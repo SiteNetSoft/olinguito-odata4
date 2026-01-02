@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.demo.odatademo.types;
+package org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
 
 public interface AddressComposableInvoker
-    extends org.apache.olingo.ext.proxy.api.StructuredComposableInvoker<Address, Address.Operations>
+    extends org.sitenetsoft.olinguito.ext.proxy.api.StructuredComposableInvoker<Address, Address.Operations>
 {
 
   @Override
@@ -30,7 +30,7 @@ public interface AddressComposableInvoker
   @Override
   AddressComposableInvoker expand(String... expand);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Street",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Street",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -45,7 +45,7 @@ public interface AddressComposableInvoker
 
   void setStreet(java.lang.String _street);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "City",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "City",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -60,7 +60,7 @@ public interface AddressComposableInvoker
 
   void setCity(java.lang.String _city);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "State",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "State",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -75,7 +75,7 @@ public interface AddressComposableInvoker
 
   void setState(java.lang.String _state);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ZipCode",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ZipCode",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -90,7 +90,7 @@ public interface AddressComposableInvoker
 
   void setZipCode(java.lang.String _zipCode);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Country",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Country",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",

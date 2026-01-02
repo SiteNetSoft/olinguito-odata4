@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.prefer;
+package org.sitenetsoft.olinguito.server.core.prefer;
 
 import java.net.URI;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.olingo.commons.api.format.PreferenceName;
-import org.apache.olingo.server.api.prefer.Preferences;
+import org.sitenetsoft.olinguito.commons.api.format.PreferenceName;
+import org.sitenetsoft.olinguito.server.api.prefer.Preferences;
 
 /**
  * Provides access methods to the preferences set in the Prefer HTTP request

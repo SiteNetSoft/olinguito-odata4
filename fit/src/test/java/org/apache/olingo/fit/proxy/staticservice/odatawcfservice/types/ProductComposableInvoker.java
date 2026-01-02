@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
 public interface ProductComposableInvoker
-    extends org.apache.olingo.ext.proxy.api.StructuredComposableInvoker<Product, Product.Operations>
+    extends org.sitenetsoft.olinguito.ext.proxy.api.StructuredComposableInvoker<Product, Product.Operations>
 {
 
   @Override
@@ -34,7 +34,7 @@ public interface ProductComposableInvoker
   ProductComposableInvoker expand(String... expand);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ProductID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ProductID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -49,7 +49,7 @@ public interface ProductComposableInvoker
 
   void setProductID(java.lang.Integer _productID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Name",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Name",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -64,7 +64,7 @@ public interface ProductComposableInvoker
 
   void setName(java.lang.String _name);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "QuantityPerUnit",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "QuantityPerUnit",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -79,7 +79,7 @@ public interface ProductComposableInvoker
 
   void setQuantityPerUnit(java.lang.String _quantityPerUnit);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "UnitPrice",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "UnitPrice",
       type = "Edm.Single",
       nullable = false,
       defaultValue = "",
@@ -94,7 +94,7 @@ public interface ProductComposableInvoker
 
   void setUnitPrice(java.lang.Float _unitPrice);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "QuantityInStock",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "QuantityInStock",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -109,7 +109,7 @@ public interface ProductComposableInvoker
 
   void setQuantityInStock(java.lang.Integer _quantityInStock);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Discontinued",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Discontinued",
       type = "Edm.Boolean",
       nullable = false,
       defaultValue = "",
@@ -124,7 +124,7 @@ public interface ProductComposableInvoker
 
   void setDiscontinued(java.lang.Boolean _discontinued);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "UserAccess",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "UserAccess",
       type = "Microsoft.Test.OData.Services.ODataWCFService.AccessLevel",
       nullable = true,
       defaultValue = "",
@@ -142,7 +142,7 @@ public interface ProductComposableInvoker
       setUserAccess(
           AccessLevel _userAccess);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "SkinColor",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "SkinColor",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Color",
       nullable = true,
       defaultValue = "",
@@ -159,7 +159,7 @@ public interface ProductComposableInvoker
       setSkinColor(
           Color _skinColor);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "CoverColors",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "CoverColors",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Color",
       nullable = false,
       defaultValue = "",
@@ -170,14 +170,14 @@ public interface ProductComposableInvoker
       unicode = true,
       collation = "",
       srid = "")
-      org.apache.olingo.ext.proxy.api.PrimitiveCollection<Color>
+      org.sitenetsoft.olinguito.ext.proxy.api.PrimitiveCollection<Color>
       getCoverColors();
 
       void
       setCoverColors(
-          org.apache.olingo.ext.proxy.api.PrimitiveCollection<Color> _coverColors);
+          org.sitenetsoft.olinguito.ext.proxy.api.PrimitiveCollection<Color> _coverColors);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "Details",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "Details",
       type = "Microsoft.Test.OData.Services.ODataWCFService.ProductDetail",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",

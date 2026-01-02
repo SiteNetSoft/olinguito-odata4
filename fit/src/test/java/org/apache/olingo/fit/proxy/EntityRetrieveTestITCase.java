@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy;
+package org.sitenetsoft.olinguito.fit.proxy;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -30,23 +30,23 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.olingo.ext.proxy.commons.EntityInvocationHandler;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.InMemoryEntities;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.AccessLevel;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Address;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Company;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Customer;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.CustomerCollection;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Employee;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.EmployeeCollection;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Order;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.OrderCollection;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.OrderDetail;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.OrderDetailKey;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.PaymentInstrument;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Person;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.PersonCollection;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Product;
+import org.sitenetsoft.olinguito.ext.proxy.commons.EntityInvocationHandler;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.InMemoryEntities;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.AccessLevel;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Address;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Company;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Customer;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.CustomerCollection;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Employee;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.EmployeeCollection;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Order;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.OrderCollection;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.OrderDetail;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.OrderDetailKey;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.PaymentInstrument;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Person;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.PersonCollection;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Product;
 // CHECKSTYLE:ON (Maven checkstyle)
 import org.junit.Test;
 

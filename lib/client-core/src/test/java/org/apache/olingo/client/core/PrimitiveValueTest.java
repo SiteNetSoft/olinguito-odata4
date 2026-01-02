@@ -16,16 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core;
+package org.sitenetsoft.olinguito.client.core;
 
 import static org.junit.Assert.assertEquals;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
 
-import org.apache.olingo.client.api.domain.ClientValue;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeException;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.junit.Test;
 
 public class PrimitiveValueTest extends AbstractTest {

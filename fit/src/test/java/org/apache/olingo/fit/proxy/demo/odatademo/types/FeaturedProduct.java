@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.demo.odatademo.types;
+package org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types;
 
 import java.util.concurrent.Future;
 
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("ODataDemo")
-@org.apache.olingo.ext.proxy.api.annotations.EntityType(name = "FeaturedProduct",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("ODataDemo")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityType(name = "FeaturedProduct",
     openType = false,
     hasStream = false,
     isAbstract = false,
@@ -47,7 +47,7 @@ public interface FeaturedProduct extends Product {
 
   @Override
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -64,7 +64,7 @@ public interface FeaturedProduct extends Product {
   void setID(java.lang.Integer _iD);
 
   @Override
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Name",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Name",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -81,7 +81,7 @@ public interface FeaturedProduct extends Product {
   void setName(java.lang.String _name);
 
   @Override
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Description",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Description",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -98,7 +98,7 @@ public interface FeaturedProduct extends Product {
   void setDescription(java.lang.String _description);
 
   @Override
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ReleaseDate",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ReleaseDate",
       type = "Edm.DateTimeOffset",
       nullable = false,
       defaultValue = "",
@@ -115,7 +115,7 @@ public interface FeaturedProduct extends Product {
   void setReleaseDate(java.sql.Timestamp _releaseDate);
 
   @Override
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "DiscontinuedDate",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "DiscontinuedDate",
       type = "Edm.DateTimeOffset",
       nullable = true,
       defaultValue = "",
@@ -132,7 +132,7 @@ public interface FeaturedProduct extends Product {
   void setDiscontinuedDate(java.sql.Timestamp _discontinuedDate);
 
   @Override
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Rating",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Rating",
       type = "Edm.Int16",
       nullable = false,
       defaultValue = "",
@@ -149,7 +149,7 @@ public interface FeaturedProduct extends Product {
   void setRating(java.lang.Short _rating);
 
   @Override
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Price",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Price",
       type = "Edm.Double",
       nullable = false,
       defaultValue = "",
@@ -166,7 +166,7 @@ public interface FeaturedProduct extends Product {
   void setPrice(java.lang.Double _price);
 
   @Override
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "Categories",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "Categories",
       type = "ODataDemo.Category",
       targetSchema = "ODataDemo",
       targetContainer = "DemoService",
@@ -178,7 +178,7 @@ public interface FeaturedProduct extends Product {
   void setCategories(CategoryCollection _categories);
 
   @Override
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "Supplier",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "Supplier",
       type = "ODataDemo.Supplier",
       targetSchema = "ODataDemo",
       targetContainer = "DemoService",
@@ -190,7 +190,7 @@ public interface FeaturedProduct extends Product {
   void setSupplier(Supplier _supplier);
 
   @Override
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "ProductDetail",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "ProductDetail",
       type = "ODataDemo.ProductDetail",
       targetSchema = "ODataDemo",
       targetContainer = "DemoService",
@@ -201,7 +201,7 @@ public interface FeaturedProduct extends Product {
   @Override
   void setProductDetail(ProductDetail _productDetail);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "Advertisement",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "Advertisement",
       type = "ODataDemo.Advertisement",
       targetSchema = "ODataDemo",
       targetContainer = "DemoService",
@@ -224,58 +224,58 @@ public interface FeaturedProduct extends Product {
   interface Annotations extends Product.Annotations {
 
     @Override
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "ID",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "ID",
         type = "Edm.Int32")
-    org.apache.olingo.ext.proxy.api.Annotatable getIDAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getIDAnnotations();
 
     @Override
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Name",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Name",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getNameAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getNameAnnotations();
 
     @Override
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Description",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Description",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getDescriptionAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getDescriptionAnnotations();
 
     @Override
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "ReleaseDate",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "ReleaseDate",
         type = "Edm.DateTimeOffset")
-    org.apache.olingo.ext.proxy.api.Annotatable getReleaseDateAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getReleaseDateAnnotations();
 
     @Override
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "DiscontinuedDate",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "DiscontinuedDate",
         type = "Edm.DateTimeOffset")
-    org.apache.olingo.ext.proxy.api.Annotatable getDiscontinuedDateAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getDiscontinuedDateAnnotations();
 
     @Override
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Rating",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Rating",
         type = "Edm.Int16")
-    org.apache.olingo.ext.proxy.api.Annotatable getRatingAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getRatingAnnotations();
 
     @Override
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Price",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Price",
         type = "Edm.Double")
-    org.apache.olingo.ext.proxy.api.Annotatable getPriceAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getPriceAnnotations();
 
     @Override
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "Categories",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "Categories",
         type = "ODataDemo.Category")
-    org.apache.olingo.ext.proxy.api.Annotatable getCategoriesAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getCategoriesAnnotations();
 
     @Override
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "Supplier",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "Supplier",
         type = "ODataDemo.Supplier")
-    org.apache.olingo.ext.proxy.api.Annotatable getSupplierAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getSupplierAnnotations();
 
     @Override
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "ProductDetail",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "ProductDetail",
         type = "ODataDemo.ProductDetail")
-    org.apache.olingo.ext.proxy.api.Annotatable getProductDetailAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getProductDetailAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "Advertisement",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "Advertisement",
         type = "ODataDemo.Advertisement")
-    org.apache.olingo.ext.proxy.api.Annotatable getAdvertisementAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getAdvertisementAnnotations();
   }
 
 }

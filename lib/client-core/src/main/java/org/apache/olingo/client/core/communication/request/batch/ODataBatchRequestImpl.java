@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.request.batch;
+package org.sitenetsoft.olinguito.client.core.communication.request.batch;
 
 import java.io.IOException;
 import java.net.URI;
@@ -25,15 +25,15 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.communication.header.ODataPreferences;
-import org.apache.olingo.client.api.communication.request.ODataBatchableRequest;
-import org.apache.olingo.client.api.communication.request.batch.BatchManager;
-import org.apache.olingo.client.api.communication.request.batch.ODataBatchRequest;
-import org.apache.olingo.client.api.communication.request.batch.ODataBatchResponseItem;
-import org.apache.olingo.client.api.communication.response.ODataBatchResponse;
-import org.apache.olingo.client.core.communication.response.AbstractODataResponse;
-import org.apache.olingo.client.core.communication.response.batch.ODataBatchResponseManager;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.communication.header.ODataPreferences;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataBatchableRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.BatchManager;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchResponseItem;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataBatchResponse;
+import org.sitenetsoft.olinguito.client.core.communication.response.AbstractODataResponse;
+import org.sitenetsoft.olinguito.client.core.communication.response.batch.ODataBatchResponseManager;
 
 public class ODataBatchRequestImpl
         extends AbstractODataBatchRequest<ODataBatchResponse, BatchManager>

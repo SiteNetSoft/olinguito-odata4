@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.queryoption.apply;
+package org.sitenetsoft.olinguito.server.core.uri.queryoption.apply;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,14 +24,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.server.api.ODataApplicationException;
-import org.apache.olingo.server.api.uri.UriInfo;
-import org.apache.olingo.server.api.uri.UriResource;
-import org.apache.olingo.server.api.uri.queryoption.apply.AggregateExpression;
-import org.apache.olingo.server.api.uri.queryoption.expression.Expression;
-import org.apache.olingo.server.api.uri.queryoption.expression.ExpressionVisitException;
-import org.apache.olingo.server.api.uri.queryoption.expression.ExpressionVisitor;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfo;
+import org.sitenetsoft.olinguito.server.api.uri.UriResource;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.apply.AggregateExpression;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Expression;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.ExpressionVisitException;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.ExpressionVisitor;
 
 /**
  * Represents an aggregate expression.

@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.parser.search;
+package org.sitenetsoft.olinguito.server.core.uri.parser.search;
 
-import org.apache.olingo.server.api.uri.queryoption.search.SearchBinary;
-import org.apache.olingo.server.api.uri.queryoption.search.SearchBinaryOperatorKind;
-import org.apache.olingo.server.api.uri.queryoption.search.SearchExpression;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.search.SearchBinary;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.search.SearchBinaryOperatorKind;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.search.SearchExpression;
 
 public class SearchBinaryImpl extends SearchExpressionImpl implements SearchBinary {
 

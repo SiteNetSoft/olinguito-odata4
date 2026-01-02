@@ -16,24 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
-@org.apache.olingo.ext.proxy.api.annotations.EntityType(name = "Order",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityType(name = "Order",
     openType = false,
     hasStream = false,
     isAbstract = false)
 public interface Order
-    extends org.apache.olingo.ext.proxy.api.Annotatable,
-    org.apache.olingo.ext.proxy.api.EntityType<Order>, org.apache.olingo.ext.proxy.api.StructuredQuery<Order> {
+    extends org.sitenetsoft.olinguito.ext.proxy.api.Annotatable,
+    org.sitenetsoft.olinguito.ext.proxy.api.EntityType<Order>, org.sitenetsoft.olinguito.ext.proxy.api.StructuredQuery<Order> {
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "OrderID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "OrderID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -48,7 +48,7 @@ public interface Order
 
   void setOrderID(java.lang.Integer _orderID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "OrderDate",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "OrderDate",
       type = "Edm.DateTimeOffset",
       nullable = false,
       defaultValue = "",
@@ -63,7 +63,7 @@ public interface Order
 
   void setOrderDate(java.sql.Timestamp _orderDate);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ShelfLife",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ShelfLife",
       type = "Edm.Duration",
       nullable = true,
       defaultValue = "",
@@ -78,7 +78,7 @@ public interface Order
 
   void setShelfLife(java.math.BigDecimal _shelfLife);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "OrderShelfLifes",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "OrderShelfLifes",
       type = "Edm.Duration",
       nullable = true,
       defaultValue = "",
@@ -89,11 +89,11 @@ public interface Order
       unicode = true,
       collation = "",
       srid = "")
-  org.apache.olingo.ext.proxy.api.PrimitiveCollection<java.math.BigDecimal> getOrderShelfLifes();
+  org.sitenetsoft.olinguito.ext.proxy.api.PrimitiveCollection<java.math.BigDecimal> getOrderShelfLifes();
 
-  void setOrderShelfLifes(org.apache.olingo.ext.proxy.api.PrimitiveCollection<java.math.BigDecimal> _orderShelfLifes);
+  void setOrderShelfLifes(org.sitenetsoft.olinguito.ext.proxy.api.PrimitiveCollection<java.math.BigDecimal> _orderShelfLifes);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "LoggedInEmployee",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "LoggedInEmployee",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Employee",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -106,7 +106,7 @@ public interface Order
       setLoggedInEmployee(
           Employee _loggedInEmployee);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "CustomerForOrder",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "CustomerForOrder",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Customer",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -119,7 +119,7 @@ public interface Order
       setCustomerForOrder(
           Customer _customerForOrder);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "OrderDetails",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "OrderDetails",
       type = "Microsoft.Test.OData.Services.ODataWCFService.OrderDetail",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -134,7 +134,7 @@ public interface Order
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 
@@ -142,33 +142,33 @@ public interface Order
 
   interface Annotations {
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "OrderID",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "OrderID",
         type = "Edm.Int32")
-    org.apache.olingo.ext.proxy.api.Annotatable getOrderIDAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getOrderIDAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "OrderDate",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "OrderDate",
         type = "Edm.DateTimeOffset")
-    org.apache.olingo.ext.proxy.api.Annotatable getOrderDateAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getOrderDateAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "ShelfLife",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "ShelfLife",
         type = "Edm.Duration")
-    org.apache.olingo.ext.proxy.api.Annotatable getShelfLifeAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getShelfLifeAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "OrderShelfLifes",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "OrderShelfLifes",
         type = "Edm.Duration")
-    org.apache.olingo.ext.proxy.api.Annotatable getOrderShelfLifesAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getOrderShelfLifesAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "LoggedInEmployee",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "LoggedInEmployee",
         type = "Microsoft.Test.OData.Services.ODataWCFService.Employee")
-    org.apache.olingo.ext.proxy.api.Annotatable getLoggedInEmployeeAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getLoggedInEmployeeAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "CustomerForOrder",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "CustomerForOrder",
         type = "Microsoft.Test.OData.Services.ODataWCFService.Customer")
-    org.apache.olingo.ext.proxy.api.Annotatable getCustomerForOrderAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getCustomerForOrderAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "OrderDetails",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "OrderDetails",
         type = "Microsoft.Test.OData.Services.ODataWCFService.OrderDetail")
-    org.apache.olingo.ext.proxy.api.Annotatable getOrderDetailsAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getOrderDetailsAnnotations();
   }
 
 }

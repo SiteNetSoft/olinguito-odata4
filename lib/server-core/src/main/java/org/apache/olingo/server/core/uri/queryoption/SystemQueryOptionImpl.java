@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.queryoption;
+package org.sitenetsoft.olinguito.server.core.uri.queryoption;
 
-import org.apache.olingo.server.api.uri.queryoption.SystemQueryOption;
-import org.apache.olingo.server.api.uri.queryoption.SystemQueryOptionKind;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SystemQueryOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SystemQueryOptionKind;
 
 public abstract class SystemQueryOptionImpl extends QueryOptionImpl implements SystemQueryOption {
 

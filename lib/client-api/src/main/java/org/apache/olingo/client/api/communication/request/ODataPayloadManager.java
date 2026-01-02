@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication.request;
+package org.sitenetsoft.olinguito.client.api.communication.request;
 
 import java.io.InputStream;
 import java.util.concurrent.Future;
 
-import org.apache.olingo.client.api.communication.response.ODataResponse;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataResponse;
 
 /**
  * OData request payload management abstract class.

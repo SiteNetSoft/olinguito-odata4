@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.request;
+package org.sitenetsoft.olinguito.client.core.communication.request;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -36,20 +36,20 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.DefaultHttpResponseFactory;
 import org.apache.http.message.BasicStatusLine;
-import org.apache.olingo.client.api.Configuration;
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.communication.request.ODataBatchableRequest;
-import org.apache.olingo.client.api.communication.response.AsyncResponseWrapper;
-import org.apache.olingo.client.api.communication.response.ODataResponse;
-import org.apache.olingo.client.api.domain.ClientInvokeResult;
-import org.apache.olingo.client.api.http.HttpClientFactory;
-import org.apache.olingo.client.api.http.HttpUriRequestFactory;
-import org.apache.olingo.client.core.ODataClientFactory;
-import org.apache.olingo.client.core.communication.request.AsyncRequestWrapperImpl.AsyncResponseWrapperImpl;
-import org.apache.olingo.client.core.communication.request.batch.ODataBatchRequestImpl;
-import org.apache.olingo.client.core.communication.request.invoke.ODataInvokeRequestImpl;
-import org.apache.olingo.commons.api.http.HttpHeader;
-import org.apache.olingo.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.client.api.Configuration;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataBatchableRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.AsyncResponseWrapper;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataResponse;
+import org.sitenetsoft.olinguito.client.api.domain.ClientInvokeResult;
+import org.sitenetsoft.olinguito.client.api.http.HttpClientFactory;
+import org.sitenetsoft.olinguito.client.api.http.HttpUriRequestFactory;
+import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
+import org.sitenetsoft.olinguito.client.core.communication.request.AsyncRequestWrapperImpl.AsyncResponseWrapperImpl;
+import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataBatchRequestImpl;
+import org.sitenetsoft.olinguito.client.core.communication.request.invoke.ODataInvokeRequestImpl;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.junit.Test;
 
 public class AsyncRequestWrapperTest {

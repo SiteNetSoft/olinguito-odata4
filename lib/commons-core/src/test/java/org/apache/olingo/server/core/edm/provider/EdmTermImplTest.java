@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.edm.provider;
+package org.sitenetsoft.olinguito.server.core.edm.provider;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -31,21 +31,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmComplexType;
-import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.commons.api.edm.EdmEnumType;
-import org.apache.olingo.commons.api.edm.EdmException;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveType;
-import org.apache.olingo.commons.api.edm.EdmTerm;
-import org.apache.olingo.commons.api.edm.EdmTypeDefinition;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.edm.TargetType;
-import org.apache.olingo.commons.api.edm.provider.CsdlAnnotation;
-import org.apache.olingo.commons.api.edm.provider.CsdlEdmProvider;
-import org.apache.olingo.commons.api.edm.provider.CsdlTerm;
-import org.apache.olingo.commons.core.edm.EdmProviderImpl;
-import org.apache.olingo.commons.core.edm.EdmTermImpl;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmComplexType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEnumType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmException;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmTerm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmTypeDefinition;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.TargetType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEdmProvider;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlTerm;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmTermImpl;
 import org.junit.Before;
 import org.junit.Test;
 

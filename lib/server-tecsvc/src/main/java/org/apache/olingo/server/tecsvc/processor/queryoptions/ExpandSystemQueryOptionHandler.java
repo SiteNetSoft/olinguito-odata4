@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.tecsvc.processor.queryoptions;
+package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -24,33 +24,33 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import org.apache.olingo.commons.api.data.Entity;
-import org.apache.olingo.commons.api.data.EntityCollection;
-import org.apache.olingo.commons.api.data.Link;
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmBindingTarget;
-import org.apache.olingo.commons.api.edm.EdmElement;
-import org.apache.olingo.commons.api.edm.EdmEntitySet;
-import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.commons.api.edm.EdmNavigationProperty;
-import org.apache.olingo.commons.api.edm.EdmNavigationPropertyBinding;
-import org.apache.olingo.commons.api.http.HttpStatusCode;
-import org.apache.olingo.server.api.ODataApplicationException;
-import org.apache.olingo.server.api.uri.UriInfoResource;
-import org.apache.olingo.server.api.uri.UriResource;
-import org.apache.olingo.server.api.uri.UriResourceNavigation;
-import org.apache.olingo.server.api.uri.queryoption.CountOption;
-import org.apache.olingo.server.api.uri.queryoption.ExpandItem;
-import org.apache.olingo.server.api.uri.queryoption.ExpandOption;
-import org.apache.olingo.server.api.uri.queryoption.FilterOption;
-import org.apache.olingo.server.api.uri.queryoption.OrderByOption;
-import org.apache.olingo.server.api.uri.queryoption.SkipOption;
-import org.apache.olingo.server.api.uri.queryoption.TopOption;
-import org.apache.olingo.server.tecsvc.processor.queryoptions.options.CountHandler;
-import org.apache.olingo.server.tecsvc.processor.queryoptions.options.FilterHandler;
-import org.apache.olingo.server.tecsvc.processor.queryoptions.options.OrderByHandler;
-import org.apache.olingo.server.tecsvc.processor.queryoptions.options.SkipHandler;
-import org.apache.olingo.server.tecsvc.processor.queryoptions.options.TopHandler;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.data.EntityCollection;
+import org.sitenetsoft.olinguito.commons.api.data.Link;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmBindingTarget;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmElement;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationPropertyBinding;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoResource;
+import org.sitenetsoft.olinguito.server.api.uri.UriResource;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceNavigation;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.CountOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandItem;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.FilterOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.OrderByOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SkipOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.TopOption;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.options.CountHandler;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.options.FilterHandler;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.options.OrderByHandler;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.options.SkipHandler;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.options.TopHandler;
 
 public class ExpandSystemQueryOptionHandler {
 

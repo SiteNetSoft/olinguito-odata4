@@ -16,18 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edm.provider.annotation;
+package org.sitenetsoft.olinguito.commons.api.edm.provider.annotation;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.provider.CsdlAbstractEdmItem;
-import org.apache.olingo.commons.api.edm.provider.CsdlAnnotatable;
-import org.apache.olingo.commons.api.edm.provider.CsdlAnnotation;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAbstractEdmItem;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotatable;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
 
 /**
  * The edm:PropertyValue element supplies a value to a property on the type instantiated by an 
- * edm:Record expression (See {@link org.apache.olingo.commons.api.edm.annotation.EdmRecord}). 
+ * edm:Record expression (See {@link org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmRecord}). 
  * The value is obtained by evaluating an expression.
  */
 public class CsdlPropertyValue extends CsdlAbstractEdmItem implements CsdlAnnotatable {

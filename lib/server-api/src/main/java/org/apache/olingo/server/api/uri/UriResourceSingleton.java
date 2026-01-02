@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.uri;
+package org.sitenetsoft.olinguito.server.api.uri;
 
-import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.commons.api.edm.EdmSingleton;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmSingleton;
 
 /**
  * Used to describe an entity set used within an resource path

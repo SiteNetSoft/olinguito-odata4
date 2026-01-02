@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.tecsvc.data;
+package org.sitenetsoft.olinguito.server.tecsvc.data;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -31,44 +31,44 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.olingo.commons.api.Constants;
-import org.apache.olingo.commons.api.data.ComplexValue;
-import org.apache.olingo.commons.api.data.DeletedEntity;
-import org.apache.olingo.commons.api.data.DeletedEntity.Reason;
-import org.apache.olingo.commons.api.data.DeltaLink;
-import org.apache.olingo.commons.api.data.Entity;
-import org.apache.olingo.commons.api.data.EntityCollection;
-import org.apache.olingo.commons.api.data.Link;
-import org.apache.olingo.commons.api.data.Parameter;
-import org.apache.olingo.commons.api.data.Property;
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmComplexType;
-import org.apache.olingo.commons.api.edm.EdmEntitySet;
-import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.commons.api.edm.EdmEnumType;
-import org.apache.olingo.commons.api.edm.EdmFunction;
-import org.apache.olingo.commons.api.edm.EdmKeyPropertyRef;
-import org.apache.olingo.commons.api.edm.EdmNavigationProperty;
-import org.apache.olingo.commons.api.edm.EdmParameter;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveType;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeException;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
-import org.apache.olingo.commons.api.edm.EdmProperty;
-import org.apache.olingo.commons.api.edm.EdmSingleton;
-import org.apache.olingo.commons.api.edm.EdmStructuredType;
-import org.apache.olingo.commons.api.edm.EdmType;
-import org.apache.olingo.commons.api.edm.EdmTypeDefinition;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.edm.constants.EdmTypeKind;
-import org.apache.olingo.commons.api.http.HttpStatusCode;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.ODataApplicationException;
-import org.apache.olingo.server.api.deserializer.DeserializerException;
-import org.apache.olingo.server.api.serializer.SerializerException;
-import org.apache.olingo.server.api.uri.UriInfoResource;
-import org.apache.olingo.server.api.uri.UriParameter;
-import org.apache.olingo.server.api.uri.UriResourceEntitySet;
-import org.apache.olingo.server.api.uri.queryoption.expression.Literal;
+import org.sitenetsoft.olinguito.commons.api.Constants;
+import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
+import org.sitenetsoft.olinguito.commons.api.data.DeletedEntity;
+import org.sitenetsoft.olinguito.commons.api.data.DeletedEntity.Reason;
+import org.sitenetsoft.olinguito.commons.api.data.DeltaLink;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.data.EntityCollection;
+import org.sitenetsoft.olinguito.commons.api.data.Link;
+import org.sitenetsoft.olinguito.commons.api.data.Parameter;
+import org.sitenetsoft.olinguito.commons.api.data.Property;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmComplexType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEnumType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmFunction;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmKeyPropertyRef;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmParameter;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmSingleton;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmStructuredType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmTypeDefinition;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.constants.EdmTypeKind;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoResource;
+import org.sitenetsoft.olinguito.server.api.uri.UriParameter;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceEntitySet;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Literal;
 
 public class DataProvider {
 

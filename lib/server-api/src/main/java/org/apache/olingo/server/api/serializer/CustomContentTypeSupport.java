@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.serializer;
+package org.sitenetsoft.olinguito.server.api.serializer;
 
 import java.util.List;
 
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.server.api.OlingoExtension;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.server.api.OlingoExtension;
 
 /**
  * <p>Processors that supports custom content types can implement this interface.</p>

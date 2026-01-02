@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.tecsvc.http;
+package org.sitenetsoft.olinguito.fit.tecsvc.http;
 
 import static org.junit.Assert.*;
 
@@ -30,15 +30,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.commons.api.http.HttpHeader;
-import org.apache.olingo.commons.api.http.HttpMethod;
-import org.apache.olingo.commons.api.http.HttpStatusCode;
-import org.apache.olingo.fit.AbstractBaseTestITCase;
-import org.apache.olingo.fit.tecsvc.TecSvcConst;
-import org.apache.olingo.fit.util.StringHelper;
-import org.apache.olingo.server.tecsvc.async.TechnicalAsyncService;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.fit.AbstractBaseTestITCase;
+import org.sitenetsoft.olinguito.fit.tecsvc.TecSvcConst;
+import org.sitenetsoft.olinguito.fit.util.StringHelper;
+import org.sitenetsoft.olinguito.server.tecsvc.async.TechnicalAsyncService;
 import org.junit.Test;
 
 public class PreferHeaderForGetAndDeleteITCase extends AbstractBaseTestITCase {

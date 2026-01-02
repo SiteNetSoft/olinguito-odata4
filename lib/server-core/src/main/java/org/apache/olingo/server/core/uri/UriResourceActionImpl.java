@@ -16,17 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri;
+package org.sitenetsoft.olinguito.server.core.uri;
 
-import org.apache.olingo.commons.api.edm.EdmAction;
-import org.apache.olingo.commons.api.edm.EdmActionImport;
-import org.apache.olingo.commons.api.edm.EdmType;
-import org.apache.olingo.server.api.uri.UriResourceAction;
-import org.apache.olingo.server.api.uri.UriResourceKind;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmAction;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmActionImport;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceAction;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceKind;
 
 /**
  * Implementation of the {@link UriResourceAction} interface. This class does not extend
- * {@link org.apache.olingo.server.core.uri.UriResourceTypedImpl UriResourceTypedImpl} since that would allow type
+ * {@link org.sitenetsoft.olinguito.server.core.uri.UriResourceTypedImpl UriResourceTypedImpl} since that would allow type
  * filters and subsequent path segments.
  */
 public class UriResourceActionImpl extends UriResourceImpl implements UriResourceAction {

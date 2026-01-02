@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.serializer;
+package org.sitenetsoft.olinguito.server.core.serializer;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.apache.olingo.server.api.serializer.ODataSerializer;
-import org.apache.olingo.server.api.serializer.SerializerException;
+import org.sitenetsoft.olinguito.server.api.serializer.ODataSerializer;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
 
 public abstract class AbstractODataSerializer implements ODataSerializer {
 

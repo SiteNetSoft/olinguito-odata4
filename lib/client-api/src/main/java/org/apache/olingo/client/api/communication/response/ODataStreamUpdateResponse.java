@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication.response;
+package org.sitenetsoft.olinguito.client.api.communication.response;
 
 import java.io.InputStream;
 
 /**
  * This class implements the response to an Odata stream create/update request.
  *
- * @see org.apache.olingo.client.api.communication.request.streamed.ODataStreamUpdateRequest
+ * @see org.sitenetsoft.olinguito.client.api.communication.request.streamed.ODataStreamUpdateRequest
  */
 public interface ODataStreamUpdateResponse extends ODataResponse {
 

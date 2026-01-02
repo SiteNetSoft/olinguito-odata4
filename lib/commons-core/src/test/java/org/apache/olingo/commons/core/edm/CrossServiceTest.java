@@ -1,4 +1,4 @@
-package org.apache.olingo.commons.core.edm;
+package org.sitenetsoft.olinguito.commons.core.edm;
  /*
   * Licensed to the Apache Software Foundation (ASF) under one
   * or more contributor license agreements. See the NOTICE file
@@ -22,23 +22,23 @@ package org.apache.olingo.commons.core.edm;
  import java.util.Collections;
  import java.util.List;
  
- import org.apache.olingo.commons.api.edm.Edm;
- import org.apache.olingo.commons.api.edm.EdmEntitySet;
- import org.apache.olingo.commons.api.edm.EdmEntityType;
- import org.apache.olingo.commons.api.edm.FullQualifiedName;
- import org.apache.olingo.commons.api.edm.provider.CsdlAbstractEdmProvider;
- import org.apache.olingo.commons.api.edm.provider.CsdlAliasInfo;
- import org.apache.olingo.commons.api.edm.provider.CsdlEdmProvider;
- import org.apache.olingo.commons.api.edm.provider.CsdlEntityContainer;
- import org.apache.olingo.commons.api.edm.provider.CsdlEntityContainerInfo;
- import org.apache.olingo.commons.api.edm.provider.CsdlEntitySet;
- import org.apache.olingo.commons.api.edm.provider.CsdlEntityType;
- import org.apache.olingo.commons.api.edm.provider.CsdlNavigationProperty;
- import org.apache.olingo.commons.api.edm.provider.CsdlProperty;
- import org.apache.olingo.commons.api.edm.provider.CsdlPropertyRef;
- import org.apache.olingo.commons.api.edm.provider.CsdlSchema;
- import org.apache.olingo.commons.api.ex.ODataException;
-import org.apache.olingo.commons.core.edm.EdmProviderImpl;
+ import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+ import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
+ import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+ import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAbstractEdmProvider;
+ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAliasInfo;
+ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEdmProvider;
+ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityContainer;
+ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityContainerInfo;
+ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntitySet;
+ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityType;
+ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlNavigationProperty;
+ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlProperty;
+ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlPropertyRef;
+ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlSchema;
+ import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
 import org.junit.Assert;
  import org.junit.Test;
  

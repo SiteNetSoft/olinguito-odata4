@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edm.provider;
+package org.sitenetsoft.olinguito.commons.api.edm.provider;
 
-import org.apache.olingo.commons.api.edm.EdmMapping;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmMapping;
 
 /**
  * Content of this class does not appear within the CSDL metadata document. This class is used to perform server
@@ -43,7 +43,7 @@ public class CsdlMapping implements EdmMapping {
   
   /**
    * Sets the class to be used during deserialization to transform an EDM primitive type into this java class. To see
-   * which classes work for which primitive type refer to {@link org.apache.olingo.commons.api.edm.EdmPrimitiveType}.
+   * which classes work for which primitive type refer to {@link org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType}.
    * @param mappedJavaClass class to which is mapped
    * @return this for method chaining
    */
@@ -55,7 +55,7 @@ public class CsdlMapping implements EdmMapping {
   /*
    * (non-Javadoc)
    * 
-   * @see org.apache.olingo.commons.api.edm.EdmMapping#getMappedJavaClass()
+   * @see org.sitenetsoft.olinguito.commons.api.edm.EdmMapping#getMappedJavaClass()
    */
   @Override
   public Class<?> getMappedJavaClass() {
@@ -63,7 +63,7 @@ public class CsdlMapping implements EdmMapping {
   }
 
   /* (non-Javadoc)
-   * @see org.apache.olingo.commons.api.edm.EdmMapping#getInternalName()
+   * @see org.sitenetsoft.olinguito.commons.api.edm.EdmMapping#getInternalName()
    */
   @Override
   public String getInternalName() {

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy;
+package org.sitenetsoft.olinguito.fit.proxy;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -26,13 +26,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.olingo.ext.proxy.api.Search;
-import org.apache.olingo.ext.proxy.api.Sort;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.People;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Employee;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.EmployeeCollection;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Person;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.PersonCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.Search;
+import org.sitenetsoft.olinguito.ext.proxy.api.Sort;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.People;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Employee;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.EmployeeCollection;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Person;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.PersonCollection;
 import org.junit.Test;
 
 // CHECKSTYLE:ON (Maven checkstyle)

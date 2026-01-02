@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
 public interface StoredPIComposableInvoker
-    extends org.apache.olingo.ext.proxy.api.StructuredComposableInvoker<StoredPI, StoredPI.Operations>
+    extends org.sitenetsoft.olinguito.ext.proxy.api.StructuredComposableInvoker<StoredPI, StoredPI.Operations>
 {
 
   @Override
@@ -34,7 +34,7 @@ public interface StoredPIComposableInvoker
   StoredPIComposableInvoker expand(String... expand);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "StoredPIID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "StoredPIID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -49,7 +49,7 @@ public interface StoredPIComposableInvoker
 
   void setStoredPIID(java.lang.Integer _storedPIID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "PIName",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "PIName",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -64,7 +64,7 @@ public interface StoredPIComposableInvoker
 
   void setPIName(java.lang.String _pIName);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "PIType",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "PIType",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -79,7 +79,7 @@ public interface StoredPIComposableInvoker
 
   void setPIType(java.lang.String _pIType);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "CreatedDate",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "CreatedDate",
       type = "Edm.DateTimeOffset",
       nullable = false,
       defaultValue = "",

@@ -16,45 +16,45 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core;
+package org.sitenetsoft.olinguito.server.core;
 
-import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.server.api.uri.UriInfo;
-import org.apache.olingo.server.api.uri.UriInfoAll;
-import org.apache.olingo.server.api.uri.UriInfoBatch;
-import org.apache.olingo.server.api.uri.UriInfoCrossjoin;
-import org.apache.olingo.server.api.uri.UriInfoEntityId;
-import org.apache.olingo.server.api.uri.UriInfoMetadata;
-import org.apache.olingo.server.api.uri.UriInfoResource;
-import org.apache.olingo.server.api.uri.UriInfoService;
-import org.apache.olingo.server.api.uri.UriResourceAction;
-import org.apache.olingo.server.api.uri.UriResourceComplexProperty;
-import org.apache.olingo.server.api.uri.UriResourceCount;
-import org.apache.olingo.server.api.uri.UriResourceEntitySet;
-import org.apache.olingo.server.api.uri.UriResourceFunction;
-import org.apache.olingo.server.api.uri.UriResourceIt;
-import org.apache.olingo.server.api.uri.UriResourceLambdaAll;
-import org.apache.olingo.server.api.uri.UriResourceLambdaAny;
-import org.apache.olingo.server.api.uri.UriResourceLambdaVariable;
-import org.apache.olingo.server.api.uri.UriResourceNavigation;
-import org.apache.olingo.server.api.uri.UriResourcePrimitiveProperty;
-import org.apache.olingo.server.api.uri.UriResourceRef;
-import org.apache.olingo.server.api.uri.UriResourceRoot;
-import org.apache.olingo.server.api.uri.UriResourceSingleton;
-import org.apache.olingo.server.api.uri.UriResourceValue;
-import org.apache.olingo.server.api.uri.queryoption.ApplyOption;
-import org.apache.olingo.server.api.uri.queryoption.CountOption;
-import org.apache.olingo.server.api.uri.queryoption.DeltaTokenOption;
-import org.apache.olingo.server.api.uri.queryoption.ExpandOption;
-import org.apache.olingo.server.api.uri.queryoption.FilterOption;
-import org.apache.olingo.server.api.uri.queryoption.FormatOption;
-import org.apache.olingo.server.api.uri.queryoption.IdOption;
-import org.apache.olingo.server.api.uri.queryoption.OrderByOption;
-import org.apache.olingo.server.api.uri.queryoption.SearchOption;
-import org.apache.olingo.server.api.uri.queryoption.SelectOption;
-import org.apache.olingo.server.api.uri.queryoption.SkipOption;
-import org.apache.olingo.server.api.uri.queryoption.SkipTokenOption;
-import org.apache.olingo.server.api.uri.queryoption.TopOption;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfo;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoAll;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoBatch;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoCrossjoin;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoEntityId;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoMetadata;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoResource;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoService;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceAction;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceComplexProperty;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceCount;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceEntitySet;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceFunction;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceIt;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceLambdaAll;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceLambdaAny;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceLambdaVariable;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceNavigation;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourcePrimitiveProperty;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceRef;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceRoot;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceSingleton;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceValue;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ApplyOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.CountOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.DeltaTokenOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.FilterOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.FormatOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.IdOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.OrderByOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SearchOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SkipOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SkipTokenOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.TopOption;
 
 public interface RequestURLVisitor {
 

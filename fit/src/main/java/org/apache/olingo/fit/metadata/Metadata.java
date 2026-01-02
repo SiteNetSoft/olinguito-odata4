@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.metadata;
+package org.sitenetsoft.olinguito.fit.metadata;
 
 import java.io.InputStream;
 import java.util.Collection;
@@ -35,8 +35,8 @@ import javax.xml.stream.events.XMLEvent;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.olingo.fit.utils.ConstantKey;
-import org.apache.olingo.fit.utils.Constants;
+import org.sitenetsoft.olinguito.fit.utils.ConstantKey;
+import org.sitenetsoft.olinguito.fit.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +61,7 @@ public class Metadata extends AbstractMetadataElement {
       final XMLInputFactory ifactory = XMLInputFactory.newInstance();
       ifactory.setProperty(SUPPORT_DTD, false);
       ifactory.setProperty(IS_SUPPORTING_EXTERNAL_ENTITIES, false);
-      final XMLEventReader reader = ifactory.createXMLEventReader(is, org.apache.olingo.commons.api.Constants.UTF8);
+      final XMLEventReader reader = ifactory.createXMLEventReader(is, org.sitenetsoft.olinguito.commons.api.Constants.UTF8);
 
       try {
         while (reader.hasNext()) {
@@ -194,7 +194,7 @@ public class Metadata extends AbstractMetadataElement {
         schema.addEntityType(entityType.getName(), entityType);
       } else if (event.isStartElement()
           && event.asStartElement().getName().equals(new QName(DEF_NS, "EntityContainer"))) {
-        final org.apache.olingo.fit.metadata.Container container = getContainer(event.asStartElement(), reader);
+        final org.sitenetsoft.olinguito.fit.metadata.Container container = getContainer(event.asStartElement(), reader);
         schema.addContainer(container.getName(), container);
       } else if (event.isEndElement() && event.asEndElement().getName().equals(start.getName())) {
         completed = true;
@@ -204,10 +204,10 @@ public class Metadata extends AbstractMetadataElement {
     return schema;
   }
 
-  private org.apache.olingo.fit.metadata.Container getContainer(
+  private org.sitenetsoft.olinguito.fit.metadata.Container getContainer(
       final StartElement start, final XMLEventReader reader) throws XMLStreamException {
-    final org.apache.olingo.fit.metadata.Container container =
-        new org.apache.olingo.fit.metadata.Container(start.getAttributeByName(new QName("Name")).getValue());
+    final org.sitenetsoft.olinguito.fit.metadata.Container container =
+        new org.sitenetsoft.olinguito.fit.metadata.Container(start.getAttributeByName(new QName("Name")).getValue());
 
     boolean completed = false;
 
@@ -244,7 +244,7 @@ public class Metadata extends AbstractMetadataElement {
       XMLEvent event = reader.nextEvent();
 
       if (event.isStartElement() && event.asStartElement().getName().equals(new QName(DEF_NS, "Property"))) {
-        final org.apache.olingo.fit.metadata.Property property = getProperty(event.asStartElement());
+        final org.sitenetsoft.olinguito.fit.metadata.Property property = getProperty(event.asStartElement());
         entityType.addProperty(property.getName(), property);
       } else if (event.isStartElement()
           && event.asStartElement().getName().equals(new QName(DEF_NS, "NavigationProperty"))) {
@@ -258,9 +258,9 @@ public class Metadata extends AbstractMetadataElement {
     return entityType;
   }
 
-  private org.apache.olingo.fit.metadata.Property getProperty(final StartElement start) throws XMLStreamException {
-    final org.apache.olingo.fit.metadata.Property property =
-        new org.apache.olingo.fit.metadata.Property(start.getAttributeByName(new QName("Name")).getValue());
+  private org.sitenetsoft.olinguito.fit.metadata.Property getProperty(final StartElement start) throws XMLStreamException {
+    final org.sitenetsoft.olinguito.fit.metadata.Property property =
+        new org.sitenetsoft.olinguito.fit.metadata.Property(start.getAttributeByName(new QName("Name")).getValue());
 
     final Attribute type = start.getAttributeByName(new QName("Type"));
     property.setType(type == null ? "Edm.String" : type.getValue());

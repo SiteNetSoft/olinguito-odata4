@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.core.edm;
+package org.sitenetsoft.olinguito.commons.core.edm;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmNamed;
-import org.apache.olingo.commons.api.edm.provider.CsdlAnnotatable;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmNamed;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotatable;
 
 public abstract class AbstractEdmNamed extends AbstractEdmAnnotatable implements EdmNamed {
 

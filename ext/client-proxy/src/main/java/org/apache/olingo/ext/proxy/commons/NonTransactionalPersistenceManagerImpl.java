@@ -16,26 +16,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.ext.proxy.commons;
+package org.sitenetsoft.olinguito.ext.proxy.commons;
 
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.olingo.client.api.communication.request.ODataBasicRequest;
-import org.apache.olingo.client.api.communication.request.ODataBatchableRequest;
-import org.apache.olingo.client.api.communication.request.ODataRequest;
-import org.apache.olingo.client.api.communication.request.ODataStreamedRequest;
-import org.apache.olingo.client.api.communication.response.ODataEntityCreateResponse;
-import org.apache.olingo.client.api.communication.response.ODataEntityUpdateResponse;
-import org.apache.olingo.client.api.communication.response.ODataResponse;
-import org.apache.olingo.commons.api.ex.ODataRuntimeException;
-import org.apache.olingo.ext.proxy.AbstractService;
-import org.apache.olingo.ext.proxy.api.ODataFlushException;
-import org.apache.olingo.ext.proxy.api.ODataResponseError;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataBasicRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataBatchableRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataStreamedRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataEntityCreateResponse;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataEntityUpdateResponse;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataResponse;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
+import org.sitenetsoft.olinguito.ext.proxy.AbstractService;
+import org.sitenetsoft.olinguito.ext.proxy.api.ODataFlushException;
+import org.sitenetsoft.olinguito.ext.proxy.api.ODataResponseError;
 
 /**
- * {@link org.apache.olingo.ext.proxy.api.PersistenceManager} implementation not using OData batch requests: any
+ * {@link org.sitenetsoft.olinguito.ext.proxy.api.PersistenceManager} implementation not using OData batch requests: any
  * read-write operation will be sent separately to the OData service when calling <tt>flush()</tt>.
  */
 public class NonTransactionalPersistenceManagerImpl extends AbstractPersistenceManager {

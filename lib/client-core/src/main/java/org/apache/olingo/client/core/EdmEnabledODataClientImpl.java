@@ -16,16 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core;
+package org.sitenetsoft.olinguito.client.core;
 
-import org.apache.olingo.client.api.EdmEnabledODataClient;
-import org.apache.olingo.client.api.communication.request.invoke.EdmEnabledInvokeRequestFactory;
-import org.apache.olingo.client.api.communication.request.retrieve.EdmMetadataRequest;
-import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
-import org.apache.olingo.client.api.uri.URIBuilder;
-import org.apache.olingo.client.core.communication.request.invoke.EdmEnabledInvokeRequestFactoryImpl;
-import org.apache.olingo.client.core.uri.URIBuilderImpl;
-import org.apache.olingo.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
+import org.sitenetsoft.olinguito.client.api.communication.request.invoke.EdmEnabledInvokeRequestFactory;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.EdmMetadataRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
+import org.sitenetsoft.olinguito.client.api.uri.URIBuilder;
+import org.sitenetsoft.olinguito.client.core.communication.request.invoke.EdmEnabledInvokeRequestFactoryImpl;
+import org.sitenetsoft.olinguito.client.core.uri.URIBuilderImpl;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 
 public class EdmEnabledODataClientImpl extends ODataClientImpl implements EdmEnabledODataClient {
 

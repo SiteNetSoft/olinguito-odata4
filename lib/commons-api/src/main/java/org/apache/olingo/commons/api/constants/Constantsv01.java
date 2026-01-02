@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.constants;
+package org.sitenetsoft.olinguito.commons.api.constants;
 
-import org.apache.olingo.commons.api.IConstants;
+import org.sitenetsoft.olinguito.commons.api.IConstants;
 
 /**
  * Constant values related to the OData protocol.

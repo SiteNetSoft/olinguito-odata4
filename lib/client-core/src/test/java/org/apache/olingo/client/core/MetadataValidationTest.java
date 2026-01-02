@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core;
+package org.sitenetsoft.olinguito.client.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -25,11 +25,11 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
-import org.apache.olingo.client.api.edm.xml.XMLMetadata;
-import org.apache.olingo.client.api.serialization.ODataMetadataValidation;
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmException;
-import org.apache.olingo.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.client.api.edm.xml.XMLMetadata;
+import org.sitenetsoft.olinguito.client.api.serialization.ODataMetadataValidation;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmException;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.junit.Test;
 
 public class MetadataValidationTest extends AbstractTest {

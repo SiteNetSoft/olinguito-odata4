@@ -16,19 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core;
+package org.sitenetsoft.olinguito.server.core;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.constants.ODataServiceVersion;
-import org.apache.olingo.commons.api.edm.provider.CsdlEdmProvider;
-import org.apache.olingo.commons.api.edmx.EdmxReference;
-import org.apache.olingo.commons.core.edm.EdmProviderImpl;
-import org.apache.olingo.server.api.ServiceMetadata;
-import org.apache.olingo.server.api.etag.ServiceMetadataETagSupport;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.constants.ODataServiceVersion;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEdmProvider;
+import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.api.etag.ServiceMetadataETagSupport;
 
 /**
  */

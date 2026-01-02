@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.ext.proxy.api;
+package org.sitenetsoft.olinguito.ext.proxy.api;
 
 public interface StructuredCollectionComposableInvoker<CT extends StructuredCollection<?, ?, ?>, O extends Operations>
         extends StructuredCollectionInvoker<CT>, ComposableInvoker<CT, O> {

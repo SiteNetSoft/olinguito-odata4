@@ -16,30 +16,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api;
+package org.sitenetsoft.olinguito.server.api;
 
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.EdmPrimitiveType;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
-import org.apache.olingo.commons.api.edm.provider.CsdlEdmProvider;
-import org.apache.olingo.commons.api.edmx.EdmxReference;
-import org.apache.olingo.commons.api.ex.ODataRuntimeException;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.server.api.debug.DebugResponseHelper;
-import org.apache.olingo.server.api.deserializer.DeserializerException;
-import org.apache.olingo.server.api.deserializer.FixedFormatDeserializer;
-import org.apache.olingo.server.api.deserializer.ODataDeserializer;
-import org.apache.olingo.server.api.etag.ETagHelper;
-import org.apache.olingo.server.api.etag.ServiceMetadataETagSupport;
-import org.apache.olingo.server.api.prefer.Preferences;
-import org.apache.olingo.server.api.serializer.EdmAssistedSerializer;
-import org.apache.olingo.server.api.serializer.EdmDeltaSerializer;
-import org.apache.olingo.server.api.serializer.FixedFormatSerializer;
-import org.apache.olingo.server.api.serializer.ODataSerializer;
-import org.apache.olingo.server.api.serializer.SerializerException;
-import org.apache.olingo.server.api.uri.UriHelper;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEdmProvider;
+import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.server.api.debug.DebugResponseHelper;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
+import org.sitenetsoft.olinguito.server.api.deserializer.FixedFormatDeserializer;
+import org.sitenetsoft.olinguito.server.api.deserializer.ODataDeserializer;
+import org.sitenetsoft.olinguito.server.api.etag.ETagHelper;
+import org.sitenetsoft.olinguito.server.api.etag.ServiceMetadataETagSupport;
+import org.sitenetsoft.olinguito.server.api.prefer.Preferences;
+import org.sitenetsoft.olinguito.server.api.serializer.EdmAssistedSerializer;
+import org.sitenetsoft.olinguito.server.api.serializer.EdmDeltaSerializer;
+import org.sitenetsoft.olinguito.server.api.serializer.FixedFormatSerializer;
+import org.sitenetsoft.olinguito.server.api.serializer.ODataSerializer;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
+import org.sitenetsoft.olinguito.server.api.uri.UriHelper;
 
 /**
  * Root object for serving factory tasks and support loose coupling of implementation (core) from the API.
@@ -48,7 +48,7 @@ import org.apache.olingo.server.api.uri.UriHelper;
  */
 public abstract class OData {
 
-  private static final String IMPLEMENTATION = "org.apache.olingo.server.core.ODataImpl";
+  private static final String IMPLEMENTATION = "org.sitenetsoft.olinguito.server.core.ODataImpl";
 
   /**
    * Use this method to create a new OData instance. Each thread/request should keep its own instance.

@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.ext.proxy.commons;
+package org.sitenetsoft.olinguito.ext.proxy.commons;
 
-import org.apache.olingo.ext.proxy.api.annotations.AnnotationsForNavigationProperty;
-import org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty;
-import org.apache.olingo.ext.proxy.utils.ClassUtils;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForNavigationProperty;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty;
+import org.sitenetsoft.olinguito.ext.proxy.utils.ClassUtils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import org.apache.olingo.ext.proxy.AbstractService;
+import org.sitenetsoft.olinguito.ext.proxy.AbstractService;
 
 public class AnnotatationsInvocationHandler extends AbstractInvocationHandler {
 

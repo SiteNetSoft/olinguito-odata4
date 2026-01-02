@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.tecsvc.http;
+package org.sitenetsoft.olinguito.fit.tecsvc.http;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -31,21 +31,21 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.communication.request.invoke.ODataInvokeRequest;
-import org.apache.olingo.client.api.domain.ClientCollectionValue;
-import org.apache.olingo.client.api.domain.ClientComplexValue;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.client.api.domain.ClientPrimitiveValue;
-import org.apache.olingo.client.api.domain.ClientProperty;
-import org.apache.olingo.client.api.domain.ClientValue;
-import org.apache.olingo.client.api.uri.URIBuilder;
-import org.apache.olingo.client.core.ODataClientFactory;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.commons.api.http.HttpHeader;
-import org.apache.olingo.commons.api.http.HttpMethod;
-import org.apache.olingo.commons.api.http.HttpStatusCode;
-import org.apache.olingo.fit.tecsvc.TecSvcConst;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.communication.request.invoke.ODataInvokeRequest;
+import org.sitenetsoft.olinguito.client.api.domain.ClientCollectionValue;
+import org.sitenetsoft.olinguito.client.api.domain.ClientComplexValue;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientPrimitiveValue;
+import org.sitenetsoft.olinguito.client.api.domain.ClientProperty;
+import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
+import org.sitenetsoft.olinguito.client.api.uri.URIBuilder;
+import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.fit.tecsvc.TecSvcConst;
 import org.junit.Test;
 
 public class BasicBoundActionsITCase {

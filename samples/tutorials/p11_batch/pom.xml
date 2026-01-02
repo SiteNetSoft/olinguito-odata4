@@ -62,23 +62,23 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.olingo</groupId>
+			<groupId>org.sitenetsoft.olinguito</groupId>
 			<artifactId>odata-server-api</artifactId>
 			<version>${odata.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.olingo</groupId>
+			<groupId>org.sitenetsoft.olinguito</groupId>
 			<artifactId>odata-server-core</artifactId>
 			<version>${odata.version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.olingo</groupId>
+			<groupId>org.sitenetsoft.olinguito</groupId>
 			<artifactId>odata-commons-api</artifactId>
 			<version>${odata.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.olingo</groupId>
+			<groupId>org.sitenetsoft.olinguito</groupId>
 			<artifactId>odata-commons-core</artifactId>
 			<version>${odata.version}</version>
 		</dependency>

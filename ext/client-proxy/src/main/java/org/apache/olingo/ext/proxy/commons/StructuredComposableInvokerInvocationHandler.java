@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.ext.proxy.commons;
+package org.sitenetsoft.olinguito.ext.proxy.commons;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -24,12 +24,12 @@ import java.net.URI;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.olingo.client.api.domain.ClientValue;
-import org.apache.olingo.commons.api.edm.EdmOperation;
-import org.apache.olingo.commons.core.edm.EdmTypeInfo;
-import org.apache.olingo.ext.proxy.AbstractService;
-import org.apache.olingo.ext.proxy.api.Operations;
-import org.apache.olingo.ext.proxy.api.annotations.Operation;
+import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmOperation;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmTypeInfo;
+import org.sitenetsoft.olinguito.ext.proxy.AbstractService;
+import org.sitenetsoft.olinguito.ext.proxy.api.Operations;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Operation;
 
 public class StructuredComposableInvokerInvocationHandler<T, O extends Operations>
         extends InvokerInvocationHandler<T, O> {

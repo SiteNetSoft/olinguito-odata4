@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.deserializer.json;
+package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -27,18 +27,18 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.olingo.commons.api.data.Annotation;
-import org.apache.olingo.commons.api.data.ComplexValue;
-import org.apache.olingo.commons.api.data.Entity;
-import org.apache.olingo.commons.api.data.Property;
-import org.apache.olingo.commons.api.data.ValueType;
-import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.deserializer.DeserializerException;
-import org.apache.olingo.server.api.deserializer.DeserializerResult;
-import org.apache.olingo.server.core.deserializer.AbstractODataDeserializerTest;
+import org.sitenetsoft.olinguito.commons.api.data.Annotation;
+import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.data.Property;
+import org.sitenetsoft.olinguito.commons.api.data.ValueType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerResult;
+import org.sitenetsoft.olinguito.server.core.deserializer.AbstractODataDeserializerTest;
 import org.junit.Test;
 
 public class ODataJsonDeserializerWithInstanceAnnotationsTest extends AbstractODataDeserializerTest {

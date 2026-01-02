@@ -16,24 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.demo.odatademo.types;
+package org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("ODataDemo")
-@org.apache.olingo.ext.proxy.api.annotations.EntityType(name = "Supplier",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("ODataDemo")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityType(name = "Supplier",
     openType = false,
     hasStream = false,
     isAbstract = false)
 public interface Supplier
-    extends org.apache.olingo.ext.proxy.api.Annotatable,
-    org.apache.olingo.ext.proxy.api.EntityType<Supplier>, org.apache.olingo.ext.proxy.api.StructuredQuery<Supplier> {
+    extends org.sitenetsoft.olinguito.ext.proxy.api.Annotatable,
+    org.sitenetsoft.olinguito.ext.proxy.api.EntityType<Supplier>, org.sitenetsoft.olinguito.ext.proxy.api.StructuredQuery<Supplier> {
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -48,7 +48,7 @@ public interface Supplier
 
   void setID(java.lang.Integer _iD);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Name",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Name",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -63,7 +63,7 @@ public interface Supplier
 
   void setName(java.lang.String _name);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Address",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Address",
       type = "ODataDemo.Address",
       nullable = true,
       defaultValue = "",
@@ -78,7 +78,7 @@ public interface Supplier
 
   void setAddress(Address _address);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Location",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Location",
       type = "Edm.GeographyPoint",
       nullable = true,
       defaultValue = "",
@@ -89,11 +89,11 @@ public interface Supplier
       unicode = true,
       collation = "",
       srid = "")
-  org.apache.olingo.commons.api.edm.geo.Point getLocation();
+  org.sitenetsoft.olinguito.commons.api.edm.geo.Point getLocation();
 
-  void setLocation(org.apache.olingo.commons.api.edm.geo.Point _location);
+  void setLocation(org.sitenetsoft.olinguito.commons.api.edm.geo.Point _location);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Concurrency",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Concurrency",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -108,7 +108,7 @@ public interface Supplier
 
   void setConcurrency(java.lang.Integer _concurrency);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "Products",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "Products",
       type = "ODataDemo.Product",
       targetSchema = "ODataDemo",
       targetContainer = "DemoService",
@@ -120,7 +120,7 @@ public interface Supplier
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 
@@ -128,29 +128,29 @@ public interface Supplier
 
   interface Annotations {
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "ID",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "ID",
         type = "Edm.Int32")
-    org.apache.olingo.ext.proxy.api.Annotatable getIDAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getIDAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Name",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Name",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getNameAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getNameAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Address",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Address",
         type = "ODataDemo.Address")
-    org.apache.olingo.ext.proxy.api.Annotatable getAddressAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getAddressAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Location",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Location",
         type = "Edm.GeographyPoint")
-    org.apache.olingo.ext.proxy.api.Annotatable getLocationAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getLocationAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Concurrency",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Concurrency",
         type = "Edm.Int32")
-    org.apache.olingo.ext.proxy.api.Annotatable getConcurrencyAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getConcurrencyAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "Products",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "Products",
         type = "ODataDemo.Product")
-    org.apache.olingo.ext.proxy.api.Annotatable getProductsAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getProductsAnnotations();
   }
 
 }

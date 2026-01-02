@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.data;
+package org.sitenetsoft.olinguito.commons.api.data;
 
 import java.net.URI;
 
-import org.apache.olingo.commons.api.edm.EdmEntitySet;
-import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.commons.api.edm.EdmType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
 
 /**
  * High-level representation of a context URL, built from the string value returned by a service; provides access to the

@@ -16,22 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.opentype;
+package org.sitenetsoft.olinguito.fit.proxy.opentype;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.olingo.client.api.EdmEnabledODataClient;
-import org.apache.olingo.commons.api.edm.constants.ODataServiceVersion;
-import org.apache.olingo.ext.proxy.AbstractService;
-import org.apache.olingo.ext.proxy.api.AbstractTerm;
-import org.apache.olingo.fit.proxy.opentype.opentypesservice.types.AccountInfo;
-import org.apache.olingo.fit.proxy.opentype.opentypesservice.types.Color;
-import org.apache.olingo.fit.proxy.opentype.opentypesservice.types.ContactDetails;
-import org.apache.olingo.fit.proxy.opentype.opentypesservice.types.IndexedRow;
-import org.apache.olingo.fit.proxy.opentype.opentypesservice.types.Row;
-import org.apache.olingo.fit.proxy.opentype.opentypesservice.types.RowIndex;
+import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
+import org.sitenetsoft.olinguito.commons.api.edm.constants.ODataServiceVersion;
+import org.sitenetsoft.olinguito.ext.proxy.AbstractService;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractTerm;
+import org.sitenetsoft.olinguito.fit.proxy.opentype.opentypesservice.types.AccountInfo;
+import org.sitenetsoft.olinguito.fit.proxy.opentype.opentypesservice.types.Color;
+import org.sitenetsoft.olinguito.fit.proxy.opentype.opentypesservice.types.ContactDetails;
+import org.sitenetsoft.olinguito.fit.proxy.opentype.opentypesservice.types.IndexedRow;
+import org.sitenetsoft.olinguito.fit.proxy.opentype.opentypesservice.types.Row;
+import org.sitenetsoft.olinguito.fit.proxy.opentype.opentypesservice.types.RowIndex;
 
 public class Service<C extends EdmEnabledODataClient> extends AbstractService<C> {
 

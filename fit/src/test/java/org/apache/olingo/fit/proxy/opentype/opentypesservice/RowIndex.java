@@ -16,25 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.opentype.opentypesservice;
+package org.sitenetsoft.olinguito.fit.proxy.opentype.opentypesservice;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.AbstractEntitySet;
-import org.apache.olingo.fit.proxy.opentype.opentypesservice.types.RowIndexCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractEntitySet;
+import org.sitenetsoft.olinguito.fit.proxy.opentype.opentypesservice.types.RowIndexCollection;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
-@org.apache.olingo.ext.proxy.api.annotations.EntitySet(name = "RowIndex",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntitySet(name = "RowIndex",
     container = "Microsoft.Test.OData.Services.OpenTypesServiceV4.DefaultContainer")
 public interface RowIndex
     extends
-    org.apache.olingo.ext.proxy.api.EntitySet<org.apache.olingo.fit.proxy.opentype.opentypesservice.types.RowIndex, RowIndexCollection>,
-    org.apache.olingo.ext.proxy.api.StructuredCollectionQuery<RowIndex>,
-    AbstractEntitySet<org.apache.olingo.fit.proxy.opentype.opentypesservice.types.RowIndex, java.lang.Integer, RowIndexCollection> {
+    org.sitenetsoft.olinguito.ext.proxy.api.EntitySet<org.sitenetsoft.olinguito.fit.proxy.opentype.opentypesservice.types.RowIndex, RowIndexCollection>,
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionQuery<RowIndex>,
+    AbstractEntitySet<org.sitenetsoft.olinguito.fit.proxy.opentype.opentypesservice.types.RowIndex, java.lang.Integer, RowIndexCollection> {
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 }

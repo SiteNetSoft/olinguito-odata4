@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.netty.server.core;
+package org.sitenetsoft.olinguito.netty.server.core;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,22 +31,22 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.olingo.commons.api.ex.ODataRuntimeException;
-import org.apache.olingo.commons.api.http.HttpHeader;
-import org.apache.olingo.commons.api.http.HttpMethod;
-import org.apache.olingo.netty.server.api.ODataNettyHandler;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.ODataContent;
-import org.apache.olingo.server.api.ODataLibraryException;
-import org.apache.olingo.server.api.ODataRequest;
-import org.apache.olingo.server.api.ODataResponse;
-import org.apache.olingo.server.api.ODataServerError;
-import org.apache.olingo.server.api.ServiceMetadata;
-import org.apache.olingo.server.api.processor.Processor;
-import org.apache.olingo.server.core.ODataExceptionHelper;
-import org.apache.olingo.server.core.ODataHandlerException;
-import org.apache.olingo.server.core.ODataHandlerImpl;
-import org.apache.olingo.server.core.debug.ServerCoreDebugger;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.netty.server.api.ODataNettyHandler;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ODataContent;
+import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
+import org.sitenetsoft.olinguito.server.api.ODataRequest;
+import org.sitenetsoft.olinguito.server.api.ODataResponse;
+import org.sitenetsoft.olinguito.server.api.ODataServerError;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.api.processor.Processor;
+import org.sitenetsoft.olinguito.server.core.ODataExceptionHelper;
+import org.sitenetsoft.olinguito.server.core.ODataHandlerException;
+import org.sitenetsoft.olinguito.server.core.ODataHandlerImpl;
+import org.sitenetsoft.olinguito.server.core.debug.ServerCoreDebugger;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;

@@ -16,17 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.base;
+package org.sitenetsoft.olinguito.fit.base;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataPropertyRequest;
-import org.apache.olingo.client.api.domain.ClientProperty;
-import org.apache.olingo.client.api.domain.ClientValuable;
-import org.apache.olingo.client.api.uri.URIBuilder;
-import org.apache.olingo.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataPropertyRequest;
+import org.sitenetsoft.olinguito.client.api.domain.ClientProperty;
+import org.sitenetsoft.olinguito.client.api.domain.ClientValuable;
+import org.sitenetsoft.olinguito.client.api.uri.URIBuilder;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.junit.Test;
 
 public class PropertyTestITCase extends AbstractTestITCase {

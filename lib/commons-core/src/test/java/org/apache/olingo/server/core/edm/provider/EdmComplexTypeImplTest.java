@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.edm.provider;
+package org.sitenetsoft.olinguito.server.core.edm.provider;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -29,17 +29,17 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.EdmComplexType;
-import org.apache.olingo.commons.api.edm.EdmElement;
-import org.apache.olingo.commons.api.edm.EdmException;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.edm.provider.CsdlComplexType;
-import org.apache.olingo.commons.api.edm.provider.CsdlEdmProvider;
-import org.apache.olingo.commons.api.edm.provider.CsdlNavigationProperty;
-import org.apache.olingo.commons.api.edm.provider.CsdlProperty;
-import org.apache.olingo.commons.core.edm.EdmComplexTypeImpl;
-import org.apache.olingo.commons.core.edm.EdmProviderImpl;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmComplexType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmElement;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmException;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlComplexType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEdmProvider;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlNavigationProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlProperty;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmComplexTypeImpl;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
 import org.junit.Before;
 import org.junit.Test;
 

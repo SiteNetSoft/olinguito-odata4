@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.AbstractTerm;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractTerm;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
-@org.apache.olingo.ext.proxy.api.annotations.Term(name = "IsBoss",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Term(name = "IsBoss",
     type = "Edm.Boolean")
 public interface IsBoss extends AbstractTerm {
   // No additional methods needed for now.

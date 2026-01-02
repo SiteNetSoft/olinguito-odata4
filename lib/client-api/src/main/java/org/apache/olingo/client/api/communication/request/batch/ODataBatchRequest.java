@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication.request.batch;
+package org.sitenetsoft.olinguito.client.api.communication.request.batch;
 
 import java.io.IOException;
 import java.io.PipedOutputStream;
 
-import org.apache.olingo.client.api.communication.request.ODataStreamedRequest;
-import org.apache.olingo.client.api.communication.response.ODataBatchResponse;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataStreamedRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataBatchResponse;
 
 public interface ODataBatchRequest extends ODataStreamedRequest<ODataBatchResponse, BatchManager> {
 

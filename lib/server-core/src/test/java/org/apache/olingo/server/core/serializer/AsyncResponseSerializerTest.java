@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.serializer;
+package org.sitenetsoft.olinguito.server.core.serializer;
 
 import static org.junit.Assert.assertEquals;
 
@@ -24,10 +24,10 @@ import java.io.InputStream;
 import java.util.Random;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.commons.api.http.HttpHeader;
-import org.apache.olingo.commons.api.http.HttpStatusCode;
-import org.apache.olingo.server.api.ODataResponse;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.server.api.ODataResponse;
 import org.junit.Test;
 
 public class AsyncResponseSerializerTest {

@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.data;
+package org.sitenetsoft.olinguito.client.core.data;
 
-import org.apache.olingo.client.api.data.ServiceDocumentItem;
+import org.sitenetsoft.olinguito.client.api.data.ServiceDocumentItem;
 
 public final class ServiceDocumentItemImpl implements ServiceDocumentItem {
 

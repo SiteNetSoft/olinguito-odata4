@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api;
+package org.sitenetsoft.olinguito.server.api;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.olingo.commons.api.ex.ODataError;
-import org.apache.olingo.commons.api.ex.ODataErrorDetail;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataError;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataErrorDetail;
 
 /**
  * Class to hold all server relevant error information.

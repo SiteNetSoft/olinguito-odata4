@@ -16,35 +16,35 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri;
+package org.sitenetsoft.olinguito.server.core.uri;
 
 import java.util.List;
 
-import org.apache.olingo.commons.api.data.Entity;
-import org.apache.olingo.commons.api.data.Property;
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmEntitySet;
-import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.commons.api.edm.EdmKeyPropertyRef;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveType;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeException;
-import org.apache.olingo.commons.api.edm.EdmProperty;
-import org.apache.olingo.commons.api.edm.EdmStructuredType;
-import org.apache.olingo.commons.core.Encoder;
-import org.apache.olingo.server.api.ODataLibraryException;
-import org.apache.olingo.server.api.deserializer.DeserializerException;
-import org.apache.olingo.server.api.deserializer.DeserializerException.MessageKeys;
-import org.apache.olingo.server.api.serializer.SerializerException;
-import org.apache.olingo.server.api.uri.UriHelper;
-import org.apache.olingo.server.api.uri.UriParameter;
-import org.apache.olingo.server.api.uri.UriResource;
-import org.apache.olingo.server.api.uri.UriResourceEntitySet;
-import org.apache.olingo.server.api.uri.UriResourceKind;
-import org.apache.olingo.server.api.uri.queryoption.ExpandOption;
-import org.apache.olingo.server.api.uri.queryoption.SelectOption;
-import org.apache.olingo.server.core.ODataImpl;
-import org.apache.olingo.server.core.serializer.utils.ContextURLHelper;
-import org.apache.olingo.server.core.uri.parser.Parser;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.data.Property;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmKeyPropertyRef;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmStructuredType;
+import org.sitenetsoft.olinguito.commons.core.Encoder;
+import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException.MessageKeys;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
+import org.sitenetsoft.olinguito.server.api.uri.UriHelper;
+import org.sitenetsoft.olinguito.server.api.uri.UriParameter;
+import org.sitenetsoft.olinguito.server.api.uri.UriResource;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceEntitySet;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceKind;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectOption;
+import org.sitenetsoft.olinguito.server.core.ODataImpl;
+import org.sitenetsoft.olinguito.server.core.serializer.utils.ContextURLHelper;
+import org.sitenetsoft.olinguito.server.core.uri.parser.Parser;
 
 public class UriHelperImpl implements UriHelper {
 

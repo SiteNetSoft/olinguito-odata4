@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.serializer.json;
+package org.sitenetsoft.olinguito.server.core.serializer.json;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -26,13 +26,13 @@ import java.io.InputStream;
 import java.util.Collections;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.olingo.commons.api.edmx.EdmxReference;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.ServiceMetadata;
-import org.apache.olingo.server.api.etag.ServiceMetadataETagSupport;
-import org.apache.olingo.server.api.serializer.ODataSerializer;
-import org.apache.olingo.server.tecsvc.provider.EdmTechProvider;
+import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.api.etag.ServiceMetadataETagSupport;
+import org.sitenetsoft.olinguito.server.api.serializer.ODataSerializer;
+import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
 import org.junit.Test;
 
 public class ServiceDocumentTest {

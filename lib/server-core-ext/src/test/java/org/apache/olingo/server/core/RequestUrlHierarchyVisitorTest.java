@@ -16,37 +16,37 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core;
+package org.sitenetsoft.olinguito.server.core;
 
 import static org.junit.Assert.assertNull;
 
-import org.apache.olingo.server.api.uri.UriInfoEntityId;
-import org.apache.olingo.server.api.uri.UriInfoKind;
-import org.apache.olingo.server.api.uri.UriInfoMetadata;
-import org.apache.olingo.server.api.uri.queryoption.FormatOption;
-import org.apache.olingo.server.core.uri.UriInfoImpl;
-import org.apache.olingo.server.core.uri.UriResourceComplexPropertyImpl;
-import org.apache.olingo.server.core.uri.UriResourceCountImpl;
-import org.apache.olingo.server.core.uri.UriResourceEntitySetImpl;
-import org.apache.olingo.server.core.uri.UriResourceFunctionImpl;
-import org.apache.olingo.server.core.uri.UriResourceItImpl;
-import org.apache.olingo.server.core.uri.UriResourceLambdaAllImpl;
-import org.apache.olingo.server.core.uri.UriResourceLambdaAnyImpl;
-import org.apache.olingo.server.core.uri.UriResourceNavigationPropertyImpl;
-import org.apache.olingo.server.core.uri.UriResourcePrimitivePropertyImpl;
-import org.apache.olingo.server.core.uri.UriResourceRefImpl;
-import org.apache.olingo.server.core.uri.UriResourceRootImpl;
-import org.apache.olingo.server.core.uri.UriResourceSingletonImpl;
-import org.apache.olingo.server.core.uri.UriResourceValueImpl;
-import org.apache.olingo.server.core.uri.queryoption.CountOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.DeltaTokenOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.ExpandOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.FilterOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.FormatOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.SearchOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.SkipOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.SkipTokenOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.TopOptionImpl;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoEntityId;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoKind;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoMetadata;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.FormatOption;
+import org.sitenetsoft.olinguito.server.core.uri.UriInfoImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceComplexPropertyImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceCountImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceEntitySetImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceFunctionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceItImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceLambdaAllImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceLambdaAnyImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceNavigationPropertyImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourcePrimitivePropertyImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceRefImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceRootImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceSingletonImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceValueImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.CountOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.DeltaTokenOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.ExpandOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.FilterOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.FormatOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.SearchOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.SkipOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.SkipTokenOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.TopOptionImpl;
 import org.junit.Test;
 
 public class RequestUrlHierarchyVisitorTest {

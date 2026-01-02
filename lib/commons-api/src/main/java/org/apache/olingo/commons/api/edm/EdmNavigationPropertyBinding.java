@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edm;
+package org.sitenetsoft.olinguito.commons.api.edm;
 
 /**
  * A navigation property binding which binds entity sets or singletons with each other.

@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.netty.server.core;
+package org.sitenetsoft.olinguito.netty.server.core;
 
 import static org.junit.Assert.assertNotNull;
 
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.netty.server.api.ODataNetty;
-import org.apache.olingo.server.api.deserializer.DeserializerException;
-import org.apache.olingo.server.api.serializer.SerializerException;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.netty.server.api.ODataNetty;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
 import org.junit.Test;
 
 public class ODataNettyImplTest {

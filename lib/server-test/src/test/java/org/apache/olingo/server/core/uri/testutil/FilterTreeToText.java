@@ -16,26 +16,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.testutil;
+package org.sitenetsoft.olinguito.server.core.uri.testutil;
 
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.EdmEnumType;
-import org.apache.olingo.commons.api.edm.EdmType;
-import org.apache.olingo.server.api.ODataApplicationException;
-import org.apache.olingo.server.api.uri.UriResource;
-import org.apache.olingo.server.api.uri.UriResourceLambdaAll;
-import org.apache.olingo.server.api.uri.UriResourceLambdaAny;
-import org.apache.olingo.server.api.uri.UriResourcePartTyped;
-import org.apache.olingo.server.api.uri.queryoption.FilterOption;
-import org.apache.olingo.server.api.uri.queryoption.expression.BinaryOperatorKind;
-import org.apache.olingo.server.api.uri.queryoption.expression.Expression;
-import org.apache.olingo.server.api.uri.queryoption.expression.ExpressionVisitException;
-import org.apache.olingo.server.api.uri.queryoption.expression.ExpressionVisitor;
-import org.apache.olingo.server.api.uri.queryoption.expression.Literal;
-import org.apache.olingo.server.api.uri.queryoption.expression.Member;
-import org.apache.olingo.server.api.uri.queryoption.expression.MethodKind;
-import org.apache.olingo.server.api.uri.queryoption.expression.UnaryOperatorKind;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEnumType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
+import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
+import org.sitenetsoft.olinguito.server.api.uri.UriResource;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceLambdaAll;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceLambdaAny;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourcePartTyped;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.FilterOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.BinaryOperatorKind;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Expression;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.ExpressionVisitException;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.ExpressionVisitor;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Literal;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Member;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.MethodKind;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.UnaryOperatorKind;
 
 public class FilterTreeToText implements ExpressionVisitor<String> {
 

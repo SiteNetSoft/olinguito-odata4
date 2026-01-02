@@ -16,19 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.testutil;
+package org.sitenetsoft.olinguito.server.core.uri.testutil;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.server.api.uri.queryoption.ExpandItem;
-import org.apache.olingo.server.api.uri.queryoption.ExpandOption;
-import org.apache.olingo.server.api.uri.queryoption.OrderByOption;
-import org.apache.olingo.server.api.uri.queryoption.SelectItem;
-import org.apache.olingo.server.api.uri.queryoption.SelectOption;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandItem;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.OrderByOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectItem;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectOption;
 
 public class ExpandValidator implements TestValidator {
   private Edm edm;

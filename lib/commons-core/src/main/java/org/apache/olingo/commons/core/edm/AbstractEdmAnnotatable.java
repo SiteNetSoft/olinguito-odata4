@@ -16,18 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.core.edm;
+package org.sitenetsoft.olinguito.commons.core.edm;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmAnnotatable;
-import org.apache.olingo.commons.api.edm.EdmAnnotation;
-import org.apache.olingo.commons.api.edm.EdmTerm;
-import org.apache.olingo.commons.api.edm.provider.CsdlAnnotatable;
-import org.apache.olingo.commons.api.edm.provider.CsdlAnnotation;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmAnnotatable;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmAnnotation;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmTerm;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotatable;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
 
 public abstract class AbstractEdmAnnotatable implements EdmAnnotatable {
 

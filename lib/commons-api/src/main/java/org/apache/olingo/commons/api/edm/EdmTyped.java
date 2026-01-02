@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edm;
+package org.sitenetsoft.olinguito.commons.api.edm;
 
 /**
  * EdmTyped indicates if an EDM element is of a special type and holds the multiplicity of that type.

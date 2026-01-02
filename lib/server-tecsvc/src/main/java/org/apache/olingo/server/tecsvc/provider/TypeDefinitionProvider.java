@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.tecsvc.provider;
+package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.edm.provider.CsdlTypeDefinition;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlTypeDefinition;
 
 public class TypeDefinitionProvider {
 

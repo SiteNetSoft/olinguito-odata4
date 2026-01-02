@@ -16,16 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.tecsvc.provider;
+package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.apache.olingo.commons.api.ex.ODataException;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.edm.provider.CsdlComplexType;
-import org.apache.olingo.commons.api.edm.provider.CsdlNavigationProperty;
-import org.apache.olingo.commons.api.edm.provider.CsdlProperty;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlComplexType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlNavigationProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlProperty;
 
 public class ComplexTypeProvider {
 

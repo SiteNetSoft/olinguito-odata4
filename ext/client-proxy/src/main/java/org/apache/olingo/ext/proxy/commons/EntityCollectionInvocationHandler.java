@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.ext.proxy.commons;
+package org.sitenetsoft.olinguito.ext.proxy.commons;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -25,10 +25,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.olingo.client.api.uri.URIBuilder;
-import org.apache.olingo.ext.proxy.AbstractService;
-import org.apache.olingo.ext.proxy.api.EntityCollection;
-import org.apache.olingo.ext.proxy.api.EntityType;
+import org.sitenetsoft.olinguito.client.api.uri.URIBuilder;
+import org.sitenetsoft.olinguito.ext.proxy.AbstractService;
+import org.sitenetsoft.olinguito.ext.proxy.api.EntityCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.EntityType;
 
 public class EntityCollectionInvocationHandler<T extends EntityType<?>>
         extends AbstractEntityCollectionInvocationHandler<T, EntityCollection<T, ?, ?>> {

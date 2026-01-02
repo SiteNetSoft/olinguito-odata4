@@ -16,17 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.serialization;
+package org.sitenetsoft.olinguito.client.api.serialization;
 
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Collection;
 
-import org.apache.olingo.client.api.data.ResWrap;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.client.api.domain.ClientLink;
-import org.apache.olingo.client.api.domain.ClientProperty;
-import org.apache.olingo.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.client.api.data.ResWrap;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientLink;
+import org.sitenetsoft.olinguito.client.api.domain.ClientProperty;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 
 /**
  * OData writer.

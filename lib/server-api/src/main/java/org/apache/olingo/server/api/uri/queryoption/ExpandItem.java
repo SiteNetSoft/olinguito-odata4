@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.uri.queryoption;
+package org.sitenetsoft.olinguito.server.api.uri.queryoption;
 
-import org.apache.olingo.commons.api.edm.EdmType;
-import org.apache.olingo.server.api.uri.UriInfoResource;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoResource;
 
 /**
  * Represents a single resource path which should be expanded with using the system query option $expand

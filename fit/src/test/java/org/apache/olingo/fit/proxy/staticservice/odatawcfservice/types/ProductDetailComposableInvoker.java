@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
 public interface ProductDetailComposableInvoker
-    extends org.apache.olingo.ext.proxy.api.StructuredComposableInvoker<ProductDetail, ProductDetail.Operations>
+    extends org.sitenetsoft.olinguito.ext.proxy.api.StructuredComposableInvoker<ProductDetail, ProductDetail.Operations>
 {
 
   @Override
@@ -34,7 +34,7 @@ public interface ProductDetailComposableInvoker
   ProductDetailComposableInvoker expand(String... expand);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ProductID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ProductID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -50,7 +50,7 @@ public interface ProductDetailComposableInvoker
   void setProductID(java.lang.Integer _productID);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ProductDetailID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ProductDetailID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -65,7 +65,7 @@ public interface ProductDetailComposableInvoker
 
   void setProductDetailID(java.lang.Integer _productDetailID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ProductName",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ProductName",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -80,7 +80,7 @@ public interface ProductDetailComposableInvoker
 
   void setProductName(java.lang.String _productName);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Description",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Description",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -95,7 +95,7 @@ public interface ProductDetailComposableInvoker
 
   void setDescription(java.lang.String _description);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "RelatedProduct",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "RelatedProduct",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Product",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -108,7 +108,7 @@ public interface ProductDetailComposableInvoker
       setRelatedProduct(
           Product _relatedProduct);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "Reviews",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "Reviews",
       type = "Microsoft.Test.OData.Services.ODataWCFService.ProductReview",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",

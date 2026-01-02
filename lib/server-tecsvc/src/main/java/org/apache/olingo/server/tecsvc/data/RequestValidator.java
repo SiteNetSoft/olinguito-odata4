@@ -16,25 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.tecsvc.data;
+package org.sitenetsoft.olinguito.server.tecsvc.data;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.olingo.commons.api.data.ComplexValue;
-import org.apache.olingo.commons.api.data.Entity;
-import org.apache.olingo.commons.api.data.EntityCollection;
-import org.apache.olingo.commons.api.data.Link;
-import org.apache.olingo.commons.api.data.Linked;
-import org.apache.olingo.commons.api.data.Property;
-import org.apache.olingo.commons.api.edm.EdmBindingTarget;
-import org.apache.olingo.commons.api.edm.EdmComplexType;
-import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.commons.api.edm.EdmNavigationProperty;
-import org.apache.olingo.commons.api.edm.EdmProperty;
-import org.apache.olingo.commons.api.edm.EdmStructuredType;
-import org.apache.olingo.commons.api.http.HttpStatusCode;
-import org.apache.olingo.server.tecsvc.data.DataProvider.DataProviderException;
+import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.data.EntityCollection;
+import org.sitenetsoft.olinguito.commons.api.data.Link;
+import org.sitenetsoft.olinguito.commons.api.data.Linked;
+import org.sitenetsoft.olinguito.commons.api.data.Property;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmBindingTarget;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmComplexType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmStructuredType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider.DataProviderException;
 
 public class RequestValidator {
   private final DataProvider provider;

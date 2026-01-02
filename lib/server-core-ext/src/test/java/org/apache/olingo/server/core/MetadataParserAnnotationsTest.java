@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core;
+package org.sitenetsoft.olinguito.server.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -25,29 +25,29 @@ import static org.junit.Assert.assertTrue;
 import java.io.FileReader;
 import java.util.Arrays;
 
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.edm.provider.CsdlAnnotation;
-import org.apache.olingo.commons.api.edm.provider.CsdlAnnotations;
-import org.apache.olingo.commons.api.edm.provider.CsdlEdmProvider;
-import org.apache.olingo.commons.api.edm.provider.CsdlSchema;
-import org.apache.olingo.commons.api.edm.provider.CsdlTerm;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlAnnotationPath;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlApply;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlCast;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlCollection;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlConstantExpression;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlConstantExpression.ConstantExpressionType;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlIf;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlIsOf;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlLabeledElement;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlLabeledElementReference;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlNavigationPropertyPath;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlNull;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlPath;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlPropertyValue;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlRecord;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlUrlRef;
-import org.apache.olingo.commons.api.ex.ODataException;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotations;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEdmProvider;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlSchema;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlTerm;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlAnnotationPath;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlApply;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlCast;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlCollection;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlConstantExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlConstantExpression.ConstantExpressionType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlIf;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlIsOf;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlLabeledElement;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlLabeledElementReference;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlNavigationPropertyPath;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlNull;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlPath;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlPropertyValue;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlRecord;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlUrlRef;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
 import org.junit.Before;
 import org.junit.Test;
 

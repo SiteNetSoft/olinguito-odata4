@@ -16,19 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.tecsvc.provider;
+package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.provider.CsdlAction;
-import org.apache.olingo.commons.api.edm.provider.CsdlComplexType;
-import org.apache.olingo.commons.api.edm.provider.CsdlEdmProvider;
-import org.apache.olingo.commons.api.edm.provider.CsdlEntityType;
-import org.apache.olingo.commons.api.edm.provider.CsdlFunction;
-import org.apache.olingo.commons.api.edm.provider.CsdlSchema;
-import org.apache.olingo.commons.api.ex.ODataException;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAction;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlComplexType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEdmProvider;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlFunction;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlSchema;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
 
 public class SchemaProvider {
 

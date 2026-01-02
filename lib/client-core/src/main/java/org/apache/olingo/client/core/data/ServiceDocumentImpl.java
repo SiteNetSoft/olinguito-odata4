@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.data;
+package org.sitenetsoft.olinguito.client.core.data;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.olingo.client.api.data.ServiceDocument;
-import org.apache.olingo.client.api.data.ServiceDocumentItem;
-import org.apache.olingo.commons.api.Constants;
+import org.sitenetsoft.olinguito.client.api.data.ServiceDocument;
+import org.sitenetsoft.olinguito.client.api.data.ServiceDocumentItem;
+import org.sitenetsoft.olinguito.commons.api.Constants;
 
 public final class ServiceDocumentImpl implements ServiceDocument {
 

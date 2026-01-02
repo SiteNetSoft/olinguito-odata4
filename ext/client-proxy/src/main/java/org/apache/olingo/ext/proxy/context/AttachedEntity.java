@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.ext.proxy.context;
+package org.sitenetsoft.olinguito.ext.proxy.context;
 
-import org.apache.olingo.ext.proxy.commons.EntityInvocationHandler;
+import org.sitenetsoft.olinguito.ext.proxy.commons.EntityInvocationHandler;
 
 public class AttachedEntity {
 

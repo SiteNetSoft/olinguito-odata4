@@ -19,4 +19,4 @@
 /**
  * Contains all the data objects of OData responses and OData requests
  */
-package org.apache.olingo.commons.api.data;
+package org.sitenetsoft.olinguito.commons.api.data;

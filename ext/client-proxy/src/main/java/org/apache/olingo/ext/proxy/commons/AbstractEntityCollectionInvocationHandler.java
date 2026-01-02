@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.ext.proxy.commons;
+package org.sitenetsoft.olinguito.ext.proxy.commons;
 
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
@@ -26,20 +26,20 @@ import java.util.List;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
-import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
-import org.apache.olingo.client.api.uri.URIBuilder;
-import org.apache.olingo.client.api.domain.ClientAnnotation;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.client.api.domain.ClientEntitySet;
-import org.apache.olingo.client.api.domain.ClientSingleton;
-import org.apache.olingo.ext.proxy.AbstractService;
-import org.apache.olingo.ext.proxy.api.AbstractEntitySet;
-import org.apache.olingo.ext.proxy.api.AbstractSingleton;
-import org.apache.olingo.ext.proxy.api.EntityCollection;
-import org.apache.olingo.ext.proxy.api.EntityType;
-import org.apache.olingo.ext.proxy.utils.ClassUtils;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntitySetRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
+import org.sitenetsoft.olinguito.client.api.uri.URIBuilder;
+import org.sitenetsoft.olinguito.client.api.domain.ClientAnnotation;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntitySet;
+import org.sitenetsoft.olinguito.client.api.domain.ClientSingleton;
+import org.sitenetsoft.olinguito.ext.proxy.AbstractService;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractEntitySet;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractSingleton;
+import org.sitenetsoft.olinguito.ext.proxy.api.EntityCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.EntityType;
+import org.sitenetsoft.olinguito.ext.proxy.utils.ClassUtils;
 
 //CHECKSTYLE:OFF
 public abstract class AbstractEntityCollectionInvocationHandler<T extends EntityType<?>, EC extends EntityCollection<T, ?, ?>>

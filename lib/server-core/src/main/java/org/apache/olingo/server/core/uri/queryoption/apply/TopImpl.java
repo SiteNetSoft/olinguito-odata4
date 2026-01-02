@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.queryoption.apply;
+package org.sitenetsoft.olinguito.server.core.uri.queryoption.apply;
 
-import org.apache.olingo.server.api.uri.queryoption.TopOption;
-import org.apache.olingo.server.api.uri.queryoption.apply.Top;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.TopOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.apply.Top;
 
 public class TopImpl implements Top {
 

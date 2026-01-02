@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.http;
+package org.sitenetsoft.olinguito.client.core.http;
 
 import java.net.URI;
 

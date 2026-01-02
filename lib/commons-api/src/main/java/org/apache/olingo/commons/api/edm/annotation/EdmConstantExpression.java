@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edm.annotation;
+package org.sitenetsoft.olinguito.commons.api.edm.annotation;
 
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.geo.Geospatial;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Geospatial;
 
 /**
  * Represents a constant expression

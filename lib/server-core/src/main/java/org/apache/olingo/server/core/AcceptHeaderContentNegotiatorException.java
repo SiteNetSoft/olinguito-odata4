@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core;
+package org.sitenetsoft.olinguito.server.core;
 
-import org.apache.olingo.server.api.ODataLibraryException.MessageKey;
+import org.sitenetsoft.olinguito.server.api.ODataLibraryException.MessageKey;
 
 public class AcceptHeaderContentNegotiatorException extends ContentNegotiatorException {
   private static final long serialVersionUID = -8112658467394158700L;

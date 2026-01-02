@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri;
+package org.sitenetsoft.olinguito.server.core.uri;
 
-import org.apache.olingo.server.api.uri.UriResourceCount;
-import org.apache.olingo.server.api.uri.UriResourceKind;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceCount;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceKind;
 
 public class UriResourceCountImpl extends UriResourceImpl implements UriResourceCount {
 

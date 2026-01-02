@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.queryoption;
+package org.sitenetsoft.olinguito.server.core.uri.queryoption;
 
-import org.apache.olingo.server.api.uri.queryoption.QueryOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.QueryOption;
 
 public abstract class QueryOptionImpl implements QueryOption {
   private String name;

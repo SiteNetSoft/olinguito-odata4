@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edm.annotation;
+package org.sitenetsoft.olinguito.commons.api.edm.annotation;
 
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.EdmAnnotatable;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmAnnotatable;
 
 /**
  * Represents an Edm:Apply expression
@@ -34,9 +34,9 @@ public interface EdmApply extends EdmDynamicExpression, EdmAnnotatable {
    * namespace or alias other than odata. Function names qualified with odata are reserved for this specification and
    * its future versions.
    *
-   * @see org.apache.olingo.commons.api.Constants#CANONICAL_FUNCTION_CONCAT
-   * @see org.apache.olingo.commons.api.Constants#CANONICAL_FUNCTION_FILLURITEMPLATE
-   * @see org.apache.olingo.commons.api.Constants#CANONICAL_FUNCTION_URIENCODE
+   * @see org.sitenetsoft.olinguito.commons.api.Constants#CANONICAL_FUNCTION_CONCAT
+   * @see org.sitenetsoft.olinguito.commons.api.Constants#CANONICAL_FUNCTION_FILLURITEMPLATE
+   * @see org.sitenetsoft.olinguito.commons.api.Constants#CANONICAL_FUNCTION_URIENCODE
    * @return function full qualified name
    */
   String getFunction();

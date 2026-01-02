@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core;
+package org.sitenetsoft.olinguito.client.core;
 
-import org.apache.olingo.client.api.uri.URISearch;
+import org.sitenetsoft.olinguito.client.api.uri.URISearch;
 
 public class LiteralSearch implements URISearch {
 

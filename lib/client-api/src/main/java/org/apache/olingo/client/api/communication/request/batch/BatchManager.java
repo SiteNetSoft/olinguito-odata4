@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication.request.batch;
+package org.sitenetsoft.olinguito.client.api.communication.request.batch;
 
-import org.apache.olingo.client.api.communication.request.ODataBatchableRequest;
-import org.apache.olingo.client.api.communication.request.ODataPayloadManager;
-import org.apache.olingo.client.api.communication.response.ODataBatchResponse;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataBatchableRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataPayloadManager;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataBatchResponse;
 
 /**
  * Batch request payload management.

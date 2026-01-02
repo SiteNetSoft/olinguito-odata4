@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.ext.proxy.commons;
+package org.sitenetsoft.olinguito.ext.proxy.commons;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -30,32 +30,32 @@ import java.util.concurrent.Future;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.olingo.client.api.communication.request.invoke.ClientNoContent;
-import org.apache.olingo.client.api.uri.URIBuilder;
-import org.apache.olingo.client.api.uri.URIFilter;
-import org.apache.olingo.client.core.uri.URIUtils;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.client.api.domain.ClientEntitySet;
-import org.apache.olingo.client.api.domain.ClientInvokeResult;
-import org.apache.olingo.client.api.domain.ClientProperty;
-import org.apache.olingo.client.api.domain.ClientValue;
-import org.apache.olingo.commons.api.edm.EdmFunction;
-import org.apache.olingo.commons.api.edm.EdmOperation;
-import org.apache.olingo.commons.api.edm.EdmReturnType;
-import org.apache.olingo.commons.api.edm.constants.EdmTypeKind;
-import org.apache.olingo.commons.api.http.HttpMethod;
-import org.apache.olingo.commons.core.edm.EdmTypeInfo;
-import org.apache.olingo.ext.proxy.AbstractService;
-import org.apache.olingo.ext.proxy.api.ComplexCollection;
-import org.apache.olingo.ext.proxy.api.EntityCollection;
-import org.apache.olingo.ext.proxy.api.OperationType;
-import org.apache.olingo.ext.proxy.api.Operations;
-import org.apache.olingo.ext.proxy.api.PrimitiveCollection;
-import org.apache.olingo.ext.proxy.api.Sort;
-import org.apache.olingo.ext.proxy.api.annotations.Operation;
-import org.apache.olingo.ext.proxy.utils.ClassUtils;
-import org.apache.olingo.ext.proxy.utils.CoreUtils;
-import org.apache.olingo.ext.proxy.utils.ProxyUtils;
+import org.sitenetsoft.olinguito.client.api.communication.request.invoke.ClientNoContent;
+import org.sitenetsoft.olinguito.client.api.uri.URIBuilder;
+import org.sitenetsoft.olinguito.client.api.uri.URIFilter;
+import org.sitenetsoft.olinguito.client.core.uri.URIUtils;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntitySet;
+import org.sitenetsoft.olinguito.client.api.domain.ClientInvokeResult;
+import org.sitenetsoft.olinguito.client.api.domain.ClientProperty;
+import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmFunction;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmOperation;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmReturnType;
+import org.sitenetsoft.olinguito.commons.api.edm.constants.EdmTypeKind;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmTypeInfo;
+import org.sitenetsoft.olinguito.ext.proxy.AbstractService;
+import org.sitenetsoft.olinguito.ext.proxy.api.ComplexCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.EntityCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.OperationType;
+import org.sitenetsoft.olinguito.ext.proxy.api.Operations;
+import org.sitenetsoft.olinguito.ext.proxy.api.PrimitiveCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.Sort;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Operation;
+import org.sitenetsoft.olinguito.ext.proxy.utils.ClassUtils;
+import org.sitenetsoft.olinguito.ext.proxy.utils.CoreUtils;
+import org.sitenetsoft.olinguito.ext.proxy.utils.ProxyUtils;
 
 public class InvokerInvocationHandler<T, O extends Operations> extends AbstractInvocationHandler {
 

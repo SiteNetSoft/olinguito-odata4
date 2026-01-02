@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.ext.proxy.context;
+package org.sitenetsoft.olinguito.ext.proxy.context;
 
 public enum AttachedEntityStatus {
 

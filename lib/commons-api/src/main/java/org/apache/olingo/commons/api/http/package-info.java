@@ -19,4 +19,4 @@
 /**
  * Contains all the HTTP related objects which are used for handling of OData responses and OData requests.
  */
-package org.apache.olingo.commons.api.http;
+package org.sitenetsoft.olinguito.commons.api.http;

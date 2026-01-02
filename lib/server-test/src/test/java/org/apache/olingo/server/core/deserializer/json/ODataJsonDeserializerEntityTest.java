@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.deserializer.json;
+package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -36,32 +36,32 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.olingo.commons.api.Constants;
-import org.apache.olingo.commons.api.data.Annotation;
-import org.apache.olingo.commons.api.data.ComplexValue;
-import org.apache.olingo.commons.api.data.Entity;
-import org.apache.olingo.commons.api.data.Link;
-import org.apache.olingo.commons.api.data.Property;
-import org.apache.olingo.commons.api.data.ValueType;
-import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
-import org.apache.olingo.commons.api.edm.EdmProperty;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.edm.geo.Geospatial;
-import org.apache.olingo.commons.api.edm.geo.GeospatialCollection;
-import org.apache.olingo.commons.api.edm.geo.LineString;
-import org.apache.olingo.commons.api.edm.geo.MultiLineString;
-import org.apache.olingo.commons.api.edm.geo.MultiPoint;
-import org.apache.olingo.commons.api.edm.geo.MultiPolygon;
-import org.apache.olingo.commons.api.edm.geo.Point;
-import org.apache.olingo.commons.api.edm.geo.Polygon;
-import org.apache.olingo.commons.api.edm.provider.CsdlMapping;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.deserializer.DeserializerException;
-import org.apache.olingo.server.api.deserializer.DeserializerResult;
-import org.apache.olingo.server.api.deserializer.ODataDeserializer;
-import org.apache.olingo.server.core.deserializer.AbstractODataDeserializerTest;
+import org.sitenetsoft.olinguito.commons.api.Constants;
+import org.sitenetsoft.olinguito.commons.api.data.Annotation;
+import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.data.Link;
+import org.sitenetsoft.olinguito.commons.api.data.Property;
+import org.sitenetsoft.olinguito.commons.api.data.ValueType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Geospatial;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.GeospatialCollection;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.LineString;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.MultiLineString;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.MultiPoint;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.MultiPolygon;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Point;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Polygon;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlMapping;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerResult;
+import org.sitenetsoft.olinguito.server.api.deserializer.ODataDeserializer;
+import org.sitenetsoft.olinguito.server.core.deserializer.AbstractODataDeserializerTest;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;

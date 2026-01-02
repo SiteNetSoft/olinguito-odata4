@@ -16,17 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.deserializer.batch;
+package org.sitenetsoft.olinguito.server.core.deserializer.batch;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.olingo.commons.api.ex.ODataRuntimeException;
-import org.apache.olingo.server.api.deserializer.batch.BatchDeserializerException;
-import org.apache.olingo.server.api.deserializer.batch.BatchOptions;
-import org.apache.olingo.server.api.deserializer.batch.BatchRequestPart;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
+import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchDeserializerException;
+import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchOptions;
+import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchRequestPart;
 
 public class BatchParser {
 

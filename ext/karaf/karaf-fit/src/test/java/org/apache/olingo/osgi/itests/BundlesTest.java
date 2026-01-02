@@ -17,7 +17,7 @@
  * under the License.
  ******************************************************************************/
 
-package org.apache.olingo.osgi.itests;
+package org.sitenetsoft.olinguito.osgi.itests;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,12 +37,12 @@ public class BundlesTest extends OlingoOSGiTestSupport {
     @Test
     public void test() throws Exception {
         // check the server-api and server-core
-        assertBundleStarted("org.apache.olingo.odata-server-api");
-        assertBundleStarted("org.apache.olingo.odata-server-core");
+        assertBundleStarted("org.sitenetsoft.olinguito.odata-server-api");
+        assertBundleStarted("org.sitenetsoft.olinguito.odata-server-core");
 
         // check the client-api and client-core
-        assertBundleStarted("org.apache.olingo.odata-client-api");
-        assertBundleStarted("org.apache.olingo.odata-client-core");
+        assertBundleStarted("org.sitenetsoft.olinguito.odata-client-api");
+        assertBundleStarted("org.sitenetsoft.olinguito.odata-client-core");
     }
 
     @Configuration

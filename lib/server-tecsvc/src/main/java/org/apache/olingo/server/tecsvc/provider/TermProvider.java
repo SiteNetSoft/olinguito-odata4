@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.tecsvc.provider;
+package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
 import java.util.Arrays;
 
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.edm.provider.CsdlAnnotation;
-import org.apache.olingo.commons.api.edm.provider.CsdlTerm;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlConstantExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlTerm;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlConstantExpression;
 
 /**
  */

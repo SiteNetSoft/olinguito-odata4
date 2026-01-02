@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.ext.pojogen;
+package org.sitenetsoft.olinguito.ext.pojogen;
 
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.core.ODataClientFactory;
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmSchema;
-import org.apache.olingo.commons.api.edm.constants.ODataServiceVersion;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmSchema;
+import org.sitenetsoft.olinguito.commons.api.edm.constants.ODataServiceVersion;
 
 /**
  * POJOs generator.

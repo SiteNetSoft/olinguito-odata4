@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edm.provider.annotation;
+package org.sitenetsoft.olinguito.commons.api.edm.provider.annotation;
 
 /**
  *  The edm:Path expression enables a value to be obtained by traversing an object graph. 

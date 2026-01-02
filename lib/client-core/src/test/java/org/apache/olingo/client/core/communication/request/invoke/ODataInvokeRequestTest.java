@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.request.invoke;
+package org.sitenetsoft.olinguito.client.core.communication.request.invoke;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -24,11 +24,11 @@ import static org.junit.Assert.assertNull;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.domain.ClientInvokeResult;
-import org.apache.olingo.client.core.ODataClientFactory;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.domain.ClientInvokeResult;
+import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.junit.Test;
 
 public class ODataInvokeRequestTest {

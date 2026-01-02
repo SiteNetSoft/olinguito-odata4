@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.core.edm.primitivetype;
+package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -25,15 +25,15 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
 
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeException;
-import org.apache.olingo.commons.api.edm.geo.Geospatial;
-import org.apache.olingo.commons.api.edm.geo.GeospatialCollection;
-import org.apache.olingo.commons.api.edm.geo.LineString;
-import org.apache.olingo.commons.api.edm.geo.MultiLineString;
-import org.apache.olingo.commons.api.edm.geo.MultiPoint;
-import org.apache.olingo.commons.api.edm.geo.MultiPolygon;
-import org.apache.olingo.commons.api.edm.geo.Point;
-import org.apache.olingo.commons.api.edm.geo.Polygon;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Geospatial;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.GeospatialCollection;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.LineString;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.MultiLineString;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.MultiPoint;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.MultiPolygon;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Point;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Polygon;
 import org.junit.Test;
 
 public class EdmGeoTest extends PrimitiveTypeBaseTest {

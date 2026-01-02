@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core;
+package org.sitenetsoft.olinguito.server.core;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,24 +35,24 @@ import java.util.Map.Entry;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.apache.olingo.commons.api.ex.ODataRuntimeException;
-import org.apache.olingo.commons.api.http.HttpHeader;
-import org.apache.olingo.commons.api.http.HttpMethod;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.ODataContent;
-import org.apache.olingo.server.api.ODataHttpHandler;
-import org.apache.olingo.server.api.ODataLibraryException;
-import org.apache.olingo.server.api.ODataRequest;
-import org.apache.olingo.server.api.ODataResponse;
-import org.apache.olingo.server.api.ODataServerError;
-import org.apache.olingo.server.api.OlingoExtension;
-import org.apache.olingo.server.api.ServiceMetadata;
-import org.apache.olingo.server.api.debug.DebugSupport;
-import org.apache.olingo.server.api.deserializer.DeserializerException;
-import org.apache.olingo.server.api.etag.CustomETagSupport;
-import org.apache.olingo.server.api.processor.Processor;
-import org.apache.olingo.server.api.serializer.CustomContentTypeSupport;
-import org.apache.olingo.server.core.debug.ServerCoreDebugger;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ODataContent;
+import org.sitenetsoft.olinguito.server.api.ODataHttpHandler;
+import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
+import org.sitenetsoft.olinguito.server.api.ODataRequest;
+import org.sitenetsoft.olinguito.server.api.ODataResponse;
+import org.sitenetsoft.olinguito.server.api.ODataServerError;
+import org.sitenetsoft.olinguito.server.api.OlingoExtension;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.api.debug.DebugSupport;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
+import org.sitenetsoft.olinguito.server.api.etag.CustomETagSupport;
+import org.sitenetsoft.olinguito.server.api.processor.Processor;
+import org.sitenetsoft.olinguito.server.api.serializer.CustomContentTypeSupport;
+import org.sitenetsoft.olinguito.server.core.debug.ServerCoreDebugger;
 
 public class ODataHttpHandlerImpl implements ODataHttpHandler {
 

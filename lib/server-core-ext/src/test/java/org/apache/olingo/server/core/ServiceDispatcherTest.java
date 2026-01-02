@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core;
+package org.sitenetsoft.olinguito.server.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -42,24 +42,24 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.olingo.commons.api.http.HttpMethod;
-import org.apache.olingo.commons.core.Encoder;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.ODataHttpHandler;
-import org.apache.olingo.server.api.ServiceMetadata;
-import org.apache.olingo.server.core.requests.ActionRequest;
-import org.apache.olingo.server.core.requests.DataRequest;
-import org.apache.olingo.server.core.requests.FunctionRequest;
-import org.apache.olingo.server.core.requests.MediaRequest;
-import org.apache.olingo.server.core.requests.MetadataRequest;
-import org.apache.olingo.server.core.responses.CountResponse;
-import org.apache.olingo.server.core.responses.EntityResponse;
-import org.apache.olingo.server.core.responses.EntitySetResponse;
-import org.apache.olingo.server.core.responses.MetadataResponse;
-import org.apache.olingo.server.core.responses.NoContentResponse;
-import org.apache.olingo.server.core.responses.PrimitiveValueResponse;
-import org.apache.olingo.server.core.responses.PropertyResponse;
-import org.apache.olingo.server.core.responses.StreamResponse;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.commons.core.Encoder;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ODataHttpHandler;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.core.requests.ActionRequest;
+import org.sitenetsoft.olinguito.server.core.requests.DataRequest;
+import org.sitenetsoft.olinguito.server.core.requests.FunctionRequest;
+import org.sitenetsoft.olinguito.server.core.requests.MediaRequest;
+import org.sitenetsoft.olinguito.server.core.requests.MetadataRequest;
+import org.sitenetsoft.olinguito.server.core.responses.CountResponse;
+import org.sitenetsoft.olinguito.server.core.responses.EntityResponse;
+import org.sitenetsoft.olinguito.server.core.responses.EntitySetResponse;
+import org.sitenetsoft.olinguito.server.core.responses.MetadataResponse;
+import org.sitenetsoft.olinguito.server.core.responses.NoContentResponse;
+import org.sitenetsoft.olinguito.server.core.responses.PrimitiveValueResponse;
+import org.sitenetsoft.olinguito.server.core.responses.PropertyResponse;
+import org.sitenetsoft.olinguito.server.core.responses.StreamResponse;
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;

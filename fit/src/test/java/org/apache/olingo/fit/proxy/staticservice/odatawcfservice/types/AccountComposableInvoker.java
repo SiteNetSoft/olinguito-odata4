@@ -16,16 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.AbstractEntitySet;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractEntitySet;
 
 // CHECKSTYLE:ON (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 public interface AccountComposableInvoker
-    extends org.apache.olingo.ext.proxy.api.StructuredComposableInvoker<Account, Account.Operations>
+    extends org.sitenetsoft.olinguito.ext.proxy.api.StructuredComposableInvoker<Account, Account.Operations>
 {
 
   @Override
@@ -35,7 +35,7 @@ public interface AccountComposableInvoker
   AccountComposableInvoker expand(String... expand);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "AccountID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "AccountID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -50,7 +50,7 @@ public interface AccountComposableInvoker
 
   void setAccountID(java.lang.Integer _accountID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Country",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Country",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -65,7 +65,7 @@ public interface AccountComposableInvoker
 
   void setCountry(java.lang.String _country);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "AccountInfo",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "AccountInfo",
       type = "Microsoft.Test.OData.Services.ODataWCFService.AccountInfo",
       nullable = true,
       defaultValue = "",
@@ -83,7 +83,7 @@ public interface AccountComposableInvoker
       setAccountInfo(
           AccountInfo _accountInfo);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "MyGiftCard",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "MyGiftCard",
       type = "Microsoft.Test.OData.Services.ODataWCFService.GiftCard",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "",
@@ -96,7 +96,7 @@ public interface AccountComposableInvoker
       setMyGiftCard(
           GiftCard _myGiftCard);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "AvailableSubscriptionTemplatess",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "AvailableSubscriptionTemplatess",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Subscription",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -109,7 +109,7 @@ public interface AccountComposableInvoker
       setAvailableSubscriptionTemplatess(
           SubscriptionCollection _availableSubscriptionTemplatess);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "MyPaymentInstruments",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "MyPaymentInstruments",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Subscription",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -122,16 +122,16 @@ public interface AccountComposableInvoker
       setMyPaymentInstruments(
           Account.MyPaymentInstruments _myPaymentInstruments);
 
-  @org.apache.olingo.ext.proxy.api.annotations.EntitySet(name = "MyPaymentInstruments", contained = true)
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntitySet(name = "MyPaymentInstruments", contained = true)
   interface MyPaymentInstruments
       extends
-      org.apache.olingo.ext.proxy.api.EntitySet<PaymentInstrument, PaymentInstrumentCollection>,
-      org.apache.olingo.ext.proxy.api.StructuredCollectionQuery<MyPaymentInstruments>,
+      org.sitenetsoft.olinguito.ext.proxy.api.EntitySet<PaymentInstrument, PaymentInstrumentCollection>,
+      org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionQuery<MyPaymentInstruments>,
   AbstractEntitySet<PaymentInstrument, java.lang.Integer, PaymentInstrumentCollection> {
     // No additional methods needed for now.
   }
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "ActiveSubscriptions",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "ActiveSubscriptions",
       type = "java.lang.Integer",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -144,11 +144,11 @@ public interface AccountComposableInvoker
       setActiveSubscriptions(
           Account.ActiveSubscriptions _activeSubscriptions);
 
-  @org.apache.olingo.ext.proxy.api.annotations.EntitySet(name = "ActiveSubscriptions", contained = true)
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntitySet(name = "ActiveSubscriptions", contained = true)
   interface ActiveSubscriptions
       extends
-      org.apache.olingo.ext.proxy.api.EntitySet<Subscription, SubscriptionCollection>,
-      org.apache.olingo.ext.proxy.api.StructuredCollectionQuery<ActiveSubscriptions>,
+      org.sitenetsoft.olinguito.ext.proxy.api.EntitySet<Subscription, SubscriptionCollection>,
+      org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionQuery<ActiveSubscriptions>,
   AbstractEntitySet<Subscription, java.lang.Integer, SubscriptionCollection> {
     // No additional methods needed for now.
   }

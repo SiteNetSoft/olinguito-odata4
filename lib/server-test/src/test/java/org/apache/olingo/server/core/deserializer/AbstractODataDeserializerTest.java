@@ -16,17 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.deserializer;
+package org.sitenetsoft.olinguito.server.core.deserializer;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edmx.EdmxReference;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.ServiceMetadata;
-import org.apache.olingo.server.tecsvc.provider.EdmTechProvider;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
 
 public class AbstractODataDeserializerTest {
 

@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.core.edm;
+package org.sitenetsoft.olinguito.commons.core.edm;
 
-import org.apache.olingo.commons.api.edm.EdmEntityContainer;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 
 /**
  * An Edm target element. It contains a target as a String name as well as the {@link FullQualifiedName} of the entity

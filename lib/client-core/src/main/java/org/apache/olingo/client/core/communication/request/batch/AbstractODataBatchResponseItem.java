@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.request.batch;
+package org.sitenetsoft.olinguito.client.core.communication.request.batch;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.olingo.client.api.communication.request.batch.ODataBatchLineIterator;
-import org.apache.olingo.client.api.communication.request.batch.ODataBatchResponseItem;
-import org.apache.olingo.client.api.communication.response.ODataResponse;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchLineIterator;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchResponseItem;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

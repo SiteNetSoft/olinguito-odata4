@@ -16,16 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.core.edm;
+package org.sitenetsoft.olinguito.commons.core.edm;
 
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmEntityContainer;
-import org.apache.olingo.commons.api.edm.EdmFunction;
-import org.apache.olingo.commons.api.edm.EdmFunctionImport;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.edm.provider.CsdlFunctionImport;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmFunction;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmFunctionImport;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlFunctionImport;
 
 public class EdmFunctionImportImpl extends AbstractEdmOperationImport implements EdmFunctionImport {
 

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.serialization;
+package org.sitenetsoft.olinguito.client.core.serialization;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -30,25 +30,25 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.olingo.client.api.data.ResWrap;
-import org.apache.olingo.client.api.data.ServiceDocument;
-import org.apache.olingo.client.api.edm.xml.Edmx;
-import org.apache.olingo.client.api.edm.xml.XMLMetadata;
-import org.apache.olingo.client.api.serialization.ClientODataDeserializer;
-import org.apache.olingo.client.api.serialization.ODataDeserializer;
-import org.apache.olingo.client.api.serialization.ODataDeserializerException;
-import org.apache.olingo.client.core.data.JSONServiceDocumentDeserializer;
-import org.apache.olingo.client.core.data.XMLServiceDocumentDeserializer;
-import org.apache.olingo.client.core.edm.ClientCsdlXMLMetadata;
-import org.apache.olingo.client.core.edm.xml.ClientCsdlEdmx;
-import org.apache.olingo.commons.api.data.Delta;
-import org.apache.olingo.commons.api.data.Entity;
-import org.apache.olingo.commons.api.data.EntityCollection;
-import org.apache.olingo.commons.api.data.Property;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeException;
-import org.apache.olingo.commons.api.edm.provider.CsdlSchema;
-import org.apache.olingo.commons.api.ex.ODataError;
-import org.apache.olingo.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.client.api.data.ResWrap;
+import org.sitenetsoft.olinguito.client.api.data.ServiceDocument;
+import org.sitenetsoft.olinguito.client.api.edm.xml.Edmx;
+import org.sitenetsoft.olinguito.client.api.edm.xml.XMLMetadata;
+import org.sitenetsoft.olinguito.client.api.serialization.ClientODataDeserializer;
+import org.sitenetsoft.olinguito.client.api.serialization.ODataDeserializer;
+import org.sitenetsoft.olinguito.client.api.serialization.ODataDeserializerException;
+import org.sitenetsoft.olinguito.client.core.data.JSONServiceDocumentDeserializer;
+import org.sitenetsoft.olinguito.client.core.data.XMLServiceDocumentDeserializer;
+import org.sitenetsoft.olinguito.client.core.edm.ClientCsdlXMLMetadata;
+import org.sitenetsoft.olinguito.client.core.edm.xml.ClientCsdlEdmx;
+import org.sitenetsoft.olinguito.commons.api.data.Delta;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.data.EntityCollection;
+import org.sitenetsoft.olinguito.commons.api.data.Property;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlSchema;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataError;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;

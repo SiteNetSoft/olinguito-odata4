@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.serialization;
+package org.sitenetsoft.olinguito.client.api.serialization;
 
-import org.apache.olingo.client.api.edm.xml.XMLMetadata;
-import org.apache.olingo.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.client.api.edm.xml.XMLMetadata;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 
 public interface ODataMetadataValidation {
 

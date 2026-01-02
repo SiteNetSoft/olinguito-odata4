@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core;
+package org.sitenetsoft.olinguito.client.core;
 
-import org.apache.olingo.client.api.EdmEnabledODataClient;
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.ODataClientBuilder;
-import org.apache.olingo.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.ODataClientBuilder;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.junit.Test;
 import org.mockito.Mockito;
 

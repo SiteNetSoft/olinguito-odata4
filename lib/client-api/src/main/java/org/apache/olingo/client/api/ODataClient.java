@@ -16,27 +16,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api;
+package org.sitenetsoft.olinguito.client.api;
 
-import org.apache.olingo.client.api.communication.header.ODataHeaders;
-import org.apache.olingo.client.api.communication.header.ODataPreferences;
-import org.apache.olingo.client.api.communication.request.AsyncRequestFactory;
-import org.apache.olingo.client.api.communication.request.batch.BatchRequestFactory;
-import org.apache.olingo.client.api.communication.request.cud.CUDRequestFactory;
-import org.apache.olingo.client.api.communication.request.invoke.InvokeRequestFactory;
-import org.apache.olingo.client.api.communication.request.retrieve.RetrieveRequestFactory;
-import org.apache.olingo.client.api.domain.ClientObjectFactory;
-import org.apache.olingo.client.api.serialization.ClientODataDeserializer;
-import org.apache.olingo.client.api.serialization.ODataBinder;
-import org.apache.olingo.client.api.serialization.ODataMetadataValidation;
-import org.apache.olingo.client.api.serialization.ODataReader;
-import org.apache.olingo.client.api.serialization.ODataSerializer;
-import org.apache.olingo.client.api.serialization.ODataWriter;
-import org.apache.olingo.client.api.uri.FilterFactory;
-import org.apache.olingo.client.api.uri.SearchFactory;
-import org.apache.olingo.client.api.uri.URIBuilder;
-import org.apache.olingo.commons.api.edm.constants.ODataServiceVersion;
-import org.apache.olingo.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.client.api.communication.header.ODataHeaders;
+import org.sitenetsoft.olinguito.client.api.communication.header.ODataPreferences;
+import org.sitenetsoft.olinguito.client.api.communication.request.AsyncRequestFactory;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.BatchRequestFactory;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.CUDRequestFactory;
+import org.sitenetsoft.olinguito.client.api.communication.request.invoke.InvokeRequestFactory;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.RetrieveRequestFactory;
+import org.sitenetsoft.olinguito.client.api.domain.ClientObjectFactory;
+import org.sitenetsoft.olinguito.client.api.serialization.ClientODataDeserializer;
+import org.sitenetsoft.olinguito.client.api.serialization.ODataBinder;
+import org.sitenetsoft.olinguito.client.api.serialization.ODataMetadataValidation;
+import org.sitenetsoft.olinguito.client.api.serialization.ODataReader;
+import org.sitenetsoft.olinguito.client.api.serialization.ODataSerializer;
+import org.sitenetsoft.olinguito.client.api.serialization.ODataWriter;
+import org.sitenetsoft.olinguito.client.api.uri.FilterFactory;
+import org.sitenetsoft.olinguito.client.api.uri.SearchFactory;
+import org.sitenetsoft.olinguito.client.api.uri.URIBuilder;
+import org.sitenetsoft.olinguito.commons.api.edm.constants.ODataServiceVersion;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 
 
 public interface ODataClient {

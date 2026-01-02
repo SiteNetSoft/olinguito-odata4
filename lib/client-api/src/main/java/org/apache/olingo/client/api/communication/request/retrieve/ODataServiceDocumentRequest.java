@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication.request.retrieve;
+package org.sitenetsoft.olinguito.client.api.communication.request.retrieve;
 
-import org.apache.olingo.client.api.domain.ClientServiceDocument;
+import org.sitenetsoft.olinguito.client.api.domain.ClientServiceDocument;
 
 /**
  * This class implements an OData service document request.

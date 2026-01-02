@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.ext.proxy;
+package org.sitenetsoft.olinguito.ext.proxy;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -33,21 +33,21 @@ import java.util.zip.GZIPInputStream;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.serialization.ValidatingObjectInputStream;
-import org.apache.olingo.client.api.EdmEnabledODataClient;
-import org.apache.olingo.client.api.edm.xml.XMLMetadata;
-import org.apache.olingo.client.core.ODataClientFactory;
-import org.apache.olingo.client.core.edm.ClientCsdlEdmProvider;
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.constants.ODataServiceVersion;
-import org.apache.olingo.commons.api.ex.ODataRuntimeException;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.commons.core.edm.EdmProviderImpl;
-import org.apache.olingo.ext.proxy.api.AbstractTerm;
-import org.apache.olingo.ext.proxy.api.PersistenceManager;
-import org.apache.olingo.ext.proxy.commons.EntityContainerInvocationHandler;
-import org.apache.olingo.ext.proxy.commons.NonTransactionalPersistenceManagerImpl;
-import org.apache.olingo.ext.proxy.commons.TransactionalPersistenceManagerImpl;
-import org.apache.olingo.ext.proxy.context.Context;
+import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
+import org.sitenetsoft.olinguito.client.api.edm.xml.XMLMetadata;
+import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
+import org.sitenetsoft.olinguito.client.core.edm.ClientCsdlEdmProvider;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.constants.ODataServiceVersion;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractTerm;
+import org.sitenetsoft.olinguito.ext.proxy.api.PersistenceManager;
+import org.sitenetsoft.olinguito.ext.proxy.commons.EntityContainerInvocationHandler;
+import org.sitenetsoft.olinguito.ext.proxy.commons.NonTransactionalPersistenceManagerImpl;
+import org.sitenetsoft.olinguito.ext.proxy.commons.TransactionalPersistenceManagerImpl;
+import org.sitenetsoft.olinguito.ext.proxy.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +63,7 @@ public abstract class AbstractService<C extends EdmEnabledODataClient> {
    */
   private static final Set<String> DEFAULT_ALLOWED_CLASSES;
   static {
-    DEFAULT_ALLOWED_CLASSES = Collections.singleton("org.apache.olingo.*");
+    DEFAULT_ALLOWED_CLASSES = Collections.singleton("org.sitenetsoft.olinguito.*");
   }
 
   protected static final Logger LOG = LoggerFactory.getLogger(AbstractService.class);
@@ -168,7 +168,7 @@ public abstract class AbstractService<C extends EdmEnabledODataClient> {
 
   /**
    * Returns a set of classes which are allowed for deserialization.<br/>
-   * By default, only classes from the "org.apache.olingo" package are allowed.
+   * By default, only classes from the "org.sitenetsoft.olinguito" package are allowed.
    * Subclasses should override this method if they expect other classes to be deserialized.
    *
    * @return A set of classes which are allowed for deserialization.

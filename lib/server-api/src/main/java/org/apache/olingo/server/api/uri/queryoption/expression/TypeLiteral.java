@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.uri.queryoption.expression;
+package org.sitenetsoft.olinguito.server.api.uri.queryoption.expression;
 
-import org.apache.olingo.commons.api.edm.EdmType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
 
 /**
  * Represents a type literal expression in the expression tree

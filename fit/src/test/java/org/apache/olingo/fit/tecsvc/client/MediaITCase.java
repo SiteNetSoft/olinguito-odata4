@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.tecsvc.client;
+package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertEquals;
@@ -29,21 +29,21 @@ import java.io.InputStream;
 import java.net.URI;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.olingo.client.api.communication.ODataClientErrorException;
-import org.apache.olingo.client.api.communication.request.cud.ODataDeleteRequest;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataMediaRequest;
-import org.apache.olingo.client.api.communication.request.streamed.ODataMediaEntityCreateRequest;
-import org.apache.olingo.client.api.communication.request.streamed.ODataMediaEntityUpdateRequest;
-import org.apache.olingo.client.api.communication.response.ODataDeleteResponse;
-import org.apache.olingo.client.api.communication.response.ODataMediaEntityCreateResponse;
-import org.apache.olingo.client.api.communication.response.ODataMediaEntityUpdateResponse;
-import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.client.api.domain.ClientProperty;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.commons.api.http.HttpHeader;
-import org.apache.olingo.commons.api.http.HttpStatusCode;
-import org.apache.olingo.fit.tecsvc.TecSvcConst;
+import org.sitenetsoft.olinguito.client.api.communication.ODataClientErrorException;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataDeleteRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataMediaRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.streamed.ODataMediaEntityCreateRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.streamed.ODataMediaEntityUpdateRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataDeleteResponse;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataMediaEntityCreateResponse;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataMediaEntityUpdateResponse;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientProperty;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.fit.tecsvc.TecSvcConst;
 import org.junit.Test;
 
 public class MediaITCase extends AbstractParamTecSvcITCase {

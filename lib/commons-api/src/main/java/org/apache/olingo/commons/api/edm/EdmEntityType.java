@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edm;
+package org.sitenetsoft.olinguito.commons.api.edm;
 
 import java.util.List;
 
@@ -57,7 +57,7 @@ public interface EdmEntityType extends EdmStructuredType {
   /*
    * (non-Javadoc)
    *
-   * @see org.apache.olingo.api.edm.EdmStructuralType#getBaseType()
+   * @see org.sitenetsoft.olinguito.api.edm.EdmStructuralType#getBaseType()
    */
   @Override
   EdmEntityType getBaseType();

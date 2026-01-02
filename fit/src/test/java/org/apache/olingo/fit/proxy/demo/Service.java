@@ -16,27 +16,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.demo;
+package org.sitenetsoft.olinguito.fit.proxy.demo;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.olingo.client.api.EdmEnabledODataClient;
-import org.apache.olingo.commons.api.edm.constants.ODataServiceVersion;
-import org.apache.olingo.ext.proxy.AbstractService;
-import org.apache.olingo.ext.proxy.api.AbstractTerm;
-import org.apache.olingo.fit.proxy.demo.odatademo.types.Address;
-import org.apache.olingo.fit.proxy.demo.odatademo.types.Advertisement;
-import org.apache.olingo.fit.proxy.demo.odatademo.types.Category;
-import org.apache.olingo.fit.proxy.demo.odatademo.types.Customer;
-import org.apache.olingo.fit.proxy.demo.odatademo.types.Employee;
-import org.apache.olingo.fit.proxy.demo.odatademo.types.FeaturedProduct;
-import org.apache.olingo.fit.proxy.demo.odatademo.types.Person;
-import org.apache.olingo.fit.proxy.demo.odatademo.types.PersonDetail;
-import org.apache.olingo.fit.proxy.demo.odatademo.types.Product;
-import org.apache.olingo.fit.proxy.demo.odatademo.types.ProductDetail;
-import org.apache.olingo.fit.proxy.demo.odatademo.types.Supplier;
+import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
+import org.sitenetsoft.olinguito.commons.api.edm.constants.ODataServiceVersion;
+import org.sitenetsoft.olinguito.ext.proxy.AbstractService;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractTerm;
+import org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types.Address;
+import org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types.Advertisement;
+import org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types.Category;
+import org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types.Customer;
+import org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types.Employee;
+import org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types.FeaturedProduct;
+import org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types.Person;
+import org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types.PersonDetail;
+import org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types.Product;
+import org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types.ProductDetail;
+import org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types.Supplier;
 
 public class Service<C extends EdmEnabledODataClient> extends AbstractService<C> {
 
@@ -67,7 +67,7 @@ public class Service<C extends EdmEnabledODataClient> extends AbstractService<C>
    * @param serviceRoot OData service root
    * @return OData 4.0 instance for given service root, operating in transactions (with batch requests)
    */
-  public static Service<org.apache.olingo.client.api.EdmEnabledODataClient> getV4(
+  public static Service<org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient> getV4(
       final String serviceRoot) {
 
     return getV4(serviceRoot, true);
@@ -80,7 +80,7 @@ public class Service<C extends EdmEnabledODataClient> extends AbstractService<C>
    * @param transactional whether operating in transactions (with batch requests) or not
    * @return OData 4.0 instance for given service root
    */
-  public static Service<org.apache.olingo.client.api.EdmEnabledODataClient> getV4(
+  public static Service<org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient> getV4(
       final String serviceRoot, final boolean transactional) {
 
     return getInstance(ODataServiceVersion.V40, serviceRoot, transactional);

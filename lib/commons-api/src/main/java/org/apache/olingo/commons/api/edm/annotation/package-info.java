@@ -20,5 +20,5 @@
  * Contains representations for all annotation related
  * EDM objects created during the URI parsing
  */
-package org.apache.olingo.commons.api.edm.annotation;
+package org.sitenetsoft.olinguito.commons.api.edm.annotation;
 

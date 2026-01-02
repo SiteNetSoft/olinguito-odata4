@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api;
+package org.sitenetsoft.olinguito.server.api;
 
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.olingo.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 /**
  * Request object to carry HTTP information optimized for and required to handle OData requests only.

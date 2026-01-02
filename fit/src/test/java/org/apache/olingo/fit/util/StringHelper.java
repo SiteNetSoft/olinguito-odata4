@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  ******************************************************************************/
-package org.apache.olingo.fit.util;
+package org.sitenetsoft.olinguito.fit.util;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;

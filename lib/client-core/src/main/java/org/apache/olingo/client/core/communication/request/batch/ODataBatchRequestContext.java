@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.request.batch;
+package org.sitenetsoft.olinguito.client.core.communication.request.batch;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

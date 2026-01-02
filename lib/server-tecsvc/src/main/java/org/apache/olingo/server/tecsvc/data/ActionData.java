@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.tecsvc.data;
+package org.sitenetsoft.olinguito.server.tecsvc.data;
 
 import java.math.BigDecimal;
 import java.net.URI;
@@ -28,29 +28,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.olingo.commons.api.Constants;
-import org.apache.olingo.commons.api.data.ComplexValue;
-import org.apache.olingo.commons.api.data.Entity;
-import org.apache.olingo.commons.api.data.EntityCollection;
-import org.apache.olingo.commons.api.data.Link;
-import org.apache.olingo.commons.api.data.Parameter;
-import org.apache.olingo.commons.api.data.Property;
-import org.apache.olingo.commons.api.data.ValueType;
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmEntitySet;
-import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.commons.api.edm.EdmKeyPropertyRef;
-import org.apache.olingo.commons.api.edm.EdmNavigationProperty;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveType;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeException;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
-import org.apache.olingo.commons.api.edm.EdmProperty;
-import org.apache.olingo.commons.api.http.HttpStatusCode;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.serializer.SerializerException;
-import org.apache.olingo.server.api.uri.UriParameter;
-import org.apache.olingo.server.tecsvc.data.DataProvider.DataProviderException;
-import org.apache.olingo.server.tecsvc.provider.ComplexTypeProvider;
+import org.sitenetsoft.olinguito.commons.api.Constants;
+import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.data.EntityCollection;
+import org.sitenetsoft.olinguito.commons.api.data.Link;
+import org.sitenetsoft.olinguito.commons.api.data.Parameter;
+import org.sitenetsoft.olinguito.commons.api.data.Property;
+import org.sitenetsoft.olinguito.commons.api.data.ValueType;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmKeyPropertyRef;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
+import org.sitenetsoft.olinguito.server.api.uri.UriParameter;
+import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider.DataProviderException;
+import org.sitenetsoft.olinguito.server.tecsvc.provider.ComplexTypeProvider;
 
 public class ActionData {
 

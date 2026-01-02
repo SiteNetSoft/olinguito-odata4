@@ -16,21 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.tecsvc.client;
+package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import org.apache.olingo.client.api.communication.request.retrieve.ODataEntityRequest;
-import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
-import org.apache.olingo.client.api.domain.ClientCollectionValue;
-import org.apache.olingo.client.api.domain.ClientComplexValue;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.client.api.domain.ClientLink;
-import org.apache.olingo.client.api.domain.ClientProperty;
-import org.apache.olingo.client.api.domain.ClientValue;
-import org.apache.olingo.commons.api.http.HttpStatusCode;
-import org.apache.olingo.fit.tecsvc.TecSvcConst;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntityRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
+import org.sitenetsoft.olinguito.client.api.domain.ClientCollectionValue;
+import org.sitenetsoft.olinguito.client.api.domain.ClientComplexValue;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientLink;
+import org.sitenetsoft.olinguito.client.api.domain.ClientProperty;
+import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.fit.tecsvc.TecSvcConst;
 import org.junit.Test;
 
 public class ExpandWithComplexPropertyITCase extends AbstractParamTecSvcITCase {

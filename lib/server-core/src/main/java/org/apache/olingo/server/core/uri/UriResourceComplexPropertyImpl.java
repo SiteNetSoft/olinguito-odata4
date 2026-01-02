@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri;
+package org.sitenetsoft.olinguito.server.core.uri;
 
-import org.apache.olingo.commons.api.edm.EdmComplexType;
-import org.apache.olingo.commons.api.edm.EdmProperty;
-import org.apache.olingo.commons.api.edm.EdmType;
-import org.apache.olingo.server.api.uri.UriResourceComplexProperty;
-import org.apache.olingo.server.api.uri.UriResourceKind;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmComplexType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceComplexProperty;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceKind;
 
 public class UriResourceComplexPropertyImpl extends UriResourceTypedImpl implements UriResourceComplexProperty {
 

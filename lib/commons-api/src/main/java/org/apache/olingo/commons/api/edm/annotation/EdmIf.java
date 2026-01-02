@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edm.annotation;
+package org.sitenetsoft.olinguito.commons.api.edm.annotation;
 
-import org.apache.olingo.commons.api.edm.EdmAnnotatable;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmAnnotatable;
 
 /**
  * Represents a edm:If expression

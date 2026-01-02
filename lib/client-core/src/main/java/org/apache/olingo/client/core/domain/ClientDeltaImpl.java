@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.domain;
+package org.sitenetsoft.olinguito.client.core.domain;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.olingo.client.api.domain.ClientDeletedEntity;
-import org.apache.olingo.client.api.domain.ClientDelta;
-import org.apache.olingo.client.api.domain.ClientDeltaLink;
+import org.sitenetsoft.olinguito.client.api.domain.ClientDeletedEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientDelta;
+import org.sitenetsoft.olinguito.client.api.domain.ClientDeltaLink;
 
 public class ClientDeltaImpl extends ClientEntitySetImpl implements ClientDelta {
 

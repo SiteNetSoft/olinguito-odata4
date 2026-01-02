@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.tecsvc.provider;
+package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
 import java.util.Arrays;
 
-import org.apache.olingo.commons.api.ex.ODataException;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.edm.provider.CsdlEnumMember;
-import org.apache.olingo.commons.api.edm.provider.CsdlEnumType;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEnumMember;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEnumType;
 
 public class EnumTypeProvider {
 

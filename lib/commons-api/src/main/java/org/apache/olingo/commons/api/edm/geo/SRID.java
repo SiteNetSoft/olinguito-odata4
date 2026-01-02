@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edm.geo;
+package org.sitenetsoft.olinguito.commons.api.edm.geo;
 
 import java.io.Serializable;
 
-import org.apache.olingo.commons.api.edm.geo.Geospatial.Dimension;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Geospatial.Dimension;
 
 /**
  * A geometry or geography property MAY define a value for the SRID attribute. The value of this attribute identifies

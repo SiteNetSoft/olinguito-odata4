@@ -16,45 +16,45 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core;
+package org.sitenetsoft.olinguito.server.core;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.constants.ODataServiceVersion;
-import org.apache.olingo.commons.api.ex.ODataRuntimeException;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.commons.api.http.HttpHeader;
-import org.apache.olingo.commons.api.http.HttpMethod;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.ODataApplicationException;
-import org.apache.olingo.server.api.ODataHandler;
-import org.apache.olingo.server.api.ODataLibraryException;
-import org.apache.olingo.server.api.ODataRequest;
-import org.apache.olingo.server.api.ODataResponse;
-import org.apache.olingo.server.api.ODataServerError;
-import org.apache.olingo.server.api.OlingoExtension;
-import org.apache.olingo.server.api.ServiceMetadata;
-import org.apache.olingo.server.api.deserializer.DeserializerException;
-import org.apache.olingo.server.api.etag.CustomETagSupport;
-import org.apache.olingo.server.api.etag.PreconditionException;
-import org.apache.olingo.server.api.processor.DefaultProcessor;
-import org.apache.olingo.server.api.processor.ErrorProcessor;
-import org.apache.olingo.server.api.processor.Processor;
-import org.apache.olingo.server.api.serializer.CustomContentTypeSupport;
-import org.apache.olingo.server.api.serializer.RepresentationType;
-import org.apache.olingo.server.api.serializer.SerializerException;
-import org.apache.olingo.server.api.uri.UriInfo;
-import org.apache.olingo.server.api.uri.queryoption.FormatOption;
-import org.apache.olingo.server.api.uri.queryoption.SystemQueryOptionKind;
-import org.apache.olingo.server.core.debug.ServerCoreDebugger;
-import org.apache.olingo.server.core.uri.parser.Parser;
-import org.apache.olingo.server.core.uri.parser.UriParserException;
-import org.apache.olingo.server.core.uri.parser.UriParserSemanticException;
-import org.apache.olingo.server.core.uri.parser.UriParserSyntaxException;
-import org.apache.olingo.server.core.uri.queryoption.FormatOptionImpl;
-import org.apache.olingo.server.core.uri.validator.UriValidationException;
-import org.apache.olingo.server.core.uri.validator.UriValidator;
+import org.sitenetsoft.olinguito.commons.api.edm.constants.ODataServiceVersion;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
+import org.sitenetsoft.olinguito.server.api.ODataHandler;
+import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
+import org.sitenetsoft.olinguito.server.api.ODataRequest;
+import org.sitenetsoft.olinguito.server.api.ODataResponse;
+import org.sitenetsoft.olinguito.server.api.ODataServerError;
+import org.sitenetsoft.olinguito.server.api.OlingoExtension;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
+import org.sitenetsoft.olinguito.server.api.etag.CustomETagSupport;
+import org.sitenetsoft.olinguito.server.api.etag.PreconditionException;
+import org.sitenetsoft.olinguito.server.api.processor.DefaultProcessor;
+import org.sitenetsoft.olinguito.server.api.processor.ErrorProcessor;
+import org.sitenetsoft.olinguito.server.api.processor.Processor;
+import org.sitenetsoft.olinguito.server.api.serializer.CustomContentTypeSupport;
+import org.sitenetsoft.olinguito.server.api.serializer.RepresentationType;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfo;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.FormatOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SystemQueryOptionKind;
+import org.sitenetsoft.olinguito.server.core.debug.ServerCoreDebugger;
+import org.sitenetsoft.olinguito.server.core.uri.parser.Parser;
+import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserException;
+import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserSemanticException;
+import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserSyntaxException;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.FormatOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidationException;
+import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidator;
 
 /**
  * This class is not thread-safe.

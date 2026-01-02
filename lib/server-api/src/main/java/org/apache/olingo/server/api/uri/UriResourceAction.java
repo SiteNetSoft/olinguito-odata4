@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.uri;
+package org.sitenetsoft.olinguito.server.api.uri;
 
-import org.apache.olingo.commons.api.edm.EdmAction;
-import org.apache.olingo.commons.api.edm.EdmActionImport;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmAction;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmActionImport;
 
 /**
  * Used to describe an action used within an resource path

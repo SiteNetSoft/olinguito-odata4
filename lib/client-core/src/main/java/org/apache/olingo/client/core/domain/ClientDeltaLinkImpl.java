@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.domain;
+package org.sitenetsoft.olinguito.client.core.domain;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.olingo.client.api.domain.ClientAnnotation;
-import org.apache.olingo.client.api.domain.ClientDeltaLink;
-import org.apache.olingo.client.api.domain.ClientItem;
+import org.sitenetsoft.olinguito.client.api.domain.ClientAnnotation;
+import org.sitenetsoft.olinguito.client.api.domain.ClientDeltaLink;
+import org.sitenetsoft.olinguito.client.api.domain.ClientItem;
 
 public class ClientDeltaLinkImpl extends ClientItem implements ClientDeltaLink {
 

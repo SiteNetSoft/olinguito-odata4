@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.tecsvc.data;
+package org.sitenetsoft.olinguito.server.tecsvc.data;
 
-import org.apache.olingo.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
 
 public class EntityActionResult {
   private Entity entity;

@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.tecsvc;
+package org.sitenetsoft.olinguito.server.tecsvc;
 
-import org.apache.olingo.commons.api.edm.EdmBindingTarget;
-import org.apache.olingo.server.api.etag.CustomETagSupport;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmBindingTarget;
+import org.sitenetsoft.olinguito.server.api.etag.CustomETagSupport;
 
 public class ETagSupport implements CustomETagSupport {
 

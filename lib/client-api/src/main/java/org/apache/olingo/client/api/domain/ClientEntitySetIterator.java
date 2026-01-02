@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.domain;
+package org.sitenetsoft.olinguito.client.api.domain;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -28,12 +28,12 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.data.ResWrap;
-import org.apache.olingo.client.api.serialization.ODataDeserializerException;
-import org.apache.olingo.commons.api.Constants;
-import org.apache.olingo.commons.api.data.Entity;
-import org.apache.olingo.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.data.ResWrap;
+import org.sitenetsoft.olinguito.client.api.serialization.ODataDeserializerException;
+import org.sitenetsoft.olinguito.commons.api.Constants;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.uri;
+package org.sitenetsoft.olinguito.client.core.uri;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 import javax.xml.datatype.Duration;
 
 import org.apache.commons.codec.binary.Hex;
-import org.apache.olingo.commons.core.Encoder;
+import org.sitenetsoft.olinguito.commons.core.Encoder;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -44,24 +44,24 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.InputStreamEntity;
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.domain.ClientValue;
-import org.apache.olingo.client.api.http.HttpClientFactory;
-import org.apache.olingo.client.api.http.WrappingHttpClientFactory;
-import org.apache.olingo.client.api.uri.SegmentType;
-import org.apache.olingo.client.core.http.BasicAuthHttpClientFactory;
-import org.apache.olingo.commons.api.Constants;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeException;
-import org.apache.olingo.commons.api.edm.geo.Geospatial;
-import org.apache.olingo.commons.api.ex.ODataRuntimeException;
-import org.apache.olingo.commons.core.edm.primitivetype.EdmBinary;
-import org.apache.olingo.commons.core.edm.primitivetype.EdmDateTimeOffset;
-import org.apache.olingo.commons.core.edm.primitivetype.EdmDecimal;
-import org.apache.olingo.commons.core.edm.primitivetype.EdmDouble;
-import org.apache.olingo.commons.core.edm.primitivetype.EdmDuration;
-import org.apache.olingo.commons.core.edm.primitivetype.EdmInt64;
-import org.apache.olingo.commons.core.edm.primitivetype.EdmPrimitiveTypeFactory;
-import org.apache.olingo.commons.core.edm.primitivetype.EdmSingle;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
+import org.sitenetsoft.olinguito.client.api.http.HttpClientFactory;
+import org.sitenetsoft.olinguito.client.api.http.WrappingHttpClientFactory;
+import org.sitenetsoft.olinguito.client.api.uri.SegmentType;
+import org.sitenetsoft.olinguito.client.core.http.BasicAuthHttpClientFactory;
+import org.sitenetsoft.olinguito.commons.api.Constants;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Geospatial;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
+import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmBinary;
+import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmDateTimeOffset;
+import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmDecimal;
+import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmDouble;
+import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmDuration;
+import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmInt64;
+import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmPrimitiveTypeFactory;
+import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmSingle;
 
 /**
  * URI utilities.

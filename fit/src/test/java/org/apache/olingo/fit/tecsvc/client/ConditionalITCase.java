@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.tecsvc.client;
+package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -29,31 +29,31 @@ import static org.junit.Assert.fail;
 import java.net.URI;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.olingo.client.api.communication.ODataClientErrorException;
-import org.apache.olingo.client.api.communication.request.ODataBasicRequest;
-import org.apache.olingo.client.api.communication.request.cud.ODataDeleteRequest;
-import org.apache.olingo.client.api.communication.request.cud.ODataEntityUpdateRequest;
-import org.apache.olingo.client.api.communication.request.cud.ODataPropertyUpdateRequest;
-import org.apache.olingo.client.api.communication.request.cud.ODataValueUpdateRequest;
-import org.apache.olingo.client.api.communication.request.cud.UpdateType;
-import org.apache.olingo.client.api.communication.request.retrieve.EdmMetadataRequest;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataEntityRequest;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataPropertyRequest;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataServiceDocumentRequest;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataValueRequest;
-import org.apache.olingo.client.api.communication.request.streamed.ODataMediaEntityUpdateRequest;
-import org.apache.olingo.client.api.communication.response.ODataDeleteResponse;
-import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.client.api.domain.ClientPrimitiveValue;
-import org.apache.olingo.client.api.domain.ClientProperty;
-import org.apache.olingo.client.api.domain.ClientServiceDocument;
-import org.apache.olingo.client.api.http.HttpClientException;
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.http.HttpHeader;
-import org.apache.olingo.commons.api.http.HttpStatusCode;
-import org.apache.olingo.fit.tecsvc.TecSvcConst;
+import org.sitenetsoft.olinguito.client.api.communication.ODataClientErrorException;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataBasicRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataDeleteRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataEntityUpdateRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataPropertyUpdateRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataValueUpdateRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.UpdateType;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.EdmMetadataRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntityRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataPropertyRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataServiceDocumentRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataValueRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.streamed.ODataMediaEntityUpdateRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataDeleteResponse;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientPrimitiveValue;
+import org.sitenetsoft.olinguito.client.api.domain.ClientProperty;
+import org.sitenetsoft.olinguito.client.api.domain.ClientServiceDocument;
+import org.sitenetsoft.olinguito.client.api.http.HttpClientException;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.fit.tecsvc.TecSvcConst;
 import org.junit.Test;
 
 public class ConditionalITCase extends AbstractParamTecSvcITCase {

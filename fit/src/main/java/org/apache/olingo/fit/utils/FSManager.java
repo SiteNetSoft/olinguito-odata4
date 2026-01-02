@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.utils;
+package org.sitenetsoft.olinguito.fit.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -36,13 +36,13 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.VFS;
-import org.apache.olingo.client.api.data.ResWrap;
-import org.apache.olingo.client.api.serialization.ODataSerializerException;
-import org.apache.olingo.client.core.serialization.AtomSerializer;
-import org.apache.olingo.client.core.serialization.JsonSerializer;
-import org.apache.olingo.commons.api.data.Entity;
-import org.apache.olingo.commons.api.edm.constants.ODataServiceVersion;
-import org.apache.olingo.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.client.api.data.ResWrap;
+import org.sitenetsoft.olinguito.client.api.serialization.ODataSerializerException;
+import org.sitenetsoft.olinguito.client.core.serialization.AtomSerializer;
+import org.sitenetsoft.olinguito.client.core.serialization.JsonSerializer;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.edm.constants.ODataServiceVersion;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

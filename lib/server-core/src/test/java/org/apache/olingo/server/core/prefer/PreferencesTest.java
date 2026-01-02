@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.prefer;
+package org.sitenetsoft.olinguito.server.core.prefer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -29,9 +29,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
-import org.apache.olingo.server.api.prefer.Preferences;
-import org.apache.olingo.server.api.prefer.Preferences.Preference;
-import org.apache.olingo.server.api.prefer.Preferences.Return;
+import org.sitenetsoft.olinguito.server.api.prefer.Preferences;
+import org.sitenetsoft.olinguito.server.api.prefer.Preferences.Preference;
+import org.sitenetsoft.olinguito.server.api.prefer.Preferences.Return;
 import org.junit.Test;
 
 public class PreferencesTest {

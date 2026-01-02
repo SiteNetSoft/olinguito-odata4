@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit;
+package org.sitenetsoft.olinguito.fit;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -40,11 +40,11 @@ import jakarta.ws.rs.core.UriInfo;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.olingo.fit.metadata.Metadata;
-import org.apache.olingo.fit.utils.Accept;
-import org.apache.olingo.fit.utils.ConstantKey;
-import org.apache.olingo.fit.utils.Constants;
-import org.apache.olingo.fit.utils.FSManager;
+import org.sitenetsoft.olinguito.fit.metadata.Metadata;
+import org.sitenetsoft.olinguito.fit.utils.Accept;
+import org.sitenetsoft.olinguito.fit.utils.ConstantKey;
+import org.sitenetsoft.olinguito.fit.utils.Constants;
+import org.sitenetsoft.olinguito.fit.utils.FSManager;
 import org.springframework.stereotype.Service;
 
 @Service

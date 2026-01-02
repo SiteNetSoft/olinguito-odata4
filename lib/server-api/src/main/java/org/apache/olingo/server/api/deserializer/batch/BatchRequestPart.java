@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.deserializer.batch;
+package org.sitenetsoft.olinguito.server.api.deserializer.batch;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.olingo.server.api.ODataRequest;
+import org.sitenetsoft.olinguito.server.api.ODataRequest;
 
 /**
  * Represents a distinct MIME part of a Batch Request body - either a Change Set or a Query Operation

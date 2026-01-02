@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edm;
+package org.sitenetsoft.olinguito.commons.api.edm;
 
-import org.apache.olingo.commons.api.edm.annotation.EdmExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmExpression;
 
 /**
  * This class models an OData Annotation which can be applied to a target. 

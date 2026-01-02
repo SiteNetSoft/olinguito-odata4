@@ -16,16 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.demo.odatademo.types;
+package org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.AbstractOpenType;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractOpenType;
 
 // CHECKSTYLE:ON (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 public interface CategoryComposableInvoker
-    extends org.apache.olingo.ext.proxy.api.StructuredComposableInvoker<Category, Category.Operations>
+    extends org.sitenetsoft.olinguito.ext.proxy.api.StructuredComposableInvoker<Category, Category.Operations>
     , AbstractOpenType {
 
   @Override
@@ -35,7 +35,7 @@ public interface CategoryComposableInvoker
   CategoryComposableInvoker expand(String... expand);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -50,7 +50,7 @@ public interface CategoryComposableInvoker
 
   void setID(java.lang.Integer _iD);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Name",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Name",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -65,7 +65,7 @@ public interface CategoryComposableInvoker
 
   void setName(java.lang.String _name);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "Products",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "Products",
       type = "ODataDemo.Product",
       targetSchema = "ODataDemo",
       targetContainer = "DemoService",

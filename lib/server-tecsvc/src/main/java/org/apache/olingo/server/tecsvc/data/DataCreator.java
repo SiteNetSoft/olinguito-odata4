@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.tecsvc.data;
+package org.sitenetsoft.olinguito.server.tecsvc.data;
 
 import java.math.BigDecimal;
 import java.net.URI;
@@ -36,30 +36,30 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.olingo.commons.api.Constants;
-import org.apache.olingo.commons.api.data.ComplexValue;
-import org.apache.olingo.commons.api.data.Entity;
-import org.apache.olingo.commons.api.data.EntityCollection;
-import org.apache.olingo.commons.api.data.Link;
-import org.apache.olingo.commons.api.data.Operation;
-import org.apache.olingo.commons.api.data.Property;
-import org.apache.olingo.commons.api.data.ValueType;
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmEntitySet;
-import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.edm.provider.CsdlAction;
-import org.apache.olingo.commons.api.edm.provider.CsdlFunction;
-import org.apache.olingo.commons.api.edm.provider.CsdlParameter;
-import org.apache.olingo.commons.api.ex.ODataException;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.serializer.SerializerException;
-import org.apache.olingo.server.api.uri.UriHelper;
-import org.apache.olingo.server.tecsvc.provider.ActionProvider;
-import org.apache.olingo.server.tecsvc.provider.ComplexTypeProvider;
-import org.apache.olingo.server.tecsvc.provider.EntityTypeProvider;
-import org.apache.olingo.server.tecsvc.provider.FunctionProvider;
-import org.apache.olingo.server.tecsvc.provider.SchemaProvider;
+import org.sitenetsoft.olinguito.commons.api.Constants;
+import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.data.EntityCollection;
+import org.sitenetsoft.olinguito.commons.api.data.Link;
+import org.sitenetsoft.olinguito.commons.api.data.Operation;
+import org.sitenetsoft.olinguito.commons.api.data.Property;
+import org.sitenetsoft.olinguito.commons.api.data.ValueType;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAction;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlFunction;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlParameter;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
+import org.sitenetsoft.olinguito.server.api.uri.UriHelper;
+import org.sitenetsoft.olinguito.server.tecsvc.provider.ActionProvider;
+import org.sitenetsoft.olinguito.server.tecsvc.provider.ComplexTypeProvider;
+import org.sitenetsoft.olinguito.server.tecsvc.provider.EntityTypeProvider;
+import org.sitenetsoft.olinguito.server.tecsvc.provider.FunctionProvider;
+import org.sitenetsoft.olinguito.server.tecsvc.provider.SchemaProvider;
 
 public class DataCreator {
 

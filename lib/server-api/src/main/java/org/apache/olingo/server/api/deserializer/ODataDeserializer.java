@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.deserializer;
+package org.sitenetsoft.olinguito.server.api.deserializer;
 
 import java.io.InputStream;
 
-import org.apache.olingo.commons.api.edm.EdmAction;
-import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.commons.api.edm.EdmProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmAction;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
 
 /**
  * Deserializer on OData server side.
@@ -30,10 +30,10 @@ import org.apache.olingo.commons.api.edm.EdmProperty;
 public interface ODataDeserializer {
 
   /**
-   * Deserializes an entity stream into an {@link org.apache.olingo.commons.api.data.Entity Entity} object.
+   * Deserializes an entity stream into an {@link org.sitenetsoft.olinguito.commons.api.data.Entity Entity} object.
    * Validates: property types, no double properties, correct json types.
-   * Returns a deserialized {@link org.apache.olingo.commons.api.data.Entity Entity} object and an
-   * {@link org.apache.olingo.server.api.uri.queryoption.ExpandOption ExpandOption} object.
+   * Returns a deserialized {@link org.sitenetsoft.olinguito.commons.api.data.Entity Entity} object and an
+   * {@link org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandOption ExpandOption} object.
    * @param stream
    * @param edmEntityType
    * @return {@link DeserializerResult#getEntity()} and {@link DeserializerResult#getExpandTree()}
@@ -42,7 +42,7 @@ public interface ODataDeserializer {
   DeserializerResult entity(InputStream stream, EdmEntityType edmEntityType) throws DeserializerException;
 
   /**
-   * Deserializes an entity collection stream into an {@link org.apache.olingo.commons.api.data.EntityCollection
+   * Deserializes an entity collection stream into an {@link org.sitenetsoft.olinguito.commons.api.data.EntityCollection
    * EntityCollection} object.
    * @param stream
    * @param edmEntityType

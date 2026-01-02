@@ -36,10 +36,10 @@
     <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson.version}</bundle>
     <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/${jackson.version}</bundle>
 
-    <bundle>mvn:org.apache.olingo/odata-commons-api/${project.version}</bundle>
-    <bundle>mvn:org.apache.olingo/odata-commons-core/${project.version}</bundle>
-    <bundle>mvn:org.apache.olingo/odata-server-api/${project.version}</bundle>
-    <bundle>mvn:org.apache.olingo/odata-server-core/${project.version}</bundle>
+    <bundle>mvn:org.sitenetsoft.olinguito/odata-commons-api/${project.version}</bundle>
+    <bundle>mvn:org.sitenetsoft.olinguito/odata-commons-core/${project.version}</bundle>
+    <bundle>mvn:org.sitenetsoft.olinguito/odata-server-api/${project.version}</bundle>
+    <bundle>mvn:org.sitenetsoft.olinguito/odata-server-core/${project.version}</bundle>
   </feature>
 
   <feature name="olingo-client" version="${project.version}" resolver="(obr)" start-level="50">
@@ -57,9 +57,9 @@
     <bundle>mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/${jackson.version}</bundle>
     <bundle>mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-xml/${jackson.version}</bundle>
 
-    <bundle>mvn:org.apache.olingo/odata-commons-api/${project.version}</bundle>
-    <bundle>mvn:org.apache.olingo/odata-commons-core/${project.version}</bundle>
-    <bundle>mvn:org.apache.olingo/odata-client-api/${project.version}</bundle>
-    <bundle>mvn:org.apache.olingo/odata-client-core/${project.version}</bundle>
+    <bundle>mvn:org.sitenetsoft.olinguito/odata-commons-api/${project.version}</bundle>
+    <bundle>mvn:org.sitenetsoft.olinguito/odata-commons-core/${project.version}</bundle>
+    <bundle>mvn:org.sitenetsoft.olinguito/odata-client-api/${project.version}</bundle>
+    <bundle>mvn:org.sitenetsoft.olinguito/odata-client-core/${project.version}</bundle>
   </feature>
 </features>

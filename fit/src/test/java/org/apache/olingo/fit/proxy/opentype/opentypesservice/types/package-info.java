@@ -16,5 +16,5 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.opentype.opentypesservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.opentype.opentypesservice.types;
 

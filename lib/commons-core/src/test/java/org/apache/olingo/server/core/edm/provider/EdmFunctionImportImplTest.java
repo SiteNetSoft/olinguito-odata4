@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.edm.provider;
+package org.sitenetsoft.olinguito.server.core.edm.provider;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -30,21 +30,21 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.EdmEntityContainer;
-import org.apache.olingo.commons.api.edm.EdmFunction;
-import org.apache.olingo.commons.api.edm.EdmFunctionImport;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.edm.provider.CsdlEdmProvider;
-import org.apache.olingo.commons.api.edm.provider.CsdlEntityContainerInfo;
-import org.apache.olingo.commons.api.edm.provider.CsdlFunction;
-import org.apache.olingo.commons.api.edm.provider.CsdlFunctionImport;
-import org.apache.olingo.commons.api.edm.provider.CsdlParameter;
-import org.apache.olingo.commons.api.edm.provider.CsdlReturnType;
-import org.apache.olingo.commons.core.edm.EdmEntityContainerImpl;
-import org.apache.olingo.commons.core.edm.EdmFunctionImportImpl;
-import org.apache.olingo.commons.core.edm.EdmProviderImpl;
-import org.apache.olingo.commons.core.edm.primitivetype.EdmPrimitiveTypeFactory;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmFunction;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmFunctionImport;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEdmProvider;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityContainerInfo;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlFunction;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlFunctionImport;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlParameter;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlReturnType;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmEntityContainerImpl;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmFunctionImportImpl;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
+import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmPrimitiveTypeFactory;
 import org.junit.Test;
 
 public class EdmFunctionImportImplTest {

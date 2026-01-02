@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.serialization;
+package org.sitenetsoft.olinguito.client.core.serialization;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -25,8 +25,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
 
-import org.apache.olingo.client.core.serialization.ContextURLParser;
-import org.apache.olingo.commons.api.data.ContextURL;
+import org.sitenetsoft.olinguito.client.core.serialization.ContextURLParser;
+import org.sitenetsoft.olinguito.commons.api.data.ContextURL;
 import org.junit.Test;
 
 public class ContextURLParserTest {

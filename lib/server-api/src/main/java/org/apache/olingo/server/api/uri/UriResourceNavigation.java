@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.uri;
+package org.sitenetsoft.olinguito.server.api.uri;
 
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.EdmNavigationProperty;
-import org.apache.olingo.commons.api.edm.EdmType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
 
 /**
  * Used to describe an navigation property used within an resource path

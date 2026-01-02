@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit;
+package org.sitenetsoft.olinguito.fit;
 
 import java.io.IOException;
 
@@ -27,10 +27,10 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.LifecycleException;
 import org.apache.commons.io.IOUtils;
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.fit.server.TomcatTestServer;
-import org.apache.olingo.server.tecsvc.TechnicalServlet;
-import org.apache.olingo.server.tecsvc.async.TechnicalStatusMonitorServlet;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.fit.server.TomcatTestServer;
+import org.sitenetsoft.olinguito.server.tecsvc.TechnicalServlet;
+import org.sitenetsoft.olinguito.server.tecsvc.async.TechnicalStatusMonitorServlet;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 

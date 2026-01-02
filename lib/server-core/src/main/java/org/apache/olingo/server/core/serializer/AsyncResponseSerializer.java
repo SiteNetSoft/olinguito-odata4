@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.serializer;
+package org.sitenetsoft.olinguito.server.core.serializer;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -30,9 +30,9 @@ import java.nio.channels.WritableByteChannel;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.olingo.commons.api.http.HttpStatusCode;
-import org.apache.olingo.server.api.ODataResponse;
-import org.apache.olingo.server.api.serializer.SerializerException;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.server.api.ODataResponse;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
 
 public class AsyncResponseSerializer {
   private static final int BUFFER_SIZE = 8192;

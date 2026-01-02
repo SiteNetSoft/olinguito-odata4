@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy;
+package org.sitenetsoft.olinguito.fit.proxy;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -35,38 +35,38 @@ import java.util.TimeZone;
 // CHECKSTYLE:OFF (Maven checkstyle)
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.olingo.client.api.EdmEnabledODataClient;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.ext.proxy.AbstractService;
-import org.apache.olingo.ext.proxy.api.EdmStreamValue;
-import org.apache.olingo.ext.proxy.api.PrimitiveCollection;
-import org.apache.olingo.ext.proxy.commons.AbstractCollectionInvocationHandler;
-import org.apache.olingo.fit.proxy.demo.Service;
-import org.apache.olingo.fit.proxy.demo.odatademo.DemoService;
-import org.apache.olingo.fit.proxy.demo.odatademo.types.PersonDetail;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.InMemoryEntities;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.AccessLevel;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Account;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Address;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.AddressCollection;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Color;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Customer;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.CustomerCollection;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.HomeAddress;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Order;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.OrderCollection;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.PaymentInstrument;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.PaymentInstrumentCollection;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Person;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.PersonCollection;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.PersonComposableInvoker;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Product;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.ProductCollection;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.ProductCollectionComposableInvoker;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.ProductDetail;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.ProductDetailCollection;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.ProductDetailCollectionComposableInvoker;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Account.MyPaymentInstruments;
+import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.ext.proxy.AbstractService;
+import org.sitenetsoft.olinguito.ext.proxy.api.EdmStreamValue;
+import org.sitenetsoft.olinguito.ext.proxy.api.PrimitiveCollection;
+import org.sitenetsoft.olinguito.ext.proxy.commons.AbstractCollectionInvocationHandler;
+import org.sitenetsoft.olinguito.fit.proxy.demo.Service;
+import org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.DemoService;
+import org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types.PersonDetail;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.InMemoryEntities;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.AccessLevel;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Account;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Address;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.AddressCollection;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Color;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Customer;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.CustomerCollection;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.HomeAddress;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Order;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.OrderCollection;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.PaymentInstrument;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.PaymentInstrumentCollection;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Person;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.PersonCollection;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.PersonComposableInvoker;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Product;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.ProductCollection;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.ProductCollectionComposableInvoker;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.ProductDetail;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.ProductDetailCollection;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.ProductDetailCollectionComposableInvoker;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Account.MyPaymentInstruments;
 // CHECKSTYLE:ON (Maven checkstyle)
 import org.junit.Test;
 

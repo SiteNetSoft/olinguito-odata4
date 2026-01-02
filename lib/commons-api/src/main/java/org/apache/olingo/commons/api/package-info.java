@@ -20,4 +20,4 @@
  * Contains all OData commons classes which are not more specific
  * (e.g. Constants which can be used in every context).
  */
-package org.apache.olingo.commons.api;
+package org.sitenetsoft.olinguito.commons.api;

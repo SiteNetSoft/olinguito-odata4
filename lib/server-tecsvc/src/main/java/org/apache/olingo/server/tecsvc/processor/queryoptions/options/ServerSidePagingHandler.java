@@ -16,18 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.tecsvc.processor.queryoptions.options;
+package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.options;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Locale;
 
-import org.apache.olingo.commons.api.data.EntityCollection;
-import org.apache.olingo.commons.api.edm.EdmEntitySet;
-import org.apache.olingo.commons.api.http.HttpStatusCode;
-import org.apache.olingo.server.api.ODataApplicationException;
-import org.apache.olingo.server.api.uri.queryoption.SkipTokenOption;
-import org.apache.olingo.server.api.uri.queryoption.SystemQueryOptionKind;
+import org.sitenetsoft.olinguito.commons.api.data.EntityCollection;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SkipTokenOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SystemQueryOptionKind;
 
 public class ServerSidePagingHandler {
   private static final int MAX_PAGE_SIZE = 10;

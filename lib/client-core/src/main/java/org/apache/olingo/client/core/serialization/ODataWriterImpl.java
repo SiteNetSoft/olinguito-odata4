@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.serialization;
+package org.sitenetsoft.olinguito.client.core.serialization;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -28,16 +28,16 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.data.ResWrap;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.client.api.domain.ClientLink;
-import org.apache.olingo.client.api.domain.ClientProperty;
-import org.apache.olingo.client.api.serialization.ODataSerializer;
-import org.apache.olingo.client.api.serialization.ODataSerializerException;
-import org.apache.olingo.client.api.serialization.ODataWriter;
-import org.apache.olingo.commons.api.Constants;
-import org.apache.olingo.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.data.ResWrap;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientLink;
+import org.sitenetsoft.olinguito.client.api.domain.ClientProperty;
+import org.sitenetsoft.olinguito.client.api.serialization.ODataSerializer;
+import org.sitenetsoft.olinguito.client.api.serialization.ODataSerializerException;
+import org.sitenetsoft.olinguito.client.api.serialization.ODataWriter;
+import org.sitenetsoft.olinguito.commons.api.Constants;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 
 public class ODataWriterImpl implements ODataWriter {
 

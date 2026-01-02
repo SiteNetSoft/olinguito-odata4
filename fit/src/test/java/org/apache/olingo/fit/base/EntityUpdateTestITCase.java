@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.base;
+package org.sitenetsoft.olinguito.fit.base;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -24,12 +24,12 @@ import static org.junit.Assert.assertNotNull;
 import java.net.URI;
 import java.util.UUID;
 
-import org.apache.olingo.client.api.communication.request.cud.ODataEntityUpdateRequest;
-import org.apache.olingo.client.api.communication.request.cud.UpdateType;
-import org.apache.olingo.client.api.communication.response.ODataEntityUpdateResponse;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataEntityUpdateRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.UpdateType;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataEntityUpdateResponse;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.junit.Test;
 
 public class EntityUpdateTestITCase extends AbstractTestITCase {

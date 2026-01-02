@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.base;
+package org.sitenetsoft.olinguito.fit.base;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -26,18 +26,18 @@ import static org.junit.Assert.assertTrue;
 import java.net.URI;
 import java.util.List;
 
-import org.apache.olingo.client.api.communication.request.AsyncRequestWrapper;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataEntityRequest;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
-import org.apache.olingo.client.api.communication.response.AsyncResponseWrapper;
-import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.client.api.domain.ClientEntitySet;
-import org.apache.olingo.client.api.domain.ClientInlineEntity;
-import org.apache.olingo.client.api.domain.ClientLink;
-import org.apache.olingo.client.api.domain.ClientProperty;
-import org.apache.olingo.client.api.uri.URIBuilder;
-import org.apache.olingo.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.client.api.communication.request.AsyncRequestWrapper;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntityRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntitySetRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.AsyncResponseWrapper;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntitySet;
+import org.sitenetsoft.olinguito.client.api.domain.ClientInlineEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientLink;
+import org.sitenetsoft.olinguito.client.api.domain.ClientProperty;
+import org.sitenetsoft.olinguito.client.api.uri.URIBuilder;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.junit.Ignore;
 import org.junit.Test;
 

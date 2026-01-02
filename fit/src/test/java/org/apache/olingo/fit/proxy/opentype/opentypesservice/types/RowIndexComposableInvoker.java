@@ -16,16 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.opentype.opentypesservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.opentype.opentypesservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.AbstractOpenType;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractOpenType;
 
 // CHECKSTYLE:ON (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 public interface RowIndexComposableInvoker
-    extends org.apache.olingo.ext.proxy.api.StructuredComposableInvoker<RowIndex, RowIndex.Operations>
+    extends org.sitenetsoft.olinguito.ext.proxy.api.StructuredComposableInvoker<RowIndex, RowIndex.Operations>
     , AbstractOpenType {
 
   @Override
@@ -35,7 +35,7 @@ public interface RowIndexComposableInvoker
   RowIndexComposableInvoker expand(String... expand);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Id",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Id",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -50,7 +50,7 @@ public interface RowIndexComposableInvoker
 
   void setId(java.lang.Integer _id);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "Rows",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "Rows",
       type = "Microsoft.Test.OData.Services.OpenTypesServiceV4.Row",
       targetSchema = "Microsoft.Test.OData.Services.OpenTypesServiceV4",
       targetContainer = "DefaultContainer",

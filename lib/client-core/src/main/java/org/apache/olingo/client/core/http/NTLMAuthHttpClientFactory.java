@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.http;
+package org.sitenetsoft.olinguito.client.core.http;
 
 import java.net.URI;
 
@@ -25,7 +25,7 @@ import org.apache.http.auth.NTCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.olingo.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 /**
  * Implementation for working with NTLM Authentication via embedded HttpClient features.

@@ -19,4 +19,4 @@
 /**
  * Contains representations for objects created during CSDL document parsing
  */
-package org.apache.olingo.commons.api.edm.provider;
+package org.sitenetsoft.olinguito.commons.api.edm.provider;

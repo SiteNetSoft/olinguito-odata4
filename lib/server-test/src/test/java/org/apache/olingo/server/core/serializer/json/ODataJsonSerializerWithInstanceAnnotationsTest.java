@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.serializer.json;
+package org.sitenetsoft.olinguito.server.core.serializer.json;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -25,25 +25,25 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.olingo.commons.api.data.Annotation;
-import org.apache.olingo.commons.api.data.ComplexValue;
-import org.apache.olingo.commons.api.data.ContextURL;
-import org.apache.olingo.commons.api.data.ContextURL.Suffix;
-import org.apache.olingo.commons.api.data.Entity;
-import org.apache.olingo.commons.api.data.Property;
-import org.apache.olingo.commons.api.data.ValueType;
-import org.apache.olingo.commons.api.edm.EdmEntityContainer;
-import org.apache.olingo.commons.api.edm.EdmEntitySet;
-import org.apache.olingo.commons.api.edmx.EdmxReference;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.ServiceMetadata;
-import org.apache.olingo.server.api.serializer.EntitySerializerOptions;
-import org.apache.olingo.server.api.serializer.ODataSerializer;
-import org.apache.olingo.server.api.uri.UriHelper;
-import org.apache.olingo.server.tecsvc.MetadataETagSupport;
-import org.apache.olingo.server.tecsvc.data.DataProvider;
-import org.apache.olingo.server.tecsvc.provider.EdmTechProvider;
+import org.sitenetsoft.olinguito.commons.api.data.Annotation;
+import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
+import org.sitenetsoft.olinguito.commons.api.data.ContextURL;
+import org.sitenetsoft.olinguito.commons.api.data.ContextURL.Suffix;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.data.Property;
+import org.sitenetsoft.olinguito.commons.api.data.ValueType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
+import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.api.serializer.EntitySerializerOptions;
+import org.sitenetsoft.olinguito.server.api.serializer.ODataSerializer;
+import org.sitenetsoft.olinguito.server.api.uri.UriHelper;
+import org.sitenetsoft.olinguito.server.tecsvc.MetadataETagSupport;
+import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider;
+import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
 import org.junit.Assert;
 import org.junit.Test;
 

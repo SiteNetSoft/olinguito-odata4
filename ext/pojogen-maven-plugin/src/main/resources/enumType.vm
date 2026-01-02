@@ -19,9 +19,9 @@
 package ${package};
 
 //CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Namespace;
-import org.apache.olingo.ext.proxy.api.annotations.EnumType;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.EnumType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 //CHECKSTYLE:ON (Maven checkstyle)
 
 #set( $enumName = $utility.capitalize($enumType.Name) )
@@ -32,8 +32,8 @@ import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
     #set( $javatype = $utility.getJavaType("Edm.Int32") )
 #end
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("$namespace")
-@org.apache.olingo.ext.proxy.api.annotations.EnumType(name = "$enumType.Name",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("$namespace")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EnumType(name = "$enumType.Name",
           #if( $enumType.UnderlyingType )underlyingType = EdmPrimitiveTypeKind.${utility.getEdmTypeInfo($enumType.UnderlyingType).PrimitiveTypeKind.name()},
           #{end}isFlags = $enumType.Flags)
 public enum $enumName {

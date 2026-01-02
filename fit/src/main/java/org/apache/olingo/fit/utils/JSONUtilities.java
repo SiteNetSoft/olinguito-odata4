@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.utils;
+package org.sitenetsoft.olinguito.fit.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -35,8 +35,8 @@ import jakarta.ws.rs.NotFoundException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.olingo.fit.metadata.Metadata;
-import org.apache.olingo.fit.metadata.NavigationProperty;
+import org.sitenetsoft.olinguito.fit.metadata.Metadata;
+import org.sitenetsoft.olinguito.fit.metadata.NavigationProperty;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonNode;

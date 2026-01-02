@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
 public interface AssetComposableInvoker
-    extends org.apache.olingo.ext.proxy.api.StructuredComposableInvoker<Asset, Asset.Operations>
+    extends org.sitenetsoft.olinguito.ext.proxy.api.StructuredComposableInvoker<Asset, Asset.Operations>
 {
 
   @Override
@@ -34,7 +34,7 @@ public interface AssetComposableInvoker
   AssetComposableInvoker expand(String... expand);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "AssetID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "AssetID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -49,7 +49,7 @@ public interface AssetComposableInvoker
 
   void setAssetID(java.lang.Integer _assetID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Name",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Name",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -64,7 +64,7 @@ public interface AssetComposableInvoker
 
   void setName(java.lang.String _name);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Number",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Number",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",

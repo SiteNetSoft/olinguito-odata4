@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.tecsvc.http;
+package org.sitenetsoft.olinguito.fit.tecsvc.http;
 
 import static org.junit.Assert.*;
 
@@ -24,11 +24,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.commons.api.http.HttpMethod;
-import org.apache.olingo.commons.api.http.HttpStatusCode;
-import org.apache.olingo.fit.AbstractBaseTestITCase;
-import org.apache.olingo.fit.tecsvc.TecSvcConst;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.fit.AbstractBaseTestITCase;
+import org.sitenetsoft.olinguito.fit.tecsvc.TecSvcConst;
 import org.junit.Test;
 
 public class EmptyNavigationPropertiesITCase extends AbstractBaseTestITCase {

@@ -16,21 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.domain;
+package org.sitenetsoft.olinguito.client.core.domain;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import org.apache.olingo.client.api.domain.AbstractClientValue;
-import org.apache.olingo.client.api.domain.ClientEnumValue;
-import org.apache.olingo.client.api.domain.ClientPrimitiveValue;
-import org.apache.olingo.commons.api.Constants;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveType;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeException;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
-import org.apache.olingo.commons.api.edm.EdmType;
-import org.apache.olingo.commons.api.edm.constants.EdmTypeKind;
-import org.apache.olingo.commons.core.edm.primitivetype.EdmPrimitiveTypeFactory;
+import org.sitenetsoft.olinguito.client.api.domain.AbstractClientValue;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEnumValue;
+import org.sitenetsoft.olinguito.client.api.domain.ClientPrimitiveValue;
+import org.sitenetsoft.olinguito.commons.api.Constants;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
+import org.sitenetsoft.olinguito.commons.api.edm.constants.EdmTypeKind;
+import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmPrimitiveTypeFactory;
 
 public class ClientPrimitiveValueImpl extends AbstractClientValue implements ClientPrimitiveValue {
 

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api;
+package org.sitenetsoft.olinguito.server.api;
 
 import java.util.Arrays;
 import java.util.Formatter;
@@ -25,7 +25,7 @@ import java.util.MissingFormatArgumentException;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import org.apache.olingo.commons.api.ex.ODataException;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
 
 /**
  * Abstract superclass of all translatable server exceptions.

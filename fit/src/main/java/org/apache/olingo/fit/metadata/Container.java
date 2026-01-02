@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.metadata;
+package org.sitenetsoft.olinguito.fit.metadata;
 
 import java.util.Collection;
 import java.util.HashMap;

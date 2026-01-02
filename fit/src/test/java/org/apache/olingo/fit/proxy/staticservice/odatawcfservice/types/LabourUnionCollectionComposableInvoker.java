@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
 
 public interface LabourUnionCollectionComposableInvoker
     extends
-    org.apache.olingo.ext.proxy.api.StructuredCollectionComposableInvoker<LabourUnionCollection, LabourUnionCollection.Operations> {
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionComposableInvoker<LabourUnionCollection, LabourUnionCollection.Operations> {
 
   @Override
   LabourUnionCollectionComposableInvoker select(String... select);

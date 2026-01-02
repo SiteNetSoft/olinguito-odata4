@@ -22,5 +22,5 @@
  * The debug package is used to condense all information about the Olingo debug handling.
  *
  */
-package org.apache.olingo.server.api.debug;
+package org.sitenetsoft.olinguito.server.api.debug;
 

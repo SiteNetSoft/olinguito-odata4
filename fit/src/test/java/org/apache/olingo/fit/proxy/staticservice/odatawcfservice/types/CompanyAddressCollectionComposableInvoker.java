@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
 
 public interface CompanyAddressCollectionComposableInvoker
     extends
-    org.apache.olingo.ext.proxy.api.StructuredCollectionComposableInvoker<CompanyAddressCollection, CompanyAddressCollection.Operations> {
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionComposableInvoker<CompanyAddressCollection, CompanyAddressCollection.Operations> {
 
   @Override
   CompanyAddressCollectionComposableInvoker select(String... select);

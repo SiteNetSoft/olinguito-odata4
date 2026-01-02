@@ -16,17 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.serializer.json;
+package org.sitenetsoft.olinguito.server.core.serializer.json;
 
 import java.io.IOException;
 
-import org.apache.olingo.commons.api.Constants;
-import org.apache.olingo.commons.api.edm.EdmEntityContainer;
-import org.apache.olingo.commons.api.edm.EdmEntitySet;
-import org.apache.olingo.commons.api.edm.EdmFunctionImport;
-import org.apache.olingo.commons.api.edm.EdmSingleton;
-import org.apache.olingo.server.api.ServiceMetadata;
-import org.apache.olingo.server.api.serializer.SerializerException;
+import org.sitenetsoft.olinguito.commons.api.Constants;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmFunctionImport;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmSingleton;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 

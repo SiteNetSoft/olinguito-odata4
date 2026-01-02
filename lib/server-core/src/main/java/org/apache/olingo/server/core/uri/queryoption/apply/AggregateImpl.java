@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.queryoption.apply;
+package org.sitenetsoft.olinguito.server.core.uri.queryoption.apply;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.olingo.server.api.uri.queryoption.apply.Aggregate;
-import org.apache.olingo.server.api.uri.queryoption.apply.AggregateExpression;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.apply.Aggregate;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.apply.AggregateExpression;
 
 /**
  * Represents the aggregate transformation.

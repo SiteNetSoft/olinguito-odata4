@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.uri.queryoption;
+package org.sitenetsoft.olinguito.server.api.uri.queryoption;
 
-import org.apache.olingo.server.api.uri.queryoption.expression.Expression;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Expression;
 
 /**
  * Represents an alias value defined as query option

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.request;
+package org.sitenetsoft.olinguito.client.core.communication.request;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,15 +28,15 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DecompressingHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.communication.header.ODataHeaders;
-import org.apache.olingo.client.api.communication.request.ODataRequest;
-import org.apache.olingo.client.api.communication.response.ODataResponse;
-import org.apache.olingo.client.api.http.HttpClientException;
-import org.apache.olingo.commons.api.ex.ODataRuntimeException;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.commons.api.http.HttpHeader;
-import org.apache.olingo.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.communication.header.ODataHeaders;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataResponse;
+import org.sitenetsoft.olinguito.client.api.http.HttpClientException;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -49,9 +49,9 @@ import java.util.Collection;
 /**
  * Abstract representation of an OData request. Get instance by using factories.
  *
- * @see org.apache.olingo.client.api.communication.request.cud.CUDRequestFactory
- * @see org.apache.olingo.client.api.communication.request.batch.BatchRequestFactory
- * @see org.apache.olingo.client.api.communication.request.invoke.InvokeRequestFactory
+ * @see org.sitenetsoft.olinguito.client.api.communication.request.cud.CUDRequestFactory
+ * @see org.sitenetsoft.olinguito.client.api.communication.request.batch.BatchRequestFactory
+ * @see org.sitenetsoft.olinguito.client.api.communication.request.invoke.InvokeRequestFactory
  */
 public abstract class AbstractODataRequest extends AbstractRequest implements ODataRequest {
 

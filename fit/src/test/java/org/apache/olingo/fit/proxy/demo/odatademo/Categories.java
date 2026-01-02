@@ -16,25 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.demo.odatademo;
+package org.sitenetsoft.olinguito.fit.proxy.demo.odatademo;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.AbstractEntitySet;
-import org.apache.olingo.fit.proxy.demo.odatademo.types.Category;
-import org.apache.olingo.fit.proxy.demo.odatademo.types.CategoryCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractEntitySet;
+import org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types.Category;
+import org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types.CategoryCollection;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
-@org.apache.olingo.ext.proxy.api.annotations.EntitySet(name = "Categories", container = "ODataDemo.DemoService")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntitySet(name = "Categories", container = "ODataDemo.DemoService")
 public interface Categories
     extends
-    org.apache.olingo.ext.proxy.api.EntitySet<Category, CategoryCollection>,
-    org.apache.olingo.ext.proxy.api.StructuredCollectionQuery<Categories>,
+    org.sitenetsoft.olinguito.ext.proxy.api.EntitySet<Category, CategoryCollection>,
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionQuery<Categories>,
     AbstractEntitySet<Category, java.lang.Integer, CategoryCollection> {
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 }

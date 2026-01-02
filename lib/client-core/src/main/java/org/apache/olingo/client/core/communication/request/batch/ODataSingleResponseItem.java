@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.request.batch;
+package org.sitenetsoft.olinguito.client.core.communication.request.batch;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import org.apache.olingo.client.api.communication.response.ODataResponse;
-import org.apache.olingo.client.core.communication.response.AsyncResponseImpl;
-import org.apache.olingo.client.core.communication.response.batch.ODataBatchErrorResponse;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataResponse;
+import org.sitenetsoft.olinguito.client.core.communication.response.AsyncResponseImpl;
+import org.sitenetsoft.olinguito.client.core.communication.response.batch.ODataBatchErrorResponse;
 
 /**
  * Retrieve response wrapper for the corresponding batch item.

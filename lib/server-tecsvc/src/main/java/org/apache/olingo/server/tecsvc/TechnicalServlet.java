@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.tecsvc;
+package org.sitenetsoft.olinguito.server.tecsvc;
 
 import java.io.IOException;
 import java.net.URI;
@@ -29,18 +29,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-import org.apache.olingo.commons.api.edmx.EdmxReference;
-import org.apache.olingo.commons.api.edmx.EdmxReferenceInclude;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.ODataHttpHandler;
-import org.apache.olingo.server.api.ServiceMetadata;
-import org.apache.olingo.server.api.debug.DefaultDebugSupport;
-import org.apache.olingo.server.tecsvc.data.DataProvider;
-import org.apache.olingo.server.tecsvc.processor.TechnicalActionProcessor;
-import org.apache.olingo.server.tecsvc.processor.TechnicalBatchProcessor;
-import org.apache.olingo.server.tecsvc.processor.TechnicalEntityProcessor;
-import org.apache.olingo.server.tecsvc.processor.TechnicalPrimitiveComplexProcessor;
-import org.apache.olingo.server.tecsvc.provider.EdmTechProvider;
+import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
+import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReferenceInclude;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ODataHttpHandler;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.api.debug.DefaultDebugSupport;
+import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.TechnicalActionProcessor;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.TechnicalBatchProcessor;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.TechnicalEntityProcessor;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.TechnicalPrimitiveComplexProcessor;
+import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

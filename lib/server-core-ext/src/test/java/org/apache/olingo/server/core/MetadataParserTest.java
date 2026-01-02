@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core;
+package org.sitenetsoft.olinguito.server.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -31,21 +31,21 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 
-import org.apache.olingo.commons.api.ex.ODataException;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.edm.provider.CsdlAction;
-import org.apache.olingo.commons.api.edm.provider.CsdlActionImport;
-import org.apache.olingo.commons.api.edm.provider.CsdlComplexType;
-import org.apache.olingo.commons.api.edm.provider.CsdlEdmProvider;
-import org.apache.olingo.commons.api.edm.provider.CsdlEntitySet;
-import org.apache.olingo.commons.api.edm.provider.CsdlEntityType;
-import org.apache.olingo.commons.api.edm.provider.CsdlEnumType;
-import org.apache.olingo.commons.api.edm.provider.CsdlFunction;
-import org.apache.olingo.commons.api.edm.provider.CsdlFunctionImport;
-import org.apache.olingo.commons.api.edm.provider.CsdlNavigationPropertyBinding;
-import org.apache.olingo.commons.api.edm.provider.CsdlParameter;
-import org.apache.olingo.commons.api.edm.provider.CsdlProperty;
-import org.apache.olingo.commons.api.edm.provider.CsdlSingleton;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAction;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlActionImport;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlComplexType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEdmProvider;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntitySet;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEnumType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlFunction;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlFunctionImport;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlNavigationPropertyBinding;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlParameter;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlSingleton;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -226,11 +226,11 @@ public class MetadataParserTest {
 
     Assert.assertNotNull(providerTest.getSchema("Microsoft.OData.SampleService.Models.TripPin", false));
 
-    Assert.assertNull(providerTest.getSchema("org.apache.olingo.a", false));
-    Assert.assertNull(providerTest.getSchema("org.apache.olingo.b", false));
+    Assert.assertNull(providerTest.getSchema("org.sitenetsoft.olinguito.a", false));
+    Assert.assertNull(providerTest.getSchema("org.sitenetsoft.olinguito.b", false));
 
-    Assert.assertNotNull(providerTest.getSchema("org.apache.olingo.a", true));
-    Assert.assertNotNull(providerTest.getSchema("org.apache.olingo.b", true));
+    Assert.assertNotNull(providerTest.getSchema("org.sitenetsoft.olinguito.a", true));
+    Assert.assertNotNull(providerTest.getSchema("org.sitenetsoft.olinguito.b", true));
   }
 
   @Test

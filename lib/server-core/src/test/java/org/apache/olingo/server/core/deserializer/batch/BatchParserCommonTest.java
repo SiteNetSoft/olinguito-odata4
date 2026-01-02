@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.deserializer.batch;
+package org.sitenetsoft.olinguito.server.core.deserializer.batch;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -26,8 +26,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.olingo.commons.api.http.HttpHeader;
-import org.apache.olingo.server.api.deserializer.batch.BatchDeserializerException;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchDeserializerException;
 import org.junit.Assert;
 import org.junit.Test;
 

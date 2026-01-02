@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.prefer;
+package org.sitenetsoft.olinguito.server.api.prefer;
 
 import static org.junit.Assert.assertEquals;
 
-import org.apache.olingo.server.api.prefer.Preferences.Return;
+import org.sitenetsoft.olinguito.server.api.prefer.Preferences.Return;
 import org.junit.Test;
 
 public class PreferencesAppliedTest {

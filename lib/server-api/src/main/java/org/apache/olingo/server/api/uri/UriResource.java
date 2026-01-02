@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.uri;
+package org.sitenetsoft.olinguito.server.api.uri;
 
 /**
  * Super interface for all objects representing resource parts.

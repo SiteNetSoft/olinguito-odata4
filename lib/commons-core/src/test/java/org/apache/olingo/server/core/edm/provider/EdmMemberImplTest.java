@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.edm.provider;
+package org.sitenetsoft.olinguito.server.core.edm.provider;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
-import org.apache.olingo.commons.api.edm.provider.CsdlEnumMember;
-import org.apache.olingo.commons.core.edm.EdmMemberImpl;
-import org.apache.olingo.commons.core.edm.EdmProviderImpl;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEnumMember;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmMemberImpl;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
 import org.junit.Test;
 
 public class EdmMemberImplTest {

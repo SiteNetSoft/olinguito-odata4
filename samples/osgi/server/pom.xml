@@ -28,7 +28,7 @@ under the License.
   <name>${project.artifactId}</name>
 
   <parent>
-    <groupId>org.apache.olingo</groupId>
+    <groupId>org.sitenetsoft.olinguito</groupId>
     <artifactId>odata-samples</artifactId>
     <version>5.0.1-SNAPSHOT</version>
     <relativePath>../..</relativePath>
@@ -42,23 +42,23 @@ under the License.
     </dependency>
 
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-server-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-server-core</artifactId>
       <version>${project.version}</version>
     </dependency>
 
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-commons-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-commons-core</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -99,8 +99,8 @@ under the License.
             <Export-Package>
             </Export-Package>
             <Import-Package>
-              org.apache.olingo.server.api*,
-              org.apache.olingo.netty.server.api*,
+              org.sitenetsoft.olinguito.server.api*,
+              org.sitenetsoft.olinguito.netty.server.api*,
               org.apache.catalina;resolution:=optional,
               org.apache.catalina.comet;resolution:=optional,
               org.eclipse.jetty.continuation;resolution:=optional,

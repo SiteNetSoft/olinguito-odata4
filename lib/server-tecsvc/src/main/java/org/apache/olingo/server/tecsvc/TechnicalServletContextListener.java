@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.tecsvc;
+package org.sitenetsoft.olinguito.server.tecsvc;
 
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 
-import org.apache.olingo.server.tecsvc.async.TechnicalAsyncService;
+import org.sitenetsoft.olinguito.server.tecsvc.async.TechnicalAsyncService;
 
 /**
  */

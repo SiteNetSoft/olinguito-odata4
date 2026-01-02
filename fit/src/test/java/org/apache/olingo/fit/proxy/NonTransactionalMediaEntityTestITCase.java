@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy;
+package org.sitenetsoft.olinguito.fit.proxy;
 
-import org.apache.olingo.client.api.EdmEnabledODataClient;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.fit.proxy.demo.Service;
-import org.apache.olingo.fit.proxy.demo.odatademo.DemoService;
+import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.fit.proxy.demo.Service;
+import org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.DemoService;
 
 public class NonTransactionalMediaEntityTestITCase extends MediaEntityTestITCase {
 

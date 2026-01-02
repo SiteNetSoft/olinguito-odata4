@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api;
+package org.sitenetsoft.olinguito.server.api;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.apache.olingo.server.api.debug.DebugSupport;
-import org.apache.olingo.server.api.etag.CustomETagSupport;
-import org.apache.olingo.server.api.serializer.CustomContentTypeSupport;
+import org.sitenetsoft.olinguito.server.api.debug.DebugSupport;
+import org.sitenetsoft.olinguito.server.api.etag.CustomETagSupport;
+import org.sitenetsoft.olinguito.server.api.serializer.CustomContentTypeSupport;
 
 /**
  * Handles HTTP requests as OData requests.

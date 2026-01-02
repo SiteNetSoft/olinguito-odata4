@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication.request.cud;
+package org.sitenetsoft.olinguito.client.api.communication.request.cud;
 
-import org.apache.olingo.client.api.communication.request.ODataBasicRequest;
-import org.apache.olingo.client.api.communication.request.ODataBatchableRequest;
-import org.apache.olingo.client.api.communication.response.ODataDeleteResponse;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataBasicRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataBatchableRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataDeleteResponse;
 
 /**
  * This class implements an OData delete request.

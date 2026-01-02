@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.deserializer.json;
+package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -25,17 +25,17 @@ import static org.junit.Assert.assertNull;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.olingo.commons.api.Constants;
-import org.apache.olingo.commons.api.data.Annotation;
-import org.apache.olingo.commons.api.data.Entity;
-import org.apache.olingo.commons.api.data.Link;
-import org.apache.olingo.commons.api.data.ValueType;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.server.api.deserializer.DeserializerException;
-import org.apache.olingo.server.api.deserializer.DeserializerResult;
-import org.apache.olingo.server.api.uri.queryoption.ExpandItem;
-import org.apache.olingo.server.api.uri.queryoption.ExpandOption;
-import org.apache.olingo.server.core.deserializer.AbstractODataDeserializerTest;
+import org.sitenetsoft.olinguito.commons.api.Constants;
+import org.sitenetsoft.olinguito.commons.api.data.Annotation;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.data.Link;
+import org.sitenetsoft.olinguito.commons.api.data.ValueType;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerResult;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandItem;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandOption;
+import org.sitenetsoft.olinguito.server.core.deserializer.AbstractODataDeserializerTest;
 import org.junit.Test;
 
 public class ODataDeserializerDeepInsertTest extends AbstractODataDeserializerTest {

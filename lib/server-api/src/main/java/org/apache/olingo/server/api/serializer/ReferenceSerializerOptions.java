@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.serializer;
+package org.sitenetsoft.olinguito.server.api.serializer;
 
-import org.apache.olingo.commons.api.data.ContextURL;
+import org.sitenetsoft.olinguito.commons.api.data.ContextURL;
 
 /**
  * Options to pass as additional information to the reference serializer.

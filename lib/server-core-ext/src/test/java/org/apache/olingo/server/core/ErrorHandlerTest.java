@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core;
+package org.sitenetsoft.olinguito.server.core;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -25,25 +25,25 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.Locale;
 
-import org.apache.olingo.commons.api.edm.provider.CsdlEdmProvider;
-import org.apache.olingo.commons.api.edmx.EdmxReference;
-import org.apache.olingo.commons.api.edmx.EdmxReferenceInclude;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.ODataApplicationException;
-import org.apache.olingo.server.api.ODataRequest;
-import org.apache.olingo.server.api.ODataResponse;
-import org.apache.olingo.server.api.ODataServerError;
-import org.apache.olingo.server.api.ServiceMetadata;
-import org.apache.olingo.server.api.deserializer.DeserializerException;
-import org.apache.olingo.server.api.deserializer.batch.BatchDeserializerException;
-import org.apache.olingo.server.api.etag.ServiceMetadataETagSupport;
-import org.apache.olingo.server.api.serializer.SerializerException;
-import org.apache.olingo.server.core.legacy.ProcessorServiceHandler;
-import org.apache.olingo.server.core.uri.parser.UriParserException;
-import org.apache.olingo.server.core.uri.parser.UriParserSemanticException;
-import org.apache.olingo.server.core.uri.parser.UriParserSyntaxException;
-import org.apache.olingo.server.core.uri.validator.UriValidationException;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEdmProvider;
+import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
+import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReferenceInclude;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
+import org.sitenetsoft.olinguito.server.api.ODataRequest;
+import org.sitenetsoft.olinguito.server.api.ODataResponse;
+import org.sitenetsoft.olinguito.server.api.ODataServerError;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
+import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchDeserializerException;
+import org.sitenetsoft.olinguito.server.api.etag.ServiceMetadataETagSupport;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
+import org.sitenetsoft.olinguito.server.core.legacy.ProcessorServiceHandler;
+import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserException;
+import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserSemanticException;
+import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserSyntaxException;
+import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidationException;
 import org.junit.Before;
 import org.junit.Test;
 

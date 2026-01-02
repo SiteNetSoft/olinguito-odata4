@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.core.edm.annotation;
+package org.sitenetsoft.olinguito.commons.core.edm.annotation;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.annotation.EdmConstantExpression;
-import org.apache.olingo.commons.api.edm.annotation.EdmDynamicExpression;
-import org.apache.olingo.commons.api.edm.annotation.EdmExpression;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlDynamicExpression;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlExpression;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlLogicalOrComparisonExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmConstantExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmDynamicExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlDynamicExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlLogicalOrComparisonExpression;
 
 public abstract class AbstractEdmExpression implements EdmExpression {
 

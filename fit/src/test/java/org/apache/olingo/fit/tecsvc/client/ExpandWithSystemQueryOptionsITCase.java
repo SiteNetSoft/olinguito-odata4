@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.tecsvc.client;
+package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -29,14 +29,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.communication.ODataServerErrorException;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
-import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.client.api.domain.ClientEntitySet;
-import org.apache.olingo.client.api.uri.QueryOption;
-import org.apache.olingo.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.communication.ODataServerErrorException;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntitySetRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntitySet;
+import org.sitenetsoft.olinguito.client.api.uri.QueryOption;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
 import org.junit.Test;
 
 public class ExpandWithSystemQueryOptionsITCase extends AbstractParamTecSvcITCase {

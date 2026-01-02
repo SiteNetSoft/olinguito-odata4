@@ -16,16 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.edm.provider;
+package org.sitenetsoft.olinguito.server.core.edm.provider;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmReferentialConstraint;
-import org.apache.olingo.commons.api.edm.provider.CsdlReferentialConstraint;
-import org.apache.olingo.commons.core.edm.EdmReferentialConstraintImpl;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmReferentialConstraint;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlReferentialConstraint;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmReferentialConstraintImpl;
 import org.junit.Test;
 
 public class EdmReferentialConstraintTest {

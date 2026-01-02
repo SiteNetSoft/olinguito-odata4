@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.ext.proxy.commons;
+package org.sitenetsoft.olinguito.ext.proxy.commons;
 
 import java.io.Serializable;
 import java.net.URI;
@@ -26,9 +26,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.lang3.tuple.Triple;
-import org.apache.olingo.client.api.domain.ClientAnnotation;
-import org.apache.olingo.ext.proxy.api.EntityCollection;
-import org.apache.olingo.ext.proxy.api.EntityType;
+import org.sitenetsoft.olinguito.client.api.domain.ClientAnnotation;
+import org.sitenetsoft.olinguito.ext.proxy.api.EntityCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.EntityType;
 
 class EntitySetIterator<T extends EntityType<?>, KEY extends Serializable, EC extends EntityCollection<T, ?, ?>>
         implements Iterator<T> {

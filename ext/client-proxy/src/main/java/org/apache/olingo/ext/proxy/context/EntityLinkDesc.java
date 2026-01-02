@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.ext.proxy.context;
+package org.sitenetsoft.olinguito.ext.proxy.context;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.apache.olingo.client.api.domain.ClientLinkType;
-import org.apache.olingo.ext.proxy.commons.EntityInvocationHandler;
+import org.sitenetsoft.olinguito.client.api.domain.ClientLinkType;
+import org.sitenetsoft.olinguito.ext.proxy.commons.EntityInvocationHandler;
 
 import java.io.Serializable;
 import java.util.Collection;

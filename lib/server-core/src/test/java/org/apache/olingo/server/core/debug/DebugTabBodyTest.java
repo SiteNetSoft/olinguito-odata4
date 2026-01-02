@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.debug;
+package org.sitenetsoft.olinguito.server.core.debug;
 
 import static org.junit.Assert.assertEquals;
 
@@ -25,9 +25,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.commons.api.http.HttpHeader;
-import org.apache.olingo.server.api.ODataResponse;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.server.api.ODataResponse;
 import org.junit.Test;
 
 public class DebugTabBodyTest extends AbstractDebugTabTest {

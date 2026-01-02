@@ -22,4 +22,4 @@
  * They are related to the HTTP headers <code>Prefer</code>, <code>Accept</code>,
  * and <code>Content-Type</code>.
  */
-package org.apache.olingo.commons.api.format;
+package org.sitenetsoft.olinguito.commons.api.format;

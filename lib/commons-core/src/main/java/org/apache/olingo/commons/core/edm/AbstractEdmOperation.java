@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.core.edm;
+package org.sitenetsoft.olinguito.commons.core.edm;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,17 +24,17 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmBindingTarget;
-import org.apache.olingo.commons.api.edm.EdmEntitySet;
-import org.apache.olingo.commons.api.edm.EdmException;
-import org.apache.olingo.commons.api.edm.EdmOperation;
-import org.apache.olingo.commons.api.edm.EdmParameter;
-import org.apache.olingo.commons.api.edm.EdmReturnType;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.edm.constants.EdmTypeKind;
-import org.apache.olingo.commons.api.edm.provider.CsdlOperation;
-import org.apache.olingo.commons.api.edm.provider.CsdlParameter;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmBindingTarget;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmException;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmOperation;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmParameter;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmReturnType;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.constants.EdmTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlOperation;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlParameter;
 
 public abstract class AbstractEdmOperation extends EdmTypeImpl implements EdmOperation {
 

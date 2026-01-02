@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.uri.queryoption.apply;
+package org.sitenetsoft.olinguito.server.api.uri.queryoption.apply;
 
-import org.apache.olingo.server.api.uri.queryoption.ApplyItem;
-import org.apache.olingo.server.api.uri.queryoption.SearchOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ApplyItem;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SearchOption;
 
 /**
  * Represents the search transformation.

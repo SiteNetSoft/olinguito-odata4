@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.format;
+package org.sitenetsoft.olinguito.commons.api.format;
 
 /**
  * Names of preferences defined in the OData standard.

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.netty.server.core;
+package org.sitenetsoft.olinguito.netty.server.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -29,16 +29,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
-import org.apache.olingo.commons.api.edm.constants.EdmTypeKind;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.netty.server.api.ODataNetty;
-import org.apache.olingo.netty.server.api.ODataNettyHandler;
-import org.apache.olingo.server.api.ServiceMetadata;
-import org.apache.olingo.server.api.deserializer.DeserializerException;
-import org.apache.olingo.server.api.serializer.SerializerException;
-import org.apache.olingo.server.core.MetadataParser;
-import org.apache.olingo.server.core.SchemaBasedEdmProvider;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.constants.EdmTypeKind;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.netty.server.api.ODataNetty;
+import org.sitenetsoft.olinguito.netty.server.api.ODataNettyHandler;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
+import org.sitenetsoft.olinguito.server.core.MetadataParser;
+import org.sitenetsoft.olinguito.server.core.SchemaBasedEdmProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;

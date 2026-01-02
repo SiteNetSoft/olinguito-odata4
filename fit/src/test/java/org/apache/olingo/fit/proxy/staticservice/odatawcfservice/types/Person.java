@@ -16,25 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.OperationType;
+import org.sitenetsoft.olinguito.ext.proxy.api.OperationType;
 // CHECKSTYLE:ON (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
-import org.apache.olingo.ext.proxy.api.annotations.Parameter;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Parameter;
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
-@org.apache.olingo.ext.proxy.api.annotations.EntityType(name = "Person",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityType(name = "Person",
     openType = false,
     hasStream = false,
     isAbstract = false)
 public interface Person
-    extends org.apache.olingo.ext.proxy.api.Annotatable,
-    org.apache.olingo.ext.proxy.api.EntityType<Person>, org.apache.olingo.ext.proxy.api.StructuredQuery<Person> {
+    extends org.sitenetsoft.olinguito.ext.proxy.api.Annotatable,
+    org.sitenetsoft.olinguito.ext.proxy.api.EntityType<Person>, org.sitenetsoft.olinguito.ext.proxy.api.StructuredQuery<Person> {
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "PersonID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "PersonID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -49,7 +49,7 @@ public interface Person
 
   void setPersonID(java.lang.Integer _personID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "FirstName",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "FirstName",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -64,7 +64,7 @@ public interface Person
 
   void setFirstName(java.lang.String _firstName);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "LastName",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "LastName",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -79,7 +79,7 @@ public interface Person
 
   void setLastName(java.lang.String _lastName);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "MiddleName",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "MiddleName",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -94,7 +94,7 @@ public interface Person
 
   void setMiddleName(java.lang.String _middleName);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "HomeAddress",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "HomeAddress",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Address",
       nullable = true,
       defaultValue = "",
@@ -112,7 +112,7 @@ public interface Person
       setHomeAddress(
           Address _homeAddress);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Home",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Home",
       type = "Edm.GeographyPoint",
       nullable = true,
       defaultValue = "",
@@ -123,11 +123,11 @@ public interface Person
       unicode = true,
       collation = "",
       srid = "")
-  org.apache.olingo.commons.api.edm.geo.Point getHome();
+  org.sitenetsoft.olinguito.commons.api.edm.geo.Point getHome();
 
-  void setHome(org.apache.olingo.commons.api.edm.geo.Point _home);
+  void setHome(org.sitenetsoft.olinguito.commons.api.edm.geo.Point _home);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Numbers",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Numbers",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -138,11 +138,11 @@ public interface Person
       unicode = true,
       collation = "",
       srid = "")
-  org.apache.olingo.ext.proxy.api.PrimitiveCollection<java.lang.String> getNumbers();
+  org.sitenetsoft.olinguito.ext.proxy.api.PrimitiveCollection<java.lang.String> getNumbers();
 
-  void setNumbers(org.apache.olingo.ext.proxy.api.PrimitiveCollection<java.lang.String> _numbers);
+  void setNumbers(org.sitenetsoft.olinguito.ext.proxy.api.PrimitiveCollection<java.lang.String> _numbers);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Emails",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Emails",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -153,11 +153,11 @@ public interface Person
       unicode = true,
       collation = "",
       srid = "")
-  org.apache.olingo.ext.proxy.api.PrimitiveCollection<java.lang.String> getEmails();
+  org.sitenetsoft.olinguito.ext.proxy.api.PrimitiveCollection<java.lang.String> getEmails();
 
-  void setEmails(org.apache.olingo.ext.proxy.api.PrimitiveCollection<java.lang.String> _emails);
+  void setEmails(org.sitenetsoft.olinguito.ext.proxy.api.PrimitiveCollection<java.lang.String> _emails);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "Parent",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "Parent",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Person",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -170,9 +170,9 @@ public interface Person
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
 
-    @org.apache.olingo.ext.proxy.api.annotations.Operation(
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Operation(
         name = "GetHomeAddress",
         type = OperationType.FUNCTION,
         isComposable = true,
@@ -182,12 +182,12 @@ public interface Person
         getHomeAddress(
         );
 
-    @org.apache.olingo.ext.proxy.api.annotations.Operation(
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Operation(
         name = "ResetAddress",
         type = OperationType.ACTION,
         referenceType = Person.class,
         returnType = "Microsoft.Test.OData.Services.ODataWCFService.Person")
-        org.apache.olingo.ext.proxy.api.StructuredInvoker<Person>
+        org.sitenetsoft.olinguito.ext.proxy.api.StructuredInvoker<Person>
         resetAddress(
             @Parameter(name = "addresses", type = "Collection(Microsoft.Test.OData.Services.ODataWCFService.Address)",
                 nullable = false) AddressCollection addresses,
@@ -200,41 +200,41 @@ public interface Person
 
   interface Annotations {
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "PersonID",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "PersonID",
         type = "Edm.Int32")
-    org.apache.olingo.ext.proxy.api.Annotatable getPersonIDAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getPersonIDAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "FirstName",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "FirstName",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getFirstNameAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getFirstNameAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "LastName",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "LastName",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getLastNameAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getLastNameAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "MiddleName",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "MiddleName",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getMiddleNameAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getMiddleNameAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "HomeAddress",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "HomeAddress",
         type = "Microsoft.Test.OData.Services.ODataWCFService.Address")
-    org.apache.olingo.ext.proxy.api.Annotatable getHomeAddressAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getHomeAddressAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Home",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Home",
         type = "Edm.GeographyPoint")
-    org.apache.olingo.ext.proxy.api.Annotatable getHomeAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getHomeAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Numbers",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Numbers",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getNumbersAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getNumbersAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Emails",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Emails",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getEmailsAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getEmailsAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "Parent",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "Parent",
         type = "Microsoft.Test.OData.Services.ODataWCFService.Person")
-    org.apache.olingo.ext.proxy.api.Annotatable getParentAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getParentAnnotations();
   }
 
 }

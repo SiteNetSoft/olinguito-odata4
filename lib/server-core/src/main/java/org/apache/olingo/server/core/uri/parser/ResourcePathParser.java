@@ -16,51 +16,51 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.parser;
+package org.sitenetsoft.olinguito.server.core.uri.parser;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmAction;
-import org.apache.olingo.commons.api.edm.EdmActionImport;
-import org.apache.olingo.commons.api.edm.EdmEntityContainer;
-import org.apache.olingo.commons.api.edm.EdmEntitySet;
-import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.commons.api.edm.EdmFunction;
-import org.apache.olingo.commons.api.edm.EdmFunctionImport;
-import org.apache.olingo.commons.api.edm.EdmNavigationProperty;
-import org.apache.olingo.commons.api.edm.EdmProperty;
-import org.apache.olingo.commons.api.edm.EdmSingleton;
-import org.apache.olingo.commons.api.edm.EdmStructuredType;
-import org.apache.olingo.commons.api.edm.EdmType;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.edm.EdmKeyPropertyRef;
-import org.apache.olingo.commons.api.edm.constants.EdmTypeKind;
-import org.apache.olingo.commons.core.edm.primitivetype.EdmString;
-import org.apache.olingo.server.api.uri.UriParameter;
-import org.apache.olingo.server.api.uri.UriResource;
-import org.apache.olingo.server.api.uri.UriResourceEntitySet;
-import org.apache.olingo.server.api.uri.UriResourceFunction;
-import org.apache.olingo.server.api.uri.UriResourceNavigation;
-import org.apache.olingo.server.api.uri.UriResourcePartTyped;
-import org.apache.olingo.server.api.uri.queryoption.AliasQueryOption;
-import org.apache.olingo.server.core.uri.UriResourceActionImpl;
-import org.apache.olingo.server.core.uri.UriResourceComplexPropertyImpl;
-import org.apache.olingo.server.core.uri.UriResourceCountImpl;
-import org.apache.olingo.server.core.uri.UriResourceEntitySetImpl;
-import org.apache.olingo.server.core.uri.UriResourceFunctionImpl;
-import org.apache.olingo.server.core.uri.UriResourceNavigationPropertyImpl;
-import org.apache.olingo.server.core.uri.UriResourcePrimitivePropertyImpl;
-import org.apache.olingo.server.core.uri.UriResourceRefImpl;
-import org.apache.olingo.server.core.uri.UriResourceSingletonImpl;
-import org.apache.olingo.server.core.uri.UriResourceTypedImpl;
-import org.apache.olingo.server.core.uri.UriResourceValueImpl;
-import org.apache.olingo.server.core.uri.UriResourceWithKeysImpl;
-import org.apache.olingo.server.core.uri.UriParameterImpl;
-import org.apache.olingo.server.core.uri.parser.UriTokenizer.TokenKind;
-import org.apache.olingo.server.core.uri.validator.UriValidationException;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmAction;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmActionImport;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmFunction;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmFunctionImport;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmSingleton;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmStructuredType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmKeyPropertyRef;
+import org.sitenetsoft.olinguito.commons.api.edm.constants.EdmTypeKind;
+import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmString;
+import org.sitenetsoft.olinguito.server.api.uri.UriParameter;
+import org.sitenetsoft.olinguito.server.api.uri.UriResource;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceEntitySet;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceFunction;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceNavigation;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourcePartTyped;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.AliasQueryOption;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceActionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceComplexPropertyImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceCountImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceEntitySetImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceFunctionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceNavigationPropertyImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourcePrimitivePropertyImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceRefImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceSingletonImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceTypedImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceValueImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceWithKeysImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriParameterImpl;
+import org.sitenetsoft.olinguito.server.core.uri.parser.UriTokenizer.TokenKind;
+import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidationException;
 
 public class ResourcePathParser {
 

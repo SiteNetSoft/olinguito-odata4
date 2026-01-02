@@ -16,41 +16,41 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.tecsvc.processor;
+package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.olingo.commons.api.data.DeletedEntity;
-import org.apache.olingo.commons.api.data.DeltaLink;
-import org.apache.olingo.commons.api.data.Entity;
-import org.apache.olingo.commons.api.data.EntityCollection;
-import org.apache.olingo.commons.api.data.Link;
-import org.apache.olingo.commons.api.edm.EdmBindingTarget;
-import org.apache.olingo.commons.api.edm.EdmEntityContainer;
-import org.apache.olingo.commons.api.edm.EdmEntitySet;
-import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.commons.api.edm.EdmFunction;
-import org.apache.olingo.commons.api.edm.EdmNavigationProperty;
-import org.apache.olingo.commons.api.edm.EdmSingleton;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.commons.api.http.HttpStatusCode;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.ODataApplicationException;
-import org.apache.olingo.server.api.ServiceMetadata;
-import org.apache.olingo.server.api.processor.Processor;
-import org.apache.olingo.server.api.uri.UriInfo;
-import org.apache.olingo.server.api.uri.UriInfoResource;
-import org.apache.olingo.server.api.uri.UriParameter;
-import org.apache.olingo.server.api.uri.UriResource;
-import org.apache.olingo.server.api.uri.UriResourceAction;
-import org.apache.olingo.server.api.uri.UriResourceEntitySet;
-import org.apache.olingo.server.api.uri.UriResourceFunction;
-import org.apache.olingo.server.api.uri.UriResourceNavigation;
-import org.apache.olingo.server.api.uri.UriResourceSingleton;
-import org.apache.olingo.server.api.uri.queryoption.expression.Binary;
-import org.apache.olingo.server.api.uri.queryoption.expression.Member;
-import org.apache.olingo.server.tecsvc.data.DataProvider;
+import org.sitenetsoft.olinguito.commons.api.data.DeletedEntity;
+import org.sitenetsoft.olinguito.commons.api.data.DeltaLink;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.data.EntityCollection;
+import org.sitenetsoft.olinguito.commons.api.data.Link;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmBindingTarget;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmFunction;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmSingleton;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.api.processor.Processor;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfo;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoResource;
+import org.sitenetsoft.olinguito.server.api.uri.UriParameter;
+import org.sitenetsoft.olinguito.server.api.uri.UriResource;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceAction;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceEntitySet;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceFunction;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceNavigation;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceSingleton;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Binary;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Member;
+import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider;
 
 /**
  * Technical Processor base.

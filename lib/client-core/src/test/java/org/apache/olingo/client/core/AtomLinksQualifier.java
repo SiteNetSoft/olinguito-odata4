@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core;
+package org.sitenetsoft.olinguito.client.core;
 
-import org.apache.olingo.commons.api.Constants;
+import org.sitenetsoft.olinguito.commons.api.Constants;
 import org.custommonkey.xmlunit.ElementNameQualifier;
 import org.w3c.dom.Element;
 

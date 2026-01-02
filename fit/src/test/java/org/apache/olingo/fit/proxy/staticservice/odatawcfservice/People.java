@@ -16,26 +16,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.AbstractEntitySet;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Person;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.PersonCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractEntitySet;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Person;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.PersonCollection;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
-@org.apache.olingo.ext.proxy.api.annotations.EntitySet(name = "People",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntitySet(name = "People",
     container = "Microsoft.Test.OData.Services.ODataWCFService.InMemoryEntities")
 public interface People
     extends
-    org.apache.olingo.ext.proxy.api.EntitySet<Person, PersonCollection>,
-    org.apache.olingo.ext.proxy.api.StructuredCollectionQuery<People>,
+    org.sitenetsoft.olinguito.ext.proxy.api.EntitySet<Person, PersonCollection>,
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionQuery<People>,
     AbstractEntitySet<Person, java.lang.Integer, PersonCollection> {
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 }

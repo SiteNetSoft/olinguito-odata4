@@ -16,21 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.queryoption.expression;
+package org.sitenetsoft.olinguito.server.core.uri.queryoption.expression;
 
-import org.apache.olingo.commons.api.edm.EdmType;
-import org.apache.olingo.server.api.ODataApplicationException;
-import org.apache.olingo.server.api.uri.UriInfoResource;
-import org.apache.olingo.server.api.uri.UriResource;
-import org.apache.olingo.server.api.uri.UriResourcePartTyped;
-import org.apache.olingo.server.api.uri.queryoption.expression.ExpressionVisitException;
-import org.apache.olingo.server.api.uri.queryoption.expression.ExpressionVisitor;
-import org.apache.olingo.server.api.uri.queryoption.expression.Member;
-import org.apache.olingo.server.core.uri.UriInfoImpl;
-import org.apache.olingo.server.core.uri.UriResourceActionImpl;
-import org.apache.olingo.server.core.uri.UriResourceImpl;
-import org.apache.olingo.server.core.uri.UriResourceTypedImpl;
-import org.apache.olingo.server.core.uri.UriResourceWithKeysImpl;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
+import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoResource;
+import org.sitenetsoft.olinguito.server.api.uri.UriResource;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourcePartTyped;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.ExpressionVisitException;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.ExpressionVisitor;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Member;
+import org.sitenetsoft.olinguito.server.core.uri.UriInfoImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceActionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceTypedImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceWithKeysImpl;
 
 public class MemberImpl implements Member {
 

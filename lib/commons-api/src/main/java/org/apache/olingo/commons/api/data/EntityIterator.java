@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.data;
+package org.sitenetsoft.olinguito.commons.api.data;
 
-import org.apache.olingo.commons.api.ex.ODataNotSupportedException;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataNotSupportedException;
 
 import java.net.URI;
 import java.util.Iterator;

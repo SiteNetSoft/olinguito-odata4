@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.edm.provider;
+package org.sitenetsoft.olinguito.server.core.edm.provider;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -24,11 +24,11 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.EdmAnnotatable;
-import org.apache.olingo.commons.api.edm.EdmNamed;
-import org.apache.olingo.commons.api.edm.provider.CsdlAnnotatable;
-import org.apache.olingo.commons.api.edm.provider.CsdlAnnotation;
-import org.apache.olingo.commons.core.edm.AbstractEdmNamed;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmAnnotatable;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmNamed;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotatable;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
+import org.sitenetsoft.olinguito.commons.core.edm.AbstractEdmNamed;
 import org.junit.Test;
 
 public class AbstractEdmNamedTest {

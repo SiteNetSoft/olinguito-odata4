@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.example;
+package org.sitenetsoft.olinguito.server.example;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -28,11 +28,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.ODataHttpHandler;
-import org.apache.olingo.server.api.ServiceMetadata;
-import org.apache.olingo.server.core.MetadataParser;
-import org.apache.olingo.server.core.OData4Impl;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ODataHttpHandler;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.core.MetadataParser;
+import org.sitenetsoft.olinguito.server.core.OData4Impl;
 
 public class TripPinServlet extends HttpServlet {
   private static final long serialVersionUID = 2663595419366214401L;

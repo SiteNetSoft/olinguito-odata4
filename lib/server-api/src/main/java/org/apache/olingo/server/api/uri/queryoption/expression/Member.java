@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.uri.queryoption.expression;
+package org.sitenetsoft.olinguito.server.api.uri.queryoption.expression;
 
-import org.apache.olingo.commons.api.edm.EdmType;
-import org.apache.olingo.server.api.uri.UriInfoResource;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoResource;
 
 /**
  * Represents a member expression node in the expression tree. This expression is used to describe access paths

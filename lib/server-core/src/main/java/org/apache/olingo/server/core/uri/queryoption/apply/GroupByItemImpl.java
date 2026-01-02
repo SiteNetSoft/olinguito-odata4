@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.queryoption.apply;
+package org.sitenetsoft.olinguito.server.core.uri.queryoption.apply;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.olingo.server.api.uri.UriInfo;
-import org.apache.olingo.server.api.uri.UriResource;
-import org.apache.olingo.server.api.uri.queryoption.apply.GroupByItem;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfo;
+import org.sitenetsoft.olinguito.server.api.uri.UriResource;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.apply.GroupByItem;
 
 /**
  * Represents a grouping property.

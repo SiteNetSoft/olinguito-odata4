@@ -19,4 +19,4 @@
 /**
  * Contains all OData errors and exception-related classes.
  */
-package org.apache.olingo.commons.api.ex;
+package org.sitenetsoft.olinguito.commons.api.ex;

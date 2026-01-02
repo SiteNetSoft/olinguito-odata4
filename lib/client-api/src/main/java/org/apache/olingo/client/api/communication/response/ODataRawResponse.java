@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication.response;
+package org.sitenetsoft.olinguito.client.api.communication.response;
 
-import org.apache.olingo.client.api.data.ResWrap;
+import org.sitenetsoft.olinguito.client.api.data.ResWrap;
 
 /**
  * This interface represents a generic OData response.

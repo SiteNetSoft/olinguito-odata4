@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.parser;
+package org.sitenetsoft.olinguito.server.core.uri.parser;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -24,7 +24,7 @@ import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.olingo.server.api.uri.queryoption.QueryOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.QueryOption;
 import org.junit.Test;
 
 public class UriDecoderTest {

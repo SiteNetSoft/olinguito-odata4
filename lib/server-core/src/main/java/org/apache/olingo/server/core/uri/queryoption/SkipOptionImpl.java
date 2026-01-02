@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.queryoption;
+package org.sitenetsoft.olinguito.server.core.uri.queryoption;
 
-import org.apache.olingo.server.api.uri.queryoption.SkipOption;
-import org.apache.olingo.server.api.uri.queryoption.SystemQueryOptionKind;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SkipOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SystemQueryOptionKind;
 
 public class SkipOptionImpl extends SystemQueryOptionImpl implements SkipOption {
   private int value;

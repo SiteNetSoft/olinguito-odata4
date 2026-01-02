@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 import java.util.concurrent.Future;
 
-import org.apache.olingo.ext.proxy.api.AbstractEntitySet;
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractEntitySet;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
-@org.apache.olingo.ext.proxy.api.annotations.EntityType(name = "CreditCardPI",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityType(name = "CreditCardPI",
     openType = false,
     hasStream = false,
     isAbstract = false,
@@ -48,7 +48,7 @@ public interface CreditCardPI extends PaymentInstrument {
 
   @Override
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "PaymentInstrumentID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "PaymentInstrumentID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -65,7 +65,7 @@ public interface CreditCardPI extends PaymentInstrument {
   void setPaymentInstrumentID(java.lang.Integer _paymentInstrumentID);
 
   @Override
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "FriendlyName",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "FriendlyName",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -82,7 +82,7 @@ public interface CreditCardPI extends PaymentInstrument {
   void setFriendlyName(java.lang.String _friendlyName);
 
   @Override
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "CreatedDate",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "CreatedDate",
       type = "Edm.DateTimeOffset",
       nullable = false,
       defaultValue = "",
@@ -98,7 +98,7 @@ public interface CreditCardPI extends PaymentInstrument {
   @Override
   void setCreatedDate(java.sql.Timestamp _createdDate);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "CardNumber",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "CardNumber",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -113,7 +113,7 @@ public interface CreditCardPI extends PaymentInstrument {
 
   void setCardNumber(java.lang.String _cardNumber);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "CVV",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "CVV",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -128,7 +128,7 @@ public interface CreditCardPI extends PaymentInstrument {
 
   void setCVV(java.lang.String _cVV);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "HolderName",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "HolderName",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -143,7 +143,7 @@ public interface CreditCardPI extends PaymentInstrument {
 
   void setHolderName(java.lang.String _holderName);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Balance",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Balance",
       type = "Edm.Double",
       nullable = false,
       defaultValue = "",
@@ -158,7 +158,7 @@ public interface CreditCardPI extends PaymentInstrument {
 
   void setBalance(java.lang.Double _balance);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ExperationDate",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ExperationDate",
       type = "Edm.DateTimeOffset",
       nullable = false,
       defaultValue = "",
@@ -174,7 +174,7 @@ public interface CreditCardPI extends PaymentInstrument {
   void setExperationDate(java.sql.Timestamp _experationDate);
 
   @Override
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "TheStoredPI",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "TheStoredPI",
       type = "Microsoft.Test.OData.Services.ODataWCFService.StoredPI",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -189,7 +189,7 @@ public interface CreditCardPI extends PaymentInstrument {
           StoredPI _theStoredPI);
 
   @Override
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "BackupStoredPI",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "BackupStoredPI",
       type = "Microsoft.Test.OData.Services.ODataWCFService.StoredPI",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -220,61 +220,61 @@ public interface CreditCardPI extends PaymentInstrument {
           PaymentInstrument.Annotations {
 
     @Override
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "PaymentInstrumentID",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "PaymentInstrumentID",
         type = "Edm.Int32")
-    org.apache.olingo.ext.proxy.api.Annotatable getPaymentInstrumentIDAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getPaymentInstrumentIDAnnotations();
 
     @Override
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "FriendlyName",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "FriendlyName",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getFriendlyNameAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getFriendlyNameAnnotations();
 
     @Override
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "CreatedDate",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "CreatedDate",
         type = "Edm.DateTimeOffset")
-    org.apache.olingo.ext.proxy.api.Annotatable getCreatedDateAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getCreatedDateAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "CardNumber",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "CardNumber",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getCardNumberAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getCardNumberAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "CVV",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "CVV",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getCVVAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getCVVAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "HolderName",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "HolderName",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getHolderNameAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getHolderNameAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Balance",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Balance",
         type = "Edm.Double")
-    org.apache.olingo.ext.proxy.api.Annotatable getBalanceAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getBalanceAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "ExperationDate",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "ExperationDate",
         type = "Edm.DateTimeOffset")
-    org.apache.olingo.ext.proxy.api.Annotatable getExperationDateAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getExperationDateAnnotations();
 
     @Override
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "TheStoredPI",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "TheStoredPI",
         type = "Microsoft.Test.OData.Services.ODataWCFService.StoredPI")
-    org.apache.olingo.ext.proxy.api.Annotatable getTheStoredPIAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getTheStoredPIAnnotations();
 
     @Override
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "BillingStatements",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "BillingStatements",
         type = "Microsoft.Test.OData.Services.ODataWCFService.Statement")
-    org.apache.olingo.ext.proxy.api.Annotatable getBillingStatementsAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getBillingStatementsAnnotations();
 
     @Override
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "BackupStoredPI",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "BackupStoredPI",
         type = "Microsoft.Test.OData.Services.ODataWCFService.StoredPI")
-    org.apache.olingo.ext.proxy.api.Annotatable getBackupStoredPIAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getBackupStoredPIAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "CreditRecords",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "CreditRecords",
         type = "Microsoft.Test.OData.Services.ODataWCFService.CreditRecord")
-    org.apache.olingo.ext.proxy.api.Annotatable getCreditRecordsAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getCreditRecordsAnnotations();
   }
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "CreditRecords",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "CreditRecords",
       type = "Microsoft.Test.OData.Services.ODataWCFService.CreditRecord",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "",
@@ -287,11 +287,11 @@ public interface CreditCardPI extends PaymentInstrument {
       setCreditRecords(
           CreditCardPI.CreditRecords _creditRecords);
 
-  @org.apache.olingo.ext.proxy.api.annotations.EntitySet(name = "CreditRecords", contained = true)
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntitySet(name = "CreditRecords", contained = true)
   interface CreditRecords
       extends
-      org.apache.olingo.ext.proxy.api.EntitySet<CreditRecord, CreditRecordCollection>,
-      org.apache.olingo.ext.proxy.api.StructuredCollectionQuery<CreditRecords>,
+      org.sitenetsoft.olinguito.ext.proxy.api.EntitySet<CreditRecord, CreditRecordCollection>,
+      org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionQuery<CreditRecords>,
   AbstractEntitySet<CreditRecord, java.lang.Integer, CreditRecordCollection> {
     // No additional methods needed for now.
   }

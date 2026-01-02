@@ -22,5 +22,5 @@
  * The prefer package is used to condense all about the Olingo Prefer handling.
  *
  */
-package org.apache.olingo.server.api.prefer;
+package org.sitenetsoft.olinguito.server.api.prefer;
 

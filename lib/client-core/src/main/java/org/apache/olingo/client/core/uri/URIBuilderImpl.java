@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.uri;
+package org.sitenetsoft.olinguito.client.core.uri;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -29,15 +29,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.olingo.client.api.Configuration;
-import org.apache.olingo.client.api.uri.QueryOption;
-import org.apache.olingo.client.api.uri.SegmentType;
-import org.apache.olingo.client.api.uri.URIBuilder;
-import org.apache.olingo.client.api.uri.URIFilter;
-import org.apache.olingo.client.api.uri.URISearch;
-import org.apache.olingo.commons.api.edm.EdmEnumType;
-import org.apache.olingo.commons.core.Decoder;
-import org.apache.olingo.commons.core.Encoder;
+import org.sitenetsoft.olinguito.client.api.Configuration;
+import org.sitenetsoft.olinguito.client.api.uri.QueryOption;
+import org.sitenetsoft.olinguito.client.api.uri.SegmentType;
+import org.sitenetsoft.olinguito.client.api.uri.URIBuilder;
+import org.sitenetsoft.olinguito.client.api.uri.URIFilter;
+import org.sitenetsoft.olinguito.client.api.uri.URISearch;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEnumType;
+import org.sitenetsoft.olinguito.commons.core.Decoder;
+import org.sitenetsoft.olinguito.commons.core.Encoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

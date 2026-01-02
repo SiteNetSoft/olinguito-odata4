@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edm.constants;
+package org.sitenetsoft.olinguito.commons.api.edm.constants;
 
 /**
  * A navigation property MAY define one edm:OnDelete element. It describes the action the service will take on 

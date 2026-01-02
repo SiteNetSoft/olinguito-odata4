@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.domain;
+package org.sitenetsoft.olinguito.client.core.domain;
 
-import org.apache.olingo.client.api.domain.AbstractClientValue;
-import org.apache.olingo.client.api.domain.ClientEnumValue;
+import org.sitenetsoft.olinguito.client.api.domain.AbstractClientValue;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEnumValue;
 
 public class ClientEnumValueImpl extends AbstractClientValue implements ClientEnumValue {
 

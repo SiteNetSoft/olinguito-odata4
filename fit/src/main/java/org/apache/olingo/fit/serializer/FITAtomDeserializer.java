@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.serializer;
+package org.sitenetsoft.olinguito.fit.serializer;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -26,8 +26,8 @@ import java.nio.charset.CodingErrorAction;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.olingo.client.core.serialization.AtomDeserializer;
-import org.apache.olingo.commons.api.Constants;
+import org.sitenetsoft.olinguito.client.core.serialization.AtomDeserializer;
+import org.sitenetsoft.olinguito.commons.api.Constants;
 
 public class FITAtomDeserializer extends AtomDeserializer {
 

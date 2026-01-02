@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.response.batch;
+package org.sitenetsoft.olinguito.client.core.communication.response.batch;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -26,14 +26,14 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.olingo.client.api.communication.request.batch.ODataBatchLineIterator;
-import org.apache.olingo.client.api.communication.request.batch.ODataBatchResponseItem;
-import org.apache.olingo.client.api.communication.response.ODataBatchResponse;
-import org.apache.olingo.client.core.communication.request.batch.ODataBatchLineIteratorImpl;
-import org.apache.olingo.client.core.communication.request.batch.ODataBatchUtilities;
-import org.apache.olingo.client.core.communication.request.batch.ODataChangesetResponseItem;
-import org.apache.olingo.commons.api.Constants;
-import org.apache.olingo.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchLineIterator;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchResponseItem;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataBatchResponse;
+import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataBatchLineIteratorImpl;
+import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataBatchUtilities;
+import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataChangesetResponseItem;
+import org.sitenetsoft.olinguito.commons.api.Constants;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

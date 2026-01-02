@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core;
+package org.sitenetsoft.olinguito.server.core;
 
-import org.apache.olingo.server.api.ODataLibraryException;
+import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
 
 /** Exception thrown during basic request handling. */
 public class ODataHandlerException extends ODataLibraryException {

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy;
+package org.sitenetsoft.olinguito.fit.proxy;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -30,17 +30,17 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.UUID;
 
-import org.apache.olingo.client.api.EdmEnabledODataClient;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.ext.proxy.api.annotations.EntityType;
-import org.apache.olingo.fit.proxy.opentype.Service;
-import org.apache.olingo.fit.proxy.opentype.opentypesservice.DefaultContainer;
-import org.apache.olingo.fit.proxy.opentype.opentypesservice.types.AccountInfo;
-import org.apache.olingo.fit.proxy.opentype.opentypesservice.types.Color;
-import org.apache.olingo.fit.proxy.opentype.opentypesservice.types.ContactDetails;
-import org.apache.olingo.fit.proxy.opentype.opentypesservice.types.IndexedRow;
-import org.apache.olingo.fit.proxy.opentype.opentypesservice.types.Row;
-import org.apache.olingo.fit.proxy.opentype.opentypesservice.types.RowIndex;
+import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityType;
+import org.sitenetsoft.olinguito.fit.proxy.opentype.Service;
+import org.sitenetsoft.olinguito.fit.proxy.opentype.opentypesservice.DefaultContainer;
+import org.sitenetsoft.olinguito.fit.proxy.opentype.opentypesservice.types.AccountInfo;
+import org.sitenetsoft.olinguito.fit.proxy.opentype.opentypesservice.types.Color;
+import org.sitenetsoft.olinguito.fit.proxy.opentype.opentypesservice.types.ContactDetails;
+import org.sitenetsoft.olinguito.fit.proxy.opentype.opentypesservice.types.IndexedRow;
+import org.sitenetsoft.olinguito.fit.proxy.opentype.opentypesservice.types.Row;
+import org.sitenetsoft.olinguito.fit.proxy.opentype.opentypesservice.types.RowIndex;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

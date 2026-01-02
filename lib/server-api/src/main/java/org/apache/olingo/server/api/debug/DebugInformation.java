@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.debug;
+package org.sitenetsoft.olinguito.server.api.debug;
 
 import java.util.List;
 import java.util.Map;
 
-import org.apache.olingo.server.api.ODataRequest;
-import org.apache.olingo.server.api.ODataResponse;
-import org.apache.olingo.server.api.uri.UriInfo;
+import org.sitenetsoft.olinguito.server.api.ODataRequest;
+import org.sitenetsoft.olinguito.server.api.ODataResponse;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfo;
 
 /**
  * This class contains all information necessary to construct a debug response.

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.request.streamed;
+package org.sitenetsoft.olinguito.client.core.communication.request.streamed;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -24,17 +24,17 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.communication.request.streamed.MediaEntityCreateStreamManager;
-import org.apache.olingo.client.api.communication.request.streamed.ODataMediaEntityCreateRequest;
-import org.apache.olingo.client.api.communication.response.ODataMediaEntityCreateResponse;
-import org.apache.olingo.client.api.data.ResWrap;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.client.api.serialization.ODataDeserializerException;
-import org.apache.olingo.client.core.communication.request.AbstractODataStreamManager;
-import org.apache.olingo.client.core.communication.response.AbstractODataResponse;
-import org.apache.olingo.commons.api.data.Entity;
-import org.apache.olingo.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.communication.request.streamed.MediaEntityCreateStreamManager;
+import org.sitenetsoft.olinguito.client.api.communication.request.streamed.ODataMediaEntityCreateRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataMediaEntityCreateResponse;
+import org.sitenetsoft.olinguito.client.api.data.ResWrap;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.serialization.ODataDeserializerException;
+import org.sitenetsoft.olinguito.client.core.communication.request.AbstractODataStreamManager;
+import org.sitenetsoft.olinguito.client.core.communication.response.AbstractODataResponse;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 /**
  * This class implements an OData Media Entity create request. Get instance by using ODataStreamedRequestFactory.

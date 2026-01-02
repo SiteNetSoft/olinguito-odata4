@@ -11,7 +11,7 @@
   language governing permissions and limitations under the License. -->
 <edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
   <edmx:Reference Uri="http://localhost/a.xml">
-    <edmx:Include Alias="A" Namespace="org.apache.olingo.a" />
+    <edmx:Include Alias="A" Namespace="org.sitenetsoft.olinguito.a" />
   </edmx:Reference>
     <edmx:DataServices>
         <Schema Namespace="Microsoft.OData.SampleService.Models.TripPin"

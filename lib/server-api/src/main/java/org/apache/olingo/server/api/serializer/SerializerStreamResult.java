@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.serializer;
+package org.sitenetsoft.olinguito.server.api.serializer;
 
-import org.apache.olingo.server.api.ODataContent;
+import org.sitenetsoft.olinguito.server.api.ODataContent;
 
 /**
  * Result type for {@link ODataSerializer} methods

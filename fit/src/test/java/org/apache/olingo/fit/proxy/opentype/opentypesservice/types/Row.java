@@ -16,25 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.opentype.opentypesservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.opentype.opentypesservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.AbstractOpenType;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractOpenType;
 // CHECKSTYLE:ON (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.OpenTypesServiceV4")
-@org.apache.olingo.ext.proxy.api.annotations.EntityType(name = "Row",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.OpenTypesServiceV4")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityType(name = "Row",
     openType = true,
     hasStream = false,
     isAbstract = false)
 public interface Row
-    extends org.apache.olingo.ext.proxy.api.Annotatable,
-    org.apache.olingo.ext.proxy.api.EntityType<Row>, org.apache.olingo.ext.proxy.api.StructuredQuery<Row>,
+    extends org.sitenetsoft.olinguito.ext.proxy.api.Annotatable,
+    org.sitenetsoft.olinguito.ext.proxy.api.EntityType<Row>, org.sitenetsoft.olinguito.ext.proxy.api.StructuredQuery<Row>,
     AbstractOpenType {
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Id",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Id",
       type = "Edm.Guid",
       nullable = false,
       defaultValue = "",
@@ -51,7 +51,7 @@ public interface Row
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 
@@ -59,9 +59,9 @@ public interface Row
 
   interface Annotations {
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Id",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Id",
         type = "Edm.Guid")
-    org.apache.olingo.ext.proxy.api.Annotatable getIdAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getIdAnnotations();
 
   }
 

@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.http;
+package org.sitenetsoft.olinguito.client.core.http;
 
 import java.net.URI;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreProtocolPNames;
-import org.apache.olingo.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 /**
  * Default implementation returning HttpClients with default parameters.

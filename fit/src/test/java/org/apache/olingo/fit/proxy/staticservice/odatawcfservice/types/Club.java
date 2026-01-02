@@ -16,24 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
-@org.apache.olingo.ext.proxy.api.annotations.EntityType(name = "Club",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityType(name = "Club",
     openType = false,
     hasStream = false,
     isAbstract = false)
 public interface Club
-    extends org.apache.olingo.ext.proxy.api.Annotatable,
-    org.apache.olingo.ext.proxy.api.EntityType<Club>, org.apache.olingo.ext.proxy.api.StructuredQuery<Club> {
+    extends org.sitenetsoft.olinguito.ext.proxy.api.Annotatable,
+    org.sitenetsoft.olinguito.ext.proxy.api.EntityType<Club>, org.sitenetsoft.olinguito.ext.proxy.api.StructuredQuery<Club> {
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ClubID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ClubID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -48,7 +48,7 @@ public interface Club
 
   void setClubID(java.lang.Integer _clubID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Name",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Name",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -65,7 +65,7 @@ public interface Club
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 
@@ -73,13 +73,13 @@ public interface Club
 
   interface Annotations {
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "ClubID",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "ClubID",
         type = "Edm.Int32")
-    org.apache.olingo.ext.proxy.api.Annotatable getClubIDAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getClubIDAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Name",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Name",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getNameAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getNameAnnotations();
 
   }
 

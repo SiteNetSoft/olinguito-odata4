@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.prefer;
+package org.sitenetsoft.olinguito.server.api.prefer;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -25,8 +25,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.olingo.commons.api.format.PreferenceName;
-import org.apache.olingo.server.api.prefer.Preferences.Return;
+import org.sitenetsoft.olinguito.commons.api.format.PreferenceName;
+import org.sitenetsoft.olinguito.server.api.prefer.Preferences.Return;
 
 /**
  * Provides methods to set values suitable for the Preference-Applied HTTP response header

@@ -16,17 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.responses;
+package org.sitenetsoft.olinguito.server.core.responses;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Collections;
 
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.server.api.ODataApplicationException;
-import org.apache.olingo.server.api.ODataResponse;
-import org.apache.olingo.server.api.ODataLibraryException;
-import org.apache.olingo.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
+import org.sitenetsoft.olinguito.server.api.ODataResponse;
+import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 
 public class StreamResponse extends ServiceResponse {
 

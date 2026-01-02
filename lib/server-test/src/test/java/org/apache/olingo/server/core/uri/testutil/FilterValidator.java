@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.testutil;
+package org.sitenetsoft.olinguito.server.core.uri.testutil;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -25,38 +25,38 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmType;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.ex.ODataException;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.ODataApplicationException;
-import org.apache.olingo.server.api.uri.UriInfo;
-import org.apache.olingo.server.api.uri.UriInfoKind;
-import org.apache.olingo.server.api.uri.UriResource;
-import org.apache.olingo.server.api.uri.queryoption.FilterOption;
-import org.apache.olingo.server.api.uri.queryoption.OrderByOption;
-import org.apache.olingo.server.api.uri.queryoption.expression.Alias;
-import org.apache.olingo.server.api.uri.queryoption.expression.Binary;
-import org.apache.olingo.server.api.uri.queryoption.expression.BinaryOperatorKind;
-import org.apache.olingo.server.api.uri.queryoption.expression.Enumeration;
-import org.apache.olingo.server.api.uri.queryoption.expression.Expression;
-import org.apache.olingo.server.api.uri.queryoption.expression.ExpressionVisitException;
-import org.apache.olingo.server.api.uri.queryoption.expression.Literal;
-import org.apache.olingo.server.api.uri.queryoption.expression.Member;
-import org.apache.olingo.server.api.uri.queryoption.expression.Method;
-import org.apache.olingo.server.api.uri.queryoption.expression.MethodKind;
-import org.apache.olingo.server.api.uri.queryoption.expression.TypeLiteral;
-import org.apache.olingo.server.api.uri.queryoption.expression.Unary;
-import org.apache.olingo.server.core.uri.UriResourceFunctionImpl;
-import org.apache.olingo.server.core.uri.parser.Parser;
-import org.apache.olingo.server.core.uri.parser.UriParserException;
-import org.apache.olingo.server.core.uri.parser.UriParserSemanticException;
-import org.apache.olingo.server.core.uri.queryoption.expression.BinaryImpl;
-import org.apache.olingo.server.core.uri.queryoption.expression.MemberImpl;
-import org.apache.olingo.server.core.uri.queryoption.expression.MethodImpl;
-import org.apache.olingo.server.core.uri.queryoption.expression.UnaryImpl;
-import org.apache.olingo.server.core.uri.validator.UriValidationException;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfo;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoKind;
+import org.sitenetsoft.olinguito.server.api.uri.UriResource;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.FilterOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.OrderByOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Alias;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Binary;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.BinaryOperatorKind;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Enumeration;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Expression;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.ExpressionVisitException;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Literal;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Member;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Method;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.MethodKind;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.TypeLiteral;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Unary;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceFunctionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.parser.Parser;
+import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserException;
+import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserSemanticException;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.expression.BinaryImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.expression.MemberImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.expression.MethodImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.expression.UnaryImpl;
+import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidationException;
 
 public class FilterValidator implements TestValidator {
   private final OData odata = OData.newInstance();

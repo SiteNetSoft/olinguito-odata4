@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.AbstractEntityKey;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractEntityKey;
 
 // CHECKSTYLE:ON (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.CompoundKeyElement;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.CompoundKeyElement;
 
-@org.apache.olingo.ext.proxy.api.annotations.CompoundKey
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.CompoundKey
 public class ProductDetailKey extends AbstractEntityKey {
 
   private static final long serialVersionUID = -6268946147639590355L;

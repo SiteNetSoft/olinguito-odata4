@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.core.edm.annotation;
+package org.sitenetsoft.olinguito.commons.core.edm.annotation;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmException;
-import org.apache.olingo.commons.api.edm.annotation.EdmExpression;
-import org.apache.olingo.commons.api.edm.annotation.EdmPropertyValue;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlPropertyValue;
-import org.apache.olingo.commons.core.edm.AbstractEdmAnnotatable;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmException;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmPropertyValue;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlPropertyValue;
+import org.sitenetsoft.olinguito.commons.core.edm.AbstractEdmAnnotatable;
 
 public class EdmPropertyValueImpl extends AbstractEdmAnnotatable implements EdmPropertyValue {
 

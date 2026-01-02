@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.base;
+package org.sitenetsoft.olinguito.fit.base;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -25,16 +25,16 @@ import static org.junit.Assert.fail;
 import java.net.URI;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.olingo.client.api.EdmEnabledODataClient;
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataEntityRequest;
-import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.client.api.uri.URIBuilder;
-import org.apache.olingo.client.core.ODataClientFactory;
-import org.apache.olingo.client.core.http.DefaultHttpClientFactory;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.fit.CXFOAuth2HttpClientFactory;
+import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntityRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.uri.URIBuilder;
+import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
+import org.sitenetsoft.olinguito.client.core.http.DefaultHttpClientFactory;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.fit.CXFOAuth2HttpClientFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy;
+package org.sitenetsoft.olinguito.fit.proxy;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
 import static org.junit.Assert.assertEquals;
@@ -32,19 +32,19 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.olingo.client.api.EdmEnabledODataClient;
-import org.apache.olingo.ext.proxy.AbstractService;
-import org.apache.olingo.ext.proxy.commons.EntityInvocationHandler;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.InMemoryEntities;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Address;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.CompanyAddress;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Customer;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Order;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.OrderCollection;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.OrderDetail;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.OrderDetailKey;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.PaymentInstrument;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Person;
+import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
+import org.sitenetsoft.olinguito.ext.proxy.AbstractService;
+import org.sitenetsoft.olinguito.ext.proxy.commons.EntityInvocationHandler;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.InMemoryEntities;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Address;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.CompanyAddress;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Customer;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Order;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.OrderCollection;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.OrderDetail;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.OrderDetailKey;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.PaymentInstrument;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Person;
 import org.junit.Test;
 
 // CHECKSTYLE:ON (Maven checkstyle)

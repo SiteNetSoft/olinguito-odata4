@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
 public interface OrderComposableInvoker
-    extends org.apache.olingo.ext.proxy.api.StructuredComposableInvoker<Order, Order.Operations>
+    extends org.sitenetsoft.olinguito.ext.proxy.api.StructuredComposableInvoker<Order, Order.Operations>
 {
 
   @Override
@@ -34,7 +34,7 @@ public interface OrderComposableInvoker
   OrderComposableInvoker expand(String... expand);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "OrderID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "OrderID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -49,7 +49,7 @@ public interface OrderComposableInvoker
 
   void setOrderID(java.lang.Integer _orderID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "OrderDate",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "OrderDate",
       type = "Edm.DateTimeOffset",
       nullable = false,
       defaultValue = "",
@@ -64,7 +64,7 @@ public interface OrderComposableInvoker
 
   void setOrderDate(java.sql.Timestamp _orderDate);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ShelfLife",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ShelfLife",
       type = "Edm.Duration",
       nullable = true,
       defaultValue = "",
@@ -79,7 +79,7 @@ public interface OrderComposableInvoker
 
   void setShelfLife(java.math.BigDecimal _shelfLife);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "OrderShelfLifes",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "OrderShelfLifes",
       type = "Edm.Duration",
       nullable = true,
       defaultValue = "",
@@ -90,11 +90,11 @@ public interface OrderComposableInvoker
       unicode = true,
       collation = "",
       srid = "")
-  org.apache.olingo.ext.proxy.api.PrimitiveCollection<java.math.BigDecimal> getOrderShelfLifes();
+  org.sitenetsoft.olinguito.ext.proxy.api.PrimitiveCollection<java.math.BigDecimal> getOrderShelfLifes();
 
-  void setOrderShelfLifes(org.apache.olingo.ext.proxy.api.PrimitiveCollection<java.math.BigDecimal> _orderShelfLifes);
+  void setOrderShelfLifes(org.sitenetsoft.olinguito.ext.proxy.api.PrimitiveCollection<java.math.BigDecimal> _orderShelfLifes);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "LoggedInEmployee",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "LoggedInEmployee",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Employee",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -107,7 +107,7 @@ public interface OrderComposableInvoker
       setLoggedInEmployee(
           Employee _loggedInEmployee);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "CustomerForOrder",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "CustomerForOrder",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Customer",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -120,7 +120,7 @@ public interface OrderComposableInvoker
       setCustomerForOrder(
           Customer _customerForOrder);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "OrderDetails",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "OrderDetails",
       type = "Microsoft.Test.OData.Services.ODataWCFService.OrderDetail",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",

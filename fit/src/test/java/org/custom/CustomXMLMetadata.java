@@ -22,9 +22,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.olingo.client.api.edm.xml.Reference;
-import org.apache.olingo.client.api.edm.xml.XMLMetadata;
-import org.apache.olingo.commons.api.edm.provider.CsdlSchema;
+import org.sitenetsoft.olinguito.client.api.edm.xml.Reference;
+import org.sitenetsoft.olinguito.client.api.edm.xml.XMLMetadata;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlSchema;
 
 public class CustomXMLMetadata implements XMLMetadata, Serializable {
 

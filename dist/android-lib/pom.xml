@@ -29,7 +29,7 @@
   <name>Olingo-OData-Client-for-Android</name>
 
   <parent>
-    <groupId>org.apache.olingo</groupId>
+    <groupId>org.sitenetsoft.olinguito</groupId>
     <artifactId>odata-dist</artifactId>
     <version>5.0.1-SNAPSHOT</version>
     <relativePath>..</relativePath>
@@ -86,7 +86,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-client-android</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>

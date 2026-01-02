@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.uri.queryoption.expression;
+package org.sitenetsoft.olinguito.server.api.uri.queryoption.expression;
 
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.EdmEnumType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEnumType;
 
 /**
  * Represents a enumeration expression node in the expression tree

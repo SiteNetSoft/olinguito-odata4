@@ -16,26 +16,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.AbstractEntitySet;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Order;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.OrderCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractEntitySet;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Order;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.OrderCollection;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
-@org.apache.olingo.ext.proxy.api.annotations.EntitySet(name = "Orders",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntitySet(name = "Orders",
     container = "Microsoft.Test.OData.Services.ODataWCFService.InMemoryEntities")
 public interface Orders
     extends
-    org.apache.olingo.ext.proxy.api.EntitySet<Order, OrderCollection>,
-    org.apache.olingo.ext.proxy.api.StructuredCollectionQuery<Orders>,
+    org.sitenetsoft.olinguito.ext.proxy.api.EntitySet<Order, OrderCollection>,
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionQuery<Orders>,
     AbstractEntitySet<Order, java.lang.Integer, OrderCollection> {
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 }

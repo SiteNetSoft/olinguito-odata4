@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.processor;
+package org.sitenetsoft.olinguito.server.api.processor;
 
 /**
  * Processor interface for handling a single instance of an Delta Response.

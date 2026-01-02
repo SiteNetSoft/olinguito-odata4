@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edm.constants;
+package org.sitenetsoft.olinguito.commons.api.edm.constants;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

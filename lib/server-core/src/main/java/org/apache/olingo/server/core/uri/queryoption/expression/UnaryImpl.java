@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.queryoption.expression;
+package org.sitenetsoft.olinguito.server.core.uri.queryoption.expression;
 
-import org.apache.olingo.commons.api.edm.EdmType;
-import org.apache.olingo.server.api.ODataApplicationException;
-import org.apache.olingo.server.api.uri.queryoption.expression.Expression;
-import org.apache.olingo.server.api.uri.queryoption.expression.ExpressionVisitException;
-import org.apache.olingo.server.api.uri.queryoption.expression.ExpressionVisitor;
-import org.apache.olingo.server.api.uri.queryoption.expression.Unary;
-import org.apache.olingo.server.api.uri.queryoption.expression.UnaryOperatorKind;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
+import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Expression;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.ExpressionVisitException;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.ExpressionVisitor;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Unary;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.UnaryOperatorKind;
 
 public class UnaryImpl implements Unary {
 

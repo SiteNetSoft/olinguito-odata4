@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.etag;
+package org.sitenetsoft.olinguito.server.core.etag;
 
 import java.util.Collection;
 import java.util.Collections;
 
-import org.apache.olingo.server.api.etag.ETagHelper;
-import org.apache.olingo.server.api.etag.PreconditionException;
+import org.sitenetsoft.olinguito.server.api.etag.ETagHelper;
+import org.sitenetsoft.olinguito.server.api.etag.PreconditionException;
 
 public class ETagHelperImpl implements ETagHelper {
 

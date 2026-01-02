@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.request.cud;
+package org.sitenetsoft.olinguito.client.core.communication.request.cud;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -25,19 +25,19 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.communication.request.cud.ODataEntityCreateRequest;
-import org.apache.olingo.client.api.communication.response.ODataEntityCreateResponse;
-import org.apache.olingo.client.api.data.ResWrap;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.client.api.serialization.ODataDeserializerException;
-import org.apache.olingo.client.api.serialization.ODataSerializerException;
-import org.apache.olingo.client.core.communication.request.AbstractODataBasicRequest;
-import org.apache.olingo.client.core.communication.response.AbstractODataResponse;
-import org.apache.olingo.client.core.uri.URIUtils;
-import org.apache.olingo.commons.api.data.Entity;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataEntityCreateRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataEntityCreateResponse;
+import org.sitenetsoft.olinguito.client.api.data.ResWrap;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.serialization.ODataDeserializerException;
+import org.sitenetsoft.olinguito.client.api.serialization.ODataSerializerException;
+import org.sitenetsoft.olinguito.client.core.communication.request.AbstractODataBasicRequest;
+import org.sitenetsoft.olinguito.client.core.communication.response.AbstractODataResponse;
+import org.sitenetsoft.olinguito.client.core.uri.URIUtils;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 /**
  * This class implements an OData create request.

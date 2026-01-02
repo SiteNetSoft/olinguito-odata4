@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.deserializer.batch;
+package org.sitenetsoft.olinguito.server.core.deserializer.batch;
 
 import java.net.URI;
 import java.util.List;
 
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.commons.api.http.HttpHeader;
-import org.apache.olingo.server.api.deserializer.batch.BatchDeserializerException;
-import org.apache.olingo.server.api.deserializer.batch.BatchDeserializerException.MessageKeys;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchDeserializerException;
+import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchDeserializerException.MessageKeys;
 
 public class BatchTransformatorCommon {
 

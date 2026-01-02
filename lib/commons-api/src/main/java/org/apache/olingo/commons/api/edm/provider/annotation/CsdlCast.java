@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edm.provider.annotation;
+package org.sitenetsoft.olinguito.commons.api.edm.provider.annotation;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.geo.SRID;
-import org.apache.olingo.commons.api.edm.provider.CsdlAnnotatable;
-import org.apache.olingo.commons.api.edm.provider.CsdlAnnotation;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.SRID;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotatable;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
 
 /**
  * Represents an edm:Cast expression.

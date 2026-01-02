@@ -13,24 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.olingo.fit.tecsvc.client;
+package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
 import java.net.URI;
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.communication.request.batch.BatchManager;
-import org.apache.olingo.client.api.communication.request.batch.ODataBatchRequest;
-import org.apache.olingo.client.api.communication.request.batch.ODataChangeset;
-import org.apache.olingo.client.api.communication.request.cud.ODataEntityUpdateRequest;
-import org.apache.olingo.client.api.communication.request.cud.UpdateType;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataEntityRequest;
-import org.apache.olingo.client.api.communication.response.ODataBatchResponse;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.client.api.http.HttpClientException;
-import org.apache.olingo.client.api.uri.URIBuilder;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeException;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.BatchManager;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataChangeset;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataEntityUpdateRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.UpdateType;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntityRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataBatchResponse;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.http.HttpClientException;
+import org.sitenetsoft.olinguito.client.api.uri.URIBuilder;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 

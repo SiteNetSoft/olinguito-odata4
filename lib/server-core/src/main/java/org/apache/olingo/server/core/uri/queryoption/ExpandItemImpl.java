@@ -16,25 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.queryoption;
+package org.sitenetsoft.olinguito.server.core.uri.queryoption;
 
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.EdmType;
-import org.apache.olingo.commons.api.ex.ODataRuntimeException;
-import org.apache.olingo.server.api.uri.UriInfoResource;
-import org.apache.olingo.server.api.uri.queryoption.ApplyOption;
-import org.apache.olingo.server.api.uri.queryoption.CountOption;
-import org.apache.olingo.server.api.uri.queryoption.ExpandItem;
-import org.apache.olingo.server.api.uri.queryoption.ExpandOption;
-import org.apache.olingo.server.api.uri.queryoption.FilterOption;
-import org.apache.olingo.server.api.uri.queryoption.LevelsExpandOption;
-import org.apache.olingo.server.api.uri.queryoption.OrderByOption;
-import org.apache.olingo.server.api.uri.queryoption.SearchOption;
-import org.apache.olingo.server.api.uri.queryoption.SelectOption;
-import org.apache.olingo.server.api.uri.queryoption.SkipOption;
-import org.apache.olingo.server.api.uri.queryoption.SystemQueryOption;
-import org.apache.olingo.server.api.uri.queryoption.TopOption;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoResource;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ApplyOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.CountOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandItem;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.FilterOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.LevelsExpandOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.OrderByOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SearchOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SkipOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SystemQueryOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.TopOption;
 
 public class ExpandItemImpl implements ExpandItem {
   private LevelsExpandOption levelsExpandOption;

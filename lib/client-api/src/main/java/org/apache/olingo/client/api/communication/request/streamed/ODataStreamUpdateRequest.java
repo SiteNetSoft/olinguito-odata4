@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication.request.streamed;
+package org.sitenetsoft.olinguito.client.api.communication.request.streamed;
 
-import org.apache.olingo.client.api.communication.request.ODataBatchableRequest;
-import org.apache.olingo.client.api.communication.request.ODataStreamedRequest;
-import org.apache.olingo.client.api.communication.response.ODataStreamUpdateResponse;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataBatchableRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataStreamedRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataStreamUpdateResponse;
 
 /**
  * This class implements an OData stream create/update request. Get instance by using ODataStreamedRequestFactory.

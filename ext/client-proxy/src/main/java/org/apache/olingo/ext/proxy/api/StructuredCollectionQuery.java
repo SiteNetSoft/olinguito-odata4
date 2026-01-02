@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.ext.proxy.api;
+package org.sitenetsoft.olinguito.ext.proxy.api;
 
-import org.apache.olingo.client.api.uri.URIFilter;
+import org.sitenetsoft.olinguito.client.api.uri.URIFilter;
 
 public interface StructuredCollectionQuery<CT extends StructuredCollectionQuery<?>>
         extends StructuredQuery<CT>, CollectionQuery<CT> {

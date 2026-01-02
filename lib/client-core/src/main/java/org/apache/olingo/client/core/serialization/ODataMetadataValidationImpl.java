@@ -16,29 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.serialization;
+package org.sitenetsoft.olinguito.client.core.serialization;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.olingo.client.api.edm.xml.XMLMetadata;
-import org.apache.olingo.client.api.serialization.ODataMetadataValidation;
-import org.apache.olingo.client.core.metadatavalidator.CsdlTypeValidator;
-import org.apache.olingo.client.core.metadatavalidator.EdmTypeValidator;
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmComplexType;
-import org.apache.olingo.commons.api.edm.EdmEntityContainer;
-import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.commons.api.edm.EdmFunction;
-import org.apache.olingo.commons.api.edm.EdmSchema;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.edm.provider.CsdlAction;
-import org.apache.olingo.commons.api.edm.provider.CsdlComplexType;
-import org.apache.olingo.commons.api.edm.provider.CsdlEntityContainer;
-import org.apache.olingo.commons.api.edm.provider.CsdlEntityType;
-import org.apache.olingo.commons.api.edm.provider.CsdlFunction;
-import org.apache.olingo.commons.api.edm.provider.CsdlSchema;
+import org.sitenetsoft.olinguito.client.api.edm.xml.XMLMetadata;
+import org.sitenetsoft.olinguito.client.api.serialization.ODataMetadataValidation;
+import org.sitenetsoft.olinguito.client.core.metadatavalidator.CsdlTypeValidator;
+import org.sitenetsoft.olinguito.client.core.metadatavalidator.EdmTypeValidator;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmComplexType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmFunction;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmSchema;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAction;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlComplexType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityContainer;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlFunction;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlSchema;
 
 public class ODataMetadataValidationImpl implements ODataMetadataValidation {
 

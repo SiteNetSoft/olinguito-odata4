@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit;
+package org.sitenetsoft.olinguito.fit;
 
 import java.io.IOException;
 
@@ -24,9 +24,9 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
 
 import org.apache.cxf.interceptor.InInterceptors;
-import org.apache.olingo.fit.rest.XHTTPMethodInterceptor;
-import org.apache.olingo.fit.utils.ConstantKey;
-import org.apache.olingo.fit.utils.Constants;
+import org.sitenetsoft.olinguito.fit.rest.XHTTPMethodInterceptor;
+import org.sitenetsoft.olinguito.fit.utils.ConstantKey;
+import org.sitenetsoft.olinguito.fit.utils.Constants;
 import org.springframework.stereotype.Service;
 
 @Service

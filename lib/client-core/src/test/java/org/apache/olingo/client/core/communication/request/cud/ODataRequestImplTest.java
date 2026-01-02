@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.request.cud;
+package org.sitenetsoft.olinguito.client.core.communication.request.cud;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -24,18 +24,18 @@ import static org.junit.Assert.assertNull;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.olingo.client.api.communication.request.cud.CUDRequestFactory;
-import org.apache.olingo.client.api.communication.request.cud.UpdateType;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.client.api.domain.ClientProperty;
-import org.apache.olingo.client.api.domain.ClientValue;
-import org.apache.olingo.client.core.ODataClientFactory;
-import org.apache.olingo.client.core.ODataClientImpl;
-import org.apache.olingo.client.core.domain.ClientCollectionValueImpl;
-import org.apache.olingo.client.core.domain.ClientComplexValueImpl;
-import org.apache.olingo.client.core.domain.ClientEntityImpl;
-import org.apache.olingo.client.core.domain.ClientPropertyImpl;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.CUDRequestFactory;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.UpdateType;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientProperty;
+import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
+import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
+import org.sitenetsoft.olinguito.client.core.ODataClientImpl;
+import org.sitenetsoft.olinguito.client.core.domain.ClientCollectionValueImpl;
+import org.sitenetsoft.olinguito.client.core.domain.ClientComplexValueImpl;
+import org.sitenetsoft.olinguito.client.core.domain.ClientEntityImpl;
+import org.sitenetsoft.olinguito.client.core.domain.ClientPropertyImpl;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.junit.Test;
 
 public class ODataRequestImplTest {

@@ -16,25 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.demo.odatademo;
+package org.sitenetsoft.olinguito.fit.proxy.demo.odatademo;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.AbstractEntitySet;
-import org.apache.olingo.fit.proxy.demo.odatademo.types.Advertisement;
-import org.apache.olingo.fit.proxy.demo.odatademo.types.AdvertisementCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractEntitySet;
+import org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types.Advertisement;
+import org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types.AdvertisementCollection;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
-@org.apache.olingo.ext.proxy.api.annotations.EntitySet(name = "Advertisements", container = "ODataDemo.DemoService")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntitySet(name = "Advertisements", container = "ODataDemo.DemoService")
 public interface Advertisements
     extends
-    org.apache.olingo.ext.proxy.api.EntitySet<Advertisement, AdvertisementCollection>,
-    org.apache.olingo.ext.proxy.api.StructuredCollectionQuery<Advertisements>,
+    org.sitenetsoft.olinguito.ext.proxy.api.EntitySet<Advertisement, AdvertisementCollection>,
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionQuery<Advertisements>,
     AbstractEntitySet<Advertisement, java.util.UUID, AdvertisementCollection> {
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 }

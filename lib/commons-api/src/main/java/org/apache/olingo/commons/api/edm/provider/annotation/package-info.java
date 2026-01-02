@@ -20,4 +20,4 @@
  * Contains representations for objects created during
  * CSDL document parsing related to the CSDL annotations.
  */
-package org.apache.olingo.commons.api.edm.provider.annotation;
+package org.sitenetsoft.olinguito.commons.api.edm.provider.annotation;

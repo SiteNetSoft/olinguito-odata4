@@ -16,21 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.request.batch;
+package org.sitenetsoft.olinguito.client.core.communication.request.batch;
 
 import java.nio.charset.Charset;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpResponse;
-import org.apache.olingo.client.api.communication.request.ODataBatchableRequest;
-import org.apache.olingo.client.api.communication.request.batch.ODataBatchRequest;
-import org.apache.olingo.client.api.communication.request.batch.ODataBatchRequestItem;
-import org.apache.olingo.client.api.communication.request.batch.ODataChangeset;
-import org.apache.olingo.client.api.communication.request.batch.ODataSingleRequest;
-import org.apache.olingo.client.api.communication.response.ODataBatchResponse;
-import org.apache.olingo.client.core.communication.request.AbstractODataStreamManager;
-import org.apache.olingo.client.core.communication.request.Wrapper;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataBatchableRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchRequestItem;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataChangeset;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataSingleRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataBatchResponse;
+import org.sitenetsoft.olinguito.client.core.communication.request.AbstractODataStreamManager;
+import org.sitenetsoft.olinguito.client.core.communication.request.Wrapper;
 
 /**
  * Batch request payload management.

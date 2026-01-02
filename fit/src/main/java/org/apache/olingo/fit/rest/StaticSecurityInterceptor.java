@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.rest;
+package org.sitenetsoft.olinguito.fit.rest;
 
 import java.security.Principal;
 import java.util.List;

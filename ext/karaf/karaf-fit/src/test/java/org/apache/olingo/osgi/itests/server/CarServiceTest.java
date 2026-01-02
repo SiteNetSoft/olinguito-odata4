@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  ******************************************************************************/
-package org.apache.olingo.osgi.itests.server;
+package org.sitenetsoft.olinguito.osgi.itests.server;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.apache.olingo.osgi.itests.OlingoOSGiTestSupport;
+import org.sitenetsoft.olinguito.osgi.itests.OlingoOSGiTestSupport;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,7 +49,7 @@ public class CarServiceTest extends OlingoOSGiTestSupport {
     @Test
     public void testServiceStarted() throws Exception {
         // check if the bundle is started
-        assertBundleStarted("org.apache.olingo.odata-server-osgi-sample");
+        assertBundleStarted("org.sitenetsoft.olinguito.odata-server-osgi-sample");
 
         // use the jdk http client to verify the server side
         verifyContent(getContent(SERVICE_URL));
@@ -96,7 +96,7 @@ public class CarServiceTest extends OlingoOSGiTestSupport {
         return new Option[] {
             olingoBaseConfig(),
             features(olingoUrl, "olingo-server", "olingo-client"),
-            mavenBundle("org.apache.olingo", "odata-server-osgi-sample", "5.0.1-SNAPSHOT"),
+            mavenBundle("org.sitenetsoft.olinguito", "odata-server-osgi-sample", "5.0.1-SNAPSHOT"),
             logLevel(LogLevel.INFO)
         };
     }

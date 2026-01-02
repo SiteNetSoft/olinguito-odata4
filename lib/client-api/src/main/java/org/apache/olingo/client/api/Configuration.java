@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api;
+package org.sitenetsoft.olinguito.client.api;
 
 import java.util.concurrent.ExecutorService;
 
-import org.apache.olingo.client.api.http.HttpClientFactory;
-import org.apache.olingo.client.api.http.HttpUriRequestFactory;
-import org.apache.olingo.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.client.api.http.HttpClientFactory;
+import org.sitenetsoft.olinguito.client.api.http.HttpUriRequestFactory;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 
 /**
  * Configuration wrapper.

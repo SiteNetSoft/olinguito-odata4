@@ -29,7 +29,7 @@
   <name>Olingo-OData-Client-for-Java</name>
 
   <parent>
-    <groupId>org.apache.olingo</groupId>
+    <groupId>org.sitenetsoft.olinguito</groupId>
     <artifactId>odata-dist</artifactId>
     <version>5.0.1-SNAPSHOT</version>
     <relativePath>..</relativePath>
@@ -86,33 +86,33 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-commons-api</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-commons-core</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-client-api</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-client-core</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-client-proxy</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>

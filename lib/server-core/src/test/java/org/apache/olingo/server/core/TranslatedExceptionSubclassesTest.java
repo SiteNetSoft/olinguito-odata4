@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core;
+package org.sitenetsoft.olinguito.server.core;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -25,11 +25,11 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.UUID;
 
-import org.apache.olingo.server.api.ODataLibraryException;
-import org.apache.olingo.server.api.serializer.SerializerException;
-import org.apache.olingo.server.core.uri.parser.UriParserSemanticException;
-import org.apache.olingo.server.core.uri.parser.UriParserSyntaxException;
-import org.apache.olingo.server.core.uri.validator.UriValidationException;
+import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
+import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserSemanticException;
+import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserSyntaxException;
+import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidationException;
 import org.junit.Assert;
 import org.junit.Test;
 

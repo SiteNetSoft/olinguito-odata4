@@ -16,35 +16,35 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core;
+package org.sitenetsoft.olinguito.server.core;
 
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 
-import org.apache.olingo.commons.api.data.Entity;
-import org.apache.olingo.commons.api.data.Property;
-import org.apache.olingo.commons.api.http.HttpMethod;
-import org.apache.olingo.server.api.ODataApplicationException;
-import org.apache.olingo.server.api.ODataLibraryException;
-import org.apache.olingo.server.api.ODataRequest;
-import org.apache.olingo.server.api.ODataResponse;
-import org.apache.olingo.server.api.ODataServerError;
-import org.apache.olingo.server.api.processor.Processor;
-import org.apache.olingo.server.core.requests.ActionRequest;
-import org.apache.olingo.server.core.requests.DataRequest;
-import org.apache.olingo.server.core.requests.FunctionRequest;
-import org.apache.olingo.server.core.requests.MediaRequest;
-import org.apache.olingo.server.core.requests.MetadataRequest;
-import org.apache.olingo.server.core.requests.ServiceDocumentRequest;
-import org.apache.olingo.server.core.responses.EntityResponse;
-import org.apache.olingo.server.core.responses.ErrorResponse;
-import org.apache.olingo.server.core.responses.MetadataResponse;
-import org.apache.olingo.server.core.responses.NoContentResponse;
-import org.apache.olingo.server.core.responses.PropertyResponse;
-import org.apache.olingo.server.core.responses.ServiceDocumentResponse;
-import org.apache.olingo.server.core.responses.ServiceResponse;
-import org.apache.olingo.server.core.responses.StreamResponse;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.data.Property;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
+import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
+import org.sitenetsoft.olinguito.server.api.ODataRequest;
+import org.sitenetsoft.olinguito.server.api.ODataResponse;
+import org.sitenetsoft.olinguito.server.api.ODataServerError;
+import org.sitenetsoft.olinguito.server.api.processor.Processor;
+import org.sitenetsoft.olinguito.server.core.requests.ActionRequest;
+import org.sitenetsoft.olinguito.server.core.requests.DataRequest;
+import org.sitenetsoft.olinguito.server.core.requests.FunctionRequest;
+import org.sitenetsoft.olinguito.server.core.requests.MediaRequest;
+import org.sitenetsoft.olinguito.server.core.requests.MetadataRequest;
+import org.sitenetsoft.olinguito.server.core.requests.ServiceDocumentRequest;
+import org.sitenetsoft.olinguito.server.core.responses.EntityResponse;
+import org.sitenetsoft.olinguito.server.core.responses.ErrorResponse;
+import org.sitenetsoft.olinguito.server.core.responses.MetadataResponse;
+import org.sitenetsoft.olinguito.server.core.responses.NoContentResponse;
+import org.sitenetsoft.olinguito.server.core.responses.PropertyResponse;
+import org.sitenetsoft.olinguito.server.core.responses.ServiceDocumentResponse;
+import org.sitenetsoft.olinguito.server.core.responses.ServiceResponse;
+import org.sitenetsoft.olinguito.server.core.responses.StreamResponse;
 
 public interface ServiceHandler extends Processor {
 

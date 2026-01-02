@@ -16,21 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.serializer;
+package org.sitenetsoft.olinguito.server.core.serializer;
 
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.olingo.commons.api.data.EntityMediaObject;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveType;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.serializer.FixedFormatSerializer;
-import org.apache.olingo.server.api.serializer.PrimitiveValueSerializerOptions;
-import org.apache.olingo.server.api.serializer.SerializerException;
-import org.apache.olingo.server.api.serializer.SerializerStreamResult;
+import org.sitenetsoft.olinguito.commons.api.data.EntityMediaObject;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.serializer.FixedFormatSerializer;
+import org.sitenetsoft.olinguito.server.api.serializer.PrimitiveValueSerializerOptions;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerStreamResult;
 import org.junit.Test;
 
 public class FixedFormatSerializerTest {

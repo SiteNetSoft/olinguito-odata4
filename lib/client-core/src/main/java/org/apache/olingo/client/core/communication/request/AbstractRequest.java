@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.olingo.client.core.communication.request;
+package org.sitenetsoft.olinguito.client.core.communication.request;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.olingo.client.api.EdmEnabledODataClient;
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.communication.ODataClientErrorException;
-import org.apache.olingo.client.core.communication.header.ODataErrorResponseChecker;
-import org.apache.olingo.commons.api.ex.ODataRuntimeException;
-import org.apache.olingo.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.communication.ODataClientErrorException;
+import org.sitenetsoft.olinguito.client.core.communication.header.ODataErrorResponseChecker;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

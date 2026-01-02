@@ -16,18 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.request.retrieve;
+package org.sitenetsoft.olinguito.client.core.communication.request.retrieve;
 
 import java.net.URI;
 import java.util.Collection;
 
 import org.apache.http.client.HttpClient;
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.communication.request.retrieve.EdmMetadataRequest;
-import org.apache.olingo.client.api.communication.request.retrieve.XMLMetadataRequest;
-import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
-import org.apache.olingo.client.api.edm.xml.XMLMetadata;
-import org.apache.olingo.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.EdmMetadataRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.XMLMetadataRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
+import org.sitenetsoft.olinguito.client.api.edm.xml.XMLMetadata;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 
 /**
  * This class implements a metadata query request.

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.sample.processor;
+package org.sitenetsoft.olinguito.server.sample.processor;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -24,45 +24,45 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.olingo.commons.api.data.ContextURL;
-import org.apache.olingo.commons.api.data.ContextURL.Suffix;
-import org.apache.olingo.commons.api.data.Entity;
-import org.apache.olingo.commons.api.data.EntityCollection;
-import org.apache.olingo.commons.api.data.Property;
-import org.apache.olingo.commons.api.edm.EdmComplexType;
-import org.apache.olingo.commons.api.edm.EdmEntitySet;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveType;
-import org.apache.olingo.commons.api.edm.EdmProperty;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.commons.api.http.HttpHeader;
-import org.apache.olingo.commons.api.http.HttpStatusCode;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.ODataApplicationException;
-import org.apache.olingo.server.api.ODataLibraryException;
-import org.apache.olingo.server.api.ODataRequest;
-import org.apache.olingo.server.api.ODataResponse;
-import org.apache.olingo.server.api.ServiceMetadata;
-import org.apache.olingo.server.api.deserializer.DeserializerException;
-import org.apache.olingo.server.api.processor.ComplexProcessor;
-import org.apache.olingo.server.api.processor.EntityCollectionProcessor;
-import org.apache.olingo.server.api.processor.EntityProcessor;
-import org.apache.olingo.server.api.processor.PrimitiveProcessor;
-import org.apache.olingo.server.api.processor.PrimitiveValueProcessor;
-import org.apache.olingo.server.api.serializer.ComplexSerializerOptions;
-import org.apache.olingo.server.api.serializer.EntityCollectionSerializerOptions;
-import org.apache.olingo.server.api.serializer.EntitySerializerOptions;
-import org.apache.olingo.server.api.serializer.ODataSerializer;
-import org.apache.olingo.server.api.serializer.PrimitiveSerializerOptions;
-import org.apache.olingo.server.api.serializer.SerializerException;
-import org.apache.olingo.server.api.uri.UriInfo;
-import org.apache.olingo.server.api.uri.UriInfoResource;
-import org.apache.olingo.server.api.uri.UriResource;
-import org.apache.olingo.server.api.uri.UriResourceEntitySet;
-import org.apache.olingo.server.api.uri.UriResourceProperty;
-import org.apache.olingo.server.api.uri.queryoption.ExpandOption;
-import org.apache.olingo.server.api.uri.queryoption.SelectOption;
-import org.apache.olingo.server.sample.data.DataProvider;
-import org.apache.olingo.server.sample.data.DataProvider.DataProviderException;
+import org.sitenetsoft.olinguito.commons.api.data.ContextURL;
+import org.sitenetsoft.olinguito.commons.api.data.ContextURL.Suffix;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.data.EntityCollection;
+import org.sitenetsoft.olinguito.commons.api.data.Property;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmComplexType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
+import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
+import org.sitenetsoft.olinguito.server.api.ODataRequest;
+import org.sitenetsoft.olinguito.server.api.ODataResponse;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
+import org.sitenetsoft.olinguito.server.api.processor.ComplexProcessor;
+import org.sitenetsoft.olinguito.server.api.processor.EntityCollectionProcessor;
+import org.sitenetsoft.olinguito.server.api.processor.EntityProcessor;
+import org.sitenetsoft.olinguito.server.api.processor.PrimitiveProcessor;
+import org.sitenetsoft.olinguito.server.api.processor.PrimitiveValueProcessor;
+import org.sitenetsoft.olinguito.server.api.serializer.ComplexSerializerOptions;
+import org.sitenetsoft.olinguito.server.api.serializer.EntityCollectionSerializerOptions;
+import org.sitenetsoft.olinguito.server.api.serializer.EntitySerializerOptions;
+import org.sitenetsoft.olinguito.server.api.serializer.ODataSerializer;
+import org.sitenetsoft.olinguito.server.api.serializer.PrimitiveSerializerOptions;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfo;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoResource;
+import org.sitenetsoft.olinguito.server.api.uri.UriResource;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceEntitySet;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceProperty;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectOption;
+import org.sitenetsoft.olinguito.server.sample.data.DataProvider;
+import org.sitenetsoft.olinguito.server.sample.data.DataProvider.DataProviderException;
 
 /**
  * This processor will deliver entity collections, single entities as well as properties of an entity.

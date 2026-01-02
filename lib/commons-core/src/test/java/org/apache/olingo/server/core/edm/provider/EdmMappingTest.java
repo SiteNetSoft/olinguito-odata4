@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.edm.provider;
+package org.sitenetsoft.olinguito.server.core.edm.provider;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -24,20 +24,20 @@ import static org.junit.Assert.assertNull;
 
 import java.util.Date;
 
-import org.apache.olingo.commons.api.edm.EdmEntitySet;
-import org.apache.olingo.commons.api.edm.EdmParameter;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
-import org.apache.olingo.commons.api.edm.EdmProperty;
-import org.apache.olingo.commons.api.edm.EdmSingleton;
-import org.apache.olingo.commons.api.edm.provider.CsdlEntitySet;
-import org.apache.olingo.commons.api.edm.provider.CsdlMapping;
-import org.apache.olingo.commons.api.edm.provider.CsdlParameter;
-import org.apache.olingo.commons.api.edm.provider.CsdlProperty;
-import org.apache.olingo.commons.api.edm.provider.CsdlSingleton;
-import org.apache.olingo.commons.core.edm.EdmEntitySetImpl;
-import org.apache.olingo.commons.core.edm.EdmParameterImpl;
-import org.apache.olingo.commons.core.edm.EdmPropertyImpl;
-import org.apache.olingo.commons.core.edm.EdmSingletonImpl;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmParameter;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmSingleton;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntitySet;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlMapping;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlParameter;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlSingleton;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmEntitySetImpl;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmParameterImpl;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmPropertyImpl;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmSingletonImpl;
 import org.junit.Test;
 
 public class EdmMappingTest {

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.tecsvc.processor.queryoptions.options;
+package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.options;
 
 import java.util.Calendar;
 import java.util.Iterator;
@@ -25,16 +25,16 @@ import java.util.Locale;
 
 import jakarta.xml.bind.DatatypeConverter;
 
-import org.apache.olingo.commons.api.data.Entity;
-import org.apache.olingo.commons.api.data.EntityCollection;
-import org.apache.olingo.commons.api.data.Property;
-import org.apache.olingo.commons.api.http.HttpStatusCode;
-import org.apache.olingo.server.api.ODataApplicationException;
-import org.apache.olingo.server.api.uri.queryoption.SearchOption;
-import org.apache.olingo.server.api.uri.queryoption.search.SearchBinary;
-import org.apache.olingo.server.api.uri.queryoption.search.SearchBinaryOperatorKind;
-import org.apache.olingo.server.api.uri.queryoption.search.SearchExpression;
-import org.apache.olingo.server.api.uri.queryoption.search.SearchTerm;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.data.EntityCollection;
+import org.sitenetsoft.olinguito.commons.api.data.Property;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SearchOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.search.SearchBinary;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.search.SearchBinaryOperatorKind;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.search.SearchExpression;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.search.SearchTerm;
 
 public class SearchHandler {
 

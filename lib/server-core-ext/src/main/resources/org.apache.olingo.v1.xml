@@ -25,7 +25,7 @@
     <edmx:Include Alias="Core" Namespace="Org.OData.Core.V1" />
   </edmx:Reference>
   <edmx:DataServices>
-    <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="org.apache.olingo.v1" Alias="olingo-extensions">
+    <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="org.sitenetsoft.olinguito.v1" Alias="olingo-extensions">
 
       <Term Name="xml10-incompatible-char-replacement" Type="Edm.String" AppliesTo="PropertyValue ReturnType">
         <Annotation Term="Core.Description">

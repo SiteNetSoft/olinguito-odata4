@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.domain;
+package org.sitenetsoft.olinguito.client.api.domain;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.olingo.commons.api.Constants;
+import org.sitenetsoft.olinguito.commons.api.Constants;
 
 /**
  * OData link.

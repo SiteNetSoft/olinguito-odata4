@@ -16,17 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.deserializer;
+package org.sitenetsoft.olinguito.server.api.deserializer;
 
 import java.io.InputStream;
 import java.util.List;
 
-import org.apache.olingo.commons.api.data.Parameter;
-import org.apache.olingo.commons.api.edm.EdmParameter;
-import org.apache.olingo.commons.api.edm.EdmProperty;
-import org.apache.olingo.server.api.deserializer.batch.BatchDeserializerException;
-import org.apache.olingo.server.api.deserializer.batch.BatchOptions;
-import org.apache.olingo.server.api.deserializer.batch.BatchRequestPart;
+import org.sitenetsoft.olinguito.commons.api.data.Parameter;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmParameter;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
+import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchDeserializerException;
+import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchOptions;
+import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchRequestPart;
 
 public interface FixedFormatDeserializer {
 

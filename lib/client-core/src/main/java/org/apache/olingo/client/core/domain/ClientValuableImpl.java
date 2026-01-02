@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.domain;
+package org.sitenetsoft.olinguito.client.core.domain;
 
-import org.apache.olingo.client.api.domain.ClientCollectionValue;
-import org.apache.olingo.client.api.domain.ClientComplexValue;
-import org.apache.olingo.client.api.domain.ClientEnumValue;
-import org.apache.olingo.client.api.domain.ClientPrimitiveValue;
-import org.apache.olingo.client.api.domain.ClientValuable;
-import org.apache.olingo.client.api.domain.ClientValue;
+import org.sitenetsoft.olinguito.client.api.domain.ClientCollectionValue;
+import org.sitenetsoft.olinguito.client.api.domain.ClientComplexValue;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEnumValue;
+import org.sitenetsoft.olinguito.client.api.domain.ClientPrimitiveValue;
+import org.sitenetsoft.olinguito.client.api.domain.ClientValuable;
+import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
 
 public class ClientValuableImpl implements ClientValuable {
 

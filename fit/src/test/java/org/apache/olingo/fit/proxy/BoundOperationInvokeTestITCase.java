@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy;
+package org.sitenetsoft.olinguito.fit.proxy;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
 import static org.junit.Assert.assertEquals;
@@ -25,16 +25,16 @@ import static org.junit.Assert.assertNotNull;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.AccessLevel;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.AccountInfoComposableInvoker;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Address;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.AddressCollection;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.HomeAddress;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.PaymentInstrument;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Person;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.ProductComposableInvoker;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.ProductDetailCollectionComposableInvoker;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.ProductDetailKey;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.AccessLevel;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.AccountInfoComposableInvoker;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Address;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.AddressCollection;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.HomeAddress;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.PaymentInstrument;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Person;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.ProductComposableInvoker;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.ProductDetailCollectionComposableInvoker;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.ProductDetailKey;
 import org.junit.Test;
 // CHECKSTYLE:ON (Maven checkstyle)
 

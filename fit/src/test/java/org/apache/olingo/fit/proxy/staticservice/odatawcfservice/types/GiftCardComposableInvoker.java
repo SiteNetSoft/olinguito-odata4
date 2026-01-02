@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
 public interface GiftCardComposableInvoker
-    extends org.apache.olingo.ext.proxy.api.StructuredComposableInvoker<GiftCard, GiftCard.Operations>
+    extends org.sitenetsoft.olinguito.ext.proxy.api.StructuredComposableInvoker<GiftCard, GiftCard.Operations>
 {
 
   @Override
@@ -34,7 +34,7 @@ public interface GiftCardComposableInvoker
   GiftCardComposableInvoker expand(String... expand);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "GiftCardID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "GiftCardID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -49,7 +49,7 @@ public interface GiftCardComposableInvoker
 
   void setGiftCardID(java.lang.Integer _giftCardID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "GiftCardNO",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "GiftCardNO",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -64,7 +64,7 @@ public interface GiftCardComposableInvoker
 
   void setGiftCardNO(java.lang.String _giftCardNO);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Amount",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Amount",
       type = "Edm.Double",
       nullable = false,
       defaultValue = "",
@@ -79,7 +79,7 @@ public interface GiftCardComposableInvoker
 
   void setAmount(java.lang.Double _amount);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ExperationDate",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ExperationDate",
       type = "Edm.DateTimeOffset",
       nullable = false,
       defaultValue = "",
@@ -94,7 +94,7 @@ public interface GiftCardComposableInvoker
 
   void setExperationDate(java.sql.Timestamp _experationDate);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "OwnerName",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "OwnerName",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",

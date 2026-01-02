@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.ext.proxy.commons;
+package org.sitenetsoft.olinguito.ext.proxy.commons;
 
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -38,34 +38,34 @@ import java.util.concurrent.Callable;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.client.api.domain.ClientInlineEntity;
-import org.apache.olingo.client.api.domain.ClientInlineEntitySet;
-import org.apache.olingo.client.api.domain.ClientLink;
-import org.apache.olingo.client.api.domain.ClientLinked;
-import org.apache.olingo.client.api.domain.ClientProperty;
-import org.apache.olingo.client.api.domain.ClientValue;
-import org.apache.olingo.client.api.uri.QueryOption;
-import org.apache.olingo.client.api.uri.URIBuilder;
-import org.apache.olingo.client.core.uri.URIUtils;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.ext.proxy.AbstractService;
-import org.apache.olingo.ext.proxy.api.AbstractEntitySet;
-import org.apache.olingo.ext.proxy.api.ComplexCollection;
-import org.apache.olingo.ext.proxy.api.EdmStreamValue;
-import org.apache.olingo.ext.proxy.api.EntityCollection;
-import org.apache.olingo.ext.proxy.api.PrimitiveCollection;
-import org.apache.olingo.ext.proxy.api.annotations.ComplexType;
-import org.apache.olingo.ext.proxy.api.annotations.Namespace;
-import org.apache.olingo.ext.proxy.api.annotations.NavigationProperty;
-import org.apache.olingo.ext.proxy.api.annotations.Property;
-import org.apache.olingo.ext.proxy.context.AttachedEntityStatus;
-import org.apache.olingo.ext.proxy.context.EntityContext;
-import org.apache.olingo.ext.proxy.context.EntityUUID;
-import org.apache.olingo.ext.proxy.utils.ClassUtils;
-import org.apache.olingo.ext.proxy.utils.CoreUtils;
-import org.apache.olingo.ext.proxy.utils.ProxyUtils;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientInlineEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientInlineEntitySet;
+import org.sitenetsoft.olinguito.client.api.domain.ClientLink;
+import org.sitenetsoft.olinguito.client.api.domain.ClientLinked;
+import org.sitenetsoft.olinguito.client.api.domain.ClientProperty;
+import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
+import org.sitenetsoft.olinguito.client.api.uri.QueryOption;
+import org.sitenetsoft.olinguito.client.api.uri.URIBuilder;
+import org.sitenetsoft.olinguito.client.core.uri.URIUtils;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.ext.proxy.AbstractService;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractEntitySet;
+import org.sitenetsoft.olinguito.ext.proxy.api.ComplexCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.EdmStreamValue;
+import org.sitenetsoft.olinguito.ext.proxy.api.EntityCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.PrimitiveCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.ComplexType;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property;
+import org.sitenetsoft.olinguito.ext.proxy.context.AttachedEntityStatus;
+import org.sitenetsoft.olinguito.ext.proxy.context.EntityContext;
+import org.sitenetsoft.olinguito.ext.proxy.context.EntityUUID;
+import org.sitenetsoft.olinguito.ext.proxy.utils.ClassUtils;
+import org.sitenetsoft.olinguito.ext.proxy.utils.CoreUtils;
+import org.sitenetsoft.olinguito.ext.proxy.utils.ProxyUtils;
 
 public abstract class AbstractStructuredInvocationHandler extends AbstractInvocationHandler {
 

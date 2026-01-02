@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.parser.search;
+package org.sitenetsoft.olinguito.server.core.uri.parser.search;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ import java.util.List;
  * </pre>
  *
  * <b>ATTENTION:</b> This class does not support a percent-encoded <code>searchPhrase</code> because the URI parser's
- * {@link org.apache.olingo.server.core.uri.parser.Parser#parseUri(String, String, String) parseUri} method
+ * {@link org.sitenetsoft.olinguito.server.core.uri.parser.Parser#parseUri(String, String, String) parseUri} method
  * <em>percent decodes</em> each query before calling parsers of query options.
  */
 public class SearchTokenizer {

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.debug;
+package org.sitenetsoft.olinguito.server.core.debug;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -30,16 +30,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.olingo.commons.api.ex.ODataRuntimeException;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.commons.api.http.HttpHeader;
-import org.apache.olingo.commons.api.http.HttpStatusCode;
-import org.apache.olingo.server.api.ODataResponse;
-import org.apache.olingo.server.api.debug.DebugInformation;
-import org.apache.olingo.server.api.debug.DebugResponseHelper;
-import org.apache.olingo.server.api.debug.DebugSupport;
-import org.apache.olingo.server.api.debug.RuntimeMeasurement;
-import org.apache.olingo.server.core.serializer.utils.CircleStreamBuffer;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.server.api.ODataResponse;
+import org.sitenetsoft.olinguito.server.api.debug.DebugInformation;
+import org.sitenetsoft.olinguito.server.api.debug.DebugResponseHelper;
+import org.sitenetsoft.olinguito.server.api.debug.DebugSupport;
+import org.sitenetsoft.olinguito.server.api.debug.RuntimeMeasurement;
+import org.sitenetsoft.olinguito.server.core.serializer.utils.CircleStreamBuffer;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -19,16 +19,16 @@
 package ${package};
 
 //CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Namespace;
-import org.apache.olingo.ext.proxy.api.annotations.Term;
-import org.apache.olingo.ext.proxy.api.AbstractTerm;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Term;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractTerm;
 #foreach($ns in $namespaces)
 import #if($basePackage)${basePackage}.#end${ns}.types.*;
 #end
 //CHECKSTYLE:ON (Maven checkstyle)
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("$namespace")
-@org.apache.olingo.ext.proxy.api.annotations.Term(name = "$term.Name",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("$namespace")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Term(name = "$term.Name",
       type="$term.Type"#if($term.getBaseTerm()),
       baseTerm = "$term.getBaseTerm().getFullQualifiedName().toString()"#end)
 public interface $utility.capitalize($term.Name) extends AbstractTerm {

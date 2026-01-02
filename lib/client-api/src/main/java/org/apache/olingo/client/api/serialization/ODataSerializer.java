@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.serialization;
+package org.sitenetsoft.olinguito.client.api.serialization;
 
 import java.io.Writer;
 
-import org.apache.olingo.client.api.data.ResWrap;
+import org.sitenetsoft.olinguito.client.api.data.ResWrap;
 
 /**
  * Interface for serialization.

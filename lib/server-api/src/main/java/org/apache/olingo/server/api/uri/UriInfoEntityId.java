@@ -16,16 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.uri;
+package org.sitenetsoft.olinguito.server.api.uri;
 
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.server.api.uri.queryoption.CustomQueryOption;
-import org.apache.olingo.server.api.uri.queryoption.ExpandOption;
-import org.apache.olingo.server.api.uri.queryoption.FormatOption;
-import org.apache.olingo.server.api.uri.queryoption.IdOption;
-import org.apache.olingo.server.api.uri.queryoption.SelectOption;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.CustomQueryOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.FormatOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.IdOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectOption;
 
 /**
  * Used for URI info kind {@link UriInfoKind#entityId} to describe URIs like

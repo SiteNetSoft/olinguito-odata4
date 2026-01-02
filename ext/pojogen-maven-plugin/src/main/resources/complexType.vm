@@ -19,37 +19,37 @@
 package ${package};
 
 //CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty;
-import org.apache.olingo.ext.proxy.api.annotations.AnnotationsForNavigationProperty;
-import org.apache.olingo.ext.proxy.api.annotations.Namespace;
-import org.apache.olingo.ext.proxy.api.annotations.ComplexType;
-import org.apache.olingo.ext.proxy.api.annotations.EntitySet;
-import org.apache.olingo.ext.proxy.api.annotations.Property;
-import org.apache.olingo.ext.proxy.api.annotations.NavigationProperty;
-import org.apache.olingo.ext.proxy.api.AbstractOpenType;
-import org.apache.olingo.ext.proxy.api.AbstractEntitySet;
-import org.apache.olingo.ext.proxy.api.Annotatable;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForNavigationProperty;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.ComplexType;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntitySet;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractOpenType;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractEntitySet;
+import org.sitenetsoft.olinguito.ext.proxy.api.Annotatable;
 #foreach($ns in $namespaces)
 import #if($basePackage)${basePackage}.#end${ns}.*;
 #end
 
-import org.apache.olingo.commons.api.edm.geo.Geospatial;
-import org.apache.olingo.commons.api.edm.geo.GeospatialCollection;
-import org.apache.olingo.commons.api.edm.geo.LineString;
-import org.apache.olingo.commons.api.edm.geo.MultiLineString;
-import org.apache.olingo.commons.api.edm.geo.MultiPoint;
-import org.apache.olingo.commons.api.edm.geo.MultiPolygon;
-import org.apache.olingo.commons.api.edm.geo.Point;
-import org.apache.olingo.commons.api.edm.geo.Polygon;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Geospatial;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.GeospatialCollection;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.LineString;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.MultiLineString;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.MultiPoint;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.MultiPolygon;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Point;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Polygon;
 //CHECKSTYLE:ON (Maven checkstyle)
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("$namespace")
-@org.apache.olingo.ext.proxy.api.annotations.ComplexType(name = "$complexType.Name",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("$namespace")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.ComplexType(name = "$complexType.Name",
         isOpenType = $complexType.isOpenType(),
         isAbstract = $complexType.Abstract#if($complexType.getBaseType()),
         baseType = "$complexType.getBaseType().getFullQualifiedName().toString()"#end)
 public interface $utility.capitalize($complexType.Name) 
-    extends #if($complexType.getBaseType())$utility.getJavaType($complexType.getBaseType().getFullQualifiedName().toString())#{else}org.apache.olingo.ext.proxy.api.ComplexType<$utility.capitalize($complexType.Name)>, org.apache.olingo.ext.proxy.api.StructuredQuery<$utility.capitalize($complexType.Name)>#{end}#if( $complexType.isOpenType() ),AbstractOpenType#{end} {
+    extends #if($complexType.getBaseType())$utility.getJavaType($complexType.getBaseType().getFullQualifiedName().toString())#{else}org.sitenetsoft.olinguito.ext.proxy.api.ComplexType<$utility.capitalize($complexType.Name)>, org.sitenetsoft.olinguito.ext.proxy.api.StructuredQuery<$utility.capitalize($complexType.Name)>#{end}#if( $complexType.isOpenType() ),AbstractOpenType#{end} {
 
 #if( $entityType.getBaseType() )
   @Override
@@ -62,12 +62,12 @@ public interface $utility.capitalize($complexType.Name)
     #set($property = $complexType.getProperty($propertyName))#*
 
     *##if($property.Type.FullQualifiedName.toString().equals("Edm.Stream"))#*
-      *##set( $returnType = "org.apache.olingo.ext.proxy.api.EdmStreamValue" )#*
+      *##set( $returnType = "org.sitenetsoft.olinguito.ext.proxy.api.EdmStreamValue" )#*
     *##else#*
       *##set( $returnType = $utility.getJavaType($property.Type, $property.Collection) )#*
     *##end
 
-    @org.apache.olingo.ext.proxy.api.annotations.Property(name = "$property.Name", 
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "$property.Name",
                 type = "$property.Type.getFullQualifiedName().toString()",
                 nullable = $property.Nullable,
                 defaultValue = "#if($property.getDefaultValue())$property.getDefaultValue()#end",
@@ -96,7 +96,7 @@ public interface $utility.capitalize($complexType.Name)
     #if($property.containsTarget() && $property.Collection)#*
       *##set( $contains = $contained.add($property) )
     #else#*
-      *#@org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "$property.Name", 
+      *#@org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "$property.Name",
                 type = "$type", 
                 targetSchema = "$binding.Schema.Namespace", 
                 targetContainer = "#if($binding.Container)$binding.Container.Name#end", 
@@ -114,7 +114,7 @@ public interface $utility.capitalize($complexType.Name)
 
 #foreach($propertyName in $complexType.PropertyNames)
     #set($property = $complexType.getProperty($propertyName))
-        @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "$property.Name",
+        @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "$property.Name",
                    type = "$property.Type.FullQualifiedName.toString()")
         Annotatable get$utility.capitalize($property.Name)Annotations();
 

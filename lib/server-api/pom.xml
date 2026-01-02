@@ -28,7 +28,7 @@
   <name>${project.artifactId}</name>
 
   <parent>
-    <groupId>org.apache.olingo</groupId>
+    <groupId>org.sitenetsoft.olinguito</groupId>
     <artifactId>odata-lib</artifactId>
     <version>5.0.1-SNAPSHOT</version>
     <relativePath>..</relativePath>
@@ -36,7 +36,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-commons-api</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -75,16 +75,16 @@
         <configuration>
           <instructions>
             <Export-Package>
-              org.apache.olingo.server.api*,
-              org.apache.olingo.netty.server.api*
+              org.sitenetsoft.olinguito.server.api*,
+              org.sitenetsoft.olinguito.netty.server.api*
             </Export-Package>
             <Import-Package>
               *
             </Import-Package>
             <!-- workaround due to the current server-api server-core interdependency -->
             <DynamicImport-Package>
-              org.apache.olingo.netty.server.core,
-              org.apache.olingo.server.core
+              org.sitenetsoft.olinguito.netty.server.core,
+              org.sitenetsoft.olinguito.server.core
             </DynamicImport-Package>
           </instructions>
         </configuration>

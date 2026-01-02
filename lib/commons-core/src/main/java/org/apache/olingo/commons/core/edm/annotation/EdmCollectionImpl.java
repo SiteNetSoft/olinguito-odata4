@@ -16,17 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.core.edm.annotation;
+package org.sitenetsoft.olinguito.commons.core.edm.annotation;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.annotation.EdmCollection;
-import org.apache.olingo.commons.api.edm.annotation.EdmExpression;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlCollection;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmCollection;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlCollection;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlExpression;
 
 public class EdmCollectionImpl extends AbstractEdmDynamicExpression implements EdmCollection {
 

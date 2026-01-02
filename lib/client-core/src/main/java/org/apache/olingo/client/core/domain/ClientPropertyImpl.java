@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.domain;
+package org.sitenetsoft.olinguito.client.core.domain;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.olingo.client.api.domain.ClientAnnotation;
-import org.apache.olingo.client.api.domain.ClientOperation;
-import org.apache.olingo.client.api.domain.ClientProperty;
-import org.apache.olingo.client.api.domain.ClientValue;
+import org.sitenetsoft.olinguito.client.api.domain.ClientAnnotation;
+import org.sitenetsoft.olinguito.client.api.domain.ClientOperation;
+import org.sitenetsoft.olinguito.client.api.domain.ClientProperty;
+import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
 
 public final class ClientPropertyImpl extends ClientValuableImpl implements ClientProperty {
 

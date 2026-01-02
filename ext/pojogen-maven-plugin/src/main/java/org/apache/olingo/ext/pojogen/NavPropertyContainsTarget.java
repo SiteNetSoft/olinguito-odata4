@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.ext.pojogen;
+package org.sitenetsoft.olinguito.ext.pojogen;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
 
 public class NavPropertyContainsTarget extends NavPropertyBindingDetails {
 

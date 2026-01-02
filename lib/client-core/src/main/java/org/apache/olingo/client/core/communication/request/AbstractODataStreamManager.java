@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.request;
+package org.sitenetsoft.olinguito.client.core.communication.request;
 
 import java.io.InputStream;
 import java.util.concurrent.ExecutionException;
@@ -26,12 +26,12 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
-import org.apache.olingo.client.api.communication.request.ODataPayloadManager;
-import org.apache.olingo.client.api.communication.response.ODataResponse;
-import org.apache.olingo.client.api.http.HttpClientException;
-import org.apache.olingo.client.core.ConfigurationImpl;
-import org.apache.olingo.client.core.communication.util.PipedInputStream;
-import org.apache.olingo.client.core.communication.util.PipedOutputStream;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataPayloadManager;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataResponse;
+import org.sitenetsoft.olinguito.client.api.http.HttpClientException;
+import org.sitenetsoft.olinguito.client.core.ConfigurationImpl;
+import org.sitenetsoft.olinguito.client.core.communication.util.PipedInputStream;
+import org.sitenetsoft.olinguito.client.core.communication.util.PipedOutputStream;
 
 /**
  * OData request payload management abstract class.

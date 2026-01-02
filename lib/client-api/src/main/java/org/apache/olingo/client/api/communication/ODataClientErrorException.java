@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication;
+package org.sitenetsoft.olinguito.client.api.communication;
 
 import org.apache.http.Header;
 import org.apache.http.StatusLine;
-import org.apache.olingo.commons.api.ex.ODataError;
-import org.apache.olingo.commons.api.ex.ODataRuntimeException;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataError;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
 
 import java.io.InputStream;
 

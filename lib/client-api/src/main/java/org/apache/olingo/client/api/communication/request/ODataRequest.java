@@ -16,21 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication.request;
+package org.sitenetsoft.olinguito.client.api.communication.request;
 
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Collection;
 
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.olingo.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 /**
  * Abstract representation of an OData request. Get instance by using factories.
  *
- * @see org.apache.olingo.client.api.communication.request.cud.CUDRequestFactory
- * @see org.apache.olingo.client.api.communication.request.batch.BatchRequestFactory
- * @see org.apache.olingo.client.api.communication.request.invoke.InvokeRequestFactory
+ * @see org.sitenetsoft.olinguito.client.api.communication.request.cud.CUDRequestFactory
+ * @see org.sitenetsoft.olinguito.client.api.communication.request.batch.BatchRequestFactory
+ * @see org.sitenetsoft.olinguito.client.api.communication.request.invoke.InvokeRequestFactory
  */
 public interface ODataRequest {
 
@@ -82,7 +82,7 @@ public interface ODataRequest {
    *
    * @param value header value.
    * @return current object
-   * @see org.apache.olingo.commons.api.http.HttpHeader#ACCEPT
+   * @see org.sitenetsoft.olinguito.commons.api.http.HttpHeader#ACCEPT
    */
   ODataRequest setAccept(final String value);
 
@@ -90,7 +90,7 @@ public interface ODataRequest {
    * Gets <tt>Accept</tt> OData request header.
    *
    * @return header value.
-   * @see org.apache.olingo.commons.api.http.HttpHeader#ACCEPT
+   * @see org.sitenetsoft.olinguito.commons.api.http.HttpHeader#ACCEPT
    */
   String getAccept();
 
@@ -99,7 +99,7 @@ public interface ODataRequest {
    *
    * @param value header value.
    * @return current object
-   * @see org.apache.olingo.commons.api.http.HttpHeader#IF_MATCH
+   * @see org.sitenetsoft.olinguito.commons.api.http.HttpHeader#IF_MATCH
    */
   ODataRequest setIfMatch(final String value);
 
@@ -107,7 +107,7 @@ public interface ODataRequest {
    * Gets <tt>If-Match</tt> OData request header.
    *
    * @return header value.
-   * @see org.apache.olingo.commons.api.http.HttpHeader#IF_MATCH
+   * @see org.sitenetsoft.olinguito.commons.api.http.HttpHeader#IF_MATCH
    */
   String getIfMatch();
 
@@ -116,7 +116,7 @@ public interface ODataRequest {
    *
    * @param value header value.
    * @return current object
-   * @see org.apache.olingo.commons.api.http.HttpHeader#IF_NONE_MATCH
+   * @see org.sitenetsoft.olinguito.commons.api.http.HttpHeader#IF_NONE_MATCH
    */
   ODataRequest setIfNoneMatch(final String value);
 
@@ -124,7 +124,7 @@ public interface ODataRequest {
    * Gets <tt>If-None-Match</tt> OData request header.
    *
    * @return header value.
-   * @see org.apache.olingo.commons.api.http.HttpHeader#IF_NONE_MATCH
+   * @see org.sitenetsoft.olinguito.commons.api.http.HttpHeader#IF_NONE_MATCH
    */
   String getIfNoneMatch();
 
@@ -133,7 +133,7 @@ public interface ODataRequest {
    *
    * @param value header value.
    * @return current object
-   * @see org.apache.olingo.commons.api.http.HttpHeader#PREFER
+   * @see org.sitenetsoft.olinguito.commons.api.http.HttpHeader#PREFER
    */
   ODataRequest setPrefer(final String value);
 
@@ -141,7 +141,7 @@ public interface ODataRequest {
    * Gets <tt>Prefer</tt> OData request header.
    *
    * @return header value.
-   * @see org.apache.olingo.commons.api.http.HttpHeader#PREFER
+   * @see org.sitenetsoft.olinguito.commons.api.http.HttpHeader#PREFER
    */
   String getPrefer();
 
@@ -150,7 +150,7 @@ public interface ODataRequest {
    *
    * @param value header value.
    * @return current object
-   * @see org.apache.olingo.commons.api.http.HttpHeader#CONTENT_TYPE
+   * @see org.sitenetsoft.olinguito.commons.api.http.HttpHeader#CONTENT_TYPE
    */
   ODataRequest setContentType(final String value);
 
@@ -158,7 +158,7 @@ public interface ODataRequest {
    * Gets <tt>contentType</tt> OData request header.
    *
    * @return header value.
-   * @see org.apache.olingo.commons.api.http.HttpHeader#CONTENT_TYPE
+   * @see org.sitenetsoft.olinguito.commons.api.http.HttpHeader#CONTENT_TYPE
    */
   String getContentType();
 
@@ -167,7 +167,7 @@ public interface ODataRequest {
    *
    * @param value header value.
    * @return current object
-   * @see org.apache.olingo.commons.api.http.HttpHeader#X_HTTP_METHOD
+   * @see org.sitenetsoft.olinguito.commons.api.http.HttpHeader#X_HTTP_METHOD
    */
   ODataRequest setXHTTPMethod(final String value);
 

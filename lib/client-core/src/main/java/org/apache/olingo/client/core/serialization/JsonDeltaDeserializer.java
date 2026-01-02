@@ -16,20 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.serialization;
+package org.sitenetsoft.olinguito.client.core.serialization;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.olingo.client.api.data.ResWrap;
-import org.apache.olingo.client.api.serialization.ODataDeserializerException;
-import org.apache.olingo.commons.api.Constants;
-import org.apache.olingo.commons.api.data.ContextURL;
-import org.apache.olingo.commons.api.data.DeletedEntity;
-import org.apache.olingo.commons.api.data.Delta;
-import org.apache.olingo.commons.api.data.DeltaLink;
+import org.sitenetsoft.olinguito.client.api.data.ResWrap;
+import org.sitenetsoft.olinguito.client.api.serialization.ODataDeserializerException;
+import org.sitenetsoft.olinguito.commons.api.Constants;
+import org.sitenetsoft.olinguito.commons.api.data.ContextURL;
+import org.sitenetsoft.olinguito.commons.api.data.DeletedEntity;
+import org.sitenetsoft.olinguito.commons.api.data.Delta;
+import org.sitenetsoft.olinguito.commons.api.data.DeltaLink;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;

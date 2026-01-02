@@ -16,28 +16,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.serializer.utils;
+package org.sitenetsoft.olinguito.server.core.serializer.utils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.olingo.commons.api.edm.EdmStructuredType;
-import org.apache.olingo.server.api.serializer.SerializerException;
-import org.apache.olingo.server.api.uri.UriResource;
-import org.apache.olingo.server.api.uri.UriResourceAction;
-import org.apache.olingo.server.api.uri.UriResourceComplexProperty;
-import org.apache.olingo.server.api.uri.UriResourceCount;
-import org.apache.olingo.server.api.uri.UriResourceEntitySet;
-import org.apache.olingo.server.api.uri.UriResourceFunction;
-import org.apache.olingo.server.api.uri.UriResourceNavigation;
-import org.apache.olingo.server.api.uri.UriResourceProperty;
-import org.apache.olingo.server.api.uri.UriResourceRef;
-import org.apache.olingo.server.api.uri.queryoption.ExpandItem;
-import org.apache.olingo.server.api.uri.queryoption.ExpandOption;
-import org.apache.olingo.server.api.uri.queryoption.SelectItem;
-import org.apache.olingo.server.api.uri.queryoption.SelectOption;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmStructuredType;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
+import org.sitenetsoft.olinguito.server.api.uri.UriResource;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceAction;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceComplexProperty;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceCount;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceEntitySet;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceFunction;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceNavigation;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceProperty;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceRef;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandItem;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectItem;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectOption;
 
 public abstract class ExpandSelectHelper {
 

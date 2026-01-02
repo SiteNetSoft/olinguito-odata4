@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.uri.queryoption.expression;
+package org.sitenetsoft.olinguito.server.api.uri.queryoption.expression;
 
 /**
  * Super class of all classes used to build the expression tree

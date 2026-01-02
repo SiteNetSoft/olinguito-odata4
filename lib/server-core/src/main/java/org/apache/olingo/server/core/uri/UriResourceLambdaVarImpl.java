@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri;
+package org.sitenetsoft.olinguito.server.core.uri;
 
-import org.apache.olingo.commons.api.edm.EdmType;
-import org.apache.olingo.server.api.uri.UriResourceKind;
-import org.apache.olingo.server.api.uri.UriResourceLambdaVariable;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceKind;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceLambdaVariable;
 
 public class UriResourceLambdaVarImpl extends UriResourceTypedImpl implements UriResourceLambdaVariable {
 

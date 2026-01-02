@@ -16,22 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
 import java.util.Collection;
 // CHECKSTYLE:ON (Maven checkstyle)
 
-import org.apache.olingo.ext.proxy.api.AbstractTerm;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractTerm;
 
 public interface PublicCompanyCollection
     extends
-    org.apache.olingo.ext.proxy.api.StructuredCollectionQuery<PublicCompanyCollection>,
-org.apache.olingo.ext.proxy.api.EntityCollection<PublicCompany, PublicCompanyCollection, PublicCompanyCollection> {
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionQuery<PublicCompanyCollection>,
+org.sitenetsoft.olinguito.ext.proxy.api.EntityCollection<PublicCompany, PublicCompanyCollection, PublicCompanyCollection> {
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 

@@ -16,22 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.core.edm;
+package org.sitenetsoft.olinguito.commons.core.edm;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.commons.api.edm.EdmException;
-import org.apache.olingo.commons.api.edm.EdmNavigationProperty;
-import org.apache.olingo.commons.api.edm.EdmOnDelete;
-import org.apache.olingo.commons.api.edm.EdmReferentialConstraint;
-import org.apache.olingo.commons.api.edm.EdmStructuredType;
-import org.apache.olingo.commons.api.edm.provider.CsdlNavigationProperty;
-import org.apache.olingo.commons.api.edm.provider.CsdlOnDelete;
-import org.apache.olingo.commons.api.edm.provider.CsdlReferentialConstraint;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmException;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmOnDelete;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmReferentialConstraint;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmStructuredType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlNavigationProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlOnDelete;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlReferentialConstraint;
 
 public class EdmNavigationPropertyImpl extends AbstractEdmNamed implements EdmNavigationProperty {
 

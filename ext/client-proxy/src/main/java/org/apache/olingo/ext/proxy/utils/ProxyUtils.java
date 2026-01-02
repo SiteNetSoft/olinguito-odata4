@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.olingo.ext.proxy.utils;
+package org.sitenetsoft.olinguito.ext.proxy.utils;
 
 import java.lang.reflect.Proxy;
 import java.net.URI;
@@ -21,18 +21,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.client.api.domain.ClientEntitySet;
-import org.apache.olingo.client.api.domain.ClientValue;
-import org.apache.olingo.client.api.uri.URIBuilder;
-import org.apache.olingo.ext.proxy.AbstractService;
-import org.apache.olingo.ext.proxy.api.AbstractEntitySet;
-import org.apache.olingo.ext.proxy.api.AbstractSingleton;
-import org.apache.olingo.ext.proxy.commons.ComplexInvocationHandler;
-import org.apache.olingo.ext.proxy.commons.EntityCollectionInvocationHandler;
-import org.apache.olingo.ext.proxy.commons.EntityInvocationHandler;
-import org.apache.olingo.ext.proxy.commons.EntitySetInvocationHandler;
-import org.apache.olingo.ext.proxy.commons.InlineEntitySetInvocationHandler;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntitySet;
+import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
+import org.sitenetsoft.olinguito.client.api.uri.URIBuilder;
+import org.sitenetsoft.olinguito.ext.proxy.AbstractService;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractEntitySet;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractSingleton;
+import org.sitenetsoft.olinguito.ext.proxy.commons.ComplexInvocationHandler;
+import org.sitenetsoft.olinguito.ext.proxy.commons.EntityCollectionInvocationHandler;
+import org.sitenetsoft.olinguito.ext.proxy.commons.EntityInvocationHandler;
+import org.sitenetsoft.olinguito.ext.proxy.commons.EntitySetInvocationHandler;
+import org.sitenetsoft.olinguito.ext.proxy.commons.InlineEntitySetInvocationHandler;
 
 public class ProxyUtils {
 

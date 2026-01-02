@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.uri.queryoption;
+package org.sitenetsoft.olinguito.server.api.uri.queryoption;
 
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.EdmStructuredType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmStructuredType;
 
 /**
  * Represents the system query option $apply, defined in the data aggregation extension.

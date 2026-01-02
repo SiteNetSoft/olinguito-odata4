@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.queryoption;
+package org.sitenetsoft.olinguito.server.core.uri.queryoption;
 
-import org.apache.olingo.server.api.uri.queryoption.OrderByItem;
-import org.apache.olingo.server.api.uri.queryoption.expression.Expression;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.OrderByItem;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Expression;
 
 public class OrderByItemImpl implements OrderByItem {
 

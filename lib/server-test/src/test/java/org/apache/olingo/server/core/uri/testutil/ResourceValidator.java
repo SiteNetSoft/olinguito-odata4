@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.testutil;
+package org.sitenetsoft.olinguito.server.core.uri.testutil;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -25,33 +25,33 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmElement;
-import org.apache.olingo.commons.api.edm.EdmType;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.http.HttpMethod;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.ODataLibraryException;
-import org.apache.olingo.server.api.uri.UriInfo;
-import org.apache.olingo.server.api.uri.UriInfoKind;
-import org.apache.olingo.server.api.uri.UriInfoResource;
-import org.apache.olingo.server.api.uri.UriParameter;
-import org.apache.olingo.server.api.uri.UriResource;
-import org.apache.olingo.server.api.uri.UriResourceAction;
-import org.apache.olingo.server.api.uri.UriResourceEntitySet;
-import org.apache.olingo.server.api.uri.UriResourceFunction;
-import org.apache.olingo.server.api.uri.UriResourceKind;
-import org.apache.olingo.server.api.uri.UriResourceLambdaAll;
-import org.apache.olingo.server.api.uri.UriResourceLambdaAny;
-import org.apache.olingo.server.api.uri.UriResourceNavigation;
-import org.apache.olingo.server.api.uri.UriResourcePartTyped;
-import org.apache.olingo.server.api.uri.UriResourceProperty;
-import org.apache.olingo.server.api.uri.UriResourceSingleton;
-import org.apache.olingo.server.core.uri.UriResourceTypedImpl;
-import org.apache.olingo.server.core.uri.UriResourceWithKeysImpl;
-import org.apache.olingo.server.core.uri.parser.Parser;
-import org.apache.olingo.server.core.uri.validator.UriValidationException;
-import org.apache.olingo.server.core.uri.validator.UriValidator;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmElement;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfo;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoKind;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoResource;
+import org.sitenetsoft.olinguito.server.api.uri.UriParameter;
+import org.sitenetsoft.olinguito.server.api.uri.UriResource;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceAction;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceEntitySet;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceFunction;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceKind;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceLambdaAll;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceLambdaAny;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceNavigation;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourcePartTyped;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceProperty;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceSingleton;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceTypedImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceWithKeysImpl;
+import org.sitenetsoft.olinguito.server.core.uri.parser.Parser;
+import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidationException;
+import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidator;
 
 public class ResourceValidator implements TestValidator {
   private final OData odata = OData.newInstance();

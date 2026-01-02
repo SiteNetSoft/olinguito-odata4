@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit;
+package org.sitenetsoft.olinguito.fit;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -74,39 +74,39 @@ import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
-import org.apache.olingo.client.api.data.ResWrap;
-import org.apache.olingo.client.api.serialization.ODataDeserializer;
-import org.apache.olingo.client.api.serialization.ODataSerializer;
-import org.apache.olingo.client.core.serialization.AtomSerializer;
-import org.apache.olingo.client.core.serialization.JsonDeserializer;
-import org.apache.olingo.client.core.serialization.JsonSerializer;
-import org.apache.olingo.commons.api.data.ComplexValue;
-import org.apache.olingo.commons.api.data.Entity;
-import org.apache.olingo.commons.api.data.EntityCollection;
-import org.apache.olingo.commons.api.data.Link;
-import org.apache.olingo.commons.api.data.Property;
-import org.apache.olingo.commons.api.data.ValueType;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeException;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.commons.core.edm.EdmTypeInfo;
-import org.apache.olingo.commons.core.edm.primitivetype.EdmPrimitiveTypeFactory;
-import org.apache.olingo.fit.metadata.EntityType;
-import org.apache.olingo.fit.metadata.Metadata;
-import org.apache.olingo.fit.metadata.NavigationProperty;
-import org.apache.olingo.fit.methods.PATCH;
-import org.apache.olingo.fit.rest.ResolvingReferencesInterceptor;
-import org.apache.olingo.fit.rest.XHTTPMethodInterceptor;
-import org.apache.olingo.fit.serializer.FITAtomDeserializer;
-import org.apache.olingo.fit.utils.AbstractUtilities;
-import org.apache.olingo.fit.utils.Accept;
-import org.apache.olingo.fit.utils.Commons;
-import org.apache.olingo.fit.utils.ConstantKey;
-import org.apache.olingo.fit.utils.Constants;
-import org.apache.olingo.fit.utils.FSManager;
-import org.apache.olingo.fit.utils.JSONUtilities;
-import org.apache.olingo.fit.utils.LinkInfo;
-import org.apache.olingo.fit.utils.XMLUtilities;
+import org.sitenetsoft.olinguito.client.api.data.ResWrap;
+import org.sitenetsoft.olinguito.client.api.serialization.ODataDeserializer;
+import org.sitenetsoft.olinguito.client.api.serialization.ODataSerializer;
+import org.sitenetsoft.olinguito.client.core.serialization.AtomSerializer;
+import org.sitenetsoft.olinguito.client.core.serialization.JsonDeserializer;
+import org.sitenetsoft.olinguito.client.core.serialization.JsonSerializer;
+import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.data.EntityCollection;
+import org.sitenetsoft.olinguito.commons.api.data.Link;
+import org.sitenetsoft.olinguito.commons.api.data.Property;
+import org.sitenetsoft.olinguito.commons.api.data.ValueType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmTypeInfo;
+import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmPrimitiveTypeFactory;
+import org.sitenetsoft.olinguito.fit.metadata.EntityType;
+import org.sitenetsoft.olinguito.fit.metadata.Metadata;
+import org.sitenetsoft.olinguito.fit.metadata.NavigationProperty;
+import org.sitenetsoft.olinguito.fit.methods.PATCH;
+import org.sitenetsoft.olinguito.fit.rest.ResolvingReferencesInterceptor;
+import org.sitenetsoft.olinguito.fit.rest.XHTTPMethodInterceptor;
+import org.sitenetsoft.olinguito.fit.serializer.FITAtomDeserializer;
+import org.sitenetsoft.olinguito.fit.utils.AbstractUtilities;
+import org.sitenetsoft.olinguito.fit.utils.Accept;
+import org.sitenetsoft.olinguito.fit.utils.Commons;
+import org.sitenetsoft.olinguito.fit.utils.ConstantKey;
+import org.sitenetsoft.olinguito.fit.utils.Constants;
+import org.sitenetsoft.olinguito.fit.utils.FSManager;
+import org.sitenetsoft.olinguito.fit.utils.JSONUtilities;
+import org.sitenetsoft.olinguito.fit.utils.LinkInfo;
+import org.sitenetsoft.olinguito.fit.utils.XMLUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -1218,7 +1218,7 @@ public class Services {
 
       final ResWrap<Entity> container;
 
-      final org.apache.olingo.fit.metadata.EntitySet entitySet = metadata.getEntitySet(entitySetName);
+      final org.sitenetsoft.olinguito.fit.metadata.EntitySet entitySet = metadata.getEntitySet(entitySetName);
 
       final Entity entry;
       final String entityKey;
@@ -1379,9 +1379,9 @@ public class Services {
   }
 
   private void normalizeAtomEntry(final Entity entry, final String entitySetName, final String entityKey) {
-    final org.apache.olingo.fit.metadata.EntitySet entitySet = metadata.getEntitySet(entitySetName);
+    final org.sitenetsoft.olinguito.fit.metadata.EntitySet entitySet = metadata.getEntitySet(entitySetName);
     final EntityType entityType = metadata.getEntityOrComplexType(entitySet.getType());
-    for (Map.Entry<String, org.apache.olingo.fit.metadata.Property> property : entityType.getPropertyMap().entrySet()) {
+    for (Map.Entry<String, org.sitenetsoft.olinguito.fit.metadata.Property> property : entityType.getPropertyMap().entrySet()) {
       if (entry.getProperty(property.getKey()) == null && property.getValue().isNullable()) {
         final Property prop = new Property();
         prop.setName(property.getKey());
@@ -2572,8 +2572,8 @@ public class Services {
     try {
       return EdmPrimitiveTypeFactory.getInstance(kind)
           .valueToString(property.asPrimitive(), null, null,
-              org.apache.olingo.commons.api.Constants.DEFAULT_PRECISION,
-              org.apache.olingo.commons.api.Constants.DEFAULT_SCALE, null);
+              org.sitenetsoft.olinguito.commons.api.Constants.DEFAULT_PRECISION,
+              org.sitenetsoft.olinguito.commons.api.Constants.DEFAULT_SCALE, null);
     } catch (final EdmPrimitiveTypeException e) {
       return property.asPrimitive().toString();
     }

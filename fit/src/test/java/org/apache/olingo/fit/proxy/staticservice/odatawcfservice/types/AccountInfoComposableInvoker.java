@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.AbstractOpenType;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractOpenType;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
 public interface AccountInfoComposableInvoker
-    extends org.apache.olingo.ext.proxy.api.StructuredComposableInvoker<AccountInfo, AccountInfo.Operations>
+    extends org.sitenetsoft.olinguito.ext.proxy.api.StructuredComposableInvoker<AccountInfo, AccountInfo.Operations>
     , AbstractOpenType {
 
   @Override
@@ -33,7 +33,7 @@ public interface AccountInfoComposableInvoker
   @Override
   AccountInfoComposableInvoker expand(String... expand);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "FirstName",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "FirstName",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -48,7 +48,7 @@ public interface AccountInfoComposableInvoker
 
   void setFirstName(java.lang.String _firstName);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "LastName",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "LastName",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",

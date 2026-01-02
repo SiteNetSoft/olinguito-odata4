@@ -16,30 +16,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core;
+package org.sitenetsoft.olinguito.server.core;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 
-import org.apache.olingo.commons.api.data.EntityIterator;
-import org.apache.olingo.commons.api.data.EntityMediaObject;
-import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.commons.api.ex.ODataRuntimeException;
-import org.apache.olingo.server.api.ODataContent;
-import org.apache.olingo.server.api.ODataContentWriteErrorCallback;
-import org.apache.olingo.server.api.ODataContentWriteErrorContext;
-import org.apache.olingo.server.api.ODataLibraryException;
-import org.apache.olingo.server.api.ServiceMetadata;
-import org.apache.olingo.server.api.serializer.EntityCollectionSerializerOptions;
-import org.apache.olingo.server.api.serializer.ODataSerializer;
-import org.apache.olingo.server.api.serializer.SerializerException;
-import org.apache.olingo.server.api.serializer.SerializerStreamResult;
-import org.apache.olingo.server.core.serializer.SerializerStreamResultImpl;
-import org.apache.olingo.server.core.serializer.FixedFormatSerializerImpl;
-import org.apache.olingo.server.core.serializer.json.ODataJsonSerializer;
-import org.apache.olingo.server.core.serializer.xml.ODataXmlSerializer;
+import org.sitenetsoft.olinguito.commons.api.data.EntityIterator;
+import org.sitenetsoft.olinguito.commons.api.data.EntityMediaObject;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
+import org.sitenetsoft.olinguito.server.api.ODataContent;
+import org.sitenetsoft.olinguito.server.api.ODataContentWriteErrorCallback;
+import org.sitenetsoft.olinguito.server.api.ODataContentWriteErrorContext;
+import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.api.serializer.EntityCollectionSerializerOptions;
+import org.sitenetsoft.olinguito.server.api.serializer.ODataSerializer;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerStreamResult;
+import org.sitenetsoft.olinguito.server.core.serializer.SerializerStreamResultImpl;
+import org.sitenetsoft.olinguito.server.core.serializer.FixedFormatSerializerImpl;
+import org.sitenetsoft.olinguito.server.core.serializer.json.ODataJsonSerializer;
+import org.sitenetsoft.olinguito.server.core.serializer.xml.ODataXmlSerializer;
 
 /**
  * Stream supporting implementation of the ODataContent
@@ -47,7 +47,7 @@ import org.apache.olingo.server.core.serializer.xml.ODataXmlSerializer;
  * <p/>
  * If an error occur during a <code>write</code> method <b>NO</b> exception
  * will be thrown but if registered the
- * org.apache.olingo.server.api.ODataContentWriteErrorCallback is called.
+ * org.sitenetsoft.olinguito.server.api.ODataContentWriteErrorCallback is called.
  */
 public class ODataWritableContent implements ODataContent {
   private StreamContent streamContent;

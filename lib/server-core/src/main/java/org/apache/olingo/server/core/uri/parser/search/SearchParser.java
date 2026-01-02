@@ -16,17 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.parser.search;
+package org.sitenetsoft.olinguito.server.core.uri.parser.search;
 
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.olingo.server.api.uri.queryoption.SearchOption;
-import org.apache.olingo.server.api.uri.queryoption.search.SearchBinaryOperatorKind;
-import org.apache.olingo.server.api.uri.queryoption.search.SearchExpression;
-import org.apache.olingo.server.api.uri.queryoption.search.SearchTerm;
-import org.apache.olingo.server.core.uri.parser.search.SearchQueryToken.Token;
-import org.apache.olingo.server.core.uri.queryoption.SearchOptionImpl;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SearchOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.search.SearchBinaryOperatorKind;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.search.SearchExpression;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.search.SearchTerm;
+import org.sitenetsoft.olinguito.server.core.uri.parser.search.SearchQueryToken.Token;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.SearchOptionImpl;
 
 /*
  * Rewritten grammar

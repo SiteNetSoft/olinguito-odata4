@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy;
+package org.sitenetsoft.olinguito.fit.proxy;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -25,13 +25,13 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Address;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.CompanyAddress;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.CreditCardPI;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.CreditCardPICollection;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Customer;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.CustomerCollection;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Person;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Address;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.CompanyAddress;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.CreditCardPI;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.CreditCardPICollection;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Customer;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.CustomerCollection;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Person;
 // CHECKSTYLE:ON (Maven checkstyle)
 import org.junit.Test;
 

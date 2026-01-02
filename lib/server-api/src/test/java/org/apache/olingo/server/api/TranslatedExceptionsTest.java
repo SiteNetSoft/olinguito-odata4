@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api;
+package org.sitenetsoft.olinguito.server.api;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
@@ -27,7 +27,7 @@ import java.util.Locale;
 
 import javax.management.RuntimeErrorException;
 
-import org.apache.olingo.server.api.ODataLibraryException.ODataErrorMessage;
+import org.sitenetsoft.olinguito.server.api.ODataLibraryException.ODataErrorMessage;
 import org.junit.Test;
 
 public class TranslatedExceptionsTest {

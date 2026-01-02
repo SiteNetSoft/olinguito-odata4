@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.debug;
+package org.sitenetsoft.olinguito.server.core.debug;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -27,16 +27,16 @@ import java.util.Map;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.commons.api.http.HttpHeader;
-import org.apache.olingo.commons.api.http.HttpStatusCode;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.ODataRequest;
-import org.apache.olingo.server.api.ODataResponse;
-import org.apache.olingo.server.api.debug.DebugInformation;
-import org.apache.olingo.server.api.debug.DebugSupport;
-import org.apache.olingo.server.api.debug.RuntimeMeasurement;
-import org.apache.olingo.server.api.uri.UriInfo;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ODataRequest;
+import org.sitenetsoft.olinguito.server.api.ODataResponse;
+import org.sitenetsoft.olinguito.server.api.debug.DebugInformation;
+import org.sitenetsoft.olinguito.server.api.debug.DebugSupport;
+import org.sitenetsoft.olinguito.server.api.debug.RuntimeMeasurement;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfo;
 
 public class ServerCoreDebugger {
 

@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication.request.retrieve;
+package org.sitenetsoft.olinguito.client.api.communication.request.retrieve;
 
-import org.apache.olingo.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
 
 /**
  * Describes an OData retrieve query request returning a single entity.

@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.deserializer.helper;
+package org.sitenetsoft.olinguito.server.core.deserializer.helper;
 
-import org.apache.olingo.commons.api.edm.EdmNavigationProperty;
-import org.apache.olingo.server.api.uri.queryoption.ExpandOption;
-import org.apache.olingo.server.core.uri.UriInfoImpl;
-import org.apache.olingo.server.core.uri.UriResourceNavigationPropertyImpl;
-import org.apache.olingo.server.core.uri.queryoption.ExpandItemImpl;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationProperty;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandOption;
+import org.sitenetsoft.olinguito.server.core.uri.UriInfoImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceNavigationPropertyImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.ExpandItemImpl;
 
 public abstract class ExpandTreeBuilder {
   

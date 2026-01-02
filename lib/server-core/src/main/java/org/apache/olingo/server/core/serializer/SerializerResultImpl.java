@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.serializer;
+package org.sitenetsoft.olinguito.server.core.serializer;
 
 import java.io.InputStream;
 
-import org.apache.olingo.server.api.serializer.SerializerResult;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerResult;
 
 public class SerializerResultImpl implements SerializerResult {
   private InputStream content;

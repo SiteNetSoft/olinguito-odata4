@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.utils;
+package org.sitenetsoft.olinguito.fit.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -57,8 +57,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
-import org.apache.olingo.fit.metadata.Metadata;
-import org.apache.olingo.fit.metadata.NavigationProperty;
+import org.sitenetsoft.olinguito.fit.metadata.Metadata;
+import org.sitenetsoft.olinguito.fit.metadata.NavigationProperty;
 
 import static javax.xml.stream.XMLInputFactory.*;
 
@@ -382,7 +382,7 @@ public class XMLUtilities extends AbstractUtilities {
     final XMLElement res = new XMLElement();
     res.setStart(start);
 
-    final Charset encoding = Charset.forName(org.apache.olingo.commons.api.Constants.UTF8);
+    final Charset encoding = Charset.forName(org.sitenetsoft.olinguito.commons.api.Constants.UTF8);
     final ByteArrayOutputStream content = new ByteArrayOutputStream();
     final OutputStreamWriter writer = new OutputStreamWriter(content, encoding);
 

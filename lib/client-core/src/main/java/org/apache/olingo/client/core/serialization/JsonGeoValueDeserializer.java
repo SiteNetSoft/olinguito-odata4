@@ -16,28 +16,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.serialization;
+package org.sitenetsoft.olinguito.client.core.serialization;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.olingo.commons.api.Constants;
-import org.apache.olingo.commons.api.data.GeoUtils;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeException;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
-import org.apache.olingo.commons.api.edm.geo.Geospatial;
-import org.apache.olingo.commons.api.edm.geo.GeospatialCollection;
-import org.apache.olingo.commons.api.edm.geo.LineString;
-import org.apache.olingo.commons.api.edm.geo.MultiLineString;
-import org.apache.olingo.commons.api.edm.geo.MultiPoint;
-import org.apache.olingo.commons.api.edm.geo.MultiPolygon;
-import org.apache.olingo.commons.api.edm.geo.Point;
-import org.apache.olingo.commons.api.edm.geo.Polygon;
-import org.apache.olingo.commons.api.edm.geo.SRID;
-import org.apache.olingo.commons.core.edm.EdmTypeInfo;
-import org.apache.olingo.commons.core.edm.primitivetype.EdmDouble;
+import org.sitenetsoft.olinguito.commons.api.Constants;
+import org.sitenetsoft.olinguito.commons.api.data.GeoUtils;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Geospatial;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.GeospatialCollection;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.LineString;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.MultiLineString;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.MultiPoint;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.MultiPolygon;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Point;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Polygon;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.SRID;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmTypeInfo;
+import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmDouble;
 
 import com.fasterxml.jackson.databind.JsonNode;
 

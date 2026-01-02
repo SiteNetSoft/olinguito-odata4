@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edm.annotation;
+package org.sitenetsoft.olinguito.commons.api.edm.annotation;
 
 /**
  * The edm:PropertyPath expression provides a value for terms or term properties that specify the built-in 

@@ -16,24 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
-@org.apache.olingo.ext.proxy.api.annotations.EntityType(name = "Department",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityType(name = "Department",
     openType = false,
     hasStream = false,
     isAbstract = false)
 public interface Department
-    extends org.apache.olingo.ext.proxy.api.Annotatable,
-    org.apache.olingo.ext.proxy.api.EntityType<Department>, org.apache.olingo.ext.proxy.api.StructuredQuery<Department> {
+    extends org.sitenetsoft.olinguito.ext.proxy.api.Annotatable,
+    org.sitenetsoft.olinguito.ext.proxy.api.EntityType<Department>, org.sitenetsoft.olinguito.ext.proxy.api.StructuredQuery<Department> {
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "DepartmentID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "DepartmentID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -48,7 +48,7 @@ public interface Department
 
   void setDepartmentID(java.lang.Integer _departmentID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Name",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Name",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -63,7 +63,7 @@ public interface Department
 
   void setName(java.lang.String _name);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "DepartmentNO",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "DepartmentNO",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -78,7 +78,7 @@ public interface Department
 
   void setDepartmentNO(java.lang.String _departmentNO);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "Company",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "Company",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Company",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -92,7 +92,7 @@ public interface Department
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 
@@ -100,21 +100,21 @@ public interface Department
 
   interface Annotations {
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "DepartmentID",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "DepartmentID",
         type = "Edm.Int32")
-    org.apache.olingo.ext.proxy.api.Annotatable getDepartmentIDAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getDepartmentIDAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Name",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Name",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getNameAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getNameAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "DepartmentNO",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "DepartmentNO",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getDepartmentNOAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getDepartmentNOAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "Company",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "Company",
         type = "Microsoft.Test.OData.Services.ODataWCFService.Company")
-    org.apache.olingo.ext.proxy.api.Annotatable getCompanyAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getCompanyAnnotations();
   }
 
 }

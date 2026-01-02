@@ -16,19 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.ext.proxy.commons;
+package org.sitenetsoft.olinguito.ext.proxy.commons;
 
 import java.net.URI;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.olingo.client.api.EdmEnabledODataClient;
-import org.apache.olingo.client.api.uri.URIBuilder;
-import org.apache.olingo.client.api.uri.URISearch;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.ext.proxy.api.EntityCollection;
-import org.apache.olingo.ext.proxy.api.EntityType;
-import org.apache.olingo.ext.proxy.api.Search;
-import org.apache.olingo.ext.proxy.utils.ClassUtils;
+import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
+import org.sitenetsoft.olinguito.client.api.uri.URIBuilder;
+import org.sitenetsoft.olinguito.client.api.uri.URISearch;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.ext.proxy.api.EntityCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.EntityType;
+import org.sitenetsoft.olinguito.ext.proxy.api.Search;
+import org.sitenetsoft.olinguito.ext.proxy.utils.ClassUtils;
 
 public class SearchImpl<T extends EntityType<?>, EC extends EntityCollection<T, ?, ?>> implements Search<T, EC> {
 

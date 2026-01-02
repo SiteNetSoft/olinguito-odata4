@@ -16,33 +16,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.request.cud;
+package org.sitenetsoft.olinguito.client.core.communication.request.cud;
 
 import java.io.InputStream;
 import java.net.URI;
 
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.communication.request.cud.CUDRequestFactory;
-import org.apache.olingo.client.api.communication.request.cud.ODataDeleteRequest;
-import org.apache.olingo.client.api.communication.request.cud.ODataEntityCreateRequest;
-import org.apache.olingo.client.api.communication.request.cud.ODataEntityUpdateRequest;
-import org.apache.olingo.client.api.communication.request.cud.ODataPropertyUpdateRequest;
-import org.apache.olingo.client.api.communication.request.cud.ODataReferenceAddingRequest;
-import org.apache.olingo.client.api.communication.request.cud.ODataValueUpdateRequest;
-import org.apache.olingo.client.api.communication.request.cud.UpdateType;
-import org.apache.olingo.client.api.communication.request.streamed.ODataMediaEntityCreateRequest;
-import org.apache.olingo.client.api.communication.request.streamed.ODataMediaEntityUpdateRequest;
-import org.apache.olingo.client.api.communication.request.streamed.ODataStreamUpdateRequest;
-import org.apache.olingo.client.api.data.ResWrap;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.client.api.domain.ClientPrimitiveValue;
-import org.apache.olingo.client.api.domain.ClientProperty;
-import org.apache.olingo.client.api.domain.ClientSingleton;
-import org.apache.olingo.client.core.communication.request.streamed.ODataMediaEntityCreateRequestImpl;
-import org.apache.olingo.client.core.communication.request.streamed.ODataMediaEntityUpdateRequestImpl;
-import org.apache.olingo.client.core.communication.request.streamed.ODataStreamUpdateRequestImpl;
-import org.apache.olingo.client.core.uri.URIUtils;
-import org.apache.olingo.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.CUDRequestFactory;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataDeleteRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataEntityCreateRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataEntityUpdateRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataPropertyUpdateRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataReferenceAddingRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataValueUpdateRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.UpdateType;
+import org.sitenetsoft.olinguito.client.api.communication.request.streamed.ODataMediaEntityCreateRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.streamed.ODataMediaEntityUpdateRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.streamed.ODataStreamUpdateRequest;
+import org.sitenetsoft.olinguito.client.api.data.ResWrap;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientPrimitiveValue;
+import org.sitenetsoft.olinguito.client.api.domain.ClientProperty;
+import org.sitenetsoft.olinguito.client.api.domain.ClientSingleton;
+import org.sitenetsoft.olinguito.client.core.communication.request.streamed.ODataMediaEntityCreateRequestImpl;
+import org.sitenetsoft.olinguito.client.core.communication.request.streamed.ODataMediaEntityUpdateRequestImpl;
+import org.sitenetsoft.olinguito.client.core.communication.request.streamed.ODataStreamUpdateRequestImpl;
+import org.sitenetsoft.olinguito.client.core.uri.URIUtils;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 public class CUDRequestFactoryImpl implements CUDRequestFactory {
 

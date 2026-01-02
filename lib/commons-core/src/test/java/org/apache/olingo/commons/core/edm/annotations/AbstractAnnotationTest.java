@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.core.edm.annotations;
+package org.sitenetsoft.olinguito.commons.core.edm.annotations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -28,9 +28,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.annotation.EdmConstantExpression;
-import org.apache.olingo.commons.api.edm.annotation.EdmDynamicExpression;
-import org.apache.olingo.commons.api.edm.annotation.EdmExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmConstantExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmDynamicExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmExpression;
 
 public class AbstractAnnotationTest {
 

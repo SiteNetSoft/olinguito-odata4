@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.sample;
+package org.sitenetsoft.olinguito.server.sample;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,13 +27,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-import org.apache.olingo.commons.api.edmx.EdmxReference;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.ODataHttpHandler;
-import org.apache.olingo.server.api.ServiceMetadata;
-import org.apache.olingo.server.sample.data.DataProvider;
-import org.apache.olingo.server.sample.edmprovider.CarsEdmProvider;
-import org.apache.olingo.server.sample.processor.CarsProcessor;
+import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ODataHttpHandler;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.sample.data.DataProvider;
+import org.sitenetsoft.olinguito.server.sample.edmprovider.CarsEdmProvider;
+import org.sitenetsoft.olinguito.server.sample.processor.CarsProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

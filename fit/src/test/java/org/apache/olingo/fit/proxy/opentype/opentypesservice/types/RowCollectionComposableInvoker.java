@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.opentype.opentypesservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.opentype.opentypesservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
 
 public interface RowCollectionComposableInvoker
     extends
-    org.apache.olingo.ext.proxy.api.StructuredCollectionComposableInvoker<RowCollection, RowCollection.Operations> {
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionComposableInvoker<RowCollection, RowCollection.Operations> {
 
   @Override
   RowCollectionComposableInvoker select(String... select);

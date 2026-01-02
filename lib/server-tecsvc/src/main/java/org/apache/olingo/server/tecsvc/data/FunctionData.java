@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.tecsvc.data;
+package org.sitenetsoft.olinguito.server.tecsvc.data;
 
 import java.math.BigDecimal;
 import java.net.URI;
@@ -29,15 +29,15 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
 
-import org.apache.olingo.commons.api.data.ComplexValue;
-import org.apache.olingo.commons.api.data.Entity;
-import org.apache.olingo.commons.api.data.EntityCollection;
-import org.apache.olingo.commons.api.data.Parameter;
-import org.apache.olingo.commons.api.data.Property;
-import org.apache.olingo.commons.api.data.ValueType;
-import org.apache.olingo.commons.api.http.HttpStatusCode;
-import org.apache.olingo.server.tecsvc.data.DataProvider.DataProviderException;
-import org.apache.olingo.server.tecsvc.provider.ComplexTypeProvider;
+import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.data.EntityCollection;
+import org.sitenetsoft.olinguito.commons.api.data.Parameter;
+import org.sitenetsoft.olinguito.commons.api.data.Property;
+import org.sitenetsoft.olinguito.commons.api.data.ValueType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider.DataProviderException;
+import org.sitenetsoft.olinguito.server.tecsvc.provider.ComplexTypeProvider;
 
 public class FunctionData {
 

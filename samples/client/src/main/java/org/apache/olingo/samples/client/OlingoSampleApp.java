@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  ******************************************************************************/
-package org.apache.olingo.samples.client;
+package org.sitenetsoft.olinguito.samples.client;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,35 +30,35 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.communication.request.cud.ODataDeleteRequest;
-import org.apache.olingo.client.api.communication.request.cud.ODataEntityCreateRequest;
-import org.apache.olingo.client.api.communication.request.cud.ODataEntityUpdateRequest;
-import org.apache.olingo.client.api.communication.request.cud.UpdateType;
-import org.apache.olingo.client.api.communication.request.retrieve.EdmMetadataRequest;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataEntityRequest;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetIteratorRequest;
-import org.apache.olingo.client.api.communication.response.ODataDeleteResponse;
-import org.apache.olingo.client.api.communication.response.ODataEntityCreateResponse;
-import org.apache.olingo.client.api.communication.response.ODataEntityUpdateResponse;
-import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
-import org.apache.olingo.client.api.domain.ClientCollectionValue;
-import org.apache.olingo.client.api.domain.ClientComplexValue;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.client.api.domain.ClientEntitySet;
-import org.apache.olingo.client.api.domain.ClientEntitySetIterator;
-import org.apache.olingo.client.api.domain.ClientEnumValue;
-import org.apache.olingo.client.api.domain.ClientProperty;
-import org.apache.olingo.client.api.domain.ClientValue;
-import org.apache.olingo.client.api.serialization.ODataDeserializerException;
-import org.apache.olingo.client.core.ODataClientFactory;
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmComplexType;
-import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.commons.api.edm.EdmProperty;
-import org.apache.olingo.commons.api.edm.EdmSchema;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataDeleteRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataEntityCreateRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataEntityUpdateRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.UpdateType;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.EdmMetadataRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntityRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntitySetIteratorRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataDeleteResponse;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataEntityCreateResponse;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataEntityUpdateResponse;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
+import org.sitenetsoft.olinguito.client.api.domain.ClientCollectionValue;
+import org.sitenetsoft.olinguito.client.api.domain.ClientComplexValue;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntitySet;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntitySetIterator;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEnumValue;
+import org.sitenetsoft.olinguito.client.api.domain.ClientProperty;
+import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
+import org.sitenetsoft.olinguito.client.api.serialization.ODataDeserializerException;
+import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmComplexType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmSchema;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 
 
 /**

@@ -28,7 +28,7 @@
   <name>${project.artifactId}</name>
 
   <parent>
-    <groupId>org.apache.olingo</groupId>
+    <groupId>org.sitenetsoft.olinguito</groupId>
     <artifactId>odata-ext</artifactId>
     <version>5.0.1-SNAPSHOT</version>
     <relativePath>..</relativePath>
@@ -36,7 +36,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-client-proxy</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -66,11 +66,11 @@
         <configuration>
           <artifactSet>
             <includes>
-              <include>org.apache.olingo:odata-client-proxy</include>
-              <include>org.apache.olingo:odata-client-core</include>
-              <include>org.apache.olingo:odata-client-api</include>
-              <include>org.apache.olingo:odata-commons-core</include>
-              <include>org.apache.olingo:odata-commons-api</include>
+              <include>org.sitenetsoft.olinguito:odata-client-proxy</include>
+              <include>org.sitenetsoft.olinguito:odata-client-core</include>
+              <include>org.sitenetsoft.olinguito:odata-client-api</include>
+              <include>org.sitenetsoft.olinguito:odata-commons-core</include>
+              <include>org.sitenetsoft.olinguito:odata-commons-api</include>
               <include>org.apache.commons:commons-lang3</include>
               <include>org.slf4j:slf4j-api</include>
               <include>commons-io:commons-io</include>
@@ -87,7 +87,7 @@
           <relocations>
             <relocation>
               <pattern>javax.xml.stream</pattern>
-              <shadedPattern>org.apache.olingo.javax.xml.stream</shadedPattern>
+              <shadedPattern>org.sitenetsoft.olinguito.javax.xml.stream</shadedPattern>
             </relocation>
           </relocations>
           <filters>

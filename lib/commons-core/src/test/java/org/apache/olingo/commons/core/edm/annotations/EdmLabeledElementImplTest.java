@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.core.edm.annotations;
+package org.sitenetsoft.olinguito.commons.core.edm.annotations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -27,17 +27,17 @@ import static org.mockito.Mockito.mock;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmException;
-import org.apache.olingo.commons.api.edm.annotation.EdmDynamicExpression;
-import org.apache.olingo.commons.api.edm.annotation.EdmExpression;
-import org.apache.olingo.commons.api.edm.annotation.EdmLabeledElement;
-import org.apache.olingo.commons.api.edm.annotation.EdmExpression.EdmExpressionType;
-import org.apache.olingo.commons.api.edm.provider.CsdlAnnotation;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlConstantExpression;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlLabeledElement;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlConstantExpression.ConstantExpressionType;
-import org.apache.olingo.commons.core.edm.annotation.AbstractEdmExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmException;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmDynamicExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmLabeledElement;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmExpression.EdmExpressionType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlConstantExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlLabeledElement;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlConstantExpression.ConstantExpressionType;
+import org.sitenetsoft.olinguito.commons.core.edm.annotation.AbstractEdmExpression;
 import org.junit.Test;
 
 public class EdmLabeledElementImplTest extends AbstractAnnotationTest {

@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edm;
+package org.sitenetsoft.olinguito.commons.api.edm;
 
-import org.apache.olingo.commons.api.edm.geo.SRID;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.SRID;
 
 /**
  * An {@link EdmReturnType} of an {@link EdmOperation}.

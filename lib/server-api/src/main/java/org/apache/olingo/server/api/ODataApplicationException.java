@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api;
+package org.sitenetsoft.olinguito.server.api;
 
 import java.util.Locale;
 
-import org.apache.olingo.commons.api.ex.ODataException;
-import org.apache.olingo.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
 
 /**
  * Exception thrown by OData service implementations.

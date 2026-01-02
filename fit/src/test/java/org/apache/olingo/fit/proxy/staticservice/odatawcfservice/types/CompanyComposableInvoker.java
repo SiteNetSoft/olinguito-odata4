@@ -16,16 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.AbstractOpenType;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractOpenType;
 
 // CHECKSTYLE:ON (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 public interface CompanyComposableInvoker
-    extends org.apache.olingo.ext.proxy.api.StructuredComposableInvoker<Company, Company.Operations>
+    extends org.sitenetsoft.olinguito.ext.proxy.api.StructuredComposableInvoker<Company, Company.Operations>
     , AbstractOpenType {
 
   @Override
@@ -35,7 +35,7 @@ public interface CompanyComposableInvoker
   CompanyComposableInvoker expand(String... expand);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "CompanyID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "CompanyID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -50,7 +50,7 @@ public interface CompanyComposableInvoker
 
   void setCompanyID(java.lang.Integer _companyID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "CompanyCategory",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "CompanyCategory",
       type = "Microsoft.Test.OData.Services.ODataWCFService.CompanyCategory",
       nullable = true,
       defaultValue = "",
@@ -68,7 +68,7 @@ public interface CompanyComposableInvoker
       setCompanyCategory(
           CompanyCategory _companyCategory);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Revenue",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Revenue",
       type = "Edm.Int64",
       nullable = false,
       defaultValue = "",
@@ -83,7 +83,7 @@ public interface CompanyComposableInvoker
 
   void setRevenue(java.lang.Long _revenue);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Name",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Name",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -98,7 +98,7 @@ public interface CompanyComposableInvoker
 
   void setName(java.lang.String _name);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Address",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Address",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Address",
       nullable = true,
       defaultValue = "",
@@ -115,7 +115,7 @@ public interface CompanyComposableInvoker
       setAddress(
           Address _address);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "Employees",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "Employees",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Employee",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -128,7 +128,7 @@ public interface CompanyComposableInvoker
       setEmployees(
           EmployeeCollection _employees);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "VipCustomer",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "VipCustomer",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Customer",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -141,7 +141,7 @@ public interface CompanyComposableInvoker
       setVipCustomer(
           Customer _vipCustomer);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "Departments",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "Departments",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Department",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -154,7 +154,7 @@ public interface CompanyComposableInvoker
       setDepartments(
           DepartmentCollection _departments);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "CoreDepartment",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "CoreDepartment",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Department",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",

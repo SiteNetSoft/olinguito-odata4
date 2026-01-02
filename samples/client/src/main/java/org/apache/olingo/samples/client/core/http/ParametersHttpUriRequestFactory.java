@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.samples.client.core.http;
+package org.sitenetsoft.olinguito.samples.client.core.http;
 
 import java.net.URI;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpConnectionParams;
-import org.apache.olingo.commons.api.http.HttpMethod;
-import org.apache.olingo.client.core.http.DefaultHttpUriRequestFactory;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.client.core.http.DefaultHttpUriRequestFactory;
 
 /**
  * Shows how to customize the runtime behavior of an HTTP request.

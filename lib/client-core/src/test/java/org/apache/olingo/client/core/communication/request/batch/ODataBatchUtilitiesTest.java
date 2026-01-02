@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.request.batch;
+package org.sitenetsoft.olinguito.client.core.communication.request.batch;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -33,15 +33,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.LineIterator;
-import org.apache.olingo.client.api.ODataBatchConstants;
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.ODataClientBuilder;
-import org.apache.olingo.client.api.communication.request.ODataBatchableRequest;
-import org.apache.olingo.client.api.communication.request.batch.ODataBatchLineIterator;
-import org.apache.olingo.client.api.communication.request.batch.ODataBatchRequest;
-import org.apache.olingo.client.api.domain.ClientInvokeResult;
-import org.apache.olingo.client.core.communication.request.invoke.ODataInvokeRequestImpl;
-import org.apache.olingo.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.client.api.ODataBatchConstants;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.ODataClientBuilder;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataBatchableRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchLineIterator;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchRequest;
+import org.sitenetsoft.olinguito.client.api.domain.ClientInvokeResult;
+import org.sitenetsoft.olinguito.client.core.communication.request.invoke.ODataInvokeRequestImpl;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.junit.Test;
 
 public class ODataBatchUtilitiesTest {

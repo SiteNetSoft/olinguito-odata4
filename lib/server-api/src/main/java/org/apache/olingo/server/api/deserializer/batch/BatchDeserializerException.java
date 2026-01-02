@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.deserializer.batch;
+package org.sitenetsoft.olinguito.server.api.deserializer.batch;
 
-import org.apache.olingo.server.api.deserializer.DeserializerException;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
 
 public class BatchDeserializerException extends DeserializerException {
   public static enum MessageKeys implements MessageKey {

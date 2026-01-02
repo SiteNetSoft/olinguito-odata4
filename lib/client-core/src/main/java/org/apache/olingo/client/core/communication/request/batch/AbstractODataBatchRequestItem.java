@@ -16,16 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.request.batch;
+package org.sitenetsoft.olinguito.client.core.communication.request.batch;
 
 import java.nio.charset.Charset;
 
-import org.apache.olingo.client.api.ODataBatchConstants;
-import org.apache.olingo.client.api.communication.request.ODataBatchableRequest;
-import org.apache.olingo.client.api.communication.request.batch.ODataBatchRequest;
-import org.apache.olingo.client.api.communication.request.batch.ODataBatchRequestItem;
-import org.apache.olingo.client.core.communication.util.PipedOutputStream;
-import org.apache.olingo.client.core.communication.request.AbstractODataStreamer;
+import org.sitenetsoft.olinguito.client.api.ODataBatchConstants;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataBatchableRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchRequestItem;
+import org.sitenetsoft.olinguito.client.core.communication.util.PipedOutputStream;
+import org.sitenetsoft.olinguito.client.core.communication.request.AbstractODataStreamer;
 
 /**
  * Abstract representation of a batch request item.

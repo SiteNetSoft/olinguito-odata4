@@ -34,10 +34,10 @@ import myservice.mynamespace.service.DemoEntityCollectionProcessor;
 import myservice.mynamespace.service.DemoEntityProcessor;
 import myservice.mynamespace.service.DemoPrimitiveProcessor;
 
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.ODataHttpHandler;
-import org.apache.olingo.server.api.ServiceMetadata;
-import org.apache.olingo.commons.api.edmx.EdmxReference;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ODataHttpHandler;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

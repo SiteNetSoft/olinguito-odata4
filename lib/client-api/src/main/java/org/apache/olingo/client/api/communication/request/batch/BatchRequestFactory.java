@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication.request.batch;
+package org.sitenetsoft.olinguito.client.api.communication.request.batch;
 
 
 public interface BatchRequestFactory {

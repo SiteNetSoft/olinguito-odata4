@@ -41,10 +41,10 @@
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
   <bean class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer"/>
   
-  <jaxrs:server id="services" address="/" basePackages="org.apache.olingo.fit">
+  <jaxrs:server id="services" address="/" basePackages="org.sitenetsoft.olinguito.fit">
     <jaxrs:providers>
       <bean class="com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider"/>
-      <bean class="org.apache.olingo.fit.rest.OAuth2RequestFilter">
+      <bean class="org.sitenetsoft.olinguito.fit.rest.OAuth2RequestFilter">
         <property name="requiredScopes">
           <list>
             <value>foo</value>
@@ -55,11 +55,11 @@
         <property name="jwtTokenConsumer" ref="jwtTokenConsumer"/>
         <property name="messageContext" ref="messageContext" />
       </bean>
-      <bean class="org.apache.olingo.fit.rest.ServiceNameResponseFilter"/>
+      <bean class="org.sitenetsoft.olinguito.fit.rest.ServiceNameResponseFilter"/>
     </jaxrs:providers>
   </jaxrs:server>
 
-  <bean id="oauthProvider" class="org.apache.olingo.fit.rest.OAuth2Provider"/>
+  <bean id="oauthProvider" class="org.sitenetsoft.olinguito.fit.rest.OAuth2Provider"/>
   <bean id="jwtTokenConsumer" class="org.apache.cxf.rs.security.jose.jwt.JoseJwtConsumer"/>
   <bean id="messageContext" class="org.apache.cxf.jaxrs.impl.tl.ThreadLocalMessageContext" />
   <bean id="authorizationService" class="org.apache.cxf.rs.security.oauth2.services.AuthorizationCodeGrantService">
@@ -68,7 +68,7 @@
   <bean id="accessTokenService" class="org.apache.cxf.rs.security.oauth2.services.AccessTokenService">
     <property name="dataProvider" ref="oauthProvider"/>
   </bean>  
-  <bean id="oauthSecurityInterceptor" class="org.apache.olingo.fit.rest.StaticSecurityInterceptor"/>
+  <bean id="oauthSecurityInterceptor" class="org.sitenetsoft.olinguito.fit.rest.StaticSecurityInterceptor"/>
   <jaxrs:server id="oauthServer" address="/oauth2">
     <jaxrs:serviceBeans>
       <ref bean="authorizationService"/>

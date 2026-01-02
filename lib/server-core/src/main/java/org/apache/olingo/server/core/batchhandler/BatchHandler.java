@@ -16,24 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.batchhandler;
+package org.sitenetsoft.olinguito.server.core.batchhandler;
 
 import java.util.List;
 
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.commons.api.http.HttpHeader;
-import org.apache.olingo.commons.api.http.HttpMethod;
-import org.apache.olingo.server.api.ODataApplicationException;
-import org.apache.olingo.server.api.ODataLibraryException;
-import org.apache.olingo.server.api.ODataRequest;
-import org.apache.olingo.server.api.ODataResponse;
-import org.apache.olingo.server.api.batch.BatchFacade;
-import org.apache.olingo.server.api.deserializer.batch.BatchDeserializerException;
-import org.apache.olingo.server.api.deserializer.batch.BatchDeserializerException.MessageKeys;
-import org.apache.olingo.server.api.processor.BatchProcessor;
-import org.apache.olingo.server.core.ODataHandlerException;
-import org.apache.olingo.server.core.ODataHandlerImpl;
-import org.apache.olingo.server.core.deserializer.batch.BatchParserCommon;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
+import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
+import org.sitenetsoft.olinguito.server.api.ODataRequest;
+import org.sitenetsoft.olinguito.server.api.ODataResponse;
+import org.sitenetsoft.olinguito.server.api.batch.BatchFacade;
+import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchDeserializerException;
+import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchDeserializerException.MessageKeys;
+import org.sitenetsoft.olinguito.server.api.processor.BatchProcessor;
+import org.sitenetsoft.olinguito.server.core.ODataHandlerException;
+import org.sitenetsoft.olinguito.server.core.ODataHandlerImpl;
+import org.sitenetsoft.olinguito.server.core.deserializer.batch.BatchParserCommon;
 
 public class BatchHandler {
   private final BatchProcessor batchProcessor;

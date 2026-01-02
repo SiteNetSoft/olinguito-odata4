@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.parser;
+package org.sitenetsoft.olinguito.server.core.uri.parser;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.olingo.commons.core.Decoder;
-import org.apache.olingo.server.api.uri.queryoption.QueryOption;
-import org.apache.olingo.server.core.uri.queryoption.CustomQueryOptionImpl;
+import org.sitenetsoft.olinguito.commons.core.Decoder;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.QueryOption;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.CustomQueryOptionImpl;
 
 public class UriDecoder {
 

@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.netty.server.api;
+package org.sitenetsoft.olinguito.netty.server.api;
 
-import org.apache.olingo.commons.api.ex.ODataRuntimeException;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 
 public abstract class ODataNetty extends OData {
 
-  private static final String IMPLEMENTATION = "org.apache.olingo.netty.server.core.ODataNettyImpl";
+  private static final String IMPLEMENTATION = "org.sitenetsoft.olinguito.netty.server.core.ODataNettyImpl";
 
   /**
    * Use this method to create a new OData instance. Each thread/request should keep its own instance.

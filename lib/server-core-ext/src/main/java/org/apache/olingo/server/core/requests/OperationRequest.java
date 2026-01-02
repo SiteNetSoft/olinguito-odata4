@@ -17,19 +17,19 @@
  * under the License.
  */
 
-package org.apache.olingo.server.core.requests;
+package org.sitenetsoft.olinguito.server.core.requests;
 
-import org.apache.olingo.commons.api.data.ContextURL;
-import org.apache.olingo.commons.api.edm.EdmReturnType;
-import org.apache.olingo.commons.api.edm.constants.EdmTypeKind;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.ServiceMetadata;
-import org.apache.olingo.server.api.serializer.RepresentationType;
-import org.apache.olingo.server.api.serializer.SerializerException;
-import org.apache.olingo.server.core.ContentNegotiator;
-import org.apache.olingo.server.core.ContentNegotiatorException;
-import org.apache.olingo.server.core.ServiceRequest;
+import org.sitenetsoft.olinguito.commons.api.data.ContextURL;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmReturnType;
+import org.sitenetsoft.olinguito.commons.api.edm.constants.EdmTypeKind;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.api.serializer.RepresentationType;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
+import org.sitenetsoft.olinguito.server.core.ContentNegotiator;
+import org.sitenetsoft.olinguito.server.core.ContentNegotiatorException;
+import org.sitenetsoft.olinguito.server.core.ServiceRequest;
 
 public abstract class OperationRequest extends ServiceRequest {
 

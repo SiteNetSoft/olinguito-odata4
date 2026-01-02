@@ -30,7 +30,7 @@
 	
 	<servlet>
 		<servlet-name>ODataServlet</servlet-name>
-		<servlet-class>org.apache.olingo.server.tecsvc.TechnicalServlet</servlet-class>
+		<servlet-class>org.sitenetsoft.olinguito.server.tecsvc.TechnicalServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
    
@@ -41,7 +41,7 @@
 
 	<servlet>
 		<servlet-name>StatusMonitorServlet</servlet-name>
-		<servlet-class>org.apache.olingo.server.tecsvc.async.TechnicalStatusMonitorServlet</servlet-class>
+		<servlet-class>org.sitenetsoft.olinguito.server.tecsvc.async.TechnicalStatusMonitorServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 
@@ -51,6 +51,6 @@
 	</servlet-mapping>
 
 	<listener>
-		<listener-class>org.apache.olingo.server.tecsvc.TechnicalServletContextListener</listener-class>
+		<listener-class>org.sitenetsoft.olinguito.server.tecsvc.TechnicalServletContextListener</listener-class>
 	</listener>
 </web-app>

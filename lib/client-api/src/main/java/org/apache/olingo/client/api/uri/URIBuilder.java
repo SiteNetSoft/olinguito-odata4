@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.uri;
+package org.sitenetsoft.olinguito.client.api.uri;
 
 import java.net.URI;
 import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.olingo.commons.api.edm.EdmEnumType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEnumType;
 
 public interface URIBuilder {
 
@@ -181,7 +181,7 @@ public interface URIBuilder {
    * @return current URIBuilder instance
    * @see QueryOption#FILTER
    * @see URIFilter
-   * @see org.apache.olingo.client.api.uri.FilterFactory
+   * @see org.sitenetsoft.olinguito.client.api.uri.FilterFactory
    */
   URIBuilder filter(URIFilter filter);
 
@@ -307,7 +307,7 @@ public interface URIBuilder {
    *
    * @param idValue opaque token.
    * @return current URIBuilder instance
-   * @see org.apache.olingo.client.api.uri.QueryOption#ID
+   * @see org.sitenetsoft.olinguito.client.api.uri.QueryOption#ID
    */
   URIBuilder id(String idValue);
 
@@ -316,7 +316,7 @@ public interface URIBuilder {
    *
    * @param value true or false
    * @return current URIBuilder instance
-   * @see org.apache.olingo.client.api.uri.QueryOption#COUNT
+   * @see org.sitenetsoft.olinguito.client.api.uri.QueryOption#COUNT
    */
   URIBuilder count(boolean value);
 
@@ -325,7 +325,7 @@ public interface URIBuilder {
    *
    * @param search search expression
    * @return current URIBuilder instance
-   * @see org.apache.olingo.client.api.uri.QueryOption#SEARCH
+   * @see org.sitenetsoft.olinguito.client.api.uri.QueryOption#SEARCH
    */
   URIBuilder search(URISearch search);
   
@@ -334,7 +334,7 @@ public interface URIBuilder {
    *
    * @param expression search expression
    * @return current URIBuilder instance
-   * @see org.apache.olingo.client.api.uri.QueryOption#SEARCH
+   * @see org.sitenetsoft.olinguito.client.api.uri.QueryOption#SEARCH
    */
   URIBuilder search(String expression);
 
@@ -346,7 +346,7 @@ public interface URIBuilder {
    * @param options System query options. Allowed query options are: $filter, $select, $orderby, $skip, $top, $count,
    * $search, $expand, and $levels.
    * @return current URIBuilder instance.
-   * @see org.apache.olingo.client.api.uri.QueryOption#EXPAND
+   * @see org.sitenetsoft.olinguito.client.api.uri.QueryOption#EXPAND
    */
   URIBuilder expandWithOptions(String expandItem, Map<QueryOption, Object> options);
   
@@ -360,7 +360,7 @@ public interface URIBuilder {
    * @param options System query options. Allowed query options are: $filter, $select, $orderby, $skip, $top, $count,
    * $search, $expand, and $levels.
    * @return current URIBuilder instance.
-   * @see org.apache.olingo.client.api.uri.QueryOption#EXPAND
+   * @see org.sitenetsoft.olinguito.client.api.uri.QueryOption#EXPAND
    */
   URIBuilder expandWithOptions(String expandItem, boolean pathRef,
       boolean pathCount, Map<QueryOption, Object> options);  
@@ -372,8 +372,8 @@ public interface URIBuilder {
    * @param expandItem related entity name.
    * @param selectItems properties to be selected.
    * @return current URIBuilder instance.
-   * @see org.apache.olingo.client.api.uri.QueryOption#EXPAND
-   * @see org.apache.olingo.client.api.uri.QueryOption#SELECT
+   * @see org.sitenetsoft.olinguito.client.api.uri.QueryOption#EXPAND
+   * @see org.sitenetsoft.olinguito.client.api.uri.QueryOption#SELECT
    */
   URIBuilder expandWithSelect(String expandItem, String... selectItems);
 

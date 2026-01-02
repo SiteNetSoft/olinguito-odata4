@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.deserializer;
+package org.sitenetsoft.olinguito.server.core.deserializer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -25,22 +25,22 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.List;
 
-import org.apache.olingo.commons.api.data.Parameter;
-import org.apache.olingo.commons.api.data.ValueType;
-import org.apache.olingo.commons.api.edm.EdmParameter;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveType;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeException;
-import org.apache.olingo.commons.api.edm.EdmProperty;
-import org.apache.olingo.commons.api.edm.EdmType;
-import org.apache.olingo.commons.api.edm.constants.EdmTypeKind;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.server.api.deserializer.DeserializerException;
-import org.apache.olingo.server.api.deserializer.FixedFormatDeserializer;
-import org.apache.olingo.server.api.deserializer.batch.BatchDeserializerException;
-import org.apache.olingo.server.api.deserializer.batch.BatchOptions;
-import org.apache.olingo.server.api.deserializer.batch.BatchRequestPart;
-import org.apache.olingo.server.core.deserializer.batch.BatchParser;
-import org.apache.olingo.server.core.deserializer.json.ODataJsonDeserializer;
+import org.sitenetsoft.olinguito.commons.api.data.Parameter;
+import org.sitenetsoft.olinguito.commons.api.data.ValueType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmParameter;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
+import org.sitenetsoft.olinguito.commons.api.edm.constants.EdmTypeKind;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
+import org.sitenetsoft.olinguito.server.api.deserializer.FixedFormatDeserializer;
+import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchDeserializerException;
+import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchOptions;
+import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchRequestPart;
+import org.sitenetsoft.olinguito.server.core.deserializer.batch.BatchParser;
+import org.sitenetsoft.olinguito.server.core.deserializer.json.ODataJsonDeserializer;
 
 public class FixedFormatDeserializerImpl implements FixedFormatDeserializer {
 

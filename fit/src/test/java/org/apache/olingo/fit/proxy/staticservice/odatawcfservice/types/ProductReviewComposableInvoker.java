@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
 public interface ProductReviewComposableInvoker
-    extends org.apache.olingo.ext.proxy.api.StructuredComposableInvoker<ProductReview, ProductReview.Operations>
+    extends org.sitenetsoft.olinguito.ext.proxy.api.StructuredComposableInvoker<ProductReview, ProductReview.Operations>
 {
 
   @Override
@@ -34,7 +34,7 @@ public interface ProductReviewComposableInvoker
   ProductReviewComposableInvoker expand(String... expand);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ProductID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ProductID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -50,7 +50,7 @@ public interface ProductReviewComposableInvoker
   void setProductID(java.lang.Integer _productID);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ProductDetailID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ProductDetailID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -66,7 +66,7 @@ public interface ProductReviewComposableInvoker
   void setProductDetailID(java.lang.Integer _productDetailID);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ReviewTitle",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ReviewTitle",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -82,7 +82,7 @@ public interface ProductReviewComposableInvoker
   void setReviewTitle(java.lang.String _reviewTitle);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "RevisionID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "RevisionID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -97,7 +97,7 @@ public interface ProductReviewComposableInvoker
 
   void setRevisionID(java.lang.Integer _revisionID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Comment",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Comment",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -112,7 +112,7 @@ public interface ProductReviewComposableInvoker
 
   void setComment(java.lang.String _comment);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Author",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Author",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",

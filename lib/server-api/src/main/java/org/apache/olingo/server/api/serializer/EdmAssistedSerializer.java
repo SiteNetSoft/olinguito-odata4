@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.serializer;
+package org.sitenetsoft.olinguito.server.api.serializer;
 
-import org.apache.olingo.commons.api.data.AbstractEntityCollection;
-import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.commons.api.data.AbstractEntityCollection;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 
 /** EDM-assisted serializer */
 public interface EdmAssistedSerializer {

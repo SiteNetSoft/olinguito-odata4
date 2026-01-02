@@ -22,5 +22,5 @@
  * The etag package is used to condense all about the Olingo ETag handling.
  *
  */
-package org.apache.olingo.server.api.etag;
+package org.sitenetsoft.olinguito.server.api.etag;
 

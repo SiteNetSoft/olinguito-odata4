@@ -16,34 +16,34 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.parser;
+package org.sitenetsoft.olinguito.server.core.uri.parser;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmAction;
-import org.apache.olingo.commons.api.edm.EdmComplexType;
-import org.apache.olingo.commons.api.edm.EdmFunction;
-import org.apache.olingo.commons.api.edm.EdmNavigationProperty;
-import org.apache.olingo.commons.api.edm.EdmProperty;
-import org.apache.olingo.commons.api.edm.EdmStructuredType;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.edm.constants.EdmTypeKind;
-import org.apache.olingo.server.api.uri.UriInfoKind;
-import org.apache.olingo.server.api.uri.UriResourcePartTyped;
-import org.apache.olingo.server.api.uri.queryoption.SelectItem;
-import org.apache.olingo.server.api.uri.queryoption.SelectOption;
-import org.apache.olingo.server.core.uri.UriInfoImpl;
-import org.apache.olingo.server.core.uri.UriResourceActionImpl;
-import org.apache.olingo.server.core.uri.UriResourceComplexPropertyImpl;
-import org.apache.olingo.server.core.uri.UriResourceFunctionImpl;
-import org.apache.olingo.server.core.uri.UriResourceNavigationPropertyImpl;
-import org.apache.olingo.server.core.uri.UriResourcePrimitivePropertyImpl;
-import org.apache.olingo.server.core.uri.parser.UriTokenizer.TokenKind;
-import org.apache.olingo.server.core.uri.queryoption.SelectItemImpl;
-import org.apache.olingo.server.core.uri.queryoption.SelectOptionImpl;
-import org.apache.olingo.server.core.uri.validator.UriValidationException;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmAction;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmComplexType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmFunction;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmStructuredType;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.constants.EdmTypeKind;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoKind;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourcePartTyped;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectItem;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectOption;
+import org.sitenetsoft.olinguito.server.core.uri.UriInfoImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceActionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceComplexPropertyImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceFunctionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceNavigationPropertyImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourcePrimitivePropertyImpl;
+import org.sitenetsoft.olinguito.server.core.uri.parser.UriTokenizer.TokenKind;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.SelectItemImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.SelectOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidationException;
 
 public class SelectParser {
 

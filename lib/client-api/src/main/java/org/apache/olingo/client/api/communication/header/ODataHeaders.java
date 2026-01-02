@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication.header;
+package org.sitenetsoft.olinguito.client.api.communication.header;
 
 import java.util.Collection;
 
 /**
  * ODataHeaders wraps OData request/response headers.
  *
- * @see org.apache.olingo.client.api.communication.request.ODataRequest
- * @see org.apache.olingo.client.api.communication.response.ODataResponse
+ * @see org.sitenetsoft.olinguito.client.api.communication.request.ODataRequest
+ * @see org.sitenetsoft.olinguito.client.api.communication.response.ODataResponse
  */
 public interface ODataHeaders {
 
