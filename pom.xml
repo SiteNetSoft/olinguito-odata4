@@ -23,19 +23,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.apache.olingo</groupId>
+  <groupId>org.sitenetsoft.olinguito</groupId>
   <artifactId>odata-parent</artifactId>
   <version>5.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>Olingo-OData</name>
+  <name>Olinguito-OData</name>
 
-  <inceptionYear>2013</inceptionYear>
+  <inceptionYear>2026</inceptionYear>
 
   <parent>
-    <groupId>org.apache</groupId>
-    <artifactId>apache</artifactId>
-    <version>30</version>
+    <groupId>org.sitenetsoft</groupId>
+    <artifactId>sitenetsoft</artifactId>
+    <version>1</version>
   </parent>
 
   <licenses>
@@ -46,7 +46,7 @@
     </license>
   </licenses>
 
-  <url>http://olingo.apache.org</url>
+  <url>https://sitenetsoft.org/projects/olinguito.html</url>
 
   <scm>
     <connection>scm:git:git://gitbox.apache.org/repos/asf/olingo-odata4.git</connection>

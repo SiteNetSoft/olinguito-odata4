@@ -1,6 +1,10 @@
 # SiteNetSoft Olinguito — OData V4
 Based on Apache Olingo, a Java library and extensions around the OData specification.
 
+<p align="center">
+  <img src="./assets/olinguito.png" />
+</p>
+
 Apache Olingo supported the specification version:
 - OData 4.0 <http://www.odata.org/documentation/odata-version-4-0/>
 
