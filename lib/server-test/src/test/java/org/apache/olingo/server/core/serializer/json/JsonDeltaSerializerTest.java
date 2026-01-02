@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.serializer.json;
+package org.sitenetsoft.olinguito.server.core.serializer.json;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -25,31 +25,31 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.olingo.commons.api.data.ContextURL;
-import org.apache.olingo.commons.api.data.DeletedEntity;
-import org.apache.olingo.commons.api.data.DeletedEntity.Reason;
-import org.apache.olingo.commons.api.data.Delta;
-import org.apache.olingo.commons.api.data.DeltaLink;
-import org.apache.olingo.commons.api.data.Entity;
-import org.apache.olingo.commons.api.data.ContextURL.Suffix;
-import org.apache.olingo.commons.api.edm.EdmEntityContainer;
-import org.apache.olingo.commons.api.edm.EdmEntitySet;
-import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.commons.api.edmx.EdmxReference;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.ServiceMetadata;
-import org.apache.olingo.server.api.serializer.EdmDeltaSerializer;
-import org.apache.olingo.server.api.serializer.EntityCollectionSerializerOptions;
-import org.apache.olingo.server.api.serializer.SerializerException;
-import org.apache.olingo.server.api.uri.UriHelper;
-import org.apache.olingo.server.api.uri.queryoption.CountOption;
-import org.apache.olingo.server.api.uri.queryoption.ExpandOption;
-import org.apache.olingo.server.api.uri.queryoption.SelectOption;
-import org.apache.olingo.server.core.serializer.ExpandSelectMock;
-import org.apache.olingo.server.tecsvc.MetadataETagSupport;
-import org.apache.olingo.server.tecsvc.data.DataProvider;
-import org.apache.olingo.server.tecsvc.provider.EdmTechProvider;
+import org.sitenetsoft.olinguito.commons.api.data.ContextURL;
+import org.sitenetsoft.olinguito.commons.api.data.DeletedEntity;
+import org.sitenetsoft.olinguito.commons.api.data.DeletedEntity.Reason;
+import org.sitenetsoft.olinguito.commons.api.data.Delta;
+import org.sitenetsoft.olinguito.commons.api.data.DeltaLink;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.data.ContextURL.Suffix;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.api.serializer.EdmDeltaSerializer;
+import org.sitenetsoft.olinguito.server.api.serializer.EntityCollectionSerializerOptions;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
+import org.sitenetsoft.olinguito.server.api.uri.UriHelper;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.CountOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectOption;
+import org.sitenetsoft.olinguito.server.core.serializer.ExpandSelectMock;
+import org.sitenetsoft.olinguito.server.tecsvc.MetadataETagSupport;
+import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider;
+import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;

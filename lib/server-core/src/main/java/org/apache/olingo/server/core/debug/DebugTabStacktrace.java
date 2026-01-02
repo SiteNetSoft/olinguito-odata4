@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.debug;
+package org.sitenetsoft.olinguito.server.core.debug;
 
 import java.io.IOException;
 import java.io.Writer;
 
-import org.apache.olingo.server.api.ODataLibraryException;
-import org.apache.olingo.server.api.ODataLibraryException.ODataErrorMessage;
+import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
+import org.sitenetsoft.olinguito.server.api.ODataLibraryException.ODataErrorMessage;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 

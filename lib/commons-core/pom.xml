@@ -28,7 +28,7 @@
   <name>${project.artifactId}</name>
 
   <parent>
-    <groupId>org.apache.olingo</groupId>
+    <groupId>org.sitenetsoft.olinguito</groupId>
     <artifactId>odata-lib</artifactId>
     <version>5.0.1-SNAPSHOT</version>
     <relativePath>..</relativePath>
@@ -36,7 +36,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-commons-api</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -74,10 +74,10 @@
         <configuration>
           <instructions>
             <Export-Package>
-              org.apache.olingo.commons.core,
-              org.apache.olingo.commons.core.edm,
-              org.apache.olingo.commons.core.edm.provider,
-              org.apache.olingo.commons.core.edm.primitivetype,
+              org.sitenetsoft.olinguito.commons.core,
+              org.sitenetsoft.olinguito.commons.core.edm,
+              org.sitenetsoft.olinguito.commons.core.edm.provider,
+              org.sitenetsoft.olinguito.commons.core.edm.primitivetype,
             </Export-Package>
             <Import-Package>
               *

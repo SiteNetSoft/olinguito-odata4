@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication.request.retrieve;
+package org.sitenetsoft.olinguito.client.api.communication.request.retrieve;
 
-import org.apache.olingo.client.api.communication.request.ODataRequest;
-import org.apache.olingo.client.api.communication.response.ODataRawResponse;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataRawResponse;
 
 /**
  * This interface represents a generic OData request.

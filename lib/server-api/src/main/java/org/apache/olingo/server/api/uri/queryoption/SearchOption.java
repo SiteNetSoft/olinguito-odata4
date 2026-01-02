@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.uri.queryoption;
+package org.sitenetsoft.olinguito.server.api.uri.queryoption;
 
-import org.apache.olingo.server.api.uri.queryoption.search.SearchExpression;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.search.SearchExpression;
 
 /**
  * Represents the system query option $search

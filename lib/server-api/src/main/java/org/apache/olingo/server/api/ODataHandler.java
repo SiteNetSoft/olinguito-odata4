@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api;
+package org.sitenetsoft.olinguito.server.api;
 
-import org.apache.olingo.server.api.processor.Processor;
+import org.sitenetsoft.olinguito.server.api.processor.Processor;
 
 /**
  * <p>Handles requests as OData requests.</p>

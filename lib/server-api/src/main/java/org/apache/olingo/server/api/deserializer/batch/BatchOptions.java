@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.deserializer.batch;
+package org.sitenetsoft.olinguito.server.api.deserializer.batch;
 
 /**
  * Options for the batch deserializer.
- * @see org.apache.olingo.server.api.deserializer.FixedFormatDeserializer #parseBatchRequest(java.io.InputStream,
+ * @see org.sitenetsoft.olinguito.server.api.deserializer.FixedFormatDeserializer #parseBatchRequest(java.io.InputStream,
  * String, BatchOptions)
  */
 public final class BatchOptions {
@@ -41,7 +41,7 @@ public final class BatchOptions {
 
   /**
    * Gets raw base URI.
-   * @see org.apache.olingo.server.api.ODataRequest#getRawBaseUri()
+   * @see org.sitenetsoft.olinguito.server.api.ODataRequest#getRawBaseUri()
    */
   public String getRawBaseUri() {
     return rawBaseUri;
@@ -49,7 +49,7 @@ public final class BatchOptions {
 
   /**
    * Gets raw service resolution URI.
-   * @see org.apache.olingo.server.api.ODataRequest#getRawServiceResolutionUri()
+   * @see org.sitenetsoft.olinguito.server.api.ODataRequest#getRawServiceResolutionUri()
    */
   public String getRawServiceResolutionUri() {
     return rawServiceResolutionUri;
@@ -83,7 +83,7 @@ public final class BatchOptions {
     }
 
     /**
-     * @see org.apache.olingo.server.api.ODataRequest#getRawBaseUri()
+     * @see org.sitenetsoft.olinguito.server.api.ODataRequest#getRawBaseUri()
      */
     public Builder rawBaseUri(final String baseUri) {
       options.rawBaseUri = baseUri;
@@ -91,7 +91,7 @@ public final class BatchOptions {
     }
 
     /**
-     * @see org.apache.olingo.server.api.ODataRequest#getRawServiceResolutionUri()
+     * @see org.sitenetsoft.olinguito.server.api.ODataRequest#getRawServiceResolutionUri()
      */
     public Builder rawServiceResolutionUri(final String serviceResolutionUri) {
       options.rawServiceResolutionUri = serviceResolutionUri;

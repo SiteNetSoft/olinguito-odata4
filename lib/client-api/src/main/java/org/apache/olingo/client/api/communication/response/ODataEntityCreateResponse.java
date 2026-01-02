@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication.response;
+package org.sitenetsoft.olinguito.client.api.communication.response;
 
-import org.apache.olingo.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
 
 /**
  * This interface describes the response to an OData entity create request.
  *
  * @param <E> concrete ODataEntity implementation
- * @see org.apache.olingo.client.api.communication.request.cud.ODataEntityCreateRequest
+ * @see org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataEntityCreateRequest
  */
 public interface ODataEntityCreateResponse<E extends ClientEntity> extends ODataResponse {
 

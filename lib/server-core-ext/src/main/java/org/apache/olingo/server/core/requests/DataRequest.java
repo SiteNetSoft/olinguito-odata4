@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.requests;
+package org.sitenetsoft.olinguito.server.core.requests;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -30,62 +30,62 @@ import java.nio.channels.WritableByteChannel;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.olingo.commons.api.data.ContextURL;
-import org.apache.olingo.commons.api.data.ContextURL.Suffix;
-import org.apache.olingo.commons.api.data.Entity;
-import org.apache.olingo.commons.api.data.Property;
-import org.apache.olingo.commons.api.data.ValueType;
-import org.apache.olingo.commons.api.edm.EdmBindingTarget;
-import org.apache.olingo.commons.api.edm.EdmComplexType;
-import org.apache.olingo.commons.api.edm.EdmEntitySet;
-import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.commons.api.edm.EdmNavigationProperty;
-import org.apache.olingo.commons.api.edm.EdmNavigationPropertyBinding;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
-import org.apache.olingo.commons.api.edm.EdmProperty;
-import org.apache.olingo.commons.api.ex.ODataRuntimeException;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.commons.api.http.HttpHeader;
-import org.apache.olingo.commons.api.http.HttpMethod;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.ODataApplicationException;
-import org.apache.olingo.server.api.ODataLibraryException;
-import org.apache.olingo.server.api.ODataRequest;
-import org.apache.olingo.server.api.ODataResponse;
-import org.apache.olingo.server.api.ServiceMetadata;
-import org.apache.olingo.server.api.deserializer.DeserializerException;
-import org.apache.olingo.server.api.deserializer.DeserializerException.MessageKeys;
-import org.apache.olingo.server.api.deserializer.ODataDeserializer;
-import org.apache.olingo.server.api.serializer.PrimitiveSerializerOptions;
-import org.apache.olingo.server.api.serializer.RepresentationType;
-import org.apache.olingo.server.api.serializer.SerializerException;
-import org.apache.olingo.server.api.uri.UriHelper;
-import org.apache.olingo.server.api.uri.UriInfo;
-import org.apache.olingo.server.api.uri.UriInfoCrossjoin;
-import org.apache.olingo.server.api.uri.UriInfoResource;
-import org.apache.olingo.server.api.uri.UriParameter;
-import org.apache.olingo.server.api.uri.UriResource;
-import org.apache.olingo.server.api.uri.UriResourceComplexProperty;
-import org.apache.olingo.server.api.uri.UriResourceEntitySet;
-import org.apache.olingo.server.api.uri.UriResourceNavigation;
-import org.apache.olingo.server.api.uri.UriResourcePrimitiveProperty;
-import org.apache.olingo.server.api.uri.UriResourceProperty;
-import org.apache.olingo.server.api.uri.UriResourceSingleton;
-import org.apache.olingo.server.api.uri.queryoption.ApplyOption;
-import org.apache.olingo.server.core.ContentNegotiator;
-import org.apache.olingo.server.core.ContentNegotiatorException;
-import org.apache.olingo.server.core.ODataHandlerException;
-import org.apache.olingo.server.core.ReturnRepresentation;
-import org.apache.olingo.server.core.ServiceHandler;
-import org.apache.olingo.server.core.ServiceRequest;
-import org.apache.olingo.server.core.responses.CountResponse;
-import org.apache.olingo.server.core.responses.EntityResponse;
-import org.apache.olingo.server.core.responses.EntitySetResponse;
-import org.apache.olingo.server.core.responses.NoContentResponse;
-import org.apache.olingo.server.core.responses.PrimitiveValueResponse;
-import org.apache.olingo.server.core.responses.PropertyResponse;
-import org.apache.olingo.server.core.responses.StreamResponse;
-import org.apache.olingo.server.core.uri.parser.UriParserSemanticException;
+import org.sitenetsoft.olinguito.commons.api.data.ContextURL;
+import org.sitenetsoft.olinguito.commons.api.data.ContextURL.Suffix;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.data.Property;
+import org.sitenetsoft.olinguito.commons.api.data.ValueType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmBindingTarget;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmComplexType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationPropertyBinding;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
+import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
+import org.sitenetsoft.olinguito.server.api.ODataRequest;
+import org.sitenetsoft.olinguito.server.api.ODataResponse;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException.MessageKeys;
+import org.sitenetsoft.olinguito.server.api.deserializer.ODataDeserializer;
+import org.sitenetsoft.olinguito.server.api.serializer.PrimitiveSerializerOptions;
+import org.sitenetsoft.olinguito.server.api.serializer.RepresentationType;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
+import org.sitenetsoft.olinguito.server.api.uri.UriHelper;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfo;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoCrossjoin;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoResource;
+import org.sitenetsoft.olinguito.server.api.uri.UriParameter;
+import org.sitenetsoft.olinguito.server.api.uri.UriResource;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceComplexProperty;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceEntitySet;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceNavigation;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourcePrimitiveProperty;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceProperty;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceSingleton;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ApplyOption;
+import org.sitenetsoft.olinguito.server.core.ContentNegotiator;
+import org.sitenetsoft.olinguito.server.core.ContentNegotiatorException;
+import org.sitenetsoft.olinguito.server.core.ODataHandlerException;
+import org.sitenetsoft.olinguito.server.core.ReturnRepresentation;
+import org.sitenetsoft.olinguito.server.core.ServiceHandler;
+import org.sitenetsoft.olinguito.server.core.ServiceRequest;
+import org.sitenetsoft.olinguito.server.core.responses.CountResponse;
+import org.sitenetsoft.olinguito.server.core.responses.EntityResponse;
+import org.sitenetsoft.olinguito.server.core.responses.EntitySetResponse;
+import org.sitenetsoft.olinguito.server.core.responses.NoContentResponse;
+import org.sitenetsoft.olinguito.server.core.responses.PrimitiveValueResponse;
+import org.sitenetsoft.olinguito.server.core.responses.PropertyResponse;
+import org.sitenetsoft.olinguito.server.core.responses.StreamResponse;
+import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserSemanticException;
 
 public class DataRequest extends ServiceRequest {
   public static final int DEFAULT_BUFFER_SIZE = 8192;
@@ -821,7 +821,7 @@ public class DataRequest extends ServiceRequest {
     }
   }
   
-  private org.apache.olingo.commons.api.data.Property getPropertyValueFromClient(
+  private org.sitenetsoft.olinguito.commons.api.data.Property getPropertyValueFromClient(
       EdmProperty edmProperty) throws DeserializerException {
     ODataDeserializer deserializer = odata.createDeserializer(getRequestContentType(), getServiceMetaData());
     return deserializer.property(getODataRequest().getBody(), edmProperty).getProperty();

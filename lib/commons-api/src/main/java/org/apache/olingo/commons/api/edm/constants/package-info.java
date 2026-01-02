@@ -19,5 +19,5 @@
 /**
  * Contains representations for constants related to EDM objects.
  */
-package org.apache.olingo.commons.api.edm.constants;
+package org.sitenetsoft.olinguito.commons.api.edm.constants;
 

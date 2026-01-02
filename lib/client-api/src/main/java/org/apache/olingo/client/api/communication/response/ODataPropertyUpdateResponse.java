@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication.response;
+package org.sitenetsoft.olinguito.client.api.communication.response;
 
-import org.apache.olingo.client.api.domain.ClientProperty;
+import org.sitenetsoft.olinguito.client.api.domain.ClientProperty;
 
 /**
  * This class implements the response to an OData update entity property request.
  *
- * @see org.apache.olingo.client.api.communication.request.cud.ODataPropertyUpdateRequest
+ * @see org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataPropertyUpdateRequest
  */
 public interface ODataPropertyUpdateResponse extends ODataResponse {
 

@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
 public interface CreditRecordComposableInvoker
-    extends org.apache.olingo.ext.proxy.api.StructuredComposableInvoker<CreditRecord, CreditRecord.Operations>
+    extends org.sitenetsoft.olinguito.ext.proxy.api.StructuredComposableInvoker<CreditRecord, CreditRecord.Operations>
 {
 
   @Override
@@ -34,7 +34,7 @@ public interface CreditRecordComposableInvoker
   CreditRecordComposableInvoker expand(String... expand);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "CreditRecordID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "CreditRecordID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -49,7 +49,7 @@ public interface CreditRecordComposableInvoker
 
   void setCreditRecordID(java.lang.Integer _creditRecordID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "IsGood",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "IsGood",
       type = "Edm.Boolean",
       nullable = false,
       defaultValue = "",
@@ -64,7 +64,7 @@ public interface CreditRecordComposableInvoker
 
   void setIsGood(java.lang.Boolean _isGood);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Reason",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Reason",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -79,7 +79,7 @@ public interface CreditRecordComposableInvoker
 
   void setReason(java.lang.String _reason);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "CreatedDate",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "CreatedDate",
       type = "Edm.DateTimeOffset",
       nullable = false,
       defaultValue = "",

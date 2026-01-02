@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
 public interface StatementComposableInvoker
-    extends org.apache.olingo.ext.proxy.api.StructuredComposableInvoker<Statement, Statement.Operations>
+    extends org.sitenetsoft.olinguito.ext.proxy.api.StructuredComposableInvoker<Statement, Statement.Operations>
 {
 
   @Override
@@ -34,7 +34,7 @@ public interface StatementComposableInvoker
   StatementComposableInvoker expand(String... expand);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "StatementID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "StatementID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -49,7 +49,7 @@ public interface StatementComposableInvoker
 
   void setStatementID(java.lang.Integer _statementID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "TransactionType",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "TransactionType",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -64,7 +64,7 @@ public interface StatementComposableInvoker
 
   void setTransactionType(java.lang.String _transactionType);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "TransactionDescription",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "TransactionDescription",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -79,7 +79,7 @@ public interface StatementComposableInvoker
 
   void setTransactionDescription(java.lang.String _transactionDescription);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Amount",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Amount",
       type = "Edm.Double",
       nullable = false,
       defaultValue = "",

@@ -23,11 +23,11 @@
             <useTransitiveFiltering>true</useTransitiveFiltering>
             <scope>compile</scope>
             <includes>
-                <include>org.apache.olingo:odata-commons-api</include>
-                <include>org.apache.olingo:odata-commons-core</include>
-                <include>org.apache.olingo:odata-client-api</include>
-                <include>org.apache.olingo:odata-client-core</include>
-                <include>org.apache.olingo:odata-client-proxy</include>
+                <include>org.sitenetsoft.olinguito:odata-commons-api</include>
+                <include>org.sitenetsoft.olinguito:odata-commons-core</include>
+                <include>org.sitenetsoft.olinguito:odata-client-api</include>
+                <include>org.sitenetsoft.olinguito:odata-client-core</include>
+                <include>org.sitenetsoft.olinguito:odata-client-proxy</include>
             </includes>
         </dependencySet>
     </dependencySets>

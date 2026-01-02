@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edm.provider;
+package org.sitenetsoft.olinguito.commons.api.edm.provider;
 
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 
 /**
  * The type Csdl entity container info.

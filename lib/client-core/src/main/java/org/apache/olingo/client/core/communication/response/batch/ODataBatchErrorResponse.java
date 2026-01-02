@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.response.batch;
+package org.sitenetsoft.olinguito.client.core.communication.response.batch;
 
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.olingo.client.api.communication.request.batch.ODataBatchLineIterator;
-import org.apache.olingo.client.core.communication.request.batch.ODataBatchController;
-import org.apache.olingo.client.core.communication.response.AbstractODataResponse;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchLineIterator;
+import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataBatchController;
+import org.sitenetsoft.olinguito.client.core.communication.response.AbstractODataResponse;
 
 public class ODataBatchErrorResponse extends AbstractODataResponse {
 

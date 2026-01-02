@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication.header;
+package org.sitenetsoft.olinguito.client.api.communication.header;
 
-import org.apache.olingo.commons.api.format.PreferenceName;
+import org.sitenetsoft.olinguito.commons.api.format.PreferenceName;
 
 /**
  * Values of the Prefer header.
@@ -28,7 +28,7 @@ public class ODataPreferences {
   /**
    * <code>Prefer</code> header, return content.
    *
-   * @see org.apache.olingo.commons.api.http.HttpHeader#PREFER
+   * @see org.sitenetsoft.olinguito.commons.api.http.HttpHeader#PREFER
    */
   public String returnContent() {
     return PreferenceName.RETURN.getName();
@@ -37,7 +37,7 @@ public class ODataPreferences {
   /**
    * <code>Prefer</code> header, return no content.
    *
-   * @see org.apache.olingo.commons.api.http.HttpHeader#PREFER
+   * @see org.sitenetsoft.olinguito.commons.api.http.HttpHeader#PREFER
    */
   public String returnNoContent() {
     return PreferenceName.RETURN_NO_CONTENT.getName();
@@ -46,7 +46,7 @@ public class ODataPreferences {
   /**
    * Gets the value of the non-standard preference that the URL should follow the convention
    * that keys are formatted as separate segments.
-   * @see org.apache.olingo.commons.api.http.HttpHeader#PREFER
+   * @see org.sitenetsoft.olinguito.commons.api.http.HttpHeader#PREFER
    */
   public String keyAsSegment() {
     return PreferenceName.KEY_AS_SEGMENT.getName();
@@ -66,7 +66,7 @@ public class ODataPreferences {
    * <br/><br/>
    * Supported by OData version 4.0 only.
    *
-   * @see org.apache.olingo.commons.api.http.HttpHeader#PREFER
+   * @see org.sitenetsoft.olinguito.commons.api.http.HttpHeader#PREFER
    * @return preference.
    */
   public String allowEntityReferences() {
@@ -129,7 +129,7 @@ public class ODataPreferences {
    * <br/><br/>
    * Supported by OData version 4.0 only.
    *
-   * @see org.apache.olingo.commons.api.http.HttpHeader#PREFER
+   * @see org.sitenetsoft.olinguito.commons.api.http.HttpHeader#PREFER
    * @return preference.
    */
   public String callback(final String url) {
@@ -150,7 +150,7 @@ public class ODataPreferences {
    * <br/><br/>
    * Supported by OData version 4.0 only.
    *
-   * @see org.apache.olingo.commons.api.http.HttpHeader#PREFER
+   * @see org.sitenetsoft.olinguito.commons.api.http.HttpHeader#PREFER
    * @return preference.
    */
   public String continueOnError() {
@@ -197,7 +197,7 @@ public class ODataPreferences {
    * <br/><br/>
    * Supported by OData version 4.0 only.
    *
-   * @see org.apache.olingo.commons.api.http.HttpHeader#PREFER
+   * @see org.sitenetsoft.olinguito.commons.api.http.HttpHeader#PREFER
    * @return preference.
    */
   public String includeAnnotations(final String value) {
@@ -230,7 +230,7 @@ public class ODataPreferences {
    * <br/><br/>
    * Supported by OData version 4.0 only.
    *
-   * @see org.apache.olingo.commons.api.http.HttpHeader#PREFER
+   * @see org.sitenetsoft.olinguito.commons.api.http.HttpHeader#PREFER
    * @return preference.
    */
   public String maxPageSize(final int size) {
@@ -255,7 +255,7 @@ public class ODataPreferences {
    * <br/><br/>
    * Supported by OData version 4.0 only.
    *
-   * @see org.apache.olingo.commons.api.http.HttpHeader#PREFER
+   * @see org.sitenetsoft.olinguito.commons.api.http.HttpHeader#PREFER
    * @return preference.
    */
   public String trackChanges() {
@@ -290,7 +290,7 @@ public class ODataPreferences {
    * <br/><br/>
    * Supported by OData version 4.0 only.
    *
-   * @see org.apache.olingo.commons.api.http.HttpHeader#PREFER
+   * @see org.sitenetsoft.olinguito.commons.api.http.HttpHeader#PREFER
    * @return preference.
    */
   public String respondAsync() {
@@ -310,7 +310,7 @@ public class ODataPreferences {
    * <br/><br/>
    * Supported by OData version 4.0 only.
    *
-   * @see org.apache.olingo.commons.api.http.HttpHeader#PREFER
+   * @see org.sitenetsoft.olinguito.commons.api.http.HttpHeader#PREFER
    * @return preference.
    */
   public String wait(final int value) {
@@ -340,7 +340,7 @@ public class ODataPreferences {
    * <br/><br/>
    * Supported by OData version 4.0 only.
    *
-   * @see org.apache.olingo.commons.api.http.HttpHeader#PREFER
+   * @see org.sitenetsoft.olinguito.commons.api.http.HttpHeader#PREFER
    * @return preference.
    */
   public String returnMinimal() {
@@ -370,7 +370,7 @@ public class ODataPreferences {
    * <br/><br/>
    * Supported by OData version 4.0 only.
    *
-   * @see org.apache.olingo.commons.api.http.HttpHeader#PREFER
+   * @see org.sitenetsoft.olinguito.commons.api.http.HttpHeader#PREFER
    * @return preference.
    */
   public String returnRepresentation() {

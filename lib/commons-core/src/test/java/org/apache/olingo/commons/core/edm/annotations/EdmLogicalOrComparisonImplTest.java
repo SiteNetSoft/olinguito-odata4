@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.core.edm.annotations;
+package org.sitenetsoft.olinguito.commons.core.edm.annotations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -24,20 +24,20 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmException;
-import org.apache.olingo.commons.api.edm.annotation.EdmConstantExpression;
-import org.apache.olingo.commons.api.edm.annotation.EdmDynamicExpression;
-import org.apache.olingo.commons.api.edm.annotation.EdmExpression;
-import org.apache.olingo.commons.api.edm.annotation.EdmExpression.EdmExpressionType;
-import org.apache.olingo.commons.api.edm.annotation.EdmLogicalOrComparisonExpression;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlConstantExpression;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlConstantExpression.ConstantExpressionType;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlLogicalOrComparisonExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmException;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmConstantExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmDynamicExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmExpression.EdmExpressionType;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmLogicalOrComparisonExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlConstantExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlConstantExpression.ConstantExpressionType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlLogicalOrComparisonExpression;
 //CHECKSTYLE:OFF
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlLogicalOrComparisonExpression.LogicalOrComparisonExpressionType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlLogicalOrComparisonExpression.LogicalOrComparisonExpressionType;
 //CHECKSTYLE:ON
-import org.apache.olingo.commons.core.edm.annotation.AbstractEdmExpression;
+import org.sitenetsoft.olinguito.commons.core.edm.annotation.AbstractEdmExpression;
 import org.junit.Test;
 
 public class EdmLogicalOrComparisonImplTest extends AbstractAnnotationTest {

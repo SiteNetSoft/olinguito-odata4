@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.uri;
+package org.sitenetsoft.olinguito.client.core.uri;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -28,14 +28,14 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.domain.ClientPrimitiveValue;
-import org.apache.olingo.client.api.domain.ClientValue;
-import org.apache.olingo.client.api.serialization.ODataDeserializerException;
-import org.apache.olingo.client.api.uri.QueryOption;
-import org.apache.olingo.client.api.uri.URIBuilder;
-import org.apache.olingo.client.core.AbstractTest;
-import org.apache.olingo.client.core.ODataClientFactory;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.domain.ClientPrimitiveValue;
+import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
+import org.sitenetsoft.olinguito.client.api.serialization.ODataDeserializerException;
+import org.sitenetsoft.olinguito.client.api.uri.QueryOption;
+import org.sitenetsoft.olinguito.client.api.uri.URIBuilder;
+import org.sitenetsoft.olinguito.client.core.AbstractTest;
+import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
 import org.junit.Test;
 
 public class URIBuilderTest extends AbstractTest {

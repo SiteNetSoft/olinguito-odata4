@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.util;
+package org.sitenetsoft.olinguito.client.core.communication.util;
 
-import org.apache.olingo.client.core.ConfigurationImpl;
+import org.sitenetsoft.olinguito.client.core.ConfigurationImpl;
 
 import java.io.IOException;
 

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.request.streamed;
+package org.sitenetsoft.olinguito.client.core.communication.request.streamed;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,18 +29,18 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.olingo.client.api.ODataBatchConstants;
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.communication.request.ODataPayloadManager;
-import org.apache.olingo.client.api.communication.request.ODataStreamedRequest;
-import org.apache.olingo.client.api.communication.request.ODataStreamer;
-import org.apache.olingo.client.api.communication.request.batch.ODataBatchRequest;
-import org.apache.olingo.client.api.communication.response.ODataResponse;
-import org.apache.olingo.client.core.communication.request.AbstractODataRequest;
-import org.apache.olingo.client.core.communication.request.Wrapper;
-import org.apache.olingo.client.core.uri.URIUtils;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.client.api.ODataBatchConstants;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataPayloadManager;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataStreamedRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataStreamer;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataResponse;
+import org.sitenetsoft.olinguito.client.core.communication.request.AbstractODataRequest;
+import org.sitenetsoft.olinguito.client.core.communication.request.Wrapper;
+import org.sitenetsoft.olinguito.client.core.uri.URIUtils;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 /**
  * Streamed OData request abstract class.

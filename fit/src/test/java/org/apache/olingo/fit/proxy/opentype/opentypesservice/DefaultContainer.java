@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.opentype.opentypesservice;
+package org.sitenetsoft.olinguito.fit.proxy.opentype.opentypesservice;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
 import java.io.InputStream;
@@ -24,16 +24,16 @@ import java.io.InputStream;
 // CHECKSTYLE:ON (Maven checkstyle)
 import java.io.Serializable;
 
-import org.apache.olingo.ext.proxy.api.ComplexCollection;
-import org.apache.olingo.ext.proxy.api.ComplexType;
-import org.apache.olingo.ext.proxy.api.EdmStreamValue;
-import org.apache.olingo.ext.proxy.api.EntityCollection;
-import org.apache.olingo.ext.proxy.api.EntityType;
-import org.apache.olingo.ext.proxy.api.PersistenceManager;
-import org.apache.olingo.ext.proxy.api.PrimitiveCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.ComplexCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.ComplexType;
+import org.sitenetsoft.olinguito.ext.proxy.api.EdmStreamValue;
+import org.sitenetsoft.olinguito.ext.proxy.api.EntityCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.EntityType;
+import org.sitenetsoft.olinguito.ext.proxy.api.PersistenceManager;
+import org.sitenetsoft.olinguito.ext.proxy.api.PrimitiveCollection;
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.OpenTypesServiceV4")
-@org.apache.olingo.ext.proxy.api.annotations.EntityContainer(name = "DefaultContainer",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.OpenTypesServiceV4")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityContainer(name = "DefaultContainer",
     namespace = "Microsoft.Test.OData.Services.OpenTypesServiceV4")
 public interface DefaultContainer extends PersistenceManager {
 
@@ -43,7 +43,7 @@ public interface DefaultContainer extends PersistenceManager {
 
   Operations operations();
 
-  public interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  public interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 

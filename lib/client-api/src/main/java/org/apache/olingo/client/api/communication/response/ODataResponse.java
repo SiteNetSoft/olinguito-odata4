@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication.response;
+package org.sitenetsoft.olinguito.client.api.communication.response;
 
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 
 import org.apache.http.HttpResponse;
-import org.apache.olingo.client.api.communication.request.batch.ODataBatchLineIterator;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchLineIterator;
 
 /**
  * Abstract representation of an OData response.

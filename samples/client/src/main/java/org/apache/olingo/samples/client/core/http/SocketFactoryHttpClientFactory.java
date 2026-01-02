@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.samples.client.core.http;
+package org.sitenetsoft.olinguito.samples.client.core.http;
 
 import java.net.URI;
 import java.security.cert.X509Certificate;
@@ -28,9 +28,9 @@ import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.BasicClientConnectionManager;
 import org.apache.http.params.CoreProtocolPNames;
-import org.apache.olingo.commons.api.http.HttpMethod;
-import org.apache.olingo.client.core.http.AbstractHttpClientFactory;
-import org.apache.olingo.commons.api.ex.ODataRuntimeException;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.client.core.http.AbstractHttpClientFactory;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
 
 /**
  * Shows how to customize the way how the underlying network socket are managed by the HTTP component; the specific

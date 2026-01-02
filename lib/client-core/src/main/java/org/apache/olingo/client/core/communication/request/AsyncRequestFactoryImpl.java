@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.request;
+package org.sitenetsoft.olinguito.client.core.communication.request;
 
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.communication.request.AsyncBatchRequestWrapper;
-import org.apache.olingo.client.api.communication.request.AsyncRequestFactory;
-import org.apache.olingo.client.api.communication.request.AsyncRequestWrapper;
-import org.apache.olingo.client.api.communication.request.ODataRequest;
-import org.apache.olingo.client.api.communication.request.batch.ODataBatchRequest;
-import org.apache.olingo.client.api.communication.response.ODataResponse;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.communication.request.AsyncBatchRequestWrapper;
+import org.sitenetsoft.olinguito.client.api.communication.request.AsyncRequestFactory;
+import org.sitenetsoft.olinguito.client.api.communication.request.AsyncRequestWrapper;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataResponse;
 
 public class AsyncRequestFactoryImpl implements AsyncRequestFactory {
 

@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edm;
+package org.sitenetsoft.olinguito.commons.api.edm;
 
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.geo.SRID;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.SRID;
 
 /**
  * An {@link EdmTerm} defines a term in a vocabulary.

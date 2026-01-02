@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.debug;
+package org.sitenetsoft.olinguito.server.core.debug;
 
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.olingo.commons.api.http.HttpMethod;
-import org.apache.olingo.server.api.ODataRequest;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.server.api.ODataRequest;
 import org.junit.Test;
 
 public class DebugTabRequestTest extends AbstractDebugTabTest {

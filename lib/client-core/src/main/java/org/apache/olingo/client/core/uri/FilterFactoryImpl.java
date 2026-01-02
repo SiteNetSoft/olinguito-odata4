@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.uri;
+package org.sitenetsoft.olinguito.client.core.uri;
 
-import org.apache.olingo.client.api.uri.FilterArg;
-import org.apache.olingo.client.api.uri.FilterArgFactory;
-import org.apache.olingo.client.api.uri.FilterFactory;
-import org.apache.olingo.client.api.uri.URIFilter;
-import org.apache.olingo.commons.api.edm.EdmEnumType;
+import org.sitenetsoft.olinguito.client.api.uri.FilterArg;
+import org.sitenetsoft.olinguito.client.api.uri.FilterArgFactory;
+import org.sitenetsoft.olinguito.client.api.uri.FilterFactory;
+import org.sitenetsoft.olinguito.client.api.uri.URIFilter;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEnumType;
 
 public class FilterFactoryImpl implements FilterFactory {
 

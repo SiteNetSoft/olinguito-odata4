@@ -16,25 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.request.invoke;
+package org.sitenetsoft.olinguito.client.core.communication.request.invoke;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Map;
 
-import org.apache.olingo.client.api.EdmEnabledODataClient;
-import org.apache.olingo.client.api.communication.request.invoke.EdmEnabledInvokeRequestFactory;
-import org.apache.olingo.client.api.communication.request.invoke.ODataInvokeRequest;
-import org.apache.olingo.client.api.domain.ClientInvokeResult;
-import org.apache.olingo.client.api.domain.ClientValue;
-import org.apache.olingo.commons.api.edm.EdmAction;
-import org.apache.olingo.commons.api.edm.EdmActionImport;
-import org.apache.olingo.commons.api.edm.EdmEntityContainer;
-import org.apache.olingo.commons.api.edm.EdmFunction;
-import org.apache.olingo.commons.api.edm.EdmFunctionImport;
-import org.apache.olingo.commons.api.edm.EdmSchema;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
+import org.sitenetsoft.olinguito.client.api.communication.request.invoke.EdmEnabledInvokeRequestFactory;
+import org.sitenetsoft.olinguito.client.api.communication.request.invoke.ODataInvokeRequest;
+import org.sitenetsoft.olinguito.client.api.domain.ClientInvokeResult;
+import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmAction;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmActionImport;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmFunction;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmFunctionImport;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmSchema;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 public abstract class AbstractEdmEnabledInvokeRequestFactory extends AbstractInvokeRequestFactory
         implements EdmEnabledInvokeRequestFactory {

@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.netty.server.api;
+package org.sitenetsoft.olinguito.netty.server.api;
 
 import java.util.Map;
 
-import org.apache.olingo.server.api.processor.Processor;
+import org.sitenetsoft.olinguito.server.api.processor.Processor;
 
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;

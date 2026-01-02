@@ -16,25 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.demo.odatademo.types;
+package org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("ODataDemo")
-@org.apache.olingo.ext.proxy.api.annotations.EntityType(name = "PersonDetail",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("ODataDemo")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityType(name = "PersonDetail",
     openType = false,
     hasStream = false,
     isAbstract = false)
 public interface PersonDetail
-    extends org.apache.olingo.ext.proxy.api.Annotatable,
-    org.apache.olingo.ext.proxy.api.EntityType<PersonDetail>,
-    org.apache.olingo.ext.proxy.api.StructuredQuery<PersonDetail> {
+    extends org.sitenetsoft.olinguito.ext.proxy.api.Annotatable,
+    org.sitenetsoft.olinguito.ext.proxy.api.EntityType<PersonDetail>,
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredQuery<PersonDetail> {
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "PersonID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "PersonID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -49,7 +49,7 @@ public interface PersonDetail
 
   void setPersonID(java.lang.Integer _personID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Age",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Age",
       type = "Edm.Byte",
       nullable = false,
       defaultValue = "",
@@ -64,7 +64,7 @@ public interface PersonDetail
 
   void setAge(java.lang.Short _age);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Gender",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Gender",
       type = "Edm.Boolean",
       nullable = false,
       defaultValue = "",
@@ -79,7 +79,7 @@ public interface PersonDetail
 
   void setGender(java.lang.Boolean _gender);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Phone",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Phone",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -94,7 +94,7 @@ public interface PersonDetail
 
   void setPhone(java.lang.String _phone);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Address",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Address",
       type = "ODataDemo.Address",
       nullable = true,
       defaultValue = "",
@@ -109,7 +109,7 @@ public interface PersonDetail
 
   void setAddress(Address _address);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Photo",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Photo",
       type = "Edm.Stream",
       nullable = false,
       defaultValue = "",
@@ -120,11 +120,11 @@ public interface PersonDetail
       unicode = true,
       collation = "",
       srid = "")
-  org.apache.olingo.ext.proxy.api.EdmStreamValue getPhoto();
+  org.sitenetsoft.olinguito.ext.proxy.api.EdmStreamValue getPhoto();
 
-  void setPhoto(org.apache.olingo.ext.proxy.api.EdmStreamValue _photo);
+  void setPhoto(org.sitenetsoft.olinguito.ext.proxy.api.EdmStreamValue _photo);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "Person",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "Person",
       type = "ODataDemo.Person",
       targetSchema = "ODataDemo",
       targetContainer = "DemoService",
@@ -136,7 +136,7 @@ public interface PersonDetail
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 
@@ -144,33 +144,33 @@ public interface PersonDetail
 
   interface Annotations {
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "PersonID",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "PersonID",
         type = "Edm.Int32")
-    org.apache.olingo.ext.proxy.api.Annotatable getPersonIDAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getPersonIDAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Age",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Age",
         type = "Edm.Byte")
-    org.apache.olingo.ext.proxy.api.Annotatable getAgeAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getAgeAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Gender",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Gender",
         type = "Edm.Boolean")
-    org.apache.olingo.ext.proxy.api.Annotatable getGenderAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getGenderAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Phone",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Phone",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getPhoneAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getPhoneAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Address",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Address",
         type = "ODataDemo.Address")
-    org.apache.olingo.ext.proxy.api.Annotatable getAddressAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getAddressAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Photo",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Photo",
         type = "Edm.Stream")
-    org.apache.olingo.ext.proxy.api.Annotatable getPhotoAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getPhotoAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "Person",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "Person",
         type = "ODataDemo.Person")
-    org.apache.olingo.ext.proxy.api.Annotatable getPersonAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getPersonAnnotations();
   }
 
 }

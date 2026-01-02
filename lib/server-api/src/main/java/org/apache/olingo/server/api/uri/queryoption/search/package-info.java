@@ -23,5 +23,5 @@
  * the Olingo search options within the query options (in uri context).
  *
  */
-package org.apache.olingo.server.api.uri.queryoption.search;
+package org.sitenetsoft.olinguito.server.api.uri.queryoption.search;
 

@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.edm.xml;
+package org.sitenetsoft.olinguito.client.api.edm.xml;
 
 import java.net.URI;
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.provider.CsdlAnnotatable;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotatable;
 
 public interface Reference extends CsdlAnnotatable {
 

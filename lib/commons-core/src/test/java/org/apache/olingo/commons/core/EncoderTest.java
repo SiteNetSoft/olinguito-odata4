@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.core;
+package org.sitenetsoft.olinguito.commons.core;
 
 import static org.junit.Assert.assertEquals;
 

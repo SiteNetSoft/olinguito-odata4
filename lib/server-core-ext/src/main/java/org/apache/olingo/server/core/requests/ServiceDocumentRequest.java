@@ -17,20 +17,20 @@
  * under the License.
  */
 
-package org.apache.olingo.server.core.requests;
+package org.sitenetsoft.olinguito.server.core.requests;
 
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.ODataApplicationException;
-import org.apache.olingo.server.api.ODataResponse;
-import org.apache.olingo.server.api.ODataLibraryException;
-import org.apache.olingo.server.api.ServiceMetadata;
-import org.apache.olingo.server.api.serializer.RepresentationType;
-import org.apache.olingo.server.core.ContentNegotiator;
-import org.apache.olingo.server.core.ContentNegotiatorException;
-import org.apache.olingo.server.core.ServiceHandler;
-import org.apache.olingo.server.core.ServiceRequest;
-import org.apache.olingo.server.core.responses.ServiceDocumentResponse;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
+import org.sitenetsoft.olinguito.server.api.ODataResponse;
+import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.api.serializer.RepresentationType;
+import org.sitenetsoft.olinguito.server.core.ContentNegotiator;
+import org.sitenetsoft.olinguito.server.core.ContentNegotiatorException;
+import org.sitenetsoft.olinguito.server.core.ServiceHandler;
+import org.sitenetsoft.olinguito.server.core.ServiceRequest;
+import org.sitenetsoft.olinguito.server.core.responses.ServiceDocumentResponse;
 
 public class ServiceDocumentRequest extends ServiceRequest {
 

@@ -30,7 +30,7 @@
 
 	<servlet>
 		<servlet-name>CarsServlet</servlet-name>
-		<servlet-class>org.apache.olingo.server.sample.CarsServlet</servlet-class>
+		<servlet-class>org.sitenetsoft.olinguito.server.sample.CarsServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 

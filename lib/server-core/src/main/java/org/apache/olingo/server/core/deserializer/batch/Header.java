@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.deserializer.batch;
+package org.sitenetsoft.olinguito.server.core.deserializer.batch;
 
 import java.util.ArrayList;
 import java.util.HashMap;

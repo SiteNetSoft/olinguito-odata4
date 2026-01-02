@@ -16,23 +16,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.opentype.opentypesservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.opentype.opentypesservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.AbstractOpenType;
-import org.apache.olingo.ext.proxy.api.Annotatable;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractOpenType;
+import org.sitenetsoft.olinguito.ext.proxy.api.Annotatable;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.OpenTypesServiceV4")
-@org.apache.olingo.ext.proxy.api.annotations.ComplexType(name = "AccountInfo",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.OpenTypesServiceV4")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.ComplexType(name = "AccountInfo",
     isOpenType = true,
     isAbstract = false)
 public interface AccountInfo
-    extends org.apache.olingo.ext.proxy.api.ComplexType<AccountInfo>,
-    org.apache.olingo.ext.proxy.api.StructuredQuery<AccountInfo>, AbstractOpenType {
+    extends org.sitenetsoft.olinguito.ext.proxy.api.ComplexType<AccountInfo>,
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredQuery<AccountInfo>, AbstractOpenType {
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "FirstName",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "FirstName",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -47,7 +47,7 @@ public interface AccountInfo
 
   void setFirstName(java.lang.String _firstName);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "LastName",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "LastName",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -66,11 +66,11 @@ public interface AccountInfo
 
   interface Annotations {
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "FirstName",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "FirstName",
         type = "Edm.String")
     Annotatable getFirstNameAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "LastName",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "LastName",
         type = "Edm.String")
     Annotatable getLastNameAnnotations();
 
@@ -78,7 +78,7 @@ public interface AccountInfo
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 }

@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.tecsvc.processor.queryoptions.options;
+package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.options;
 
-import org.apache.olingo.commons.api.data.EntityCollection;
-import org.apache.olingo.server.api.uri.queryoption.CountOption;
+import org.sitenetsoft.olinguito.commons.api.data.EntityCollection;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.CountOption;
 
 public class CountHandler {
   public static void applyCountSystemQueryOption(final CountOption countOption, final EntityCollection entitySet) {

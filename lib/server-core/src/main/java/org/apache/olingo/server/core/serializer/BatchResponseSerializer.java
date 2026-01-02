@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.serializer;
+package org.sitenetsoft.olinguito.server.core.serializer;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -31,16 +31,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.olingo.commons.api.ex.ODataRuntimeException;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.commons.api.http.HttpHeader;
-import org.apache.olingo.commons.api.http.HttpStatusCode;
-import org.apache.olingo.server.api.ODataContent;
-import org.apache.olingo.server.api.ODataResponse;
-import org.apache.olingo.server.api.deserializer.batch.ODataResponsePart;
-import org.apache.olingo.server.api.serializer.BatchSerializerException;
-import org.apache.olingo.server.api.serializer.BatchSerializerException.MessageKeys;
-import org.apache.olingo.server.core.deserializer.batch.BatchParserCommon;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.server.api.ODataContent;
+import org.sitenetsoft.olinguito.server.api.ODataResponse;
+import org.sitenetsoft.olinguito.server.api.deserializer.batch.ODataResponsePart;
+import org.sitenetsoft.olinguito.server.api.serializer.BatchSerializerException;
+import org.sitenetsoft.olinguito.server.api.serializer.BatchSerializerException.MessageKeys;
+import org.sitenetsoft.olinguito.server.core.deserializer.batch.BatchParserCommon;
 
 public class BatchResponseSerializer {
   private static final int BUFFER_SIZE = 4096;

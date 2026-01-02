@@ -16,17 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.AbstractEntitySet;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractEntitySet;
 
 // CHECKSTYLE:ON (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 public interface PaymentInstrumentComposableInvoker
     extends
-    org.apache.olingo.ext.proxy.api.StructuredComposableInvoker<PaymentInstrument, PaymentInstrument.Operations>
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredComposableInvoker<PaymentInstrument, PaymentInstrument.Operations>
 {
 
   @Override
@@ -36,7 +36,7 @@ public interface PaymentInstrumentComposableInvoker
   PaymentInstrumentComposableInvoker expand(String... expand);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "PaymentInstrumentID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "PaymentInstrumentID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -51,7 +51,7 @@ public interface PaymentInstrumentComposableInvoker
 
   void setPaymentInstrumentID(java.lang.Integer _paymentInstrumentID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "FriendlyName",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "FriendlyName",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -66,7 +66,7 @@ public interface PaymentInstrumentComposableInvoker
 
   void setFriendlyName(java.lang.String _friendlyName);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "CreatedDate",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "CreatedDate",
       type = "Edm.DateTimeOffset",
       nullable = false,
       defaultValue = "",
@@ -81,7 +81,7 @@ public interface PaymentInstrumentComposableInvoker
 
   void setCreatedDate(java.sql.Timestamp _createdDate);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "TheStoredPI",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "TheStoredPI",
       type = "Microsoft.Test.OData.Services.ODataWCFService.StoredPI",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -94,7 +94,7 @@ public interface PaymentInstrumentComposableInvoker
       setTheStoredPI(
           StoredPI _theStoredPI);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "BackupStoredPI",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "BackupStoredPI",
       type = "Microsoft.Test.OData.Services.ODataWCFService.StoredPI",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -107,7 +107,7 @@ public interface PaymentInstrumentComposableInvoker
       setBackupStoredPI(
           StoredPI _backupStoredPI);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "BillingStatements",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "BillingStatements",
       type = "Microsoft.Test.OData.Services.ODataWCFService.StoredPI",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -120,11 +120,11 @@ public interface PaymentInstrumentComposableInvoker
       setBillingStatements(
           PaymentInstrument.BillingStatements _billingStatements);
 
-  @org.apache.olingo.ext.proxy.api.annotations.EntitySet(name = "BillingStatements", contained = true)
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntitySet(name = "BillingStatements", contained = true)
   interface BillingStatements
       extends
-      org.apache.olingo.ext.proxy.api.EntitySet<Statement, StatementCollection>,
-      org.apache.olingo.ext.proxy.api.StructuredCollectionQuery<BillingStatements>,
+      org.sitenetsoft.olinguito.ext.proxy.api.EntitySet<Statement, StatementCollection>,
+      org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionQuery<BillingStatements>,
   AbstractEntitySet<Statement, java.lang.Integer, StatementCollection> {
     // No additional methods needed for now.
   }

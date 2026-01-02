@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.edm.xml;
+package org.sitenetsoft.olinguito.client.core.edm.xml;
 
 import java.io.IOException;
 import java.io.Serializable;
 
-import org.apache.olingo.client.core.edm.xml.annotation.ClientCsdlDynamicExpression;
-import org.apache.olingo.commons.api.edm.provider.CsdlAnnotation;
+import org.sitenetsoft.olinguito.client.core.edm.xml.annotation.ClientCsdlDynamicExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;

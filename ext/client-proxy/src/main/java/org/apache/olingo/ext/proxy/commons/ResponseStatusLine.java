@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.ext.proxy.commons;
+package org.sitenetsoft.olinguito.ext.proxy.commons;
 
 import org.apache.http.ProtocolVersion;
 import org.apache.http.StatusLine;
-import org.apache.olingo.client.api.communication.response.ODataResponse;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataResponse;
 
 class ResponseStatusLine implements StatusLine {
 

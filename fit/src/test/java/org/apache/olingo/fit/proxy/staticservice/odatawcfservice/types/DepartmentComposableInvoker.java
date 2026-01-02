@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
 public interface DepartmentComposableInvoker
-    extends org.apache.olingo.ext.proxy.api.StructuredComposableInvoker<Department, Department.Operations>
+    extends org.sitenetsoft.olinguito.ext.proxy.api.StructuredComposableInvoker<Department, Department.Operations>
 {
 
   @Override
@@ -34,7 +34,7 @@ public interface DepartmentComposableInvoker
   DepartmentComposableInvoker expand(String... expand);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "DepartmentID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "DepartmentID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -49,7 +49,7 @@ public interface DepartmentComposableInvoker
 
   void setDepartmentID(java.lang.Integer _departmentID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Name",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Name",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -64,7 +64,7 @@ public interface DepartmentComposableInvoker
 
   void setName(java.lang.String _name);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "DepartmentNO",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "DepartmentNO",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -79,7 +79,7 @@ public interface DepartmentComposableInvoker
 
   void setDepartmentNO(java.lang.String _departmentNO);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "Company",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "Company",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Company",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.serializer.utils;
+package org.sitenetsoft.olinguito.server.core.serializer.utils;
 
 import static org.junit.Assert.assertEquals;
 

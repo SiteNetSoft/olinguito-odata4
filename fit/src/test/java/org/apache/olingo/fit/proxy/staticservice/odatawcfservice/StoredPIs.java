@@ -16,26 +16,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.AbstractEntitySet;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.StoredPI;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.StoredPICollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractEntitySet;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.StoredPI;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.StoredPICollection;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
-@org.apache.olingo.ext.proxy.api.annotations.EntitySet(name = "StoredPIs",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntitySet(name = "StoredPIs",
     container = "Microsoft.Test.OData.Services.ODataWCFService.InMemoryEntities")
 public interface StoredPIs
     extends
-    org.apache.olingo.ext.proxy.api.EntitySet<StoredPI, StoredPICollection>,
-    org.apache.olingo.ext.proxy.api.StructuredCollectionQuery<StoredPIs>,
+    org.sitenetsoft.olinguito.ext.proxy.api.EntitySet<StoredPI, StoredPICollection>,
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionQuery<StoredPIs>,
     AbstractEntitySet<StoredPI, java.lang.Integer, StoredPICollection> {
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 }

@@ -22,5 +22,5 @@
  * The uri.queryoption package is used to condense all about the Olingo query options (in uri context).
  *
  */
-package org.apache.olingo.server.api.uri.queryoption;
+package org.sitenetsoft.olinguito.server.api.uri.queryoption;
 

@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication.request.retrieve;
+package org.sitenetsoft.olinguito.client.api.communication.request.retrieve;
 
-import org.apache.olingo.client.api.communication.request.ODataBasicRequest;
-import org.apache.olingo.client.api.communication.request.ODataBatchableRequest;
-import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataBasicRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataBatchableRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
 
 /**
  * This is an abstract representation of an OData retrieve query request returning one or more result item.

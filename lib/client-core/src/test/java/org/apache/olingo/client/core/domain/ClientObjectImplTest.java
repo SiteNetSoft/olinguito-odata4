@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.domain;
+package org.sitenetsoft.olinguito.client.core.domain;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -29,18 +29,18 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
 
-import org.apache.olingo.client.api.domain.ClientDeletedEntity.Reason;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.client.api.domain.ClientInlineEntity;
-import org.apache.olingo.client.api.domain.ClientLink;
-import org.apache.olingo.client.api.domain.ClientLinkType;
-import org.apache.olingo.client.api.domain.ClientObjectFactory;
-import org.apache.olingo.client.api.domain.ClientValue;
-import org.apache.olingo.client.core.ODataClientFactory;
-import org.apache.olingo.client.core.ODataClientImpl;
-import org.apache.olingo.client.core.domain.ClientPrimitiveValueImpl.BuilderImpl;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.client.api.domain.ClientDeletedEntity.Reason;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientInlineEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientLink;
+import org.sitenetsoft.olinguito.client.api.domain.ClientLinkType;
+import org.sitenetsoft.olinguito.client.api.domain.ClientObjectFactory;
+import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
+import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
+import org.sitenetsoft.olinguito.client.core.ODataClientImpl;
+import org.sitenetsoft.olinguito.client.core.domain.ClientPrimitiveValueImpl.BuilderImpl;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.junit.Test;
 
 public class ClientObjectImplTest {

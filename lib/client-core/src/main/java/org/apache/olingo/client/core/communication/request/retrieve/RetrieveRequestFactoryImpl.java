@@ -16,28 +16,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.request.retrieve;
+package org.sitenetsoft.olinguito.client.core.communication.request.retrieve;
 
 import java.net.URI;
 
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.communication.request.retrieve.EdmMetadataRequest;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataDeltaRequest;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataEntityRequest;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetIteratorRequest;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataMediaRequest;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataPropertyRequest;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataRawRequest;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataServiceDocumentRequest;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataValueRequest;
-import org.apache.olingo.client.api.communication.request.retrieve.RetrieveRequestFactory;
-import org.apache.olingo.client.api.communication.request.retrieve.XMLMetadataRequest;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.client.api.domain.ClientEntitySet;
-import org.apache.olingo.client.api.domain.ClientProperty;
-import org.apache.olingo.client.api.domain.ClientSingleton;
-import org.apache.olingo.client.core.uri.URIUtils;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.EdmMetadataRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataDeltaRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntityRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntitySetIteratorRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntitySetRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataMediaRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataPropertyRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataRawRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataServiceDocumentRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataValueRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.RetrieveRequestFactory;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.XMLMetadataRequest;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntitySet;
+import org.sitenetsoft.olinguito.client.api.domain.ClientProperty;
+import org.sitenetsoft.olinguito.client.api.domain.ClientSingleton;
+import org.sitenetsoft.olinguito.client.core.uri.URIUtils;
 
 public class RetrieveRequestFactoryImpl implements RetrieveRequestFactory {
 

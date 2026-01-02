@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.core.edm.primitivetype;
+package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -32,7 +32,7 @@ import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeException;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
 
 /**
  * Implementation of the EDM primitive type DateTimeOffset.

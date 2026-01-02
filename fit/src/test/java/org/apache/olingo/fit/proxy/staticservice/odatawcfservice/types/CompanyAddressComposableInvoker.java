@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
 
 public interface CompanyAddressComposableInvoker
-    extends org.apache.olingo.ext.proxy.api.StructuredComposableInvoker<CompanyAddress, CompanyAddress.Operations>
+    extends org.sitenetsoft.olinguito.ext.proxy.api.StructuredComposableInvoker<CompanyAddress, CompanyAddress.Operations>
 {
 
   @Override
@@ -30,7 +30,7 @@ public interface CompanyAddressComposableInvoker
   @Override
   CompanyAddressComposableInvoker expand(String... expand);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Street",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Street",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -45,7 +45,7 @@ public interface CompanyAddressComposableInvoker
 
   void setStreet(java.lang.String _street);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "City",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "City",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -60,7 +60,7 @@ public interface CompanyAddressComposableInvoker
 
   void setCity(java.lang.String _city);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "PostalCode",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "PostalCode",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -75,7 +75,7 @@ public interface CompanyAddressComposableInvoker
 
   void setPostalCode(java.lang.String _postalCode);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "CompanyName",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "CompanyName",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.http;
+package org.sitenetsoft.olinguito.client.core.http;
 
 import java.io.IOException;
 import java.net.URI;
@@ -31,9 +31,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HttpContext;
-import org.apache.olingo.client.api.http.HttpClientFactory;
-import org.apache.olingo.client.api.http.WrappingHttpClientFactory;
-import org.apache.olingo.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.client.api.http.HttpClientFactory;
+import org.sitenetsoft.olinguito.client.api.http.WrappingHttpClientFactory;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 public abstract class AbstractOAuth2HttpClientFactory
         extends AbstractHttpClientFactory implements WrappingHttpClientFactory {

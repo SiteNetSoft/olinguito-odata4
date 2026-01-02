@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.request;
+package org.sitenetsoft.olinguito.client.core.communication.request;
 
 import java.io.IOException;
 import java.net.URI;
@@ -34,19 +34,19 @@ import org.apache.http.client.utils.HttpClientUtils;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.DecompressingHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.communication.ODataClientErrorException;
-import org.apache.olingo.client.api.communication.header.ODataPreferences;
-import org.apache.olingo.client.api.communication.request.AsyncRequestWrapper;
-import org.apache.olingo.client.api.communication.request.ODataRequest;
-import org.apache.olingo.client.api.communication.request.cud.ODataDeleteRequest;
-import org.apache.olingo.client.api.communication.response.AsyncResponseWrapper;
-import org.apache.olingo.client.api.communication.response.ODataDeleteResponse;
-import org.apache.olingo.client.api.communication.response.ODataResponse;
-import org.apache.olingo.client.api.http.HttpClientException;
-import org.apache.olingo.commons.api.http.HttpHeader;
-import org.apache.olingo.commons.api.http.HttpMethod;
-import org.apache.olingo.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.communication.ODataClientErrorException;
+import org.sitenetsoft.olinguito.client.api.communication.header.ODataPreferences;
+import org.sitenetsoft.olinguito.client.api.communication.request.AsyncRequestWrapper;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataDeleteRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.AsyncResponseWrapper;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataDeleteResponse;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataResponse;
+import org.sitenetsoft.olinguito.client.api.http.HttpClientException;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
 
 public class AsyncRequestWrapperImpl<R extends ODataResponse> extends AbstractRequest
     implements AsyncRequestWrapper<R> {

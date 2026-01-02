@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.request.streamed;
+package org.sitenetsoft.olinguito.client.core.communication.request.streamed;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -24,13 +24,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.communication.request.streamed.ODataStreamUpdateRequest;
-import org.apache.olingo.client.api.communication.request.streamed.StreamUpdateStreamManager;
-import org.apache.olingo.client.api.communication.response.ODataStreamUpdateResponse;
-import org.apache.olingo.client.core.communication.request.AbstractODataStreamManager;
-import org.apache.olingo.client.core.communication.response.AbstractODataResponse;
-import org.apache.olingo.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.communication.request.streamed.ODataStreamUpdateRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.streamed.StreamUpdateStreamManager;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataStreamUpdateResponse;
+import org.sitenetsoft.olinguito.client.core.communication.request.AbstractODataStreamManager;
+import org.sitenetsoft.olinguito.client.core.communication.response.AbstractODataResponse;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 /**
  * This class implements an OData stream create/update request. Get instance by using ODataStreamedRequestFactory.

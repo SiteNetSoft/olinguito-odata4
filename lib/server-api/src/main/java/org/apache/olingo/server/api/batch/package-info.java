@@ -22,5 +22,5 @@
  * The batch package is used to condense common parts about the OData batch processing.
  *
  */
-package org.apache.olingo.server.api.batch;
+package org.sitenetsoft.olinguito.server.api.batch;
 

@@ -16,19 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.uri;
+package org.sitenetsoft.olinguito.server.api.uri;
 
 import java.util.List;
 
-import org.apache.olingo.commons.api.data.Entity;
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmEntitySet;
-import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.commons.api.edm.EdmStructuredType;
-import org.apache.olingo.server.api.deserializer.DeserializerException;
-import org.apache.olingo.server.api.serializer.SerializerException;
-import org.apache.olingo.server.api.uri.queryoption.ExpandOption;
-import org.apache.olingo.server.api.uri.queryoption.SelectOption;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmStructuredType;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectOption;
 
 /**
  * Used for URI-related tasks.
@@ -36,7 +36,7 @@ import org.apache.olingo.server.api.uri.queryoption.SelectOption;
 public interface UriHelper {
 
   /**
-   * Builds the select-list part of a {@link org.apache.olingo.commons.api.data.ContextURL ContextURL}.
+   * Builds the select-list part of a {@link org.sitenetsoft.olinguito.commons.api.data.ContextURL ContextURL}.
    * @param type the {@link EdmStructuredType}
    * @param expand the $expand option
    * @param select the $select option
@@ -46,7 +46,7 @@ public interface UriHelper {
       throws SerializerException;
 
   /**
-   * Builds the key-predicate part of a {@link org.apache.olingo.commons.api.data.ContextURL ContextURL}.
+   * Builds the key-predicate part of a {@link org.sitenetsoft.olinguito.commons.api.data.ContextURL ContextURL}.
    * @param keys the keys as a list of {@link UriParameter} instances
    * @return a String with the key predicate
    */

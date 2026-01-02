@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.core.edm;
+package org.sitenetsoft.olinguito.commons.core.edm;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmMember;
-import org.apache.olingo.commons.api.edm.provider.CsdlEnumMember;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmMember;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEnumMember;
 
 public class EdmMemberImpl extends AbstractEdmNamed implements EdmMember {
 

@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edm.geo;
+package org.sitenetsoft.olinguito.commons.api.edm.geo;
 
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 
 /**
  * Represents a collection of polygons.

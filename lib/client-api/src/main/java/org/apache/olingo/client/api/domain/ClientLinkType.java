@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.domain;
+package org.sitenetsoft.olinguito.client.api.domain;
 
-import org.apache.olingo.commons.api.Constants;
-import org.apache.olingo.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.Constants;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 
 /**
  * OData link types.

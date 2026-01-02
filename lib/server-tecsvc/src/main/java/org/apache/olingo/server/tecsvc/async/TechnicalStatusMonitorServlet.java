@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.tecsvc.async;
+package org.sitenetsoft.olinguito.server.tecsvc.async;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

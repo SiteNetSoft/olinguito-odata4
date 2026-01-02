@@ -16,24 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
-@org.apache.olingo.ext.proxy.api.annotations.EntityType(name = "Statement",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityType(name = "Statement",
     openType = false,
     hasStream = false,
     isAbstract = false)
 public interface Statement
-    extends org.apache.olingo.ext.proxy.api.Annotatable,
-    org.apache.olingo.ext.proxy.api.EntityType<Statement>, org.apache.olingo.ext.proxy.api.StructuredQuery<Statement> {
+    extends org.sitenetsoft.olinguito.ext.proxy.api.Annotatable,
+    org.sitenetsoft.olinguito.ext.proxy.api.EntityType<Statement>, org.sitenetsoft.olinguito.ext.proxy.api.StructuredQuery<Statement> {
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "StatementID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "StatementID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -48,7 +48,7 @@ public interface Statement
 
   void setStatementID(java.lang.Integer _statementID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "TransactionType",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "TransactionType",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -63,7 +63,7 @@ public interface Statement
 
   void setTransactionType(java.lang.String _transactionType);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "TransactionDescription",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "TransactionDescription",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -78,7 +78,7 @@ public interface Statement
 
   void setTransactionDescription(java.lang.String _transactionDescription);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Amount",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Amount",
       type = "Edm.Double",
       nullable = false,
       defaultValue = "",
@@ -95,7 +95,7 @@ public interface Statement
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 
@@ -103,21 +103,21 @@ public interface Statement
 
   interface Annotations {
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "StatementID",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "StatementID",
         type = "Edm.Int32")
-    org.apache.olingo.ext.proxy.api.Annotatable getStatementIDAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getStatementIDAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "TransactionType",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "TransactionType",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getTransactionTypeAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getTransactionTypeAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "TransactionDescription",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "TransactionDescription",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getTransactionDescriptionAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getTransactionDescriptionAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Amount",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Amount",
         type = "Edm.Double")
-    org.apache.olingo.ext.proxy.api.Annotatable getAmountAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getAmountAnnotations();
 
   }
 

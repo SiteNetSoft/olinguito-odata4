@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.android.http;
+package org.sitenetsoft.olinguito.client.core.android.http;
 
 import java.net.URI;
 
 import org.apache.http.client.HttpClient;
-import org.apache.olingo.client.core.http.AbstractHttpClientFactory;
-import org.apache.olingo.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.client.core.http.AbstractHttpClientFactory;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 import android.net.http.AndroidHttpClient;
 

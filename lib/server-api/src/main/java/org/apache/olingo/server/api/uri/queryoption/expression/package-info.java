@@ -23,5 +23,5 @@
  * the Olingo expressions within the query options (in uri context).
  *
  */
-package org.apache.olingo.server.api.uri.queryoption.expression;
+package org.sitenetsoft.olinguito.server.api.uri.queryoption.expression;
 

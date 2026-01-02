@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication.response;
+package org.sitenetsoft.olinguito.client.api.communication.response;
 
 /**
  * This class implements a response to a specific query request.
  *
- * @see org.apache.olingo.client.api.communication.request.retrieve.ODataRetrieveRequest
+ * @see org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataRetrieveRequest
  */
 public interface ODataRetrieveResponse<T> extends ODataResponse {
 

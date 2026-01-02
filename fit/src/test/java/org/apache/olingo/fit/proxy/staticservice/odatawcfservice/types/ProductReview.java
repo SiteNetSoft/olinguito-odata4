@@ -16,27 +16,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
-import org.apache.olingo.ext.proxy.api.annotations.KeyRef;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.KeyRef;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
 @KeyRef(ProductReviewKey.class)
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
-@org.apache.olingo.ext.proxy.api.annotations.EntityType(name = "ProductReview",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityType(name = "ProductReview",
     openType = false,
     hasStream = false,
     isAbstract = false)
 public interface ProductReview
-    extends org.apache.olingo.ext.proxy.api.Annotatable,
-    org.apache.olingo.ext.proxy.api.EntityType<ProductReview>,
-    org.apache.olingo.ext.proxy.api.StructuredQuery<ProductReview> {
+    extends org.sitenetsoft.olinguito.ext.proxy.api.Annotatable,
+    org.sitenetsoft.olinguito.ext.proxy.api.EntityType<ProductReview>,
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredQuery<ProductReview> {
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ProductID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ProductID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -52,7 +52,7 @@ public interface ProductReview
   void setProductID(java.lang.Integer _productID);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ProductDetailID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ProductDetailID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -68,7 +68,7 @@ public interface ProductReview
   void setProductDetailID(java.lang.Integer _productDetailID);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ReviewTitle",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ReviewTitle",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -84,7 +84,7 @@ public interface ProductReview
   void setReviewTitle(java.lang.String _reviewTitle);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "RevisionID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "RevisionID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -99,7 +99,7 @@ public interface ProductReview
 
   void setRevisionID(java.lang.Integer _revisionID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Comment",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Comment",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -114,7 +114,7 @@ public interface ProductReview
 
   void setComment(java.lang.String _comment);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Author",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Author",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -131,7 +131,7 @@ public interface ProductReview
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 
@@ -139,29 +139,29 @@ public interface ProductReview
 
   interface Annotations {
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "ProductID",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "ProductID",
         type = "Edm.Int32")
-    org.apache.olingo.ext.proxy.api.Annotatable getProductIDAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getProductIDAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "ProductDetailID",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "ProductDetailID",
         type = "Edm.Int32")
-    org.apache.olingo.ext.proxy.api.Annotatable getProductDetailIDAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getProductDetailIDAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "ReviewTitle",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "ReviewTitle",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getReviewTitleAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getReviewTitleAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "RevisionID",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "RevisionID",
         type = "Edm.Int32")
-    org.apache.olingo.ext.proxy.api.Annotatable getRevisionIDAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getRevisionIDAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Comment",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Comment",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getCommentAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getCommentAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Author",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Author",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getAuthorAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getAuthorAnnotations();
 
   }
 

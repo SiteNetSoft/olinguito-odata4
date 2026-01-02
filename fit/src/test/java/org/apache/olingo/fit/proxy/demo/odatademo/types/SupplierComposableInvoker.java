@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.demo.odatademo.types;
+package org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
 public interface SupplierComposableInvoker
-    extends org.apache.olingo.ext.proxy.api.StructuredComposableInvoker<Supplier, Supplier.Operations>
+    extends org.sitenetsoft.olinguito.ext.proxy.api.StructuredComposableInvoker<Supplier, Supplier.Operations>
 {
 
   @Override
@@ -34,7 +34,7 @@ public interface SupplierComposableInvoker
   SupplierComposableInvoker expand(String... expand);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -49,7 +49,7 @@ public interface SupplierComposableInvoker
 
   void setID(java.lang.Integer _iD);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Name",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Name",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -64,7 +64,7 @@ public interface SupplierComposableInvoker
 
   void setName(java.lang.String _name);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Address",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Address",
       type = "ODataDemo.Address",
       nullable = true,
       defaultValue = "",
@@ -79,7 +79,7 @@ public interface SupplierComposableInvoker
 
   void setAddress(Address _address);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Location",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Location",
       type = "Edm.GeographyPoint",
       nullable = true,
       defaultValue = "",
@@ -90,11 +90,11 @@ public interface SupplierComposableInvoker
       unicode = true,
       collation = "",
       srid = "")
-  org.apache.olingo.commons.api.edm.geo.Point getLocation();
+  org.sitenetsoft.olinguito.commons.api.edm.geo.Point getLocation();
 
-  void setLocation(org.apache.olingo.commons.api.edm.geo.Point _location);
+  void setLocation(org.sitenetsoft.olinguito.commons.api.edm.geo.Point _location);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Concurrency",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Concurrency",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -109,7 +109,7 @@ public interface SupplierComposableInvoker
 
   void setConcurrency(java.lang.Integer _concurrency);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "Products",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "Products",
       type = "ODataDemo.Product",
       targetSchema = "ODataDemo",
       targetContainer = "DemoService",

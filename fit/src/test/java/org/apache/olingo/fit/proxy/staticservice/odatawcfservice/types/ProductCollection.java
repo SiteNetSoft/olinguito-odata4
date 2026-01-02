@@ -16,31 +16,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
 import java.util.Collection;
 // CHECKSTYLE:ON (Maven checkstyle)
 
-import org.apache.olingo.ext.proxy.api.AbstractTerm;
-import org.apache.olingo.ext.proxy.api.OperationType;
-import org.apache.olingo.ext.proxy.api.annotations.Parameter;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractTerm;
+import org.sitenetsoft.olinguito.ext.proxy.api.OperationType;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Parameter;
 
 public interface ProductCollection
     extends
-    org.apache.olingo.ext.proxy.api.StructuredCollectionQuery<ProductCollection>,
-org.apache.olingo.ext.proxy.api.EntityCollection<Product, ProductCollection, ProductCollection> {
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionQuery<ProductCollection>,
+org.sitenetsoft.olinguito.ext.proxy.api.EntityCollection<Product, ProductCollection, ProductCollection> {
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
 
-    @org.apache.olingo.ext.proxy.api.annotations.Operation(
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Operation(
         name = "Discount",
         type = OperationType.ACTION,
         referenceType = ProductCollection.class,
         returnType = "Collection(Microsoft.Test.OData.Services.ODataWCFService.Product)")
-        org.apache.olingo.ext.proxy.api.StructuredCollectionInvoker<ProductCollection>
+        org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionInvoker<ProductCollection>
         discount(
             @Parameter(name = "percentage", type = "Edm.Int32", nullable = false) java.lang.Integer percentage
         );

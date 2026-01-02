@@ -16,23 +16,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.edm.xml.annotation;
+package org.sitenetsoft.olinguito.client.core.edm.xml.annotation;
 
 import java.io.IOException;
 import java.io.Serializable;
 
-import org.apache.olingo.client.core.edm.xml.AbstractClientCsdlEdmDeserializer;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlAnnotationPath;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlDynamicExpression;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlExpression;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlIf;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlLogicalOrComparisonExpression;
+import org.sitenetsoft.olinguito.client.core.edm.xml.AbstractClientCsdlEdmDeserializer;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlAnnotationPath;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlDynamicExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlIf;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlLogicalOrComparisonExpression;
 //CHECKSTYLE:OFF
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlLogicalOrComparisonExpression.LogicalOrComparisonExpressionType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlLogicalOrComparisonExpression.LogicalOrComparisonExpressionType;
 //CHECKSTYLE:ON
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlNavigationPropertyPath;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlPath;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlPropertyPath;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlNavigationPropertyPath;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlPath;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlPropertyPath;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;

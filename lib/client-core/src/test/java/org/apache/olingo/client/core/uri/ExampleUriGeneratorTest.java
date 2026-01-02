@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.uri;
+package org.sitenetsoft.olinguito.client.core.uri;
 
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.core.ODataClientFactory;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -41,7 +41,7 @@ public class ExampleUriGeneratorTest {
 
     /**
      * This test demonstrates that some String literals are not encapsulated (quoted) correctly. This happens because
-     * {@link org.apache.olingo.client.core.uri.URIUtils#quoteString(String, boolean)} incorrectly determines the string
+     * {@link org.sitenetsoft.olinguito.client.core.uri.URIUtils#quoteString(String, boolean)} incorrectly determines the string
      * to be an enum using a poorly designed regex, causing it to not encapsulate the string with single quotes. This
      * can be abused to circumvent filters as illustrated in the example below.
      * <p>

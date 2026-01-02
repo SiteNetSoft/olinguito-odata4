@@ -16,18 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.parser;
+package org.sitenetsoft.olinguito.server.core.uri.parser;
 
-import org.apache.olingo.server.api.uri.queryoption.SearchOption;
-import org.apache.olingo.server.api.uri.queryoption.search.SearchBinaryOperatorKind;
-import org.apache.olingo.server.api.uri.queryoption.search.SearchExpression;
-import org.apache.olingo.server.api.uri.queryoption.search.SearchTerm;
-import org.apache.olingo.server.core.uri.parser.UriTokenizer.TokenKind;
-import org.apache.olingo.server.core.uri.parser.search.SearchBinaryImpl;
-import org.apache.olingo.server.core.uri.parser.search.SearchParserException;
-import org.apache.olingo.server.core.uri.parser.search.SearchTermImpl;
-import org.apache.olingo.server.core.uri.parser.search.SearchUnaryImpl;
-import org.apache.olingo.server.core.uri.queryoption.SearchOptionImpl;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SearchOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.search.SearchBinaryOperatorKind;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.search.SearchExpression;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.search.SearchTerm;
+import org.sitenetsoft.olinguito.server.core.uri.parser.UriTokenizer.TokenKind;
+import org.sitenetsoft.olinguito.server.core.uri.parser.search.SearchBinaryImpl;
+import org.sitenetsoft.olinguito.server.core.uri.parser.search.SearchParserException;
+import org.sitenetsoft.olinguito.server.core.uri.parser.search.SearchTermImpl;
+import org.sitenetsoft.olinguito.server.core.uri.parser.search.SearchUnaryImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.SearchOptionImpl;
 
 /**
  * Parses search expressions according to the following (rewritten) grammar:

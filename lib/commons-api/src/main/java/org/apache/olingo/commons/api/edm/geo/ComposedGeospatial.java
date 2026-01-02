@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edm.geo;
+package org.sitenetsoft.olinguito.commons.api.edm.geo;
 
 import java.util.ArrayList;
 import java.util.Iterator;

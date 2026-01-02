@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.utils;
+package org.sitenetsoft.olinguito.fit.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -41,24 +41,24 @@ import jakarta.ws.rs.core.Response;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.FileObject;
-import org.apache.olingo.client.api.data.ResWrap;
-import org.apache.olingo.client.api.serialization.ODataDeserializer;
-import org.apache.olingo.client.api.serialization.ODataDeserializerException;
-import org.apache.olingo.client.api.serialization.ODataSerializer;
-import org.apache.olingo.client.api.serialization.ODataSerializerException;
-import org.apache.olingo.client.core.serialization.AtomSerializer;
-import org.apache.olingo.client.core.serialization.JsonDeserializer;
-import org.apache.olingo.client.core.serialization.JsonSerializer;
-import org.apache.olingo.commons.api.data.Entity;
-import org.apache.olingo.commons.api.data.EntityCollection;
-import org.apache.olingo.commons.api.data.Link;
-import org.apache.olingo.commons.api.data.Property;
-import org.apache.olingo.commons.api.edm.constants.ODataServiceVersion;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.fit.UnsupportedMediaTypeException;
-import org.apache.olingo.fit.metadata.Metadata;
-import org.apache.olingo.fit.metadata.NavigationProperty;
-import org.apache.olingo.fit.serializer.FITAtomDeserializer;
+import org.sitenetsoft.olinguito.client.api.data.ResWrap;
+import org.sitenetsoft.olinguito.client.api.serialization.ODataDeserializer;
+import org.sitenetsoft.olinguito.client.api.serialization.ODataDeserializerException;
+import org.sitenetsoft.olinguito.client.api.serialization.ODataSerializer;
+import org.sitenetsoft.olinguito.client.api.serialization.ODataSerializerException;
+import org.sitenetsoft.olinguito.client.core.serialization.AtomSerializer;
+import org.sitenetsoft.olinguito.client.core.serialization.JsonDeserializer;
+import org.sitenetsoft.olinguito.client.core.serialization.JsonSerializer;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.data.EntityCollection;
+import org.sitenetsoft.olinguito.commons.api.data.Link;
+import org.sitenetsoft.olinguito.commons.api.data.Property;
+import org.sitenetsoft.olinguito.commons.api.edm.constants.ODataServiceVersion;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.fit.UnsupportedMediaTypeException;
+import org.sitenetsoft.olinguito.fit.metadata.Metadata;
+import org.sitenetsoft.olinguito.fit.metadata.NavigationProperty;
+import org.sitenetsoft.olinguito.fit.serializer.FITAtomDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.demo.odatademo.types;
+package org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
 public interface EmployeeComposableInvoker
-    extends org.apache.olingo.ext.proxy.api.StructuredComposableInvoker<Employee, Employee.Operations>
+    extends org.sitenetsoft.olinguito.ext.proxy.api.StructuredComposableInvoker<Employee, Employee.Operations>
 {
 
   @Override
@@ -34,7 +34,7 @@ public interface EmployeeComposableInvoker
   EmployeeComposableInvoker expand(String... expand);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -49,7 +49,7 @@ public interface EmployeeComposableInvoker
 
   void setID(java.lang.Integer _iD);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Name",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Name",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -64,7 +64,7 @@ public interface EmployeeComposableInvoker
 
   void setName(java.lang.String _name);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "EmployeeID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "EmployeeID",
       type = "Edm.Int64",
       nullable = false,
       defaultValue = "",
@@ -79,7 +79,7 @@ public interface EmployeeComposableInvoker
 
   void setEmployeeID(java.lang.Long _employeeID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "HireDate",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "HireDate",
       type = "Edm.DateTimeOffset",
       nullable = false,
       defaultValue = "",
@@ -94,7 +94,7 @@ public interface EmployeeComposableInvoker
 
   void setHireDate(java.sql.Timestamp _hireDate);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Salary",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Salary",
       type = "Edm.Single",
       nullable = false,
       defaultValue = "",
@@ -109,7 +109,7 @@ public interface EmployeeComposableInvoker
 
   void setSalary(java.lang.Float _salary);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "PersonDetail",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "PersonDetail",
       type = "ODataDemo.PersonDetail",
       targetSchema = "ODataDemo",
       targetContainer = "DemoService",

@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.deserializer.batch;
+package org.sitenetsoft.olinguito.server.api.deserializer.batch;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.olingo.server.api.ODataResponse;
+import org.sitenetsoft.olinguito.server.api.ODataResponse;
 
 /**
  * An ODataResponsePart represents a collection of ODataResponses.

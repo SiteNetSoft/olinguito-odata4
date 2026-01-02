@@ -16,21 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.parser;
+package org.sitenetsoft.olinguito.server.core.uri.parser;
 
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmStructuredType;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.uri.queryoption.AliasQueryOption;
-import org.apache.olingo.server.api.uri.queryoption.OrderByOption;
-import org.apache.olingo.server.api.uri.queryoption.expression.Expression;
-import org.apache.olingo.server.core.uri.parser.UriTokenizer.TokenKind;
-import org.apache.olingo.server.core.uri.queryoption.OrderByItemImpl;
-import org.apache.olingo.server.core.uri.queryoption.OrderByOptionImpl;
-import org.apache.olingo.server.core.uri.validator.UriValidationException;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmStructuredType;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.AliasQueryOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.OrderByOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Expression;
+import org.sitenetsoft.olinguito.server.core.uri.parser.UriTokenizer.TokenKind;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.OrderByItemImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.OrderByOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidationException;
 
 public class OrderByParser {
 

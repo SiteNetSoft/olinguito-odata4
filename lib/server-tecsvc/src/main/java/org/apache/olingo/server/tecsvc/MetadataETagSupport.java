@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.tecsvc;
+package org.sitenetsoft.olinguito.server.tecsvc;
 
-import org.apache.olingo.server.api.etag.ServiceMetadataETagSupport;
+import org.sitenetsoft.olinguito.server.api.etag.ServiceMetadataETagSupport;
 
 public class MetadataETagSupport implements ServiceMetadataETagSupport {
 

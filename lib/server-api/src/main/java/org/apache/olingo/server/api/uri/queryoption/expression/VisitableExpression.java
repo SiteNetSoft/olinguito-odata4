@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.uri.queryoption.expression;
+package org.sitenetsoft.olinguito.server.api.uri.queryoption.expression;
 
-import org.apache.olingo.server.api.ODataApplicationException;
+import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
 
 /**
  * Marks an expression node a visitable by an expression visitor

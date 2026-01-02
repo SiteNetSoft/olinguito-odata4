@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.domain;
+package org.sitenetsoft.olinguito.client.api.domain;
 
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 
 import java.net.URI;
 

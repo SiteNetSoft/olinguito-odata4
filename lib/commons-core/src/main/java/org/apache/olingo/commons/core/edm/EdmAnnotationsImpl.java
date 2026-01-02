@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.core.edm;
+package org.sitenetsoft.olinguito.commons.core.edm;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmAnnotations;
-import org.apache.olingo.commons.api.edm.provider.CsdlAnnotations;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmAnnotations;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotations;
 
 public class EdmAnnotationsImpl extends AbstractEdmAnnotatable implements EdmAnnotations {
 

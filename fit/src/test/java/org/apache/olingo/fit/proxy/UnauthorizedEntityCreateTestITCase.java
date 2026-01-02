@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy;
+package org.sitenetsoft.olinguito.fit.proxy;
 
-import org.apache.olingo.client.api.EdmEnabledODataClient;
-import org.apache.olingo.client.api.http.HttpClientException;
-import org.apache.olingo.client.core.http.BasicAuthHttpClientFactory;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.fit.proxy.staticservice.Service;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.InMemoryEntities;
+import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
+import org.sitenetsoft.olinguito.client.api.http.HttpClientException;
+import org.sitenetsoft.olinguito.client.core.http.BasicAuthHttpClientFactory;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.Service;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.InMemoryEntities;
 import org.junit.Test;
 
 public class UnauthorizedEntityCreateTestITCase extends AbstractTestITCase {

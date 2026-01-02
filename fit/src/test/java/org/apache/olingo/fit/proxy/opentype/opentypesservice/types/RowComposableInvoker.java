@@ -16,16 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.opentype.opentypesservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.opentype.opentypesservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.AbstractOpenType;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractOpenType;
 
 // CHECKSTYLE:ON (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 public interface RowComposableInvoker
-    extends org.apache.olingo.ext.proxy.api.StructuredComposableInvoker<Row, Row.Operations>
+    extends org.sitenetsoft.olinguito.ext.proxy.api.StructuredComposableInvoker<Row, Row.Operations>
     , AbstractOpenType {
 
   @Override
@@ -35,7 +35,7 @@ public interface RowComposableInvoker
   RowComposableInvoker expand(String... expand);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Id",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Id",
       type = "Edm.Guid",
       nullable = false,
       defaultValue = "",

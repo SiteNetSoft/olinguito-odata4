@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.request.batch;
+package org.sitenetsoft.olinguito.client.core.communication.request.batch;
 
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.communication.request.batch.BatchRequestFactory;
-import org.apache.olingo.client.api.communication.request.batch.ODataBatchRequest;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.BatchRequestFactory;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchRequest;
 
 public class BatchRequestFactoryImpl implements BatchRequestFactory {
 

@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edm;
+package org.sitenetsoft.olinguito.commons.api.edm;
 
-import org.apache.olingo.commons.api.edm.constants.EdmTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.constants.EdmTypeKind;
 
 /**
  * EdmType holds the namespace of a given type and its type as {@link EdmTypeKind}.

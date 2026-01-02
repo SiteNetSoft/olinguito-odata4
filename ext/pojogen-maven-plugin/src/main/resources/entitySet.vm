@@ -19,22 +19,22 @@
 package ${package};
 
 //CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.AbstractEntitySet;
-import org.apache.olingo.ext.proxy.api.annotations.EntitySet;
-import org.apache.olingo.ext.proxy.api.annotations.CompoundKey;
-import org.apache.olingo.ext.proxy.api.annotations.CompoundKeyElement;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractEntitySet;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntitySet;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.CompoundKey;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.CompoundKeyElement;
 #foreach($ns in $namespaces)
 import #if($basePackage)${basePackage}.#end${ns}.types.*;
 #end
 
-import org.apache.olingo.commons.api.edm.geo.Geospatial;
-import org.apache.olingo.commons.api.edm.geo.GeospatialCollection;
-import org.apache.olingo.commons.api.edm.geo.LineString;
-import org.apache.olingo.commons.api.edm.geo.MultiLineString;
-import org.apache.olingo.commons.api.edm.geo.MultiPoint;
-import org.apache.olingo.commons.api.edm.geo.MultiPolygon;
-import org.apache.olingo.commons.api.edm.geo.Point;
-import org.apache.olingo.commons.api.edm.geo.Polygon;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Geospatial;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.GeospatialCollection;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.LineString;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.MultiLineString;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.MultiPoint;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.MultiPolygon;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Point;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Polygon;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.UUID;
@@ -55,10 +55,10 @@ import javax.xml.datatype.Duration;
 
 #set ( $javaEntityType = $utility.getJavaType($entitySet.EntityType) )
 
-@org.apache.olingo.ext.proxy.api.annotations.EntitySet(name = "$entitySet.Name", container = "$container.FullQualifiedName.toString()")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntitySet(name = "$entitySet.Name", container = "$container.FullQualifiedName.toString()")
 public interface $utility.capitalize($entitySet.Name) 
-  extends org.apache.olingo.ext.proxy.api.EntitySet<$javaEntityType, ${javaEntityType}Collection>, 
-  org.apache.olingo.ext.proxy.api.StructuredCollectionQuery<$utility.capitalize($entitySet.Name)>,
+  extends org.sitenetsoft.olinguito.ext.proxy.api.EntitySet<$javaEntityType, ${javaEntityType}Collection>,
+  org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionQuery<$utility.capitalize($entitySet.Name)>,
   AbstractEntitySet<$javaEntityType, $type, ${javaEntityType}Collection> {
 
 #set( $functions = $utility.getFunctionsBoundTo("${container.Namespace}.${entitySet.Name}", false) )

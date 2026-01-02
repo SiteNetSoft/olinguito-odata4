@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.ext.proxy.commons;
+package org.sitenetsoft.olinguito.ext.proxy.commons;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -28,24 +28,24 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import org.apache.commons.lang3.tuple.Triple;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataValueRequest;
-import org.apache.olingo.client.api.domain.ClientAnnotation;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.client.api.uri.URIBuilder;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.ext.proxy.AbstractService;
-import org.apache.olingo.ext.proxy.api.AbstractEntitySet;
-import org.apache.olingo.ext.proxy.api.AbstractSingleton;
-import org.apache.olingo.ext.proxy.api.EntityCollection;
-import org.apache.olingo.ext.proxy.api.EntityType;
-import org.apache.olingo.ext.proxy.api.Search;
-import org.apache.olingo.ext.proxy.api.StructuredType;
-import org.apache.olingo.ext.proxy.api.annotations.Namespace;
-import org.apache.olingo.ext.proxy.context.AttachedEntityStatus;
-import org.apache.olingo.ext.proxy.context.EntityContext;
-import org.apache.olingo.ext.proxy.context.EntityUUID;
-import org.apache.olingo.ext.proxy.utils.ClassUtils;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataValueRequest;
+import org.sitenetsoft.olinguito.client.api.domain.ClientAnnotation;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.uri.URIBuilder;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.ext.proxy.AbstractService;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractEntitySet;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractSingleton;
+import org.sitenetsoft.olinguito.ext.proxy.api.EntityCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.EntityType;
+import org.sitenetsoft.olinguito.ext.proxy.api.Search;
+import org.sitenetsoft.olinguito.ext.proxy.api.StructuredType;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace;
+import org.sitenetsoft.olinguito.ext.proxy.context.AttachedEntityStatus;
+import org.sitenetsoft.olinguito.ext.proxy.context.EntityContext;
+import org.sitenetsoft.olinguito.ext.proxy.context.EntityUUID;
+import org.sitenetsoft.olinguito.ext.proxy.utils.ClassUtils;
 
 public class EntitySetInvocationHandler<
         T extends EntityType<?>, KEY extends Serializable, EC extends EntityCollection<T, ?, ?>>

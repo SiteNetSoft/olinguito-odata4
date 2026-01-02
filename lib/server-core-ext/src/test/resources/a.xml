@@ -16,12 +16,12 @@
   </edmx:Reference>
 
   <edmx:Reference Uri="http://localhost/b.xml">
-    <edmx:Include Namespace="org.apache.olingo.b" Alias="B"/>
+    <edmx:Include Namespace="org.sitenetsoft.olinguito.b" Alias="B"/>
   </edmx:Reference>
 
   <edmx:DataServices>
 
-    <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="org.apache.olingo.a">
+    <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="org.sitenetsoft.olinguito.a">
 
       <Term Name="ExtendedInfo" Type="Collection(Message.Message)" Nullable="false">
         <Annotation Term="OData.Description" String="The ExtendedInfo annotation can be applied to any object or property to provide additional information about the item."/>

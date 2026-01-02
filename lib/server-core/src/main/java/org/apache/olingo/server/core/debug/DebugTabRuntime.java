@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.debug;
+package org.sitenetsoft.olinguito.server.core.debug;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.olingo.server.api.debug.RuntimeMeasurement;
+import org.sitenetsoft.olinguito.server.api.debug.RuntimeMeasurement;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 

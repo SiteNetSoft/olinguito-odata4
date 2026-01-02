@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api;
+package org.sitenetsoft.olinguito.server.api;
 
 import java.io.OutputStream;
 import java.nio.channels.WritableByteChannel;
@@ -27,14 +27,14 @@ import java.nio.channels.WritableByteChannel;
  * Because the content is potential streamable an error can occur when the
  * <code>write</code> methods are used.
  * If this happens <b>NO</b> exception will be thrown but if registered the
- * org.apache.olingo.server.api.ODataContentWriteErrorCallback is called.
+ * org.sitenetsoft.olinguito.server.api.ODataContentWriteErrorCallback is called.
  */
 public interface ODataContent {
   /**
    * Write the available content into the given <code>WritableByteChannel</code>.
    *
    * If during write of the content an exception is thrown this exception will be catched
-   * and the org.apache.olingo.server.api.ODataContentWriteErrorCallback is called (if registered).
+   * and the org.sitenetsoft.olinguito.server.api.ODataContentWriteErrorCallback is called (if registered).
    *
    * @param channel channel in which the content is written.
    */
@@ -44,7 +44,7 @@ public interface ODataContent {
    * Write the available content into the given <code>OutputStream</code>.
    *
    * If during write of the content an exception is thrown this exception will be catched
-   * and the org.apache.olingo.server.api.ODataContentWriteErrorCallback is called (if registered).
+   * and the org.sitenetsoft.olinguito.server.api.ODataContentWriteErrorCallback is called (if registered).
    *
    * @param stream stream in which the content is written.
    */

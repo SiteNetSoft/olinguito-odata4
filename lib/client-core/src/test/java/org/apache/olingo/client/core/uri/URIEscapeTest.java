@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.uri;
+package org.sitenetsoft.olinguito.client.core.uri;
 
 import static org.junit.Assert.assertEquals;
 
@@ -26,13 +26,13 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.TimeZone;
 
-import org.apache.olingo.commons.api.edm.EdmEnumType;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.edm.geo.Geospatial;
-import org.apache.olingo.commons.api.edm.geo.Point;
-import org.apache.olingo.commons.api.edm.provider.CsdlEnumType;
-import org.apache.olingo.commons.core.Encoder;
-import org.apache.olingo.commons.core.edm.EdmEnumTypeImpl;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEnumType;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Geospatial;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Point;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEnumType;
+import org.sitenetsoft.olinguito.commons.core.Encoder;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmEnumTypeImpl;
 import org.junit.Test;
 
 public class URIEscapeTest {

@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.etag;
+package org.sitenetsoft.olinguito.server.api.etag;
 
-import org.apache.olingo.commons.api.edm.EdmBindingTarget;
-import org.apache.olingo.server.api.OlingoExtension;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmBindingTarget;
+import org.sitenetsoft.olinguito.server.api.OlingoExtension;
 
 /**
  * <p>Processors that would like to support etags for certain entity sets can implement this

@@ -16,24 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
-@org.apache.olingo.ext.proxy.api.annotations.EntityType(name = "StoredPI",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityType(name = "StoredPI",
     openType = false,
     hasStream = false,
     isAbstract = false)
 public interface StoredPI
-    extends org.apache.olingo.ext.proxy.api.Annotatable,
-    org.apache.olingo.ext.proxy.api.EntityType<StoredPI>, org.apache.olingo.ext.proxy.api.StructuredQuery<StoredPI> {
+    extends org.sitenetsoft.olinguito.ext.proxy.api.Annotatable,
+    org.sitenetsoft.olinguito.ext.proxy.api.EntityType<StoredPI>, org.sitenetsoft.olinguito.ext.proxy.api.StructuredQuery<StoredPI> {
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "StoredPIID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "StoredPIID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -48,7 +48,7 @@ public interface StoredPI
 
   void setStoredPIID(java.lang.Integer _storedPIID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "PIName",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "PIName",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -63,7 +63,7 @@ public interface StoredPI
 
   void setPIName(java.lang.String _pIName);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "PIType",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "PIType",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -78,7 +78,7 @@ public interface StoredPI
 
   void setPIType(java.lang.String _pIType);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "CreatedDate",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "CreatedDate",
       type = "Edm.DateTimeOffset",
       nullable = false,
       defaultValue = "",
@@ -95,7 +95,7 @@ public interface StoredPI
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 
@@ -103,21 +103,21 @@ public interface StoredPI
 
   interface Annotations {
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "StoredPIID",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "StoredPIID",
         type = "Edm.Int32")
-    org.apache.olingo.ext.proxy.api.Annotatable getStoredPIIDAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getStoredPIIDAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "PIName",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "PIName",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getPINameAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getPINameAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "PIType",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "PIType",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getPITypeAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getPITypeAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "CreatedDate",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "CreatedDate",
         type = "Edm.DateTimeOffset")
-    org.apache.olingo.ext.proxy.api.Annotatable getCreatedDateAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getCreatedDateAnnotations();
 
   }
 

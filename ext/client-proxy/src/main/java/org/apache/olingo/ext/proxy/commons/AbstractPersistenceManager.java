@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.ext.proxy.commons;
+package org.sitenetsoft.olinguito.ext.proxy.commons;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
@@ -32,26 +32,26 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.olingo.client.api.EdmEnabledODataClient;
-import org.apache.olingo.client.api.communication.header.ODataPreferences;
-import org.apache.olingo.client.api.communication.request.cud.ODataDeleteRequest;
-import org.apache.olingo.client.api.communication.request.cud.ODataEntityUpdateRequest;
-import org.apache.olingo.client.api.communication.request.cud.ODataReferenceAddingRequest;
-import org.apache.olingo.client.api.communication.request.streamed.ODataMediaEntityUpdateRequest;
-import org.apache.olingo.client.api.communication.request.streamed.ODataStreamUpdateRequest;
-import org.apache.olingo.client.core.uri.URIUtils;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.client.api.domain.ClientLink;
-import org.apache.olingo.client.api.domain.ClientLinkType;
-import org.apache.olingo.ext.proxy.AbstractService;
-import org.apache.olingo.ext.proxy.api.EdmStreamValue;
-import org.apache.olingo.ext.proxy.api.PersistenceManager;
-import org.apache.olingo.ext.proxy.api.annotations.NavigationProperty;
-import org.apache.olingo.ext.proxy.context.AttachedEntity;
-import org.apache.olingo.ext.proxy.context.AttachedEntityStatus;
-import org.apache.olingo.ext.proxy.context.EntityLinkDesc;
-import org.apache.olingo.ext.proxy.utils.ClassUtils;
-import org.apache.olingo.ext.proxy.utils.CoreUtils;
+import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
+import org.sitenetsoft.olinguito.client.api.communication.header.ODataPreferences;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataDeleteRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataEntityUpdateRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataReferenceAddingRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.streamed.ODataMediaEntityUpdateRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.streamed.ODataStreamUpdateRequest;
+import org.sitenetsoft.olinguito.client.core.uri.URIUtils;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientLink;
+import org.sitenetsoft.olinguito.client.api.domain.ClientLinkType;
+import org.sitenetsoft.olinguito.ext.proxy.AbstractService;
+import org.sitenetsoft.olinguito.ext.proxy.api.EdmStreamValue;
+import org.sitenetsoft.olinguito.ext.proxy.api.PersistenceManager;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty;
+import org.sitenetsoft.olinguito.ext.proxy.context.AttachedEntity;
+import org.sitenetsoft.olinguito.ext.proxy.context.AttachedEntityStatus;
+import org.sitenetsoft.olinguito.ext.proxy.context.EntityLinkDesc;
+import org.sitenetsoft.olinguito.ext.proxy.utils.ClassUtils;
+import org.sitenetsoft.olinguito.ext.proxy.utils.CoreUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -453,7 +453,7 @@ abstract class AbstractPersistenceManager implements PersistenceManager {
     final ODataEntityUpdateRequest<ClientEntity> req =
         ((EdmEnabledODataClient) service.getClient()).getCUDRequestFactory().
             getEntityUpdateRequest(handler.getEntityURI(),
-                org.apache.olingo.client.api.communication.request.cud.UpdateType.PATCH, changes);
+                org.sitenetsoft.olinguito.client.api.communication.request.cud.UpdateType.PATCH, changes);
 
     req.setPrefer(new ODataPreferences().returnContent());
 
@@ -474,7 +474,7 @@ abstract class AbstractPersistenceManager implements PersistenceManager {
     URI sericeRoot = handler.getClient().newURIBuilder(handler.getClient().getServiceRoot()).build();
 
     final ODataReferenceAddingRequest req =
-        ((org.apache.olingo.client.api.EdmEnabledODataClient) service.getClient()).getCUDRequestFactory().
+        ((org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient) service.getClient()).getCUDRequestFactory().
             getReferenceAddingRequest(sericeRoot, source, targetRef);
 
     req.setPrefer(new ODataPreferences().returnContent());
@@ -498,7 +498,7 @@ abstract class AbstractPersistenceManager implements PersistenceManager {
     final ODataEntityUpdateRequest<ClientEntity> req =
         ((EdmEnabledODataClient) service.getClient()).getCUDRequestFactory().
             getEntityUpdateRequest(uri,
-                org.apache.olingo.client.api.communication.request.cud.UpdateType.PATCH, changes);
+                org.sitenetsoft.olinguito.client.api.communication.request.cud.UpdateType.PATCH, changes);
 
     req.setPrefer(new ODataPreferences().returnContent());
 

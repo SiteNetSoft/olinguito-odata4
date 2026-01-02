@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.deserializer;
+package org.sitenetsoft.olinguito.server.api.deserializer;
 
-import org.apache.olingo.server.api.ODataLibraryException;
+import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
 
 /** Exception thrown by deserializers. */
 public class DeserializerException extends ODataLibraryException {

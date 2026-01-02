@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core;
+package org.sitenetsoft.olinguito.client.core;
 
-import org.apache.olingo.client.api.Configuration;
-import org.apache.olingo.client.api.http.HttpClientFactory;
-import org.apache.olingo.client.api.http.HttpUriRequestFactory;
-import org.apache.olingo.client.core.http.DefaultHttpClientFactory;
-import org.apache.olingo.client.core.http.DefaultHttpUriRequestFactory;
-import org.apache.olingo.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.client.api.Configuration;
+import org.sitenetsoft.olinguito.client.api.http.HttpClientFactory;
+import org.sitenetsoft.olinguito.client.api.http.HttpUriRequestFactory;
+import org.sitenetsoft.olinguito.client.core.http.DefaultHttpClientFactory;
+import org.sitenetsoft.olinguito.client.core.http.DefaultHttpUriRequestFactory;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 
 import java.util.HashMap;
 import java.util.Map;

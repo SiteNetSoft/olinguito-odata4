@@ -16,26 +16,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.AbstractEntitySet;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Account;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.AccountCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractEntitySet;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Account;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.AccountCollection;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
-@org.apache.olingo.ext.proxy.api.annotations.EntitySet(name = "Accounts",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntitySet(name = "Accounts",
     container = "Microsoft.Test.OData.Services.ODataWCFService.InMemoryEntities")
 public interface Accounts
     extends
-    org.apache.olingo.ext.proxy.api.EntitySet<Account, AccountCollection>,
-    org.apache.olingo.ext.proxy.api.StructuredCollectionQuery<Accounts>,
+    org.sitenetsoft.olinguito.ext.proxy.api.EntitySet<Account, AccountCollection>,
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionQuery<Accounts>,
     AbstractEntitySet<Account, java.lang.Integer, AccountCollection> {
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 }

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.data;
+package org.sitenetsoft.olinguito.client.api.data;
 
 import java.net.URI;
 import java.util.List;
@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * REST resource for an <tt>ODataServiceDocument</tt>.
  *
- * @see org.apache.olingo.client.api.domain.ClientServiceDocument
+ * @see org.sitenetsoft.olinguito.client.api.domain.ClientServiceDocument
  */
 public interface ServiceDocument {
 

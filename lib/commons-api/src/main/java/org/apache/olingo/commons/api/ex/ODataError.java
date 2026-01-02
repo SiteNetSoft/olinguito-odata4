@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.ex;
+package org.sitenetsoft.olinguito.commons.api.ex;
 
 import java.util.List;
 import java.util.Map;

@@ -16,27 +16,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
-import org.apache.olingo.ext.proxy.api.annotations.KeyRef;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.KeyRef;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
 @KeyRef(OrderDetailKey.class)
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
-@org.apache.olingo.ext.proxy.api.annotations.EntityType(name = "OrderDetail",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityType(name = "OrderDetail",
     openType = false,
     hasStream = false,
     isAbstract = false)
 public interface OrderDetail
-    extends org.apache.olingo.ext.proxy.api.Annotatable,
-    org.apache.olingo.ext.proxy.api.EntityType<OrderDetail>,
-    org.apache.olingo.ext.proxy.api.StructuredQuery<OrderDetail> {
+    extends org.sitenetsoft.olinguito.ext.proxy.api.Annotatable,
+    org.sitenetsoft.olinguito.ext.proxy.api.EntityType<OrderDetail>,
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredQuery<OrderDetail> {
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "OrderID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "OrderID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -52,7 +52,7 @@ public interface OrderDetail
   void setOrderID(java.lang.Integer _orderID);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ProductID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ProductID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -67,7 +67,7 @@ public interface OrderDetail
 
   void setProductID(java.lang.Integer _productID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "OrderPlaced",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "OrderPlaced",
       type = "Edm.DateTimeOffset",
       nullable = false,
       defaultValue = "",
@@ -82,7 +82,7 @@ public interface OrderDetail
 
   void setOrderPlaced(java.sql.Timestamp _orderPlaced);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Quantity",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Quantity",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -97,7 +97,7 @@ public interface OrderDetail
 
   void setQuantity(java.lang.Integer _quantity);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "UnitPrice",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "UnitPrice",
       type = "Edm.Single",
       nullable = false,
       defaultValue = "",
@@ -112,7 +112,7 @@ public interface OrderDetail
 
   void setUnitPrice(java.lang.Float _unitPrice);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "ProductOrdered",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "ProductOrdered",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Product",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -125,7 +125,7 @@ public interface OrderDetail
       setProductOrdered(
           ProductCollection _productOrdered);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "AssociatedOrder",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "AssociatedOrder",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Order",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -140,7 +140,7 @@ public interface OrderDetail
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 
@@ -148,33 +148,33 @@ public interface OrderDetail
 
   interface Annotations {
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "OrderID",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "OrderID",
         type = "Edm.Int32")
-    org.apache.olingo.ext.proxy.api.Annotatable getOrderIDAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getOrderIDAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "ProductID",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "ProductID",
         type = "Edm.Int32")
-    org.apache.olingo.ext.proxy.api.Annotatable getProductIDAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getProductIDAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "OrderPlaced",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "OrderPlaced",
         type = "Edm.DateTimeOffset")
-    org.apache.olingo.ext.proxy.api.Annotatable getOrderPlacedAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getOrderPlacedAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Quantity",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Quantity",
         type = "Edm.Int32")
-    org.apache.olingo.ext.proxy.api.Annotatable getQuantityAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getQuantityAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "UnitPrice",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "UnitPrice",
         type = "Edm.Single")
-    org.apache.olingo.ext.proxy.api.Annotatable getUnitPriceAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getUnitPriceAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "ProductOrdered",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "ProductOrdered",
         type = "Microsoft.Test.OData.Services.ODataWCFService.Product")
-    org.apache.olingo.ext.proxy.api.Annotatable getProductOrderedAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getProductOrderedAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "AssociatedOrder",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "AssociatedOrder",
         type = "Microsoft.Test.OData.Services.ODataWCFService.Order")
-    org.apache.olingo.ext.proxy.api.Annotatable getAssociatedOrderAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getAssociatedOrderAnnotations();
   }
 
 }

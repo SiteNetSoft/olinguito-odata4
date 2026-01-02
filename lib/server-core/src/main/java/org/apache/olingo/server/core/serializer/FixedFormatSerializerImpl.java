@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.serializer;
+package org.sitenetsoft.olinguito.server.core.serializer;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -25,17 +25,17 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-import org.apache.olingo.commons.api.data.EntityMediaObject;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveType;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeException;
-import org.apache.olingo.server.api.ODataResponse;
-import org.apache.olingo.server.api.deserializer.batch.ODataResponsePart;
-import org.apache.olingo.server.api.serializer.BatchSerializerException;
-import org.apache.olingo.server.api.serializer.FixedFormatSerializer;
-import org.apache.olingo.server.api.serializer.PrimitiveValueSerializerOptions;
-import org.apache.olingo.server.api.serializer.SerializerException;
-import org.apache.olingo.server.api.serializer.SerializerStreamResult;
-import org.apache.olingo.server.core.ODataWritableContent;
+import org.sitenetsoft.olinguito.commons.api.data.EntityMediaObject;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
+import org.sitenetsoft.olinguito.server.api.ODataResponse;
+import org.sitenetsoft.olinguito.server.api.deserializer.batch.ODataResponsePart;
+import org.sitenetsoft.olinguito.server.api.serializer.BatchSerializerException;
+import org.sitenetsoft.olinguito.server.api.serializer.FixedFormatSerializer;
+import org.sitenetsoft.olinguito.server.api.serializer.PrimitiveValueSerializerOptions;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerStreamResult;
+import org.sitenetsoft.olinguito.server.core.ODataWritableContent;
 
 public class FixedFormatSerializerImpl implements FixedFormatSerializer {
 

@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edm.provider;
+package org.sitenetsoft.olinguito.commons.api.edm.provider;
 
 import java.util.List;
 
-import org.apache.olingo.commons.api.ex.ODataException;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 
 /**
  * The interface Csdl edm provider.

@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.utils;
+package org.sitenetsoft.olinguito.fit.utils;
 
 import java.util.regex.Pattern;
 
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.fit.UnsupportedMediaTypeException;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.fit.UnsupportedMediaTypeException;
 
 public enum Accept {
 

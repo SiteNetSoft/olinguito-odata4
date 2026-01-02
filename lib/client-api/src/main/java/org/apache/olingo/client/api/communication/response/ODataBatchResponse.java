@@ -16,16 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication.response;
+package org.sitenetsoft.olinguito.client.api.communication.response;
 
 import java.util.Iterator;
 
-import org.apache.olingo.client.api.communication.request.batch.ODataBatchResponseItem;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchResponseItem;
 
 /**
  * This class implements a response to a batch request.
  *
- * @see org.apache.olingo.client.api.communication.request.batch.ODataBatchRequest
+ * @see org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchRequest
  */
 public interface ODataBatchResponse extends ODataResponse {
 

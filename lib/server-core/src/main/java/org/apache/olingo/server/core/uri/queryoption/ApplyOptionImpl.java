@@ -16,16 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.queryoption;
+package org.sitenetsoft.olinguito.server.core.uri.queryoption;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.EdmStructuredType;
-import org.apache.olingo.server.api.uri.queryoption.ApplyItem;
-import org.apache.olingo.server.api.uri.queryoption.ApplyOption;
-import org.apache.olingo.server.api.uri.queryoption.SystemQueryOptionKind;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmStructuredType;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ApplyItem;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ApplyOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SystemQueryOptionKind;
 
 public class ApplyOptionImpl extends SystemQueryOptionImpl implements ApplyOption {
 

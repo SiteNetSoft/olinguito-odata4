@@ -16,25 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.demo.odatademo.types;
+package org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("ODataDemo")
-@org.apache.olingo.ext.proxy.api.annotations.EntityType(name = "Advertisement",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("ODataDemo")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityType(name = "Advertisement",
     openType = false,
     hasStream = true,
     isAbstract = false)
 public interface Advertisement
-    extends org.apache.olingo.ext.proxy.api.Annotatable,
-    org.apache.olingo.ext.proxy.api.EntityType<Advertisement>,
-    org.apache.olingo.ext.proxy.api.StructuredQuery<Advertisement> {
+    extends org.sitenetsoft.olinguito.ext.proxy.api.Annotatable,
+    org.sitenetsoft.olinguito.ext.proxy.api.EntityType<Advertisement>,
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredQuery<Advertisement> {
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ID",
       type = "Edm.Guid",
       nullable = false,
       defaultValue = "",
@@ -49,7 +49,7 @@ public interface Advertisement
 
   void setID(java.util.UUID _iD);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Name",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Name",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -64,7 +64,7 @@ public interface Advertisement
 
   void setName(java.lang.String _name);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "AirDate",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "AirDate",
       type = "Edm.DateTimeOffset",
       nullable = false,
       defaultValue = "",
@@ -79,7 +79,7 @@ public interface Advertisement
 
   void setAirDate(java.sql.Timestamp _airDate);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "FeaturedProduct",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "FeaturedProduct",
       type = "ODataDemo.FeaturedProduct",
       targetSchema = "ODataDemo",
       targetContainer = "DemoService",
@@ -89,13 +89,13 @@ public interface Advertisement
 
   void setFeaturedProduct(FeaturedProduct _featuredProduct);
 
-  void uploadStream(org.apache.olingo.ext.proxy.api.EdmStreamValue stream);
+  void uploadStream(org.sitenetsoft.olinguito.ext.proxy.api.EdmStreamValue stream);
 
-  org.apache.olingo.ext.proxy.api.EdmStreamValue loadStream();
+  org.sitenetsoft.olinguito.ext.proxy.api.EdmStreamValue loadStream();
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 
@@ -103,21 +103,21 @@ public interface Advertisement
 
   interface Annotations {
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "ID",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "ID",
         type = "Edm.Guid")
-    org.apache.olingo.ext.proxy.api.Annotatable getIDAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getIDAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Name",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Name",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getNameAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getNameAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "AirDate",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "AirDate",
         type = "Edm.DateTimeOffset")
-    org.apache.olingo.ext.proxy.api.Annotatable getAirDateAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getAirDateAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "FeaturedProduct",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "FeaturedProduct",
         type = "ODataDemo.FeaturedProduct")
-    org.apache.olingo.ext.proxy.api.Annotatable getFeaturedProductAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getFeaturedProductAnnotations();
   }
 
 }

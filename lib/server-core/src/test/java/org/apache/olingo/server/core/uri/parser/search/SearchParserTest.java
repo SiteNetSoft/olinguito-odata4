@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.parser.search;
+package org.sitenetsoft.olinguito.server.core.uri.parser.search;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -28,10 +28,10 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.olingo.server.api.uri.queryoption.search.SearchBinaryOperatorKind;
-import org.apache.olingo.server.api.uri.queryoption.search.SearchExpression;
-import org.apache.olingo.server.core.uri.parser.search.SearchParserException.MessageKeys;
-import org.apache.olingo.server.core.uri.parser.search.SearchQueryToken.Token;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.search.SearchBinaryOperatorKind;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.search.SearchExpression;
+import org.sitenetsoft.olinguito.server.core.uri.parser.search.SearchParserException.MessageKeys;
+import org.sitenetsoft.olinguito.server.core.uri.parser.search.SearchQueryToken.Token;
 import org.junit.Test;
 
 public class SearchParserTest extends SearchParser {

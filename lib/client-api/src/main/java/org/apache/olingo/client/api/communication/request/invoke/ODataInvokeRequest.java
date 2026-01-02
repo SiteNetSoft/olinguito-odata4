@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication.request.invoke;
+package org.sitenetsoft.olinguito.client.api.communication.request.invoke;
 
 import java.util.Map;
 
-import org.apache.olingo.client.api.communication.request.ODataBasicRequest;
-import org.apache.olingo.client.api.communication.response.ODataInvokeResponse;
-import org.apache.olingo.client.api.domain.ClientInvokeResult;
-import org.apache.olingo.client.api.domain.ClientValue;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataBasicRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataInvokeResponse;
+import org.sitenetsoft.olinguito.client.api.domain.ClientInvokeResult;
+import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
 
 /**
  * This class implements an OData invoke operation request.

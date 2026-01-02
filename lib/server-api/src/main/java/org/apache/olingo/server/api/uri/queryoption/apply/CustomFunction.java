@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.uri.queryoption.apply;
+package org.sitenetsoft.olinguito.server.api.uri.queryoption.apply;
 
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.EdmFunction;
-import org.apache.olingo.server.api.uri.UriParameter;
-import org.apache.olingo.server.api.uri.queryoption.ApplyItem;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmFunction;
+import org.sitenetsoft.olinguito.server.api.uri.UriParameter;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ApplyItem;
 
 /**
  * Represents a transformation with a custom function.

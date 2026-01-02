@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.uri;
+package org.sitenetsoft.olinguito.client.api.uri;
 
-import org.apache.olingo.commons.api.edm.EdmEnumType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEnumType;
 
 public interface FilterFactory {
 

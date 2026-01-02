@@ -26,9 +26,9 @@
  * <p>An OData service can be exposed by a web application using the standard java servlet API.
  * For further information, see the <a href="http://olingo.apache.org/doc/odata4/">Olingo
  * tutorials</a> on how to implement an OData service.</p>
- * <p>The main entry point is the org.apache.olingo.server.api.OData class.
+ * <p>The main entry point is the org.sitenetsoft.olinguito.server.api.OData class.
  * Use the newInstance() method to create a new object and
  * start providing your service from there.</p>
  */
-package org.apache.olingo.server.api;
+package org.sitenetsoft.olinguito.server.api;
 

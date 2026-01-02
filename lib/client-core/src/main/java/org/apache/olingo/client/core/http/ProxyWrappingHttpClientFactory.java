@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.http;
+package org.sitenetsoft.olinguito.client.core.http;
 
 import java.net.URI;
 
@@ -26,12 +26,12 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.olingo.client.api.http.WrappingHttpClientFactory;
-import org.apache.olingo.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.client.api.http.WrappingHttpClientFactory;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 /**
  * Implementation for working behind an HTTP proxy (possibly requiring authentication); requires another concrete
- * {@link org.apache.olingo.client.api.http.HttpClientFactory} implementation acting as real HTTP client factory.
+ * {@link org.sitenetsoft.olinguito.client.api.http.HttpClientFactory} implementation acting as real HTTP client factory.
  */
 public class ProxyWrappingHttpClientFactory implements WrappingHttpClientFactory {
 

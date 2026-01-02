@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.netty.server.core;
+package org.sitenetsoft.olinguito.netty.server.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -30,14 +30,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.olingo.commons.api.edmx.EdmxReference;
-import org.apache.olingo.commons.api.http.HttpStatusCode;
-import org.apache.olingo.netty.server.api.ODataNetty;
-import org.apache.olingo.netty.server.api.ODataNettyHandler;
-import org.apache.olingo.server.api.ServiceMetadata;
-import org.apache.olingo.server.api.processor.EntityProcessor;
-import org.apache.olingo.server.api.processor.MetadataProcessor;
-import org.apache.olingo.server.tecsvc.provider.EdmTechProvider;
+import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.netty.server.api.ODataNetty;
+import org.sitenetsoft.olinguito.netty.server.api.ODataNettyHandler;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.api.processor.EntityProcessor;
+import org.sitenetsoft.olinguito.server.api.processor.MetadataProcessor;
+import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
 import org.junit.Test;
 
 import io.netty.buffer.Unpooled;

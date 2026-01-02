@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.parser;
+package org.sitenetsoft.olinguito.server.core.uri.parser;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.apache.olingo.server.core.uri.parser.UriTokenizer;
-import org.apache.olingo.server.core.uri.parser.UriTokenizer.TokenKind;
+import org.sitenetsoft.olinguito.server.core.uri.parser.UriTokenizer;
+import org.sitenetsoft.olinguito.server.core.uri.parser.UriTokenizer.TokenKind;
 import org.junit.Test;
 
 /**

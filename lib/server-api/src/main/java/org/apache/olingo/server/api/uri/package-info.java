@@ -21,8 +21,8 @@
  * <p>
  * The URI package is used to condense all information about the OData path used to query the data.
  * <br> In order to support filter and orderby statements the
- * {@link org.apache.olingo.server.api.uri.queryoption.expression.ExpressionVisitor} has to be implemented by an
+ * {@link org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.ExpressionVisitor} has to be implemented by an
  * application.
  */
-package org.apache.olingo.server.api.uri;
+package org.sitenetsoft.olinguito.server.api.uri;
 

@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
 public interface OrderDetailComposableInvoker
-    extends org.apache.olingo.ext.proxy.api.StructuredComposableInvoker<OrderDetail, OrderDetail.Operations>
+    extends org.sitenetsoft.olinguito.ext.proxy.api.StructuredComposableInvoker<OrderDetail, OrderDetail.Operations>
 {
 
   @Override
@@ -34,7 +34,7 @@ public interface OrderDetailComposableInvoker
   OrderDetailComposableInvoker expand(String... expand);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "OrderID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "OrderID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -50,7 +50,7 @@ public interface OrderDetailComposableInvoker
   void setOrderID(java.lang.Integer _orderID);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ProductID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ProductID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -65,7 +65,7 @@ public interface OrderDetailComposableInvoker
 
   void setProductID(java.lang.Integer _productID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "OrderPlaced",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "OrderPlaced",
       type = "Edm.DateTimeOffset",
       nullable = false,
       defaultValue = "",
@@ -80,7 +80,7 @@ public interface OrderDetailComposableInvoker
 
   void setOrderPlaced(java.sql.Timestamp _orderPlaced);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Quantity",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Quantity",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -95,7 +95,7 @@ public interface OrderDetailComposableInvoker
 
   void setQuantity(java.lang.Integer _quantity);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "UnitPrice",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "UnitPrice",
       type = "Edm.Single",
       nullable = false,
       defaultValue = "",
@@ -110,7 +110,7 @@ public interface OrderDetailComposableInvoker
 
   void setUnitPrice(java.lang.Float _unitPrice);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "ProductOrdered",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "ProductOrdered",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Product",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -123,7 +123,7 @@ public interface OrderDetailComposableInvoker
       setProductOrdered(
           ProductCollection _productOrdered);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "AssociatedOrder",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "AssociatedOrder",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Order",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",

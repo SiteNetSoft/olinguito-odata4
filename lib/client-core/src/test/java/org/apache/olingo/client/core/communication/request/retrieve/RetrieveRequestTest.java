@@ -16,16 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.request.retrieve;
+package org.sitenetsoft.olinguito.client.core.communication.request.retrieve;
 
 import static org.junit.Assert.assertNotNull;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.olingo.client.core.ODataClientFactory;
-import org.apache.olingo.client.core.ODataClientImpl;
-import org.apache.olingo.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
+import org.sitenetsoft.olinguito.client.core.ODataClientImpl;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.junit.Test;
 
 public class RetrieveRequestTest {

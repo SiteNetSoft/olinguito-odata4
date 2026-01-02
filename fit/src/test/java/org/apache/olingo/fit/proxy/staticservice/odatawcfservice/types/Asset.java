@@ -16,24 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
-@org.apache.olingo.ext.proxy.api.annotations.EntityType(name = "Asset",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityType(name = "Asset",
     openType = false,
     hasStream = false,
     isAbstract = false)
 public interface Asset
-    extends org.apache.olingo.ext.proxy.api.Annotatable,
-    org.apache.olingo.ext.proxy.api.EntityType<Asset>, org.apache.olingo.ext.proxy.api.StructuredQuery<Asset> {
+    extends org.sitenetsoft.olinguito.ext.proxy.api.Annotatable,
+    org.sitenetsoft.olinguito.ext.proxy.api.EntityType<Asset>, org.sitenetsoft.olinguito.ext.proxy.api.StructuredQuery<Asset> {
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "AssetID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "AssetID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -48,7 +48,7 @@ public interface Asset
 
   void setAssetID(java.lang.Integer _assetID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Name",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Name",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -63,7 +63,7 @@ public interface Asset
 
   void setName(java.lang.String _name);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Number",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Number",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -80,7 +80,7 @@ public interface Asset
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 
@@ -88,17 +88,17 @@ public interface Asset
 
   interface Annotations {
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "AssetID",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "AssetID",
         type = "Edm.Int32")
-    org.apache.olingo.ext.proxy.api.Annotatable getAssetIDAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getAssetIDAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Name",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Name",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getNameAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getNameAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Number",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Number",
         type = "Edm.Int32")
-    org.apache.olingo.ext.proxy.api.Annotatable getNumberAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getNumberAnnotations();
 
   }
 

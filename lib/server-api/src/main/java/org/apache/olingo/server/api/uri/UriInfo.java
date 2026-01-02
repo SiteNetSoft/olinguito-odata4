@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.uri;
+package org.sitenetsoft.olinguito.server.api.uri;
 
 import java.util.List;
 
-import org.apache.olingo.server.api.uri.queryoption.AliasQueryOption;
-import org.apache.olingo.server.api.uri.queryoption.SystemQueryOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.AliasQueryOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SystemQueryOption;
 
 /**
  * <p>Object acting as general access to URI information extracted from the request URI.</p>

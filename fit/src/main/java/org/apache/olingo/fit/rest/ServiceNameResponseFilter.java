@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.rest;
+package org.sitenetsoft.olinguito.fit.rest;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -30,7 +30,7 @@ import jakarta.ws.rs.ext.Provider;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.olingo.fit.utils.Constants;
+import org.sitenetsoft.olinguito.fit.utils.Constants;
 
 @Provider
 public class ServiceNameResponseFilter implements ContainerResponseFilter {

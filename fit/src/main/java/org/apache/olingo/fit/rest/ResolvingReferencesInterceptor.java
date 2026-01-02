@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.rest;
+package org.sitenetsoft.olinguito.fit.rest;
 
 import java.net.URI;
 
@@ -25,7 +25,7 @@ import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
 import org.apache.cxf.phase.Phase;
-import org.apache.olingo.commons.core.Decoder;
+import org.sitenetsoft.olinguito.commons.core.Decoder;
 
 public class ResolvingReferencesInterceptor extends AbstractPhaseInterceptor<Message> {
 

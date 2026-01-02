@@ -16,22 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.demo.odatademo.types;
+package org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
 import java.util.Collection;
 // CHECKSTYLE:ON (Maven checkstyle)
 
-import org.apache.olingo.ext.proxy.api.AbstractTerm;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractTerm;
 
 public interface CategoryCollection
     extends
-    org.apache.olingo.ext.proxy.api.StructuredCollectionQuery<CategoryCollection>,
-org.apache.olingo.ext.proxy.api.EntityCollection<Category, CategoryCollection, CategoryCollection> {
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionQuery<CategoryCollection>,
+org.sitenetsoft.olinguito.ext.proxy.api.EntityCollection<Category, CategoryCollection, CategoryCollection> {
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 

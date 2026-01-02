@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication.request.cud;
+package org.sitenetsoft.olinguito.client.api.communication.request.cud;
 
-import org.apache.olingo.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 /**
  * Update type.

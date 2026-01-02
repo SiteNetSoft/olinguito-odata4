@@ -20,30 +20,30 @@
 package ${package};
 
 //CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.commons.api.http.HttpMethod;
-import org.apache.olingo.ext.proxy.api.annotations.Operation;
-import org.apache.olingo.ext.proxy.api.annotations.Parameter;
-import org.apache.olingo.ext.proxy.api.annotations.Property;
-import org.apache.olingo.ext.proxy.api.PersistenceManager;
-import org.apache.olingo.ext.proxy.api.OperationType;
-import org.apache.olingo.ext.proxy.api.ComplexCollection;
-import org.apache.olingo.ext.proxy.api.ComplexType;
-import org.apache.olingo.ext.proxy.api.EntityCollection;
-import org.apache.olingo.ext.proxy.api.EntityType;
-import org.apache.olingo.ext.proxy.api.PrimitiveCollection;
-import org.apache.olingo.ext.proxy.api.EdmStreamValue;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Operation;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Parameter;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property;
+import org.sitenetsoft.olinguito.ext.proxy.api.PersistenceManager;
+import org.sitenetsoft.olinguito.ext.proxy.api.OperationType;
+import org.sitenetsoft.olinguito.ext.proxy.api.ComplexCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.ComplexType;
+import org.sitenetsoft.olinguito.ext.proxy.api.EntityCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.EntityType;
+import org.sitenetsoft.olinguito.ext.proxy.api.PrimitiveCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.EdmStreamValue;
 #foreach($ns in $namespaces)
 import #if($basePackage)${basePackage}.#end${ns}.types.*;
 #end
 
-import org.apache.olingo.commons.api.edm.geo.Geospatial;
-import org.apache.olingo.commons.api.edm.geo.GeospatialCollection;
-import org.apache.olingo.commons.api.edm.geo.LineString;
-import org.apache.olingo.commons.api.edm.geo.MultiLineString;
-import org.apache.olingo.commons.api.edm.geo.MultiPoint;
-import org.apache.olingo.commons.api.edm.geo.MultiPolygon;
-import org.apache.olingo.commons.api.edm.geo.Point;
-import org.apache.olingo.commons.api.edm.geo.Polygon;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Geospatial;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.GeospatialCollection;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.LineString;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.MultiLineString;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.MultiPoint;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.MultiPolygon;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Point;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Polygon;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.io.Serializable;
@@ -54,8 +54,8 @@ import java.util.Calendar;
 import javax.xml.datatype.Duration;
 //CHECKSTYLE:ON (Maven checkstyle)
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("$namespace")
-@org.apache.olingo.ext.proxy.api.annotations.EntityContainer(name = "$container.Name",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("$namespace")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityContainer(name = "$container.Name",
   namespace = "$namespace")
 public interface $utility.capitalize($container.Name) extends PersistenceManager {
 
@@ -65,7 +65,7 @@ public interface $utility.capitalize($container.Name) extends PersistenceManager
 #end
 
 #foreach($singleton in $container.Singletons)
-    @org.apache.olingo.ext.proxy.api.annotations.Singleton(
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Singleton(
                 name = "$singleton.Name",
                 container = "${container.Namespace}.${container.Name}")
     $utility.getJavaType($singleton.EntityType) get$utility.capitalize($singleton.Name)();
@@ -74,7 +74,7 @@ public interface $utility.capitalize($container.Name) extends PersistenceManager
 
   Operations operations();
 
-  public interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  public interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
   #foreach($operation in $container.FunctionImports)
   #foreach($function in $operation.UnboundFunctions)
     #if($function.ReturnType)#*
@@ -85,35 +85,35 @@ public interface $utility.capitalize($container.Name) extends PersistenceManager
         *##set($composable = "Invoker<$defaultType>")#*
       *##end#*
       *##if(!($function.getReturnType().isCollection() || ${function.ReturnType.Type.Kind} == "ENTITY" || ${function.ReturnType.Type.Kind} == "COMPLEX" || $utility.isStreamType($function.ReturnType.Type)))#*
-        *##set($returnType = "org.apache.olingo.ext.proxy.api.Invoker<$defaultType>")#*
+        *##set($returnType = "org.sitenetsoft.olinguito.ext.proxy.api.Invoker<$defaultType>")#*
       *##else#*
         *##if(${function.ReturnType.Type.Kind} == "ENTITY" || ${function.ReturnType.Type.Kind} == "COMPLEX")#*
           *##if($function.getReturnType().isCollection())#*
             *##if($function.Composable)#*
               *##set($returnType = "${defaultType}ComposableInvoker")#*
             *##{else}#*
-              *##set($returnType = "org.apache.olingo.ext.proxy.api.StructuredCollectionInvoker<$defaultType>")#*
+              *##set($returnType = "org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionInvoker<$defaultType>")#*
             *##end#*
           *##{else}#*
             *##if($function.Composable)#*
               *##set($returnType = "${defaultType}ComposableInvoker")#*
             *##{else}#*
-              *##set($returnType = "org.apache.olingo.ext.proxy.api.StructuredInvoker<$defaultType>")#*
+              *##set($returnType = "org.sitenetsoft.olinguito.ext.proxy.api.StructuredInvoker<$defaultType>")#*
             *##end#*
           *##end#*
         *##{else}#*
           *##if($function.getReturnType().isCollection())#*
-            *##set($returnType = "org.apache.olingo.ext.proxy.api.PrimitiveCollectionInvoker<$defaultType>")#*
+            *##set($returnType = "org.sitenetsoft.olinguito.ext.proxy.api.PrimitiveCollectionInvoker<$defaultType>")#*
           *##{else}#*
-            *##set($returnType = "org.apache.olingo.ext.proxy.api.Invoker<$defaultType>")#*
+            *##set($returnType = "org.sitenetsoft.olinguito.ext.proxy.api.Invoker<$defaultType>")#*
           *##end#*
         *##end#*
       *##end#*
     *##{else}#*
-      *##set($returnType = "org.apache.olingo.ext.proxy.api.Invoker<Void>")#*
+      *##set($returnType = "org.sitenetsoft.olinguito.ext.proxy.api.Invoker<Void>")#*
     *##end
 
-    @org.apache.olingo.ext.proxy.api.annotations.Operation(name = "$function.Name",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Operation(name = "$function.Name",
                     type = OperationType.FUNCTION,
                     isComposable = $function.Composable#if($function.ReturnType),
                     #if($function.ReturnType)referenceType = ${defaultType.replaceAll("<.*>", "")}.class,#end
@@ -124,7 +124,7 @@ public interface $utility.capitalize($container.Name) extends PersistenceManager
       *##foreach($paramName in $function.ParameterNames)#*
         *##set( $count = $count - 1 )#*
         *##set( $param = $function.getParameter($paramName) )#*
-       *#    @org.apache.olingo.ext.proxy.api.annotations.Parameter(name = "$param.Name", type = "#if( $param.Collection )Collection(#end$param.Type.FullQualifiedName.toString()#if( $param.Collection ))#end", nullable = $param.Nullable) $utility.getJavaType($param.Type, $param.Collection) $utility.uncapitalize($param.Name)#if( $count > 0 ), #end
+       *#    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Parameter(name = "$param.Name", type = "#if( $param.Collection )Collection(#end$param.Type.FullQualifiedName.toString()#if( $param.Collection ))#end", nullable = $param.Nullable) $utility.getJavaType($param.Type, $param.Collection) $utility.uncapitalize($param.Name)#if( $count > 0 ), #end
 
     #end#*
     *##end);
@@ -138,27 +138,27 @@ public interface $utility.capitalize($container.Name) extends PersistenceManager
     #if($action.ReturnType)#*
       *##set($defaultType = $utility.getJavaType($action.ReturnType.Type, $action.ReturnType.Collection))#*
       *##if(!($action.getReturnType().isCollection() || ${action.ReturnType.Type.Kind} == "ENTITY" || ${action.ReturnType.Type.Kind} == "COMPLEX" || $utility.isStreamType($action.ReturnType.Type)))#*
-        *##set($returnType = "org.apache.olingo.ext.proxy.api.Invoker<$defaultType>")#*
+        *##set($returnType = "org.sitenetsoft.olinguito.ext.proxy.api.Invoker<$defaultType>")#*
       *##else#*
         *##if(${action.ReturnType.Type.Kind} == "ENTITY" || ${action.ReturnType.Type.Kind} == "COMPLEX")#*
           *##if($action.getReturnType().isCollection())#*
-            *##set($returnType = "org.apache.olingo.ext.proxy.api.StructuredCollectionInvoker<$defaultType>")#*
+            *##set($returnType = "org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionInvoker<$defaultType>")#*
           *##{else}#*
-            *##set($returnType = "org.apache.olingo.ext.proxy.api.StructuredInvoker<$defaultType>")#*
+            *##set($returnType = "org.sitenetsoft.olinguito.ext.proxy.api.StructuredInvoker<$defaultType>")#*
           *##end#*
         *##{else}#*
           *##if($action.getReturnType().isCollection())#*
-            *##set($returnType = "org.apache.olingo.ext.proxy.api.PrimitiveCollectionInvoker<$defaultType>")#*
+            *##set($returnType = "org.sitenetsoft.olinguito.ext.proxy.api.PrimitiveCollectionInvoker<$defaultType>")#*
           *##{else}#*
-            *##set($returnType = "org.apache.olingo.ext.proxy.api.Invoker<$defaultType>")#*
+            *##set($returnType = "org.sitenetsoft.olinguito.ext.proxy.api.Invoker<$defaultType>")#*
           *##end#*
         *##end#*
       *##end#*
     *##{else}#*
-      *##set($returnType = "org.apache.olingo.ext.proxy.api.Invoker<Void>")#*
+      *##set($returnType = "org.sitenetsoft.olinguito.ext.proxy.api.Invoker<Void>")#*
     *##end
 
-    @org.apache.olingo.ext.proxy.api.annotations.Operation(name = "$action.Name",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Operation(name = "$action.Name",
                     type = OperationType.ACTION#if($action.ReturnType),
                     #if($action.ReturnType)referenceType = ${defaultType.replaceAll("<.*>", "")}.class,#end
                     returnType = "#if( $action.ReturnType.Collection )Collection(#end$action.ReturnType.Type.FullQualifiedName.toString()#if( $action.ReturnType.Collection ))#end"#end)
@@ -168,7 +168,7 @@ public interface $utility.capitalize($container.Name) extends PersistenceManager
       *##foreach($paramName in $action.ParameterNames)#*
         *##set( $count = $count - 1 )#*
         *##set( $param = $action.getParameter($paramName) )#*
-       *#    @org.apache.olingo.ext.proxy.api.annotations.Parameter(name = "$param.Name", type = "#if( $param.Collection )Collection(#end$param.Type.FullQualifiedName.toString()#if( $param.Collection ))#end", nullable = $param.Nullable) $utility.getJavaType($param.Type, $param.Collection) $utility.uncapitalize($param.Name)#if( $count > 0 ), #end
+       *#    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Parameter(name = "$param.Name", type = "#if( $param.Collection )Collection(#end$param.Type.FullQualifiedName.toString()#if( $param.Collection ))#end", nullable = $param.Nullable) $utility.getJavaType($param.Type, $param.Collection) $utility.uncapitalize($param.Name)#if( $count > 0 ), #end
 
     #end#*
     *##end);

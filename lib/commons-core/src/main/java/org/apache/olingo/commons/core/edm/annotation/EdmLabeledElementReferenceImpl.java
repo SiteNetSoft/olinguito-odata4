@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.core.edm.annotation;
+package org.sitenetsoft.olinguito.commons.core.edm.annotation;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.annotation.EdmLabeledElementReference;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlLabeledElementReference;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmLabeledElementReference;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlLabeledElementReference;
 
 public class EdmLabeledElementReferenceImpl extends AbstractEdmDynamicExpression implements EdmLabeledElementReference {
 

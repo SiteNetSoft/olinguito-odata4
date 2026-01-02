@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edm.provider.annotation;
+package org.sitenetsoft.olinguito.commons.api.edm.provider.annotation;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.provider.CsdlAnnotatable;
-import org.apache.olingo.commons.api.edm.provider.CsdlAnnotation;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotatable;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
 
 public class CsdlApply extends CsdlDynamicExpression implements CsdlAnnotatable {
 
@@ -48,9 +48,9 @@ public class CsdlApply extends CsdlDynamicExpression implements CsdlAnnotatable 
    * its future versions.
    *
    * @return function full qualified name
-   * @see org.apache.olingo.commons.api.Constants#CANONICAL_FUNCTION_CONCAT
-   * @see org.apache.olingo.commons.api.Constants#CANONICAL_FUNCTION_FILLURITEMPLATE
-   * @see org.apache.olingo.commons.api.Constants#CANONICAL_FUNCTION_URIENCODE
+   * @see org.sitenetsoft.olinguito.commons.api.Constants#CANONICAL_FUNCTION_CONCAT
+   * @see org.sitenetsoft.olinguito.commons.api.Constants#CANONICAL_FUNCTION_FILLURITEMPLATE
+   * @see org.sitenetsoft.olinguito.commons.api.Constants#CANONICAL_FUNCTION_URIENCODE
    */
   public String getFunction() {
     return function;

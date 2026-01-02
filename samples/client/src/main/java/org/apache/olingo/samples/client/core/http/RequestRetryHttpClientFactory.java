@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.samples.client.core.http;
+package org.sitenetsoft.olinguito.samples.client.core.http;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -30,8 +30,8 @@ import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
-import org.apache.olingo.commons.api.http.HttpMethod;
-import org.apache.olingo.client.core.http.DefaultHttpClientFactory;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.client.core.http.DefaultHttpClientFactory;
 
 /**
  * Shows how to install a custom exception recovery mechanism.

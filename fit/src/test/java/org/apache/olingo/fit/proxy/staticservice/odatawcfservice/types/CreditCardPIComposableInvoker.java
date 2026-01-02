@@ -16,16 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.AbstractEntitySet;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractEntitySet;
 
 // CHECKSTYLE:ON (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 public interface CreditCardPIComposableInvoker
-    extends org.apache.olingo.ext.proxy.api.StructuredComposableInvoker<CreditCardPI, CreditCardPI.Operations>
+    extends org.sitenetsoft.olinguito.ext.proxy.api.StructuredComposableInvoker<CreditCardPI, CreditCardPI.Operations>
 {
 
   @Override
@@ -35,7 +35,7 @@ public interface CreditCardPIComposableInvoker
   CreditCardPIComposableInvoker expand(String... expand);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "PaymentInstrumentID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "PaymentInstrumentID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -50,7 +50,7 @@ public interface CreditCardPIComposableInvoker
 
   void setPaymentInstrumentID(java.lang.Integer _paymentInstrumentID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "FriendlyName",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "FriendlyName",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -65,7 +65,7 @@ public interface CreditCardPIComposableInvoker
 
   void setFriendlyName(java.lang.String _friendlyName);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "CreatedDate",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "CreatedDate",
       type = "Edm.DateTimeOffset",
       nullable = false,
       defaultValue = "",
@@ -80,7 +80,7 @@ public interface CreditCardPIComposableInvoker
 
   void setCreatedDate(java.sql.Timestamp _createdDate);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "CardNumber",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "CardNumber",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -95,7 +95,7 @@ public interface CreditCardPIComposableInvoker
 
   void setCardNumber(java.lang.String _cardNumber);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "CVV",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "CVV",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -110,7 +110,7 @@ public interface CreditCardPIComposableInvoker
 
   void setCVV(java.lang.String _cVV);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "HolderName",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "HolderName",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -125,7 +125,7 @@ public interface CreditCardPIComposableInvoker
 
   void setHolderName(java.lang.String _holderName);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Balance",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Balance",
       type = "Edm.Double",
       nullable = false,
       defaultValue = "",
@@ -140,7 +140,7 @@ public interface CreditCardPIComposableInvoker
 
   void setBalance(java.lang.Double _balance);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ExperationDate",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ExperationDate",
       type = "Edm.DateTimeOffset",
       nullable = false,
       defaultValue = "",
@@ -155,7 +155,7 @@ public interface CreditCardPIComposableInvoker
 
   void setExperationDate(java.sql.Timestamp _experationDate);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "TheStoredPI",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "TheStoredPI",
       type = "Microsoft.Test.OData.Services.ODataWCFService.StoredPI",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -168,7 +168,7 @@ public interface CreditCardPIComposableInvoker
       setTheStoredPI(
           StoredPI _theStoredPI);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "BackupStoredPI",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "BackupStoredPI",
       type = "Microsoft.Test.OData.Services.ODataWCFService.StoredPI",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -181,7 +181,7 @@ public interface CreditCardPIComposableInvoker
       setBackupStoredPI(
           StoredPI _backupStoredPI);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "CreditRecords",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "CreditRecords",
       type = "Microsoft.Test.OData.Services.ODataWCFService.CreditRecord",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "",
@@ -194,11 +194,11 @@ public interface CreditCardPIComposableInvoker
       setCreditRecords(
           CreditCardPI.CreditRecords _creditRecords);
 
-  @org.apache.olingo.ext.proxy.api.annotations.EntitySet(name = "CreditRecords", contained = true)
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntitySet(name = "CreditRecords", contained = true)
   interface CreditRecords
       extends
-      org.apache.olingo.ext.proxy.api.EntitySet<CreditRecord, CreditRecordCollection>,
-      org.apache.olingo.ext.proxy.api.StructuredCollectionQuery<CreditRecords>,
+      org.sitenetsoft.olinguito.ext.proxy.api.EntitySet<CreditRecord, CreditRecordCollection>,
+      org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionQuery<CreditRecords>,
   AbstractEntitySet<CreditRecord, java.lang.Integer, CreditRecordCollection> {
     // No additional methods needed for now.
   }

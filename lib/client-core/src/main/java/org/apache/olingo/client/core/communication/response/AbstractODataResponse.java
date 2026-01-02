@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.response;
+package org.sitenetsoft.olinguito.client.core.communication.response;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -34,19 +34,19 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.utils.HttpClientUtils;
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.communication.request.batch.ODataBatchLineIterator;
-import org.apache.olingo.client.api.communication.response.ODataResponse;
-import org.apache.olingo.client.api.http.NoContentException;
-import org.apache.olingo.client.core.ConfigurationImpl;
-import org.apache.olingo.client.core.communication.util.PipedInputStream;
-import org.apache.olingo.client.core.communication.util.PipedOutputStream;
-import org.apache.olingo.client.core.communication.request.batch.ODataBatchController;
-import org.apache.olingo.client.core.communication.request.batch.ODataBatchLineIteratorImpl;
-import org.apache.olingo.client.core.communication.request.batch.ODataBatchUtilities;
-import org.apache.olingo.commons.api.Constants;
-import org.apache.olingo.commons.api.ex.ODataRuntimeException;
-import org.apache.olingo.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchLineIterator;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataResponse;
+import org.sitenetsoft.olinguito.client.api.http.NoContentException;
+import org.sitenetsoft.olinguito.client.core.ConfigurationImpl;
+import org.sitenetsoft.olinguito.client.core.communication.util.PipedInputStream;
+import org.sitenetsoft.olinguito.client.core.communication.util.PipedOutputStream;
+import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataBatchController;
+import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataBatchLineIteratorImpl;
+import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataBatchUtilities;
+import org.sitenetsoft.olinguito.commons.api.Constants;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

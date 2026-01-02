@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.testutil;
+package org.sitenetsoft.olinguito.server.core.uri.testutil;
 
 public interface TestValidator {
   //No additional methods needed for now.

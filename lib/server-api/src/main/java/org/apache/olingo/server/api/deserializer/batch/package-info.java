@@ -22,5 +22,5 @@
  * The deserializer.batch package is used to condense all about the Olingo batch deserialization.
  *
  */
-package org.apache.olingo.server.api.deserializer.batch;
+package org.sitenetsoft.olinguito.server.api.deserializer.batch;
 

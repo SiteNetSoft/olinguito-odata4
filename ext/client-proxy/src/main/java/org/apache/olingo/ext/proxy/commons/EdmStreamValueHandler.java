@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.ext.proxy.commons;
+package org.sitenetsoft.olinguito.ext.proxy.commons;
 
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.URI;
 import org.apache.commons.io.IOUtils;
-import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
-import org.apache.olingo.ext.proxy.AbstractService;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
+import org.sitenetsoft.olinguito.ext.proxy.AbstractService;
 
 public class EdmStreamValueHandler extends AbstractInvocationHandler {
 

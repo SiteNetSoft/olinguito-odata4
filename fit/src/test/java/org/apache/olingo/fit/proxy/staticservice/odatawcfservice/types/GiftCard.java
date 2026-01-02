@@ -16,25 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.OperationType;
+import org.sitenetsoft.olinguito.ext.proxy.api.OperationType;
 // CHECKSTYLE:ON (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
-import org.apache.olingo.ext.proxy.api.annotations.Parameter;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Parameter;
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
-@org.apache.olingo.ext.proxy.api.annotations.EntityType(name = "GiftCard",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityType(name = "GiftCard",
     openType = false,
     hasStream = false,
     isAbstract = false)
 public interface GiftCard
-    extends org.apache.olingo.ext.proxy.api.Annotatable,
-    org.apache.olingo.ext.proxy.api.EntityType<GiftCard>, org.apache.olingo.ext.proxy.api.StructuredQuery<GiftCard> {
+    extends org.sitenetsoft.olinguito.ext.proxy.api.Annotatable,
+    org.sitenetsoft.olinguito.ext.proxy.api.EntityType<GiftCard>, org.sitenetsoft.olinguito.ext.proxy.api.StructuredQuery<GiftCard> {
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "GiftCardID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "GiftCardID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -49,7 +49,7 @@ public interface GiftCard
 
   void setGiftCardID(java.lang.Integer _giftCardID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "GiftCardNO",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "GiftCardNO",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -64,7 +64,7 @@ public interface GiftCard
 
   void setGiftCardNO(java.lang.String _giftCardNO);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Amount",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Amount",
       type = "Edm.Double",
       nullable = false,
       defaultValue = "",
@@ -79,7 +79,7 @@ public interface GiftCard
 
   void setAmount(java.lang.Double _amount);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ExperationDate",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ExperationDate",
       type = "Edm.DateTimeOffset",
       nullable = false,
       defaultValue = "",
@@ -94,7 +94,7 @@ public interface GiftCard
 
   void setExperationDate(java.sql.Timestamp _experationDate);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "OwnerName",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "OwnerName",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -111,13 +111,13 @@ public interface GiftCard
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
 
-    @org.apache.olingo.ext.proxy.api.annotations.Operation(name = "GetActualAmount",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Operation(name = "GetActualAmount",
         type = OperationType.FUNCTION,
         isComposable = false,
         referenceType = java.lang.Double.class, returnType = "Edm.Double")
-    org.apache.olingo.ext.proxy.api.Invoker<java.lang.Double> getActualAmount(
+    org.sitenetsoft.olinguito.ext.proxy.api.Invoker<java.lang.Double> getActualAmount(
         @Parameter(name = "bonusRate", type = "Edm.Double", nullable = true) java.lang.Double bonusRate
         );
 
@@ -127,25 +127,25 @@ public interface GiftCard
 
   interface Annotations {
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "GiftCardID",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "GiftCardID",
         type = "Edm.Int32")
-    org.apache.olingo.ext.proxy.api.Annotatable getGiftCardIDAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getGiftCardIDAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "GiftCardNO",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "GiftCardNO",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getGiftCardNOAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getGiftCardNOAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Amount",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Amount",
         type = "Edm.Double")
-    org.apache.olingo.ext.proxy.api.Annotatable getAmountAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getAmountAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "ExperationDate",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "ExperationDate",
         type = "Edm.DateTimeOffset")
-    org.apache.olingo.ext.proxy.api.Annotatable getExperationDateAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getExperationDateAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "OwnerName",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "OwnerName",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getOwnerNameAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getOwnerNameAnnotations();
 
   }
 

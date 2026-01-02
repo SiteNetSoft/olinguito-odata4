@@ -16,16 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.etag;
+package org.sitenetsoft.olinguito.server.core.etag;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.etag.ETagHelper;
-import org.apache.olingo.server.api.etag.PreconditionException;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.etag.ETagHelper;
+import org.sitenetsoft.olinguito.server.api.etag.PreconditionException;
 import org.junit.Test;
 
 public class ETagHelperTest {

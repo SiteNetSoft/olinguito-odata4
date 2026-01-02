@@ -1,4 +1,4 @@
-package org.apache.olingo.client.core.domain;
+package org.sitenetsoft.olinguito.client.core.domain;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -24,12 +24,12 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
-import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.client.api.domain.ClientEntitySet;
-import org.apache.olingo.client.api.domain.ClientEntitySetIterator;
-import org.apache.olingo.client.core.ODataClientFactory;
-import org.apache.olingo.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntitySet;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntitySetIterator;
+import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.junit.Assert;
 import org.junit.Test;
 

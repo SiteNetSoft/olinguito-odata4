@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.serializer;
+package org.sitenetsoft.olinguito.server.api.serializer;
 
 import java.io.InputStream;
 import java.util.List;
 
-import org.apache.olingo.commons.api.data.EntityMediaObject;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveType;
-import org.apache.olingo.server.api.ODataResponse;
-import org.apache.olingo.server.api.deserializer.batch.ODataResponsePart;
+import org.sitenetsoft.olinguito.commons.api.data.EntityMediaObject;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
+import org.sitenetsoft.olinguito.server.api.ODataResponse;
+import org.sitenetsoft.olinguito.server.api.deserializer.batch.ODataResponsePart;
 
 /** OData serializer for fixed output formats. */
 public interface FixedFormatSerializer {

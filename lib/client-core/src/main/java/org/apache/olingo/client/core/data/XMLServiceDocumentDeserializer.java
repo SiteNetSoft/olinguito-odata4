@@ -16,17 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.data;
+package org.sitenetsoft.olinguito.client.core.data;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
-import org.apache.olingo.client.api.data.ResWrap;
-import org.apache.olingo.client.api.data.ServiceDocument;
-import org.apache.olingo.client.api.serialization.ODataDeserializerException;
-import org.apache.olingo.client.core.serialization.JsonDeserializer;
-import org.apache.olingo.client.core.uri.URIUtils;
+import org.sitenetsoft.olinguito.client.api.data.ResWrap;
+import org.sitenetsoft.olinguito.client.api.data.ServiceDocument;
+import org.sitenetsoft.olinguito.client.api.serialization.ODataDeserializerException;
+import org.sitenetsoft.olinguito.client.core.serialization.JsonDeserializer;
+import org.sitenetsoft.olinguito.client.core.uri.URIUtils;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;

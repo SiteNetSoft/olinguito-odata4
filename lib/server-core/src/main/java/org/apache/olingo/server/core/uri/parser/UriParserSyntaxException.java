@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.parser;
+package org.sitenetsoft.olinguito.server.core.uri.parser;
 
 /** Exception thrown during URI parsing in cases where the URI violates the URI construction rules. */
 public class UriParserSyntaxException extends UriParserException {

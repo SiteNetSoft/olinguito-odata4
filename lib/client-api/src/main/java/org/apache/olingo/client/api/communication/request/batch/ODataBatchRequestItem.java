@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication.request.batch;
+package org.sitenetsoft.olinguito.client.api.communication.request.batch;
 
-import org.apache.olingo.client.api.communication.request.ODataStreamer;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataStreamer;
 
 /**
  * Abstract representation of a batch request item.

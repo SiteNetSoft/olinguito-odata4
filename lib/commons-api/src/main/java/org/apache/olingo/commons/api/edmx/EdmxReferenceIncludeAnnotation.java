@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edmx;
+package org.sitenetsoft.olinguito.commons.api.edmx;
 
 /**
  * POJO for Edmx Reference Include Annotation.

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.samples.client.core.http;
+package org.sitenetsoft.olinguito.samples.client.core.http;
 
 import java.net.URI;
 
@@ -24,8 +24,8 @@ import org.apache.http.HttpVersion;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpConnectionParams;
-import org.apache.olingo.client.core.http.DefaultHttpClientFactory;
-import org.apache.olingo.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.client.core.http.DefaultHttpClientFactory;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 /**
  * Shows how to customize the runtime behavior of HTTP client component.

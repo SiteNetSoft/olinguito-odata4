@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.samples.client.core.http;
+package org.sitenetsoft.olinguito.samples.client.core.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -42,8 +42,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
-import org.apache.olingo.client.core.http.AbstractOAuth2HttpClientFactory;
-import org.apache.olingo.client.core.http.OAuth2Exception;
+import org.sitenetsoft.olinguito.client.core.http.AbstractOAuth2HttpClientFactory;
+import org.sitenetsoft.olinguito.client.core.http.OAuth2Exception;
 
 /**
  * Shows how to work with OAuth 2.0 native applications protected by Azure Active Directory.

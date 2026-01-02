@@ -16,25 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.demo.odatademo;
+package org.sitenetsoft.olinguito.fit.proxy.demo.odatademo;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.AbstractEntitySet;
-import org.apache.olingo.fit.proxy.demo.odatademo.types.ProductDetail;
-import org.apache.olingo.fit.proxy.demo.odatademo.types.ProductDetailCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractEntitySet;
+import org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types.ProductDetail;
+import org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types.ProductDetailCollection;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
-@org.apache.olingo.ext.proxy.api.annotations.EntitySet(name = "ProductDetails", container = "ODataDemo.DemoService")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntitySet(name = "ProductDetails", container = "ODataDemo.DemoService")
 public interface ProductDetails
     extends
-    org.apache.olingo.ext.proxy.api.EntitySet<ProductDetail, ProductDetailCollection>,
-    org.apache.olingo.ext.proxy.api.StructuredCollectionQuery<ProductDetails>,
+    org.sitenetsoft.olinguito.ext.proxy.api.EntitySet<ProductDetail, ProductDetailCollection>,
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionQuery<ProductDetails>,
     AbstractEntitySet<ProductDetail, java.lang.Integer, ProductDetailCollection> {
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 }

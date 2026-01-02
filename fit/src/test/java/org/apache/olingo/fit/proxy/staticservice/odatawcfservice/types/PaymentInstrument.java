@@ -16,25 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.AbstractEntitySet;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractEntitySet;
 // CHECKSTYLE:ON (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
-@org.apache.olingo.ext.proxy.api.annotations.EntityType(name = "PaymentInstrument",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityType(name = "PaymentInstrument",
     openType = false,
     hasStream = false,
     isAbstract = false)
 public interface PaymentInstrument
-    extends org.apache.olingo.ext.proxy.api.Annotatable,
-    org.apache.olingo.ext.proxy.api.EntityType<PaymentInstrument>,
-    org.apache.olingo.ext.proxy.api.StructuredQuery<PaymentInstrument> {
+    extends org.sitenetsoft.olinguito.ext.proxy.api.Annotatable,
+    org.sitenetsoft.olinguito.ext.proxy.api.EntityType<PaymentInstrument>,
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredQuery<PaymentInstrument> {
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "PaymentInstrumentID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "PaymentInstrumentID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -49,7 +49,7 @@ public interface PaymentInstrument
 
   void setPaymentInstrumentID(java.lang.Integer _paymentInstrumentID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "FriendlyName",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "FriendlyName",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -64,7 +64,7 @@ public interface PaymentInstrument
 
   void setFriendlyName(java.lang.String _friendlyName);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "CreatedDate",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "CreatedDate",
       type = "Edm.DateTimeOffset",
       nullable = false,
       defaultValue = "",
@@ -79,7 +79,7 @@ public interface PaymentInstrument
 
   void setCreatedDate(java.sql.Timestamp _createdDate);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "TheStoredPI",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "TheStoredPI",
       type = "Microsoft.Test.OData.Services.ODataWCFService.StoredPI",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -92,7 +92,7 @@ public interface PaymentInstrument
       setTheStoredPI(
           StoredPI _theStoredPI);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "BackupStoredPI",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "BackupStoredPI",
       type = "Microsoft.Test.OData.Services.ODataWCFService.StoredPI",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -107,7 +107,7 @@ public interface PaymentInstrument
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 
@@ -115,32 +115,32 @@ public interface PaymentInstrument
 
   interface Annotations {
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "PaymentInstrumentID",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "PaymentInstrumentID",
         type = "Edm.Int32")
-    org.apache.olingo.ext.proxy.api.Annotatable getPaymentInstrumentIDAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getPaymentInstrumentIDAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "FriendlyName",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "FriendlyName",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getFriendlyNameAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getFriendlyNameAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "CreatedDate",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "CreatedDate",
         type = "Edm.DateTimeOffset")
-    org.apache.olingo.ext.proxy.api.Annotatable getCreatedDateAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getCreatedDateAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "TheStoredPI",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "TheStoredPI",
         type = "Microsoft.Test.OData.Services.ODataWCFService.StoredPI")
-    org.apache.olingo.ext.proxy.api.Annotatable getTheStoredPIAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getTheStoredPIAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "BillingStatements",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "BillingStatements",
         type = "Microsoft.Test.OData.Services.ODataWCFService.Statement")
-    org.apache.olingo.ext.proxy.api.Annotatable getBillingStatementsAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getBillingStatementsAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "BackupStoredPI",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "BackupStoredPI",
         type = "Microsoft.Test.OData.Services.ODataWCFService.StoredPI")
-    org.apache.olingo.ext.proxy.api.Annotatable getBackupStoredPIAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getBackupStoredPIAnnotations();
   }
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "BillingStatements",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "BillingStatements",
       type = "Microsoft.Test.OData.Services.ODataWCFService.StoredPI",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -153,11 +153,11 @@ public interface PaymentInstrument
       setBillingStatements(
           PaymentInstrument.BillingStatements _billingStatements);
 
-  @org.apache.olingo.ext.proxy.api.annotations.EntitySet(name = "BillingStatements", contained = true)
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntitySet(name = "BillingStatements", contained = true)
   interface BillingStatements
       extends
-      org.apache.olingo.ext.proxy.api.EntitySet<Statement, StatementCollection>,
-      org.apache.olingo.ext.proxy.api.StructuredCollectionQuery<BillingStatements>,
+      org.sitenetsoft.olinguito.ext.proxy.api.EntitySet<Statement, StatementCollection>,
+      org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionQuery<BillingStatements>,
   AbstractEntitySet<Statement, java.lang.Integer, StatementCollection> {
     // No additional methods needed for now.
   }

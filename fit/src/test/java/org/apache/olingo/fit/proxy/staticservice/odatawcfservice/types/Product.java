@@ -16,25 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.OperationType;
+import org.sitenetsoft.olinguito.ext.proxy.api.OperationType;
 // CHECKSTYLE:ON (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
-import org.apache.olingo.ext.proxy.api.annotations.Parameter;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Parameter;
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
-@org.apache.olingo.ext.proxy.api.annotations.EntityType(name = "Product",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityType(name = "Product",
     openType = false,
     hasStream = false,
     isAbstract = false)
 public interface Product
-    extends org.apache.olingo.ext.proxy.api.Annotatable,
-    org.apache.olingo.ext.proxy.api.EntityType<Product>, org.apache.olingo.ext.proxy.api.StructuredQuery<Product> {
+    extends org.sitenetsoft.olinguito.ext.proxy.api.Annotatable,
+    org.sitenetsoft.olinguito.ext.proxy.api.EntityType<Product>, org.sitenetsoft.olinguito.ext.proxy.api.StructuredQuery<Product> {
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ProductID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ProductID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -49,7 +49,7 @@ public interface Product
 
   void setProductID(java.lang.Integer _productID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Name",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Name",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -64,7 +64,7 @@ public interface Product
 
   void setName(java.lang.String _name);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "QuantityPerUnit",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "QuantityPerUnit",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -79,7 +79,7 @@ public interface Product
 
   void setQuantityPerUnit(java.lang.String _quantityPerUnit);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "UnitPrice",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "UnitPrice",
       type = "Edm.Single",
       nullable = false,
       defaultValue = "",
@@ -94,7 +94,7 @@ public interface Product
 
   void setUnitPrice(java.lang.Float _unitPrice);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "QuantityInStock",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "QuantityInStock",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -109,7 +109,7 @@ public interface Product
 
   void setQuantityInStock(java.lang.Integer _quantityInStock);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Discontinued",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Discontinued",
       type = "Edm.Boolean",
       nullable = false,
       defaultValue = "",
@@ -124,7 +124,7 @@ public interface Product
 
   void setDiscontinued(java.lang.Boolean _discontinued);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "UserAccess",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "UserAccess",
       type = "Microsoft.Test.OData.Services.ODataWCFService.AccessLevel",
       nullable = true,
       defaultValue = "",
@@ -142,7 +142,7 @@ public interface Product
       setUserAccess(
           AccessLevel _userAccess);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "SkinColor",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "SkinColor",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Color",
       nullable = true,
       defaultValue = "",
@@ -159,7 +159,7 @@ public interface Product
       setSkinColor(
           Color _skinColor);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "CoverColors",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "CoverColors",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Color",
       nullable = false,
       defaultValue = "",
@@ -170,14 +170,14 @@ public interface Product
       unicode = true,
       collation = "",
       srid = "")
-      org.apache.olingo.ext.proxy.api.PrimitiveCollection<Color>
+      org.sitenetsoft.olinguito.ext.proxy.api.PrimitiveCollection<Color>
       getCoverColors();
 
       void
       setCoverColors(
-          org.apache.olingo.ext.proxy.api.PrimitiveCollection<Color> _coverColors);
+          org.sitenetsoft.olinguito.ext.proxy.api.PrimitiveCollection<Color> _coverColors);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "Details",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "Details",
       type = "Microsoft.Test.OData.Services.ODataWCFService.ProductDetail",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -192,9 +192,9 @@ public interface Product
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
 
-    @org.apache.olingo.ext.proxy.api.annotations.Operation(
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Operation(
         name = "GetProductDetails",
         type = OperationType.FUNCTION,
         isComposable = true,
@@ -205,12 +205,12 @@ public interface Product
             @Parameter(name = "count", type = "Edm.Int32", nullable = true) java.lang.Integer count
         );
 
-    @org.apache.olingo.ext.proxy.api.annotations.Operation(
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Operation(
         name = "AddAccessRight",
         type = OperationType.ACTION,
         referenceType = AccessLevel.class,
         returnType = "Microsoft.Test.OData.Services.ODataWCFService.AccessLevel")
-        org.apache.olingo.ext.proxy.api.Invoker<AccessLevel>
+        org.sitenetsoft.olinguito.ext.proxy.api.Invoker<AccessLevel>
         addAccessRight(
             @Parameter(name = "accessRight", type = "Microsoft.Test.OData.Services.ODataWCFService.AccessLevel",
                 nullable = true) AccessLevel accessRight
@@ -222,45 +222,45 @@ public interface Product
 
   interface Annotations {
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "ProductID",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "ProductID",
         type = "Edm.Int32")
-    org.apache.olingo.ext.proxy.api.Annotatable getProductIDAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getProductIDAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Name",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Name",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getNameAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getNameAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "QuantityPerUnit",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "QuantityPerUnit",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getQuantityPerUnitAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getQuantityPerUnitAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "UnitPrice",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "UnitPrice",
         type = "Edm.Single")
-    org.apache.olingo.ext.proxy.api.Annotatable getUnitPriceAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getUnitPriceAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "QuantityInStock",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "QuantityInStock",
         type = "Edm.Int32")
-    org.apache.olingo.ext.proxy.api.Annotatable getQuantityInStockAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getQuantityInStockAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Discontinued",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Discontinued",
         type = "Edm.Boolean")
-    org.apache.olingo.ext.proxy.api.Annotatable getDiscontinuedAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getDiscontinuedAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "UserAccess",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "UserAccess",
         type = "Microsoft.Test.OData.Services.ODataWCFService.AccessLevel")
-    org.apache.olingo.ext.proxy.api.Annotatable getUserAccessAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getUserAccessAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "SkinColor",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "SkinColor",
         type = "Microsoft.Test.OData.Services.ODataWCFService.Color")
-    org.apache.olingo.ext.proxy.api.Annotatable getSkinColorAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getSkinColorAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "CoverColors",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "CoverColors",
         type = "Microsoft.Test.OData.Services.ODataWCFService.Color")
-    org.apache.olingo.ext.proxy.api.Annotatable getCoverColorsAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getCoverColorsAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "Details",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "Details",
         type = "Microsoft.Test.OData.Services.ODataWCFService.ProductDetail")
-    org.apache.olingo.ext.proxy.api.Annotatable getDetailsAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getDetailsAnnotations();
   }
 
 }

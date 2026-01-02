@@ -16,26 +16,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.AbstractEntitySet;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Department;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.DepartmentCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractEntitySet;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Department;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.DepartmentCollection;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
-@org.apache.olingo.ext.proxy.api.annotations.EntitySet(name = "Departments",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntitySet(name = "Departments",
     container = "Microsoft.Test.OData.Services.ODataWCFService.InMemoryEntities")
 public interface Departments
     extends
-    org.apache.olingo.ext.proxy.api.EntitySet<Department, DepartmentCollection>,
-    org.apache.olingo.ext.proxy.api.StructuredCollectionQuery<Departments>,
+    org.sitenetsoft.olinguito.ext.proxy.api.EntitySet<Department, DepartmentCollection>,
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionQuery<Departments>,
     AbstractEntitySet<Department, java.lang.Integer, DepartmentCollection> {
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 }

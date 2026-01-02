@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.ext.proxy.utils;
+package org.sitenetsoft.olinguito.ext.proxy.utils;
 
-import org.apache.olingo.ext.proxy.api.annotations.CompoundKey;
-import org.apache.olingo.ext.proxy.api.annotations.EntityType;
-import org.apache.olingo.ext.proxy.api.annotations.Key;
-import org.apache.olingo.ext.proxy.api.annotations.KeyRef;
-import org.apache.olingo.ext.proxy.api.annotations.Namespace;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.CompoundKey;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityType;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.KeyRef;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

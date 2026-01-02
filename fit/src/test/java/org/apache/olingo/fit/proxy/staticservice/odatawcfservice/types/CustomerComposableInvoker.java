@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
 public interface CustomerComposableInvoker
-    extends org.apache.olingo.ext.proxy.api.StructuredComposableInvoker<Customer, Customer.Operations>
+    extends org.sitenetsoft.olinguito.ext.proxy.api.StructuredComposableInvoker<Customer, Customer.Operations>
 {
 
   @Override
@@ -34,7 +34,7 @@ public interface CustomerComposableInvoker
   CustomerComposableInvoker expand(String... expand);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "PersonID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "PersonID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -49,7 +49,7 @@ public interface CustomerComposableInvoker
 
   void setPersonID(java.lang.Integer _personID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "FirstName",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "FirstName",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -64,7 +64,7 @@ public interface CustomerComposableInvoker
 
   void setFirstName(java.lang.String _firstName);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "LastName",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "LastName",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -79,7 +79,7 @@ public interface CustomerComposableInvoker
 
   void setLastName(java.lang.String _lastName);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "MiddleName",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "MiddleName",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -94,7 +94,7 @@ public interface CustomerComposableInvoker
 
   void setMiddleName(java.lang.String _middleName);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "HomeAddress",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "HomeAddress",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Address",
       nullable = true,
       defaultValue = "",
@@ -112,7 +112,7 @@ public interface CustomerComposableInvoker
       setHomeAddress(
           Address _homeAddress);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Home",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Home",
       type = "Edm.GeographyPoint",
       nullable = true,
       defaultValue = "",
@@ -123,11 +123,11 @@ public interface CustomerComposableInvoker
       unicode = true,
       collation = "",
       srid = "")
-  org.apache.olingo.commons.api.edm.geo.Point getHome();
+  org.sitenetsoft.olinguito.commons.api.edm.geo.Point getHome();
 
-  void setHome(org.apache.olingo.commons.api.edm.geo.Point _home);
+  void setHome(org.sitenetsoft.olinguito.commons.api.edm.geo.Point _home);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Numbers",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Numbers",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -138,11 +138,11 @@ public interface CustomerComposableInvoker
       unicode = true,
       collation = "",
       srid = "")
-  org.apache.olingo.ext.proxy.api.PrimitiveCollection<java.lang.String> getNumbers();
+  org.sitenetsoft.olinguito.ext.proxy.api.PrimitiveCollection<java.lang.String> getNumbers();
 
-  void setNumbers(org.apache.olingo.ext.proxy.api.PrimitiveCollection<java.lang.String> _numbers);
+  void setNumbers(org.sitenetsoft.olinguito.ext.proxy.api.PrimitiveCollection<java.lang.String> _numbers);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Emails",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Emails",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -153,11 +153,11 @@ public interface CustomerComposableInvoker
       unicode = true,
       collation = "",
       srid = "")
-  org.apache.olingo.ext.proxy.api.PrimitiveCollection<java.lang.String> getEmails();
+  org.sitenetsoft.olinguito.ext.proxy.api.PrimitiveCollection<java.lang.String> getEmails();
 
-  void setEmails(org.apache.olingo.ext.proxy.api.PrimitiveCollection<java.lang.String> _emails);
+  void setEmails(org.sitenetsoft.olinguito.ext.proxy.api.PrimitiveCollection<java.lang.String> _emails);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "City",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "City",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -172,7 +172,7 @@ public interface CustomerComposableInvoker
 
   void setCity(java.lang.String _city);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Birthday",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Birthday",
       type = "Edm.DateTimeOffset",
       nullable = false,
       defaultValue = "",
@@ -187,7 +187,7 @@ public interface CustomerComposableInvoker
 
   void setBirthday(java.sql.Timestamp _birthday);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "TimeBetweenLastTwoOrders",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "TimeBetweenLastTwoOrders",
       type = "Edm.Duration",
       nullable = false,
       defaultValue = "",
@@ -202,7 +202,7 @@ public interface CustomerComposableInvoker
 
   void setTimeBetweenLastTwoOrders(java.math.BigDecimal _timeBetweenLastTwoOrders);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "Parent",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "Parent",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Person",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -213,7 +213,7 @@ public interface CustomerComposableInvoker
   void setParent(
       Person _parent);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "Orders",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "Orders",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Order",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -226,7 +226,7 @@ public interface CustomerComposableInvoker
       setOrders(
           OrderCollection _orders);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "Company",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "Company",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Company",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",

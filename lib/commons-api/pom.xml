@@ -28,7 +28,7 @@
   <name>${project.artifactId}</name>
 
   <parent>
-    <groupId>org.apache.olingo</groupId>
+    <groupId>org.sitenetsoft.olinguito</groupId>
     <artifactId>odata-lib</artifactId>
     <version>5.0.1-SNAPSHOT</version>
     <relativePath>..</relativePath>
@@ -59,7 +59,7 @@
         <configuration>
           <instructions>
             <Export-Package>
-              org.apache.olingo.commons.api*
+              org.sitenetsoft.olinguito.commons.api*
             </Export-Package>
             <Import-Package>
               *

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.deserializer.batch;
+package org.sitenetsoft.olinguito.server.core.deserializer.batch;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.server.api.deserializer.batch.BatchDeserializerException;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchDeserializerException;
 
 public class BatchParserCommon {
 

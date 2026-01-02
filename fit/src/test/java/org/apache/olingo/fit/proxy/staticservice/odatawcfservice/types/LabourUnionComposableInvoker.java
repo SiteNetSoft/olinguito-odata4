@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
 public interface LabourUnionComposableInvoker
-    extends org.apache.olingo.ext.proxy.api.StructuredComposableInvoker<LabourUnion, LabourUnion.Operations>
+    extends org.sitenetsoft.olinguito.ext.proxy.api.StructuredComposableInvoker<LabourUnion, LabourUnion.Operations>
 {
 
   @Override
@@ -34,7 +34,7 @@ public interface LabourUnionComposableInvoker
   LabourUnionComposableInvoker expand(String... expand);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "LabourUnionID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "LabourUnionID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -49,7 +49,7 @@ public interface LabourUnionComposableInvoker
 
   void setLabourUnionID(java.lang.Integer _labourUnionID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Name",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Name",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",

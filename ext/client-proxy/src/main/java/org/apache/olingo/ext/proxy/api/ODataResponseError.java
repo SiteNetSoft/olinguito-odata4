@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.ext.proxy.api;
+package org.sitenetsoft.olinguito.ext.proxy.api;
 
-import org.apache.olingo.client.api.communication.request.ODataRequest;
-import org.apache.olingo.commons.api.ex.ODataRuntimeException;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataRequest;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
 
 public class ODataResponseError {
 

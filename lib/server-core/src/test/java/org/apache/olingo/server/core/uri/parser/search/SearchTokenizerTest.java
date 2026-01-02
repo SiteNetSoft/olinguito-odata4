@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.parser.search;
+package org.sitenetsoft.olinguito.server.core.uri.parser.search;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -25,13 +25,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.apache.olingo.server.core.uri.parser.search.SearchQueryToken.Token.AND;
-import static org.apache.olingo.server.core.uri.parser.search.SearchQueryToken.Token.CLOSE;
-import static org.apache.olingo.server.core.uri.parser.search.SearchQueryToken.Token.NOT;
-import static org.apache.olingo.server.core.uri.parser.search.SearchQueryToken.Token.OPEN;
-import static org.apache.olingo.server.core.uri.parser.search.SearchQueryToken.Token.OR;
-import static org.apache.olingo.server.core.uri.parser.search.SearchQueryToken.Token.PHRASE;
-import static org.apache.olingo.server.core.uri.parser.search.SearchQueryToken.Token.WORD;
+import static org.sitenetsoft.olinguito.server.core.uri.parser.search.SearchQueryToken.Token.AND;
+import static org.sitenetsoft.olinguito.server.core.uri.parser.search.SearchQueryToken.Token.CLOSE;
+import static org.sitenetsoft.olinguito.server.core.uri.parser.search.SearchQueryToken.Token.NOT;
+import static org.sitenetsoft.olinguito.server.core.uri.parser.search.SearchQueryToken.Token.OPEN;
+import static org.sitenetsoft.olinguito.server.core.uri.parser.search.SearchQueryToken.Token.OR;
+import static org.sitenetsoft.olinguito.server.core.uri.parser.search.SearchQueryToken.Token.PHRASE;
+import static org.sitenetsoft.olinguito.server.core.uri.parser.search.SearchQueryToken.Token.WORD;
 
 public class SearchTokenizerTest {
 

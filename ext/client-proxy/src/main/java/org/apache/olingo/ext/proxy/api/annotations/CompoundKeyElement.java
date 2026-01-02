@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.ext.proxy.api.annotations;
+package org.sitenetsoft.olinguito.ext.proxy.api.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

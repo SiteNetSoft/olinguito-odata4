@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edm.provider;
+package org.sitenetsoft.olinguito.commons.api.edm.provider;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.geo.SRID;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.SRID;
 
 /**
  * The type Csdl term.

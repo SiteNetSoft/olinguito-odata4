@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.serializer.utils;
+package org.sitenetsoft.olinguito.server.core.serializer.utils;
 
-import org.apache.olingo.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 
 public class ContentTypeHelper {
 

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.ext.proxy.commons;
+package org.sitenetsoft.olinguito.ext.proxy.commons;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
@@ -31,21 +31,21 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.apache.olingo.client.api.EdmEnabledODataClient;
-import org.apache.olingo.client.api.domain.ClientEntity;
-import org.apache.olingo.client.api.domain.ClientValue;
-import org.apache.olingo.client.api.uri.URIBuilder;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.ext.proxy.AbstractService;
-import org.apache.olingo.ext.proxy.api.ComplexType;
-import org.apache.olingo.ext.proxy.api.EntityType;
-import org.apache.olingo.ext.proxy.api.annotations.EntitySet;
-import org.apache.olingo.ext.proxy.api.annotations.Namespace;
-import org.apache.olingo.ext.proxy.api.annotations.Singleton;
-import org.apache.olingo.ext.proxy.context.AttachedEntityStatus;
-import org.apache.olingo.ext.proxy.context.Context;
-import org.apache.olingo.ext.proxy.context.EntityContext;
-import org.apache.olingo.ext.proxy.utils.CoreUtils;
+import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
+import org.sitenetsoft.olinguito.client.api.uri.URIBuilder;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.ext.proxy.AbstractService;
+import org.sitenetsoft.olinguito.ext.proxy.api.ComplexType;
+import org.sitenetsoft.olinguito.ext.proxy.api.EntityType;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntitySet;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Singleton;
+import org.sitenetsoft.olinguito.ext.proxy.context.AttachedEntityStatus;
+import org.sitenetsoft.olinguito.ext.proxy.context.Context;
+import org.sitenetsoft.olinguito.ext.proxy.context.EntityContext;
+import org.sitenetsoft.olinguito.ext.proxy.utils.CoreUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -152,7 +152,7 @@ abstract class AbstractInvocationHandler implements InvocationHandler {
     }
 
     final String name = handler.getUUID().getType().
-        getAnnotation(org.apache.olingo.ext.proxy.api.annotations.EntityType.class).name();
+        getAnnotation(org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityType.class).name();
 
     final String namespace = handler.getUUID().getType().getAnnotation(Namespace.class).value();
 

@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edm;
+package org.sitenetsoft.olinguito.commons.api.edm;
 
-import org.apache.olingo.commons.api.ex.ODataException;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
 
 public class EdmPrimitiveTypeException extends ODataException {
 

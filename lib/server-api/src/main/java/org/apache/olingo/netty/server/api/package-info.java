@@ -22,4 +22,4 @@
  * The netty package is used to condense all Netty related parts used in Olingo.
  *
  */
-package org.apache.olingo.netty.server.api;
+package org.sitenetsoft.olinguito.netty.server.api;

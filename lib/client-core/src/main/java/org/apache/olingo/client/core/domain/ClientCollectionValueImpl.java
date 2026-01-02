@@ -16,17 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.domain;
+package org.sitenetsoft.olinguito.client.core.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.olingo.client.api.domain.AbstractClientValue;
-import org.apache.olingo.client.api.domain.ClientCollectionValue;
-import org.apache.olingo.client.api.domain.ClientEnumValue;
-import org.apache.olingo.client.api.domain.ClientValue;
+import org.sitenetsoft.olinguito.client.api.domain.AbstractClientValue;
+import org.sitenetsoft.olinguito.client.api.domain.ClientCollectionValue;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEnumValue;
+import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
 
 public class ClientCollectionValueImpl<OV extends ClientValue> extends AbstractClientValue
         implements ClientCollectionValue<OV> {

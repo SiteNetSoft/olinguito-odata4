@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.edm;
+package org.sitenetsoft.olinguito.client.core.edm;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -24,11 +24,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.olingo.client.api.edm.xml.Edmx;
-import org.apache.olingo.client.api.edm.xml.Reference;
-import org.apache.olingo.client.api.edm.xml.XMLMetadata;
-import org.apache.olingo.commons.api.edm.provider.CsdlAbstractEdmItem;
-import org.apache.olingo.commons.api.edm.provider.CsdlSchema;
+import org.sitenetsoft.olinguito.client.api.edm.xml.Edmx;
+import org.sitenetsoft.olinguito.client.api.edm.xml.Reference;
+import org.sitenetsoft.olinguito.client.api.edm.xml.XMLMetadata;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAbstractEdmItem;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlSchema;
 
 /**
  * Entry point for access information about EDM metadata.

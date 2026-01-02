@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.demo.odatademo.types;
+package org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
 public interface ProductComposableInvoker
-    extends org.apache.olingo.ext.proxy.api.StructuredComposableInvoker<Product, Product.Operations>
+    extends org.sitenetsoft.olinguito.ext.proxy.api.StructuredComposableInvoker<Product, Product.Operations>
 {
 
   @Override
@@ -34,7 +34,7 @@ public interface ProductComposableInvoker
   ProductComposableInvoker expand(String... expand);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -49,7 +49,7 @@ public interface ProductComposableInvoker
 
   void setID(java.lang.Integer _iD);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Name",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Name",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -64,7 +64,7 @@ public interface ProductComposableInvoker
 
   void setName(java.lang.String _name);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Description",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Description",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -79,7 +79,7 @@ public interface ProductComposableInvoker
 
   void setDescription(java.lang.String _description);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ReleaseDate",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ReleaseDate",
       type = "Edm.DateTimeOffset",
       nullable = false,
       defaultValue = "",
@@ -94,7 +94,7 @@ public interface ProductComposableInvoker
 
   void setReleaseDate(java.sql.Timestamp _releaseDate);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "DiscontinuedDate",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "DiscontinuedDate",
       type = "Edm.DateTimeOffset",
       nullable = true,
       defaultValue = "",
@@ -109,7 +109,7 @@ public interface ProductComposableInvoker
 
   void setDiscontinuedDate(java.sql.Timestamp _discontinuedDate);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Rating",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Rating",
       type = "Edm.Int16",
       nullable = false,
       defaultValue = "",
@@ -124,7 +124,7 @@ public interface ProductComposableInvoker
 
   void setRating(java.lang.Short _rating);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Price",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Price",
       type = "Edm.Double",
       nullable = false,
       defaultValue = "",
@@ -139,7 +139,7 @@ public interface ProductComposableInvoker
 
   void setPrice(java.lang.Double _price);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "Categories",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "Categories",
       type = "ODataDemo.Category",
       targetSchema = "ODataDemo",
       targetContainer = "DemoService",
@@ -149,7 +149,7 @@ public interface ProductComposableInvoker
 
   void setCategories(CategoryCollection _categories);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "Supplier",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "Supplier",
       type = "ODataDemo.Supplier",
       targetSchema = "ODataDemo",
       targetContainer = "DemoService",
@@ -159,7 +159,7 @@ public interface ProductComposableInvoker
 
   void setSupplier(Supplier _supplier);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "ProductDetail",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "ProductDetail",
       type = "ODataDemo.ProductDetail",
       targetSchema = "ODataDemo",
       targetContainer = "DemoService",

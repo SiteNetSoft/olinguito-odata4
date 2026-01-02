@@ -16,28 +16,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.OperationType;
+import org.sitenetsoft.olinguito.ext.proxy.api.OperationType;
 
 // CHECKSTYLE:ON (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
-import org.apache.olingo.ext.proxy.api.annotations.KeyRef;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.KeyRef;
 
 @KeyRef(ProductDetailKey.class)
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
-@org.apache.olingo.ext.proxy.api.annotations.EntityType(name = "ProductDetail",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityType(name = "ProductDetail",
     openType = false,
     hasStream = false,
     isAbstract = false)
 public interface ProductDetail
-    extends org.apache.olingo.ext.proxy.api.Annotatable,
-    org.apache.olingo.ext.proxy.api.EntityType<ProductDetail>,
-    org.apache.olingo.ext.proxy.api.StructuredQuery<ProductDetail> {
+    extends org.sitenetsoft.olinguito.ext.proxy.api.Annotatable,
+    org.sitenetsoft.olinguito.ext.proxy.api.EntityType<ProductDetail>,
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredQuery<ProductDetail> {
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ProductID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ProductID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -53,7 +53,7 @@ public interface ProductDetail
   void setProductID(java.lang.Integer _productID);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ProductDetailID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ProductDetailID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -68,7 +68,7 @@ public interface ProductDetail
 
   void setProductDetailID(java.lang.Integer _productDetailID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ProductName",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ProductName",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -83,7 +83,7 @@ public interface ProductDetail
 
   void setProductName(java.lang.String _productName);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Description",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Description",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -98,7 +98,7 @@ public interface ProductDetail
 
   void setDescription(java.lang.String _description);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "RelatedProduct",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "RelatedProduct",
       type = "Microsoft.Test.OData.Services.ODataWCFService.Product",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -111,7 +111,7 @@ public interface ProductDetail
       setRelatedProduct(
           Product _relatedProduct);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "Reviews",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "Reviews",
       type = "Microsoft.Test.OData.Services.ODataWCFService.ProductReview",
       targetSchema = "Microsoft.Test.OData.Services.ODataWCFService",
       targetContainer = "InMemoryEntities",
@@ -126,9 +126,9 @@ public interface ProductDetail
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
 
-    @org.apache.olingo.ext.proxy.api.annotations.Operation(
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Operation(
         name = "GetRelatedProduct",
         type = OperationType.FUNCTION,
         isComposable = true,
@@ -144,29 +144,29 @@ public interface ProductDetail
 
   interface Annotations {
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "ProductID",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "ProductID",
         type = "Edm.Int32")
-    org.apache.olingo.ext.proxy.api.Annotatable getProductIDAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getProductIDAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "ProductDetailID",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "ProductDetailID",
         type = "Edm.Int32")
-    org.apache.olingo.ext.proxy.api.Annotatable getProductDetailIDAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getProductDetailIDAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "ProductName",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "ProductName",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getProductNameAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getProductNameAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Description",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Description",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getDescriptionAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getDescriptionAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "RelatedProduct",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "RelatedProduct",
         type = "Microsoft.Test.OData.Services.ODataWCFService.Product")
-    org.apache.olingo.ext.proxy.api.Annotatable getRelatedProductAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getRelatedProductAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "Reviews",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "Reviews",
         type = "Microsoft.Test.OData.Services.ODataWCFService.ProductReview")
-    org.apache.olingo.ext.proxy.api.Annotatable getReviewsAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getReviewsAnnotations();
   }
 
 }

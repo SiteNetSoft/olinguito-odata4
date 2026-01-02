@@ -16,18 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy;
+package org.sitenetsoft.olinguito.fit.proxy;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.apache.olingo.ext.proxy.api.PrimitiveCollection;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.AccessLevel;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Address;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Color;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.HomeAddress;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.PersonComposableInvoker;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.ProductCollectionComposableInvoker;
+import org.sitenetsoft.olinguito.ext.proxy.api.PrimitiveCollection;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.AccessLevel;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Address;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Color;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.HomeAddress;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.PersonComposableInvoker;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.ProductCollectionComposableInvoker;
 // CHECKSTYLE:ON (Maven checkstyle)
 import org.junit.Assert;
 import org.junit.Test;

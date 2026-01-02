@@ -16,46 +16,46 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.olingo.client.api.EdmEnabledODataClient;
-import org.apache.olingo.commons.api.edm.constants.ODataServiceVersion;
-import org.apache.olingo.ext.proxy.AbstractService;
-import org.apache.olingo.ext.proxy.api.AbstractTerm;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.AccessLevel;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Account;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.AccountInfo;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Address;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Asset;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Club;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Color;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Company;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.CompanyAddress;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.CompanyCategory;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.CreditCardPI;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.CreditRecord;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Customer;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Department;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Employee;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.GiftCard;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.HomeAddress;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.IsBoss;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.LabourUnion;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Order;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.OrderDetail;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.PaymentInstrument;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Person;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Product;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.ProductDetail;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.ProductReview;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.PublicCompany;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Statement;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.StoredPI;
-import org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types.Subscription;
+import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
+import org.sitenetsoft.olinguito.commons.api.edm.constants.ODataServiceVersion;
+import org.sitenetsoft.olinguito.ext.proxy.AbstractService;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractTerm;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.AccessLevel;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Account;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.AccountInfo;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Address;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Asset;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Club;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Color;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Company;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.CompanyAddress;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.CompanyCategory;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.CreditCardPI;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.CreditRecord;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Customer;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Department;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Employee;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.GiftCard;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.HomeAddress;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.IsBoss;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.LabourUnion;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Order;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.OrderDetail;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.PaymentInstrument;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Person;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Product;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.ProductDetail;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.ProductReview;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.PublicCompany;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Statement;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.StoredPI;
+import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Subscription;
 
 public class Service<C extends EdmEnabledODataClient> extends AbstractService<C> {
 

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit;
+package org.sitenetsoft.olinguito.fit;
 
 import java.io.IOException;
 import java.net.URI;
@@ -46,9 +46,9 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
-import org.apache.olingo.client.core.http.AbstractOAuth2HttpClientFactory;
-import org.apache.olingo.client.core.http.OAuth2Exception;
-import org.apache.olingo.fit.rest.OAuth2Provider;
+import org.sitenetsoft.olinguito.client.core.http.AbstractOAuth2HttpClientFactory;
+import org.sitenetsoft.olinguito.client.core.http.OAuth2Exception;
+import org.sitenetsoft.olinguito.fit.rest.OAuth2Provider;
 import org.apache.cxf.rs.security.oauth2.client.Consumer;
 
 

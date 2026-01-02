@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api;
+package org.sitenetsoft.olinguito.client.api;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import org.apache.olingo.commons.api.ex.ODataRuntimeException;
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 
 /**
  * <p>
@@ -39,16 +39,16 @@ import org.apache.olingo.commons.api.format.ContentType;
  * </p>
  * <p>
  * By default the ODataClientBuilder use the default Olingo V4 client core implementations
- * (<code>org.apache.olingo.client.core.ODataClientImpl</code> and
- * <code>org.apache.olingo.client.core.EdmEnabledODataClientImpl</code>) which can be
+ * (<code>org.sitenetsoft.olinguito.client.core.ODataClientImpl</code> and
+ * <code>org.sitenetsoft.olinguito.client.core.EdmEnabledODataClientImpl</code>) which can be
  * overwritten via the System properties <code>ODATA_CLIENT_IMPL_SYS_PROPERTY</code>
  * and <code>ODATA_EMD_CLIENT_IMPL_SYS_PROPERTY</code>.
  * </p>
  */
 public final class ODataClientBuilder {
 
-  private static final String ODATA_CLIENT_IMPL_CLASS = "org.apache.olingo.client.core.ODataClientImpl";
-  private static final String ODATA_EDM_CLIENT_IMPL_CLASS = "org.apache.olingo.client.core.EdmEnabledODataClientImpl";
+  private static final String ODATA_CLIENT_IMPL_CLASS = "org.sitenetsoft.olinguito.client.core.ODataClientImpl";
+  private static final String ODATA_EDM_CLIENT_IMPL_CLASS = "org.sitenetsoft.olinguito.client.core.EdmEnabledODataClientImpl";
   public static final String ODATA_CLIENT_IMPL_SYS_PROPERTY = "ORG_APACHE_OLINGO_CLIENT_IMPL_FQN";
   public static final String ODATA_EMD_CLIENT_IMPL_SYS_PROPERTY = "ORG_APACHE_OLINGO_EDM_CLIENT_IMPL_FQN";
 

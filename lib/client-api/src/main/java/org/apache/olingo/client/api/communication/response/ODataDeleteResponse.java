@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication.response;
+package org.sitenetsoft.olinguito.client.api.communication.response;
 
 /**
  * This class implements the response to an OData delete request.
  *
- * @see org.apache.olingo.client.api.communication.request.cud.ODataDeleteRequest
+ * @see org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataDeleteRequest
  */
 public interface ODataDeleteResponse extends ODataResponse {
 //No additional methods needed for now.

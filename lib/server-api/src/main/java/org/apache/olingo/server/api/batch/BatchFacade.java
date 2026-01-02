@@ -15,23 +15,23 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
- */package org.apache.olingo.server.api.batch;
+ */package org.sitenetsoft.olinguito.server.api.batch;
 
- import org.apache.olingo.server.api.ODataApplicationException;
- import org.apache.olingo.server.api.ODataLibraryException;
- import org.apache.olingo.server.api.ODataRequest;
- import org.apache.olingo.server.api.ODataResponse;
- import org.apache.olingo.server.api.deserializer.batch.BatchRequestPart;
- import org.apache.olingo.server.api.deserializer.batch.ODataResponsePart;
+ import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
+ import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
+ import org.sitenetsoft.olinguito.server.api.ODataRequest;
+ import org.sitenetsoft.olinguito.server.api.ODataResponse;
+ import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchRequestPart;
+ import org.sitenetsoft.olinguito.server.api.deserializer.batch.ODataResponsePart;
 
  /**
   * <p>Provides methods to process {@link ODataRequest}s and {@link BatchRequestPart}s
   * in the context of a batch request.</p>
   *
-  * <p>Within a {@link org.apache.olingo.server.api.processor.BatchProcessor BatchProcessor} implementation
+  * <p>Within a {@link org.sitenetsoft.olinguito.server.api.processor.BatchProcessor BatchProcessor} implementation
  * BatchRequestParts should be passed to {@link #handleBatchRequest(BatchRequestPart)}.
   * Only if the BatchRequestPart represents a change set, the request will be delegated to
-  * {@link org.apache.olingo.server.api.processor.BatchProcessor#processChangeSet(BatchFacade, java.util.List)}.
+  * {@link org.sitenetsoft.olinguito.server.api.processor.BatchProcessor#processChangeSet(BatchFacade, java.util.List)}.
   * Otherwise the requests will be directly executed.</p>
   *
   * <p>The processor implementation could use {@link #handleODataRequest(ODataRequest)} to process

@@ -22,5 +22,5 @@
  * The deserializer package is used to condense all about the Olingo deserialization.
  *
  */
-package org.apache.olingo.server.api.deserializer;
+package org.sitenetsoft.olinguito.server.api.deserializer;
 

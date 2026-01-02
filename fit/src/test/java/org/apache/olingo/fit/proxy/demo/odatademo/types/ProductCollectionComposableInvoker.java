@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.demo.odatademo.types;
+package org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
 
 public interface ProductCollectionComposableInvoker
     extends
-    org.apache.olingo.ext.proxy.api.StructuredCollectionComposableInvoker<ProductCollection, ProductCollection.Operations> {
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionComposableInvoker<ProductCollection, ProductCollection.Operations> {
 
   @Override
   ProductCollectionComposableInvoker select(String... select);

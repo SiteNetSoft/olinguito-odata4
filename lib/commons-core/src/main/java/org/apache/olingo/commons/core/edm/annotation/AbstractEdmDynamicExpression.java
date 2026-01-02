@@ -16,34 +16,34 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.core.edm.annotation;
+package org.sitenetsoft.olinguito.commons.core.edm.annotation;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.annotation.EdmAnd;
-import org.apache.olingo.commons.api.edm.annotation.EdmAnnotationPath;
-import org.apache.olingo.commons.api.edm.annotation.EdmApply;
-import org.apache.olingo.commons.api.edm.annotation.EdmCast;
-import org.apache.olingo.commons.api.edm.annotation.EdmCollection;
-import org.apache.olingo.commons.api.edm.annotation.EdmDynamicExpression;
-import org.apache.olingo.commons.api.edm.annotation.EdmEq;
-import org.apache.olingo.commons.api.edm.annotation.EdmGe;
-import org.apache.olingo.commons.api.edm.annotation.EdmGt;
-import org.apache.olingo.commons.api.edm.annotation.EdmIf;
-import org.apache.olingo.commons.api.edm.annotation.EdmIsOf;
-import org.apache.olingo.commons.api.edm.annotation.EdmLabeledElement;
-import org.apache.olingo.commons.api.edm.annotation.EdmLabeledElementReference;
-import org.apache.olingo.commons.api.edm.annotation.EdmLe;
-import org.apache.olingo.commons.api.edm.annotation.EdmLt;
-import org.apache.olingo.commons.api.edm.annotation.EdmNavigationPropertyPath;
-import org.apache.olingo.commons.api.edm.annotation.EdmNe;
-import org.apache.olingo.commons.api.edm.annotation.EdmNot;
-import org.apache.olingo.commons.api.edm.annotation.EdmNull;
-import org.apache.olingo.commons.api.edm.annotation.EdmOr;
-import org.apache.olingo.commons.api.edm.annotation.EdmPath;
-import org.apache.olingo.commons.api.edm.annotation.EdmPropertyPath;
-import org.apache.olingo.commons.api.edm.annotation.EdmPropertyValue;
-import org.apache.olingo.commons.api.edm.annotation.EdmRecord;
-import org.apache.olingo.commons.api.edm.annotation.EdmUrlRef;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmAnd;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmAnnotationPath;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmApply;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmCast;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmCollection;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmDynamicExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmEq;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmGe;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmGt;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmIf;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmIsOf;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmLabeledElement;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmLabeledElementReference;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmLe;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmLt;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmNavigationPropertyPath;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmNe;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmNot;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmNull;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmOr;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmPath;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmPropertyPath;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmPropertyValue;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmRecord;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmUrlRef;
 
 public abstract class AbstractEdmDynamicExpression extends AbstractEdmExpression implements EdmDynamicExpression {
 

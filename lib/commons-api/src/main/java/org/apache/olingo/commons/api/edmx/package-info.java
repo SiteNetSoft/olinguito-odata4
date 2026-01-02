@@ -22,5 +22,5 @@
  * The edmx package is used to condense all about the Olingo OData EDMX handling.
  *
  */
-package org.apache.olingo.commons.api.edmx;
+package org.sitenetsoft.olinguito.commons.api.edmx;
 

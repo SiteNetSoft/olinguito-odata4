@@ -22,5 +22,5 @@
  * The serializer package is used to condense all about the Olingo serialization.
  *
  */
-package org.apache.olingo.server.api.serializer;
+package org.sitenetsoft.olinguito.server.api.serializer;
 

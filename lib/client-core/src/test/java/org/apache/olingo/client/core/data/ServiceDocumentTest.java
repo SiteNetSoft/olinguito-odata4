@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.data;
+package org.sitenetsoft.olinguito.client.core.data;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -26,7 +26,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.olingo.client.api.data.ServiceDocumentItem;
+import org.sitenetsoft.olinguito.client.api.data.ServiceDocumentItem;
 import org.junit.Test;
 
 public class ServiceDocumentTest {

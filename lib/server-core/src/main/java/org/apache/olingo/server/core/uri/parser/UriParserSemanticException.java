@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.parser;
+package org.sitenetsoft.olinguito.server.core.uri.parser;
 
 /** Exception thrown during URI parsing in cases where an URI part is invalid according to the Entity Data Model. */
 public class UriParserSemanticException extends UriParserException {

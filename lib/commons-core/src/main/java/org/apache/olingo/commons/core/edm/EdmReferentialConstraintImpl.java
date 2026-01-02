@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.core.edm;
+package org.sitenetsoft.olinguito.commons.core.edm;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmReferentialConstraint;
-import org.apache.olingo.commons.api.edm.provider.CsdlReferentialConstraint;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmReferentialConstraint;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlReferentialConstraint;
 
 public class EdmReferentialConstraintImpl extends AbstractEdmAnnotatable implements EdmReferentialConstraint {
 

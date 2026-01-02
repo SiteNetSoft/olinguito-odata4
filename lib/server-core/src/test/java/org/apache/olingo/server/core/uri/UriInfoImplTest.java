@@ -16,38 +16,38 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri;
+package org.sitenetsoft.olinguito.server.core.uri;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import org.apache.olingo.commons.api.edm.EdmAction;
-import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.commons.api.ex.ODataRuntimeException;
-import org.apache.olingo.server.api.uri.UriInfo;
-import org.apache.olingo.server.api.uri.UriInfoKind;
-import org.apache.olingo.server.api.uri.UriResourceAction;
-import org.apache.olingo.server.api.uri.UriResourceEntitySet;
-import org.apache.olingo.server.api.uri.queryoption.AliasQueryOption;
-import org.apache.olingo.server.api.uri.queryoption.QueryOption;
-import org.apache.olingo.server.core.uri.queryoption.AliasQueryOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.ApplyOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.CountOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.CustomQueryOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.DeltaTokenOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.ExpandOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.FilterOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.FormatOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.IdOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.LevelsOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.OrderByOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.SearchOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.SelectOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.SkipOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.SkipTokenOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.TopOptionImpl;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmAction;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfo;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoKind;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceAction;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceEntitySet;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.AliasQueryOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.QueryOption;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.AliasQueryOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.ApplyOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.CountOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.CustomQueryOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.DeltaTokenOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.ExpandOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.FilterOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.FormatOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.IdOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.LevelsOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.OrderByOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.SearchOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.SelectOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.SkipOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.SkipTokenOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.TopOptionImpl;
 import org.junit.Test;
 import org.mockito.Mockito;
 

@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.uri;
+package org.sitenetsoft.olinguito.client.core.uri;
 
-import org.apache.olingo.client.api.uri.FilterArg;
+import org.sitenetsoft.olinguito.client.api.uri.FilterArg;
 
 public class GtFilter extends AbstractComparingFilter {
 

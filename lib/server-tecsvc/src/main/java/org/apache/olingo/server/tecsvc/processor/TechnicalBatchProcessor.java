@@ -16,29 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.tecsvc.processor;
+package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.commons.api.http.HttpHeader;
-import org.apache.olingo.commons.api.http.HttpStatusCode;
-import org.apache.olingo.server.api.ODataApplicationException;
-import org.apache.olingo.server.api.ODataLibraryException;
-import org.apache.olingo.server.api.ODataRequest;
-import org.apache.olingo.server.api.ODataResponse;
-import org.apache.olingo.server.api.batch.BatchFacade;
-import org.apache.olingo.server.api.deserializer.batch.BatchOptions;
-import org.apache.olingo.server.api.deserializer.batch.BatchRequestPart;
-import org.apache.olingo.server.api.deserializer.batch.ODataResponsePart;
-import org.apache.olingo.server.api.prefer.PreferencesApplied;
-import org.apache.olingo.server.api.processor.BatchProcessor;
-import org.apache.olingo.server.tecsvc.async.AsyncProcessor;
-import org.apache.olingo.server.tecsvc.async.TechnicalAsyncService;
-import org.apache.olingo.server.tecsvc.data.DataProvider;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
+import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
+import org.sitenetsoft.olinguito.server.api.ODataRequest;
+import org.sitenetsoft.olinguito.server.api.ODataResponse;
+import org.sitenetsoft.olinguito.server.api.batch.BatchFacade;
+import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchOptions;
+import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchRequestPart;
+import org.sitenetsoft.olinguito.server.api.deserializer.batch.ODataResponsePart;
+import org.sitenetsoft.olinguito.server.api.prefer.PreferencesApplied;
+import org.sitenetsoft.olinguito.server.api.processor.BatchProcessor;
+import org.sitenetsoft.olinguito.server.tecsvc.async.AsyncProcessor;
+import org.sitenetsoft.olinguito.server.tecsvc.async.TechnicalAsyncService;
+import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider;
 
 public class TechnicalBatchProcessor extends TechnicalProcessor implements BatchProcessor {
 

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.prefer;
+package org.sitenetsoft.olinguito.server.core.prefer;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.olingo.server.api.prefer.Preferences.Preference;
+import org.sitenetsoft.olinguito.server.api.prefer.Preferences.Preference;
 
 /**
  * <p>Parses the values of <code>Prefer</code> HTTP header fields.</p>

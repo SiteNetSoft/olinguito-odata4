@@ -16,25 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
-@org.apache.olingo.ext.proxy.api.annotations.EntityType(name = "CreditRecord",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityType(name = "CreditRecord",
     openType = false,
     hasStream = false,
     isAbstract = false)
 public interface CreditRecord
-    extends org.apache.olingo.ext.proxy.api.Annotatable,
-    org.apache.olingo.ext.proxy.api.EntityType<CreditRecord>,
-    org.apache.olingo.ext.proxy.api.StructuredQuery<CreditRecord> {
+    extends org.sitenetsoft.olinguito.ext.proxy.api.Annotatable,
+    org.sitenetsoft.olinguito.ext.proxy.api.EntityType<CreditRecord>,
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredQuery<CreditRecord> {
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "CreditRecordID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "CreditRecordID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -49,7 +49,7 @@ public interface CreditRecord
 
   void setCreditRecordID(java.lang.Integer _creditRecordID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "IsGood",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "IsGood",
       type = "Edm.Boolean",
       nullable = false,
       defaultValue = "",
@@ -64,7 +64,7 @@ public interface CreditRecord
 
   void setIsGood(java.lang.Boolean _isGood);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Reason",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Reason",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -79,7 +79,7 @@ public interface CreditRecord
 
   void setReason(java.lang.String _reason);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "CreatedDate",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "CreatedDate",
       type = "Edm.DateTimeOffset",
       nullable = false,
       defaultValue = "",
@@ -96,7 +96,7 @@ public interface CreditRecord
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 
@@ -104,21 +104,21 @@ public interface CreditRecord
 
   interface Annotations {
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "CreditRecordID",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "CreditRecordID",
         type = "Edm.Int32")
-    org.apache.olingo.ext.proxy.api.Annotatable getCreditRecordIDAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getCreditRecordIDAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "IsGood",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "IsGood",
         type = "Edm.Boolean")
-    org.apache.olingo.ext.proxy.api.Annotatable getIsGoodAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getIsGoodAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Reason",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Reason",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getReasonAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getReasonAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "CreatedDate",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "CreatedDate",
         type = "Edm.DateTimeOffset")
-    org.apache.olingo.ext.proxy.api.Annotatable getCreatedDateAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getCreatedDateAnnotations();
 
   }
 

@@ -16,21 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.core.edm.annotation;
+package org.sitenetsoft.olinguito.commons.core.edm.annotation;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmException;
-import org.apache.olingo.commons.api.edm.EdmStructuredType;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.edm.annotation.EdmPropertyValue;
-import org.apache.olingo.commons.api.edm.annotation.EdmRecord;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlPropertyValue;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlRecord;
-import org.apache.olingo.commons.core.edm.EdmTypeInfo;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmException;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmStructuredType;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmPropertyValue;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmRecord;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlPropertyValue;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlRecord;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmTypeInfo;
 
 public class EdmRecordImpl extends AbstractEdmAnnotatableDynamicExpression implements EdmRecord {
 

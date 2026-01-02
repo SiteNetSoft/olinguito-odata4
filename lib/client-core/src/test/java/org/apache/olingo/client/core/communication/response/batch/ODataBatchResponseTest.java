@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.core.communication.response.batch;
+package org.sitenetsoft.olinguito.client.core.communication.response.batch;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -35,13 +35,13 @@ import java.util.Map.Entry;
 
 import org.apache.commons.io.LineIterator;
 import org.apache.http.HttpResponse;
-import org.apache.olingo.client.api.communication.request.batch.ODataBatchLineIterator;
-import org.apache.olingo.client.api.communication.request.batch.ODataBatchResponseItem;
-import org.apache.olingo.client.api.communication.response.ODataBatchResponse;
-import org.apache.olingo.client.api.communication.response.ODataResponse;
-import org.apache.olingo.client.core.communication.request.batch.ODataBatchLineIteratorImpl;
-import org.apache.olingo.client.core.communication.request.batch.ODataBatchUtilities;
-import org.apache.olingo.client.core.communication.request.batch.ODataChangesetResponseItem;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchLineIterator;
+import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchResponseItem;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataBatchResponse;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataResponse;
+import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataBatchLineIteratorImpl;
+import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataBatchUtilities;
+import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataChangesetResponseItem;
 import org.junit.Test;
 
 public class ODataBatchResponseTest {

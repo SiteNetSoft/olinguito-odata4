@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.ext.proxy.api.annotations;
+package org.sitenetsoft.olinguito.ext.proxy.api.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.apache.olingo.client.api.edm.StoreGeneratedPattern;
+import org.sitenetsoft.olinguito.client.api.edm.StoreGeneratedPattern;
 
 /**
  * Bind POJO field to EDM property.

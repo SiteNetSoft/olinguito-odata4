@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.parser;
+package org.sitenetsoft.olinguito.server.core.uri.parser;
 
-import org.apache.olingo.server.api.ODataLibraryException;
+import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
 
 abstract public class UriParserException extends ODataLibraryException {
 

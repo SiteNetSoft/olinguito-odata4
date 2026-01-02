@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.debug;
+package org.sitenetsoft.olinguito.server.api.debug;
 
-import org.apache.olingo.server.api.ODataResponse;
+import org.sitenetsoft.olinguito.server.api.ODataResponse;
 
 /**
  * Support for applications creating debug responses.

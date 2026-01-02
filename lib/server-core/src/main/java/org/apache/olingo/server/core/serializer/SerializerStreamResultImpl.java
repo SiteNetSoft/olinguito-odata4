@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.serializer;
+package org.sitenetsoft.olinguito.server.core.serializer;
 
-import org.apache.olingo.server.api.ODataContent;
-import org.apache.olingo.server.api.serializer.SerializerStreamResult;
+import org.sitenetsoft.olinguito.server.api.ODataContent;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerStreamResult;
 
 public class SerializerStreamResultImpl implements SerializerStreamResult {
   private ODataContent oDataContent;

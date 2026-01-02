@@ -19,23 +19,23 @@
 package ${package};
 
 //CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.commons.api.http.HttpMethod;
-import org.apache.olingo.ext.proxy.api.AbstractTerm;
-import org.apache.olingo.ext.proxy.api.OperationType;
-import org.apache.olingo.ext.proxy.api.annotations.Operation;
-import org.apache.olingo.ext.proxy.api.annotations.Parameter;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractTerm;
+import org.sitenetsoft.olinguito.ext.proxy.api.OperationType;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Operation;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Parameter;
 #foreach($ns in $namespaces)
 import #if($basePackage)${basePackage}.#end${ns}.*;
 #end
 
-import org.apache.olingo.commons.api.edm.geo.Geospatial;
-import org.apache.olingo.commons.api.edm.geo.GeospatialCollection;
-import org.apache.olingo.commons.api.edm.geo.LineString;
-import org.apache.olingo.commons.api.edm.geo.MultiLineString;
-import org.apache.olingo.commons.api.edm.geo.MultiPoint;
-import org.apache.olingo.commons.api.edm.geo.MultiPolygon;
-import org.apache.olingo.commons.api.edm.geo.Point;
-import org.apache.olingo.commons.api.edm.geo.Polygon;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Geospatial;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.GeospatialCollection;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.LineString;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.MultiLineString;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.MultiPoint;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.MultiPolygon;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Point;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Polygon;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.UUID;
@@ -48,8 +48,8 @@ import javax.xml.datatype.Duration;
 #set ( $javaComplexType = $utility.getJavaType($complexType) )
 
 public interface $utility.capitalize($complexType.Name)Collection extends 
-    org.apache.olingo.ext.proxy.api.StructuredCollectionQuery<${javaComplexType}Collection>,
-    org.apache.olingo.ext.proxy.api.ComplexCollection<$javaComplexType, ${javaComplexType}Collection, ${javaComplexType}Collection> {
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionQuery<${javaComplexType}Collection>,
+    org.sitenetsoft.olinguito.ext.proxy.api.ComplexCollection<$javaComplexType, ${javaComplexType}Collection, ${javaComplexType}Collection> {
 #set( $functions = $utility.getFunctionsBoundTo($complexType.Name, true) )
 #set( $actions = $utility.getActionsBoundTo($complexType.Name, true) )
 #set($structuredType = $complexType)

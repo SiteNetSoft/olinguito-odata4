@@ -19,5 +19,5 @@
 /**
  * Contains representations for EDM objects created during the URI parsing
  */
-package org.apache.olingo.commons.api.edm;
+package org.sitenetsoft.olinguito.commons.api.edm;
 

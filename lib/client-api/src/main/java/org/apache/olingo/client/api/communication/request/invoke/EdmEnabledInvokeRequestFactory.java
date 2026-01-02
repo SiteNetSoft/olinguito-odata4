@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication.request.invoke;
+package org.sitenetsoft.olinguito.client.api.communication.request.invoke;
 
 import java.net.URI;
 import java.util.Map;
 
-import org.apache.olingo.client.api.domain.ClientInvokeResult;
-import org.apache.olingo.client.api.domain.ClientValue;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.client.api.domain.ClientInvokeResult;
+import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 
 public interface EdmEnabledInvokeRequestFactory extends InvokeRequestFactory {
 

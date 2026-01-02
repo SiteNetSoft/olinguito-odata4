@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.etag;
+package org.sitenetsoft.olinguito.server.api.etag;
 
-import org.apache.olingo.server.api.ODataLibraryException;
+import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
 
 /**
  * This exception is thrown for invalid precondition error cases.

@@ -16,26 +16,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.parser;
+package org.sitenetsoft.olinguito.server.core.uri.parser;
 
 import java.util.Collections;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edmx.EdmxReference;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.ODataLibraryException;
-import org.apache.olingo.server.api.uri.UriInfo;
-import org.apache.olingo.server.api.uri.UriInfoKind;
-import org.apache.olingo.server.api.uri.queryoption.ApplyItem;
-import org.apache.olingo.server.api.uri.queryoption.apply.Aggregate;
-import org.apache.olingo.server.api.uri.queryoption.apply.AggregateExpression;
-import org.apache.olingo.server.core.uri.parser.UriParserSemanticException.MessageKeys;
-import org.apache.olingo.server.core.uri.testutil.ExpandValidator;
-import org.apache.olingo.server.core.uri.testutil.TestUriValidator;
-import org.apache.olingo.server.tecsvc.provider.ComplexTypeProvider;
-import org.apache.olingo.server.tecsvc.provider.EdmTechProvider;
-import org.apache.olingo.server.tecsvc.provider.EntityTypeProvider;
-import org.apache.olingo.server.tecsvc.provider.PropertyProvider;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfo;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoKind;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ApplyItem;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.apply.Aggregate;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.apply.AggregateExpression;
+import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserSemanticException.MessageKeys;
+import org.sitenetsoft.olinguito.server.core.uri.testutil.ExpandValidator;
+import org.sitenetsoft.olinguito.server.core.uri.testutil.TestUriValidator;
+import org.sitenetsoft.olinguito.server.tecsvc.provider.ComplexTypeProvider;
+import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
+import org.sitenetsoft.olinguito.server.tecsvc.provider.EntityTypeProvider;
+import org.sitenetsoft.olinguito.server.tecsvc.provider.PropertyProvider;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication.request.streamed;
+package org.sitenetsoft.olinguito.client.api.communication.request.streamed;
 
-import org.apache.olingo.client.api.communication.request.ODataPayloadManager;
-import org.apache.olingo.client.api.communication.request.ODataStreamedRequest;
-import org.apache.olingo.client.api.communication.response.ODataResponse;
-import org.apache.olingo.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataPayloadManager;
+import org.sitenetsoft.olinguito.client.api.communication.request.ODataStreamedRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataResponse;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 
 /**
  * Abstract class representing a request concerning a streamed entity.
@@ -36,7 +36,7 @@ public interface ODataStreamedEntityRequest<V extends ODataResponse, T extends O
    * Returns resource representation format.
    *
    * @return the configured format (or default if not specified).
-   * @see org.apache.olingo.client.api.Configuration#getDefaultPubFormat()
+   * @see org.sitenetsoft.olinguito.client.api.Configuration#getDefaultPubFormat()
    */
   ContentType getFormat();
 

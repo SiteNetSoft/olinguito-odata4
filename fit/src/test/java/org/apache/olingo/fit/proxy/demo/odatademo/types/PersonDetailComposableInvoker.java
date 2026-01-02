@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.demo.odatademo.types;
+package org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
 public interface PersonDetailComposableInvoker
-    extends org.apache.olingo.ext.proxy.api.StructuredComposableInvoker<PersonDetail, PersonDetail.Operations>
+    extends org.sitenetsoft.olinguito.ext.proxy.api.StructuredComposableInvoker<PersonDetail, PersonDetail.Operations>
 {
 
   @Override
@@ -34,7 +34,7 @@ public interface PersonDetailComposableInvoker
   PersonDetailComposableInvoker expand(String... expand);
 
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "PersonID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "PersonID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -49,7 +49,7 @@ public interface PersonDetailComposableInvoker
 
   void setPersonID(java.lang.Integer _personID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Age",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Age",
       type = "Edm.Byte",
       nullable = false,
       defaultValue = "",
@@ -64,7 +64,7 @@ public interface PersonDetailComposableInvoker
 
   void setAge(java.lang.Short _age);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Gender",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Gender",
       type = "Edm.Boolean",
       nullable = false,
       defaultValue = "",
@@ -79,7 +79,7 @@ public interface PersonDetailComposableInvoker
 
   void setGender(java.lang.Boolean _gender);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Phone",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Phone",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -94,7 +94,7 @@ public interface PersonDetailComposableInvoker
 
   void setPhone(java.lang.String _phone);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Address",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Address",
       type = "ODataDemo.Address",
       nullable = true,
       defaultValue = "",
@@ -109,7 +109,7 @@ public interface PersonDetailComposableInvoker
 
   void setAddress(Address _address);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Photo",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Photo",
       type = "Edm.Stream",
       nullable = false,
       defaultValue = "",
@@ -120,11 +120,11 @@ public interface PersonDetailComposableInvoker
       unicode = true,
       collation = "",
       srid = "")
-  org.apache.olingo.ext.proxy.api.EdmStreamValue getPhoto();
+  org.sitenetsoft.olinguito.ext.proxy.api.EdmStreamValue getPhoto();
 
-  void setPhoto(org.apache.olingo.ext.proxy.api.EdmStreamValue _photo);
+  void setPhoto(org.sitenetsoft.olinguito.ext.proxy.api.EdmStreamValue _photo);
 
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "Person",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "Person",
       type = "ODataDemo.Person",
       targetSchema = "ODataDemo",
       targetContainer = "DemoService",

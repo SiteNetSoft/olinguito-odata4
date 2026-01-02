@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edm.provider.annotation;
+package org.sitenetsoft.olinguito.commons.api.edm.provider.annotation;
 
-import org.apache.olingo.commons.api.edm.provider.CsdlAbstractEdmItem;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAbstractEdmItem;
 
 public abstract class CsdlExpression extends CsdlAbstractEdmItem {
 

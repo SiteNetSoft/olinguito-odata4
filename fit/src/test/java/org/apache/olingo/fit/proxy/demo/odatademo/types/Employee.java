@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.demo.odatademo.types;
+package org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types;
 
 import java.util.concurrent.Future;
 
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("ODataDemo")
-@org.apache.olingo.ext.proxy.api.annotations.EntityType(name = "Employee",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("ODataDemo")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityType(name = "Employee",
     openType = false,
     hasStream = false,
     isAbstract = false,
@@ -47,7 +47,7 @@ public interface Employee extends Person {
 
   @Override
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ID",
       type = "Edm.Int32",
       nullable = false,
       defaultValue = "",
@@ -64,7 +64,7 @@ public interface Employee extends Person {
   void setID(java.lang.Integer _iD);
 
   @Override
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Name",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Name",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -80,7 +80,7 @@ public interface Employee extends Person {
   @Override
   void setName(java.lang.String _name);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "EmployeeID",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "EmployeeID",
       type = "Edm.Int64",
       nullable = false,
       defaultValue = "",
@@ -95,7 +95,7 @@ public interface Employee extends Person {
 
   void setEmployeeID(java.lang.Long _employeeID);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "HireDate",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "HireDate",
       type = "Edm.DateTimeOffset",
       nullable = false,
       defaultValue = "",
@@ -110,7 +110,7 @@ public interface Employee extends Person {
 
   void setHireDate(java.sql.Timestamp _hireDate);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Salary",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Salary",
       type = "Edm.Single",
       nullable = false,
       defaultValue = "",
@@ -126,7 +126,7 @@ public interface Employee extends Person {
   void setSalary(java.lang.Float _salary);
 
   @Override
-  @org.apache.olingo.ext.proxy.api.annotations.NavigationProperty(name = "PersonDetail",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.NavigationProperty(name = "PersonDetail",
       type = "ODataDemo.PersonDetail",
       targetSchema = "ODataDemo",
       targetContainer = "DemoService",
@@ -150,31 +150,31 @@ public interface Employee extends Person {
   interface Annotations extends Person.Annotations {
 
     @Override
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "ID",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "ID",
         type = "Edm.Int32")
-    org.apache.olingo.ext.proxy.api.Annotatable getIDAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getIDAnnotations();
 
     @Override
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Name",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Name",
         type = "Edm.String")
-    org.apache.olingo.ext.proxy.api.Annotatable getNameAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getNameAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "EmployeeID",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "EmployeeID",
         type = "Edm.Int64")
-    org.apache.olingo.ext.proxy.api.Annotatable getEmployeeIDAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getEmployeeIDAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "HireDate",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "HireDate",
         type = "Edm.DateTimeOffset")
-    org.apache.olingo.ext.proxy.api.Annotatable getHireDateAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getHireDateAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Salary",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Salary",
         type = "Edm.Single")
-    org.apache.olingo.ext.proxy.api.Annotatable getSalaryAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getSalaryAnnotations();
 
     @Override
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "PersonDetail",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForNavigationProperty(name = "PersonDetail",
         type = "ODataDemo.PersonDetail")
-    org.apache.olingo.ext.proxy.api.Annotatable getPersonDetailAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getPersonDetailAnnotations();
   }
 
 }

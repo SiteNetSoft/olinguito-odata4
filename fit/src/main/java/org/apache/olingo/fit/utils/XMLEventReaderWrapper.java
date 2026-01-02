@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.utils;
+package org.sitenetsoft.olinguito.fit.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -35,7 +35,7 @@ import static javax.xml.stream.XMLInputFactory.*;
 
 public class XMLEventReaderWrapper implements XMLEventReader {
 
-  private static final Charset ENCODING = Charset.forName(org.apache.olingo.commons.api.Constants.UTF8);
+  private static final Charset ENCODING = Charset.forName(org.sitenetsoft.olinguito.commons.api.Constants.UTF8);
 
   public final static String CONTENT = "CONTENT_TAG";
 

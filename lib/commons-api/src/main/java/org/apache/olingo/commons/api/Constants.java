@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api;
+package org.sitenetsoft.olinguito.commons.api;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
-import org.apache.olingo.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 
 /**
  * Constant values related to the OData protocol.

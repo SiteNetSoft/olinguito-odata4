@@ -20,5 +20,5 @@
  * Contains representations for all geographical related
  * EDM objects created during the URI parsing
  */
-package org.apache.olingo.commons.api.edm.geo;
+package org.sitenetsoft.olinguito.commons.api.edm.geo;
 

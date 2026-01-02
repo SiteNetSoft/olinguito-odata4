@@ -16,45 +16,45 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.uri.parser;
+package org.sitenetsoft.olinguito.server.core.uri.parser;
 
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmNavigationProperty;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
-import org.apache.olingo.commons.api.edm.EdmProperty;
-import org.apache.olingo.commons.api.edm.EdmStructuredType;
-import org.apache.olingo.commons.api.edm.constants.EdmTypeKind;
-import org.apache.olingo.commons.api.ex.ODataRuntimeException;
-import org.apache.olingo.commons.core.edm.primitivetype.EdmPrimitiveTypeFactory;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.uri.UriInfoKind;
-import org.apache.olingo.server.api.uri.UriResourceNavigation;
-import org.apache.olingo.server.api.uri.UriResourcePartTyped;
-import org.apache.olingo.server.api.uri.queryoption.AliasQueryOption;
-import org.apache.olingo.server.api.uri.queryoption.ExpandItem;
-import org.apache.olingo.server.api.uri.queryoption.ExpandOption;
-import org.apache.olingo.server.api.uri.queryoption.LevelsExpandOption;
-import org.apache.olingo.server.api.uri.queryoption.SystemQueryOption;
-import org.apache.olingo.server.api.uri.queryoption.SystemQueryOptionKind;
-import org.apache.olingo.server.core.uri.UriInfoImpl;
-import org.apache.olingo.server.core.uri.UriResourceComplexPropertyImpl;
-import org.apache.olingo.server.core.uri.UriResourceCountImpl;
-import org.apache.olingo.server.core.uri.UriResourceEntitySetImpl;
-import org.apache.olingo.server.core.uri.UriResourceNavigationPropertyImpl;
-import org.apache.olingo.server.core.uri.UriResourcePrimitivePropertyImpl;
-import org.apache.olingo.server.core.uri.UriResourceRefImpl;
-import org.apache.olingo.server.core.uri.parser.UriTokenizer.TokenKind;
-import org.apache.olingo.server.core.uri.queryoption.CountOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.ExpandItemImpl;
-import org.apache.olingo.server.core.uri.queryoption.ExpandOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.LevelsOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.SkipOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.TopOptionImpl;
-import org.apache.olingo.server.core.uri.queryoption.apply.DynamicStructuredType;
-import org.apache.olingo.server.core.uri.validator.UriValidationException;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmStructuredType;
+import org.sitenetsoft.olinguito.commons.api.edm.constants.EdmTypeKind;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
+import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmPrimitiveTypeFactory;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoKind;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceNavigation;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourcePartTyped;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.AliasQueryOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandItem;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.LevelsExpandOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SystemQueryOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SystemQueryOptionKind;
+import org.sitenetsoft.olinguito.server.core.uri.UriInfoImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceComplexPropertyImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceCountImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceEntitySetImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceNavigationPropertyImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourcePrimitivePropertyImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceRefImpl;
+import org.sitenetsoft.olinguito.server.core.uri.parser.UriTokenizer.TokenKind;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.CountOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.ExpandItemImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.ExpandOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.LevelsOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.SkipOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.TopOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.apply.DynamicStructuredType;
+import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidationException;
 
 public class ExpandParser {
 

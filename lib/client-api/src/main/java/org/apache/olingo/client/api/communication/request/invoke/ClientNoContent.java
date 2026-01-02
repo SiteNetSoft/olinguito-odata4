@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.communication.request.invoke;
+package org.sitenetsoft.olinguito.client.api.communication.request.invoke;
 
-import org.apache.olingo.client.api.domain.ClientInvokeResult;
+import org.sitenetsoft.olinguito.client.api.domain.ClientInvokeResult;
 
 /**
  * Marker class for invoke with no return type.

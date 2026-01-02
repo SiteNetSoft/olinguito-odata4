@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.opentype.opentypesservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.opentype.opentypesservice.types;
 
 import java.util.concurrent.Future;
 
-import org.apache.olingo.ext.proxy.api.annotations.Key;
+import org.sitenetsoft.olinguito.ext.proxy.api.annotations.Key;
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.OpenTypesServiceV4")
-@org.apache.olingo.ext.proxy.api.annotations.EntityType(name = "IndexedRow",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.OpenTypesServiceV4")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityType(name = "IndexedRow",
     openType = true,
     hasStream = false,
     isAbstract = false,
@@ -47,7 +47,7 @@ public interface IndexedRow extends Row {
 
   @Override
   @Key
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Id",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Id",
       type = "Edm.Guid",
       nullable = false,
       defaultValue = "",
@@ -78,9 +78,9 @@ public interface IndexedRow extends Row {
           Row.Annotations {
 
     @Override
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Id",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Id",
         type = "Edm.Guid")
-    org.apache.olingo.ext.proxy.api.Annotatable getIdAnnotations();
+    org.sitenetsoft.olinguito.ext.proxy.api.Annotatable getIdAnnotations();
 
   }
 

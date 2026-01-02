@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.ext.proxy.context;
+package org.sitenetsoft.olinguito.ext.proxy.context;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ClassUtils;
@@ -28,7 +28,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import java.io.Serializable;
 import java.net.URI;
 
-import org.apache.olingo.ext.proxy.api.EntityType;
+import org.sitenetsoft.olinguito.ext.proxy.api.EntityType;
 
 public class EntityUUID implements Serializable {
 

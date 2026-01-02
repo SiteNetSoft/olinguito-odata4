@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.api.uri.queryoption.search;
+package org.sitenetsoft.olinguito.server.api.uri.queryoption.search;
 
 public enum SearchUnaryOperatorKind {
   NOT;

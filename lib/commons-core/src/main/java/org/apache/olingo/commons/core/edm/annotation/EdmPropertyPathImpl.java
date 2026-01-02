@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.core.edm.annotation;
+package org.sitenetsoft.olinguito.commons.core.edm.annotation;
 
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.annotation.EdmPropertyPath;
-import org.apache.olingo.commons.api.edm.provider.annotation.CsdlPropertyPath;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmPropertyPath;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlPropertyPath;
 
 public class EdmPropertyPathImpl extends AbstractEdmDynamicExpression implements EdmPropertyPath {
 

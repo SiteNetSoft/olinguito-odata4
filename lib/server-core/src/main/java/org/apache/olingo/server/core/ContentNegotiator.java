@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core;
+package org.sitenetsoft.olinguito.server.core;
 
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Arrays;
@@ -26,14 +26,14 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.olingo.commons.api.format.AcceptCharset;
-import org.apache.olingo.commons.api.format.AcceptType;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.commons.api.http.HttpHeader;
-import org.apache.olingo.server.api.ODataRequest;
-import org.apache.olingo.server.api.serializer.CustomContentTypeSupport;
-import org.apache.olingo.server.api.serializer.RepresentationType;
-import org.apache.olingo.server.api.uri.queryoption.FormatOption;
+import org.sitenetsoft.olinguito.commons.api.format.AcceptCharset;
+import org.sitenetsoft.olinguito.commons.api.format.AcceptType;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.server.api.ODataRequest;
+import org.sitenetsoft.olinguito.server.api.serializer.CustomContentTypeSupport;
+import org.sitenetsoft.olinguito.server.api.serializer.RepresentationType;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.FormatOption;
 
 public final class ContentNegotiator {
 

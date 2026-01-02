@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.demo.odatademo;
+package org.sitenetsoft.olinguito.fit.proxy.demo.odatademo;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
 import java.io.InputStream;
@@ -24,17 +24,17 @@ import java.io.InputStream;
 // CHECKSTYLE:ON (Maven checkstyle)
 import java.io.Serializable;
 
-import org.apache.olingo.ext.proxy.api.ComplexCollection;
-import org.apache.olingo.ext.proxy.api.ComplexType;
-import org.apache.olingo.ext.proxy.api.EdmStreamValue;
-import org.apache.olingo.ext.proxy.api.EntityCollection;
-import org.apache.olingo.ext.proxy.api.EntityType;
-import org.apache.olingo.ext.proxy.api.OperationType;
-import org.apache.olingo.ext.proxy.api.PersistenceManager;
-import org.apache.olingo.ext.proxy.api.PrimitiveCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.ComplexCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.ComplexType;
+import org.sitenetsoft.olinguito.ext.proxy.api.EdmStreamValue;
+import org.sitenetsoft.olinguito.ext.proxy.api.EntityCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.EntityType;
+import org.sitenetsoft.olinguito.ext.proxy.api.OperationType;
+import org.sitenetsoft.olinguito.ext.proxy.api.PersistenceManager;
+import org.sitenetsoft.olinguito.ext.proxy.api.PrimitiveCollection;
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("ODataDemo")
-@org.apache.olingo.ext.proxy.api.annotations.EntityContainer(name = "DemoService",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("ODataDemo")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityContainer(name = "DemoService",
     namespace = "ODataDemo")
 public interface DemoService extends PersistenceManager {
 
@@ -54,12 +54,12 @@ public interface DemoService extends PersistenceManager {
 
   Operations operations();
 
-  public interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  public interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
 
-    @org.apache.olingo.ext.proxy.api.annotations.Operation(name = "IncreaseSalaries",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Operation(name = "IncreaseSalaries",
         type = OperationType.ACTION)
-    org.apache.olingo.ext.proxy.api.Invoker<Void> increaseSalaries(
-        @org.apache.olingo.ext.proxy.api.annotations.Parameter(name = "percentage", type = "Edm.Int32",
+    org.sitenetsoft.olinguito.ext.proxy.api.Invoker<Void> increaseSalaries(
+        @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Parameter(name = "percentage", type = "Edm.Int32",
             nullable = false) java.lang.Integer percentage
         );
 

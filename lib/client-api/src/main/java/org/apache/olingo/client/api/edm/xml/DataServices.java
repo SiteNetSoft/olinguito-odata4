@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.client.api.edm.xml;
+package org.sitenetsoft.olinguito.client.api.edm.xml;
 
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.provider.CsdlSchema;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlSchema;
 
 public interface DataServices {
 

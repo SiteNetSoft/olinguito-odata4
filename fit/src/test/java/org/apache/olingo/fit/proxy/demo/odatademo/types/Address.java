@@ -16,22 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.demo.odatademo.types;
+package org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.Annotatable;
+import org.sitenetsoft.olinguito.ext.proxy.api.Annotatable;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("ODataDemo")
-@org.apache.olingo.ext.proxy.api.annotations.ComplexType(name = "Address",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("ODataDemo")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.ComplexType(name = "Address",
     isOpenType = false,
     isAbstract = false)
 public interface Address
-    extends org.apache.olingo.ext.proxy.api.ComplexType<Address>,
-    org.apache.olingo.ext.proxy.api.StructuredQuery<Address> {
+    extends org.sitenetsoft.olinguito.ext.proxy.api.ComplexType<Address>,
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredQuery<Address> {
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Street",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Street",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -46,7 +46,7 @@ public interface Address
 
   void setStreet(java.lang.String _street);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "City",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "City",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -61,7 +61,7 @@ public interface Address
 
   void setCity(java.lang.String _city);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "State",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "State",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -76,7 +76,7 @@ public interface Address
 
   void setState(java.lang.String _state);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "ZipCode",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "ZipCode",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -91,7 +91,7 @@ public interface Address
 
   void setZipCode(java.lang.String _zipCode);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Country",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Country",
       type = "Edm.String",
       nullable = true,
       defaultValue = "",
@@ -110,23 +110,23 @@ public interface Address
 
   interface Annotations {
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Street",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Street",
         type = "Edm.String")
     Annotatable getStreetAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "City",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "City",
         type = "Edm.String")
     Annotatable getCityAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "State",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "State",
         type = "Edm.String")
     Annotatable getStateAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "ZipCode",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "ZipCode",
         type = "Edm.String")
     Annotatable getZipCodeAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Country",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Country",
         type = "Edm.String")
     Annotatable getCountryAnnotations();
 
@@ -134,7 +134,7 @@ public interface Address
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 }

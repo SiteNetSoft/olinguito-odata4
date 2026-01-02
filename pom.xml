@@ -585,7 +585,7 @@
                 </goals>
                 <configuration>
                   <excludePackageNames>
-                    org.apache.olingo.commons.core:org.apache.olingo.commons.core.*:org.apache.olingo.client.core:org.apache.olingo.client.core.*:org.apache.olingo.server.core:org.apache.olingo.server.core.*:org.apache.olingo.fit:org.apache.olingo.fit.*:org.apache.olingo.server.sample:org.apache.olingo.server.sample.*:org.apache.olingo.server.tecsvc:org.apache.olingo.server.tecsvc.*
+                    org.sitenetsoft.olinguito.commons.core:org.sitenetsoft.olinguito.commons.core.*:org.sitenetsoft.olinguito.client.core:org.sitenetsoft.olinguito.client.core.*:org.sitenetsoft.olinguito.server.core:org.sitenetsoft.olinguito.server.core.*:org.sitenetsoft.olinguito.fit:org.sitenetsoft.olinguito.fit.*:org.sitenetsoft.olinguito.server.sample:org.sitenetsoft.olinguito.server.sample.*:org.sitenetsoft.olinguito.server.tecsvc:org.sitenetsoft.olinguito.server.tecsvc.*
                   </excludePackageNames>
                   <additionalJOptions>
                     <additionalJOption>-quiet</additionalJOption>
@@ -593,19 +593,19 @@
                   <groups>
                     <group>
                       <title>OData Client</title>
-                      <packages>org.apache.olingo.client.api:org.apache.olingo.client.api.*</packages>
+                      <packages>org.sitenetsoft.olinguito.client.api:org.sitenetsoft.olinguito.client.api.*</packages>
                     </group>
                     <group>
                       <title>OData Client Proxy</title>
-                      <packages>org.apache.olingo.ext.proxy:org.apache.olingo.ext.proxy.*</packages>
+                      <packages>org.sitenetsoft.olinguito.ext.proxy:org.sitenetsoft.olinguito.ext.proxy.*</packages>
                     </group>
 					          <group>
                       <title>OData Server</title>
-                      <packages>org.apache.olingo.server.api:org.apache.olingo.server.api.*</packages>
+                      <packages>org.sitenetsoft.olinguito.server.api:org.sitenetsoft.olinguito.server.api.*</packages>
                     </group>
                     <group>
                       <title>OData Commons</title>
-                      <packages>org.apache.olingo.commons.api:org.apache.olingo.commons.api.*</packages>
+                      <packages>org.sitenetsoft.olinguito.commons.api:org.sitenetsoft.olinguito.commons.api.*</packages>
                     </group>
                   </groups>
                 </configuration>

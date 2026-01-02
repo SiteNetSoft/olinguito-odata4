@@ -16,51 +16,51 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core;
+package org.sitenetsoft.olinguito.server.core;
 
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.olingo.commons.api.constants.Constantsv00;
-import org.apache.olingo.commons.api.constants.Constantsv01;
-import org.apache.olingo.commons.api.IConstants;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveType;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
-import org.apache.olingo.commons.api.edm.provider.CsdlEdmProvider;
-import org.apache.olingo.commons.api.edmx.EdmxReference;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.commons.core.edm.primitivetype.EdmPrimitiveTypeFactory;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.ODataHandler;
-import org.apache.olingo.server.api.ODataHttpHandler;
-import org.apache.olingo.server.api.ServiceMetadata;
-import org.apache.olingo.server.api.debug.DebugResponseHelper;
-import org.apache.olingo.server.api.deserializer.DeserializerException;
-import org.apache.olingo.server.api.deserializer.FixedFormatDeserializer;
-import org.apache.olingo.server.api.deserializer.ODataDeserializer;
-import org.apache.olingo.server.api.etag.ETagHelper;
-import org.apache.olingo.server.api.etag.ServiceMetadataETagSupport;
-import org.apache.olingo.server.api.prefer.Preferences;
-import org.apache.olingo.server.api.serializer.EdmAssistedSerializer;
-import org.apache.olingo.server.api.serializer.EdmDeltaSerializer;
-import org.apache.olingo.server.api.serializer.FixedFormatSerializer;
-import org.apache.olingo.server.api.serializer.ODataSerializer;
-import org.apache.olingo.server.api.serializer.SerializerException;
-import org.apache.olingo.server.api.uri.UriHelper;
-import org.apache.olingo.server.core.debug.DebugResponseHelperImpl;
-import org.apache.olingo.server.core.debug.ServerCoreDebugger;
-import org.apache.olingo.server.core.deserializer.FixedFormatDeserializerImpl;
-import org.apache.olingo.server.core.deserializer.json.ODataJsonDeserializer;
-import org.apache.olingo.server.core.deserializer.xml.ODataXmlDeserializer;
-import org.apache.olingo.server.core.etag.ETagHelperImpl;
-import org.apache.olingo.server.core.prefer.PreferencesImpl;
-import org.apache.olingo.server.core.serializer.FixedFormatSerializerImpl;
-import org.apache.olingo.server.core.serializer.json.EdmAssistedJsonSerializer;
-import org.apache.olingo.server.core.serializer.json.ODataJsonSerializer;
-import org.apache.olingo.server.core.serializer.json.JsonDeltaSerializer;
-import org.apache.olingo.server.core.serializer.json.JsonDeltaSerializerWithNavigations;
-import org.apache.olingo.server.core.serializer.xml.ODataXmlSerializer;
-import org.apache.olingo.server.core.uri.UriHelperImpl;
+import org.sitenetsoft.olinguito.commons.api.constants.Constantsv00;
+import org.sitenetsoft.olinguito.commons.api.constants.Constantsv01;
+import org.sitenetsoft.olinguito.commons.api.IConstants;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEdmProvider;
+import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmPrimitiveTypeFactory;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ODataHandler;
+import org.sitenetsoft.olinguito.server.api.ODataHttpHandler;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.api.debug.DebugResponseHelper;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
+import org.sitenetsoft.olinguito.server.api.deserializer.FixedFormatDeserializer;
+import org.sitenetsoft.olinguito.server.api.deserializer.ODataDeserializer;
+import org.sitenetsoft.olinguito.server.api.etag.ETagHelper;
+import org.sitenetsoft.olinguito.server.api.etag.ServiceMetadataETagSupport;
+import org.sitenetsoft.olinguito.server.api.prefer.Preferences;
+import org.sitenetsoft.olinguito.server.api.serializer.EdmAssistedSerializer;
+import org.sitenetsoft.olinguito.server.api.serializer.EdmDeltaSerializer;
+import org.sitenetsoft.olinguito.server.api.serializer.FixedFormatSerializer;
+import org.sitenetsoft.olinguito.server.api.serializer.ODataSerializer;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
+import org.sitenetsoft.olinguito.server.api.uri.UriHelper;
+import org.sitenetsoft.olinguito.server.core.debug.DebugResponseHelperImpl;
+import org.sitenetsoft.olinguito.server.core.debug.ServerCoreDebugger;
+import org.sitenetsoft.olinguito.server.core.deserializer.FixedFormatDeserializerImpl;
+import org.sitenetsoft.olinguito.server.core.deserializer.json.ODataJsonDeserializer;
+import org.sitenetsoft.olinguito.server.core.deserializer.xml.ODataXmlDeserializer;
+import org.sitenetsoft.olinguito.server.core.etag.ETagHelperImpl;
+import org.sitenetsoft.olinguito.server.core.prefer.PreferencesImpl;
+import org.sitenetsoft.olinguito.server.core.serializer.FixedFormatSerializerImpl;
+import org.sitenetsoft.olinguito.server.core.serializer.json.EdmAssistedJsonSerializer;
+import org.sitenetsoft.olinguito.server.core.serializer.json.ODataJsonSerializer;
+import org.sitenetsoft.olinguito.server.core.serializer.json.JsonDeltaSerializer;
+import org.sitenetsoft.olinguito.server.core.serializer.json.JsonDeltaSerializerWithNavigations;
+import org.sitenetsoft.olinguito.server.core.serializer.xml.ODataXmlSerializer;
+import org.sitenetsoft.olinguito.server.core.uri.UriHelperImpl;
 
 public class ODataImpl extends OData {
 

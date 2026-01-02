@@ -16,25 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.demo.odatademo;
+package org.sitenetsoft.olinguito.fit.proxy.demo.odatademo;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.AbstractEntitySet;
-import org.apache.olingo.fit.proxy.demo.odatademo.types.PersonDetail;
-import org.apache.olingo.fit.proxy.demo.odatademo.types.PersonDetailCollection;
+import org.sitenetsoft.olinguito.ext.proxy.api.AbstractEntitySet;
+import org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types.PersonDetail;
+import org.sitenetsoft.olinguito.fit.proxy.demo.odatademo.types.PersonDetailCollection;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
-@org.apache.olingo.ext.proxy.api.annotations.EntitySet(name = "PersonDetails", container = "ODataDemo.DemoService")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntitySet(name = "PersonDetails", container = "ODataDemo.DemoService")
 public interface PersonDetails
     extends
-    org.apache.olingo.ext.proxy.api.EntitySet<PersonDetail, PersonDetailCollection>,
-    org.apache.olingo.ext.proxy.api.StructuredCollectionQuery<PersonDetails>,
+    org.sitenetsoft.olinguito.ext.proxy.api.EntitySet<PersonDetail, PersonDetailCollection>,
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredCollectionQuery<PersonDetails>,
     AbstractEntitySet<PersonDetail, java.lang.Integer, PersonDetailCollection> {
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 }

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.tecsvc.processor.queryoptions.expression.operation;
+package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operation;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -26,17 +26,17 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.olingo.commons.api.data.Property;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveType;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
-import org.apache.olingo.commons.api.edm.EdmType;
-import org.apache.olingo.commons.api.http.HttpStatusCode;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.ODataApplicationException;
-import org.apache.olingo.server.api.uri.queryoption.expression.BinaryOperatorKind;
-import org.apache.olingo.server.tecsvc.processor.queryoptions.expression.operand.TypedOperand;
-import org.apache.olingo.server.tecsvc.processor.queryoptions.expression.operand.VisitorOperand;
-import org.apache.olingo.server.tecsvc.processor.queryoptions.expression.primitive.EdmNull;
+import org.sitenetsoft.olinguito.commons.api.data.Property;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.BinaryOperatorKind;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operand.TypedOperand;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operand.VisitorOperand;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.primitive.EdmNull;
 
 public class BinaryOperator {
   private static final int MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;

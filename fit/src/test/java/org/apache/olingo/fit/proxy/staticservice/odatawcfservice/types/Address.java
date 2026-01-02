@@ -16,22 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.fit.proxy.staticservice.odatawcfservice.types;
+package org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types;
 
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.olingo.ext.proxy.api.Annotatable;
+import org.sitenetsoft.olinguito.ext.proxy.api.Annotatable;
 
 // CHECKSTYLE:ON (Maven checkstyle)
 
-@org.apache.olingo.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
-@org.apache.olingo.ext.proxy.api.annotations.ComplexType(name = "Address",
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.Namespace("Microsoft.Test.OData.Services.ODataWCFService")
+@org.sitenetsoft.olinguito.ext.proxy.api.annotations.ComplexType(name = "Address",
     isOpenType = false,
     isAbstract = false)
 public interface Address
-    extends org.apache.olingo.ext.proxy.api.ComplexType<Address>,
-    org.apache.olingo.ext.proxy.api.StructuredQuery<Address> {
+    extends org.sitenetsoft.olinguito.ext.proxy.api.ComplexType<Address>,
+    org.sitenetsoft.olinguito.ext.proxy.api.StructuredQuery<Address> {
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "Street",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "Street",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -46,7 +46,7 @@ public interface Address
 
   void setStreet(java.lang.String _street);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "City",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "City",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -61,7 +61,7 @@ public interface Address
 
   void setCity(java.lang.String _city);
 
-  @org.apache.olingo.ext.proxy.api.annotations.Property(name = "PostalCode",
+  @org.sitenetsoft.olinguito.ext.proxy.api.annotations.Property(name = "PostalCode",
       type = "Edm.String",
       nullable = false,
       defaultValue = "",
@@ -80,15 +80,15 @@ public interface Address
 
   interface Annotations {
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "Street",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "Street",
         type = "Edm.String")
     Annotatable getStreetAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "City",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "City",
         type = "Edm.String")
     Annotatable getCityAnnotations();
 
-    @org.apache.olingo.ext.proxy.api.annotations.AnnotationsForProperty(name = "PostalCode",
+    @org.sitenetsoft.olinguito.ext.proxy.api.annotations.AnnotationsForProperty(name = "PostalCode",
         type = "Edm.String")
     Annotatable getPostalCodeAnnotations();
 
@@ -96,7 +96,7 @@ public interface Address
 
   Operations operations();
 
-  interface Operations extends org.apache.olingo.ext.proxy.api.Operations {
+  interface Operations extends org.sitenetsoft.olinguito.ext.proxy.api.Operations {
     // No additional methods needed for now.
   }
 }

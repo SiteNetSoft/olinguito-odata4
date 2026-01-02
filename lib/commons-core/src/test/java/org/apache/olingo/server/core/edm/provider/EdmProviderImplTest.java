@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.server.core.edm.provider;
+package org.sitenetsoft.olinguito.server.core.edm.provider;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -30,26 +30,26 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.olingo.commons.api.ex.ODataException;
-import org.apache.olingo.commons.api.edm.Edm;
-import org.apache.olingo.commons.api.edm.EdmAnnotations;
-import org.apache.olingo.commons.api.edm.EdmComplexType;
-import org.apache.olingo.commons.api.edm.EdmEntityContainer;
-import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.commons.api.edm.EdmEnumType;
-import org.apache.olingo.commons.api.edm.EdmException;
-import org.apache.olingo.commons.api.edm.EdmTypeDefinition;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.edm.provider.CsdlAliasInfo;
-import org.apache.olingo.commons.api.edm.provider.CsdlAnnotations;
-import org.apache.olingo.commons.api.edm.provider.CsdlComplexType;
-import org.apache.olingo.commons.api.edm.provider.CsdlEdmProvider;
-import org.apache.olingo.commons.api.edm.provider.CsdlEntityContainerInfo;
-import org.apache.olingo.commons.api.edm.provider.CsdlEntityType;
-import org.apache.olingo.commons.api.edm.provider.CsdlEnumType;
-import org.apache.olingo.commons.api.edm.provider.CsdlPropertyRef;
-import org.apache.olingo.commons.api.edm.provider.CsdlTypeDefinition;
-import org.apache.olingo.commons.core.edm.EdmProviderImpl;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmAnnotations;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmComplexType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEnumType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmException;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmTypeDefinition;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAliasInfo;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotations;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlComplexType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEdmProvider;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityContainerInfo;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEnumType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlPropertyRef;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlTypeDefinition;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -133,34 +133,34 @@ public class EdmProviderImplTest {
       localEdm.getUnboundAction(fqn);
       fail("Expeced an EdmException");
     } catch (EdmException e) {
-      assertEquals("org.apache.olingo.commons.api.ex.ODataException: msg", e.getMessage());
+      assertEquals("org.sitenetsoft.olinguito.commons.api.ex.ODataException: msg", e.getMessage());
     }
 
     try {
       localEdm.getUnboundFunction(fqn, null);
       fail("Expeced an EdmException");
     } catch (EdmException e) {
-      assertEquals("org.apache.olingo.commons.api.ex.ODataException: msg", e.getMessage());
+      assertEquals("org.sitenetsoft.olinguito.commons.api.ex.ODataException: msg", e.getMessage());
     }
     try {
       localEdm.getBoundAction(fqn, fqn, true);
       fail("Expeced an EdmException");
     } catch (EdmException e) {
-      assertEquals("org.apache.olingo.commons.api.ex.ODataException: msg", e.getMessage());
+      assertEquals("org.sitenetsoft.olinguito.commons.api.ex.ODataException: msg", e.getMessage());
     }
 
     try {
       localEdm.getBoundFunction(fqn, fqn, true, null);
       fail("Expeced an EdmException");
     } catch (EdmException e) {
-      assertEquals("org.apache.olingo.commons.api.ex.ODataException: msg", e.getMessage());
+      assertEquals("org.sitenetsoft.olinguito.commons.api.ex.ODataException: msg", e.getMessage());
     }
 
     try {
       localEdm.getAnnotationGroup(fqn, null);
       fail("Expeced an EdmException");
     } catch (EdmException e) {
-      assertEquals("org.apache.olingo.commons.api.ex.ODataException: msg", e.getMessage());
+      assertEquals("org.sitenetsoft.olinguito.commons.api.ex.ODataException: msg", e.getMessage());
     }
   }
 

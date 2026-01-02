@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.olingo.commons.api.edm;
+package org.sitenetsoft.olinguito.commons.api.edm;
 
 /**
  * EdmPrimitiveType is a primitive type as defined in the Entity Data Model (EDM).
