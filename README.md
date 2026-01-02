@@ -1,6 +1,6 @@
 # SiteNetSoft Olinguito — OData V4
 <p align="center">
-  <img src="./assets/olinguito.png" style="width: 250px;"/>
+  <img src="./assets/olinguito.png" style="width: 350px;"/>
 </p>
 Based on Apache Olingo, a Java library and extensions around the OData specification.
 
