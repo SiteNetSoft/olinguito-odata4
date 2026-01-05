@@ -51,7 +51,7 @@
 
   <profiles>
     <profile>
-      <id>apache-release</id>
+      <id>release-docs</id>
       <activation>
         <activeByDefault>false</activeByDefault>
       </activation>

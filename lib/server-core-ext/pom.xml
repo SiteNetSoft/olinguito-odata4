@@ -99,7 +99,7 @@
        <groupId>org.apache.maven.plugins</groupId>
        <artifactId>maven-deploy-plugin</artifactId>
         <configuration>
-          <skip>${olingo.deploy.skip}</skip>
+          <skip>${deploy.skip}</skip>
         </configuration>
       </plugin>
     </plugins>
