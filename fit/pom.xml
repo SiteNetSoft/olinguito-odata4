@@ -170,7 +170,7 @@
       <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-server-tecsvc</artifactId>
       <version>${project.version}</version>
-      <type>war</type>
+      <classifier>classes</classifier>
       <scope>test</scope>
       <exclusions>
         <exclusion>

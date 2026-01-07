@@ -1382,7 +1382,9 @@ public class Services {
   private void normalizeAtomEntry(final Entity entry, final String entitySetName, final String entityKey) {
     final EntitySet entitySet = metadata.getEntitySet(entitySetName);
     final EntityType entityType = metadata.getEntityOrComplexType(entitySet.getType());
-    for (Map.Entry<String, org.sitenetsoft.olinguito.fit.metadata.Property> property : entityType.getPropertyMap().entrySet()) {
+    for (
+            Map.Entry<String, org.sitenetsoft.olinguito.fit.metadata.Property> property :
+            entityType.getPropertyMap().entrySet()) {
       if (entry.getProperty(property.getKey()) == null && property.getValue().isNullable()) {
         final Property prop = new Property();
         prop.setName(property.getKey());

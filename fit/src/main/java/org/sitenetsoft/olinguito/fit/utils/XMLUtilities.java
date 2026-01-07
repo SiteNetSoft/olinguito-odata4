@@ -57,7 +57,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
-import org.sitenetsoft.olinguito.commons.api.Constants;
 import org.sitenetsoft.olinguito.fit.metadata.Metadata;
 import org.sitenetsoft.olinguito.fit.metadata.NavigationProperty;
 
@@ -383,7 +382,7 @@ public class XMLUtilities extends AbstractUtilities {
     final XMLElement res = new XMLElement();
     res.setStart(start);
 
-    final Charset encoding = Charset.forName(Constants.UTF8);
+    final Charset encoding = Charset.forName(org.sitenetsoft.olinguito.commons.api.Constants.UTF8);
     final ByteArrayOutputStream content = new ByteArrayOutputStream();
     final OutputStreamWriter writer = new OutputStreamWriter(content, encoding);
 
