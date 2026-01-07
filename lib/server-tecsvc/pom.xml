@@ -61,11 +61,14 @@
         <artifactId>maven-jar-plugin</artifactId>
         <executions>
           <execution>
-            <id>make-a-jar</id>
-            <phase>compile</phase>
+            <id>attach-classes-jar</id>
+            <phase>package</phase>
             <goals>
               <goal>jar</goal>
             </goals>
+            <configuration>
+              <classifier>classes</classifier>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -75,27 +78,6 @@
         <configuration>
           <skip>true</skip>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-install-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>install</phase>
-            <goals>
-              <goal>install-file</goal>
-            </goals>
-            <configuration>
-              <packaging>jar</packaging>
-              <artifactId>${project.artifactId}</artifactId>
-              <groupId>${project.groupId}</groupId>
-              <version>${project.version}</version>
-              <file>
-                ${project.build.directory}/${project.artifactId}-${project.version}.jar
-              </file>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>com.keyboardsamurais.maven</groupId>

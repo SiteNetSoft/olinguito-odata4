@@ -30,13 +30,12 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
 import org.apache.commons.io.IOUtils;
-import org.sitenetsoft.olinguito.commons.api.Constants;
 
 import static javax.xml.stream.XMLInputFactory.*;
 
 public class XMLEventReaderWrapper implements XMLEventReader {
 
-  private static final Charset ENCODING = Charset.forName(Constants.UTF8);
+  private static final Charset ENCODING = Charset.forName(org.sitenetsoft.olinguito.commons.api.Constants.UTF8);
 
   public final static String CONTENT = "CONTENT_TAG";
 
