@@ -28,7 +28,7 @@ import org.sitenetsoft.olinguito.server.api.serializer.CustomContentTypeSupport;
 /**
  * Handles HTTP requests as OData requests.
  */
-public interface ODataHttpHandler extends ODataHandler {
+public interface ODataHttpHandler extends ODataRequestHandler {
 
   /**
    * <p>Processes a HttpServletRequest as an OData request.</p>

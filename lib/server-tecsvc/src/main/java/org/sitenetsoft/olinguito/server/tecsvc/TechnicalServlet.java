@@ -32,7 +32,7 @@ import jakarta.servlet.http.HttpSession;
 import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
 import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReferenceInclude;
 import org.sitenetsoft.olinguito.server.api.OData;
-import org.sitenetsoft.olinguito.server.api.ODataHttpHandler;
+import org.sitenetsoft.olinguito.server.api.ODataRequestHandler;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 import org.sitenetsoft.olinguito.server.api.debug.DefaultDebugSupport;
 import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider;
@@ -41,6 +41,9 @@ import org.sitenetsoft.olinguito.server.tecsvc.processor.TechnicalBatchProcessor
 import org.sitenetsoft.olinguito.server.tecsvc.processor.TechnicalEntityProcessor;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.TechnicalPrimitiveComplexProcessor;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
+import org.sitenetsoft.olinguito.server.adapter.servlet.ODataServletHandler;
+import org.sitenetsoft.olinguito.server.adapter.servlet.ServletODataAdapter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,17 +82,20 @@ public class TechnicalServlet extends HttpServlet {
         LOG.info("Created new data provider.");
       }
 
-      ODataHttpHandler handler = odata.createHandler(serviceMetadata);
+      //ODataHttpHandler handler = odata.createHandler(serviceMetadata);
+      ODataRequestHandler core = odata.createHandler(serviceMetadata);
+      ODataServletHandler servlet = new ServletODataAdapter(core);
       // Register processors.
-      handler.register(new TechnicalEntityProcessor(dataProvider, serviceMetadata));
-      handler.register(new TechnicalPrimitiveComplexProcessor(dataProvider, serviceMetadata));
-      handler.register(new TechnicalActionProcessor(dataProvider, serviceMetadata));
-      handler.register(new TechnicalBatchProcessor(dataProvider));
+      core.register(new TechnicalEntityProcessor(dataProvider, serviceMetadata));
+      core.register(new TechnicalPrimitiveComplexProcessor(dataProvider, serviceMetadata));
+      core.register(new TechnicalActionProcessor(dataProvider, serviceMetadata));
+      core.register(new TechnicalBatchProcessor(dataProvider));
       // Register helpers.
-      handler.register(new ETagSupport());
-      handler.register(new DefaultDebugSupport());
+      core.register(new ETagSupport());
+      core.register(new DefaultDebugSupport());
       // Process the request.
-      handler.process(request, response);
+      //handler.process(request, response);
+      servlet.process(request, response);
     } catch (final RuntimeException e) {
       LOG.error("Server Error", e);
       throw new ServletException(e);

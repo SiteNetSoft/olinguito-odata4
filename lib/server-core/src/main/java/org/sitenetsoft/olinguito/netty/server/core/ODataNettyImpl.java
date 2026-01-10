@@ -31,7 +31,7 @@ import org.sitenetsoft.olinguito.netty.server.api.ODataNetty;
 import org.sitenetsoft.olinguito.netty.server.api.ODataNettyHandler;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.ODataHandler;
-import org.sitenetsoft.olinguito.server.api.ODataHttpHandler;
+import org.sitenetsoft.olinguito.server.api.ODataRequestHandler;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 import org.sitenetsoft.olinguito.server.api.debug.DebugResponseHelper;
 import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
@@ -94,7 +94,7 @@ public class ODataNettyImpl extends ODataNetty {
   }
 
   @Override
-  public ODataHttpHandler createHandler(ServiceMetadata serviceMetadata) {
+  public ODataRequestHandler createHandler(ServiceMetadata serviceMetadata) {
     return odata.createHandler(serviceMetadata);
   }
 

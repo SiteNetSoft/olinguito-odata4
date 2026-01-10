@@ -184,8 +184,8 @@ public class ODataImpl extends OData {
   }
 
   @Override
-  public ODataHttpHandler createHandler(final ServiceMetadata serviceMetadata) {
-    return new ODataHttpHandlerImpl(this, serviceMetadata);
+  public ODataRequestHandlerImpl createHandler(final ServiceMetadata serviceMetadata) {
+    return new ODataRequestHandlerImpl(this, serviceMetadata);
   }
 
   @Override

@@ -35,6 +35,7 @@
   </parent>
 
   <modules>
+    <module>server-adapter-servlet</module>
     <module>commons-api</module>
     <module>commons-core</module>
     <module>client-api</module>

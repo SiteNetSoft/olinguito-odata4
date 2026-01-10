@@ -47,6 +47,7 @@ import org.sitenetsoft.olinguito.server.core.ODataExceptionHelper;
 import org.sitenetsoft.olinguito.server.core.ODataHandlerException;
 import org.sitenetsoft.olinguito.server.core.ODataHandlerImpl;
 import org.sitenetsoft.olinguito.server.core.debug.ServerCoreDebugger;
+import org.sitenetsoft.olinguito.server.api.OlingoExtension;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
@@ -63,7 +64,7 @@ public class ODataNettyHandlerImpl implements ODataNettyHandler {
 
   private final ODataHandlerImpl handler;
   private final ServerCoreDebugger debugger;
-  
+
   private static final String CONTEXT_PATH = "contextPath";
   private static final String SPLIT = "split";
 
@@ -73,7 +74,7 @@ public class ODataNettyHandlerImpl implements ODataNettyHandler {
     debugger = new ServerCoreDebugger(odata);
     handler = new ODataHandlerImpl(odata, serviceMetadata, debugger);
   }
-  
+
   private ODataResponse handleException(final ODataRequest odRequest, final Exception e) {
     ODataResponse resp = new ODataResponse();
     ODataServerError serverError;
@@ -87,7 +88,7 @@ public class ODataNettyHandlerImpl implements ODataNettyHandler {
     handler.handleException(odRequest, resp, serverError, e);
     return resp;
   }
-  
+
   /**
    * Convert the OData Response to Netty Response
    * @param response
@@ -108,7 +109,7 @@ public class ODataNettyHandlerImpl implements ODataNettyHandler {
 	      writeContent(odResponse, response);
 	    }
 	  }
-  
+
   /**
    * Write the odata content to netty response content
    * @param odataResponse
@@ -118,12 +119,12 @@ public class ODataNettyHandlerImpl implements ODataNettyHandler {
     ODataContent res = odataResponse.getODataContent();
     res.write(Channels.newChannel(new ByteBufOutputStream(((HttpContent)response).content())));
   }
-  
+
   static void copyContent(final InputStream inputStream, final HttpResponse response) {
 	    copyContent(Channels.newChannel(inputStream), response);
 	  }
 
-  /** 
+  /**
    * Copy OData content to netty content
    * @param input
    * @param response
@@ -153,7 +154,7 @@ public class ODataNettyHandlerImpl implements ODataNettyHandler {
       }
     }
   }
-  
+
   /**
    * Extract the information part of Netty Request and fill OData Request
    * @param odRequest
@@ -170,7 +171,7 @@ public class ODataNettyHandlerImpl implements ODataNettyHandler {
 	    	ByteBuf byteBuf = ((HttpContent)httpRequest).content();
 	    	ByteBufInputStream inputStream = new ByteBufInputStream(byteBuf);
 	      odRequest.setBody(inputStream);
-	      
+
 	      odRequest.setProtocol(httpRequest.protocolVersion().text());
 	      odRequest.setMethod(extractMethod(httpRequest));
 	      int innerHandle = debugger.startRuntimeMeasurement("ODataNettyHandlerImpl", "copyHeaders");
@@ -185,15 +186,15 @@ public class ODataNettyHandlerImpl implements ODataNettyHandler {
 	      debugger.stopRuntimeMeasurement(requestHandle);
 	    }
 	  }
-  
+
   static HttpMethod extractMethod(final HttpRequest httpRequest) throws ODataLibraryException {
     final HttpMethod httpRequestMethod;
     	try {
     	      httpRequestMethod = HttpMethod.valueOf(httpRequest.method().name());
     	    } catch (IllegalArgumentException e) {
-    	      throw new ODataHandlerException("HTTP method not allowed" + 
+    	      throw new ODataHandlerException("HTTP method not allowed" +
     	    httpRequest.method().name(), e,
-    	          ODataHandlerException.MessageKeys.HTTP_METHOD_NOT_ALLOWED, 
+    	          ODataHandlerException.MessageKeys.HTTP_METHOD_NOT_ALLOWED,
     	          httpRequest.method().name());
     	    }
     	try {
@@ -220,9 +221,9 @@ public class ODataNettyHandlerImpl implements ODataNettyHandler {
   	        return httpRequestMethod;
   	      }
   	    } catch (IllegalArgumentException e) {
-  	      throw new ODataHandlerException("Invalid HTTP method" + 
+  	      throw new ODataHandlerException("Invalid HTTP method" +
   	    httpRequest.method().name(), e,
-  	          ODataHandlerException.MessageKeys.INVALID_HTTP_METHOD, 
+  	          ODataHandlerException.MessageKeys.INVALID_HTTP_METHOD,
   	          httpRequest.method().name());
   	    }
   }
@@ -234,7 +235,7 @@ public class ODataNettyHandlerImpl implements ODataNettyHandler {
    * @param split
    * @param contextPath
    */
-  static void fillUriInformationFromHttpRequest(final ODataRequest odRequest, final HttpRequest httpRequest, 
+  static void fillUriInformationFromHttpRequest(final ODataRequest odRequest, final HttpRequest httpRequest,
 		  final int split, final String contextPath) {
 	    String rawRequestUri = httpRequest.uri();
 	    if (rawRequestUri.indexOf("?") != -1) {
@@ -294,20 +295,20 @@ public class ODataNettyHandlerImpl implements ODataNettyHandler {
 	      odRequest.addHeader(headerName, headerValues);
 	  }
   }
-  
+
 @SuppressWarnings("unused")
 @Override
-public void processNettyRequest(HttpRequest request, HttpResponse response, 
+public void processNettyRequest(HttpRequest request, HttpResponse response,
 		Map<String, String> requestParameters) {
 	  ODataRequest odRequest = new ODataRequest();
     Exception exception = null;
     ODataResponse odResponse;
-    
-    final int processMethodHandle = 
+
+    final int processMethodHandle =
     		debugger.startRuntimeMeasurement("ODataNettyHandlerImpl", "process");
     try {
-      fillODataRequest(odRequest, request, 
-          requestParameters.get(SPLIT) != null? Integer.parseInt(requestParameters.get(SPLIT)) : split, 
+      fillODataRequest(odRequest, request,
+          requestParameters.get(SPLIT) != null? Integer.parseInt(requestParameters.get(SPLIT)) : split,
               requestParameters.get(CONTEXT_PATH));
 
       odResponse = process(odRequest);
@@ -321,12 +322,23 @@ public void processNettyRequest(HttpRequest request, HttpResponse response,
     convertToHttp(response, odResponse);
   }
 
-  public ODataResponse process(ODataRequest request) {
-    return handler.process(request);
-  }
+	@Override
+	public ODataResponse process(ODataRequest request) {
+		return handler.process(request);
+	}
 
-  @Override
-  public void register(Processor processor) {
-    handler.register(processor);
-  }
+	@Override
+	public void register(Processor processor) {
+		handler.register(processor);
+	}
+
+	@Override
+	public void setSplit(final int split) {
+		this.split = split;
+	}
+
+	@Override
+	public void register(final OlingoExtension extension) {
+		handler.register(extension);
+	}
 }

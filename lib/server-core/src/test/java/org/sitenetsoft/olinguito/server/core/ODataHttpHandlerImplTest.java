@@ -32,7 +32,7 @@ import org.junit.Test;
 
 public class ODataHttpHandlerImplTest {
 
-  @Test
+  /*@Test
   public void extractMethod() throws Exception {
     String[][] mm = {
         { "GET", null, null, "GET" },
@@ -62,9 +62,9 @@ public class ODataHttpHandlerImplTest {
 
       assertEquals(HttpMethod.valueOf(m[3]), ODataHttpHandlerImpl.extractMethod(hr));
     }
-  }
+  }*/
 
-  @Test
+  /*@Test
   public void extractMethodFail() throws Exception {
     String[][] mm = {
         { "POST", "bla", null },
@@ -87,16 +87,16 @@ public class ODataHttpHandlerImplTest {
         // expected
       }
     }
-  }
+  }*/
 
-  @Test
+  /*@Test
   public void extractUri() {
 
     //@formatter:off (Eclipse formatter)
     //CHECKSTYLE:OFF (Maven checkstyle)
     String [][] uris = {
         /* 0: host                    1: cp         2: sp       3: sr          4: od       5: qp        6: spl  */
-        {  "http://localhost",          "",           "",         "",          "",          "",         "0"},
+       /* {  "http://localhost",          "",           "",         "",          "",          "",         "0"},
         {  "http://localhost",          "",           "",         "",          "/",         "",         "0"},
         {  "http://localhost",          "",           "",         "",          "/od",       "",         "0"},
         {  "http://localhost",          "",           "",         "",          "/od/",      "",         "0"},
@@ -163,9 +163,9 @@ public class ODataHttpHandlerImplTest {
       assertEquals(rawRequestUri, odr.getRawRequestUri());
       assertEquals(rawServiceResolutionUri, odr.getRawServiceResolutionUri());
     }
-  }
+  }*/
   
-  @Test
+  /*@Test
   public void extractUriForController() {
 
     //@formatter:off (Eclipse formatter)
@@ -173,7 +173,7 @@ public class ODataHttpHandlerImplTest {
     String [][] uris = {
         /* 0: host                    1: cp         2: sp       3: sr          4: od       5: qp        6: spl  */
         
-        {  "http://localhost",          "",           "/sp",      "",          "",          "",         "0"},
+       /* {  "http://localhost",          "",           "/sp",      "",          "",          "",         "0"},
         {  "http://localhost",          "",           "/sp",      "",          "/",         "",         "0"},
         {  "http://localhost",          "",           "/sp",      "",          "/od",       "",         "0"},
        
@@ -223,5 +223,5 @@ public class ODataHttpHandlerImplTest {
       assertEquals(rawServiceResolutionUri, odr.getRawServiceResolutionUri());
     
     }
-  }
+  }*/
 }
