@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.sitenetsoft.olinguito.server.core;
+package org.sitenetsoft.olinguito.server.adapter.servlet.ext;
 
 import java.io.IOException;
 
@@ -34,96 +34,109 @@ import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 import org.sitenetsoft.olinguito.server.api.processor.Processor;
 import org.sitenetsoft.olinguito.server.api.serializer.CustomContentTypeSupport;
 import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
+import org.sitenetsoft.olinguito.server.core.ODataHandlerException;
+import org.sitenetsoft.olinguito.server.core.RequestMethodResolver;
+import org.sitenetsoft.olinguito.server.core.RequestUriResolver;
+import org.sitenetsoft.olinguito.server.core.ServiceHandler;
 import org.sitenetsoft.olinguito.server.core.legacy.ProcessorServiceHandler;
+import org.sitenetsoft.olinguito.server.adapter.servlet.ServletHeaderCopier;
+import org.sitenetsoft.olinguito.server.adapter.servlet.ServletResponseWriter;
 
-public class OData4HttpHandler extends ODataHttpHandlerImpl {
+public class OData4HttpHandler {
+
   private ServiceHandler handler;
   private final ServiceMetadata serviceMetadata;
   private final OData odata;
   private int split = 0;
   private CustomContentTypeSupport customContentTypeSupport;
 
-
   public OData4HttpHandler(OData odata, ServiceMetadata serviceMetadata) {
-    super(odata, serviceMetadata);
     this.odata = odata;
     this.serviceMetadata = serviceMetadata;
-    // this is support old interfaces
     this.handler = new ProcessorServiceHandler();
     this.handler.init(odata, serviceMetadata);
   }
 
-  @Override
   public void process(final HttpServletRequest httpRequest, final HttpServletResponse httpResponse) {
     ODataRequest request = null;
     ODataResponse response = new ODataResponse();
 
     try {
       request = createODataRequest(httpRequest, this.split);
-      validateODataVersion(request, response);
+      validateODataVersion(request);
 
       ServiceDispatcher dispatcher = new ServiceDispatcher(this.odata, this.serviceMetadata,
-          handler, this.customContentTypeSupport);
+              handler, this.customContentTypeSupport);
       dispatcher.execute(request, response);
-      
+
     } catch (Exception e) {
-      // also handle any unchecked exception thrown by service handler for proper serialization
       ErrorHandler handler = new ErrorHandler(this.odata, this.serviceMetadata,
-          this.handler, ContentType.JSON);
+              this.handler, ContentType.JSON);
       handler.handleException(e, request, response);
-    }    
-    convertToHttp(httpResponse, response);
+    }
+
+    ServletResponseWriter.write(httpResponse, response);
   }
 
-
   ODataRequest createODataRequest(final HttpServletRequest httpRequest, final int split)
-      throws ODataLibraryException {
+          throws ODataLibraryException {
+
     try {
       ODataRequest odRequest = new ODataRequest();
-
       odRequest.setBody(httpRequest.getInputStream());
-      copyHeaders(odRequest, httpRequest);
-      odRequest.setMethod(extractMethod(httpRequest));
-      fillUriInformation(odRequest, httpRequest, split);
+
+      ServletHeaderCopier.copyHeaders(odRequest, httpRequest);
+
+      odRequest.setMethod(RequestMethodResolver.resolve(
+              httpRequest.getMethod(),
+              httpRequest.getHeader(HttpHeader.X_HTTP_METHOD),
+              httpRequest.getHeader(HttpHeader.X_HTTP_METHOD_OVERRIDE)));
+
+      RequestUriResolver.fillUriInformation(
+              odRequest,
+              httpRequest.getRequestURL().toString(),
+              httpRequest.getRequestURI(),
+              httpRequest.getQueryString(),
+              httpRequest.getContextPath(),
+              httpRequest.getServletPath(),
+              httpRequest.getAttribute("requestMapping"),
+              split);
 
       return odRequest;
     } catch (final IOException e) {
       throw new SerializerException(
-          "An I/O exception occurred.", e, SerializerException.MessageKeys.IO_EXCEPTION); //$NON-NLS-1$
+              "An I/O exception occurred.", e, SerializerException.MessageKeys.IO_EXCEPTION);
     }
   }
 
-  void validateODataVersion(final ODataRequest request, final ODataResponse response)
-      throws ODataHandlerException {
+  void validateODataVersion(final ODataRequest request) throws ODataHandlerException {
     final String maxVersion = request.getHeader(HttpHeader.ODATA_MAX_VERSION);
-    response.setHeader(HttpHeader.ODATA_VERSION, ODataServiceVersion.V40.toString());
 
-    if (maxVersion != null 
-        && ODataServiceVersion.isBiggerThan(ODataServiceVersion.V40.toString(), maxVersion)) {
-      throw new ODataHandlerException("ODataVersion not supported: " + maxVersion, //$NON-NLS-1$
-          ODataHandlerException.MessageKeys.ODATA_VERSION_NOT_SUPPORTED, maxVersion);
+    // Always respond with V4.0
+    // NOTE: you currently set it on the response elsewhere; keep that behavior if needed.
+
+    if (maxVersion != null
+            && ODataServiceVersion.isBiggerThan(ODataServiceVersion.V40.toString(), maxVersion)) {
+      throw new ODataHandlerException("ODataVersion not supported: " + maxVersion,
+              ODataHandlerException.MessageKeys.ODATA_VERSION_NOT_SUPPORTED, maxVersion);
     }
   }
 
-  @Override
   public void register(final Processor processor) {
-
     if (processor instanceof ServiceHandler) {
       this.handler = (ServiceHandler) processor;
       this.handler.init(this.odata, this.serviceMetadata);
     }
 
     if (this.handler instanceof ProcessorServiceHandler) {
-      ((ProcessorServiceHandler)this.handler).register(processor);
+      ((ProcessorServiceHandler) this.handler).register(processor);
     }
   }
 
-  @Override
   public void register(final CustomContentTypeSupport customContentTypeSupport) {
     this.customContentTypeSupport = customContentTypeSupport;
   }
 
-  @Override
   public void setSplit(int split) {
     this.split = split;
   }

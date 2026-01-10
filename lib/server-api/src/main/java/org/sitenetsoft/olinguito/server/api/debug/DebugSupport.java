@@ -20,11 +20,12 @@ package org.sitenetsoft.olinguito.server.api.debug;
 
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.ODataResponse;
+import org.sitenetsoft.olinguito.server.api.OlingoExtension;
 
 /**
  * Register this interface to add debug support to your service.
  */
-public interface DebugSupport {
+public interface DebugSupport extends OlingoExtension {
 
   String ODATA_DEBUG_QUERY_PARAMETER = "odata-debug";
   String ODATA_DEBUG_JSON = "json";

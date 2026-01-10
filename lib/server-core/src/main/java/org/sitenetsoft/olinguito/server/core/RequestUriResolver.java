@@ -1,0 +1,68 @@
+package org.sitenetsoft.olinguito.server.core;
+
+import org.sitenetsoft.olinguito.server.api.ODataRequest;
+
+public final class RequestUriResolver {
+
+    private static final String REQUESTMAPPING = "requestMapping";
+
+    private RequestUriResolver() {}
+
+    public static void fillUriInformation(
+            final ODataRequest odRequest,
+            final String requestUrl,
+            final String requestUri,
+            final String queryString,
+            final String contextPath,
+            final String servletPath,
+            final Object requestMappingAttr,
+            final int split) {
+
+        String rawRequestUri = requestUrl;
+
+        String rawServiceResolutionUri = null;
+        String rawODataPath;
+
+        // Spring controller case: requestMapping attribute provided by app
+        if (requestMappingAttr != null) {
+            String requestMapping = requestMappingAttr.toString();
+            rawServiceResolutionUri = requestMapping;
+            int beginIndex = rawRequestUri.indexOf(requestMapping) + requestMapping.length();
+            rawODataPath = rawRequestUri.substring(beginIndex);
+
+        } else if (servletPath != null && !"".equals(servletPath)) {
+            int beginIndex = rawRequestUri.indexOf(servletPath) + servletPath.length();
+            rawODataPath = rawRequestUri.substring(beginIndex);
+
+        } else if (contextPath != null && !"".equals(contextPath)) {
+            int beginIndex = rawRequestUri.indexOf(contextPath) + contextPath.length();
+            rawODataPath = rawRequestUri.substring(beginIndex);
+
+        } else {
+            rawODataPath = requestUri;
+        }
+
+        if (split > 0) {
+            rawServiceResolutionUri = rawODataPath;
+            for (int i = 0; i < split; i++) {
+                int index = rawODataPath.indexOf('/', 1);
+                if (-1 == index) {
+                    rawODataPath = "";
+                    break;
+                } else {
+                    rawODataPath = rawODataPath.substring(index);
+                }
+            }
+            int end = rawServiceResolutionUri.length() - rawODataPath.length();
+            rawServiceResolutionUri = rawServiceResolutionUri.substring(0, end);
+        }
+
+        String rawBaseUri = rawRequestUri.substring(0, rawRequestUri.length() - rawODataPath.length());
+
+        odRequest.setRawQueryPath(queryString);
+        odRequest.setRawRequestUri(rawRequestUri + (queryString == null ? "" : "?" + queryString));
+        odRequest.setRawODataPath(rawODataPath);
+        odRequest.setRawBaseUri(rawBaseUri);
+        odRequest.setRawServiceResolutionUri(rawServiceResolutionUri);
+    }
+}

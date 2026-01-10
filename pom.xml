@@ -57,6 +57,7 @@
 
   <url>https://sitenetsoft.org/projects/olinguito.html</url>
 
+  <!-- Source: https://github.com/apache/maven-apache-parent -->
   <parent>
     <groupId>org.apache</groupId>
     <artifactId>apache</artifactId>

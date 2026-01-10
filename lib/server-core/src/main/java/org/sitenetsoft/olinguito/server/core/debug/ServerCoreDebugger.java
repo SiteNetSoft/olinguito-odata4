@@ -25,8 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
@@ -52,17 +50,38 @@ public class ServerCoreDebugger {
     this.odata = odata;
   }
 
-  public void resolveDebugMode(final HttpServletRequest request) {
+  public void resolveDebugMode(final boolean debugMode) {
+    if (!debugMode) {
+      isDebugMode = false;
+      return;
+    }
     if (debugSupport != null) {
-      // Should we read the parameter from the servlet here and ignore multiple parameters?
-      debugFormat = request.getParameter(DebugSupport.ODATA_DEBUG_QUERY_PARAMETER);
-      if (debugFormat != null) {
-        debugSupport.init(odata);
-        isDebugMode = debugSupport.isUserAuthorized();
-      }
+      debugSupport.init(odata);
+      isDebugMode = debugSupport.isUserAuthorized();
     }
   }
-  
+
+  public void resolveDebugMode(final String debugParam) {
+    if (debugSupportProcessor == null) {
+      debugMode = false;
+      return;
+    }
+    if (debugParam == null) {
+      debugMode = false;
+      return;
+    }
+    if (!debugSupportProcessor.isUserAuthorized()) {
+      debugMode = false;
+      return;
+    }
+    debugMode = DebugSupport.ODATA_DEBUG_JSON.equals(debugParam)
+            || DebugSupport.ODATA_DEBUG_HTML.equals(debugParam);
+  }
+
+  public void resolveDebugMode(final HttpServletRequest request) {
+    resolveDebugMode(request.getParameter(DebugSupport.ODATA_DEBUG_QUERY_PARAMETER));
+  }
+
   public ODataResponse createDebugResponse(final ODataRequest request, final ODataResponse response,
       final Exception exception, final UriInfo uriInfo, final Map<String, String> serverEnvironmentVariables) {
     // Failsafe so we do not generate unauthorized debug messages

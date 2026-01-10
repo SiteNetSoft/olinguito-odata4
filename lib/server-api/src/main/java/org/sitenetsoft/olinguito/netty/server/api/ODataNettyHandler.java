@@ -20,12 +20,13 @@ package org.sitenetsoft.olinguito.netty.server.api;
 
 import java.util.Map;
 
+import org.sitenetsoft.olinguito.server.api.ODataRequestHandler;
 import org.sitenetsoft.olinguito.server.api.processor.Processor;
 
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 
-public interface ODataNettyHandler {
+public interface ODataNettyHandler extends ODataRequestHandler {
 
   /**
    * <p>Processes a NettyRequest as an OData request.</p>
