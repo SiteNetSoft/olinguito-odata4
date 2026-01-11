@@ -20,7 +20,7 @@ package org.sitenetsoft.olinguito.server.core;
 
 import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
 import org.sitenetsoft.olinguito.server.api.OData;
-import org.sitenetsoft.olinguito.server.api.ODataHttpHandler;
+import org.sitenetsoft.olinguito.server.api.ODataRequestHandler;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 
 public class OData4Impl extends ODataImpl {
@@ -39,7 +39,7 @@ public class OData4Impl extends ODataImpl {
   }
 
   @Override
-  public ODataHttpHandler createHandler(final ServiceMetadata serviceMetadata) {
-    return new OData4HttpHandler(this, serviceMetadata);
+  public ODataRequestHandler createHandler(final ServiceMetadata serviceMetadata) {
+    return new ODataRequestHandlerImpl(this, serviceMetadata);
   }
 }

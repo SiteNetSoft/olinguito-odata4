@@ -42,10 +42,11 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.junit.Assert;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.sitenetsoft.olinguito.commons.core.Encoder;
+import org.sitenetsoft.olinguito.server.adapter.servlet.OData4HttpHandler;
 import org.sitenetsoft.olinguito.server.api.OData;
-import org.sitenetsoft.olinguito.server.api.ODataHttpHandler;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 import org.sitenetsoft.olinguito.server.core.requests.ActionRequest;
 import org.sitenetsoft.olinguito.server.core.requests.DataRequest;
@@ -84,7 +85,9 @@ public class ServiceDispatcherTest {
         throws IOException {
       OData odata = OData4Impl.newInstance();
 
-      ODataHttpHandler handler = odata.createHandler(this.metadata);
+      //ODataHttpHandler handler = odata.createHandler(this.metadata);
+
+      OData4HttpHandler handler = new OData4HttpHandler(odata, metadata);
 
       handler.register(this.handler);
       handler.process(request, response);
@@ -194,7 +197,7 @@ public class ServiceDispatcherTest {
         // Need getName on ContextURL class
         // assertEquals("",
         // request.getContextURL(request.getOdata()).getName());
-        assertEquals("application/json;odata.metadata=minimal", request.getResponseContentType()
+        Assert.assertEquals("application/json;odata.metadata=minimal", request.getResponseContentType()
             .toContentTypeString());
       }
     });
@@ -214,7 +217,7 @@ public class ServiceDispatcherTest {
         // Need getName on ContextURL class
         // assertEquals("",
         // request.getContextURL(request.getOdata()).getName());
-        assertEquals("text/plain", request.getResponseContentType().toContentTypeString());
+        Assert.assertEquals("text/plain", request.getResponseContentType().toContentTypeString());
       }
     });
   }
@@ -230,8 +233,8 @@ public class ServiceDispatcherTest {
         Mockito.verify(handler).read(arg1.capture(), arg2.capture());
 
         DataRequest request = arg1.getValue();
-        assertEquals(1, request.getUriResourceEntitySet().getKeyPredicates().size());
-        assertEquals("application/json;odata.metadata=minimal", request.getResponseContentType()
+        Assert.assertEquals(1, request.getUriResourceEntitySet().getKeyPredicates().size());
+        Assert.assertEquals("application/json;odata.metadata=minimal", request.getResponseContentType()
             .toContentTypeString());
       }
     });
@@ -248,10 +251,10 @@ public class ServiceDispatcherTest {
         Mockito.verify(handler).read(arg1.capture(), arg2.capture());
 
         DataRequest request = arg1.getValue();
-        assertTrue(request.isPropertyRequest());
-        assertFalse(request.isPropertyComplex());
-        assertEquals(1, request.getUriResourceEntitySet().getKeyPredicates().size());
-        assertEquals("application/json;odata.metadata=minimal", request.getResponseContentType()
+        Assert.assertTrue(request.isPropertyRequest());
+        Assert.assertFalse(request.isPropertyComplex());
+        Assert.assertEquals(1, request.getUriResourceEntitySet().getKeyPredicates().size());
+        Assert.assertEquals("application/json;odata.metadata=minimal", request.getResponseContentType()
             .toContentTypeString());
       }
     });
@@ -268,10 +271,10 @@ public class ServiceDispatcherTest {
         Mockito.verify(handler).read(arg1.capture(), arg2.capture());
 
         DataRequest request = arg1.getValue();
-        assertTrue(request.isPropertyRequest());
-        assertTrue(request.isPropertyComplex());
-        assertEquals(1, request.getUriResourceEntitySet().getKeyPredicates().size());
-        assertEquals("application/json;odata.metadata=minimal", request.getResponseContentType()
+        Assert.assertTrue(request.isPropertyRequest());
+        Assert.assertTrue(request.isPropertyComplex());
+        Assert.assertEquals(1, request.getUriResourceEntitySet().getKeyPredicates().size());
+        Assert.assertEquals("application/json;odata.metadata=minimal", request.getResponseContentType()
             .toContentTypeString());
       }
     });
@@ -289,10 +292,10 @@ public class ServiceDispatcherTest {
         Mockito.verify(handler).read(arg1.capture(), arg2.capture());
 
         DataRequest request = arg1.getValue();
-        assertTrue(request.isPropertyRequest());
-        assertFalse(request.isPropertyComplex());
-        assertEquals(1, request.getUriResourceEntitySet().getKeyPredicates().size());
-        assertEquals("text/plain", request.getResponseContentType().toContentTypeString());
+        Assert.assertTrue(request.isPropertyRequest());
+        Assert.assertFalse(request.isPropertyComplex());
+        Assert.assertEquals(1, request.getUriResourceEntitySet().getKeyPredicates().size());
+        Assert.assertEquals("text/plain", request.getResponseContentType().toContentTypeString());
       }
     });
   }
@@ -309,10 +312,10 @@ public class ServiceDispatcherTest {
         Mockito.verify(handler).read(arg1.capture(), arg2.capture());
 
         DataRequest request = arg1.getValue();
-        assertTrue(request.isPropertyRequest());
-        assertFalse(request.isPropertyComplex());
-        assertEquals(1, request.getUriResourceEntitySet().getKeyPredicates().size());
-        assertEquals("text/plain", request.getResponseContentType().toContentTypeString());
+        Assert.assertTrue(request.isPropertyRequest());
+        Assert.assertFalse(request.isPropertyComplex());
+        Assert.assertEquals(1, request.getUriResourceEntitySet().getKeyPredicates().size());
+        Assert.assertEquals("text/plain", request.getResponseContentType().toContentTypeString());
       }
     });
   }
@@ -359,7 +362,7 @@ public class ServiceDispatcherTest {
         Mockito.verify(handler).readMediaStream(arg1.capture(), arg2.capture());
 
         MediaRequest request = arg1.getValue();
-        assertEquals("application/octet-stream", request.getResponseContentType()
+        Assert.assertEquals("application/octet-stream", request.getResponseContentType()
             .toContentTypeString());
       }
     });
@@ -376,7 +379,7 @@ public class ServiceDispatcherTest {
         Mockito.verify(handler).read(arg1.capture(), arg2.capture());
 
         DataRequest request = arg1.getValue();
-        assertEquals("application/json;odata.metadata=minimal", request.getResponseContentType()
+        Assert.assertEquals("application/json;odata.metadata=minimal", request.getResponseContentType()
             .toContentTypeString());
       }
     });
@@ -393,7 +396,7 @@ public class ServiceDispatcherTest {
         Mockito.verify(handler).read(arg1.capture(), arg2.capture());
 
         DataRequest request = arg1.getValue();
-        assertEquals("application/json;odata.metadata=minimal", request.getResponseContentType()
+        Assert.assertEquals("application/json;odata.metadata=minimal", request.getResponseContentType()
             .toContentTypeString());
       }
     });
@@ -417,7 +420,7 @@ public class ServiceDispatcherTest {
                 arg4.capture());
 
             DataRequest request = arg1.getValue();
-            assertEquals("application/json;odata.metadata=minimal", request
+            Assert.assertEquals("application/json;odata.metadata=minimal", request
                 .getResponseContentType().toContentTypeString());
           }
         });
@@ -441,7 +444,7 @@ public class ServiceDispatcherTest {
                 arg4.capture());
 
             DataRequest request = arg1.getValue();
-            assertEquals("application/json;odata.metadata=minimal", request
+            Assert.assertEquals("application/json;odata.metadata=minimal", request
                 .getResponseContentType().toContentTypeString());
           }
         });
@@ -459,7 +462,7 @@ public class ServiceDispatcherTest {
         Mockito.verify(handler).read(arg1.capture(), arg2.capture());
 
         DataRequest request = arg1.getValue();
-        assertEquals("application/json;odata.metadata=minimal", request.getResponseContentType()
+        Assert.assertEquals("application/json;odata.metadata=minimal", request.getResponseContentType()
             .toContentTypeString());
       }
     });

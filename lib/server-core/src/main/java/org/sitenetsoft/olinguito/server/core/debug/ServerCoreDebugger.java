@@ -58,28 +58,33 @@ public class ServerCoreDebugger {
     if (debugSupport != null) {
       debugSupport.init(odata);
       isDebugMode = debugSupport.isUserAuthorized();
+    } else {
+      isDebugMode = false;
     }
   }
 
   public void resolveDebugMode(final String debugParam) {
-    if (debugSupportProcessor == null) {
-      debugMode = false;
+    if (debugSupport == null) {
+      isDebugMode = false;
       return;
     }
     if (debugParam == null) {
-      debugMode = false;
+      isDebugMode = false;
       return;
     }
-    if (!debugSupportProcessor.isUserAuthorized()) {
-      debugMode = false;
-      return;
-    }
-    debugMode = DebugSupport.ODATA_DEBUG_JSON.equals(debugParam)
-            || DebugSupport.ODATA_DEBUG_HTML.equals(debugParam);
-  }
 
-  public void resolveDebugMode(final HttpServletRequest request) {
-    resolveDebugMode(request.getParameter(DebugSupport.ODATA_DEBUG_QUERY_PARAMETER));
+    // Only enable debug if requested AND user authorized
+    boolean requested =
+            DebugSupport.ODATA_DEBUG_JSON.equals(debugParam)
+                    || DebugSupport.ODATA_DEBUG_HTML.equals(debugParam);
+
+    if (!requested) {
+      isDebugMode = false;
+      return;
+    }
+
+    debugSupport.init(odata);
+    isDebugMode = debugSupport.isUserAuthorized();
   }
 
   public ODataResponse createDebugResponse(final ODataRequest request, final ODataResponse response,

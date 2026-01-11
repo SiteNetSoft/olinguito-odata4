@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.sitenetsoft.olinguito.server.adapter.servlet.ext;
+package org.sitenetsoft.olinguito.server.adapter.servlet;
 
 import java.io.IOException;
 
@@ -34,13 +34,8 @@ import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 import org.sitenetsoft.olinguito.server.api.processor.Processor;
 import org.sitenetsoft.olinguito.server.api.serializer.CustomContentTypeSupport;
 import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
-import org.sitenetsoft.olinguito.server.core.ODataHandlerException;
-import org.sitenetsoft.olinguito.server.core.RequestMethodResolver;
-import org.sitenetsoft.olinguito.server.core.RequestUriResolver;
-import org.sitenetsoft.olinguito.server.core.ServiceHandler;
+import org.sitenetsoft.olinguito.server.core.*;
 import org.sitenetsoft.olinguito.server.core.legacy.ProcessorServiceHandler;
-import org.sitenetsoft.olinguito.server.adapter.servlet.ServletHeaderCopier;
-import org.sitenetsoft.olinguito.server.adapter.servlet.ServletResponseWriter;
 
 public class OData4HttpHandler {
 
