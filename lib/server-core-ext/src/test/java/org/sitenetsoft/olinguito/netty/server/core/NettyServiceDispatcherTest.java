@@ -24,10 +24,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.sitenetsoft.olinguito.commons.api.edm.constants.EdmTypeKind;
@@ -62,8 +62,15 @@ public class NettyServiceDispatcherTest {
     parser.parseAnnotations(true);
     parser.useLocalCoreVocabularies(true);
     parser.implicitlyLoadCoreVocabularies(true);
-    metadata = parser.buildServiceMetadata(new FileReader("src/test/resources/trippin.xml"));    
-    provider = parser.buildEdmProvider(new FileReader("src/test/resources/trippin.xml"));
+
+    InputStream in = getClass().getClassLoader().getResourceAsStream("trippin.xml");
+    assertNotNull(in);
+
+    metadata = parser.buildServiceMetadata(new InputStreamReader(in, StandardCharsets.UTF_8));
+    provider  = parser.buildEdmProvider(new InputStreamReader(
+            Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("trippin.xml")),
+            StandardCharsets.UTF_8
+    ));
   }
 
   @Test

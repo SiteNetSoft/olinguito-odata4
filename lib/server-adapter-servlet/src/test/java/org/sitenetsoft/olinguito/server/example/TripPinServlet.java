@@ -20,6 +20,9 @@ package org.sitenetsoft.olinguito.server.example;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
@@ -28,11 +31,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamException;
 
+import org.sitenetsoft.olinguito.server.adapter.servlet.OData4HttpHandler;
 import org.sitenetsoft.olinguito.server.api.OData;
-import org.sitenetsoft.olinguito.server.api.ODataHttpHandler;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 import org.sitenetsoft.olinguito.server.core.MetadataParser;
 import org.sitenetsoft.olinguito.server.core.OData4Impl;
+
+import static org.junit.Assert.assertNotNull;
 
 public class TripPinServlet extends HttpServlet {
   private static final long serialVersionUID = 2663595419366214401L;
@@ -53,12 +58,16 @@ public class TripPinServlet extends HttpServlet {
       parser.parseAnnotations(true);
       parser.useLocalCoreVocabularies(true);
       parser.implicitlyLoadCoreVocabularies(true);
-      metadata = parser.buildServiceMetadata(new FileReader("src/test/resources/trippin.xml"));
+
+      InputStream in = getClass().getClassLoader().getResourceAsStream("trippin.xml");
+      assertNotNull("trippin.xml not found on test classpath", in);
+
+      metadata = parser.buildServiceMetadata(new InputStreamReader(in, StandardCharsets.UTF_8));
     } catch (XMLStreamException e) {
       throw new IOException(e);
     }
 
-    ODataHttpHandler handler = odata.createHandler(metadata);
+    OData4HttpHandler handler = new OData4HttpHandler(odata, metadata);
 
     if (this.dataModel == null) {
       try {
