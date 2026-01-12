@@ -18,14 +18,9 @@
  */
 package org.sitenetsoft.olinguito.server.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -66,6 +61,8 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
+import static org.junit.Assert.*;
+
 public class ServiceDispatcherTest {
   private static final int TOMCAT_PORT = 9900;
   private Tomcat tomcat = new Tomcat();
@@ -99,7 +96,10 @@ public class ServiceDispatcherTest {
     parser.parseAnnotations(true);
     parser.useLocalCoreVocabularies(true);
     parser.implicitlyLoadCoreVocabularies(true);
-    ServiceMetadata metadata = parser.buildServiceMetadata(new FileReader("src/test/resources/trippin.xml"));
+
+    InputStream in = getClass().getClassLoader().getResourceAsStream("trippin.xml");
+    assertNotNull("trippin.xml not found on test classpath", in);
+    ServiceMetadata metadata = parser.buildServiceMetadata(new InputStreamReader(in, StandardCharsets.UTF_8));
 
     File baseDir = new File(System.getProperty("java.io.tmpdir"));
     tomcat.setBaseDir(baseDir.getAbsolutePath());
