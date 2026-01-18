@@ -18,8 +18,6 @@
  */
 package org.sitenetsoft.olinguito.server.example;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URI;
@@ -62,10 +60,23 @@ public class TripPinDataModel {
   private Map<Integer, Map<String,Object>> tripLinks = new HashMap<Integer, Map<String,Object>>();
   private Map<String, Map<String,Object>> peopleLinks = new HashMap<String, Map<String,Object>>();
   private Map<Integer, Map<String, Object>> flightLinks = new HashMap<Integer, Map<String, Object>>();
+  private static final String BASE = "trippin/";
 
   public TripPinDataModel(ServiceMetadata metadata) throws Exception {
     this.metadata = metadata;
     loadData();
+  }
+
+  private InputStream resource(String name) throws FileNotFoundException {
+    InputStream in = TripPinDataModel.class.getClassLoader().getResourceAsStream(name);
+    if (in == null) {
+      throw new FileNotFoundException(name + " not found on classpath");
+    }
+    return in;
+  }
+
+  private InputStream resourceLowerJson(String entitySetName) throws FileNotFoundException {
+    return resource(BASE + entitySetName.toLowerCase() + ".json");
   }
 
   @SuppressWarnings("unchecked")
@@ -92,22 +103,19 @@ public class TripPinDataModel {
     this.entitySetMap.put("Event", loadEnities("Event", type));
 
     ObjectMapper mapper = new ObjectMapper();
-    Map<String, List<Object>> tripLinks = mapper.readValue(new FileInputStream(new File(
-        "src/test/resources/trip-links.json")), Map.class);
+    Map<String, List<Object>> tripLinks = mapper.readValue(resource("trippin/trip-links.json"), Map.class);
     for (Object link : tripLinks.get("value")) {
       Map<String, Object> map = (Map<String, Object>) link;
       this.tripLinks.put((Integer) map.get("TripId"), map);
     }
 
-    Map<String, List<Object>> peopleLinks = mapper.readValue(new FileInputStream(new File(
-        "src/test/resources/people-links.json")), Map.class);
+    Map<String, List<Object>> peopleLinks = mapper.readValue(resource("trippin/people-links.json"), Map.class);
     for (Object link : peopleLinks.get("value")) {
       Map<String, Object> map = (Map<String, Object>) link;
       this.peopleLinks.put((String) map.get("UserName"), map);
     }
 
-    Map<String, List<Object>> flightLinks = mapper.readValue(new FileInputStream(new File(
-        "src/test/resources/flight-links.json")), Map.class);
+    Map<String, List<Object>> flightLinks = mapper.readValue(resource("trippin/flight-links.json"), Map.class);
     for (Object link : flightLinks.get("value")) {
       Map<String, Object> map = (Map<String, Object>) link;
       this.flightLinks.put((Integer) map.get("PlanItemId"), map);
@@ -118,8 +126,9 @@ public class TripPinDataModel {
     try {
       ODataJsonDeserializer deserializer = new ODataJsonDeserializer(ContentType.JSON, this.metadata);
 
-      EntityCollection set = deserializer.entityCollection(new FileInputStream(new File(
-          "src/test/resources/" + entitySetName.toLowerCase() + ".json")), type).getEntityCollection();
+      EntityCollection set = deserializer
+              .entityCollection(resourceLowerJson(entitySetName), type)
+              .getEntityCollection();
       // TODO: the count needs to be part of deserializer
       set.setCount(set.getEntities().size());
       for (Entity entity : set.getEntities()) {
@@ -857,7 +866,7 @@ public class TripPinDataModel {
   public InputStream readMedia(Entity entity) throws ODataApplicationException {
     checkForMedia(entity);
     try {
-      return new FileInputStream(new File("src/test/resources/OlingoOrangeTM.png"));
+      return resource("trippin/OlingoOrangeTM.png");
     } catch (FileNotFoundException e) {
       throw new ODataApplicationException("image not found", 500, Locale.getDefault());
     }

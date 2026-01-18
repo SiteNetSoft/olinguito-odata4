@@ -80,6 +80,11 @@
 			<artifactId>odata-commons-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.sitenetsoft.olinguito</groupId>
+			<artifactId>server-adapter-servlet</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.slf4j</groupId>

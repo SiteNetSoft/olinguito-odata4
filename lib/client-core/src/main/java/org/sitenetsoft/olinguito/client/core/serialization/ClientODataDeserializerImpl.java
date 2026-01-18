@@ -219,17 +219,22 @@ public class ClientODataDeserializerImpl implements ClientODataDeserializer {
     }
   }
 
-  @Override
-  public List<CsdlSchema> fetchTermDefinitionSchema(List<InputStream> input) {
-    List<CsdlSchema> schemas = new ArrayList<>();
-    try {
-      for (InputStream stream : input) {
-        ClientCsdlEdmx edmx = getXmlMapper().readValue(stream, ClientCsdlEdmx.class);
-        schemas.addAll(edmx.getDataServices().getSchemas());
-      }
-      return schemas;
-    } catch (Exception e) {
-      throw new IllegalArgumentException("Could not parse Term definition", e);
+    @Override
+    public List<CsdlSchema> fetchTermDefinitionSchema(List<InputStream> input) {
+        List<CsdlSchema> schemas = new ArrayList<>();
+        try {
+            int i = 0;
+            for (InputStream stream : input) {
+                if (stream == null) {
+                    throw new IllegalArgumentException("Term definition InputStream is null at index " + i);
+                }
+                ClientCsdlEdmx edmx = getXmlMapper().readValue(stream, ClientCsdlEdmx.class);
+                schemas.addAll(edmx.getDataServices().getSchemas());
+                i++;
+            }
+            return schemas;
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Could not parse Term definition", e);
+        }
     }
-  }
 }

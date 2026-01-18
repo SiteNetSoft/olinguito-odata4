@@ -63,12 +63,12 @@ public class NettyServiceDispatcherTest {
     parser.useLocalCoreVocabularies(true);
     parser.implicitlyLoadCoreVocabularies(true);
 
-    InputStream in = getClass().getClassLoader().getResourceAsStream("trippin.xml");
-    assertNotNull(in);
+    InputStream in = getClass().getClassLoader().getResourceAsStream("trippin/trippin.xml");
+    assertNotNull("trippin/trippin.xml not found on test classpath", in);
 
     metadata = parser.buildServiceMetadata(new InputStreamReader(in, StandardCharsets.UTF_8));
     provider  = parser.buildEdmProvider(new InputStreamReader(
-            Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("trippin.xml")),
+            Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("trippin/trippin.xml")),
             StandardCharsets.UTF_8
     ));
   }

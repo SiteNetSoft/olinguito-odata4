@@ -74,9 +74,12 @@ public class TomcatTestServer {
     try {
       LOG.trace("Start tomcat embedded server from main()");
       server = TomcatTestServer.init(9180)
+              .addTecsvcWebApp(true)
           .addStaticContent("/stub/StaticService/V40/OpenType.svc/$metadata", "V40/openTypeMetadata.xml")
           .addStaticContent("/stub/StaticService/V40/Demo.svc/$metadata", "V40/demoMetadata.xml")
           .addStaticContent("/stub/StaticService/V40/Static.svc/$metadata", "V40/metadata.xml");
+
+      server.enableLogging(Level.ALL);
 
       boolean keepRunning = false;
       for (String param : params) {
@@ -165,6 +168,28 @@ public class TomcatTestServer {
     private final File resourceDir;
     private TomcatTestServer server;
     private Properties properties;
+
+    public TestServerBuilder addTecsvcWebApp(final boolean copy) throws IOException {
+      File tecsvcDir = new File("lib/server-tecsvc/target/odata-server-tecsvc-5.0.1-SNAPSHOT");
+      if (!tecsvcDir.exists()) {
+        throw new RuntimeException("tecsvc webapp dir not found: " + tecsvcDir.getAbsolutePath()
+                + " (build module odata-server-tecsvc first)");
+      }
+
+      final File webAppDir;
+      if (copy) {
+        webAppDir = new File(baseDir, tecsvcDir.getName());
+        FileUtils.deleteDirectory(webAppDir);
+        FileUtils.copyDirectory(tecsvcDir, webAppDir);
+      } else {
+        webAppDir = tecsvcDir;
+      }
+
+      String contextPath = "/odata-server-tecsvc";
+      Context ctx = tomcat.addWebapp(tomcat.getHost(), contextPath, webAppDir.getAbsolutePath());
+      LOG.info("Tecsvc webapp {} at context {}.", webAppDir.getName(), contextPath);
+      return this;
+    }
 
     private TestServerBuilder(final int fixedPort) {
       initializeProperties();

@@ -23,7 +23,7 @@
  * Afterwards the Processor which matches the return type is called.
  * Example: If a primitive property is requested by the URI we will call the
  * PrimitiveProcessor.readPrimitive method.</p>
- * <p>Processors can be registered at the {@link org.sitenetsoft.olinguito.server.api.ODataHttpHandler} object.
+ * <p>Processors can be registered at the {@link org.sitenetsoft.olinguito.server.api.ODataRequestHandler} object.
  * Per default the {@link org.sitenetsoft.olinguito.server.api.processor.DefaultProcessor} is registered
  * to perform basic functionality like delivering the metadata and service documents, respectively,
  * as well as rendering an OData error.
