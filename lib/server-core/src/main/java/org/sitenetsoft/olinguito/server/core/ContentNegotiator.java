@@ -49,7 +49,7 @@ public final class ContentNegotiator {
       Collections.unmodifiableList(Arrays.asList(
           ContentType.JSON,
           ContentType.JSON_NO_METADATA,
-          ContentType.APPLICATION_JSON,
+          //ContentType.APPLICATION_JSON,
           ContentType.JSON_FULL_METADATA,
           ContentType.APPLICATION_ATOM_XML,
           ContentType.APPLICATION_XML));
@@ -175,6 +175,10 @@ public final class ContentNegotiator {
             requestedContentType.toContentTypeString());
       }
     }
+
+    if (representationType != RepresentationType.METADATA) {
+      result = normalizeJson(result);
+    }
     return result;
   }
   
@@ -214,7 +218,7 @@ public final class ContentNegotiator {
       return JSON.equalsIgnoreCase(formatString) ? ContentType.JSON :
           XML.equalsIgnoreCase(formatString) ? ContentType.APPLICATION_XML :
               ATOM.equalsIgnoreCase(formatString) ? ContentType.APPLICATION_ATOM_XML : 
-                APPLICATION_JSON.equalsIgnoreCase(formatString)? ContentType.APPLICATION_JSON: null;
+                APPLICATION_JSON.equalsIgnoreCase(formatString)? ContentType.JSON: null;
     }
   }
 
@@ -298,5 +302,23 @@ public final class ContentNegotiator {
       }
     }
     return false;
+  }
+
+  private static ContentType normalizeJson(ContentType type) {
+    if (type == null) {
+      return null;
+    }
+
+    // ContentType.getType() is typically "application", not "application/json".
+    boolean isJson =
+            "application".equalsIgnoreCase(type.getType())
+                    && "json".equalsIgnoreCase(type.getSubtype());
+
+    if (isJson && !type.getParameters().containsKey("odata.metadata")) {
+      // No explicit odata.metadata param -> default to minimal
+      return ContentType.JSON;
+    }
+
+    return type;
   }
 }

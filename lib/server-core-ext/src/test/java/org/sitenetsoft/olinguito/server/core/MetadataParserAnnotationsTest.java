@@ -23,6 +23,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
@@ -62,7 +65,9 @@ public class MetadataParserAnnotationsTest {
     MetadataParser parser = new MetadataParser();
     parser.parseAnnotations(true);
     parser.useLocalCoreVocabularies(true);
-    provider = (CsdlEdmProvider) parser.buildEdmProvider(new FileReader("src/test/resources/annotations.xml"));
+    InputStream in = getClass().getClassLoader().getResourceAsStream("annotations.xml");
+    assertNotNull("annotations.xml not found on test classpath", in);
+    provider = (CsdlEdmProvider) parser.buildEdmProvider(new InputStreamReader(in, StandardCharsets.UTF_8));
   }
 
   CsdlAnnotation annotation(String term) throws ODataException {

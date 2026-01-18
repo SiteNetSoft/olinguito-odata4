@@ -178,6 +178,15 @@ public class ODataReaderImpl implements ODataReader {
 
   @Override
   public Edm readMetadata(InputStream input, List<InputStream> termDefinitions) {
+    if (termDefinitions == null) {
+      throw new IllegalArgumentException("termDefinitions list is null");
+    }
+    for (int i = 0; i < termDefinitions.size(); i++) {
+      if (termDefinitions.get(i) == null) {
+        throw new IllegalArgumentException("termDefinitions[" + i + "] is null (resource not found) ");
+      }
+    }
+    System.out.println(termDefinitions);
     return readMetadata(client.getDeserializer(ContentType.APPLICATION_XML).toMetadata(input).getSchemaByNsOrAlias(),
         client.getDeserializer(ContentType.APPLICATION_XML).fetchTermDefinitionSchema(termDefinitions));
   }

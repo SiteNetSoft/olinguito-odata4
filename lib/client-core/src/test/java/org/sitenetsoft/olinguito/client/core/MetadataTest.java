@@ -795,20 +795,59 @@ public class MetadataTest extends AbstractTest {
    assertEquals(2, navProp.getAnnotations().size());
    assertEquals("AdditionalInfo", navProp.getAnnotations().get(0).getTerm().getName());
  }
- 
- private Edm fetchEdm() {
-   List<InputStream> streams = new ArrayList<InputStream>();
-   streams.add(getClass().getResourceAsStream("annotations.xml"));
-   streams.add(getClass().getResourceAsStream("VOC_Core.xml"));
-   streams.add(getClass().getResourceAsStream("UI.xml"));
-   streams.add(getClass().getResourceAsStream("Capabilities.xml"));
-   streams.add(getClass().getResourceAsStream("Integration.xml"));
-   final Edm edm = client.getReader().readMetadata(getClass().getResourceAsStream("$metadata.xml"),
-       streams);
-   return edm;
- }
- 
- @Test
+
+  /*private static InputStream res(String path) {
+    InputStream in = MetadataTest.class.getResourceAsStream(path);
+    System.out.println(path + " -> " + (in == null ? "NULL" : "OK"));
+    return in;
+  }
+
+  private Edm fetchEdm() {
+    List<InputStream> streams = new ArrayList<>();
+
+    // these files are in org/sitenetsoft/olinguito/client/core/
+    streams.add(getClass().getResourceAsStream("annotations.xml"));
+    streams.add(getClass().getResourceAsStream("VOC_Core.xml"));
+    streams.add(getClass().getResourceAsStream("UI.xml"));
+    streams.add(getClass().getResourceAsStream("Capabilities.xml"));
+    streams.add(getClass().getResourceAsStream("Integration.xml"));
+
+    InputStream metadata = getClass().getResourceAsStream("$metadata.xml");
+
+    // fail fast with a better message before ODataReaderImpl throws
+    if (metadata == null) throw new IllegalStateException("$metadata.xml not found");
+    for (int i = 0; i < streams.size(); i++) {
+      if (streams.get(i) == null) throw new IllegalStateException("termDefinitions[" + i + "] not found");
+    }
+
+    return client.getReader().readMetadata(metadata, streams);
+  }*/
+
+  private static InputStream res(String name) {
+    InputStream in = MetadataTest.class.getResourceAsStream(name);
+    if (in == null) {
+      // relative to org/sitenetsoft/olinguito/client/core/
+      throw new IllegalStateException("Missing test resource: " + name
+              + " (expected next to " + MetadataTest.class.getName() + ")");
+    }
+    return in;
+  }
+
+  private Edm fetchEdm() {
+    InputStream metadata = res("$metadata.xml");
+
+    List<InputStream> termDefs = List.of(
+            res("annotations.xml"),
+            res("VOC_Core.xml"),
+            res("UI.xml"),
+            res("Capabilities.xml"),
+            res("Integration.xml")
+    );
+
+    return client.getReader().readMetadata(metadata, termDefs);
+  }
+
+  @Test
  public void readAnnotationOnFunctionImport() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);

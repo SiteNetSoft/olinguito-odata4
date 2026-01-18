@@ -21,7 +21,10 @@ package org.sitenetsoft.olinguito.server.core;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Locale;
 
@@ -55,7 +58,9 @@ public class ErrorHandlerTest {
     MetadataParser parser = new MetadataParser();
     parser.parseAnnotations(true);
     parser.useLocalCoreVocabularies(true);
-    provider = (CsdlEdmProvider) parser.buildEdmProvider(new FileReader("src/test/resources/annotations.xml"));
+    InputStream in = getClass().getClassLoader().getResourceAsStream("annotations.xml");
+    assertNotNull("annotations.xml not found on test classpath", in);
+    provider = (CsdlEdmProvider) parser.buildEdmProvider(new InputStreamReader(in, StandardCharsets.UTF_8));
   }
   
   @Test

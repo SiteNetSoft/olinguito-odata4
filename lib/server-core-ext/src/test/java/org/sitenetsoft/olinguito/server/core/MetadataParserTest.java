@@ -24,11 +24,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
@@ -62,11 +60,7 @@ public class MetadataParserTest {
     public InputStream resolveReference(URI uri, String xmlBase) {
       String str = uri.toASCIIString();
       if (str.startsWith("http://localhost/")) {
-        try {
-          return new FileInputStream("src/test/resources/"+str.substring(17));
-        } catch (FileNotFoundException e) {
-          return null;
-        }
+        return getClass().getClassLoader().getResourceAsStream(str.substring(17));
       }
       return null;
     }
@@ -75,7 +69,9 @@ public class MetadataParserTest {
   @Before
   public void setUp() throws Exception {
     MetadataParser parser = new MetadataParser();
-    provider = (CsdlEdmProvider) parser.buildEdmProvider(new FileReader("src/test/resources/trippin.xml"));
+    InputStream in = getClass().getClassLoader().getResourceAsStream("trippin.xml");
+    assertNotNull(in);
+    provider = (CsdlEdmProvider) parser.buildEdmProvider(new InputStreamReader(in, StandardCharsets.UTF_8));
   }
 
   @Test

@@ -29,8 +29,10 @@ import jakarta.servlet.http.HttpSession;
 
 import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
 import org.sitenetsoft.olinguito.server.api.OData;
-import org.sitenetsoft.olinguito.server.api.ODataHttpHandler;
+import org.sitenetsoft.olinguito.server.api.ODataRequestHandler;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.adapter.servlet.ODataServletHandler;
+import org.sitenetsoft.olinguito.server.adapter.servlet.ServletODataAdapter;
 import org.sitenetsoft.olinguito.server.sample.data.DataProvider;
 import org.sitenetsoft.olinguito.server.sample.edmprovider.CarsEdmProvider;
 import org.sitenetsoft.olinguito.server.sample.processor.CarsProcessor;
@@ -56,9 +58,11 @@ public class CarsServlet extends HttpServlet {
 
       OData odata = OData.newInstance();
       ServiceMetadata edm = odata.createServiceMetadata(new CarsEdmProvider(), new ArrayList<EdmxReference>());
-      ODataHttpHandler handler = odata.createHandler(edm);
-      handler.register(new CarsProcessor(dataProvider));
-      handler.process(req, resp);
+      ODataRequestHandler core = odata.createHandler(edm);
+      core.register(new CarsProcessor(dataProvider));
+
+      ODataServletHandler servlet = new ServletODataAdapter(core);
+      servlet.process(req, resp);
     } catch (RuntimeException e) {
       LOG.error("Server Error", e);
       throw new ServletException(e);

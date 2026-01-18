@@ -18,7 +18,6 @@
  */
 package org.sitenetsoft.olinguito.server.example;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -59,8 +58,8 @@ public class TripPinServlet extends HttpServlet {
       parser.useLocalCoreVocabularies(true);
       parser.implicitlyLoadCoreVocabularies(true);
 
-      InputStream in = getClass().getClassLoader().getResourceAsStream("trippin.xml");
-      assertNotNull("trippin.xml not found on test classpath", in);
+      InputStream in = getClass().getClassLoader().getResourceAsStream("trippin/trippin.xml");
+      assertNotNull("trippin/trippin.xml not found on test classpath", in);
 
       metadata = parser.buildServiceMetadata(new InputStreamReader(in, StandardCharsets.UTF_8));
     } catch (XMLStreamException e) {

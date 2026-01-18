@@ -97,8 +97,8 @@ public class ServiceDispatcherTest {
     parser.useLocalCoreVocabularies(true);
     parser.implicitlyLoadCoreVocabularies(true);
 
-    InputStream in = getClass().getClassLoader().getResourceAsStream("trippin.xml");
-    assertNotNull("trippin.xml not found on test classpath", in);
+    InputStream in = getClass().getClassLoader().getResourceAsStream("trippin/trippin.xml");
+    assertNotNull("trippin/trippin.xml not found on test classpath", in);
     ServiceMetadata metadata = parser.buildServiceMetadata(new InputStreamReader(in, StandardCharsets.UTF_8));
 
     File baseDir = new File(System.getProperty("java.io.tmpdir"));

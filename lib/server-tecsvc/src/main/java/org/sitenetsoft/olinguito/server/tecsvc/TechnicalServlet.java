@@ -92,7 +92,7 @@ public class TechnicalServlet extends HttpServlet {
       core.register(new TechnicalBatchProcessor(dataProvider));
       // Register helpers.
       core.register(new ETagSupport());
-      core.register(new DefaultDebugSupport());
+      //core.register(new DefaultDebugSupport());
       // Process the request.
       //handler.process(request, response);
       servlet.process(request, response);

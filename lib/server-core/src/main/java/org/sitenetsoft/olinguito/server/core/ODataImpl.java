@@ -32,7 +32,6 @@ import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmPrimitiveTypeFactory;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.ODataHandler;
-import org.sitenetsoft.olinguito.server.api.ODataHttpHandler;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 import org.sitenetsoft.olinguito.server.api.debug.DebugResponseHelper;
 import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;

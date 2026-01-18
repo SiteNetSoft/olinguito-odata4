@@ -40,11 +40,13 @@
     <module>commons-core</module>
     <module>client-api</module>
     <module>client-core</module>
+    <module>odata-vocabularies</module>
     <module>server-api</module>
     <module>server-core</module>
     <module>server-core-ext</module>
     <module>server-tecsvc</module>
     <module>server-test</module>
+    <module>test-fixtures</module>
   </modules>
 
   <properties>
