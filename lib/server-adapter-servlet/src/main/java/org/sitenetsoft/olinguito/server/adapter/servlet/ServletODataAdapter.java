@@ -112,25 +112,50 @@ public final class ServletODataAdapter implements ODataServletHandler {
                 }
             }
 
-            normalizeResponseContentType(resp);
+            /*Map<String, List<String>> responseHeaders = odResp.getAllHeaders();
+            if (responseHeaders != null) {
+                for (Map.Entry<String, List<String>> header : responseHeaders.entrySet()) {
+                    String name = header.getKey();
+                    for (String value : header.getValue()) {
+                        // addHeader to preserve multi-value headers
+                        resp.addHeader(name, value);
+                    }
+                }
+            }
+
+            normalizeResponseContentType(resp);*/
 
             // 🔧 Last-chance normalization for JSON content type:
             // If it's plain application/json with no odata.metadata parameter,
             // default to OData JSON minimal (as in original Olingo).
-            String ct = resp.getHeader(HttpHeader.CONTENT_TYPE);
+            /*String ct = resp.getHeader(HttpHeader.CONTENT_TYPE);
             if (ct == null) {
                 ct = resp.getContentType();
             }
             if (ct != null && "application/json".equalsIgnoreCase(ct.trim())) {
                 resp.setHeader(HttpHeader.CONTENT_TYPE, "application/json;odata.metadata=minimal");
-            }
+            }*/
 
             // Response body
-            InputStream content = odResp.getContent();
+            /*InputStream content = odResp.getContent();
             if (content != null) {
                 // Last chance before commit
                 normalizeResponseContentType(resp);
 
+                try (InputStream in = content;
+                     OutputStream out = resp.getOutputStream()) {
+
+                    byte[] buffer = new byte[8192];
+                    int len;
+                    while ((len = in.read(buffer)) != -1) {
+                        out.write(buffer, 0, len);
+                    }
+                    out.flush();
+                }
+            }*/
+
+            InputStream content = odResp.getContent();
+            if (content != null) {
                 try (InputStream in = content;
                      OutputStream out = resp.getOutputStream()) {
 

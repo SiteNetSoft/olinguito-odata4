@@ -49,7 +49,7 @@ public final class ContentNegotiator {
       Collections.unmodifiableList(Arrays.asList(
           ContentType.JSON,
           ContentType.JSON_NO_METADATA,
-          //ContentType.APPLICATION_JSON,
+          ContentType.APPLICATION_JSON,
           ContentType.JSON_FULL_METADATA,
           ContentType.APPLICATION_ATOM_XML,
           ContentType.APPLICATION_XML));
@@ -169,6 +169,11 @@ public final class ContentNegotiator {
           supportedContentTypes, charsets);
       
       if (result == null) {
+        System.out.println("[DEBUG] doContentNegotiation unsupported: requested = "
+                + requestedContentType.toContentTypeString()
+                + " supported = " + supportedContentTypes
+                + " representationType = " + representationType);
+
         throw new ContentNegotiatorException(
             "unsupported accept content type: " + requestedContentType + " != " + supportedContentTypes,
             ContentNegotiatorException.MessageKeys.UNSUPPORTED_CONTENT_TYPE,
@@ -218,7 +223,7 @@ public final class ContentNegotiator {
       return JSON.equalsIgnoreCase(formatString) ? ContentType.JSON :
           XML.equalsIgnoreCase(formatString) ? ContentType.APPLICATION_XML :
               ATOM.equalsIgnoreCase(formatString) ? ContentType.APPLICATION_ATOM_XML : 
-                APPLICATION_JSON.equalsIgnoreCase(formatString)? ContentType.JSON: null;
+                APPLICATION_JSON.equalsIgnoreCase(formatString)? ContentType.APPLICATION_JSON: null;
     }
   }
 
@@ -283,6 +288,10 @@ public final class ContentNegotiator {
   public static void checkSupport(final ContentType contentType,
       final CustomContentTypeSupport customContentTypeSupport, final RepresentationType representationType)
           throws ContentNegotiatorException {
+    List<ContentType> supported = getSupportedContentTypes(customContentTypeSupport, representationType);
+    System.out.println("[DEBUG] checkSupport contentType = " + contentType.toContentTypeString()
+            + " supported = " + supported);
+
     for (ContentType supportedContentType : getSupportedContentTypes(customContentTypeSupport, representationType)) {
       if (AcceptType.fromContentType(supportedContentType).get(0).matches(contentType)) {
         return;

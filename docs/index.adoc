@@ -1,0 +1,13 @@
+= olinguito-odata4
+:toc: left
+:icons: font
+
+== Introduction
+This service handles XYZ using the link:https://quarkus.io[Quarkus framework].
+
+== Getting Started
+Run the app in dev mode:
+[source,bash]
+----
+./mvnw quarkus:dev
+----
