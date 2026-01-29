@@ -203,6 +203,9 @@ public class TomcatTestServer {
       }
 
       tomcat = new Tomcat();
+      tomcat.getServer().setParentClassLoader(
+              TomcatTestServer.class.getClassLoader()
+      );
       tomcat.setBaseDir(baseDir.getParentFile().getAbsolutePath());
       tomcat.setPort(fixedPort);
       tomcat.getHost().setAppBase(baseDir.getAbsolutePath());
