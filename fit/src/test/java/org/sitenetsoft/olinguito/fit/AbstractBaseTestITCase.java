@@ -48,7 +48,7 @@ public abstract class AbstractBaseTestITCase {
     server = TomcatTestServer.init(9080)
         .addServlet(TechnicalServlet.class, "/odata-server-tecsvc/odata.svc/*")
         .addServlet(TechnicalStatusMonitorServlet.class, "/odata-server-tecsvc/status/*")
-        //.addAuthServlet(TechnicalServlet.class, "/odata-server-tecsvc/auth", "/*")
+        .addAuthServlet(TechnicalServlet.class, "/odata-server-tecsvc/auth", "/*")
         .addServlet(StaticContent.create("org-odata-core-v1.xml"),
             "/odata-server-tecsvc/v4.0/cs02/vocabularies/Org.OData.Core.V1.xml")
         .addWebApp(false)
