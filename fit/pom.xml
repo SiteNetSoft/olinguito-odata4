@@ -39,6 +39,8 @@
     <project-web-app-dir>${project.build.directory}/${project.build.finalName}</project-web-app-dir>
     <tomcat-base-dir>${project.build.directory}/emb-tom-fit</tomcat-base-dir>
     <project-resource-dir>${project.build.outputDirectory}</project-resource-dir>
+    <!-- Default test server type -->
+    <test.server.type>tomcat</test.server.type>
   </properties>
 
   <profiles>
@@ -58,6 +60,59 @@
         <!-- nothing excluded -->
         <exclude.regex></exclude.regex>
       </properties>
+    </profile>
+    <!-- Test server profiles -->
+    <profile>
+      <id>test-tomcat</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <test.server.type>tomcat</test.server.type>
+      </properties>
+    </profile>
+    <profile>
+      <id>test-quarkus</id>
+      <properties>
+        <test.server.type>quarkus</test.server.type>
+        <quarkus.version>3.17.5</quarkus.version>
+      </properties>
+      <dependencyManagement>
+        <dependencies>
+          <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-bom</artifactId>
+            <version>${quarkus.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
+      <dependencies>
+        <dependency>
+          <groupId>org.sitenetsoft.olinguito</groupId>
+          <artifactId>server-tecsvc-quarkus</artifactId>
+          <version>${project.version}</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-vertx-http</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-arc</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <!-- JUnit vintage engine to run JUnit 4 tests with JUnit 5 platform -->
+        <dependency>
+          <groupId>org.junit.vintage</groupId>
+          <artifactId>junit-vintage-engine</artifactId>
+          <version>5.10.1</version>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
     </profile>
   </profiles>
 
@@ -229,16 +284,11 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <redirectTestOutputToFile>false</redirectTestOutputToFile>
-        <systemPropertyVariables>
-	        <property>
-	            <propertyName>buildDirectory</propertyName>
-	            <buildDirectory>${project.build.directory}</buildDirectory>
-	        </property>
-	         <property>
-	            <propertyName>finalName</propertyName>
-	            <buildDirectory>${project.build.finalName}</buildDirectory>
-	        </property>
-        </systemPropertyVariables>
+          <systemPropertyVariables>
+            <buildDirectory>${project.build.directory}</buildDirectory>
+            <finalName>${project.build.finalName}</finalName>
+            <test.server.type>${test.server.type}</test.server.type>
+          </systemPropertyVariables>
           <includes>
             <include>**/*ITCase.java</include>
             <include>**/*Test.java</include>

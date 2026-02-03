@@ -75,15 +75,16 @@ public abstract class AbstractTestITCase extends AbstractBaseTestITCase {
 
   @BeforeClass
   public static void setUpODataServiceRoot() throws IOException {
-    testStaticServiceRootURL = "http://localhost:9080/stub/StaticService/V40/Static.svc";
-    testDemoServiceRootURL = "http://localhost:9080/stub/StaticService/V40/Demo.svc";
-    testVocabulariesServiceRootURL = "http://localhost:9080/stub/StaticService/V40/Vocabularies.svc";
-    testNorthwindRootURL = "http://localhost:9080/stub/StaticService/V40/NorthWind.svc";
-    testKeyAsSegmentServiceRootURL = "http://localhost:9080/stub/StaticService/V40/KeyAsSegment.svc";
-    testOpenTypeServiceRootURL = "http://localhost:9080/stub/StaticService/V40/OpenType.svc";
-    testLargeModelServiceRootURL = "http://localhost:9080/stub/StaticService/V40/Static.svc/large";
-    testAuthServiceRootURL = "http://localhost:9080/stub/DefaultService.svc/V40/Static.svc";
-    testOAuth2ServiceRootURL = "http://localhost:9080/stub/StaticService/V40/OAuth2.svc";
+    String baseUrl = getServer() != null ? getServer().getBaseUrl() : "http://localhost:9080";
+    testStaticServiceRootURL = baseUrl + "/stub/StaticService/V40/Static.svc";
+    testDemoServiceRootURL = baseUrl + "/stub/StaticService/V40/Demo.svc";
+    testVocabulariesServiceRootURL = baseUrl + "/stub/StaticService/V40/Vocabularies.svc";
+    testNorthwindRootURL = baseUrl + "/stub/StaticService/V40/NorthWind.svc";
+    testKeyAsSegmentServiceRootURL = baseUrl + "/stub/StaticService/V40/KeyAsSegment.svc";
+    testOpenTypeServiceRootURL = baseUrl + "/stub/StaticService/V40/OpenType.svc";
+    testLargeModelServiceRootURL = baseUrl + "/stub/StaticService/V40/Static.svc/large";
+    testAuthServiceRootURL = baseUrl + "/stub/DefaultService.svc/V40/Static.svc";
+    testOAuth2ServiceRootURL = baseUrl + "/stub/StaticService/V40/OAuth2.svc";
 
     edmClient = ODataClientFactory.getEdmEnabledClient(testStaticServiceRootURL, ContentType.JSON);
 

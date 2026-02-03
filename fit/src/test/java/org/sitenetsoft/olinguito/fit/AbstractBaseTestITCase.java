@@ -25,27 +25,40 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.apache.catalina.LifecycleException;
 import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.fit.server.TestServer;
+import org.sitenetsoft.olinguito.fit.server.TestServerFactory;
 import org.sitenetsoft.olinguito.fit.server.TomcatTestServer;
 import org.sitenetsoft.olinguito.server.tecsvc.TechnicalServlet;
 import org.sitenetsoft.olinguito.server.tecsvc.async.TechnicalStatusMonitorServlet;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractBaseTestITCase {
 
+  private static final Logger LOG = LoggerFactory.getLogger(AbstractBaseTestITCase.class);
+
+  protected static final int DEFAULT_PORT = 9080;
+
   protected abstract ODataClient getClient();
 
-  private static TomcatTestServer server;
+  private static TestServer server;
 
   @BeforeClass
-  public static void init()
-      throws LifecycleException, IOException, 
-          InstantiationException, IllegalAccessException, 
-          ClassNotFoundException, ServletException {
-    server = TomcatTestServer.init(9080)
+  public static void init() throws Exception {
+    if (TestServerFactory.isQuarkus()) {
+      initQuarkusServer();
+    } else {
+      initTomcatServer();
+    }
+  }
+
+  private static void initTomcatServer() throws Exception {
+    LOG.info("Initializing Tomcat test server");
+    server = TomcatTestServer.init(DEFAULT_PORT)
         .addServlet(TechnicalServlet.class, "/odata-server-tecsvc/odata.svc/*")
         .addServlet(TechnicalStatusMonitorServlet.class, "/odata-server-tecsvc/status/*")
         .addAuthServlet(TechnicalServlet.class, "/odata-server-tecsvc/auth", "/*")
@@ -55,9 +68,40 @@ public abstract class AbstractBaseTestITCase {
         .start();
   }
 
+  private static void initQuarkusServer() throws Exception {
+    LOG.info("Initializing Quarkus test server");
+    // TODO: Quarkus testing is not yet fully implemented.
+    // For now, fall back to Tomcat server.
+    LOG.warn("Quarkus test server not yet implemented - falling back to Tomcat");
+    initTomcatServer();
+  }
+
   @AfterClass
-  public static void cleanUp() throws LifecycleException {
-    server.invalidateAllSessions();
+  public static void cleanUp() throws Exception {
+    if (server != null) {
+      server.invalidateAllSessions();
+    }
+  }
+
+  /**
+   * Returns the base URL for the OData service.
+   *
+   * @return the service URL
+   */
+  protected static String getServiceUrl() {
+    if (server != null) {
+      return server.getBaseUrl() + "/odata-server-tecsvc/odata.svc";
+    }
+    return "http://localhost:" + DEFAULT_PORT + "/odata-server-tecsvc/odata.svc";
+  }
+
+  /**
+   * Returns the test server instance.
+   *
+   * @return the test server
+   */
+  protected static TestServer getServer() {
+    return server;
   }
 
   public static class StaticContent extends HttpServlet {

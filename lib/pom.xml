@@ -47,6 +47,7 @@
     <module>server-adapter-servlet</module>
     <module>server-adapter-quarkus</module>
     <module>server-tecsvc</module>
+    <module>server-tecsvc-quarkus</module>
     <module>server-test</module>
   </modules>
 

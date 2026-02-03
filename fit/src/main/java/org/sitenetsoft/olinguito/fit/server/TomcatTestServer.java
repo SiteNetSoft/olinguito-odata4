@@ -58,53 +58,90 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Server for integration tests.
+ * Server for integration tests using embedded Tomcat.
  */
-public class TomcatTestServer {
+public class TomcatTestServer implements TestServer {
   private static final Logger LOG = LoggerFactory.getLogger(TomcatTestServer.class);
 
   private final Tomcat tomcat;
+  private final int port;
 
-  private TomcatTestServer(final Tomcat tomcat) {
+  private TomcatTestServer(final Tomcat tomcat, final int port) {
     this.tomcat = tomcat;
+    this.port = port;
+  }
+
+  @Override
+  public void start() throws LifecycleException {
+    // Server is started via builder, this is for interface compliance
+    if (tomcat.getServer().getState() != LifecycleState.STARTED) {
+      tomcat.start();
+    }
+  }
+
+  @Override
+  public void stop() throws LifecycleException {
+    if (tomcat.getServer() != null
+            && tomcat.getServer().getState() != LifecycleState.DESTROYED) {
+      if (tomcat.getServer().getState() != LifecycleState.STOPPED) {
+        tomcat.stop();
+      }
+      tomcat.destroy();
+    }
+  }
+
+  @Override
+  public int getPort() {
+    return port;
+  }
+
+  @Override
+  public String getBaseUrl() {
+    return "http://localhost:" + port;
+  }
+
+  @Override
+  public boolean isRunning() {
+    return tomcat.getServer() != null
+            && tomcat.getServer().getState() == LifecycleState.STARTED;
   }
 
   public static void main(final String[] params) throws LifecycleException {
-    TestServerBuilder server = null;
+    TomcatTestServerBuilder serverBuilder = null;
     try {
       LOG.trace("Start tomcat embedded server from main()");
-      server = TomcatTestServer.init(9180)
+      serverBuilder = TomcatTestServer.init(9180)
               .addTecsvcWebApp(true)
           .addStaticContent("/stub/StaticService/V40/OpenType.svc/$metadata", "V40/openTypeMetadata.xml")
           .addStaticContent("/stub/StaticService/V40/Demo.svc/$metadata", "V40/demoMetadata.xml")
           .addStaticContent("/stub/StaticService/V40/Static.svc/$metadata", "V40/metadata.xml");
 
-      server.enableLogging(Level.ALL);
+      serverBuilder.enableLogging(Level.ALL);
 
       boolean keepRunning = false;
       for (String param : params) {
         if (param.equalsIgnoreCase("keeprunning")) {
           keepRunning = true;
         } else if (param.equalsIgnoreCase("addwebapp")) {
-          server.addWebApp();
+          serverBuilder.addWebApp();
         } else if (param.startsWith("port")) {
-          server.atPort(extractPortParam(param));
+          serverBuilder.atPort(extractPortParam(param));
         }
       }
 
       if (keepRunning) {
         LOG.info("...and keep server running.");
-        server.startAndWait();
+        serverBuilder.startAndWait();
       } else {
         LOG.info("...and run as long as the thread is running.");
-        server.start();
+        serverBuilder.start();
       }
     } catch (IOException e) {
       throw new RuntimeException("Failed to start Tomcat server from main method.", e);
     } catch (LifecycleException e) {
       throw new RuntimeException("Failed to start Tomcat server from main method.", e);
     } finally {
-      server.stop();
+      serverBuilder.stop();
     }
   }
 
@@ -149,16 +186,16 @@ public class TomcatTestServer {
     }
   }
 
-  private static TestServerBuilder builder;
+  private static TomcatTestServerBuilder builder;
 
-  public static TestServerBuilder init(final int port) {
+  public static TomcatTestServerBuilder init(final int port) {
     if (builder == null) {
-      builder = new TestServerBuilder(port);
+      builder = new TomcatTestServerBuilder(port);
     }
     return builder;
   }
 
-  public static class TestServerBuilder {
+  public static class TomcatTestServerBuilder implements TestServerBuilder<TomcatTestServerBuilder> {
     private static final String TOMCAT_BASE_DIR = "tomcat-base-dir";
     private static final String PROJECT_RESOURCES_DIR = "project-resource-dir";
     private static final String PROJECT_WEB_APP_DIR = "project-web-app-dir";
@@ -169,7 +206,7 @@ public class TomcatTestServer {
     private TomcatTestServer server;
     private Properties properties;
 
-    public TestServerBuilder addTecsvcWebApp(final boolean copy) throws IOException {
+    public TomcatTestServerBuilder addTecsvcWebApp(final boolean copy) throws IOException {
       File tecsvcDir = new File("lib/server-tecsvc/target/odata-server-tecsvc-5.0.1-SNAPSHOT");
       if (!tecsvcDir.exists()) {
         throw new RuntimeException("tecsvc webapp dir not found: " + tecsvcDir.getAbsolutePath()
@@ -191,7 +228,7 @@ public class TomcatTestServer {
       return this;
     }
 
-    private TestServerBuilder(final int fixedPort) {
+    private TomcatTestServerBuilder(final int fixedPort) {
       initializeProperties();
       baseDir = getFileForDirProperty(TOMCAT_BASE_DIR);      
       if (!baseDir.exists() && !baseDir.mkdirs()) {
@@ -248,11 +285,17 @@ public class TomcatTestServer {
       tomcat.setPort(port);
     }
 
-    public TestServerBuilder addWebApp() throws IOException {
+    @Override
+    public TomcatTestServerBuilder port(int port) {
+      tomcat.setPort(port);
+      return this;
+    }
+
+    public TomcatTestServerBuilder addWebApp() throws IOException {
       return addWebApp(true);
     }
 
-    public TestServerBuilder addWebApp(final boolean copy) throws IOException {
+    public TomcatTestServerBuilder addWebApp(final boolean copy) throws IOException {
 
       if (server != null) {
         return this;
@@ -300,8 +343,9 @@ public class TomcatTestServer {
       return new File(targetURL.getFile());
     }
 
-    public TestServerBuilder addServlet(final Class<? extends HttpServlet> factoryClass, final String path)
-        throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException {
+    @Override
+    public TomcatTestServerBuilder addServlet(final Class<? extends HttpServlet> factoryClass, final String path)
+        throws Exception {
       if (server != null) {
         return this;
       }
@@ -315,14 +359,14 @@ public class TomcatTestServer {
       return this;
     }
 
-    public TestServerBuilder addAuthServlet(final Class<? extends HttpServlet> factoryClass, 
+    public TomcatTestServerBuilder addAuthServlet(final Class<? extends HttpServlet> factoryClass,
             final String servletPath, final String contextPath)
         throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException, ServletException {
       if (server != null) {
         return this;
       }
       final String TOMCAT_WEB_XML = "web.xml";
-      String webXMLPath = Thread.currentThread().getContextClassLoader().getResource(TOMCAT_WEB_XML).getPath();      
+      String webXMLPath = Thread.currentThread().getContextClassLoader().getResource(TOMCAT_WEB_XML).getPath();
       String servletClassname = factoryClass.getName();
       HttpServlet httpServlet = (HttpServlet) Class.forName(servletClassname).newInstance();
       Context cxt = tomcat.addWebapp(servletPath, baseDir.getAbsolutePath());
@@ -334,19 +378,21 @@ public class TomcatTestServer {
       return this;
     }
 
-    public TestServerBuilder addStaticContent(final String uri, final String resourceName) throws IOException {
+    @Override
+    public TomcatTestServerBuilder addStaticContent(final String uri, final String resourceName) throws IOException {
       String resource = new File(resourceDir, resourceName).getAbsolutePath();
       LOG.info("Added static content from '{}' at uri '{}'.", resource, uri);
       StaticContent staticContent = new StaticContent(uri, resource);
       return addServlet(staticContent, String.valueOf(uri.hashCode()), uri);
     }
 
-    public TestServerBuilder addServlet(final HttpServlet httpServlet, final String path) throws IOException {
+    @Override
+    public TomcatTestServerBuilder addServlet(final HttpServlet httpServlet, final String path) throws IOException {
       String name = UUID.randomUUID().toString();
       return addServlet(httpServlet, name, path);
     }
 
-    public TestServerBuilder addServlet(final HttpServlet httpServlet, final String name, final String path)
+    public TomcatTestServerBuilder addServlet(final HttpServlet httpServlet, final String name, final String path)
         throws IOException {
       if (server != null) {
         return this;
@@ -369,18 +415,26 @@ public class TomcatTestServer {
       return baseContext;
     }
 
+    @Override
+    public TestServer build() throws LifecycleException {
+      return start();
+    }
+
     public TomcatTestServer start() throws LifecycleException {
       if (server != null) {
         return server;
       }
-      baseContext.addApplicationListener(SessionHolder.class.getName());
+      if (baseContext != null) {
+        baseContext.addApplicationListener(SessionHolder.class.getName());
+      }
       tomcat.start();
 
+      int actualPort = tomcat.getConnector().getPort();
       LOG.info("Started server at endpoint "
-          + tomcat.getServer().getAddress() + ":" + tomcat.getConnector().getPort() +
+          + tomcat.getServer().getAddress() + ":" + actualPort +
           " (with base dir: " + baseDir.getAbsolutePath());
 
-      server = new TomcatTestServer(tomcat);
+      server = new TomcatTestServer(tomcat, actualPort);
       return server;
     }
 
@@ -400,6 +454,7 @@ public class TomcatTestServer {
     }
   }
 
+  @Override
   public void invalidateAllSessions() {
     SessionHolder.invalidateAllSession();
   }
