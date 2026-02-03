@@ -71,13 +71,21 @@ public class VertxODataHandler implements Handler<RoutingContext> {
             ODataResponse odResponse = odataHandler.process(odRequest);
 
             if (odResponse == null) {
-                ctx.response().setStatusCode(500).end("Internal Server Error");
+                ctx.response().setStatusCode(500).end("Internal Server Error: null response");
                 return;
             }
 
             writeResponse(ctx.response(), odResponse);
         } catch (Exception e) {
-            ctx.fail(500, e);
+            // Send explicit error response instead of using ctx.fail()
+            // which might not send a proper HTTP response
+            String errorMessage = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+            if (!ctx.response().ended()) {
+                ctx.response()
+                        .setStatusCode(500)
+                        .putHeader("Content-Type", "text/plain")
+                        .end("Internal Server Error: " + errorMessage);
+            }
         }
     }
 
@@ -205,34 +213,44 @@ public class VertxODataHandler implements Handler<RoutingContext> {
     }
 
     private void writeResponse(HttpServerResponse response, ODataResponse odResponse) {
-        // Set status code
-        response.setStatusCode(odResponse.getStatusCode());
+        try {
+            // Set status code
+            response.setStatusCode(odResponse.getStatusCode());
 
-        // Copy headers
-        Map<String, List<String>> headers = odResponse.getAllHeaders();
-        if (headers != null) {
-            for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
-                String name = entry.getKey();
-                for (String value : entry.getValue()) {
-                    if (HttpHeader.CONTENT_TYPE.equalsIgnoreCase(name)) {
-                        response.putHeader(name, value);
-                    } else {
-                        response.headers().add(name, value);
+            // Copy headers
+            Map<String, List<String>> headers = odResponse.getAllHeaders();
+            if (headers != null) {
+                for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
+                    String name = entry.getKey();
+                    for (String value : entry.getValue()) {
+                        if (HttpHeader.CONTENT_TYPE.equalsIgnoreCase(name)) {
+                            response.putHeader(name, value);
+                        } else {
+                            response.headers().add(name, value);
+                        }
                     }
                 }
             }
-        }
 
-        // Write body
-        InputStream content = odResponse.getContent();
-        ODataContent odataContent = odResponse.getODataContent();
+            // Write body
+            InputStream content = odResponse.getContent();
+            ODataContent odataContent = odResponse.getODataContent();
 
-        if (content != null) {
-            VertxODataResponseWriter.writeInputStream(response, content);
-        } else if (odataContent != null) {
-            VertxODataResponseWriter.writeODataContent(response, odataContent);
-        } else {
-            response.end();
+            if (content != null) {
+                VertxODataResponseWriter.writeInputStream(response, content);
+            } else if (odataContent != null) {
+                VertxODataResponseWriter.writeODataContent(response, odataContent);
+            } else {
+                response.end();
+            }
+        } catch (Exception e) {
+            // Ensure response is always ended
+            if (!response.ended()) {
+                String errorMessage = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+                response.setStatusCode(500)
+                        .putHeader("Content-Type", "text/plain")
+                        .end("Error writing response: " + errorMessage);
+            }
         }
     }
 

@@ -32,7 +32,6 @@ import io.quarkus.vertx.http.deployment.RouteBuildItem;
 import org.sitenetsoft.olinguito.server.adapter.quarkus.runtime.ODataConfig;
 import org.sitenetsoft.olinguito.server.adapter.quarkus.runtime.ODataHandlerHolder;
 import org.sitenetsoft.olinguito.server.adapter.quarkus.runtime.ODataRecorder;
-import org.sitenetsoft.olinguito.server.adapter.quarkus.runtime.ODataRuntimeConfig;
 import org.sitenetsoft.olinguito.server.adapter.quarkus.runtime.ODataServiceProducer;
 
 /**
@@ -150,13 +149,13 @@ public class ODataProcessor {
     /**
      * Registers the OData route at runtime.
      * Uses a single wildcard route that handles both the base path and sub-paths.
+     * Routes are marked as blocking because OData processing involves blocking I/O.
      */
     @BuildStep
     @Record(ExecutionTime.RUNTIME_INIT)
     void registerRoutes(
             ODataBuildItem odataBuildItem,
             ODataConfig config,
-            ODataRuntimeConfig runtimeConfig,
             ODataRecorder recorder,
             BuildProducer<RouteBuildItem> routes) {
 
@@ -170,18 +169,24 @@ public class ODataProcessor {
             basePath = basePath.substring(0, basePath.length() - 1);
         }
 
+        // Default split value (can be overridden at runtime via config)
+        int split = 0;
+
         // Register wildcard route for all OData sub-paths (e.g., /odata/*)
+        // Use blockingRoute() because OData processing involves blocking I/O
         String wildcardPath = basePath + "/*";
         routes.produce(RouteBuildItem.builder()
                 .route(wildcardPath)
-                .handler(recorder.createVertxHandler(config, runtimeConfig))
+                .blockingRoute()
+                .handler(recorder.createVertxHandler(basePath, split))
                 .build());
 
         // Register exact path route for service document (e.g., /odata)
         // This is needed because /odata/* doesn't match /odata exactly
         routes.produce(RouteBuildItem.builder()
                 .route(basePath)
-                .handler(recorder.createVertxHandler(config, runtimeConfig))
+                .blockingRoute()
+                .handler(recorder.createVertxHandler(basePath, split))
                 .build());
     }
 }

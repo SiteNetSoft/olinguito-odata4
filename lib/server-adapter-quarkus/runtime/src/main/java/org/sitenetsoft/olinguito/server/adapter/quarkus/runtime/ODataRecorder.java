@@ -38,33 +38,44 @@ public class ODataRecorder {
     /**
      * Creates a consumer that sets up OData routes on the Vert.x router.
      *
-     * @param config        Build-time OData configuration
-     * @param runtimeConfig Runtime OData configuration
+     * @param path  The OData base path
+     * @param split Number of leading path segments for service resolution
      * @return Consumer to configure the router
      */
-    public Consumer<Route> createRouteHandler(ODataConfig config, ODataRuntimeConfig runtimeConfig) {
+    public Consumer<Route> createRouteHandler(String path, int split) {
         return route -> {
-            route.handler(createVertxHandler(config, runtimeConfig));
+            route.handler(createVertxHandler(path, split));
         };
     }
 
     /**
      * Creates the route customizer for integrating with Vert.x HTTP.
      *
-     * @param config        Build-time OData configuration
-     * @param runtimeConfig Runtime OData configuration
+     * @param path  The OData base path
+     * @param split Number of leading path segments for service resolution
      * @return Handler for RoutingContext
      */
-    public Handler<RoutingContext> createVertxHandler(ODataConfig config, ODataRuntimeConfig runtimeConfig) {
+    public Handler<RoutingContext> createVertxHandler(String path, int split) {
         return ctx -> {
-            // Lazy initialization on first request
-            ODataRequestHandler handler = getOrCreateHandler();
-            if (handler != null) {
-                new VertxODataHandler(handler, config.path(), runtimeConfig.split()).handle(ctx);
-            } else {
-                ctx.response()
-                        .setStatusCode(503)
-                        .end("OData service not configured. Please provide a CsdlEdmProvider bean.");
+            try {
+                // Lazy initialization on first request
+                ODataRequestHandler handler = getOrCreateHandler();
+                if (handler != null) {
+                    new VertxODataHandler(handler, path, split).handle(ctx);
+                } else {
+                    ctx.response()
+                            .setStatusCode(503)
+                            .end("OData service not configured. Please provide a CsdlEdmProvider bean.");
+                }
+            } catch (Exception e) {
+                // Ensure we always send a response
+                if (!ctx.response().ended()) {
+                    String errorMessage = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+                    ctx.response()
+                            .setStatusCode(500)
+                            .putHeader("Content-Type", "text/plain")
+                            .end("OData handler error: " + errorMessage);
+                }
             }
         };
     }
