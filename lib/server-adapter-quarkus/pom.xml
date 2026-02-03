@@ -23,8 +23,53 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>server-adapter-quarkus</artifactId>
-    <packaging>bundle</packaging>
-    <name>${project.artifactId}</name>
+    <parent>
+        <groupId>org.sitenetsoft.olinguito</groupId>
+        <artifactId>odata-lib</artifactId>
+        <version>5.0.1-SNAPSHOT</version>
+        <relativePath>..</relativePath>
+    </parent>
 
+    <artifactId>server-adapter-quarkus-parent</artifactId>
+    <packaging>pom</packaging>
+    <name>Olinguito :: Server Adapter :: Quarkus :: Parent</name>
+    <description>Quarkus extension for Olinguito OData server</description>
+
+    <modules>
+        <module>runtime</module>
+        <module>deployment</module>
+    </modules>
+
+    <properties>
+        <quarkus.version>3.17.5</quarkus.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-bom</artifactId>
+                <version>${quarkus.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-maven-plugin</artifactId>
+                    <version>${quarkus.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-extension-maven-plugin</artifactId>
+                    <version>${quarkus.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>
