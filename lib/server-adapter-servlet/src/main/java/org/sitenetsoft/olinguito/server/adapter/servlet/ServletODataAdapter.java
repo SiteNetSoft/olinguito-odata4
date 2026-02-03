@@ -24,6 +24,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.Channels;
+import java.nio.channels.WritableByteChannel;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -31,6 +33,7 @@ import java.util.Map;
 
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.server.api.ODataContent;
 import org.sitenetsoft.olinguito.server.api.ODataRequest;
 import org.sitenetsoft.olinguito.server.api.ODataRequestHandler;
 import org.sitenetsoft.olinguito.server.api.ODataResponse;
@@ -78,7 +81,13 @@ public final class ServletODataAdapter implements ODataServletHandler {
             odReq.setProtocol(req.getProtocol());
 
             // HTTP method (GET, POST, etc., including X-HTTP-Method override)
-            odReq.setMethod(extractMethod(req));
+            try {
+                odReq.setMethod(extractMethod(req));
+            } catch (IllegalArgumentException e) {
+                // Invalid or ambiguous HTTP method - return 400 Bad Request
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+                return;
+            }
 
             // Headers
             copyHeaders(odReq, req);
@@ -106,55 +115,23 @@ public final class ServletODataAdapter implements ODataServletHandler {
                 for (Map.Entry<String, List<String>> header : responseHeaders.entrySet()) {
                     String name = header.getKey();
                     for (String value : header.getValue()) {
-                        // addHeader to preserve multi-value headers
-                        resp.addHeader(name, value);
+                        if (HttpHeader.CONTENT_TYPE.equalsIgnoreCase(name)) {
+                            // For Content-Type we want a single, canonical value.
+                            resp.setHeader(name, value);
+                            // Also tell the container, in case it cares.
+                            resp.setContentType(value);
+                        } else {
+                            // For all other headers, keep multi-value behavior.
+                            resp.addHeader(name, value);
+                        }
                     }
                 }
             }
 
-            /*Map<String, List<String>> responseHeaders = odResp.getAllHeaders();
-            if (responseHeaders != null) {
-                for (Map.Entry<String, List<String>> header : responseHeaders.entrySet()) {
-                    String name = header.getKey();
-                    for (String value : header.getValue()) {
-                        // addHeader to preserve multi-value headers
-                        resp.addHeader(name, value);
-                    }
-                }
-            }
-
-            normalizeResponseContentType(resp);*/
-
-            // 🔧 Last-chance normalization for JSON content type:
-            // If it's plain application/json with no odata.metadata parameter,
-            // default to OData JSON minimal (as in original Olingo).
-            /*String ct = resp.getHeader(HttpHeader.CONTENT_TYPE);
-            if (ct == null) {
-                ct = resp.getContentType();
-            }
-            if (ct != null && "application/json".equalsIgnoreCase(ct.trim())) {
-                resp.setHeader(HttpHeader.CONTENT_TYPE, "application/json;odata.metadata=minimal");
-            }*/
-
-            // Response body
-            /*InputStream content = odResp.getContent();
-            if (content != null) {
-                // Last chance before commit
-                normalizeResponseContentType(resp);
-
-                try (InputStream in = content;
-                     OutputStream out = resp.getOutputStream()) {
-
-                    byte[] buffer = new byte[8192];
-                    int len;
-                    while ((len = in.read(buffer)) != -1) {
-                        out.write(buffer, 0, len);
-                    }
-                    out.flush();
-                }
-            }*/
-
+            // Response body: check both InputStream content and ODataContent (for streaming)
             InputStream content = odResp.getContent();
+            ODataContent odataContent = odResp.getODataContent();
+
             if (content != null) {
                 try (InputStream in = content;
                      OutputStream out = resp.getOutputStream()) {
@@ -166,9 +143,10 @@ public final class ServletODataAdapter implements ODataServletHandler {
                     }
                     out.flush();
                 }
+            } else if (odataContent != null) {
+                // Streaming content - write via ODataContent
+                writeODataContent(odataContent, resp);
             }
-
-            System.out.println("ODATA RESPONSE CT = " + odResp.getHeader(HttpHeader.CONTENT_TYPE));
 
         } catch (IOException e) {
             // If something goes wrong at servlet I/O level, surface as 500
@@ -309,40 +287,13 @@ public final class ServletODataAdapter implements ODataServletHandler {
         odRequest.setRawServiceResolutionUri(rawServiceResolutionUri);
     }
 
-    private static void normalizeResponseContentType(HttpServletResponse resp) {
-        String ct = resp.getHeader(HttpHeader.CONTENT_TYPE);
-        if (ct == null) {
-            ct = resp.getContentType();
-        }
-        if (ct == null) {
-            return;
-        }
-
-        String lower = ct.toLowerCase();
-
-        // If already has odata.metadata, keep it
-        if (lower.contains("odata.metadata=")) {
-            return;
-        }
-
-        // If it's JSON (with or without charset), default to minimal
-        // Examples to catch:
-        // - application/json
-        // - application/json; charset=UTF-8
-        if (lower.startsWith("application/json")) {
-            // keep charset if present
-            /*String charsetPart = "";
-            int charsetIdx = lower.indexOf("charset=");
-            if (charsetIdx >= 0) {
-                // keep original case/spacing from ct by slicing from the original string
-                int semi = ct.indexOf(';', charsetIdx);
-                charsetPart = semi >= 0 ?
-                ct.substring(ct.indexOf(';', charsetIdx)) : ct.substring(ct.indexOf(';', charsetIdx));
-            }*/
-
-            // Build a stable value; simplest: minimal first, then charset if you want
-            // Safer for tests expecting exact string: do NOT append charset unless your tests expect it.
-            resp.setHeader(HttpHeader.CONTENT_TYPE, "application/json;odata.metadata=minimal");
-        }
+    /**
+     * Write ODataContent (streaming content) to the servlet response.
+     */
+    private static void writeODataContent(ODataContent content, HttpServletResponse resp) throws IOException {
+        OutputStream outputStream = resp.getOutputStream();
+        WritableByteChannel channel = Channels.newChannel(outputStream);
+        content.write(channel);
+        outputStream.flush();
     }
 }
