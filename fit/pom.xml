@@ -208,7 +208,7 @@
 
     <dependency>
       <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
+      <artifactId>slf4j-reload4j</artifactId>
       <version>${sl4j.version}</version>
     </dependency>
     <dependency>
@@ -288,6 +288,7 @@
             <buildDirectory>${project.build.directory}</buildDirectory>
             <finalName>${project.build.finalName}</finalName>
             <test.server.type>${test.server.type}</test.server.type>
+            <java.util.logging.config.file>${project.basedir}/src/test/resources/logging.properties</java.util.logging.config.file>
           </systemPropertyVariables>
           <includes>
             <include>**/*ITCase.java</include>

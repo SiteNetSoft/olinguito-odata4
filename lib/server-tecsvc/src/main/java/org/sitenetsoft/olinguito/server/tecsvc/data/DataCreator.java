@@ -20,6 +20,8 @@ package org.sitenetsoft.olinguito.server.tecsvc.data;
 
 import java.math.BigDecimal;
 import java.net.URI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.nio.charset.Charset;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -63,6 +65,7 @@ import org.sitenetsoft.olinguito.server.tecsvc.provider.SchemaProvider;
 
 public class DataCreator {
 
+  private static final Logger LOG = LoggerFactory.getLogger(DataCreator.class);
   private static final UUID GUID = UUID.fromString("01234567-89ab-cdef-0123-456789abcdef");
 
   private final Map<String, EntityCollection> data;
@@ -1275,7 +1278,7 @@ public class DataCreator {
         }
       }
     } catch (ODataException e) {
-      e.printStackTrace();
+      LOG.error("Error setting bound operations on entities", e);
     }
   }
 

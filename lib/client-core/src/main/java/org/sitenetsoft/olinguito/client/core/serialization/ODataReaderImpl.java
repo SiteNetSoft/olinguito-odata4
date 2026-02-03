@@ -186,7 +186,6 @@ public class ODataReaderImpl implements ODataReader {
         throw new IllegalArgumentException("termDefinitions[" + i + "] is null (resource not found) ");
       }
     }
-    System.out.println(termDefinitions);
     return readMetadata(client.getDeserializer(ContentType.APPLICATION_XML).toMetadata(input).getSchemaByNsOrAlias(),
         client.getDeserializer(ContentType.APPLICATION_XML).fetchTermDefinitionSchema(termDefinitions));
   }
