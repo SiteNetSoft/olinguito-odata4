@@ -22,18 +22,10 @@ import io.quarkus.arc.Arc;
 import io.quarkus.runtime.annotations.Recorder;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.Route;
-import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 
-import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEdmProvider;
-import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
-import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.ODataRequestHandler;
-import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
-import org.sitenetsoft.olinguito.server.api.processor.Processor;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -90,8 +82,9 @@ public class ODataRecorder {
             String normalizedBasePath = normalizePath(path);
 
             // Check if the request path matches the OData base path
-            if (requestPath.startsWith(normalizedBasePath) ||
-                requestPath.equals(normalizedBasePath.substring(0, normalizedBasePath.length() > 0 ? normalizedBasePath.length() : 0))) {
+            boolean matchesPath = requestPath.startsWith(normalizedBasePath)
+                    || (normalizedBasePath.isEmpty() && requestPath.equals("/"));
+            if (matchesPath) {
 
                 ODataRequestHandler handler = getOrCreateHandler();
                 if (handler != null) {
@@ -107,11 +100,21 @@ public class ODataRecorder {
 
     private ODataRequestHandler getOrCreateHandler() {
         // Look up the CDI-managed OData handler
-        ODataHandlerHolder holder = Arc.container().instance(ODataHandlerHolder.class).get();
-        if (holder != null) {
-            return holder.getHandler();
+        try {
+            var container = Arc.container();
+            if (container == null) {
+                return null;
+            }
+            var instanceHandle = container.instance(ODataHandlerHolder.class);
+            if (instanceHandle == null || !instanceHandle.isAvailable()) {
+                return null;
+            }
+            ODataHandlerHolder holder = instanceHandle.get();
+            return holder != null ? holder.getHandler() : null;
+        } catch (Exception e) {
+            // Log or handle the exception as needed
+            return null;
         }
-        return null;
     }
 
     private String normalizePath(String path) {

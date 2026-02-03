@@ -19,7 +19,6 @@
 package org.sitenetsoft.olinguito.server.adapter.quarkus.deployment;
 
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
-import io.quarkus.arc.deployment.BeanContainerBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
@@ -28,7 +27,6 @@ import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedClassBuildItem;
-import io.quarkus.vertx.http.deployment.NonApplicationRootPathBuildItem;
 import io.quarkus.vertx.http.deployment.RouteBuildItem;
 
 import org.sitenetsoft.olinguito.server.adapter.quarkus.runtime.ODataConfig;
@@ -151,6 +149,7 @@ public class ODataProcessor {
 
     /**
      * Registers the OData route at runtime.
+     * Uses a single wildcard route that handles both the base path and sub-paths.
      */
     @BuildStep
     @Record(ExecutionTime.RUNTIME_INIT)
@@ -165,24 +164,23 @@ public class ODataProcessor {
             return;
         }
 
-        String path = odataBuildItem.getPath();
-        if (!path.endsWith("/*")) {
-            path = path.endsWith("/") ? path + "*" : path + "/*";
+        String basePath = odataBuildItem.getPath();
+        // Normalize: remove trailing slash if present
+        if (basePath.endsWith("/") && basePath.length() > 1) {
+            basePath = basePath.substring(0, basePath.length() - 1);
         }
 
-        // Register route for all OData paths
+        // Register wildcard route for all OData sub-paths (e.g., /odata/*)
+        String wildcardPath = basePath + "/*";
         routes.produce(RouteBuildItem.builder()
-                .route(path)
+                .route(wildcardPath)
                 .handler(recorder.createVertxHandler(config, runtimeConfig))
                 .build());
 
-        // Also register the exact path (for service document)
-        String exactPath = odataBuildItem.getPath();
-        if (exactPath.endsWith("/")) {
-            exactPath = exactPath.substring(0, exactPath.length() - 1);
-        }
+        // Register exact path route for service document (e.g., /odata)
+        // This is needed because /odata/* doesn't match /odata exactly
         routes.produce(RouteBuildItem.builder()
-                .route(exactPath)
+                .route(basePath)
                 .handler(recorder.createVertxHandler(config, runtimeConfig))
                 .build());
     }

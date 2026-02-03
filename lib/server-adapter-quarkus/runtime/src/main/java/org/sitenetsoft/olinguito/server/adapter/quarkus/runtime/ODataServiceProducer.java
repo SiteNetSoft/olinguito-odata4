@@ -20,7 +20,6 @@ package org.sitenetsoft.olinguito.server.adapter.quarkus.runtime;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
-import jakarta.inject.Singleton;
 
 import org.sitenetsoft.olinguito.server.api.OData;
 
@@ -39,7 +38,7 @@ public class ODataServiceProducer {
      * @return a new OData instance
      */
     @Produces
-    @Singleton
+    @ApplicationScoped
     public OData produceOData() {
         return OData.newInstance();
     }

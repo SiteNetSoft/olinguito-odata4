@@ -25,8 +25,9 @@ import io.smallrye.config.WithDefault;
 
 /**
  * Runtime configuration for the OData extension.
+ * Uses a distinct prefix to avoid conflicts with build-time config.
  */
-@ConfigMapping(prefix = "quarkus.odata")
+@ConfigMapping(prefix = "quarkus.odata.runtime")
 @ConfigRoot(phase = ConfigPhase.RUN_TIME)
 public interface ODataRuntimeConfig {
 
