@@ -71,11 +71,10 @@ public final class VertxODataResponseWriter {
         try {
             // Create a ByteArrayOutputStream to capture the ODataContent output
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            WritableByteChannel channel = Channels.newChannel(baos);
-
-            // Write ODataContent to the channel
-            content.write(channel);
-            channel.close();
+            try (WritableByteChannel channel = Channels.newChannel(baos)) {
+                // Write ODataContent to the channel
+                content.write(channel);
+            }
 
             // Send the captured content to Vert.x response
             byte[] bytes = baos.toByteArray();
