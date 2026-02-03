@@ -169,11 +169,6 @@ public final class ContentNegotiator {
           supportedContentTypes, charsets);
       
       if (result == null) {
-        System.out.println("[DEBUG] doContentNegotiation unsupported: requested = "
-                + requestedContentType.toContentTypeString()
-                + " supported = " + supportedContentTypes
-                + " representationType = " + representationType);
-
         throw new ContentNegotiatorException(
             "unsupported accept content type: " + requestedContentType + " != " + supportedContentTypes,
             ContentNegotiatorException.MessageKeys.UNSUPPORTED_CONTENT_TYPE,
@@ -288,10 +283,6 @@ public final class ContentNegotiator {
   public static void checkSupport(final ContentType contentType,
       final CustomContentTypeSupport customContentTypeSupport, final RepresentationType representationType)
           throws ContentNegotiatorException {
-    List<ContentType> supported = getSupportedContentTypes(customContentTypeSupport, representationType);
-    System.out.println("[DEBUG] checkSupport contentType = " + contentType.toContentTypeString()
-            + " supported = " + supported);
-
     for (ContentType supportedContentType : getSupportedContentTypes(customContentTypeSupport, representationType)) {
       if (AcceptType.fromContentType(supportedContentType).get(0).matches(contentType)) {
         return;
