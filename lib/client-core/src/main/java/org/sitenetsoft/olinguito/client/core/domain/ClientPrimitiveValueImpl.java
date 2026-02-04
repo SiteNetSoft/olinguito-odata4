@@ -191,7 +191,7 @@ public class ClientPrimitiveValueImpl extends AbstractClientValue implements Cli
     } else if (typeKind.isGeospatial()) {
       return reference.cast(value);
     } else {
-      // TODO: set facets
+      // Facets use defaults since EDM property metadata is not available on ClientPrimitiveValue
       return type.valueOfString(type.valueToString(value,
                       null, null, Constants.DEFAULT_PRECISION, Constants.DEFAULT_SCALE, null),
               null, null, Constants.DEFAULT_PRECISION, Constants.DEFAULT_SCALE, null, reference);

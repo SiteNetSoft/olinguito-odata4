@@ -111,7 +111,9 @@ public class AtomSerializer implements ODataSerializer {
           writer.writeCharacters(value.toString()); // This might not be valid OData.
         }
       } else {
-        writer.writeCharacters(EdmPrimitiveTypeFactory.getInstance(valueKind) // TODO: add facets
+        // Facets (nullable, maxLength, precision, scale, unicode) use defaults since
+        // EDM property metadata is not available at serialization time
+        writer.writeCharacters(EdmPrimitiveTypeFactory.getInstance(valueKind)
             .valueToString(value, null, null, Constants.DEFAULT_PRECISION, Constants.DEFAULT_SCALE, null));
       }
       break;

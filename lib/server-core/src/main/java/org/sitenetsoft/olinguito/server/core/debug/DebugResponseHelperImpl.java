@@ -6,15 +6,17 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Added logging for invalid debug formats
  */
 package org.sitenetsoft.olinguito.server.core.debug;
 
@@ -44,7 +46,12 @@ import org.sitenetsoft.olinguito.server.core.serializer.utils.CircleStreamBuffer
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class DebugResponseHelperImpl implements DebugResponseHelper {
+
+  private static final Logger LOG = Logger.getLogger(DebugResponseHelperImpl.class.getName());
 
   private enum DebugFormat {
     JSON, HTML, DOWNLOAD
@@ -53,11 +60,18 @@ public class DebugResponseHelperImpl implements DebugResponseHelper {
   private final DebugFormat requestedFormat;
 
   public DebugResponseHelperImpl(final String debugFormat) {
-    if (DebugSupport.ODATA_DEBUG_HTML.equals(debugFormat)) {
+    if (DebugSupport.ODATA_DEBUG_HTML.equalsIgnoreCase(debugFormat)) {
       requestedFormat = DebugFormat.HTML;
-    } else if (DebugSupport.ODATA_DEBUG_DOWNLOAD.equals(debugFormat)) {
+    } else if (DebugSupport.ODATA_DEBUG_DOWNLOAD.equalsIgnoreCase(debugFormat)) {
       requestedFormat = DebugFormat.DOWNLOAD;
+    } else if (DebugSupport.ODATA_DEBUG_JSON.equalsIgnoreCase(debugFormat)) {
+      requestedFormat = DebugFormat.JSON;
     } else {
+      // Unknown format - log warning and default to JSON
+      if (debugFormat != null && !debugFormat.isEmpty()) {
+        LOG.log(Level.WARNING, "Unknown debug format ''{0}'', defaulting to JSON. " +
+            "Supported formats: json, html, download", debugFormat);
+      }
       requestedFormat = DebugFormat.JSON;
     }
   }

@@ -96,7 +96,6 @@ public class FixedFormatSerializerImpl implements FixedFormatSerializer {
     return serializer.serialize(odataResponse);
   }
 
-  // TODO: Signature refactoring for writeBatchResponse
   @Override
   public InputStream batchResponse(final List<ODataResponsePart> batchResponses, final String boundary)
       throws BatchSerializerException {

@@ -47,7 +47,7 @@ public abstract class ClientCsdlDynamicExpression extends CsdlDynamicExpression 
   static class DynamicExpressionDeserializer
       extends AbstractClientCsdlEdmDeserializer<CsdlDynamicExpression> {
 
-    // TODO: Search for constants
+    // OData CSDL JSON element names for dynamic expressions
     private static final String APPLY = "Apply";
     private static final String CAST = "Cast";
     private static final String COLLECTION = "Collection";
@@ -104,7 +104,7 @@ public abstract class ClientCsdlDynamicExpression extends CsdlDynamicExpression 
         while (jp.getCurrentToken() != JsonToken.FIELD_NAME) {
           jp.nextToken();
         }
-        // TODO: Read as expression
+        // Read left and right operands as dynamic expressions
         logicalOrComparissonExp.setLeft(jp.readValueAs(ClientCsdlDynamicExpression.class));
         logicalOrComparissonExp.setRight(jp.readValueAs(ClientCsdlDynamicExpression.class));
         // Search for expression

@@ -20,6 +20,7 @@ package org.sitenetsoft.olinguito.client.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -708,8 +709,7 @@ public class MetadataValidationTest extends AbstractTest {
     try {
 		assertEquals(true,metadataValidator.isV4Metadata(metadata));
 	} catch (Exception e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+		fail("Unexpected exception during V4 metadata validation: " + e.getMessage());
 	}
   }
   

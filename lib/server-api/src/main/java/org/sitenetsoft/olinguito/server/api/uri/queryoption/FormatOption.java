@@ -24,6 +24,12 @@ package org.sitenetsoft.olinguito.server.api.uri.queryoption;
  */
 public interface FormatOption extends SystemQueryOption {
 
-  // TODO planned: define best representation for format to enable user defined formats
+  /**
+   * Returns the format value as specified in the $format query option.
+   * Standard values include "json", "xml", "atom". Custom formats may be
+   * supported by specific service implementations.
+   *
+   * @return the format string value
+   */
   String getFormat();
 }

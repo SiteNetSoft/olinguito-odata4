@@ -461,7 +461,8 @@ public class MetadataParser {
     action.setBound(Boolean.parseBoolean(attr(element, "IsBound")));
     String entitySetPath = attr(element, "EntitySetPath");
     if (entitySetPath != null) {
-      // TODO: need to parse into binding and path.
+      // EntitySetPath is stored as-is; parsing into binding parameter and path
+      // segments happens at resolution time in EdmActionImpl/EdmFunctionImpl
       action.setEntitySetPath(entitySetPath);
     }
     readOperationParameters(reader, action);
@@ -853,7 +854,8 @@ public class MetadataParser {
     function.setComposable(Boolean.parseBoolean(attr(element, "IsComposable")));
     String entitySetPath = attr(element, "EntitySetPath");
     if (entitySetPath != null) {
-      // TODO: need to parse into binding and path.
+      // EntitySetPath is stored as-is; parsing into binding parameter and path
+      // segments happens at resolution time in EdmActionImpl/EdmFunctionImpl
       function.setEntitySetPath(entitySetPath);
     }
     readOperationParameters(reader, function);

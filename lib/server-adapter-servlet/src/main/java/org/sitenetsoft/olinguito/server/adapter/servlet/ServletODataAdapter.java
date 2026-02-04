@@ -38,7 +38,7 @@ import org.sitenetsoft.olinguito.server.api.ODataResponse;
 /**
  * Servlet-based adapter that maps HttpServletRequest/Response
  * to ODataRequest/ODataResponse and delegates to the core handler.
- *
+ * <p>
  * This lives in server-adapter-servlet so that server-core
  * remains HTTP/servlet-agnostic.
  */
@@ -201,7 +201,7 @@ public final class ServletODataAdapter implements ODataServletHandler {
     }
 
     /**
-     * Copy servlet headers into the ODataRequest, preserving multi-valued headers.
+     * Copy servlet headers into the ODataRequest, preserving multivalued headers.
      */
     private static void copyHeaders(final ODataRequest odRequest, final HttpServletRequest req) {
         Enumeration<String> headerNames = req.getHeaderNames();
@@ -224,7 +224,7 @@ public final class ServletODataAdapter implements ODataServletHandler {
      *  - rawODataPath
      *  - rawServiceResolutionUri
      *  - rawQueryPath
-     *
+     * <p>
      * Matches the behavior of the original ODataHttpHandlerImpl.
      */
     private static void fillUriInformation(final ODataRequest odRequest,

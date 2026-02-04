@@ -91,8 +91,12 @@ public class SearchHandler {
     }
   }
 
+  /**
+   * Converts a primitive value to a searchable string representation.
+   * This implementation searches across all property types, not just String properties,
+   * which may return more results than a strict string-only search.
+   */
   private static String asString(final Object primitive) {
-    // TODO: improve 'string' conversion; maybe consider only String properties
     if (primitive instanceof String) {
       return (String) primitive;
     } else if (primitive instanceof Calendar) {
