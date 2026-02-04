@@ -21,6 +21,7 @@ package org.sitenetsoft.olinguito.server.core.serializer.xml;
 import static org.junit.Assert.assertEquals;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 import org.apache.commons.io.IOUtils;
@@ -45,7 +46,7 @@ public class ServerErrorXmlSerializerTest {
     ODataServerError error = new ODataServerError();
     error.setCode("Code").setMessage("ErrorMessage");
     InputStream stream = ser.error(error).getContent();
-    String jsonString = IOUtils.toString(stream);
+    String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
     assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
         + "<error xmlns=\"http://docs.oasis-open.org/odata/ns/metadata\">"
         + "<code>Code</code>"
@@ -71,7 +72,7 @@ public class ServerErrorXmlSerializerTest {
         .setMessage("detail message")));
 
     InputStream stream = ser.error(error).getContent();
-    String jsonString = IOUtils.toString(stream);
+    String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
     assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
         + "<error xmlns=\"http://docs.oasis-open.org/odata/ns/metadata\">"
         + "<code>code</code>"

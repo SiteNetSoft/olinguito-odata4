@@ -26,6 +26,7 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -126,7 +127,7 @@ public class ODataJsonSerializerTest {
         EntitySerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expectedResult = "{"
         + "\"@odata.context\":\"$metadata#ESAllPrim/$entity\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
@@ -162,7 +163,7 @@ public class ODataJsonSerializerTest {
 			  EntitySerializerOptions.with()
 			  .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
 			  .build()).getContent();
-	  final String resultString = IOUtils.toString(result);
+	  final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
 	  final String expectedResult = "{"
 			  + "\"@odata.context\":\"$metadata#ESAllPrim/$entity\","
 			  + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
@@ -194,7 +195,7 @@ public class ODataJsonSerializerTest {
         EntitySerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expected = "{\"@odata.context\":\"$metadata#ESAllPrim/$entity\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
         + "\"@odata.type\":\"#olingo.odata.test1.ETAllPrim\","
@@ -246,7 +247,7 @@ public class ODataJsonSerializerTest {
         EntityCollectionSerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expected = "{" + 
         "\"@odata.context\":\"$metadata#ESAllPrim\"," + 
         "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\"," + 
@@ -316,7 +317,7 @@ public class ODataJsonSerializerTest {
             .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
             .expand(expand)
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expected = "{" + 
         "\"@odata.context\":\"$metadata#ESAllPrim\"," + 
         "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\"," + 
@@ -465,7 +466,7 @@ public class ODataJsonSerializerTest {
             .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
             .count(countOption)
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
 
     Assert.assertThat(resultString, CoreMatchers.startsWith("{"
         + "\"@odata.context\":\"$metadata#ESCompAllPrim\","
@@ -594,7 +595,7 @@ public class ODataJsonSerializerTest {
             .contextURL(ContextURL.with().serviceRoot(URI.create("http://host/service/"))
                 .entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expectedResult = "{"
         + "\"@odata.context\":\"http://host/service/$metadata#ESCollAllPrim/$entity\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
@@ -630,7 +631,7 @@ public class ODataJsonSerializerTest {
         EntitySerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expectedResult = "{"
         + "\"@odata.context\":\"$metadata#ESCompAllPrim/$entity\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
@@ -665,7 +666,7 @@ public class ODataJsonSerializerTest {
         EntitySerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expectedResult = "{"
         + "\"@odata.context\":\"$metadata#ESMixPrimCollComp/$entity\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
@@ -689,7 +690,7 @@ public class ODataJsonSerializerTest {
         EntitySerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expectedResult =  "{"
         + "\"@odata.context\":\"$metadata#ESCompCollDerived/$entity\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
@@ -719,7 +720,7 @@ public class ODataJsonSerializerTest {
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .expand(expand)
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expectedResult =   "{\"@odata.context\":\"$metadata#ESAllPrimDerived/$entity\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
         + "\"PropertyInt16\":32767,\"PropertyString\":\"First Resource - positive values\",\"PropertyBoolean\":true,"
@@ -748,7 +749,7 @@ public class ODataJsonSerializerTest {
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .expand(expand)
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expectedResult =   "{\"@odata.context\":\"$metadata#ESAllPrimDerived/$entity\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\",\"PropertyInt16\":-32768,"
         + "\"PropertyString\":\"Second Resource - negative values\","
@@ -773,7 +774,7 @@ public class ODataJsonSerializerTest {
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .expand(expand)
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     
     final String expectedResult =    "{\"@odata.context\":\"$metadata#ESAllPrimDerived/$entity\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\",\"PropertyInt16\":0,\"PropertyString\":\"\","
@@ -921,7 +922,7 @@ public class ODataJsonSerializerTest {
         .entity(metadata, edmEntitySet.getEntityType(), entity, EntitySerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expectedResult = "{\"@odata.context\":\"$metadata#ESTwoPrim/$entity\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
         + "\"PropertyInt16\":32766,\"PropertyString\":\"Test String1\"}";
@@ -938,7 +939,7 @@ public class ODataJsonSerializerTest {
                 .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
                 .build())
         .getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expectedResult = "{\"@odata.context\":\"$metadata#ESTwoPrim\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
         + "\"value\":[{\"@odata.type\":\"#olingo.odata.test1.ETTwoPrim\",\"@odata.id\":\"ESTwoPrim(32766)\","
@@ -1016,7 +1017,7 @@ public class ODataJsonSerializerTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
         .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expectedResult = "{\"@odata.context\":\"$metadata#ESWithStream\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
         + "\"value\":[{\"PropertyInt16\":32767},"
@@ -1033,7 +1034,7 @@ public class ODataJsonSerializerTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
         .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expectedResult = "{"
         + "\"value\":[{\"PropertyInt16\":32767},"
         + "{\"PropertyInt16\":7}]}";
@@ -1048,7 +1049,7 @@ public class ODataJsonSerializerTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
         .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expectedResult = "{\"@odata.context\":\"$metadata#ESWithStream\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
         + "\"value\":[{"
@@ -1149,7 +1150,7 @@ public class ODataJsonSerializerTest {
             EntitySerializerOptions.with().contextURL(ContextURL.with()
                 .entitySet(edmEntitySet).suffix(Suffix.ENTITY).build()).build())
         .getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expectedResult = "{\"@odata.context\":\"$metadata#ESMedia/$entity\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
         + "\"@odata.mediaEtag\":\"W/\\\\\\\"08D25949E3BFB7AB\\\\\\\"\",\"@odata.mediaContentType\":\"image/svg+xml\","
@@ -1207,7 +1208,7 @@ public class ODataJsonSerializerTest {
                     .suffix(Suffix.ENTITY).build())
                 .select(select)
                 .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expectedResult = "{"
         + "\"@odata.context\":\"$metadata#ESAllPrim(PropertyInt16,PropertyBoolean,PropertyDate)/$entity\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
@@ -1229,7 +1230,7 @@ public class ODataJsonSerializerTest {
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .select(select)
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expectedResult = "{\"@odata.context\":\"$metadata#ESTwoPrim/$entity\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
         + "\"PropertyInt16\":32766,\"PropertyString\":\"Test String1\"}";
@@ -1252,7 +1253,7 @@ public class ODataJsonSerializerTest {
                     .build())
                 .select(select)
                 .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expected = "{"
         +     "\"@odata.context\":\"$metadata#ESFourKeyAlias"
         +        "(PropertyInt16,PropertyCompComp/PropertyComp/PropertyString)\"," 
@@ -1281,7 +1282,7 @@ public class ODataJsonSerializerTest {
             EntityCollectionSerializerOptions.with()
                 .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
                 .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
 
     final String expected = "{"
         + "\"@odata.context\":\"$metadata#ESFourKeyAlias\","
@@ -1350,7 +1351,7 @@ public class ODataJsonSerializerTest {
                  .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
                  .build())
         .getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expectedResult = "{\"@odata.context\":\"$metadata#ESCompCollComp\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
         + "\"value\":[{\"@odata.type\":\"#olingo.odata.test1.ETCompCollComp\","
@@ -1413,7 +1414,7 @@ public class ODataJsonSerializerTest {
                  .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
                  .build())
         .getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expectedResult = "{\"@odata.context\":\"$metadata#ESCompCollComp\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
         + "\"value\":[{"
@@ -1457,7 +1458,7 @@ public class ODataJsonSerializerTest {
             .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
             .build())
         .getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     Assert.assertEquals(false, resultString.contains(METADATA_TEXT));
   }
 
@@ -1479,7 +1480,7 @@ public class ODataJsonSerializerTest {
                 .select(select)
                 .build()).getContent();
           Assert.assertNotNull(result);   
-          final String resultString = IOUtils.toString(result);
+          final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
            Assert.assertEquals(  "{\"@odata.context\":\"$metadata#ESAllPrim(PropertyInt16,"
 		   + "PropertyBoolean,PropertyDate)/$entity\","+
            "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\",\"@odata.id\":\"ESAllPrim(32767)\","+
@@ -1498,7 +1499,7 @@ public class ODataJsonSerializerTest {
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .expand(expand)
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     Assert.assertEquals("{\"@odata.context\":\"$metadata#ESTwoPrim/$entity\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
         + "\"PropertyInt16\":32767,\"PropertyString\":\"Test String4\","
@@ -1986,7 +1987,7 @@ public class ODataJsonSerializerTest {
 
     final SerializerResult serializerResult = serializer.reference(metadata, edmEntitySet, entity,
         ReferenceSerializerOptions.with().contextURL(ContextURL.with().suffix(Suffix.REFERENCE).build()).build());
-    final String resultString = IOUtils.toString(serializerResult.getContent());
+    final String resultString = IOUtils.toString(serializerResult.getContent(), StandardCharsets.UTF_8);
 
     Assert.assertEquals("{\"@odata.context\":\"../$metadata#$ref\","
         + "\"@odata.id\":\"ESAllPrim(32767)\"}",
@@ -2014,7 +2015,7 @@ public class ODataJsonSerializerTest {
             .contextURL(ContextURL.with().asCollection().suffix(Suffix.REFERENCE).build())
             .build());
 
-    final String resultString = IOUtils.toString(serializerResult.getContent());
+    final String resultString = IOUtils.toString(serializerResult.getContent(), StandardCharsets.UTF_8);
 
     Assert.assertEquals("{\"@odata.context\":\"../$metadata#Collection($ref)\","
         + "\"value\":[{\"@odata.id\":\"ESAllPrim(32767)\"},"
@@ -2034,7 +2035,7 @@ public class ODataJsonSerializerTest {
             .contextURL(ContextURL.with().asCollection().suffix(Suffix.REFERENCE).build())
             .build());
 
-    final String resultString = IOUtils.toString(serializerResult.getContent());
+    final String resultString = IOUtils.toString(serializerResult.getContent(), StandardCharsets.UTF_8);
 
     Assert.assertEquals("{\"@odata.context\":\"../$metadata#Collection($ref)\","
         + "\"value\":[]}", resultString);
@@ -2057,7 +2058,7 @@ public class ODataJsonSerializerTest {
         EntitySerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expectedResult = "{"
         + "\"@odata.context\":\"$metadata#ESAllPrim/$entity\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
@@ -2090,7 +2091,7 @@ public class ODataJsonSerializerTest {
             .contextURL(ContextURL.with().serviceRoot(URI.create("http://host/service/"))
                 .entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expectedResult = "{"
         + "\"@odata.context\":\"http://host/service/$metadata#ESCollAllPrim/$entity\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
@@ -2205,7 +2206,7 @@ public class ODataJsonSerializerTest {
             .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
             .count(countOption)
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
 
     Assert.assertThat(resultString, CoreMatchers.startsWith("{"
         + "\"@odata.context\":\"$metadata#ESAllPrim\","
@@ -2235,7 +2236,7 @@ public class ODataJsonSerializerTest {
             .contextURL(ContextURL.with().asCollection().suffix(Suffix.REFERENCE).build())
             .count(countOption)
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
 
     Assert.assertThat(resultString, CoreMatchers.startsWith("{"
         + "\"@odata.context\":\"../$metadata#Collection($ref)\","
@@ -2421,7 +2422,7 @@ public class ODataJsonSerializerTest {
             .expand(expand)
             .build())
         .getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expected = "{" + 
          "\"@odata.context\":\"$metadata#ESPeople/$entity\"," + 
          "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\"," + 
@@ -2497,7 +2498,7 @@ public class ODataJsonSerializerTest {
             .expand(expand)
             .build())
         .getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expected = "{" +
        "\"@odata.context\":\"$metadata#ESPeople/$entity\"," + 
        "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\"," + 
@@ -2626,7 +2627,7 @@ public class ODataJsonSerializerTest {
         EntitySerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expected = "{\"@odata.context\":\"$metadata#ESKeyNavCont/$entity\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\",\"@odata.type\":"
         + "\"#olingo.odata.test1.ETKeyNavCont\",\"@odata.id\":\"ESKeyNavCont(32766)\","
@@ -2650,7 +2651,7 @@ public class ODataJsonSerializerTest {
                 type(edmEntitySet.getEntityType().getNavigationProperty("NavPropertyETContMany").getType())
                 .entitySetOrSingletonOrType("ESKeyNavCont(-365)/NavPropertyETContMany").build())
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expected = "{\"@odata.context\":\"$metadata#ESKeyNavCont%28-365%29%2FNavPropertyETContMany\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\",\"value\":[{"
         + "\"@odata.type\":\"#olingo.odata.test1.ETCont\",\"@odata.id\":"
@@ -2789,7 +2790,7 @@ public class ODataJsonSerializerTest {
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .select(select)
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expectedResult = "{\"@odata.context\":\"$metadata#ESTwoKeyNav/$entity\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
         + "\"@odata.id\":\"ESTwoKeyNav(PropertyInt16=1,PropertyString='1')\","
@@ -2881,7 +2882,7 @@ public class ODataJsonSerializerTest {
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .expand(expand)
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expectedResult = "{\"@context\":\"$metadata#ESStreamOnComplexProp/$entity\","
         + "\"@metadataEtag\":\"W/\\\"metadataETag\\\"\",\"PropertyInt16\":7,"
             + "\"PropertyInt32\":10,\"PropertyEntityStream@mediaEtag\":\"eTag\","
@@ -2907,7 +2908,7 @@ public class ODataJsonSerializerTest {
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .expand(expand)
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expectedResult = "{\"@context\":\"$metadata#ESStreamOnComplexProp/$entity\","
         + "\"@metadataEtag\":\"W/\\\"metadataETag\\\"\","
         + "\"@type\":\"#olingo.odata.test1.ETStreamOnComplexProp\","
@@ -2942,7 +2943,7 @@ public class ODataJsonSerializerTest {
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .expand(expand)
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expectedResult = "{\"PropertyInt16\":7,\"PropertyInt32\":10,"
         + "\"PropertyCompWithStream\":{\"PropertyStream\":\"\ufffdioz\ufffd\\\"\ufffd\","
             + "\"PropertyComp\":{\"PropertyInt16\":333,\"PropertyString\":\"TEST123\"}}}";

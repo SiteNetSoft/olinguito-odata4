@@ -26,16 +26,10 @@ import org.sitenetsoft.olinguito.server.core.debug.ServerCoreDebugger;
 
 public class ODataRequestHandlerImpl implements ODataRequestHandler {
 
-  public static final int COPY_BUFFER_SIZE = 8192;
-  private static final String REQUESTMAPPING = "requestMapping";
-
   private final ODataHandlerImpl handler;
-  private final ServerCoreDebugger debugger;
-
-  private int split = 0;
 
   public ODataRequestHandlerImpl(final OData odata, final ServiceMetadata serviceMetadata) {
-    debugger = new ServerCoreDebugger(odata);
+    ServerCoreDebugger debugger = new ServerCoreDebugger(odata);
     handler = new ODataHandlerImpl(odata, serviceMetadata, debugger);
   }
 
@@ -46,7 +40,6 @@ public class ODataRequestHandlerImpl implements ODataRequestHandler {
 
   @Override
   public void setSplit(final int split) {
-    this.split = split;
   }
 
   @Override

@@ -26,6 +26,7 @@ import static org.junit.Assert.fail;
 
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
 import org.apache.commons.io.IOUtils;
@@ -89,7 +90,7 @@ public class PrimitiveComplexITCase extends AbstractParamTecSvcITCase {
     saveCookieHeader(response);
 
     if (isJson()) {
-      String actualResult = IOUtils.toString(response.getRawResponse(), "UTF-8");
+      String actualResult = IOUtils.toString(response.getRawResponse(), StandardCharsets.UTF_8);
       assertTrue(actualResult.startsWith("{\"@odata.context\":\"../$metadata#ESTwoPrim(32766)/PropertyString\","));
       assertTrue(actualResult.endsWith("\"value\":\"Test String1\"}"));
     } else {
@@ -178,7 +179,7 @@ public class PrimitiveComplexITCase extends AbstractParamTecSvcITCase {
     saveCookieHeader(response);
 
     if (isJson()) {
-      String actualResult = IOUtils.toString(response.getRawResponse(), "UTF-8");
+      String actualResult = IOUtils.toString(response.getRawResponse(), StandardCharsets.UTF_8);
       assertTrue(actualResult.startsWith("{\"@odata.context\":\"../$metadata#ESMixPrimCollComp(7)/PropertyComp\","));
       assertTrue(actualResult.endsWith("\"PropertyInt16\":222,\"PropertyString\":\"TEST B\"}"));
     } else {
@@ -386,7 +387,7 @@ public class PrimitiveComplexITCase extends AbstractParamTecSvcITCase {
 
     final ClientPrimitiveValue value = response.getBody();
     assertNotNull(value);
-    assertEquals("Test String1", IOUtils.toString((InputStream) value.toValue(), "UTF-8"));
+    assertEquals("Test String1", IOUtils.toString((InputStream) value.toValue(), StandardCharsets.UTF_8));
   }
 
   @Test

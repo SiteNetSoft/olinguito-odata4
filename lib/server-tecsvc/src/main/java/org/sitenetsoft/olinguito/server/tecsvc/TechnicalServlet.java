@@ -19,6 +19,7 @@
 package org.sitenetsoft.olinguito.server.tecsvc;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.net.URI;
 import java.util.Collections;
 import java.util.UUID;
@@ -34,7 +35,6 @@ import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReferenceInclude;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.ODataRequestHandler;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
-import org.sitenetsoft.olinguito.server.api.debug.DefaultDebugSupport;
 import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.TechnicalActionProcessor;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.TechnicalBatchProcessor;
@@ -49,6 +49,7 @@ import org.slf4j.LoggerFactory;
 
 public class TechnicalServlet extends HttpServlet {
 
+  @Serial
   private static final long serialVersionUID = 1L;
   private static final Logger LOG = LoggerFactory.getLogger(TechnicalServlet.class);
   /**
