@@ -262,7 +262,7 @@ public class DataProvider {
         if (keyPredicateNames.size() <= 1) {
           throw new DataProviderException("Single Enum as key not supported", HttpStatusCode.NOT_IMPLEMENTED);
         }
-        newValue = new Short((short) 1);
+        newValue = Short.valueOf((short) 1);
       } else {
         throw new DataProviderException("Key type not supported", HttpStatusCode.NOT_IMPLEMENTED);
       }

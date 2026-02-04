@@ -214,9 +214,9 @@ public class ClientObjectImplTest {
     assertNotNull(builder.buildBinary(byteArray));
     Short shortValue = new Short("1");
     assertNotNull(builder.buildInt16(shortValue));
-    assertNotNull(builder.buildInt32(new Integer("1")));
-    assertNotNull(builder.buildSingle(new Float("1")));
-    assertNotNull(builder.buildDouble(new Double("1")));
+    assertNotNull(builder.buildInt32(Integer.valueOf("1")));
+    assertNotNull(builder.buildSingle(Float.valueOf("1")));
+    assertNotNull(builder.buildDouble(Double.valueOf("1")));
     assertNotNull(builder.buildGuid(new UUID(1,1)));
     assertNotNull(builder.buildDecimal(new BigDecimal("1")));
     assertNotNull(builder.buildDuration(new BigDecimal("1")));

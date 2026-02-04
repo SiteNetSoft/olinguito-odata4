@@ -27,7 +27,7 @@ public class OData4Impl extends ODataImpl {
   public static OData newInstance() {
     try {
       final Class<?> clazz = Class.forName(OData4Impl.class.getName());
-      final Object object = clazz.newInstance();
+      final Object object = clazz.getDeclaredConstructor().newInstance();
       return (OData) object;
     } catch (final Exception e) {
       throw new ODataRuntimeException(e);

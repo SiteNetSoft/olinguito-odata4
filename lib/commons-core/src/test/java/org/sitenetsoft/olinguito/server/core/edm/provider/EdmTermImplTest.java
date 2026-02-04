@@ -101,10 +101,10 @@ public class EdmTermImplTest {
     derivedCsdlTerm.setAnnotations(csdlAnnotations);
 
     derivedCsdlTerm.setNullable(false);
-    derivedCsdlTerm.setMaxLength(new Integer(15));
+    derivedCsdlTerm.setMaxLength(Integer.valueOf(15));
     derivedCsdlTerm.setDefaultValue("abc");
-    derivedCsdlTerm.setPrecision(new Integer(14));
-    derivedCsdlTerm.setScale(new Integer(13));
+    derivedCsdlTerm.setPrecision(Integer.valueOf(14));
+    derivedCsdlTerm.setScale(Integer.valueOf(13));
 
     when(provider.getTerm(derivedTermName)).thenReturn(derivedCsdlTerm);
     derivedTerm = new EdmTermImpl(edm, "namespace", derivedCsdlTerm);
@@ -150,9 +150,9 @@ public class EdmTermImplTest {
     // set facets
     assertFalse(derivedTerm.isNullable());
     assertEquals("abc", derivedTerm.getDefaultValue());
-    assertEquals(new Integer(15), derivedTerm.getMaxLength());
-    assertEquals(new Integer(14), derivedTerm.getPrecision());
-    assertEquals(new Integer(13), derivedTerm.getScale());
+    assertEquals(Integer.valueOf(15), derivedTerm.getMaxLength());
+    assertEquals(Integer.valueOf(14), derivedTerm.getPrecision());
+    assertEquals(Integer.valueOf(13), derivedTerm.getScale());
     assertNull(derivedTerm.getSrid());
   }
 

@@ -174,7 +174,7 @@ public class AtomDeserializerTest {
     final Entity inlineEntity = entity.getPayload().getNavigationLink("Supplier").getInlineEntity();
     assertNotNull(inlineEntity);
 
-    assertEquals(new Integer(0), inlineEntity.getProperty("ID").getValue());
+    assertEquals(Integer.valueOf(0), inlineEntity.getProperty("ID").getValue());
     assertEquals("Exotic Liquids", inlineEntity.getProperty("Name").getValue());
   }
 

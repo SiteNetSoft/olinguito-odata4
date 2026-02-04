@@ -81,9 +81,9 @@ public class EdmCastImplTest extends AbstractAnnotationTest{
   @Test
   public void castWithExpression() {
     CsdlCast csdlExp = new CsdlCast();
-    csdlExp.setMaxLength(new Integer(1));
-    csdlExp.setPrecision(new Integer(2));
-    csdlExp.setScale(new Integer(3));
+    csdlExp.setMaxLength(Integer.valueOf(1));
+    csdlExp.setPrecision(Integer.valueOf(2));
+    csdlExp.setScale(Integer.valueOf(3));
     csdlExp.setType("Edm.String");
     csdlExp.setValue(new CsdlConstantExpression(ConstantExpressionType.String));
     List<CsdlAnnotation> csdlAnnotations = new ArrayList<CsdlAnnotation>();
@@ -93,9 +93,9 @@ public class EdmCastImplTest extends AbstractAnnotationTest{
 
     EdmCast asIsOf = isOf.asDynamic().asCast();
 
-    assertEquals(new Integer(1), asIsOf.getMaxLength());
-    assertEquals(new Integer(2), asIsOf.getPrecision());
-    assertEquals(new Integer(3), asIsOf.getScale());
+    assertEquals(Integer.valueOf(1), asIsOf.getMaxLength());
+    assertEquals(Integer.valueOf(2), asIsOf.getPrecision());
+    assertEquals(Integer.valueOf(3), asIsOf.getScale());
 
     assertNotNull(asIsOf.getType());
     assertTrue(asIsOf.getType() instanceof EdmPrimitiveType);

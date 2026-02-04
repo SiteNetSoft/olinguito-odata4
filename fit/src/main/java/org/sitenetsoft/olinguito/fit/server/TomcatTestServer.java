@@ -349,7 +349,7 @@ public class TomcatTestServer implements TestServer {
         return this;
       }
       String servletClassname = factoryClass.getName();
-      HttpServlet httpServlet = (HttpServlet) Class.forName(servletClassname).newInstance();
+      HttpServlet httpServlet = (HttpServlet) Class.forName(servletClassname).getDeclaredConstructor().newInstance();
       Context cxt = getContext();
       String randomServletId = UUID.randomUUID().toString();
       Tomcat.addServlet(cxt, randomServletId, httpServlet);
@@ -360,14 +360,15 @@ public class TomcatTestServer implements TestServer {
 
     public TomcatTestServerBuilder addAuthServlet(final Class<? extends HttpServlet> factoryClass,
             final String servletPath, final String contextPath)
-        throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException, ServletException {
+        throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException, ServletException,
+               NoSuchMethodException, java.lang.reflect.InvocationTargetException {
       if (server != null) {
         return this;
       }
       final String TOMCAT_WEB_XML = "web.xml";
       String webXMLPath = Thread.currentThread().getContextClassLoader().getResource(TOMCAT_WEB_XML).getPath();
       String servletClassname = factoryClass.getName();
-      HttpServlet httpServlet = (HttpServlet) Class.forName(servletClassname).newInstance();
+      HttpServlet httpServlet = (HttpServlet) Class.forName(servletClassname).getDeclaredConstructor().newInstance();
       Context cxt = tomcat.addWebapp(servletPath, baseDir.getAbsolutePath());
       cxt.setAltDDName(webXMLPath);
       String randomServletId = UUID.randomUUID().toString();
