@@ -408,7 +408,7 @@ public class DeepInsertITCase extends AbstractParamTecSvcITCase {
         .execute();
     assertEquals(HttpStatusCode.CREATED.getStatusCode(), responseCreate.getStatusCode());
 
-    final String cookie = responseCreate.getHeader(HttpHeader.SET_COOKIE).toString();
+    final String cookie = responseCreate.getHeader(HttpHeader.SET_COOKIE).iterator().next();
 
     // Fetch ESKeyNav entity with expand of NavPropertyETTwoKeyNavOne nav. property
     ClientProperty propertyInt16 = responseCreate.getBody().getProperty(PROPERTY_INT16);
@@ -905,7 +905,7 @@ public class DeepInsertITCase extends AbstractParamTecSvcITCase {
         .execute();
     assertEquals(HttpStatusCode.CREATED.getStatusCode(), responseCreate.getStatusCode());
 
-    final String cookie = responseCreate.getHeader(HttpHeader.SET_COOKIE).toString();
+    final String cookie = responseCreate.getHeader(HttpHeader.SET_COOKIE).iterator().next();
 
     // Fetch ESKeyNav entity with expand of NavPropertyETTwoKeyNavOne nav. property
     ClientProperty propertyInt16 = responseCreate.getBody().getProperty(PROPERTY_INT16);
