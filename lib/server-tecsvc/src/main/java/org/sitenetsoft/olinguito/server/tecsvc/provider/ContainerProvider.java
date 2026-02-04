@@ -112,7 +112,8 @@ public class ContainerProvider {
     entitySets.add(prov.getEntitySet(ContainerProvider.nameContainer, "ESPeople"));
     entitySets.add(prov.getEntitySet(ContainerProvider.nameContainer, "ESTwoPrimDerived"));
     entitySets.add(prov.getEntitySet(ContainerProvider.nameContainer, "ESAllPrimDerived"));
-    entitySets.add(prov.getEntitySet(ContainerProvider.nameContainer, "ESDelta")); 
+    entitySets.add(prov.getEntitySet(ContainerProvider.nameContainer, "ESDelta"));
+    entitySets.add(prov.getEntitySet(ContainerProvider.nameContainer, "ESStreamOnComplexProp"));
 
     // Singletons
     List<CsdlSingleton> singletons = new ArrayList<CsdlSingleton>();

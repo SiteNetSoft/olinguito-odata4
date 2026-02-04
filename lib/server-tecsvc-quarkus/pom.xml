@@ -111,6 +111,41 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
 
+        <!-- Servlet API - required for native image analysis
+             (server-tecsvc has servlet deps for async support that aren't used in Quarkus at runtime) -->
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+        </dependency>
+
+        <!-- Native image dependencies - required for Netty compression support -->
+        <dependency>
+            <groupId>com.github.luben</groupId>
+            <artifactId>zstd-jni</artifactId>
+            <version>1.5.5-11</version>
+        </dependency>
+
+        <!-- Aalto XML parser - required by OData server for native builds -->
+        <dependency>
+            <groupId>com.fasterxml</groupId>
+            <artifactId>aalto-xml</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+
+        <!-- Fix Netty version mismatch for native builds -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec</artifactId>
+            <version>4.1.129.Final</version>
+        </dependency>
+
+        <!-- JZlib - required by Netty compression for native builds -->
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jzlib</artifactId>
+            <version>1.1.3</version>
+        </dependency>
+
         <!-- Test dependencies -->
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -125,6 +160,8 @@
     </dependencies>
 
     <build>
+        <!-- Use simple name without spaces for native builds (Podman volume mount compatibility) -->
+        <finalName>server-tecsvc-quarkus</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -133,6 +170,157 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-maven-plugin</artifactId>
+                <version>${quarkus.version}</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>build</goal>
+                            <goal>generate-code</goal>
+                            <goal>generate-code-tests</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                                <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!-- Standard native build profile -->
+        <profile>
+            <id>native</id>
+            <activation>
+                <property>
+                    <name>native</name>
+                </property>
+            </activation>
+            <properties>
+                <quarkus.native.enabled>true</quarkus.native.enabled>
+                <!--
+                     To build natively, you need ONE of:
+                     1. GraalVM with native-image: set GRAALVM_HOME or JAVA_HOME
+                     2. Docker/Podman: add -Dquarkus.native.container-build=true
+                -->
+            </properties>
+        </profile>
+
+        <!--
+            Profile-Guided Optimization (PGO) Profiles
+
+            PGO improves native image performance by 10-30% by optimizing
+            hot code paths based on actual execution profiles.
+
+            Workflow:
+            1. Build instrumented binary:
+               mvn package -Pnative-pgo-instrument -Dquarkus.native.container-build=true -Dquarkus.native.container-runtime=podman
+
+            2. Run the instrumented binary:
+               ./target/server-tecsvc-quarkus-runner
+
+            3. Generate load with K6 (in another terminal):
+               k6 run src/test/k6/load-test.js
+
+            4. Stop the application (Ctrl+C) - this writes default.iprof
+
+            5. Copy the profile to the project directory:
+               cp default.iprof src/main/resources/
+
+            6. Build optimized binary with profiles:
+               mvn package -Pnative-pgo -Dquarkus.native.container-build=true -Dquarkus.native.container-runtime=podman
+        -->
+
+        <!--
+            Step 1: Build instrumented binary for profile collection
+            PGO requires Oracle GraalVM (not Mandrel). Install Oracle GraalVM locally:
+              sdk install java 21.0.2-graal  (using SDKMAN)
+            Or download from: https://www.graalvm.org/downloads/
+        -->
+        <profile>
+            <id>native-pgo-instrument</id>
+            <properties>
+                <quarkus.native.enabled>true</quarkus.native.enabled>
+                <quarkus.native.additional-build-args>--pgo-instrument</quarkus.native.additional-build-args>
+            </properties>
+        </profile>
+
+        <!-- Step 2: Build optimized binary using collected profiles -->
+        <profile>
+            <id>native-pgo</id>
+            <properties>
+                <quarkus.native.enabled>true</quarkus.native.enabled>
+                <!-- Profile file location - adjust path if needed -->
+                <quarkus.native.additional-build-args>--pgo=${project.basedir}/src/main/resources/default.iprof</quarkus.native.additional-build-args>
+            </properties>
+        </profile>
+
+        <!--
+            Fully optimized native build profile
+            Combines PGO with additional optimizations:
+            - G1 GC for better throughput under concurrent load
+            - CPU architecture targeting for modern processors
+            - ML-based inlining for improved optimization decisions
+            Requires Oracle GraalVM installed locally
+        -->
+        <profile>
+            <id>native-optimized</id>
+            <properties>
+                <quarkus.native.enabled>true</quarkus.native.enabled>
+                <quarkus.native.additional-build-args>--pgo=${project.basedir}/src/main/resources/default.iprof,-H:+UseG1GC,-march=x86-64-v3,-H:+MLProfileInference</quarkus.native.additional-build-args>
+            </properties>
+        </profile>
+
+        <!--
+            Quick native build for development (faster builds, less optimization)
+        -->
+        <profile>
+            <id>native-fast</id>
+            <properties>
+                <quarkus.native.enabled>true</quarkus.native.enabled>
+                <quarkus.native.additional-build-args>-Ob</quarkus.native.additional-build-args>
+            </properties>
+        </profile>
+
+        <!--
+            CPU-optimized native build (works with Mandrel/containers)
+            Targets modern x86-64-v3 processors (Haswell/2013+) for better performance
+        -->
+        <profile>
+            <id>native-cpu-optimized</id>
+            <properties>
+                <quarkus.native.enabled>true</quarkus.native.enabled>
+                <quarkus.native.additional-build-args>-march=x86-64-v3</quarkus.native.additional-build-args>
+            </properties>
+        </profile>
+    </profiles>
 </project>
