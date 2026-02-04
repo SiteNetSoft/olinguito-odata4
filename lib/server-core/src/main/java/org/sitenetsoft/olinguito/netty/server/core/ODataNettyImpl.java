@@ -60,7 +60,7 @@ public class ODataNettyImpl extends ODataNetty {
        * We explicitly do not use the singleton pattern to keep the server state free
        * and avoid class loading issues also during hot deployment.
        */
-      final Object object = clazz.newInstance();
+      final Object object = clazz.getDeclaredConstructor().newInstance();
       odata = (OData) object;
     } catch (Exception e) {
       throw new ODataRuntimeException(e);
