@@ -52,7 +52,7 @@ public class FilterSystemQueryITCase extends AbstractParamTecSvcITCase {
   @Test
   public void useFilterFactory() {
     final URIFilter filter = getFilterFactory().eq(
-        getFilterArgFactory().property("PropertyInt16"), getFilterArgFactory().literal(new Integer(0)));
+        getFilterArgFactory().property("PropertyInt16"), getFilterArgFactory().literal(Integer.valueOf(0)));
 
     final URIBuilder uriBuilder =
         getClient().newURIBuilder(SERVICE_URI).appendEntitySetSegment(ES_ALL_PRIM).filter(filter);

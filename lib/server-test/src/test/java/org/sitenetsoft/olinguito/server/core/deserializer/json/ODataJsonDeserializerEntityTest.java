@@ -107,15 +107,15 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
     assertNotNull(properties);
     assertEquals(16, properties.size());
 
-    assertEquals(new Short((short) 32767), entity.getProperty("PropertyInt16").getValue());
+    assertEquals(Short.valueOf((short) 32767), entity.getProperty("PropertyInt16").getValue());
     assertEquals("First Resource - positive values", entity.getProperty("PropertyString").getValue());
-    assertEquals(new Boolean(true), entity.getProperty("PropertyBoolean").getValue());
-    assertEquals(new Short((short) 255), entity.getProperty("PropertyByte").getValue());
-    assertEquals(new Byte((byte) 127), entity.getProperty("PropertySByte").getValue());
-    assertEquals(new Integer(2147483647), entity.getProperty("PropertyInt32").getValue());
-    assertEquals(new Long(9223372036854775807l), entity.getProperty("PropertyInt64").getValue());
-    assertEquals(new Float(1.79E20), entity.getProperty("PropertySingle").getValue());
-    assertEquals(new Double(-1.79E19), entity.getProperty("PropertyDouble").getValue());
+    assertEquals(Boolean.TRUE, entity.getProperty("PropertyBoolean").getValue());
+    assertEquals(Short.valueOf((short) 255), entity.getProperty("PropertyByte").getValue());
+    assertEquals(Byte.valueOf((byte) 127), entity.getProperty("PropertySByte").getValue());
+    assertEquals(Integer.valueOf(2147483647), entity.getProperty("PropertyInt32").getValue());
+    assertEquals(Long.valueOf(9223372036854775807l), entity.getProperty("PropertyInt64").getValue());
+    assertEquals(Float.valueOf(1.79E20f), entity.getProperty("PropertySingle").getValue());
+    assertEquals(Double.valueOf(-1.79E19), entity.getProperty("PropertyDouble").getValue());
     assertEquals(new BigDecimal(34), entity.getProperty("PropertyDecimal").getValue());
     assertNotNull(entity.getProperty("PropertyBinary").getValue());
     assertNotNull(entity.getProperty("PropertyDate").getValue());
@@ -138,7 +138,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
     List<Property> properties = entity.getProperties();
     assertNotNull(properties);
     assertEquals(3, properties.size());
-    assertEquals(new Short((short) 32767), entity.getProperty("PropertyInt16").getValue());
+    assertEquals(Short.valueOf((short) 32767), entity.getProperty("PropertyInt16").getValue());
     assertEquals("First Resource - positive values", entity.getProperty("PropertyString").getValue());
     assertNotNull(entity.getProperty("AdditionalPropertyString_5").getValue());
   }
@@ -251,7 +251,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
     assertNotNull(properties);
     assertEquals(2, properties.size());
 
-    assertEquals(new Short((short) 32767), entity.getProperty("PropertyInt16").getValue());
+    assertEquals(Short.valueOf((short) 32767), entity.getProperty("PropertyInt16").getValue());
 
     assertNotNull(entity.getProperty("PropertyComp"));
     assertNotNull(entity.getProperty("PropertyComp") instanceof List);
@@ -322,7 +322,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
     Entity e = navProperty.getInlineEntity();
     Assert.assertNotNull(e);
     Assert.assertEquals("olingo.odata.test1.ETKeyPrimNavDerived", e.getType());
-    Assert.assertEquals(new Short((short)32767), e.getProperty("PropertyInt16").getValue());
+    Assert.assertEquals(Short.valueOf((short)32767), e.getProperty("PropertyInt16").getValue());
     Assert.assertEquals("First Resource - first", e.getProperty("PropertyString").getValue());
     Assert.assertEquals(true, e.getProperty("PropertyBoolean").getValue());
   }

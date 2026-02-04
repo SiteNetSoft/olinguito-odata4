@@ -72,7 +72,7 @@ public class ActionDataProviderTest {
     Map<String, Parameter> parameters = new HashMap<String, Parameter>();
     Parameter paramInt16 = new Parameter();
     paramInt16.setName("ParameterInt16");
-    paramInt16.setValue(ValueType.PRIMITIVE, new Short((short) 3));
+    paramInt16.setValue(ValueType.PRIMITIVE, Short.valueOf((short) 3));
     parameters.put("ParameterInt16", paramInt16);
 
     Parameter paramDuration = new Parameter();
@@ -89,7 +89,7 @@ public class ActionDataProviderTest {
   public void actionUARTCTTwoPrimParam() throws Exception {
     Parameter paramInt16 = new Parameter();
     paramInt16.setName("ParameterInt16");
-    paramInt16.setValue(ValueType.PRIMITIVE, new Short((short) 3));
+    paramInt16.setValue(ValueType.PRIMITIVE, Short.valueOf((short) 3));
     final Map<String, Parameter> parameters = Collections.singletonMap("ParameterInt16", paramInt16);
 
     Property result = ActionData.complexAction("UARTCTTwoPrimParam", parameters);
@@ -109,19 +109,19 @@ public class ActionDataProviderTest {
     paramInt16.setName("ParameterInt16");
     final Map<String, Parameter> parameters = Collections.singletonMap("ParameterInt16", paramInt16);
 
-    paramInt16.setValue(ValueType.PRIMITIVE, new Short((short) 0));
+    paramInt16.setValue(ValueType.PRIMITIVE, Short.valueOf((short) 0));
     Property result = ActionData.complexCollectionAction("UARTCollCTTwoPrimParam", parameters);
     assertNotNull(result);
     assertEquals((short) 0, result.asCollection().size());
 
-    paramInt16.setValue(ValueType.PRIMITIVE, new Short((short) 1));
+    paramInt16.setValue(ValueType.PRIMITIVE, Short.valueOf((short) 1));
     result = ActionData.complexCollectionAction("UARTCollCTTwoPrimParam", parameters);
     assertNotNull(result);
     assertEquals((short) 1, result.asCollection().size());
     ComplexValue value = (ComplexValue) result.asCollection().get(0);
     assertEquals("Test123", value.getValue().get(1).asPrimitive());
 
-    paramInt16.setValue(ValueType.PRIMITIVE, new Short((short) 2));
+    paramInt16.setValue(ValueType.PRIMITIVE, Short.valueOf((short) 2));
     result = ActionData.complexCollectionAction("UARTCollCTTwoPrimParam", parameters);
     assertNotNull(result);
     assertEquals((short) 2, result.asCollection().size());
@@ -130,7 +130,7 @@ public class ActionDataProviderTest {
     value = (ComplexValue) result.asCollection().get(1);
     assertEquals("Test456", value.getValue().get(1).asPrimitive());
 
-    paramInt16.setValue(ValueType.PRIMITIVE, new Short((short) 3));
+    paramInt16.setValue(ValueType.PRIMITIVE, Short.valueOf((short) 3));
     result = ActionData.complexCollectionAction("UARTCollCTTwoPrimParam", parameters);
     assertNotNull(result);
     assertEquals((short) 3, result.asCollection().size());
@@ -141,7 +141,7 @@ public class ActionDataProviderTest {
     value = (ComplexValue) result.asCollection().get(2);
     assertEquals("Test678", value.getValue().get(1).asPrimitive());
 
-    paramInt16.setValue(ValueType.PRIMITIVE, new Short((short) 4));
+    paramInt16.setValue(ValueType.PRIMITIVE, Short.valueOf((short) 4));
     result = ActionData.complexCollectionAction("UARTCollCTTwoPrimParam", parameters);
     assertNotNull(result);
     assertEquals((short) 3, result.asCollection().size());
@@ -157,7 +157,7 @@ public class ActionDataProviderTest {
   public void actionUARTETTwoKeyTwoPrimParam() throws Exception {
     Parameter paramInt16 = new Parameter();
     paramInt16.setName("ParameterInt16");
-    paramInt16.setValue(ValueType.PRIMITIVE, new Short((short) 32767));
+    paramInt16.setValue(ValueType.PRIMITIVE, Short.valueOf((short) 32767));
     final Map<String, Parameter> parameters = Collections.singletonMap("ParameterInt16", paramInt16);
 
     EntityActionResult result = ActionData.entityAction("UARTETTwoKeyTwoPrimParam", parameters, data, oData, edm);
@@ -170,7 +170,7 @@ public class ActionDataProviderTest {
   public void actionUARTETTwoKeyTwoPrimParamNegative() throws Exception {
     Parameter paramInt16 = new Parameter();
     paramInt16.setName("ParameterInt16");
-    paramInt16.setValue(ValueType.PRIMITIVE, new Short((short) 12345));
+    paramInt16.setValue(ValueType.PRIMITIVE, Short.valueOf((short) 12345));
     final Map<String, Parameter> parameters = Collections.singletonMap("ParameterInt16", paramInt16);
 
     try {
