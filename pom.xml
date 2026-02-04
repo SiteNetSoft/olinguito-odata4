@@ -124,10 +124,7 @@
     <geronimo.version>1.0.1</geronimo.version>
 
     <tomcat.servlet.port>9080</tomcat.servlet.port>
-    <!-- Tomcat 10.0.x is EOL. 10.1.x breaks tests (DeepInsertITCase fails due to behavioral changes).
-         Known unaddressed CVEs: CVE-2025-31651 (9.8), CVE-2023-44487, CVE-2024-34750, CVE-2023-24998.
-         TODO: Fix test compatibility with 10.1.40+ to address these CVEs. -->
-    <tomcat.version>10.0.27</tomcat.version>
+    <tomcat.version>10.1.40</tomcat.version>
     <quarkus.version>3.24.5</quarkus.version>
 
     <!-- for osgi integration testing -->

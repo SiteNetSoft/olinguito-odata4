@@ -53,7 +53,6 @@ import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.tomcat.util.http.LegacyCookieProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -410,7 +409,6 @@ public class TomcatTestServer implements TestServer {
     private Context getContext() {
       if (baseContext == null) {
         baseContext = tomcat.addContext("", baseDir.getAbsolutePath());
-        baseContext.setCookieProcessor(new LegacyCookieProcessor());
       }
       return baseContext;
     }
