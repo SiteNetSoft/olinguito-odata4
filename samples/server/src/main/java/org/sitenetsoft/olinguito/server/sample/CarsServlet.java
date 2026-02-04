@@ -19,6 +19,7 @@
 package org.sitenetsoft.olinguito.server.sample;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 
 import jakarta.servlet.ServletException;
@@ -41,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 public class CarsServlet extends HttpServlet {
 
+  @Serial
   private static final long serialVersionUID = 1L;
   private static final Logger LOG = LoggerFactory.getLogger(CarsServlet.class);
 

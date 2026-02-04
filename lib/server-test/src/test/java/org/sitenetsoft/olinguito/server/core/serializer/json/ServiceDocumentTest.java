@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 import org.apache.commons.io.IOUtils;
@@ -61,7 +62,7 @@ public class ServiceDocumentTest {
 
     InputStream result = serializer.serviceDocument(metadata, serviceRoot).getContent();
     assertNotNull(result);
-    final String jsonString = IOUtils.toString(result);
+    final String jsonString = IOUtils.toString(result, StandardCharsets.UTF_8);
 
     assertTrue(jsonString.contains(
         metadata.getServiceMetadataETagSupport().getMetadataETag().replace("\"", "\\\"")));

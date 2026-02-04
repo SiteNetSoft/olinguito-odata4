@@ -20,6 +20,7 @@ package org.sitenetsoft.olinguito.fit;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -410,7 +411,7 @@ public class Services {
       builder.append("Content-Type: ").append(accept)
           .append(new String(Constants.CRLF))
           .append(new String(Constants.CRLF));
-      builder.append(IOUtils.toString(feed));
+      builder.append(IOUtils.toString(feed, StandardCharsets.UTF_8));
       IOUtils.closeQuietly(feed);
 
       final UUID uuid = UUID.randomUUID();
@@ -472,7 +473,7 @@ public class Services {
         res = client.delete();
       } else {
         final InputStream is = body.getDataHandler().getInputStream();
-        String content = IOUtils.toString(is);
+        String content = IOUtils.toString(is, StandardCharsets.UTF_8);
         IOUtils.closeQuietly(is);
 
         final Matcher refs = REF_PATTERN.matcher(content);

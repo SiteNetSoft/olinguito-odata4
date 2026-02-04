@@ -20,6 +20,7 @@ package org.sitenetsoft.olinguito.server.core.serializer.json;
 
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -94,7 +95,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
         .build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{"
            + "\"@context\":\"$metadata#ESDelta/$delta\",\"value\":[{"
            + "\"@context\":\"#ESDelta/$link\",\"source\":\"ESDelta(100)\",\"relationship\":\"NavPropertyETAllPrimOne\","
@@ -119,7 +120,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
         .build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{"
            + "\"@context\":\"$metadata#ESDelta/$delta\",\"value\":[{"
            + "\"@context\":\"#ESDelta/$deletedLink\",\"source\":\"ESDelta(100)\","
@@ -148,7 +149,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
         .build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{"
            + "\"@context\":\"$metadata#ESDelta/$delta\","
            + "\"value\":[{\"@context\":\"#ESDelta(100)/$deletedEntity\","
@@ -178,7 +179,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
         .build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{"
            + "\"@context\":\"$metadata#ESDelta/$delta\",\"value\":[{"
            + "\"@id\":\"ESDelta(32767)\",\"PropertyInt16\":32767,"
@@ -233,7 +234,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
         .build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{"
            + "\"@context\":\"$metadata#ESDelta/$delta\",\"value\":[{"
            + "\"@id\":\"ESDelta(32767)\",\"PropertyInt16\":32767,\"PropertyString\":\"Number:32767\"},"
@@ -263,7 +264,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet2).build())
         .build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{"
          +"\"@context\":\"$metadata#ESDelta/$delta\",\"value\":[{"
          + "\"@context\":\"#ESAllPrim/$entity\",\"@id\":\"ESAllPrim(32767)\","
@@ -289,7 +290,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
         .build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{"
            + "\"@context\":\"$metadata#ESDelta/$delta\",\"value\":[{"
            + "\"@context\":\"#ESDelta/$link\",\"source\":\"ESDelta(100)\","
@@ -317,7 +318,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
         .build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{"
            + "\"@context\":\"$metadata#ESDelta/$delta\",\"value\":[{"
            + "\"@context\":\"#ESDelta/$link\",\"source\":\"ESDelta(100)\","
@@ -346,7 +347,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
         .build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{"
            + "\"@context\":\"$metadata#ESDelta/$delta\",\"value\":[{"
            + "\"@context\":\"#ESDelta/$link\",\"source\":\"ESDelta(100)\","
@@ -379,7 +380,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
         .count(countOption)
         .build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{"
            + "\"@context\":\"$metadata#ESDelta/$delta\","
            + "\"@count\":\"1\","
@@ -401,7 +402,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
         .build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{"
            + "\"@context\":\"$metadata#ESDelta/$delta\",\"value\":[]"
            + "}";
@@ -432,7 +433,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
         .build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{"
            + "\"@context\":\"$metadata#ESDelta/$delta\","
            + "\"value\":[{\"@context\":\"#ESDelta(100)/$deletedEntity\","
@@ -466,7 +467,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
         .build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{"
          +"\"@context\":\"$metadata#ESDelta/$delta\",\"value\":[{\"@context\":"
          + "\"#ESDelta(100)/$deletedEntity\",\"@removed\":{\"reason\":\"deleted\"},"
@@ -491,7 +492,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
         .build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{"
            + "\"@context\":\"$metadata#ESWithStream/$delta\","
            + "\"value\":[{\"@context\":\"#ESWithStream/$link\","
@@ -521,7 +522,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build()).expand(expand)
         .build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{"
          + "\"@context\":\"$metadata#ESDelta/$delta\",\"value\":"
          + "[{\"@id\":\"ESDelta(32767)\",\"PropertyInt16\":32767,\"PropertyString\":\"Number:32767\","
@@ -567,7 +568,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build()).expand(expand)
         .isFullRepresentation(true).build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{"
          + "\"@context\":\"$metadata#ESDelta/$delta\",\"value\":"
          + "[{\"@id\":\"ESDelta(32767)\",\"PropertyInt16\":32767,\"PropertyString\":\"Number:32767\","
@@ -621,7 +622,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build()).expand(expand)
         .build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{"
          +  "\"@context\":\"$metadata#ESDelta/$delta\",\"value\":"
          + "[{\"@id\":\"ESDelta(32767)\",\"NavPropertyETAllPrimMany@delta\":"
@@ -652,7 +653,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
            .contextURL(ContextURL.with().entitySet(edmEntitySet)
                .selectList(helper.buildContextURLSelectList(entityType, expand, select)).build()).expand(expand)
            .build()).getContent();
-          String jsonString = IOUtils.toString(stream);
+          String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
     Assert.assertEquals("{"
         + "\"@context\":\"$metadata#ESDelta(PropertyInt16,PropertyString,NavPropertyETAllPrimOne("
         + "PropertyInt16,PropertyString))/$delta\","
@@ -687,7 +688,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
                .selectList(helper.buildContextURLSelectList(entityType, null, select))
                .suffix(Suffix.ENTITY).build())
            .select(select).build()).getContent();
-          String jsonString = IOUtils.toString(stream);
+          String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
     Assert.assertEquals("{"
         +"\"@context\":\"$metadata#ESDelta(PropertyInt16,PropertyString)/$entity/$delta\","
         + "\"value\":[{\"@id\":\"ESDelta(32767)\",\"PropertyString\":\"Number:32767\"},"
@@ -714,7 +715,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
         .build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{"
            +  "\"@context\":\"$metadata#ESCollAllPrim/$delta\",\"value\":"
            + "[{\"@id\":\"ESCollAllPrim(1)\",\"PropertyInt16\":1,\"CollPropertyString\":"
@@ -763,7 +764,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
         .build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{"
            +  "\"@context\":\"$metadata#ESBaseTwoKeyNav/$delta\","
            + "\"value\":[{\"@id\":\"ESBaseTwoKeyNav(PropertyInt16=1,PropertyString='1')\","
@@ -813,7 +814,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
         .build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{"
          +  "\"@context\":\"$metadata#ESKeyNav/$delta\","
          + "\"value\":[{\"@id\":\"ESKeyNav(1)\",\"PropertyInt16\":1,"
@@ -882,7 +883,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build()).expand(expand)
         .build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{"
            + "\"@context\":\"$metadata#ESDelta/$delta\",\"value\":[{\"@id\":\"ESDelta(32767)\","
            + "\"PropertyInt16\":32767,\"PropertyString\":\"Number:32767\",\"NavPropertyETAllPrimOne\":null},"
@@ -921,7 +922,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build()).expand(expand)
         .isFullRepresentation(true)
         .build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{"
            + "\"@context\":\"$metadata#ESDelta/$delta\",\"value\":[{\"@id\":\"ESDelta(32767)\","
            + "\"PropertyInt16\":32767,\"PropertyString\":\"Number:32767\",\"NavPropertyETAllPrimOne\":null},"
@@ -1084,7 +1085,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
         .build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{"
            + "\"@context\":\"$metadata#ESDelta/$delta\",\"value\":[{"
            + "\"@context\":\"#ESDelta/$link\",\"source\":\"ESDelta(100)\","
@@ -1110,7 +1111,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build()).expand(expand)
         .isFullRepresentation(true).build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{\"@context\":\"$metadata#ESDelta/$delta\","
            + "\"value\":[{\"@id\":\"ESDelta(0)\",\"PropertyInt16\":0,"
            + "\"PropertyString\":\"Number:0\",\"NavPropertyETAllPrimMany\":[]}]}";
@@ -1132,7 +1133,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build()).expand(expand)
         .isFullRepresentation(true).build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{\"@context\":\"$metadata#ESDelta/$delta\","
            + "\"value\":[{\"@id\":\"ESDelta(-32768)\",\"PropertyInt16\":-32768,"
            + "\"PropertyString\":\"Number:-32768\",\"NavPropertyETAllPrimOne\":null}]}";
@@ -1154,7 +1155,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build()).expand(expand)
         .isFullRepresentation(true).build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{\"@context\":\"$metadata#ESDelta/$delta\","
            + "\"value\":[{\"@id\":\"ESDelta(-1)\",\"PropertyInt16\":-1,"
            + "\"PropertyString\":\"Number:-1\",\"NavPropertyETAllPrimOne\":null}]}";
@@ -1176,7 +1177,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build()).expand(expand)
         .isFullRepresentation(true).build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{\"@context\":\"$metadata#ESDelta/$delta\","
            + "\"value\":[{\"@id\":\"ESDelta(-1)\",\"PropertyInt16\":-1,"
            + "\"PropertyString\":\"Number:-1\",\"NavPropertyETAllPrimMany\":[]}]}";
@@ -1203,7 +1204,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build()).expand(expand)
         .build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{\"@context\":\"$metadata#ESDelta/$delta\","
            + "\"value\":[{\"@id\":\"ESDelta(32767)\",\"PropertyInt16\":32767,"
            + "\"PropertyString\":\"Number:32767\","
@@ -1235,7 +1236,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         EntityCollectionSerializerOptions.with()
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build()).expand(expand)
         .build()).getContent();
-       String jsonString = IOUtils.toString(stream);
+       String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
        final String expectedResult = "{\"@context\":\"$metadata#ESDelta/$delta\","
            + "\"value\":[{\"@id\":\"ESDelta(-32768)\",\"PropertyInt16\":-32768,"
            + "\"PropertyString\":\"Number:-32768\","

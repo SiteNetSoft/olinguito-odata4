@@ -19,6 +19,7 @@
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -78,7 +79,7 @@ public class ODataJsonSerializerWithInstanceAnnotationsTest {
         EntitySerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expectedResult = "{"
         + "\"@odata.context\":\"$metadata#ESAllPrim/$entity\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
@@ -127,7 +128,7 @@ public class ODataJsonSerializerWithInstanceAnnotationsTest {
         EntitySerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expectedResult = "{"
 	+	"\"@odata.context\":\"$metadata#ESAllPrim/$entity\","
 	+	"\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
@@ -216,7 +217,7 @@ public class ODataJsonSerializerWithInstanceAnnotationsTest {
         EntitySerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .build()).getContent();
-    final String resultString = IOUtils.toString(result);
+    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
     final String expectedResult = "{"
     		+	"\"@odata.context\":\"$metadata#ESMixPrimCollComp/$entity\","
     		+	"\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","

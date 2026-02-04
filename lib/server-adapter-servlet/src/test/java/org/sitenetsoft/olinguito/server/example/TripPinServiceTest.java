@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.startup.Tomcat;
@@ -130,7 +131,7 @@ public class TripPinServiceTest {
     req.setHeader("Accept", "application/xml");
 
     HttpResponse response = httpSend(req, 200);
-    String actual = IOUtils.toString(response.getEntity().getContent());
+    String actual = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
     String expected = 
         "<m:properties>"
         +     "<d:AirlineCode>FM</d:AirlineCode>"
@@ -147,7 +148,7 @@ public class TripPinServiceTest {
   public void testmetadata() throws Exception {
     HttpRequest req = new HttpGet(baseURL+"/$metadata");
     HttpResponse response = httpSend(req, 200);
-    IOUtils.toString(response.getEntity().getContent());
+    IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
   }
   
   @Test
@@ -204,7 +205,7 @@ public class TripPinServiceTest {
     Header[] headers = response.getHeaders("Content-Type");
     assertEquals("application/json;odata.metadata=minimal", headers[0].getValue());
     assertEquals("{\"error\":{\"code\":null,\"message\":\"The key value '' is invalid.\"}}", 
-        IOUtils.toString(response.getEntity().getContent()));
+        IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8));
   }
   
   @Test
@@ -216,7 +217,7 @@ public class TripPinServiceTest {
   @Test
   public void testRead$Count() throws Exception {
     HttpResponse response = httpGET(baseURL + "/Airlines/$count", 200);
-    assertEquals("15", IOUtils.toString(response.getEntity().getContent()));
+    assertEquals("15", IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8));
   }
 
   @Test
@@ -246,7 +247,7 @@ public class TripPinServiceTest {
   @Test
   public void testReadPrimitivePropertyValue() throws Exception {
     HttpResponse response = httpGET(baseURL + "/Airlines('AA')/Name/$value", 200);
-    assertEquals("American Airlines", IOUtils.toString(response.getEntity().getContent()));
+    assertEquals("American Airlines", IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8));
   }
   
   @Test
@@ -260,7 +261,7 @@ public class TripPinServiceTest {
     EntityUtils.consumeQuietly(response.getEntity());
     
     response = httpGET(baseURL + "/Airlines('AF')/Name/$value", 200);
-    assertEquals("Safari", IOUtils.toString(response.getEntity().getContent()));
+    assertEquals("Safari", IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8));
   }
   
   @Test @Ignore

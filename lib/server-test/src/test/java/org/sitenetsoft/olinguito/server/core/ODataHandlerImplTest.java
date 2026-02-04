@@ -34,6 +34,7 @@ import static org.mockito.Mockito.verifyNoInteractions;;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
@@ -134,7 +135,7 @@ public class ODataHandlerImplTest {
     assertThat(ct, containsString("odata.metadata=minimal"));
 
     assertNotNull(response.getContent());
-    String doc = IOUtils.toString(response.getContent());
+    String doc = IOUtils.toString(response.getContent(), StandardCharsets.UTF_8);
 
     assertThat(doc, containsString("\"@odata.context\":\"$metadata\""));
     assertThat(doc, containsString("\"value\":"));
@@ -192,7 +193,7 @@ public class ODataHandlerImplTest {
     assertEquals(ContentType.APPLICATION_XML.toContentTypeString(), response.getHeader(HttpHeader.CONTENT_TYPE));
 
     assertNotNull(response.getContent());
-    assertThat(IOUtils.toString(response.getContent()),
+    assertThat(IOUtils.toString(response.getContent(), StandardCharsets.UTF_8),
         containsString("<edmx:Edmx Version=\"4.0\""));
     
     final ODataResponse response2 = dispatch(HttpMethod.HEAD, "$metadata", null);
@@ -1213,7 +1214,7 @@ public class ODataHandlerImplTest {
     assertEquals("4.0", response.getHeader(HttpHeader.ODATA_VERSION));
     assertEquals(400, response.getStatusCode());
     assertNotNull(response.getContent());
-    String doc = IOUtils.toString(response.getContent());
+    String doc = IOUtils.toString(response.getContent(), StandardCharsets.UTF_8);
     assertTrue(doc.contains("OData version '3.0' is not supported."));
   }
   
@@ -1230,7 +1231,7 @@ public class ODataHandlerImplTest {
     assertEquals("4.0", response.getHeader(HttpHeader.ODATA_VERSION));
     assertEquals(400, response.getStatusCode());
     assertNotNull(response.getContent());
-    String doc = IOUtils.toString(response.getContent());
+    String doc = IOUtils.toString(response.getContent(), StandardCharsets.UTF_8);
     assertTrue(doc.contains("OData version '5.0' is not supported."));
   }
   
@@ -1247,7 +1248,7 @@ public class ODataHandlerImplTest {
     assertEquals("4.0", response.getHeader(HttpHeader.ODATA_VERSION));
     assertEquals(400, response.getStatusCode());
     assertNotNull(response.getContent());
-    String doc = IOUtils.toString(response.getContent());
+    String doc = IOUtils.toString(response.getContent(), StandardCharsets.UTF_8);
     assertTrue(doc.contains("OData version '3.0' is not supported."));
   }
   
@@ -1292,7 +1293,7 @@ public class ODataHandlerImplTest {
     assertEquals("4.0", response.getHeader(HttpHeader.ODATA_VERSION));
     assertEquals(400, response.getStatusCode());
     assertNotNull(response.getContent());
-    String doc = IOUtils.toString(response.getContent());
+    String doc = IOUtils.toString(response.getContent(), StandardCharsets.UTF_8);
     assertTrue(doc.contains("OData version '3.0' is not supported."));
   }
   
@@ -1310,7 +1311,7 @@ public class ODataHandlerImplTest {
     assertEquals("4.0", response.getHeader(HttpHeader.ODATA_VERSION));
     assertEquals(400, response.getStatusCode());
     assertNotNull(response.getContent());
-    String doc = IOUtils.toString(response.getContent());
+    String doc = IOUtils.toString(response.getContent(), StandardCharsets.UTF_8);
     assertTrue(doc.contains("OData version '5.0' is not supported."));
   }
   

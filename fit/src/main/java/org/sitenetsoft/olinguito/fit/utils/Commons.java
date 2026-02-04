@@ -20,6 +20,7 @@ package org.sitenetsoft.olinguito.fit.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -277,7 +278,7 @@ public abstract class Commons {
       if (is.available() <= 0) {
         return null;
       } else {
-        final String etag = IOUtils.toString(is);
+        final String etag = IOUtils.toString(is, StandardCharsets.UTF_8);
         IOUtils.closeQuietly(is);
         return etag;
       }

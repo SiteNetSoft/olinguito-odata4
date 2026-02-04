@@ -298,8 +298,8 @@ public final class ContentType {
       while (entries.hasNext()) {
         final Entry<String, String> e = entries.next();
         final Entry<String, String> oe = otherEntries.next();
-        if (!areEqual(e.getKey(), oe.getKey())
-            || !areEqual(e.getValue(), oe.getValue())) {
+        if (areNotEqual(e.getKey(), oe.getKey())
+            || areNotEqual(e.getValue(), oe.getValue())) {
           return false;
         }
       }
@@ -321,13 +321,13 @@ public final class ContentType {
   }
 
   /**
-   * Checks whether both strings are equal ignoring the case of the strings.
+   * Checks whether both strings are not equal ignoring the case of the strings.
    * @param first first string
    * @param second second string
-   * @return <code>true</code> if both strings are equal (ignoring the case), otherwise <code>false</code>
+   * @return <code>true</code> if strings are not equal (ignoring case), otherwise <code>false</code>
    */
-  private static boolean areEqual(final String first, final String second) {
-    return first == null && second == null || (first != null && first.equalsIgnoreCase(second));
+  private static boolean areNotEqual(final String first, final String second) {
+    return first == null ? second != null : !first.equalsIgnoreCase(second);
   }
 
   /**
