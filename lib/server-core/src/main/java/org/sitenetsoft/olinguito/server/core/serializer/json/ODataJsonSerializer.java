@@ -1057,9 +1057,11 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
     }
   }
 
-  // TODO: There could be a more strict verification that the lines describe boundaries
-  //       and have the correct winding order.
-  //       But arguably the better place for this is the constructor of the Polygon object.
+  /**
+   * Writes a GeoJSON polygon. Note: Strict verification of boundary line closure
+   * and correct winding order (counter-clockwise for exterior, clockwise for interior)
+   * is intentionally not performed here - such validation belongs in the Polygon constructor.
+   */
   private void writeGeoPolygon(JsonGenerator json, final Polygon polygon) throws IOException {
     json.writeStartArray();
     writeGeoPoints(json, polygon.getExterior());

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Added server-driven paging support
  */
 package org.sitenetsoft.olinguito.server.core.responses;
 
@@ -64,8 +66,11 @@ public class EntitySetResponse extends ServiceResponse {
         request.getResponseContentType(), request.getPreferences());
   }
 
-  // write collection of entities
-  // TODO: server paging needs to be implemented.
+  /**
+   * Writes the entity collection to the response.
+   * For server-driven paging, use {@link #writeReadEntitySet(EdmEntityType, EntityCollection, int, String, String)}
+   * or set EntityCollection.setNext() with the next link URI before calling this method.
+   */
   public void writeReadEntitySet(EdmEntityType entityType, EntityCollection entitySet)
       throws SerializerException {
 
@@ -77,13 +82,40 @@ public class EntitySetResponse extends ServiceResponse {
     }
 
     if (ContentTypeHelper.isODataMetadataFull(this.responseContentType)) {
-      buildOperations(entityType, entitySet);      
-    }    
+      buildOperations(entityType, entitySet);
+    }
     // write the whole collection to response
     this.response.setContent(this.serializer.entityCollection(metadata, entityType, entitySet, this.options)
                                             .getContent());
     writeOK(responseContentType);
     close();
+  }
+
+  /**
+   * Writes the entity collection to the response with server-driven paging.
+   * <p>
+   * This method applies paging to the collection before writing:
+   * <ul>
+   *   <li>Limits results to the specified page size</li>
+   *   <li>Automatically sets the @odata.nextLink if more results exist</li>
+   *   <li>Handles $skiptoken for subsequent page requests</li>
+   * </ul>
+   * </p>
+   *
+   * @param entityType     the entity type
+   * @param entitySet      the full entity collection (will be modified to contain only current page)
+   * @param pageSize       maximum number of entities per page
+   * @param rawRequestUri  the raw request URI (from ODataRequest.getRawRequestUri())
+   * @param skipToken      the current skip token value (from SkipTokenOption.getValue()), or null
+   * @throws SerializerException if serialization fails
+   */
+  public void writeReadEntitySet(EdmEntityType entityType, EntityCollection entitySet,
+      int pageSize, String rawRequestUri, String skipToken) throws SerializerException {
+
+    if (entitySet != null && pageSize > 0) {
+      PagingHelper.applyPaging(entitySet, pageSize, rawRequestUri, skipToken);
+    }
+    writeReadEntitySet(entityType, entitySet);
   }
 
   @Override

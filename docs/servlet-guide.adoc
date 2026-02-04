@@ -1,0 +1,738 @@
+= Servlet Integration Guide
+:toc: left
+:toclevels: 3
+:icons: font
+:source-highlighter: highlight.js
+
+== Introduction
+
+This guide covers deploying OData V4 services using the Jakarta Servlet adapter. This is the traditional approach suitable for:
+
+* WAR deployments to application servers (Tomcat, Jetty, WildFly)
+* Spring Boot applications
+* Existing servlet-based applications
+
+== Getting Started
+
+=== Maven Dependencies
+
+[source,xml]
+----
+<dependencies>
+    <!-- OData Server Core -->
+    <dependency>
+        <groupId>org.sitenetsoft.olinguito</groupId>
+        <artifactId>odata-server-core</artifactId>
+        <version>${olinguito.version}</version>
+    </dependency>
+
+    <!-- Server Extensions (recommended) -->
+    <dependency>
+        <groupId>org.sitenetsoft.olinguito</groupId>
+        <artifactId>odata-server-core-ext</artifactId>
+        <version>${olinguito.version}</version>
+    </dependency>
+
+    <!-- Servlet Adapter -->
+    <dependency>
+        <groupId>org.sitenetsoft.olinguito</groupId>
+        <artifactId>odata-server-adapter-servlet</artifactId>
+        <version>${olinguito.version}</version>
+    </dependency>
+
+    <!-- Servlet API (provided by container) -->
+    <dependency>
+        <groupId>jakarta.servlet</groupId>
+        <artifactId>jakarta.servlet-api</artifactId>
+        <version>6.0.0</version>
+        <scope>provided</scope>
+    </dependency>
+</dependencies>
+----
+
+== Basic Servlet Setup
+
+=== Creating the OData Servlet
+
+[source,java]
+----
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ODataHttpHandler;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+
+@WebServlet(urlPatterns = "/odata/*", loadOnStartup = 1)
+public class ODataServlet extends HttpServlet {
+
+    private ODataHttpHandler handler;
+
+    @Override
+    public void init() throws ServletException {
+        try {
+            // Create OData instance
+            OData odata = OData.newInstance();
+
+            // Create service metadata with your EDM provider
+            ServiceMetadata serviceMetadata = odata.createServiceMetadata(
+                new MyEdmProvider(),
+                new ArrayList<>()  // No external references
+            );
+
+            // Create handler
+            handler = odata.createHandler(serviceMetadata);
+
+            // Register processors
+            handler.register(new MyEntityCollectionProcessor());
+            handler.register(new MyEntityProcessor());
+            handler.register(new MyPrimitiveProcessor());
+
+        } catch (Exception e) {
+            throw new ServletException("Failed to initialize OData service", e);
+        }
+    }
+
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        try {
+            handler.process(req, resp);
+        } catch (RuntimeException e) {
+            throw new ServletException(e);
+        }
+    }
+}
+----
+
+=== web.xml Configuration (Alternative)
+
+If not using annotations:
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+                             https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version="6.0">
+
+    <servlet>
+        <servlet-name>ODataServlet</servlet-name>
+        <servlet-class>com.example.ODataServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ODataServlet</servlet-name>
+        <url-pattern>/odata/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- Optional: Set character encoding -->
+    <filter>
+        <filter-name>CharacterEncodingFilter</filter-name>
+        <filter-class>com.example.CharacterEncodingFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>CharacterEncodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+</web-app>
+----
+
+== Project Structure
+
+[source]
+----
+my-odata-webapp/
+├── src/main/java/
+│   └── com/example/
+│       ├── ODataServlet.java
+│       ├── MyEdmProvider.java
+│       ├── MyEntityCollectionProcessor.java
+│       ├── MyEntityProcessor.java
+│       └── data/
+│           └── DataProvider.java
+├── src/main/webapp/
+│   └── WEB-INF/
+│       └── web.xml
+└── pom.xml
+----
+
+== Complete Example
+
+=== EDM Provider
+
+[source,java]
+----
+public class MyEdmProvider extends CsdlAbstractEdmProvider {
+
+    public static final String NAMESPACE = "MyODataService";
+    public static final String CONTAINER_NAME = "Container";
+    public static final FullQualifiedName CONTAINER =
+        new FullQualifiedName(NAMESPACE, CONTAINER_NAME);
+
+    // Customer entity
+    public static final String ET_CUSTOMER = "Customer";
+    public static final FullQualifiedName ET_CUSTOMER_FQN =
+        new FullQualifiedName(NAMESPACE, ET_CUSTOMER);
+    public static final String ES_CUSTOMERS = "Customers";
+
+    // Order entity
+    public static final String ET_ORDER = "Order";
+    public static final FullQualifiedName ET_ORDER_FQN =
+        new FullQualifiedName(NAMESPACE, ET_ORDER);
+    public static final String ES_ORDERS = "Orders";
+
+    @Override
+    public List<CsdlSchema> getSchemas() {
+        CsdlSchema schema = new CsdlSchema();
+        schema.setNamespace(NAMESPACE);
+
+        // Entity types
+        List<CsdlEntityType> entityTypes = new ArrayList<>();
+        entityTypes.add(getEntityType(ET_CUSTOMER_FQN));
+        entityTypes.add(getEntityType(ET_ORDER_FQN));
+        schema.setEntityTypes(entityTypes);
+
+        // Entity container
+        schema.setEntityContainer(getEntityContainer());
+
+        return Collections.singletonList(schema);
+    }
+
+    @Override
+    public CsdlEntityType getEntityType(FullQualifiedName entityTypeName) {
+        if (entityTypeName.equals(ET_CUSTOMER_FQN)) {
+            return new CsdlEntityType()
+                .setName(ET_CUSTOMER)
+                .setProperties(Arrays.asList(
+                    new CsdlProperty().setName("ID")
+                        .setType(EdmPrimitiveTypeKind.Int32.getFullQualifiedName())
+                        .setNullable(false),
+                    new CsdlProperty().setName("Name")
+                        .setType(EdmPrimitiveTypeKind.String.getFullQualifiedName())
+                        .setMaxLength(100),
+                    new CsdlProperty().setName("Email")
+                        .setType(EdmPrimitiveTypeKind.String.getFullQualifiedName())
+                ))
+                .setKey(Collections.singletonList(
+                    new CsdlPropertyRef().setName("ID")))
+                .setNavigationProperties(Collections.singletonList(
+                    new CsdlNavigationProperty()
+                        .setName("Orders")
+                        .setType(ET_ORDER_FQN)
+                        .setCollection(true)
+                        .setPartner("Customer")
+                ));
+        }
+
+        if (entityTypeName.equals(ET_ORDER_FQN)) {
+            return new CsdlEntityType()
+                .setName(ET_ORDER)
+                .setProperties(Arrays.asList(
+                    new CsdlProperty().setName("ID")
+                        .setType(EdmPrimitiveTypeKind.Int32.getFullQualifiedName())
+                        .setNullable(false),
+                    new CsdlProperty().setName("CustomerID")
+                        .setType(EdmPrimitiveTypeKind.Int32.getFullQualifiedName()),
+                    new CsdlProperty().setName("OrderDate")
+                        .setType(EdmPrimitiveTypeKind.Date.getFullQualifiedName()),
+                    new CsdlProperty().setName("TotalAmount")
+                        .setType(EdmPrimitiveTypeKind.Decimal.getFullQualifiedName())
+                        .setPrecision(10).setScale(2)
+                ))
+                .setKey(Collections.singletonList(
+                    new CsdlPropertyRef().setName("ID")))
+                .setNavigationProperties(Collections.singletonList(
+                    new CsdlNavigationProperty()
+                        .setName("Customer")
+                        .setType(ET_CUSTOMER_FQN)
+                        .setNullable(false)
+                        .setPartner("Orders")
+                ));
+        }
+
+        return null;
+    }
+
+    @Override
+    public CsdlEntitySet getEntitySet(FullQualifiedName entityContainer,
+                                       String entitySetName) {
+        if (entityContainer.equals(CONTAINER)) {
+            if (entitySetName.equals(ES_CUSTOMERS)) {
+                return new CsdlEntitySet()
+                    .setName(ES_CUSTOMERS)
+                    .setType(ET_CUSTOMER_FQN)
+                    .setNavigationPropertyBindings(Collections.singletonList(
+                        new CsdlNavigationPropertyBinding()
+                            .setPath("Orders")
+                            .setTarget(ES_ORDERS)
+                    ));
+            }
+            if (entitySetName.equals(ES_ORDERS)) {
+                return new CsdlEntitySet()
+                    .setName(ES_ORDERS)
+                    .setType(ET_ORDER_FQN)
+                    .setNavigationPropertyBindings(Collections.singletonList(
+                        new CsdlNavigationPropertyBinding()
+                            .setPath("Customer")
+                            .setTarget(ES_CUSTOMERS)
+                    ));
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public CsdlEntityContainer getEntityContainer() {
+        return new CsdlEntityContainer()
+            .setName(CONTAINER_NAME)
+            .setEntitySets(Arrays.asList(
+                getEntitySet(CONTAINER, ES_CUSTOMERS),
+                getEntitySet(CONTAINER, ES_ORDERS)
+            ));
+    }
+
+    @Override
+    public CsdlEntityContainerInfo getEntityContainerInfo(
+            FullQualifiedName entityContainerName) {
+        if (entityContainerName == null ||
+            entityContainerName.equals(CONTAINER)) {
+            return new CsdlEntityContainerInfo()
+                .setContainerName(CONTAINER);
+        }
+        return null;
+    }
+}
+----
+
+=== Entity Collection Processor
+
+[source,java]
+----
+public class MyEntityCollectionProcessor implements EntityCollectionProcessor {
+
+    private OData odata;
+    private ServiceMetadata serviceMetadata;
+    private DataProvider dataProvider;
+
+    public MyEntityCollectionProcessor() {
+        this.dataProvider = DataProvider.getInstance();
+    }
+
+    @Override
+    public void init(OData odata, ServiceMetadata serviceMetadata) {
+        this.odata = odata;
+        this.serviceMetadata = serviceMetadata;
+    }
+
+    @Override
+    public void readEntityCollection(ODataRequest request,
+                                     ODataResponse response,
+                                     UriInfo uriInfo,
+                                     ContentType responseFormat)
+            throws ODataApplicationException, ODataLibraryException {
+
+        // Determine which entity set is requested
+        List<UriResource> resourcePaths = uriInfo.getUriResourceParts();
+        UriResourceEntitySet uriResourceEntitySet =
+            (UriResourceEntitySet) resourcePaths.get(0);
+        EdmEntitySet edmEntitySet = uriResourceEntitySet.getEntitySet();
+
+        // Fetch the data
+        EntityCollection entityCollection =
+            dataProvider.readEntitySetData(edmEntitySet.getName());
+
+        // Apply system query options
+        entityCollection = applySystemQueryOptions(uriInfo, entityCollection);
+
+        // Apply server-driven paging
+        int pageSize = 20;
+        String skipToken = uriInfo.getSkipTokenOption() != null
+            ? uriInfo.getSkipTokenOption().getValue()
+            : null;
+        PagingHelper.applyPaging(entityCollection, pageSize,
+            request.getRawRequestUri(), skipToken);
+
+        // Serialize the response content
+        EdmEntityType entityType = edmEntitySet.getEntityType();
+        ContextURL contextUrl = ContextURL.with()
+            .entitySet(edmEntitySet)
+            .build();
+
+        final String id = request.getRawBaseUri() + "/" + edmEntitySet.getName();
+        EntityCollectionSerializerOptions opts =
+            EntityCollectionSerializerOptions.with()
+                .id(id)
+                .contextURL(contextUrl)
+                .select(uriInfo.getSelectOption())
+                .expand(uriInfo.getExpandOption())
+                .count(uriInfo.getCountOption())
+                .build();
+
+        ODataSerializer serializer = odata.createSerializer(responseFormat);
+        SerializerResult serializerResult = serializer.entityCollection(
+            serviceMetadata, entityType, entityCollection, opts);
+
+        // Configure the response
+        response.setContent(serializerResult.getContent());
+        response.setStatusCode(HttpStatusCode.OK.getStatusCode());
+        response.setHeader(HttpHeader.CONTENT_TYPE,
+            responseFormat.toContentTypeString());
+    }
+
+    private EntityCollection applySystemQueryOptions(UriInfo uriInfo,
+                                                      EntityCollection entityCollection)
+            throws ODataApplicationException {
+
+        // Apply $filter
+        FilterOption filterOption = uriInfo.getFilterOption();
+        if (filterOption != null) {
+            entityCollection = applyFilter(filterOption, entityCollection);
+        }
+
+        // Apply $orderby
+        OrderByOption orderByOption = uriInfo.getOrderByOption();
+        if (orderByOption != null) {
+            entityCollection = applyOrderBy(orderByOption, entityCollection);
+        }
+
+        // Apply $count
+        CountOption countOption = uriInfo.getCountOption();
+        if (countOption != null && countOption.getValue()) {
+            entityCollection.setCount(entityCollection.getEntities().size());
+        }
+
+        // $skip and $top are handled before paging
+        SkipOption skipOption = uriInfo.getSkipOption();
+        TopOption topOption = uriInfo.getTopOption();
+        if (skipOption != null || topOption != null) {
+            entityCollection = applySkipTop(skipOption, topOption, entityCollection);
+        }
+
+        return entityCollection;
+    }
+
+    // Filter, orderby, skip/top implementations...
+}
+----
+
+== Spring Boot Integration
+
+=== Maven Dependencies
+
+[source,xml]
+----
+<dependencies>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.sitenetsoft.olinguito</groupId>
+        <artifactId>odata-server-core</artifactId>
+        <version>${olinguito.version}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.sitenetsoft.olinguito</groupId>
+        <artifactId>odata-server-core-ext</artifactId>
+        <version>${olinguito.version}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.sitenetsoft.olinguito</groupId>
+        <artifactId>odata-server-adapter-servlet</artifactId>
+        <version>${olinguito.version}</version>
+    </dependency>
+</dependencies>
+----
+
+=== Spring Configuration
+
+[source,java]
+----
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class ODataConfiguration {
+
+    @Bean
+    public ServletRegistrationBean<ODataServlet> odataServlet() {
+        ServletRegistrationBean<ODataServlet> registration =
+            new ServletRegistrationBean<>(new ODataServlet(), "/odata/*");
+        registration.setLoadOnStartup(1);
+        return registration;
+    }
+}
+----
+
+=== Spring-Aware Servlet
+
+[source,java]
+----
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
+public class ODataServlet extends HttpServlet {
+
+    @Autowired
+    private MyEdmProvider edmProvider;
+
+    @Autowired
+    private MyEntityCollectionProcessor collectionProcessor;
+
+    private ODataHttpHandler handler;
+
+    @Override
+    public void init() throws ServletException {
+        // Enable Spring autowiring in servlet
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+
+        OData odata = OData.newInstance();
+        ServiceMetadata serviceMetadata = odata.createServiceMetadata(
+            edmProvider, new ArrayList<>());
+
+        handler = odata.createHandler(serviceMetadata);
+        handler.register(collectionProcessor);
+    }
+
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        handler.process(req, resp);
+    }
+}
+----
+
+=== Using Spring Data
+
+[source,java]
+----
+@Service
+public class MyEntityCollectionProcessor implements EntityCollectionProcessor {
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Override
+    public void readEntityCollection(ODataRequest request,
+                                     ODataResponse response,
+                                     UriInfo uriInfo,
+                                     ContentType responseFormat)
+            throws ODataApplicationException, ODataLibraryException {
+
+        EdmEntitySet edmEntitySet = getEdmEntitySet(uriInfo);
+        String entitySetName = edmEntitySet.getName();
+
+        EntityCollection entityCollection = new EntityCollection();
+
+        if ("Customers".equals(entitySetName)) {
+            List<Customer> customers = customerRepository.findAll();
+            for (Customer c : customers) {
+                entityCollection.getEntities().add(toEntity(c));
+            }
+        } else if ("Orders".equals(entitySetName)) {
+            List<Order> orders = orderRepository.findAll();
+            for (Order o : orders) {
+                entityCollection.getEntities().add(toEntity(o));
+            }
+        }
+
+        // Serialize and respond...
+    }
+
+    private Entity toEntity(Customer customer) {
+        return new Entity()
+            .addProperty(new Property(null, "ID",
+                ValueType.PRIMITIVE, customer.getId()))
+            .addProperty(new Property(null, "Name",
+                ValueType.PRIMITIVE, customer.getName()))
+            .addProperty(new Property(null, "Email",
+                ValueType.PRIMITIVE, customer.getEmail()));
+    }
+}
+----
+
+== Deployment
+
+=== Tomcat
+
+1. Build WAR file: `mvn clean package`
+2. Copy to Tomcat: `cp target/my-odata-app.war $TOMCAT_HOME/webapps/`
+3. Start Tomcat: `$TOMCAT_HOME/bin/startup.sh`
+4. Access: `http://localhost:8080/my-odata-app/odata/`
+
+=== Jetty
+
+[source,xml]
+----
+<!-- pom.xml -->
+<plugin>
+    <groupId>org.eclipse.jetty</groupId>
+    <artifactId>jetty-maven-plugin</artifactId>
+    <version>11.0.15</version>
+    <configuration>
+        <webApp>
+            <contextPath>/</contextPath>
+        </webApp>
+    </configuration>
+</plugin>
+----
+
+Run: `mvn jetty:run`
+
+=== Embedded Tomcat (Spring Boot)
+
+[source,java]
+----
+@SpringBootApplication
+public class Application {
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+}
+----
+
+Run: `mvn spring-boot:run`
+
+== Security
+
+=== Basic Authentication Filter
+
+[source,java]
+----
+@WebFilter(urlPatterns = "/odata/*")
+public class BasicAuthFilter implements Filter {
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response,
+                        FilterChain chain) throws IOException, ServletException {
+
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
+
+        String authHeader = httpRequest.getHeader("Authorization");
+
+        if (authHeader == null || !authHeader.startsWith("Basic ")) {
+            httpResponse.setHeader("WWW-Authenticate", "Basic realm=\"OData\"");
+            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+        String credentials = new String(
+            Base64.getDecoder().decode(authHeader.substring(6)));
+        String[] parts = credentials.split(":", 2);
+
+        if (authenticate(parts[0], parts[1])) {
+            chain.doFilter(request, response);
+        } else {
+            httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
+        }
+    }
+
+    private boolean authenticate(String username, String password) {
+        // Implement your authentication logic
+        return "admin".equals(username) && "secret".equals(password);
+    }
+}
+----
+
+=== Spring Security Integration
+
+[source,java]
+----
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/odata/$metadata").permitAll()
+                .requestMatchers("/odata/**").authenticated()
+            )
+            .httpBasic(Customizer.withDefaults())
+            .csrf(csrf -> csrf.disable());
+
+        return http.build();
+    }
+}
+----
+
+== CORS Support
+
+[source,java]
+----
+@WebFilter(urlPatterns = "/odata/*")
+public class CorsFilter implements Filter {
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response,
+                        FilterChain chain) throws IOException, ServletException {
+
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
+
+        httpResponse.setHeader("Access-Control-Allow-Origin", "*");
+        httpResponse.setHeader("Access-Control-Allow-Methods",
+            "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+        httpResponse.setHeader("Access-Control-Allow-Headers",
+            "Content-Type, Accept, Authorization, OData-Version, OData-MaxVersion");
+        httpResponse.setHeader("Access-Control-Expose-Headers",
+            "OData-Version, Location");
+
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        if ("OPTIONS".equalsIgnoreCase(httpRequest.getMethod())) {
+            httpResponse.setStatus(HttpServletResponse.SC_OK);
+            return;
+        }
+
+        chain.doFilter(request, response);
+    }
+}
+----
+
+== Logging
+
+=== SLF4J Configuration
+
+[source,xml]
+----
+<!-- logback.xml -->
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- OData logging -->
+    <logger name="org.sitenetsoft.olinguito" level="DEBUG"/>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>
+----
+
+== See Also
+
+* link:getting-started.adoc[Getting Started Guide]
+* link:server-guide.adoc[Server Development Guide]
+* link:architecture.adoc[Architecture Overview]
+* link:quarkus-guide.adoc[Quarkus Integration Guide]

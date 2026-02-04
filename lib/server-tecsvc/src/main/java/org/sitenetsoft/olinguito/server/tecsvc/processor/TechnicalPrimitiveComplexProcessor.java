@@ -309,8 +309,12 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
     return getPropertyData(entity, path);
   }
 
+  /**
+   * Reserved for future implementation of direct function data retrieval.
+   * Currently unused - function data is retrieved through readFunctionPrimitiveComplex.
+   */
+  @SuppressWarnings("unused")
   private Property getFunctionData(UriResource uriResource) {
-    // TODO Auto-generated method stub
     return null;
   }
 

@@ -261,8 +261,8 @@ public class ODataImpl extends OData {
 
   @Override
   public DebugResponseHelper createDebugResponseHelper(final String debugFormat) {
-    // TODO: What should we do with invalid formats?
-    // TODO: Support more debug formats
+    // Invalid formats are logged as warnings and default to JSON
+    // Supported formats: json, html, download (see DebugSupport constants)
     return new DebugResponseHelperImpl(debugFormat);
   }
 

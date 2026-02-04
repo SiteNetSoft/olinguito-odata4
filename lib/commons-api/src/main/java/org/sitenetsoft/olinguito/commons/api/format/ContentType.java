@@ -29,7 +29,7 @@ import java.util.Map.Entry;
 
 /**
  * Internally used {@link ContentType} for OData library.
- *
+ * <p>
  * For more details on format and content of a {@link ContentType} see
  * <em>Media Type</em> format as defined in
  * <a href="http://www.ietf.org/rfc/rfc7231.txt">RFC 7231</a>, chapter 3.1.1.1.
@@ -161,7 +161,7 @@ public final class ContentType {
   /**
    * Parses the given input string (<code>format</code>) and returns created {@link ContentType} if input was valid or
    * return <code>NULL</code> if input was not parseable.
-   *
+   * <p>
    * For the definition of the supported format see {@link #create(String)}.
    *
    * @param format a string in format as defined in RFC 7231, chapter 3.1.1.1

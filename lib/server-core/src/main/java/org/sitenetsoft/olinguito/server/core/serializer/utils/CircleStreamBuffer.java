@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Changed to heap buffer allocation for better performance
  */
 package org.sitenetsoft.olinguito.server.core.serializer.utils;
 
@@ -199,17 +201,20 @@ public class CircleStreamBuffer {
     }
     writeMode = false;
 
-    // FIXME: mibo_160108: This is not efficient and only for test/poc reasons
-    int reqSize = 0;
+    // Calculate total size needed
+    int totalSize = 0;
     for (ByteBuffer byteBuffer : bufferQueue) {
-      reqSize += byteBuffer.position();
+      totalSize += byteBuffer.position();
     }
-    ByteBuffer tmp = ByteBuffer.allocateDirect(reqSize);
+    // Use heap buffer for better performance with small/medium sizes
+    // Direct buffers have allocation overhead that only pays off for large I/O operations
+    ByteBuffer result = ByteBuffer.allocate(totalSize);
     for (ByteBuffer byteBuffer : bufferQueue) {
       byteBuffer.flip();
-      tmp.put(byteBuffer);
+      result.put(byteBuffer);
     }
-    return tmp;
+    result.flip();
+    return result;
   }
 
   // #############################################

@@ -36,7 +36,7 @@
     <description>Technical Service implementation for Quarkus extension testing</description>
 
     <properties>
-        <quarkus.version>3.17.5</quarkus.version>
+        <quarkus.version>3.24.5</quarkus.version>
     </properties>
 
     <dependencyManagement>

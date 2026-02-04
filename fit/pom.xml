@@ -75,7 +75,7 @@
       <id>test-quarkus</id>
       <properties>
         <test.server.type>quarkus</test.server.type>
-        <quarkus.version>3.17.5</quarkus.version>
+        <quarkus.version>3.24.5</quarkus.version>
       </properties>
       <dependencyManagement>
         <dependencies>

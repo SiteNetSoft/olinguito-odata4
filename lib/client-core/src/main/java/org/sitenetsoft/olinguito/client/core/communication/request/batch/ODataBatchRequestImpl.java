@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Implemented validateSingleRequest() method
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.batch;
 
@@ -90,7 +92,12 @@ public class ODataBatchRequestImpl
 
     @Override
     protected void validateSingleRequest(final ODataBatchableRequest request) {
-      //TODO: Validate single batch request
+      if (request == null) {
+        throw new IllegalArgumentException("Batch request item cannot be null");
+      }
+      if (request.getURI() == null) {
+        throw new IllegalArgumentException("Batch request item must have a valid URI");
+      }
     }
   }
 
