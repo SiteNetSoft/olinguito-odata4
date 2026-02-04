@@ -912,7 +912,7 @@ public class MetadataTest extends AbstractTest {
    annotation = container.getAnnotation(term, null);
    assertNotNull(annotation);
    valueAsString = annotation.getExpression().asConstant().getValueAsString();
-   assertTrue(Boolean.valueOf(valueAsString));
+   assertTrue(Boolean.parseBoolean(valueAsString));
    
    //Get the annotations defined on type definitions
    final EdmTypeDefinition defn = edm.getTypeDefinition(new FullQualifiedName("SEPMRA_SO_MAN2", "TDString"));
@@ -924,7 +924,7 @@ public class MetadataTest extends AbstractTest {
    annotation = defn.getAnnotation(term, null);
    assertNotNull(annotation);
    valueAsString = annotation.getExpression().asConstant().getValueAsString();
-   assertTrue(Boolean.valueOf(valueAsString));
+   assertTrue(Boolean.parseBoolean(valueAsString));
    
    termName =
        new FullQualifiedName("UI", "HeaderInfo");
@@ -955,15 +955,14 @@ public class MetadataTest extends AbstractTest {
       if (asRecord != null) {
         List<EdmPropertyValue> propertyValues = asRecord.getPropertyValues();
         if (propertyValues != null) {
-          for (int i = 0; i < propertyValues.size(); i++) {
-            EdmPropertyValue edmPropertyValue = propertyValues.get(i);
-            String property = edmPropertyValue.getProperty();
-            if (property.equals("Value")) {
-              EdmExpression value = edmPropertyValue.getValue();
-              assertNotNull(value);
-              assertEquals("Path", value.getExpressionName());
+            for (EdmPropertyValue edmPropertyValue : propertyValues) {
+                String property = edmPropertyValue.getProperty();
+                if (property.equals("Value")) {
+                    EdmExpression value = edmPropertyValue.getValue();
+                    assertNotNull(value);
+                    assertEquals("Path", value.getExpressionName());
+                }
             }
-          }
         }
       }
     }
@@ -987,7 +986,7 @@ public class MetadataTest extends AbstractTest {
     annotation = ((EdmProperty) entityType.getProperty("CHANGED")).getAnnotation(term, null);
     assertNotNull(annotation);
     valueAsString = annotation.getExpression().asConstant().getValueAsString();
-    assertTrue(Boolean.valueOf(valueAsString));
+    assertTrue(Boolean.parseBoolean(valueAsString));
     
     assertEquals(3, entityType.getAnnotations().size());
     termName =
@@ -1003,16 +1002,15 @@ public class MetadataTest extends AbstractTest {
       if (asRecord != null) {
         List<EdmPropertyValue> propertyValues = asRecord.getPropertyValues();
         if (propertyValues != null) {
-          for (int i = 0; i < propertyValues.size(); i++) {
-            EdmPropertyValue edmPropertyValue = propertyValues.get(i);
-            String property = edmPropertyValue.getProperty();
-            if (property.equals("Supported")) {
-              EdmExpression value = edmPropertyValue.getValue();
-              EdmConstantExpression asConstant2 = value.asConstant();
-              String valueAsString1 = asConstant2.getValueAsString();
-              assertTrue(Boolean.valueOf(valueAsString1));
+            for (EdmPropertyValue edmPropertyValue : propertyValues) {
+                String property = edmPropertyValue.getProperty();
+                if (property.equals("Supported")) {
+                    EdmExpression value = edmPropertyValue.getValue();
+                    EdmConstantExpression asConstant2 = value.asConstant();
+                    String valueAsString1 = asConstant2.getValueAsString();
+                    assertTrue(Boolean.parseBoolean(valueAsString1));
+                }
             }
-          }
         }
       }
     }
@@ -1044,7 +1042,7 @@ public class MetadataTest extends AbstractTest {
                EdmExpression value = edmPropertyValue.getValue();
                EdmConstantExpression asConstant2 = value.asConstant();
                String valueAsString = asConstant2.getValueAsString();
-               assertTrue(Boolean.valueOf(valueAsString));
+               assertTrue(Boolean.parseBoolean(valueAsString));
              }
            }
          }
@@ -1057,7 +1055,7 @@ public class MetadataTest extends AbstractTest {
    EdmAnnotation annotation = entityType.getAnnotation(term, null);
    assertNotNull(annotation);
    String valueAsString = annotation.getExpression().asConstant().getValueAsString();
-   assertTrue(Boolean.valueOf(valueAsString));
+   assertTrue(Boolean.parseBoolean(valueAsString));
  }
  
  @Test

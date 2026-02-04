@@ -425,7 +425,6 @@
         <configuration>
           <redirectTestOutputToFile>true</redirectTestOutputToFile>
           <runOrder>alphabetical</runOrder>
-          <encoding>${project.build.sourceEncoding}</encoding>
           <argLine>-Dfile.encoding=${project.build.sourceEncoding}</argLine>
         </configuration>
         <executions>
