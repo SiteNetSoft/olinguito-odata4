@@ -130,7 +130,6 @@ public abstract class OData {
    *
    * @param edmProvider a custom or default implementation for creating metadata
    * @param references list of edmx references
-   * @param serviceMetadataETagSupport
    * @return a service metadata implementation
    */
   public abstract ServiceMetadata createServiceMetadata(CsdlEdmProvider edmProvider, List<EdmxReference> references,
@@ -165,7 +164,7 @@ public abstract class OData {
   * Deserializers are used in Processor implementations.
     *
     * @param contentType any content type supported by Olingo (XML, JSON ...)
-    * @param service version
+    * @param versions version
    */
   public abstract ODataDeserializer createDeserializer(ContentType contentType, 
       final List<String> versions) throws DeserializerException;
@@ -176,7 +175,7 @@ public abstract class OData {
    *
    * @param contentType any content type supported by Olingo (XML, JSON ...)
    * @param metadata ServiceMetada of the service
-   * @param service version
+   * @param versions version
    */
   public abstract ODataDeserializer createDeserializer(ContentType contentType,
       ServiceMetadata metadata, final List<String> versions) throws DeserializerException;
@@ -231,7 +230,7 @@ public abstract class OData {
    * Creates a new serializer object capable of working without EDM information
    * for rendering delta content in the specified format.
    * @param contentType a content type supported by Olingo
-   * @param version versions supported by Olingo
+   * @param versions versions supported by Olingo
    */
   public abstract EdmDeltaSerializer createEdmDeltaSerializer(final ContentType contentType,
       final List<String> versions) throws SerializerException;
