@@ -45,7 +45,7 @@ class ClientCsdlReturnType extends CsdlReturnType implements Serializable {
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("Type".equals(jp.getCurrentName())) {
+          if ("Type".equals(jp.currentName())) {
             String metadataTypeName = jp.nextTextValue();
             if (metadataTypeName.startsWith("Collection(")) {
               returnType.setType(metadataTypeName.substring(metadataTypeName.indexOf("(") + 1,
@@ -55,23 +55,23 @@ class ClientCsdlReturnType extends CsdlReturnType implements Serializable {
               returnType.setType(metadataTypeName);
               returnType.setCollection(false);
             }
-          } else if ("Nullable".equals(jp.getCurrentName())) {
+          } else if ("Nullable".equals(jp.currentName())) {
             returnType.setNullable(BooleanUtils.toBoolean(jp.nextTextValue()));
-          } else if ("MaxLength".equals(jp.getCurrentName())) {
+          } else if ("MaxLength".equals(jp.currentName())) {
             final String maxLenght = jp.nextTextValue();
             returnType.setMaxLength("max".equalsIgnoreCase(maxLenght) ? Integer.MAX_VALUE : Integer.valueOf(maxLenght));
-          } else if ("Precision".equals(jp.getCurrentName())) {
+          } else if ("Precision".equals(jp.currentName())) {
             returnType.setPrecision(Integer.valueOf(jp.nextTextValue()));
-          } else if ("Scale".equals(jp.getCurrentName())) {
+          } else if ("Scale".equals(jp.currentName())) {
             final String scale = jp.nextTextValue();
             returnType.setScale("variable".equalsIgnoreCase(scale) || "floating".equalsIgnoreCase(scale) ?
                 0 : Integer.valueOf(scale));
-          } else if ("SRID".equals(jp.getCurrentName())) {
+          } else if ("SRID".equals(jp.currentName())) {
             final String srid = jp.nextTextValue();
             if (srid != null) {
               returnType.setSrid(SRID.valueOf(srid));
             }
-          } else if ("Annotation".equals(jp.getCurrentName())) {
+          } else if ("Annotation".equals(jp.currentName())) {
             jp.nextToken();
             returnType.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));
           }

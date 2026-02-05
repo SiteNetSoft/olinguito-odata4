@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
@@ -53,7 +54,7 @@ public class BasicBoundFunctionITCase extends AbstractBaseTestITCase {
         +  "\"PropertyString\":\"TEST A\","
         +  "\"AdditionalPropertyString_5\":\"TEST A 0815\","
         +  "\"AdditionalPropertyString_6\":\"TEST B 0815\"";
-    String content = IOUtils.toString(connection.getInputStream());
+    String content = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
     assertTrue(content.contains(expected));
     connection.disconnect();
   }
@@ -88,7 +89,7 @@ public class BasicBoundFunctionITCase extends AbstractBaseTestITCase {
         +             "\"PropertyInt64\":9223372036854775807,"
         +             "\"PropertySByte\":127,"
         +             "\"PropertyTimeOfDay\":\"21:05:59\"";
-    String content = IOUtils.toString(connection.getInputStream());
+    String content = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
     assertTrue(content.contains(expected));
     connection.disconnect();
   }
@@ -103,7 +104,7 @@ public class BasicBoundFunctionITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    String content = IOUtils.toString(connection.getInputStream());
+    String content = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
     assertNotNull(content);
     connection.disconnect();
   }
@@ -119,7 +120,7 @@ public class BasicBoundFunctionITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    String content = IOUtils.toString(connection.getInputStream());
+    String content = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
     assertNotNull(content);
     connection.disconnect();
   }
@@ -134,7 +135,7 @@ public class BasicBoundFunctionITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    String content = IOUtils.toString(connection.getInputStream());
+    String content = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
     assertNotNull(content);
     connection.disconnect();
   }
@@ -151,7 +152,7 @@ public class BasicBoundFunctionITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    String content = IOUtils.toString(connection.getInputStream());
+    String content = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
     assertNotNull(content);
     connection.disconnect();
   }
@@ -167,7 +168,7 @@ public class BasicBoundFunctionITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    String content = IOUtils.toString(connection.getInputStream());
+    String content = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
     assertNotNull(content);
     connection.disconnect();
   }
@@ -183,7 +184,7 @@ public class BasicBoundFunctionITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    String content = IOUtils.toString(connection.getInputStream());
+    String content = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
     assertNotNull(content);
     connection.disconnect();
   }
@@ -199,7 +200,7 @@ public class BasicBoundFunctionITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    String content = IOUtils.toString(connection.getInputStream());
+    String content = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
     assertNotNull(content);
     connection.disconnect();
   }
@@ -215,7 +216,7 @@ public class BasicBoundFunctionITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    String content = IOUtils.toString(connection.getInputStream());
+    String content = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
     assertNotNull(content);
     connection.disconnect();
   }
@@ -231,7 +232,7 @@ public class BasicBoundFunctionITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    String content = IOUtils.toString(connection.getInputStream());
+    String content = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
     assertNotNull(content);
     connection.disconnect();
   }
@@ -246,7 +247,7 @@ public class BasicBoundFunctionITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    String content = IOUtils.toString(connection.getInputStream());
+    String content = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
     assertNotNull(content);
     connection.disconnect();
   }
@@ -262,7 +263,7 @@ public class BasicBoundFunctionITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    String content = IOUtils.toString(connection.getInputStream());
+    String content = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
     assertNotNull(content);
     connection.disconnect();
   }
@@ -279,7 +280,7 @@ public class BasicBoundFunctionITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    String content = IOUtils.toString(connection.getInputStream());
+    String content = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
     assertNotNull(content);
     connection.disconnect();
   }
@@ -295,7 +296,7 @@ public class BasicBoundFunctionITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    String content = IOUtils.toString(connection.getInputStream());
+    String content = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
     assertNotNull(content);
     connection.disconnect();
   }
@@ -311,7 +312,7 @@ public class BasicBoundFunctionITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    String content = IOUtils.toString(connection.getInputStream());
+    String content = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
     assertNotNull(content);
     connection.disconnect();
   }
@@ -327,7 +328,7 @@ public class BasicBoundFunctionITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    String content = IOUtils.toString(connection.getInputStream());
+    String content = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
     assertNotNull(content);
     connection.disconnect();
   }
@@ -342,7 +343,7 @@ public class BasicBoundFunctionITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    String content = IOUtils.toString(connection.getInputStream());
+    String content = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
     assertNotNull(content);
     connection.disconnect();
   }
@@ -357,7 +358,7 @@ public class BasicBoundFunctionITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    String content = IOUtils.toString(connection.getInputStream());
+    String content = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
     assertNotNull(content);
     connection.disconnect();
   }

@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
@@ -43,7 +44,7 @@ public class NavigationITCase extends AbstractParamTecSvcITCase {
             .appendEntitySetSegment("ESAllPrim").appendKeySegment(32767).build())
         .rawExecute();
 
-    final String zeroLevelResponseBody = IOUtils.toString(zeroLevelResponse);
+    final String zeroLevelResponseBody = IOUtils.toString(zeroLevelResponse, StandardCharsets.UTF_8);
     assertTrue(zeroLevelResponseBody.contains("\"$metadata#ESAllPrim/$entity\""));
 
     // one navigation
@@ -53,7 +54,7 @@ public class NavigationITCase extends AbstractParamTecSvcITCase {
             .appendNavigationSegment("NavPropertyETTwoPrimOne").build())
         .rawExecute();
 
-    final String oneLevelResponseBody = IOUtils.toString(oneLevelResponse);
+    final String oneLevelResponseBody = IOUtils.toString(oneLevelResponse, StandardCharsets.UTF_8);
     assertTrue(oneLevelResponseBody.contains("\"../$metadata#ESTwoPrim/$entity\""));
 
     // two navigation
@@ -64,12 +65,12 @@ public class NavigationITCase extends AbstractParamTecSvcITCase {
             .appendNavigationSegment("NavPropertyETTwoPrimMany").appendKeySegment(-365).build())
         .rawExecute();
 
-    final String twoLevelResponseBody = IOUtils.toString(twoLevelResponse);
+    final String twoLevelResponseBody = IOUtils.toString(twoLevelResponse, StandardCharsets.UTF_8);
     assertTrue(twoLevelResponseBody.contains("\"../../$metadata#ESTwoPrim/$entity\""));
   }
 
   @Test
-  public void oneLevelToEntity() throws Exception {
+  public void oneLevelToEntity() {
     final ODataRetrieveResponse<ClientEntity> response =
         getClient().getRetrieveRequestFactory().getEntityRequest(
             getClient().newURIBuilder(TecSvcConst.BASE_URI)
@@ -87,7 +88,7 @@ public class NavigationITCase extends AbstractParamTecSvcITCase {
   }
 
   @Test
-  public void oneLevelToEntityWithKey() throws Exception {
+  public void oneLevelToEntityWithKey() {
     final ODataRetrieveResponse<ClientEntity> response =
         getClient().getRetrieveRequestFactory().getEntityRequest(
             getClient().newURIBuilder(TecSvcConst.BASE_URI)
@@ -105,7 +106,7 @@ public class NavigationITCase extends AbstractParamTecSvcITCase {
   }
 
   @Test
-  public void twoLevelsToEntityWithKey() throws Exception {
+  public void twoLevelsToEntityWithKey() {
     final ODataRetrieveResponse<ClientEntity> response =
         getClient().getRetrieveRequestFactory().getEntityRequest(
             getClient().newURIBuilder(TecSvcConst.BASE_URI)
@@ -124,7 +125,7 @@ public class NavigationITCase extends AbstractParamTecSvcITCase {
   }
 
   @Test
-  public void twoLevelsToEntitySet() throws Exception {
+  public void twoLevelsToEntitySet() {
     final ODataRetrieveResponse<ClientEntitySet> response =
         getClient().getRetrieveRequestFactory().getEntitySetRequest(
             getClient().newURIBuilder(TecSvcConst.BASE_URI)
@@ -146,7 +147,7 @@ public class NavigationITCase extends AbstractParamTecSvcITCase {
   }
 
   @Test
-  public void twoLevelsToProperty() throws Exception {
+  public void twoLevelsToProperty() {
     final ODataRetrieveResponse<ClientProperty> response =
         getClient().getRetrieveRequestFactory().getPropertyRequest(
             getClient().newURIBuilder(TecSvcConst.BASE_URI)

@@ -78,11 +78,11 @@ class ClientCsdlDataServices extends CsdlAbstractEdmItem implements Serializable
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("DataServiceVersion".equals(jp.getCurrentName())) {
+          if ("DataServiceVersion".equals(jp.currentName())) {
             dataServices.setDataServiceVersion(jp.nextTextValue());
-          } else if ("MaxDataServiceVersion".equals(jp.getCurrentName())) {
+          } else if ("MaxDataServiceVersion".equals(jp.currentName())) {
             dataServices.setMaxDataServiceVersion(jp.nextTextValue());
-          } else if ("Schema".equals(jp.getCurrentName())) {
+          } else if ("Schema".equals(jp.currentName())) {
             jp.nextToken();
             dataServices.getSchemas().add(jp.readValueAs(ClientCsdlSchema.class));
           }

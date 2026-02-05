@@ -43,9 +43,9 @@ class ClientCsdlLabeledElement extends CsdlLabeledElement implements Serializabl
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("Name".equals(jp.getCurrentName())) {
+          if ("Name".equals(jp.currentName())) {
             element.setName(jp.nextTextValue());
-          } else if ("Annotation".equals(jp.getCurrentName())) {
+          } else if ("Annotation".equals(jp.currentName())) {
             element.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));
           } else {
             element.setValue(jp.readValueAs(ClientCsdlDynamicExpression.class));

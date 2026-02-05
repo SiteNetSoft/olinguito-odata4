@@ -46,9 +46,9 @@ class ClientCsdlProperty extends CsdlProperty implements Serializable {
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("Name".equals(jp.getCurrentName())) {
+          if ("Name".equals(jp.currentName())) {
             property.setName(jp.nextTextValue());
-          } else if ("Type".equals(jp.getCurrentName())) {
+          } else if ("Type".equals(jp.currentName())) {
             String metadataTypeName = jp.nextTextValue();
             if (metadataTypeName.startsWith("Collection(")) {
               property.setType(metadataTypeName.substring(metadataTypeName.indexOf("(") + 1,
@@ -58,28 +58,28 @@ class ClientCsdlProperty extends CsdlProperty implements Serializable {
               property.setType(metadataTypeName);
               property.setCollection(false);
             }
-          } else if ("Nullable".equals(jp.getCurrentName())) {
+          } else if ("Nullable".equals(jp.currentName())) {
             property.setNullable(BooleanUtils.toBoolean(jp.nextTextValue()));
-          } else if ("DefaultValue".equals(jp.getCurrentName())) {
+          } else if ("DefaultValue".equals(jp.currentName())) {
             property.setDefaultValue(jp.nextTextValue());
-          } else if ("MaxLength".equals(jp.getCurrentName())) {
+          } else if ("MaxLength".equals(jp.currentName())) {
             final String maxLenght = jp.nextTextValue();
             property.setMaxLength("max".equalsIgnoreCase(maxLenght) ? Integer.MAX_VALUE : Integer.valueOf(maxLenght));
-          } else if ("Precision".equals(jp.getCurrentName())) {
+          } else if ("Precision".equals(jp.currentName())) {
             property.setPrecision(Integer.valueOf(jp.nextTextValue()));
-          } else if ("Scale".equals(jp.getCurrentName())) {
+          } else if ("Scale".equals(jp.currentName())) {
             final String scale = jp.nextTextValue();
             property.setScale("variable".equalsIgnoreCase(scale) || "floating".equalsIgnoreCase(scale) ?
                 0 : Integer.valueOf(scale));
             property.setScaleAsString(scale);
-          } else if ("Unicode".equals(jp.getCurrentName())) {
+          } else if ("Unicode".equals(jp.currentName())) {
             property.setUnicode(BooleanUtils.toBoolean(jp.nextTextValue()));
-          } else if ("SRID".equals(jp.getCurrentName())) {
+          } else if ("SRID".equals(jp.currentName())) {
             final String srid = jp.nextTextValue();
             if (srid != null) {
               property.setSrid(SRID.valueOf(srid));
             }
-          } else if ("Annotation".equals(jp.getCurrentName())) {
+          } else if ("Annotation".equals(jp.currentName())) {
             jp.nextToken();
             property.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));
           }

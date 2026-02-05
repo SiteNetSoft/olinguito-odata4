@@ -23,11 +23,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.net.URI;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.TimeZone;
-import java.util.UUID;
+import java.util.*;
 
 import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.commons.api.data.AbstractEntityCollection;
@@ -103,7 +99,7 @@ public class EdmAssistedJsonSerializerTest {
         .addProperty(new Property(null, "Property1", ValueType.PRIMITIVE, 1));
     Calendar date = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
     date.clear();
-    date.set(2000, 1, 29);
+    date.set(2000, Calendar.FEBRUARY, 29);
     entity.addProperty(new Property("Edm.Date", "Property2", ValueType.PRIMITIVE, date))
         .addProperty(new Property("Edm.DateTimeOffset", "Property3", ValueType.PRIMITIVE, date))
         .addProperty(new Property(null, "Property4", ValueType.COLLECTION_PRIMITIVE,
@@ -299,7 +295,7 @@ public class EdmAssistedJsonSerializerTest {
   public void collectionEnumType() throws Exception {
     EntityCollection entityCollection = new EntityCollection();
     entityCollection.getEntities().add(
-        new Entity().addProperty(new Property(null, "Property1", ValueType.COLLECTION_ENUM, Arrays.asList(42))));
+        new Entity().addProperty(new Property(null, "Property1", ValueType.COLLECTION_ENUM, List.of(42))));
     serializer.entityCollection(metadata, null, entityCollection, null);
   }
 
@@ -442,7 +438,7 @@ public class EdmAssistedJsonSerializerTest {
         .addProperty(new Property(null, "Property1", ValueType.PRIMITIVE, 1));
     Calendar date = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
     date.clear();
-    date.set(2000, 1, 29);
+    date.set(2000, Calendar.FEBRUARY, 29);
     entity.addProperty(new Property("Edm.Date", "Property2", ValueType.PRIMITIVE, date))
         .addProperty(new Property("Edm.DateTimeOffset", "Property3", ValueType.PRIMITIVE, date))
         .addProperty(new Property(null, "Property4", ValueType.COLLECTION_PRIMITIVE,
@@ -670,13 +666,13 @@ public class EdmAssistedJsonSerializerTest {
   @Test
   public void entityCollectionWithBigDecimalProperty() throws Exception {
     EntityCollection entityCollection = new EntityCollection();
-    BigDecimal b = new BigDecimal(1.666666666666666666666666666666667);
+    BigDecimal b = new BigDecimal("1.666666666666666666666666666666667");
     b.abs(new MathContext(0, RoundingMode.UNNECESSARY));
     entityCollection.getEntities().add(new Entity()
         .addProperty(new Property(null, "Property1", ValueType.PRIMITIVE, b)));
     Assert.assertTrue(
         serialize(serializerMin, metadata, null, entityCollection, null)
-        .contains("1.6666666666666667406815349750104360282421112060546875"));
+        .contains("1.666666666666666666666666666666667"));
   }
   
   @Test

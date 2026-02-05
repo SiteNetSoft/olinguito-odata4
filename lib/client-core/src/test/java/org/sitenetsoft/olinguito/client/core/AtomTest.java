@@ -26,6 +26,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URI;
+import java.util.Objects;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -86,7 +87,7 @@ public class AtomTest extends JSONTest {
   @Override
   protected void assertSimilar(final String filename, final String actual, 
       boolean isServerMode) throws Exception {
-    final Diff diff = new Diff(cleanup(IOUtils.toString(getClass().getResourceAsStream(filename))), actual);
+    final Diff diff = new Diff(cleanup(IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream(filename)))), actual);
     diff.overrideElementQualifier(new AtomLinksQualifier());
     assertTrue(diff.similar());
   }
@@ -162,7 +163,7 @@ public class AtomTest extends JSONTest {
     String actual = IOUtils.toString(client.getWriter().writeEntity(message, ContentType.APPLICATION_ATOM_XML));
     actual = actual.substring(actual.indexOf("<entry"));
     assertNotNull(actual);
-    String expected = IOUtils.toString(getClass().getResourceAsStream("olingo1073_1.xml"));
+    String expected = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("olingo1073_1.xml")));
     expected = expected.substring(expected.indexOf("<entry"));
     expected = expected.trim().replace("\n", "").replace("\r", "").replace("\t", "");
     assertEquals(expected, actual);
@@ -276,7 +277,7 @@ public class AtomTest extends JSONTest {
     assertEquals(3, entity.getProperty("AddressInfo").getCollectionValue().asCollection().size());
     assertEquals("Collection(Microsoft.OData.SampleService.Models.TripPin.Location)", 
         entity.getProperty("AddressInfo").getCollectionValue().asCollection().getTypeName());
-    assertEquals(true, entity.getProperty("AddressInfo").getCollectionValue().isCollection());
+      assertTrue(entity.getProperty("AddressInfo").getCollectionValue().isCollection());
     ClientCollectionValue<ClientValue> collectionValue = entity.getProperty("AddressInfo").
         getCollectionValue().asCollection();
     int i = 0;
@@ -354,7 +355,6 @@ public class AtomTest extends JSONTest {
   }
 
   /**
-   * @return
    */
   private ClientEntity createClientEntity() {
     final ClientEntity message = client.getObjectFactory().
@@ -440,7 +440,7 @@ public class AtomTest extends JSONTest {
     final ClientEntity innerEntity = client.getObjectFactory().
         newEntity(new FullQualifiedName("Microsoft.OData.SampleService.Models.TripPin.Photo"));
     innerEntity.getProperties().add(client.getObjectFactory().newPrimitiveProperty("Id", 
-        client.getObjectFactory().newPrimitiveValueBuilder().buildInt64(Long.valueOf(123))));
+        client.getObjectFactory().newPrimitiveValueBuilder().buildInt64(123L)));
     innerEntity.getProperties().add(client.getObjectFactory().newPrimitiveProperty("Name", 
         client.getObjectFactory().newPrimitiveValueBuilder().buildString("ABC")));
     innerEntity.getAnnotations().add(createAnnotation());
@@ -465,7 +465,6 @@ public class AtomTest extends JSONTest {
   }
 
   /**
-   * @param entity
    */
   private void setNavigationBindingLinkOnEntity(ResWrap<Entity> entity) {
     Link entityLink = new Link();
@@ -493,14 +492,13 @@ public class AtomTest extends JSONTest {
   }
 
   /**
-   * @return
    */
   private Entity createEntity() {
     Entity en = new Entity();
     Property p1 = new Property();
     p1.setName("Id");
     p1.setType("Int64");
-    p1.setValue(ValueType.PRIMITIVE, Long.valueOf(123));
+    p1.setValue(ValueType.PRIMITIVE, 123L);
     en.addProperty(p1);
     
     Property p2 = new Property();
@@ -512,78 +510,75 @@ public class AtomTest extends JSONTest {
   }
 
   /**
-   * @return
    */
   private ClientAnnotation createAnnotation() {
-    final ClientAnnotation messageAnnotation = 
-        new ClientAnnotationImpl("Org.OData.Core.V1.Permissions", new ClientPrimitiveValue() {
-      
-      @Override
-      public boolean isPrimitive() {
-        return false;
-      }
-      
-      @Override
-      public boolean isEnum() {
-        return true;
-      }
-      
-      @Override
-      public boolean isComplex() {
-        return false;
-      }
-      
-      @Override
-      public boolean isCollection() {
-        return false;
-      }
-      
-      @Override
-      public String getTypeName() {
-        return "String";
-      }
-      
-      @Override
-      public ClientPrimitiveValue asPrimitive() {
-        return null;
-      }
-      
-      @Override
-      public ClientEnumValue asEnum() {
-        return client.getObjectFactory().newEnumValue("Org.OData.Core.V1.Permissions", "Read");
-      }
-      
-      @Override
-      public ClientComplexValue asComplex() {
-        return null;
-      }
-      
-      @Override
-      public <T extends ClientValue> ClientCollectionValue<T> asCollection() {
-        return null;
-      }
-      
-      @Override
-      public Object toValue() {
-        return client.getObjectFactory().newEnumValue("Org.OData.Core.V1.Permissions", "Read");
-      }
-      
-      @Override
-      public <T> T toCastValue(Class<T> reference) throws EdmPrimitiveTypeException {
-        return null;
-      }
-      
-      @Override
-      public EdmPrimitiveTypeKind getTypeKind() {
-        return null;
-      }
-      
-      @Override
-      public EdmPrimitiveType getType() {
-        return null;
-      }
-    });
-    return messageAnnotation;
+      return new ClientAnnotationImpl("Org.OData.Core.V1.Permissions", new ClientPrimitiveValue() {
+
+    @Override
+    public boolean isPrimitive() {
+      return false;
+    }
+
+    @Override
+    public boolean isEnum() {
+      return true;
+    }
+
+    @Override
+    public boolean isComplex() {
+      return false;
+    }
+
+    @Override
+    public boolean isCollection() {
+      return false;
+    }
+
+    @Override
+    public String getTypeName() {
+      return "String";
+    }
+
+    @Override
+    public ClientPrimitiveValue asPrimitive() {
+      return null;
+    }
+
+    @Override
+    public ClientEnumValue asEnum() {
+      return client.getObjectFactory().newEnumValue("Org.OData.Core.V1.Permissions", "Read");
+    }
+
+    @Override
+    public ClientComplexValue asComplex() {
+      return null;
+    }
+
+    @Override
+    public <T extends ClientValue> ClientCollectionValue<T> asCollection() {
+      return null;
+    }
+
+    @Override
+    public Object toValue() {
+      return client.getObjectFactory().newEnumValue("Org.OData.Core.V1.Permissions", "Read");
+    }
+
+    @Override
+    public <T> T toCastValue(Class<T> reference) throws EdmPrimitiveTypeException {
+      return null;
+    }
+
+    @Override
+    public EdmPrimitiveTypeKind getTypeKind() {
+      return null;
+    }
+
+    @Override
+    public EdmPrimitiveType getType() {
+      return null;
+    }
+  });
   }
   
   @Test
@@ -613,9 +608,9 @@ public class AtomTest extends JSONTest {
     property("Employees_3_HomeAddress.xml");
   }
   
-  protected void delta(final String filename) throws Exception {
+  protected void delta() throws Exception {
     ResWrap<Delta> resDelta = client.getDeserializer(ContentType.APPLICATION_ATOM_XML).toDelta(
-        getClass().getResourceAsStream(filename));
+        getClass().getResourceAsStream("delta.xml"));
     final Delta delta = resDelta.getPayload();
     
     assertNotNull(delta);
@@ -644,6 +639,6 @@ public class AtomTest extends JSONTest {
 
   @Test
   public void deltas() throws Exception {
-    delta("delta.xml");
+    delta();
   }
 }

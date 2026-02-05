@@ -43,9 +43,9 @@ class ClientCsdlReferentialConstraint extends CsdlReferentialConstraint implemen
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("Property".equals(jp.getCurrentName())) {
+          if ("Property".equals(jp.currentName())) {
             refConst.setProperty(jp.nextTextValue());
-          } else if ("ReferencedProperty".equals(jp.getCurrentName())) {
+          } else if ("ReferencedProperty".equals(jp.currentName())) {
             refConst.setReferencedProperty(jp.nextTextValue());
           }
         }

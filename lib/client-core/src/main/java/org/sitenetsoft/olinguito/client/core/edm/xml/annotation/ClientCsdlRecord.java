@@ -43,12 +43,12 @@ class ClientCsdlRecord extends CsdlRecord implements Serializable {
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("Type".equals(jp.getCurrentName())) {
+          if ("Type".equals(jp.currentName())) {
             record.setType(jp.nextTextValue());
-          } else if ("Annotation".equals(jp.getCurrentName())) {
+          } else if ("Annotation".equals(jp.currentName())) {
 			jp.nextToken();
             record.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));
-          } else if ("PropertyValue".equals(jp.getCurrentName())) {
+          } else if ("PropertyValue".equals(jp.currentName())) {
 			jp.nextToken();
             record.getPropertyValues().add(jp.readValueAs(ClientCsdlPropertyValue.class));
           }

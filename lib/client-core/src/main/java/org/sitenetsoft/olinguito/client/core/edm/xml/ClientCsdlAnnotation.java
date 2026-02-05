@@ -45,11 +45,11 @@ public class ClientCsdlAnnotation extends CsdlAnnotation implements Serializable
       for (; jp.getCurrentToken() != null && jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("Term".equals(jp.getCurrentName())) {
+          if ("Term".equals(jp.currentName())) {
             annotation.setTerm(jp.nextTextValue());
-          } else if ("Qualifier".equals(jp.getCurrentName())) {
+          } else if ("Qualifier".equals(jp.currentName())) {
             annotation.setQualifier(jp.nextTextValue());
-          } else if ("Annotation".equals(jp.getCurrentName())) {
+          } else if ("Annotation".equals(jp.currentName())) {
             jp.nextToken();
             annotation.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));
           } else if (isAnnotationConstExprConstruct(jp)) {

@@ -45,23 +45,23 @@ class ClientCsdlEntityContainer extends CsdlEntityContainer implements Serializa
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("Name".equals(jp.getCurrentName())) {
+          if ("Name".equals(jp.currentName())) {
             entityContainer.setName(jp.nextTextValue());
-          } else if ("Extends".equals(jp.getCurrentName())) {
+          } else if ("Extends".equals(jp.currentName())) {
             entityContainer.setExtendsContainer(jp.nextTextValue());
-          } else if ("EntitySet".equals(jp.getCurrentName())) {
+          } else if ("EntitySet".equals(jp.currentName())) {
             jp.nextToken();
             entityContainer.getEntitySets().add(jp.readValueAs(ClientCsdlEntitySet.class));
-          } else if ("Singleton".equals(jp.getCurrentName())) {
+          } else if ("Singleton".equals(jp.currentName())) {
             jp.nextToken();
             entityContainer.getSingletons().add(jp.readValueAs(ClientCsdlSingleton.class));
-          } else if ("ActionImport".equals(jp.getCurrentName())) {
+          } else if ("ActionImport".equals(jp.currentName())) {
             jp.nextToken();
             entityContainer.getActionImports().add(jp.readValueAs(ClientCsdlActionImport.class));
-          } else if ("FunctionImport".equals(jp.getCurrentName())) {
+          } else if ("FunctionImport".equals(jp.currentName())) {
             jp.nextToken();
             entityContainer.getFunctionImports().add(jp.readValueAs(ClientCsdlFunctionImport.class));
-          } else if ("Annotation".equals(jp.getCurrentName())) {
+          } else if ("Annotation".equals(jp.currentName())) {
             jp.nextToken();
             entityContainer.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));
           }

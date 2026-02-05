@@ -43,7 +43,7 @@ class ClientCsdlOnDelete extends CsdlOnDelete implements Serializable {
 
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
-        if (token == JsonToken.FIELD_NAME && "Action".equals(jp.getCurrentName())) {
+        if (token == JsonToken.FIELD_NAME && "Action".equals(jp.currentName())) {
           CsdlOnDeleteAction action = CsdlOnDeleteAction.valueOf(jp.nextTextValue());
           ondelete.setAction(action);
         }

@@ -46,18 +46,18 @@ class ClientCsdlAction extends CsdlAction implements Serializable {
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("Name".equals(jp.getCurrentName())) {
+          if ("Name".equals(jp.currentName())) {
             action.setName(jp.nextTextValue());
-          } else if ("IsBound".equals(jp.getCurrentName())) {
+          } else if ("IsBound".equals(jp.currentName())) {
             action.setBound(BooleanUtils.toBoolean(jp.nextTextValue()));
-          } else if ("EntitySetPath".equals(jp.getCurrentName())) {
+          } else if ("EntitySetPath".equals(jp.currentName())) {
             action.setEntitySetPath(jp.nextTextValue());
-          } else if ("Parameter".equals(jp.getCurrentName())) {
+          } else if ("Parameter".equals(jp.currentName())) {
             jp.nextToken();
             action.getParameters().add(jp.readValueAs(ClientCsdlParameter.class));
-          } else if ("ReturnType".equals(jp.getCurrentName())) {
+          } else if ("ReturnType".equals(jp.currentName())) {
             action.setReturnType(parseReturnType(jp, "Action"));
-          } else if ("Annotation".equals(jp.getCurrentName())) {
+          } else if ("Annotation".equals(jp.currentName())) {
             jp.nextToken();
             action.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));
           }

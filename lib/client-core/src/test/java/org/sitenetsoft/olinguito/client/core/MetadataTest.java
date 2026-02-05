@@ -1017,8 +1017,7 @@ public class MetadataTest extends AbstractTest {
  }
 
  /**
-  * @param edm
-  * @param entityType
+  *
   */
  private void checkAnnotationsOnEntityType(final Edm edm, EdmEntityType entityType) {
    FullQualifiedName termName =
@@ -1027,7 +1026,6 @@ public class MetadataTest extends AbstractTest {
    EdmTerm term = edm.getTerm(termName);
    EdmAnnotation annotationChangeTracking = entityType.getAnnotation(term, null);
    assertNotNull(annotationChangeTracking);
-   if (annotationChangeTracking != null) {
      EdmExpression expression = annotationChangeTracking.getExpression();
      EdmDynamicExpression asDynamic = expression.asDynamic();
      if ((asDynamic != null) && (asDynamic.isRecord())) {
@@ -1035,21 +1033,19 @@ public class MetadataTest extends AbstractTest {
        if (asRecord != null) {
          List<EdmPropertyValue> propertyValues = asRecord.getPropertyValues();
          if (propertyValues != null) {
-           for (int i = 0; i < propertyValues.size(); i++) {
-             EdmPropertyValue edmPropertyValue = propertyValues.get(i);
-             String property = edmPropertyValue.getProperty();
-             if (property.equals("Supported")) {
-               EdmExpression value = edmPropertyValue.getValue();
-               EdmConstantExpression asConstant2 = value.asConstant();
-               String valueAsString = asConstant2.getValueAsString();
-               assertTrue(Boolean.parseBoolean(valueAsString));
+             for (EdmPropertyValue edmPropertyValue : propertyValues) {
+                 String property = edmPropertyValue.getProperty();
+                 if (property.equals("Supported")) {
+                     EdmExpression value = edmPropertyValue.getValue();
+                     EdmConstantExpression asConstant2 = value.asConstant();
+                     String valueAsString = asConstant2.getValueAsString();
+                     assertTrue(Boolean.parseBoolean(valueAsString));
+                 }
              }
-           }
          }
        }
      }
-   }
-   termName =
+     termName =
        new FullQualifiedName("Integration", "Extractable");
    term = edm.getTerm(termName);
    EdmAnnotation annotation = entityType.getAnnotation(term, null);

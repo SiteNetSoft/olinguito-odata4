@@ -43,40 +43,40 @@ class ClientCsdlSchema extends CsdlSchema implements Serializable {
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("Namespace".equals(jp.getCurrentName())) {
+          if ("Namespace".equals(jp.currentName())) {
             schema.setNamespace(jp.nextTextValue());
-          } else if ("Alias".equals(jp.getCurrentName())) {
+          } else if ("Alias".equals(jp.currentName())) {
             schema.setAlias(jp.nextTextValue());
-          } else if ("ComplexType".equals(jp.getCurrentName())) {
+          } else if ("ComplexType".equals(jp.currentName())) {
             jp.nextToken();
             schema.getComplexTypes().add(jp.readValueAs(ClientCsdlComplexType.class));
-          } else if ("EntityType".equals(jp.getCurrentName())) {
+          } else if ("EntityType".equals(jp.currentName())) {
             jp.nextToken();
             schema.getEntityTypes().add(jp.readValueAs(ClientCsdlEntityType.class));
-          } else if ("EnumType".equals(jp.getCurrentName())) {
+          } else if ("EnumType".equals(jp.currentName())) {
             jp.nextToken();
             schema.getEnumTypes().add(jp.readValueAs(ClientCsdlEnumType.class));
-          } else if ("EntityContainer".equals(jp.getCurrentName())) {
+          } else if ("EntityContainer".equals(jp.currentName())) {
             jp.nextToken();
             ClientCsdlEntityContainer entityContainer = jp.readValueAs(ClientCsdlEntityContainer.class);
             schema.setEntityContainer(entityContainer);
-          } else if ("Action".equals(jp.getCurrentName())) {
+          } else if ("Action".equals(jp.currentName())) {
             jp.nextToken();
             schema.getActions().add(jp.readValueAs(ClientCsdlAction.class));
-          } else if ("Function".equals(jp.getCurrentName())) {
+          } else if ("Function".equals(jp.currentName())) {
             jp.nextToken();
             schema.getFunctions().add(jp.readValueAs(ClientCsdlFunction.class));
-          } else if ("TypeDefinition".equals(jp.getCurrentName())) {
+          } else if ("TypeDefinition".equals(jp.currentName())) {
             jp.nextToken();
             schema.getTypeDefinitions().add(jp.readValueAs(ClientCsdlTypeDefinition.class));
           }
-        } else if ("Annotations".equals(jp.getCurrentName())) {
+        } else if ("Annotations".equals(jp.currentName())) {
           jp.nextToken();
           schema.getAnnotationGroups().add(jp.readValueAs(ClientCsdlAnnotations.class));
-        } else if ("Annotation".equals(jp.getCurrentName())) {
+        } else if ("Annotation".equals(jp.currentName())) {
           jp.nextToken();
           schema.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));
-        } else if ("Term".equals(jp.getCurrentName())) {
+        } else if ("Term".equals(jp.currentName())) {
           jp.nextToken();
           schema.getTerms().add(jp.readValueAs(ClientCsdlTerm.class));
         }

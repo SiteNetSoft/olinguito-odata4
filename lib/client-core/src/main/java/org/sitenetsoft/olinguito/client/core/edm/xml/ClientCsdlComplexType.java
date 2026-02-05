@@ -46,21 +46,21 @@ class ClientCsdlComplexType extends CsdlComplexType implements Serializable {
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("Name".equals(jp.getCurrentName())) {
+          if ("Name".equals(jp.currentName())) {
             complexType.setName(jp.nextTextValue());
-          } else if ("Abstract".equals(jp.getCurrentName())) {
+          } else if ("Abstract".equals(jp.currentName())) {
             complexType.setAbstract(BooleanUtils.toBoolean(jp.nextTextValue()));
-          } else if ("BaseType".equals(jp.getCurrentName())) {
+          } else if ("BaseType".equals(jp.currentName())) {
             complexType.setBaseType(jp.nextTextValue());
-          } else if ("OpenType".equals(jp.getCurrentName())) {
+          } else if ("OpenType".equals(jp.currentName())) {
             complexType.setOpenType(BooleanUtils.toBoolean(jp.nextTextValue()));
-          } else if ("Property".equals(jp.getCurrentName())) {
+          } else if ("Property".equals(jp.currentName())) {
             jp.nextToken();
             complexType.getProperties().add(jp.readValueAs(ClientCsdlProperty.class));
-          } else if ("NavigationProperty".equals(jp.getCurrentName())) {
+          } else if ("NavigationProperty".equals(jp.currentName())) {
             jp.nextToken();
             complexType.getNavigationProperties().add(jp.readValueAs(ClientCsdlNavigationProperty.class));
-          } else if ("Annotation".equals(jp.getCurrentName())) {
+          } else if ("Annotation".equals(jp.currentName())) {
             jp.nextToken();
             complexType.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));
           }

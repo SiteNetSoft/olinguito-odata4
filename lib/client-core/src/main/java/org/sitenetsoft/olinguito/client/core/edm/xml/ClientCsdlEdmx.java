@@ -79,12 +79,12 @@ public class ClientCsdlEdmx extends CsdlAbstractEdmItem implements Serializable,
       for (; (jp.getCurrentToken() != null && jp.getCurrentToken() != JsonToken.END_OBJECT); jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("Version".equals(jp.getCurrentName())) {
+          if ("Version".equals(jp.currentName())) {
             edmx.setVersion(jp.nextTextValue());
-          } else if ("DataServices".equals(jp.getCurrentName())) {
+          } else if ("DataServices".equals(jp.currentName())) {
             jp.nextToken();
             edmx.setDataServices(jp.readValueAs(ClientCsdlDataServices.class));
-          } else if ("Reference".equals(jp.getCurrentName())) {
+          } else if ("Reference".equals(jp.currentName())) {
             jp.nextToken();
             edmx.getReferences().add(jp.readValueAs(ClientCsdlReference.class));
           }

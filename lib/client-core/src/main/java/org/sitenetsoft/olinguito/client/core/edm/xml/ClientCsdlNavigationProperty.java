@@ -46,9 +46,9 @@ class ClientCsdlNavigationProperty extends CsdlNavigationProperty implements Ser
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("Name".equals(jp.getCurrentName())) {
+          if ("Name".equals(jp.currentName())) {
             property.setName(jp.nextTextValue());
-          } else if ("Type".equals(jp.getCurrentName())) {
+          } else if ("Type".equals(jp.currentName())) {
             String metadataTypeName = jp.nextTextValue();
             if (metadataTypeName.startsWith("Collection(")) {
               property.setType(metadataTypeName.substring(metadataTypeName.indexOf("(") + 1,
@@ -58,19 +58,19 @@ class ClientCsdlNavigationProperty extends CsdlNavigationProperty implements Ser
               property.setType(metadataTypeName);
               property.setCollection(false);
             }
-          } else if ("Nullable".equals(jp.getCurrentName())) {
+          } else if ("Nullable".equals(jp.currentName())) {
             property.setNullable(BooleanUtils.toBoolean(jp.nextTextValue()));
-          } else if ("Partner".equals(jp.getCurrentName())) {
+          } else if ("Partner".equals(jp.currentName())) {
             property.setPartner(jp.nextTextValue());
-          } else if ("ContainsTarget".equals(jp.getCurrentName())) {
+          } else if ("ContainsTarget".equals(jp.currentName())) {
             property.setContainsTarget(BooleanUtils.toBoolean(jp.nextTextValue()));
-          } else if ("ReferentialConstraint".equals(jp.getCurrentName())) {
+          } else if ("ReferentialConstraint".equals(jp.currentName())) {
             jp.nextToken();
             property.getReferentialConstraints().add(jp.readValueAs(ClientCsdlReferentialConstraint.class));
-          } else if ("OnDelete".equals(jp.getCurrentName())) {
+          } else if ("OnDelete".equals(jp.currentName())) {
             jp.nextToken();
             property.setOnDelete(jp.readValueAs(ClientCsdlOnDelete.class));
-          } else if ("Annotation".equals(jp.getCurrentName())) {
+          } else if ("Annotation".equals(jp.currentName())) {
             jp.nextToken();
             property.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));
           }

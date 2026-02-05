@@ -79,15 +79,15 @@ class ClientCsdlReference extends CsdlAbstractEdmItem implements Serializable, R
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("Uri".equals(jp.getCurrentName())) {
+          if ("Uri".equals(jp.currentName())) {
             reference.setUri(URI.create(jp.nextTextValue()));
-          } else if ("Include".equals(jp.getCurrentName())) {
+          } else if ("Include".equals(jp.currentName())) {
             jp.nextToken();
             reference.getIncludes().add(jp.readValueAs( ClientCsdlInclude.class));
-          } else if ("IncludeAnnotations".equals(jp.getCurrentName())) {
+          } else if ("IncludeAnnotations".equals(jp.currentName())) {
             jp.nextToken();
             reference.getIncludeAnnotations().add(jp.readValueAs( ClientCsdlIncludeAnnotations.class));
-          } else if ("Annotation".equals(jp.getCurrentName())) {
+          } else if ("Annotation".equals(jp.currentName())) {
             jp.nextToken();
             reference.getAnnotations().add(jp.readValueAs( ClientCsdlAnnotation.class));
           }

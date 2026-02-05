@@ -45,15 +45,15 @@ class ClientCsdlFunctionImport extends CsdlFunctionImport implements Serializabl
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("Name".equals(jp.getCurrentName())) {
+          if ("Name".equals(jp.currentName())) {
             functImpImpl.setName(jp.nextTextValue());
-          } else if ("Function".equals(jp.getCurrentName())) {
+          } else if ("Function".equals(jp.currentName())) {
             functImpImpl.setFunction(jp.nextTextValue());
-          } else if ("EntitySet".equals(jp.getCurrentName())) {
+          } else if ("EntitySet".equals(jp.currentName())) {
             functImpImpl.setEntitySet(jp.nextTextValue());
-          } else if ("IncludeInServiceDocument".equals(jp.getCurrentName())) {
+          } else if ("IncludeInServiceDocument".equals(jp.currentName())) {
             functImpImpl.setIncludeInServiceDocument(BooleanUtils.toBoolean(jp.nextTextValue()));
-          } else if ("Annotation".equals(jp.getCurrentName())) {
+          } else if ("Annotation".equals(jp.currentName())) {
             jp.nextToken();
             functImpImpl.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));
           }

@@ -44,20 +44,20 @@ class ClientCsdlIsOf extends CsdlIsOf implements Serializable {
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("Type".equals(jp.getCurrentName())) {
+          if ("Type".equals(jp.currentName())) {
             isof.setType(jp.nextTextValue());
-          } else if ("Annotation".equals(jp.getCurrentName())) {
+          } else if ("Annotation".equals(jp.currentName())) {
             isof.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));
-          } else if ("MaxLength".equals(jp.getCurrentName())) {
+          } else if ("MaxLength".equals(jp.currentName())) {
             final String maxLenght = jp.nextTextValue();
             isof.setMaxLength("max".equalsIgnoreCase(maxLenght) ? Integer.MAX_VALUE : Integer.valueOf(maxLenght));
-          } else if ("Precision".equals(jp.getCurrentName())) {
+          } else if ("Precision".equals(jp.currentName())) {
             isof.setPrecision(Integer.valueOf(jp.nextTextValue()));
-          } else if ("Scale".equals(jp.getCurrentName())) {
+          } else if ("Scale".equals(jp.currentName())) {
             final String scale = jp.nextTextValue();
             isof.setScale("variable".equalsIgnoreCase(scale) || "floating".equalsIgnoreCase(scale) ?
                 0 : Integer.valueOf(scale));
-          } else if ("SRID".equals(jp.getCurrentName())) {
+          } else if ("SRID".equals(jp.currentName())) {
             final String srid = jp.nextTextValue();
             if (srid != null) {
               isof.setSrid(SRID.valueOf(srid));
