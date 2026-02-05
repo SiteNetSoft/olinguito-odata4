@@ -45,26 +45,26 @@ class ClientCsdlTypeDefinition extends CsdlTypeDefinition implements Serializabl
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("Name".equals(jp.getCurrentName())) {
+          if ("Name".equals(jp.currentName())) {
             typeDefinition.setName(jp.nextTextValue());
-          } else if ("UnderlyingType".equals(jp.getCurrentName())) {
+          } else if ("UnderlyingType".equals(jp.currentName())) {
             typeDefinition.setUnderlyingType(jp.nextTextValue());
-          } else if ("MaxLength".equals(jp.getCurrentName())) {
+          } else if ("MaxLength".equals(jp.currentName())) {
             typeDefinition.setMaxLength(jp.nextIntValue(0));
-          } else if ("Unicode".equals(jp.getCurrentName())) {
+          } else if ("Unicode".equals(jp.currentName())) {
             typeDefinition.setUnicode(BooleanUtils.toBoolean(jp.nextTextValue()));
-          } else if ("Precision".equals(jp.getCurrentName())) {
+          } else if ("Precision".equals(jp.currentName())) {
             typeDefinition.setPrecision(jp.nextIntValue(0));
-          } else if ("Scale".equals(jp.getCurrentName())) {
+          } else if ("Scale".equals(jp.currentName())) {
             final String scale = jp.nextTextValue();
             typeDefinition.setScale("variable".equalsIgnoreCase(scale) || "floating".equalsIgnoreCase(scale) ?
                 0 : Integer.valueOf(scale));
-          } else if ("SRID".equals(jp.getCurrentName())) {
+          } else if ("SRID".equals(jp.currentName())) {
             final String srid = jp.nextTextValue();
             if (srid != null) {
               typeDefinition.setSrid(SRID.valueOf(srid));
             }
-          } else if ("Annotation".equals(jp.getCurrentName())) {
+          } else if ("Annotation".equals(jp.currentName())) {
             jp.nextToken();
             typeDefinition.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));
           }

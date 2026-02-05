@@ -44,13 +44,13 @@ class ClientCsdlActionImport extends CsdlActionImport implements Serializable {
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("Action".equals(jp.getCurrentName())) {
+          if ("Action".equals(jp.currentName())) {
             action.setAction(jp.nextTextValue());
-          } else if ("Name".equals(jp.getCurrentName())) {
+          } else if ("Name".equals(jp.currentName())) {
             action.setName(jp.nextTextValue());
-          } else if ("EntitySet".equals(jp.getCurrentName())) {
+          } else if ("EntitySet".equals(jp.currentName())) {
             action.setEntitySet(jp.nextTextValue());
-          } else if ("Annotation".equals(jp.getCurrentName())) {
+          } else if ("Annotation".equals(jp.currentName())) {
               jp.nextToken();
               action.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));
           }

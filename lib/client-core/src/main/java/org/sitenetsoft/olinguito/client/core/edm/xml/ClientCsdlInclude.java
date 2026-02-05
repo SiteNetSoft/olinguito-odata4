@@ -65,9 +65,9 @@ class ClientCsdlInclude extends CsdlAbstractEdmItem implements Serializable, Inc
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("Namespace".equals(jp.getCurrentName())) {
+          if ("Namespace".equals(jp.currentName())) {
             include.setNamespace(jp.nextTextValue());
-          } else if ("Alias".equals(jp.getCurrentName())) {
+          } else if ("Alias".equals(jp.currentName())) {
             include.setAlias(jp.nextTextValue());
           }
         }

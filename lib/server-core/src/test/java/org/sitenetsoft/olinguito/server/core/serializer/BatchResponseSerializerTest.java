@@ -28,6 +28,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -55,7 +56,7 @@ public class BatchResponseSerializerTest {
   private static final String CRLF = "\r\n";
   private static final String BOUNDARY = "batch_" + UUID.randomUUID().toString();
 
-  private static final Charset CS_ISO_8859_1 = Charset.forName("iso-8859-1");
+  private static final Charset CS_ISO_8859_1 = StandardCharsets.ISO_8859_1;
 
   @Test
   public void batchResponse() throws Exception {

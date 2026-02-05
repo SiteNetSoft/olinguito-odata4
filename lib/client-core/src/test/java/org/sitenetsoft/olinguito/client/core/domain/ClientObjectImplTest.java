@@ -18,12 +18,6 @@
  */
 package org.sitenetsoft.olinguito.client.core.domain;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -42,6 +36,8 @@ import org.sitenetsoft.olinguito.client.core.domain.ClientPrimitiveValueImpl.Bui
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class ClientObjectImplTest {
 
@@ -76,10 +72,10 @@ public class ClientObjectImplTest {
   
   @Test
   public void testCollection(){
-    ClientCollectionValueImpl val = new ClientCollectionValueImpl<ClientValue>("test");
+    ClientCollectionValueImpl<ClientValue> val = new ClientCollectionValueImpl<ClientValue>("test");
     assertNull(val.asEnum());
-    ClientCollectionValueImpl val2 = new ClientCollectionValueImpl<ClientValue>("test");
-    assertTrue(val.equals(val2));
+    ClientCollectionValueImpl<ClientValue> val2 = new ClientCollectionValueImpl<ClientValue>("test");
+      assertEquals(val, val2);
     assertNotNull(val.hashCode());
     assertNotNull(val.toString());
     val.add(val2);
@@ -96,7 +92,7 @@ public class ClientObjectImplTest {
     assertNull(val.asEnum());
     assertTrue(val.removeLink(link));
     ClientComplexValueImpl val2 = new ClientComplexValueImpl("test");
-    assertTrue(val.equals(val2));
+      assertEquals(val, val2);
     assertNotNull(val.hashCode());
     assertNotNull(val.toString());
   }  
@@ -112,7 +108,7 @@ public class ClientObjectImplTest {
     assertNotNull(val.hashCode());
     assertNotNull(val.toString());
     ClientDeletedEntityImpl val2 = new ClientDeletedEntityImpl();
-    assertFalse(val.equals(val2));
+      assertNotEquals(val, val2);
   }
   
   @Test
@@ -133,7 +129,7 @@ public class ClientObjectImplTest {
     assertNotNull(val.getOperations());
     assertNotNull(val.hashCode());
     assertNotNull(val.toString());
-    assertFalse(val.equals(val2));
+      assertNotEquals(val, val2);
   }
   
   @Test
@@ -153,7 +149,7 @@ public class ClientObjectImplTest {
     assertNull(val.getName());
     assertNotNull(val.hashCode());
     assertNotNull(val.toString());
-    assertFalse(val.equals(val2));
+      assertNotEquals(val, val2);
   }
   
   @Test
@@ -176,7 +172,7 @@ public class ClientObjectImplTest {
     assertNotNull(val.hashCode());
     assertNotNull(val.toString());
     ClientDeletedEntityImpl val2 = new ClientDeletedEntityImpl();
-    assertFalse(val.equals(val2));
+      assertNotEquals(val, val2);
   }
   
   @Test
@@ -190,7 +186,7 @@ public class ClientObjectImplTest {
     assertNull(val.getOperation("test"));
     assertNotNull(val.hashCode());
     assertNotNull(val.toString());
-    assertFalse(val.equals(val2));
+      assertNotEquals(val, val2);
   }  
   
   @Test
@@ -199,7 +195,7 @@ public class ClientObjectImplTest {
     ClientEnumValueImpl val2 = new ClientEnumValueImpl("type", "value");
     assertNotNull(val.hashCode());
     assertNotNull(val.toString());
-    assertTrue(val.equals(val2));
+      assertEquals(val, val2);
   }
   
   @Test
@@ -212,7 +208,7 @@ public class ClientObjectImplTest {
     assertNotNull(builder);
     byte[] byteArray = new byte[2];
     assertNotNull(builder.buildBinary(byteArray));
-    Short shortValue = new Short("1");
+    Short shortValue = Short.valueOf("1");
     assertNotNull(builder.buildInt16(shortValue));
     assertNotNull(builder.buildInt32(Integer.valueOf("1")));
     assertNotNull(builder.buildSingle(Float.valueOf("1")));
@@ -222,7 +218,7 @@ public class ClientObjectImplTest {
     assertNotNull(builder.buildDuration(new BigDecimal("1")));
     assertNotNull(val.hashCode());
     assertNotNull(val.toString());
-    assertTrue(val.equals(val2));
+      assertEquals(val, val2);
   }
   
   @Test
@@ -234,7 +230,7 @@ public class ClientObjectImplTest {
     assertNotNull(val.getOperations());
     assertNotNull(val.hashCode());
     assertNotNull(val.toString());
-    assertTrue(val.equals(val2));
+      assertEquals(val, val2);
   }
   
   @Test
@@ -244,6 +240,6 @@ public class ClientObjectImplTest {
     ClientValuableImpl val2 = new ClientValuableImpl(value);
     assertNotNull(val.hashCode());
     assertNotNull(val.toString());
-    assertTrue(val.equals(val2));
+      assertEquals(val, val2);
   }
 }

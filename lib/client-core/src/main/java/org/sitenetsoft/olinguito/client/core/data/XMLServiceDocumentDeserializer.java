@@ -59,11 +59,11 @@ public class XMLServiceDocumentDeserializer extends JsonDeserializer {
 
       final JsonToken token = jp.getCurrentToken();
       if (token == JsonToken.FIELD_NAME) {
-        if ("href".equals(jp.getCurrentName())) {
+        if ("href".equals(jp.currentName())) {
           element.setUrl(jp.nextTextValue());
-        } else if ("name".equals(jp.getCurrentName())) {
+        } else if ("name".equals(jp.currentName())) {
           element.setName(jp.nextTextValue());
-        } else if ("title".equals(jp.getCurrentName())) {
+        } else if ("title".equals(jp.currentName())) {
           element.setTitle(getName(jp));
         }
       }
@@ -88,28 +88,28 @@ public class XMLServiceDocumentDeserializer extends JsonDeserializer {
 
       final JsonToken token = jp.getCurrentToken();
       if (token == JsonToken.FIELD_NAME) {
-        if ("base".equals(jp.getCurrentName())) {
+        if ("base".equals(jp.currentName())) {
           base = jp.nextTextValue();
-        } else if ("context".equals(jp.getCurrentName())) {
+        } else if ("context".equals(jp.currentName())) {
           contextURL = URI.create(jp.nextTextValue());
-        } else if ("metadata-etag".equals(jp.getCurrentName())) {
+        } else if ("metadata-etag".equals(jp.currentName())) {
           metadataETag = jp.nextTextValue();
-        } else if ("workspace".equals(jp.getCurrentName())) {
+        } else if ("workspace".equals(jp.currentName())) {
           jp.nextToken();
           jp.nextToken();
-          if ("title".equals(jp.getCurrentName())) {
+          if ("title".equals(jp.currentName())) {
             sdoc.setTitle(getName(jp));
           }
-        } else if ("collection".equals(jp.getCurrentName())) {
+        } else if ("collection".equals(jp.currentName())) {
           jp.nextToken();
           sdoc.getEntitySets().add(deserializeElement(jp, "collection"));
-        } else if ("function-import".equals(jp.getCurrentName())) {
+        } else if ("function-import".equals(jp.currentName())) {
           jp.nextToken();
           sdoc.getFunctionImports().add(deserializeElement(jp, "function-import"));
-        } else if ("singleton".equals(jp.getCurrentName())) {
+        } else if ("singleton".equals(jp.currentName())) {
           jp.nextToken();
           sdoc.getSingletons().add(deserializeElement(jp, "singleton"));
-        } else if ("service-document".equals(jp.getCurrentName())) {
+        } else if ("service-document".equals(jp.currentName())) {
           jp.nextToken();
           sdoc.getRelatedServiceDocuments().add(deserializeElement(jp, "service-document"));
         }

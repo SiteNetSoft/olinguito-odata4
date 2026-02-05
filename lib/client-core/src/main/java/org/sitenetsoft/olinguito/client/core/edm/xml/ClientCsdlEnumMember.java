@@ -43,11 +43,11 @@ class ClientCsdlEnumMember extends CsdlEnumMember implements Serializable {
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("Name".equals(jp.getCurrentName())) {
+          if ("Name".equals(jp.currentName())) {
             member.setName(jp.nextTextValue());
-          } else if ("Value".equals(jp.getCurrentName())) {
+          } else if ("Value".equals(jp.currentName())) {
             member.setValue(jp.nextTextValue());
-          } else if ("Annotation".equals(jp.getCurrentName())) {
+          } else if ("Annotation".equals(jp.currentName())) {
             jp.nextToken();
             member.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));
           }

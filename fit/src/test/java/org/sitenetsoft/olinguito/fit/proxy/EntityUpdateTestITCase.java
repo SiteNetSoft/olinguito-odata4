@@ -29,8 +29,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.UUID;
-
-import org.apache.commons.lang3.RandomUtils;
+import java.util.concurrent.ThreadLocalRandom;
 import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
 import org.sitenetsoft.olinguito.ext.proxy.AbstractService;
@@ -113,13 +112,13 @@ public class EntityUpdateTestITCase extends AbstractTestITCase {
 
     final Calendar birthday = Calendar.getInstance();
     birthday.clear();
-    birthday.set(1977, 8, 8);
+    birthday.set(1977, Calendar.SEPTEMBER, 8);
     customer.setBirthday(new Timestamp(birthday.getTimeInMillis()));
 
     customer.setTimeBetweenLastTwoOrders(BigDecimal.valueOf(0.0000002));
 
     // 2. create order and set it to customer
-    final int orderId = RandomUtils.nextInt(400, 410);
+    final int orderId = ThreadLocalRandom.current().nextInt(400, 410);
 
     Order order = getContainer().newEntityInstance(Order.class);
     order.setOrderID(orderId);

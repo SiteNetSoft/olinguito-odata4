@@ -26,10 +26,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -259,7 +256,7 @@ public class JSONTest extends AbstractTest {
   
   protected void assertSimilar(final String filename, final String actual, 
       boolean isServerMode) throws Exception {
-    final JsonNode expected = OBJECT_MAPPER.readTree(IOUtils.toString(getClass().getResourceAsStream(filename)).
+    final JsonNode expected = OBJECT_MAPPER.readTree(IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream(filename))).
         replace(Constants.JSON_NAVIGATION_LINK, Constants.JSON_BIND_LINK_SUFFIX));
     cleanup((ObjectNode) expected, isServerMode);
     final ObjectNode actualNode = (ObjectNode) OBJECT_MAPPER.readTree(new ByteArrayInputStream(actual.getBytes()));
@@ -269,7 +266,7 @@ public class JSONTest extends AbstractTest {
   
   protected void assertSimilarWithFullMetadata(final String filename, final String actual, 
       boolean isServerMode) throws Exception {
-    String value = IOUtils.toString(getClass().getResourceAsStream(filename));
+    String value = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream(filename)));
     final JsonNode expected = isServerMode ? OBJECT_MAPPER.readTree(value.
         replace(Constants.JSON_MEDIA_EDIT_LINK, Constants.JSON_MEDIA_READ_LINK)) :
     OBJECT_MAPPER.readTree(value.
@@ -282,7 +279,7 @@ public class JSONTest extends AbstractTest {
   
   protected void assertSimilarWithNoMetadata(final String filename, final String actual, 
       boolean isServerMode) throws Exception {
-    final JsonNode expected = OBJECT_MAPPER.readTree(IOUtils.toString(getClass().getResourceAsStream(filename)).
+    final JsonNode expected = OBJECT_MAPPER.readTree(IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream(filename))).
         replace(Constants.JSON_NAVIGATION_LINK, Constants.JSON_BIND_LINK_SUFFIX));
     cleanupWithNoMetadata((ObjectNode) expected, isServerMode);
     final ObjectNode actualNode = (ObjectNode) OBJECT_MAPPER.readTree(new ByteArrayInputStream(actual.getBytes()));
@@ -291,7 +288,7 @@ public class JSONTest extends AbstractTest {
   }
 
   private void assertJSONSimilar(final String filename, final String actual) throws Exception {
-    final JsonNode expected = OBJECT_MAPPER.readTree(IOUtils.toString(getClass().getResourceAsStream(filename)).
+    final JsonNode expected = OBJECT_MAPPER.readTree(IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream(filename))).
         replace(Constants.JSON_NAVIGATION_LINK, Constants.JSON_BIND_LINK_SUFFIX));
     cleanup((ObjectNode) expected, false);
     final ObjectNode actualNode = (ObjectNode) OBJECT_MAPPER.readTree(new ByteArrayInputStream(actual.getBytes()));
@@ -653,7 +650,7 @@ public class JSONTest extends AbstractTest {
 
     String actual = IOUtils.toString(client.getWriter().writeEntity(message, ContentType.JSON));
     JsonNode expected =
-        OBJECT_MAPPER.readTree(IOUtils.toString(getClass().getResourceAsStream("olingo390.json")).
+        OBJECT_MAPPER.readTree(IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("olingo390.json"))).
             replace(Constants.JSON_NAVIGATION_LINK, Constants.JSON_BIND_LINK_SUFFIX));
     cleanup((ObjectNode) expected, false);
     ObjectNode actualNode = (ObjectNode) OBJECT_MAPPER.readTree(new ByteArrayInputStream(actual.getBytes()));
@@ -661,7 +658,7 @@ public class JSONTest extends AbstractTest {
     
     actual = IOUtils.toString(client.getWriter().writeEntity(message, ContentType.JSON_FULL_METADATA));
     expected =
-        OBJECT_MAPPER.readTree(IOUtils.toString(getClass().getResourceAsStream("olingo390.json")).
+        OBJECT_MAPPER.readTree(IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("olingo390.json"))).
             replace(Constants.JSON_NAVIGATION_LINK, Constants.JSON_BIND_LINK_SUFFIX));
     actualNode = (ObjectNode) OBJECT_MAPPER.readTree(new ByteArrayInputStream(actual.getBytes()));
     assertEquals(expected, actualNode);
@@ -693,7 +690,7 @@ public class JSONTest extends AbstractTest {
 
 	String actual = IOUtils.toString(client.getWriter().writeEntity(message, ContentType.JSON));
     JsonNode expected =
-        OBJECT_MAPPER.readTree(IOUtils.toString(getClass().getResourceAsStream("olingo1073.json")).
+        OBJECT_MAPPER.readTree(IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("olingo1073.json"))).
             replace(Constants.JSON_NAVIGATION_LINK, Constants.JSON_BIND_LINK_SUFFIX));
     cleanup((ObjectNode) expected, false);
     ObjectNode actualNode = (ObjectNode) OBJECT_MAPPER.readTree(new ByteArrayInputStream(actual.getBytes()));
@@ -701,7 +698,7 @@ public class JSONTest extends AbstractTest {
     
     actual = IOUtils.toString(client.getWriter().writeEntity(message, ContentType.JSON_FULL_METADATA));
     expected =
-        OBJECT_MAPPER.readTree(IOUtils.toString(getClass().getResourceAsStream("olingo1073.json")).
+        OBJECT_MAPPER.readTree(IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("olingo1073.json"))).
             replace(Constants.JSON_NAVIGATION_LINK, Constants.JSON_BIND_LINK_SUFFIX));
     actualNode = (ObjectNode) OBJECT_MAPPER.readTree(new ByteArrayInputStream(actual.getBytes()));
     assertEquals(expected, actualNode);
@@ -766,7 +763,7 @@ public class JSONTest extends AbstractTest {
 
     String actual = IOUtils.toString(client.getWriter().writeEntity(message, ContentType.JSON));
     JsonNode expected =
-        OBJECT_MAPPER.readTree(IOUtils.toString(getClass().getResourceAsStream("olingo1073_1.json")).
+        OBJECT_MAPPER.readTree(IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("olingo1073_1.json"))).
             replace(Constants.JSON_NAVIGATION_LINK, Constants.JSON_BIND_LINK_SUFFIX));
     cleanup((ObjectNode) expected, false);
     ObjectNode actualNode = (ObjectNode) OBJECT_MAPPER.readTree(new ByteArrayInputStream(actual.getBytes()));
@@ -774,7 +771,7 @@ public class JSONTest extends AbstractTest {
     
     actual = IOUtils.toString(client.getWriter().writeEntity(message, ContentType.JSON_FULL_METADATA));
     expected =
-        OBJECT_MAPPER.readTree(IOUtils.toString(getClass().getResourceAsStream("olingo1073_1.json")).
+        OBJECT_MAPPER.readTree(IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("olingo1073_1.json"))).
             replace(Constants.JSON_NAVIGATION_LINK, Constants.JSON_BIND_LINK_SUFFIX));
     actualNode = (ObjectNode) OBJECT_MAPPER.readTree(new ByteArrayInputStream(actual.getBytes()));
     assertEquals(expected, actualNode);
@@ -971,7 +968,7 @@ public class JSONTest extends AbstractTest {
 
     final String actual = EntityUtils.toString(httpEntity);
     final JsonNode expected =
-            OBJECT_MAPPER.readTree(IOUtils.toString(getClass().getResourceAsStream("olingo1114.json")).
+            OBJECT_MAPPER.readTree(IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("olingo1114.json"))).
                     replace(Constants.JSON_NAVIGATION_LINK, Constants.JSON_BIND_LINK_SUFFIX));
     final ObjectNode actualNode = (ObjectNode) OBJECT_MAPPER.readTree(new ByteArrayInputStream(actual.getBytes()));
     assertEquals(expected, actualNode);
@@ -1120,7 +1117,7 @@ public class JSONTest extends AbstractTest {
     final ClientEntity innerEntity = client.getObjectFactory().
         newEntity(new FullQualifiedName("Microsoft.OData.SampleService.Models.TripPin.Photo"));
     innerEntity.getProperties().add(client.getObjectFactory().newPrimitiveProperty("Id", 
-        client.getObjectFactory().newPrimitiveValueBuilder().buildInt64(Long.valueOf(123))));
+        client.getObjectFactory().newPrimitiveValueBuilder().buildInt64(123L)));
     innerEntity.getProperties().add(client.getObjectFactory().newPrimitiveProperty("Name", 
         client.getObjectFactory().newPrimitiveValueBuilder().buildString("ABC")));
     innerEntity.getAnnotations().add(createAnnotation());
@@ -1192,78 +1189,75 @@ public class JSONTest extends AbstractTest {
   }
 
   /**
-   * @return
    */
   private ClientAnnotation createAnnotation() {
-    final ClientAnnotation messageAnnotation = 
-        new ClientAnnotationImpl("Org.OData.Core.V1.Permissions", new ClientPrimitiveValue() {
-      
-      @Override
-      public boolean isPrimitive() {
-        return false;
-      }
-      
-      @Override
-      public boolean isEnum() {
-        return true;
-      }
-      
-      @Override
-      public boolean isComplex() {
-        return false;
-      }
-      
-      @Override
-      public boolean isCollection() {
-        return false;
-      }
-      
-      @Override
-      public String getTypeName() {
-        return "String";
-      }
-      
-      @Override
-      public ClientPrimitiveValue asPrimitive() {
-        return null;
-      }
-      
-      @Override
-      public ClientEnumValue asEnum() {
-        return client.getObjectFactory().newEnumValue("Org.OData.Core.V1.Permissions", "Read");
-      }
-      
-      @Override
-      public ClientComplexValue asComplex() {
-        return null;
-      }
-      
-      @Override
-      public <T extends ClientValue> ClientCollectionValue<T> asCollection() {
-        return null;
-      }
-      
-      @Override
-      public Object toValue() {
-        return client.getObjectFactory().newEnumValue("Org.OData.Core.V1.Permissions", "Read");
-      }
-      
-      @Override
-      public <T> T toCastValue(Class<T> reference) throws EdmPrimitiveTypeException {
-        return null;
-      }
-      
-      @Override
-      public EdmPrimitiveTypeKind getTypeKind() {
-        return null;
-      }
-      
-      @Override
-      public EdmPrimitiveType getType() {
-        return null;
-      }
-    });
-    return messageAnnotation;
+      return new ClientAnnotationImpl("Org.OData.Core.V1.Permissions", new ClientPrimitiveValue() {
+
+    @Override
+    public boolean isPrimitive() {
+      return false;
+    }
+
+    @Override
+    public boolean isEnum() {
+      return true;
+    }
+
+    @Override
+    public boolean isComplex() {
+      return false;
+    }
+
+    @Override
+    public boolean isCollection() {
+      return false;
+    }
+
+    @Override
+    public String getTypeName() {
+      return "String";
+    }
+
+    @Override
+    public ClientPrimitiveValue asPrimitive() {
+      return null;
+    }
+
+    @Override
+    public ClientEnumValue asEnum() {
+      return client.getObjectFactory().newEnumValue("Org.OData.Core.V1.Permissions", "Read");
+    }
+
+    @Override
+    public ClientComplexValue asComplex() {
+      return null;
+    }
+
+    @Override
+    public <T extends ClientValue> ClientCollectionValue<T> asCollection() {
+      return null;
+    }
+
+    @Override
+    public Object toValue() {
+      return client.getObjectFactory().newEnumValue("Org.OData.Core.V1.Permissions", "Read");
+    }
+
+    @Override
+    public <T> T toCastValue(Class<T> reference) throws EdmPrimitiveTypeException {
+      return null;
+    }
+
+    @Override
+    public EdmPrimitiveTypeKind getTypeKind() {
+      return null;
+    }
+
+    @Override
+    public EdmPrimitiveType getType() {
+      return null;
+    }
+  });
   }
   
   protected void property1(final String filename) throws Exception {

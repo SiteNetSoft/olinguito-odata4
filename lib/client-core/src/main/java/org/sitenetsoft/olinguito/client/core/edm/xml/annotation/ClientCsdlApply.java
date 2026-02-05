@@ -44,9 +44,9 @@ class ClientCsdlApply extends CsdlApply implements Serializable {
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("Function".equals(jp.getCurrentName())) {
+          if ("Function".equals(jp.currentName())) {
             apply.setFunction(jp.nextTextValue());
-          } else if ("Annotation".equals(jp.getCurrentName())) {
+          } else if ("Annotation".equals(jp.currentName())) {
             apply.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));
           } else if (isAnnotationConstExprConstruct(jp)) {
             apply.getParameters().add(parseAnnotationConstExprConstruct(jp));

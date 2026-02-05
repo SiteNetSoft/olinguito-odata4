@@ -22,6 +22,7 @@ import static org.junit.Assert.*;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
@@ -126,7 +127,7 @@ public class EmptyNavigationPropertiesITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    assertNotNull(IOUtils.toString(connection.getInputStream()));
+    assertNotNull(IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8));
   }
   
   @Override

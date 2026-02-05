@@ -43,9 +43,9 @@ class ClientCsdlPropertyRef extends CsdlPropertyRef implements Serializable {
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("Name".equals(jp.getCurrentName())) {
+          if ("Name".equals(jp.currentName())) {
             propertyRef.setName(jp.nextTextValue());
-          } else if ("Alias".equals(jp.getCurrentName())) {
+          } else if ("Alias".equals(jp.currentName())) {
             propertyRef.setAlias(jp.nextTextValue());
           }
         }

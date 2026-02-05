@@ -53,7 +53,7 @@ class ClientCsdlEntityKey extends CsdlAbstractEdmItem implements Serializable {
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
 
-        if (token == JsonToken.FIELD_NAME && "PropertyRef".equals(jp.getCurrentName())) {
+        if (token == JsonToken.FIELD_NAME && "PropertyRef".equals(jp.currentName())) {
           jp.nextToken();
           entityKey.getPropertyRefs().add(jp.readValueAs(ClientCsdlPropertyRef.class));
         }

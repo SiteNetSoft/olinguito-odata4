@@ -45,16 +45,16 @@ class ClientCsdlEnumType extends CsdlEnumType implements Serializable {
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("Name".equals(jp.getCurrentName())) {
+          if ("Name".equals(jp.currentName())) {
             enumType.setName(jp.nextTextValue());
-          } else if ("UnderlyingType".equals(jp.getCurrentName())) {
+          } else if ("UnderlyingType".equals(jp.currentName())) {
             enumType.setUnderlyingType(jp.nextTextValue());
-          } else if ("IsFlags".equals(jp.getCurrentName())) {
+          } else if ("IsFlags".equals(jp.currentName())) {
             enumType.setFlags(BooleanUtils.toBoolean(jp.nextTextValue()));
-          } else if ("Member".equals(jp.getCurrentName())) {
+          } else if ("Member".equals(jp.currentName())) {
             jp.nextToken();
             enumType.getMembers().add(jp.readValueAs(ClientCsdlEnumMember.class));
-          } else if ("Annotation".equals(jp.getCurrentName())) {
+          } else if ("Annotation".equals(jp.currentName())) {
             jp.nextToken();
             enumType.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));
           }

@@ -45,27 +45,27 @@ class ClientCsdlEntityType extends CsdlEntityType implements Serializable {
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("Name".equals(jp.getCurrentName())) {
+          if ("Name".equals(jp.currentName())) {
             entityType.setName(jp.nextTextValue());
-          } else if ("Abstract".equals(jp.getCurrentName())) {
+          } else if ("Abstract".equals(jp.currentName())) {
             entityType.setAbstract(BooleanUtils.toBoolean(jp.nextTextValue()));
-          } else if ("BaseType".equals(jp.getCurrentName())) {
+          } else if ("BaseType".equals(jp.currentName())) {
             entityType.setBaseType(jp.nextTextValue());
-          } else if ("OpenType".equals(jp.getCurrentName())) {
+          } else if ("OpenType".equals(jp.currentName())) {
             entityType.setOpenType(BooleanUtils.toBoolean(jp.nextTextValue()));
-          } else if ("HasStream".equals(jp.getCurrentName())) {
+          } else if ("HasStream".equals(jp.currentName())) {
             entityType.setHasStream(BooleanUtils.toBoolean(jp.nextTextValue()));
-          } else if ("Key".equals(jp.getCurrentName())) {
+          } else if ("Key".equals(jp.currentName())) {
             jp.nextToken();
             ClientCsdlEntityKey keyImpl = jp.readValueAs(ClientCsdlEntityKey.class);
             entityType.setKey(keyImpl.getPropertyRefs());
-          } else if ("Property".equals(jp.getCurrentName())) {
+          } else if ("Property".equals(jp.currentName())) {
             jp.nextToken();
             entityType.getProperties().add(jp.readValueAs(ClientCsdlProperty.class));
-          } else if ("NavigationProperty".equals(jp.getCurrentName())) {
+          } else if ("NavigationProperty".equals(jp.currentName())) {
             jp.nextToken();
             entityType.getNavigationProperties().add(jp.readValueAs(ClientCsdlNavigationProperty.class));
-          } else if ("Annotation".equals(jp.getCurrentName())) {
+          } else if ("Annotation".equals(jp.currentName())) {
             jp.nextToken();
             entityType.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));
           }

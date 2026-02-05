@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.commons.api.Constants;
@@ -374,7 +375,7 @@ public class ODataXmlSerializerTest {
   public void entityAllPrimAllNull() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
-    entity.getProperties().retainAll(Arrays.asList(entity.getProperties().get(0)));
+    entity.getProperties().retainAll(Collections.singletonList(entity.getProperties().get(0)));
     long currentTimeMillis = System.currentTimeMillis();
     InputStream content = serializer.entity(metadata, edmEntitySet.getEntityType(),
         entity,
@@ -759,7 +760,7 @@ public class ODataXmlSerializerTest {
   public void entityMixPrimCollCompAllNull() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESMixPrimCollComp");
     Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
-    entity.getProperties().retainAll(Arrays.asList(entity.getProperties().get(0)));
+    entity.getProperties().retainAll(Collections.singletonList(entity.getProperties().get(0)));
     long currentTimeMillis = System.currentTimeMillis();
     InputStream content = serializer.entity(metadata, edmEntitySet.getEntityType(),
         entity,
@@ -1966,8 +1967,8 @@ public class ODataXmlSerializerTest {
   public void expand() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESTwoPrim");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(3);
-    final ExpandOption expand = ExpandSelectMock.mockExpandOption(Arrays.asList(
-        ExpandSelectMock.mockExpandItem(edmEntitySet, "NavPropertyETAllPrimOne")));
+    final ExpandOption expand = ExpandSelectMock.mockExpandOption(List.of(
+            ExpandSelectMock.mockExpandItem(edmEntitySet, "NavPropertyETAllPrimOne")));
     long currentTimeMillis = System.currentTimeMillis();
     InputStream result = serializer.entity(metadata, edmEntitySet.getEntityType(), entity,
         EntitySerializerOptions.with()
@@ -2083,11 +2084,11 @@ public class ODataXmlSerializerTest {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESTwoPrim");
     final EdmEntityType entityType = edmEntitySet.getEntityType();
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(3);
-    final SelectOption select = ExpandSelectMock.mockSelectOption(Arrays.asList(
-        ExpandSelectMock.mockSelectItem(entityContainer.getEntitySet("ESAllPrim"), "PropertyDate")));
+    final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(
+            ExpandSelectMock.mockSelectItem(entityContainer.getEntitySet("ESAllPrim"), "PropertyDate")));
     ExpandItem expandItem = ExpandSelectMock.mockExpandItem(edmEntitySet, "NavPropertyETAllPrimOne");
     Mockito.when(expandItem.getSelectOption()).thenReturn(select);
-    final ExpandOption expand = ExpandSelectMock.mockExpandOption(Arrays.asList(expandItem));
+    final ExpandOption expand = ExpandSelectMock.mockExpandOption(List.of(expandItem));
     long currentTimeMillis = System.currentTimeMillis();
     InputStream inputStream = serializer
         .entity(metadata, entityType, entity,
@@ -2187,8 +2188,8 @@ public class ODataXmlSerializerTest {
     Mockito.when(expandItemAll.isStar()).thenReturn(true);
     final ExpandOption expand = ExpandSelectMock.mockExpandOption(Arrays.asList(
         expandItem, expandItem, expandItemAll));
-    final SelectOption select = ExpandSelectMock.mockSelectOption(Arrays.asList(
-        ExpandSelectMock.mockSelectItem(edmEntitySet, "PropertySByte")));
+    final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(
+            ExpandSelectMock.mockSelectItem(edmEntitySet, "PropertySByte")));
     long currentTimeMillis = System.currentTimeMillis();
     InputStream inputStream = serializer
         .entity(metadata, entityType, entity,
@@ -2332,9 +2333,9 @@ public class ODataXmlSerializerTest {
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(1);
     ExpandItem expandItemAll = Mockito.mock(ExpandItem.class);
     Mockito.when(expandItemAll.isStar()).thenReturn(true);
-    final ExpandOption expand = ExpandSelectMock.mockExpandOption(Arrays.asList(expandItemAll));
-    final SelectOption select = ExpandSelectMock.mockSelectOption(Arrays.asList(
-        ExpandSelectMock.mockSelectItem(edmEntitySet, "PropertyTimeOfDay")));
+    final ExpandOption expand = ExpandSelectMock.mockExpandOption(List.of(expandItemAll));
+    final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(
+            ExpandSelectMock.mockSelectItem(edmEntitySet, "PropertyTimeOfDay")));
     long currentTimeMillis = System.currentTimeMillis();
     InputStream result = serializer
         .entity(metadata, entityType, entity,
@@ -2399,13 +2400,13 @@ public class ODataXmlSerializerTest {
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(1);
     ExpandItem expandItemSecond = Mockito.mock(ExpandItem.class);
     Mockito.when(expandItemSecond.isStar()).thenReturn(true);
-    final ExpandOption expandInner = ExpandSelectMock.mockExpandOption(Arrays.asList(expandItemSecond));
+    final ExpandOption expandInner = ExpandSelectMock.mockExpandOption(List.of(expandItemSecond));
     ExpandItem expandItemFirst = ExpandSelectMock.mockExpandItem(edmEntitySet, "NavPropertyETAllPrimMany");
     Mockito.when(expandItemFirst.getExpandOption()).thenReturn(expandInner);
-    final SelectOption select = ExpandSelectMock.mockSelectOption(Arrays.asList(
-        ExpandSelectMock.mockSelectItem(innerEntitySet, "PropertyInt32")));
+    final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(
+            ExpandSelectMock.mockSelectItem(innerEntitySet, "PropertyInt32")));
     Mockito.when(expandItemFirst.getSelectOption()).thenReturn(select);
-    final ExpandOption expand = ExpandSelectMock.mockExpandOption(Arrays.asList(expandItemFirst));
+    final ExpandOption expand = ExpandSelectMock.mockExpandOption(List.of(expandItemFirst));
     long currentTimeMillis = System.currentTimeMillis();
     InputStream result = serializer
         .entity(metadata, entityType, entity,
@@ -3369,7 +3370,7 @@ public class ODataXmlSerializerTest {
     
     final UriInfoResource resource = ExpandSelectMock.mockComplexTypeResource(propertyWithinCT);
     final SelectItem selectItem = ExpandSelectMock.mockSelectItemForColComplexProperty(resource);
-    final SelectOption selectOption = ExpandSelectMock.mockSelectOption(Arrays.asList(selectItem));
+    final SelectOption selectOption = ExpandSelectMock.mockSelectOption(List.of(selectItem));
     
     final String resultString = IOUtils.toString(serializer
         .complexCollection(metadata, (EdmComplexType) edmProperty.getType(), property,

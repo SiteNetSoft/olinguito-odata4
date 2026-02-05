@@ -75,11 +75,11 @@ class ClientCsdlIncludeAnnotations extends CsdlAbstractEdmItem implements Serial
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("TermNamespace".equals(jp.getCurrentName())) {
+          if ("TermNamespace".equals(jp.currentName())) {
             member.setTermNamespace(jp.nextTextValue());
-          } else if ("Qualifier".equals(jp.getCurrentName())) {
+          } else if ("Qualifier".equals(jp.currentName())) {
             member.setQualifier(jp.nextTextValue());
-          } else if ("TargetNamespace".equals(jp.getCurrentName())) {
+          } else if ("TargetNamespace".equals(jp.currentName())) {
             member.setTargetNamespace(jp.nextTextValue());
           }
         }

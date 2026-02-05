@@ -43,9 +43,9 @@ class ClientCsdlPropertyValue extends CsdlPropertyValue implements Serializable 
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("Property".equals(jp.getCurrentName())) {
+          if ("Property".equals(jp.currentName())) {
             propValue.setProperty(jp.nextTextValue());
-          } else if ("Annotation".equals(jp.getCurrentName())) {
+          } else if ("Annotation".equals(jp.currentName())) {
             propValue.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));
           } else if (isAnnotationConstExprConstruct(jp)) {
             propValue.setValue(parseAnnotationConstExprConstruct(jp));

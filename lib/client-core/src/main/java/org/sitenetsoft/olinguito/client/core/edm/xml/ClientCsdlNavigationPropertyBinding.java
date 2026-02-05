@@ -56,9 +56,9 @@ class ClientCsdlNavigationPropertyBinding extends CsdlNavigationPropertyBinding 
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("Path".equals(jp.getCurrentName())) {
+          if ("Path".equals(jp.currentName())) {
             member.setPath(jp.nextTextValue());
-          } else if ("Target".equals(jp.getCurrentName())) {
+          } else if ("Target".equals(jp.currentName())) {
             member.setTarget(jp.nextTextValue());
           }
         }

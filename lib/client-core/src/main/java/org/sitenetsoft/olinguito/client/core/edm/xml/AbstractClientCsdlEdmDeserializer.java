@@ -30,13 +30,13 @@ import com.fasterxml.jackson.dataformat.xml.deser.FromXmlParser;
 public abstract class AbstractClientCsdlEdmDeserializer<T> extends JsonDeserializer<T> {
 
   protected boolean isAnnotationConstExprConstruct(final JsonParser jp) throws IOException {
-    return CsdlConstantExpression.ConstantExpressionType.fromString(jp.getCurrentName()) != null;
+    return CsdlConstantExpression.ConstantExpressionType.fromString(jp.currentName()) != null;
   }
 
   protected CsdlConstantExpression parseAnnotationConstExprConstruct(final JsonParser jp)
       throws IOException {
     final CsdlConstantExpression constExpr =
-        new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.fromString(jp.getCurrentName()));
+        new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.fromString(jp.currentName()));
     constExpr.setValue(jp.nextTextValue());
     return constExpr;
   }

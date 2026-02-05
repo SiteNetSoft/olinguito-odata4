@@ -43,15 +43,15 @@ class ClientCsdlSingleton extends CsdlSingleton implements Serializable {
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if ("Name".equals(jp.getCurrentName())) {
+          if ("Name".equals(jp.currentName())) {
             singleton.setName(jp.nextTextValue());
-          } else if ("Type".equals(jp.getCurrentName())) {
+          } else if ("Type".equals(jp.currentName())) {
             singleton.setType(jp.nextTextValue());
-          } else if ("NavigationPropertyBinding".equals(jp.getCurrentName())) {
+          } else if ("NavigationPropertyBinding".equals(jp.currentName())) {
             jp.nextToken();
             singleton.getNavigationPropertyBindings().add(
                     jp.readValueAs(ClientCsdlNavigationPropertyBinding.class));
-          } else if ("Annotation".equals(jp.getCurrentName())) {
+          } else if ("Annotation".equals(jp.currentName())) {
             jp.nextToken();
             singleton.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));
           }
