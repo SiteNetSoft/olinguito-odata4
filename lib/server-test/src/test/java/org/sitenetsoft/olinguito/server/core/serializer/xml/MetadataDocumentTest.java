@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
  */
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
@@ -23,6 +25,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 import org.apache.commons.io.IOUtils;
@@ -49,7 +52,8 @@ public class MetadataDocumentTest {
                 .addInclude(new EdmxReferenceInclude("Org.OData.Core.V1", "Core"))));
 
     final String metadata = IOUtils.toString(
-        odata.createSerializer(ContentType.APPLICATION_XML).metadataDocument(serviceMetadata).getContent());
+        odata.createSerializer(ContentType.APPLICATION_XML).metadataDocument(serviceMetadata).getContent(),
+        StandardCharsets.UTF_8);
     assertNotNull(metadata);
     assertThat(metadata, containsString("<edmx:Reference Uri=\"" + CORE_VOCABULARY + "\">"
             + "<edmx:Include Namespace=\"Org.OData.Core.V1\" Alias=\"Core\"></edmx:Include>" + "</edmx:Reference>"));

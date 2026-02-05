@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
  */
 package org.sitenetsoft.olinguito.client.core;
 
@@ -26,6 +28,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 import javax.xml.transform.Source;
@@ -87,7 +90,7 @@ public class AtomTest extends JSONTest {
   @Override
   protected void assertSimilar(final String filename, final String actual, 
       boolean isServerMode) throws Exception {
-    final Diff diff = new Diff(cleanup(IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream(filename)))), actual);
+    final Diff diff = new Diff(cleanup(IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream(filename)), StandardCharsets.UTF_8)), actual);
     diff.overrideElementQualifier(new AtomLinksQualifier());
     assertTrue(diff.similar());
   }
@@ -160,10 +163,10 @@ public class AtomTest extends JSONTest {
     message.setEditLink(URI.create("http://services.odata.org/V4/(S(fe5rsnxo3fkkkk2bvmh1nl1y))/"
         + "TripPinServiceRW/People('russellwhyte')"));
 
-    String actual = IOUtils.toString(client.getWriter().writeEntity(message, ContentType.APPLICATION_ATOM_XML));
+    String actual = IOUtils.toString(client.getWriter().writeEntity(message, ContentType.APPLICATION_ATOM_XML), StandardCharsets.UTF_8);
     actual = actual.substring(actual.indexOf("<entry"));
     assertNotNull(actual);
-    String expected = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("olingo1073_1.xml")));
+    String expected = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("olingo1073_1.xml")), StandardCharsets.UTF_8);
     expected = expected.substring(expected.indexOf("<entry"));
     expected = expected.trim().replace("\n", "").replace("\r", "").replace("\t", "");
     assertEquals(expected, actual);

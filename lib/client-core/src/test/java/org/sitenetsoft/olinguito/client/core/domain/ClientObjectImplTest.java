@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
  */
 package org.sitenetsoft.olinguito.client.core.domain;
 
@@ -76,7 +78,6 @@ public class ClientObjectImplTest {
     assertNull(val.asEnum());
     ClientCollectionValueImpl<ClientValue> val2 = new ClientCollectionValueImpl<ClientValue>("test");
       assertEquals(val, val2);
-    assertNotNull(val.hashCode());
     assertNotNull(val.toString());
     val.add(val2);
     assertEquals(1, val.asJavaCollection().size());
@@ -93,7 +94,6 @@ public class ClientObjectImplTest {
     assertTrue(val.removeLink(link));
     ClientComplexValueImpl val2 = new ClientComplexValueImpl("test");
       assertEquals(val, val2);
-    assertNotNull(val.hashCode());
     assertNotNull(val.toString());
   }  
   
@@ -105,7 +105,6 @@ public class ClientObjectImplTest {
     assertNotNull(val.getId());
     val.setReason(Reason.changed);
     assertNotNull(val.getReason());
-    assertNotNull(val.hashCode());
     assertNotNull(val.toString());
     ClientDeletedEntityImpl val2 = new ClientDeletedEntityImpl();
       assertNotEquals(val, val2);
@@ -127,7 +126,6 @@ public class ClientObjectImplTest {
     assertNull(val.getName());
     assertNull(val.getNext());
     assertNotNull(val.getOperations());
-    assertNotNull(val.hashCode());
     assertNotNull(val.toString());
       assertNotEquals(val, val2);
   }
@@ -147,7 +145,6 @@ public class ClientObjectImplTest {
     assertNotNull(val.getAnnotations());
     assertNull(val.getLink());
     assertNull(val.getName());
-    assertNotNull(val.hashCode());
     assertNotNull(val.toString());
       assertNotEquals(val, val2);
   }
@@ -169,7 +166,6 @@ public class ClientObjectImplTest {
     assertNotNull(val.getAssociationLink("title"));
     assertTrue(val.removeLink(link ));
     assertFalse(val.isReadOnly());
-    assertNotNull(val.hashCode());
     assertNotNull(val.toString());
     ClientDeletedEntityImpl val2 = new ClientDeletedEntityImpl();
       assertNotEquals(val, val2);
@@ -184,7 +180,6 @@ public class ClientObjectImplTest {
     val.setDeltaLink(uri);
     assertNotNull(val.getOperations());
     assertNull(val.getOperation("test"));
-    assertNotNull(val.hashCode());
     assertNotNull(val.toString());
       assertNotEquals(val, val2);
   }  
@@ -193,7 +188,6 @@ public class ClientObjectImplTest {
   public void testClientEnumValue() {
     ClientEnumValueImpl val = new ClientEnumValueImpl("type", "value");
     ClientEnumValueImpl val2 = new ClientEnumValueImpl("type", "value");
-    assertNotNull(val.hashCode());
     assertNotNull(val.toString());
       assertEquals(val, val2);
   }
@@ -216,7 +210,6 @@ public class ClientObjectImplTest {
     assertNotNull(builder.buildGuid(new UUID(1,1)));
     assertNotNull(builder.buildDecimal(new BigDecimal("1")));
     assertNotNull(builder.buildDuration(new BigDecimal("1")));
-    assertNotNull(val.hashCode());
     assertNotNull(val.toString());
       assertEquals(val, val2);
   }
@@ -228,7 +221,6 @@ public class ClientObjectImplTest {
     ClientPropertyImpl val2 = new ClientPropertyImpl("type", value);
     assertNull(val.getOperation("type"));
     assertNotNull(val.getOperations());
-    assertNotNull(val.hashCode());
     assertNotNull(val.toString());
       assertEquals(val, val2);
   }
@@ -238,7 +230,6 @@ public class ClientObjectImplTest {
     ClientValue value = new ClientCollectionValueImpl<ClientValue>("type");
     ClientValuableImpl val = new ClientValuableImpl(value);
     ClientValuableImpl val2 = new ClientValuableImpl(value);
-    assertNotNull(val.hashCode());
     assertNotNull(val.toString());
       assertEquals(val, val2);
   }
