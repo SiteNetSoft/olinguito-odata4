@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -62,8 +64,8 @@ public class AsyncRequestWrapperTest {
     AsyncBatchRequestWrapperImpl req = new AsyncBatchRequestWrapperImpl(client,
         client.getBatchRequestFactory().getBatchRequest("root"));
     assertNotNull(req.addChangeset());
-    ODataBatchableRequest request = new ODataInvokeRequestImpl<ClientInvokeResult>(
-        client, ClientInvokeResult.class, HttpMethod.GET, uri);
+    ODataBatchableRequest request = new ODataInvokeRequestImpl<>(
+            client, ClientInvokeResult.class, HttpMethod.GET, uri);
     req.addRetrieve(request);
     req.addOutsideUpdate(request);
     assertNotNull(client.getAsyncRequestFactory().getAsyncRequestWrapper(request));
@@ -77,19 +79,19 @@ public class AsyncRequestWrapperTest {
 
     ODataClient client = ODataClientFactory.getClient();
     URI uri = new URI("localhost:8080");
-    AsyncRequestWrapperImpl req = new AsyncRequestWrapperImpl(client,
+    AsyncRequestWrapperImpl<ODataResponse> req = new AsyncRequestWrapperImpl<>(client,
         client.getBatchRequestFactory().getBatchRequest("root"));
     assertNotNull(req);
-    ODataBatchableRequest request = new ODataInvokeRequestImpl<ClientInvokeResult>(
-        client, ClientInvokeResult.class, HttpMethod.GET, uri);
+    new ODataInvokeRequestImpl<>(
+            client, ClientInvokeResult.class, HttpMethod.GET, uri);
     req.checkRequest(client, null);
     assertNotNull(req.callback(uri));
     req.extendHeader("header", "value");
-    AsyncResponseWrapperImpl res = req.new AsyncResponseWrapperImpl();
+    AsyncRequestWrapperImpl<ODataResponse>.AsyncResponseWrapperImpl res = req.new AsyncResponseWrapperImpl();
     res.forceNextMonitorCheck(uri);
   }
 
-  private AsyncRequestWrapperImpl createAsyncRequestWrapperImplWithRetryAfter(int retryAfter)
+  private AsyncRequestWrapperImpl<ODataResponse> createAsyncRequestWrapperImplWithRetryAfter(int retryAfter)
       throws IOException, URISyntaxException {
 
     HttpClient httpClient = mock(HttpClient.class);
@@ -118,14 +120,14 @@ public class AsyncRequestWrapperTest {
     when(oDataRequest.getURI()).thenReturn(new URI("http://localhost/path"));
     when(oDataResponse.initFromHttpResponse(any(HttpResponse.class))).thenReturn(null);
 
-    return new AsyncRequestWrapperImpl(oDataClient, oDataRequest);
+    return new AsyncRequestWrapperImpl<>(oDataClient, oDataRequest);
   }
 
   @Test
   public void testTooBigRetryAfter() throws IOException, URISyntaxException {
 
-    AsyncRequestWrapperImpl req = createAsyncRequestWrapperImplWithRetryAfter(Integer.MAX_VALUE);
-    AsyncResponseWrapper wrappedResponse = req.execute();
+    AsyncRequestWrapperImpl<ODataResponse> req = createAsyncRequestWrapperImplWithRetryAfter(Integer.MAX_VALUE);
+    AsyncResponseWrapper<ODataResponse> wrappedResponse = req.execute();
     assertTrue(wrappedResponse instanceof AsyncResponseWrapperImpl);
     AsyncResponseWrapperImpl wrappedResponseImpl = (AsyncResponseWrapperImpl) wrappedResponse;
     assertEquals(AsyncResponseWrapperImpl.MAX_RETRY_AFTER, wrappedResponseImpl.retryAfter);
@@ -134,8 +136,8 @@ public class AsyncRequestWrapperTest {
   @Test
   public void testZeroRetryAfter() throws IOException, URISyntaxException {
 
-    AsyncRequestWrapperImpl req = createAsyncRequestWrapperImplWithRetryAfter(0);
-    AsyncResponseWrapper wrappedResponse = req.execute();
+    AsyncRequestWrapperImpl<ODataResponse> req = createAsyncRequestWrapperImplWithRetryAfter(0);
+    AsyncResponseWrapper<ODataResponse> wrappedResponse = req.execute();
     assertTrue(wrappedResponse instanceof AsyncResponseWrapperImpl);
     AsyncResponseWrapperImpl wrappedResponseImpl = (AsyncResponseWrapperImpl) wrappedResponse;
     assertEquals(0, wrappedResponseImpl.retryAfter);
@@ -144,8 +146,8 @@ public class AsyncRequestWrapperTest {
   @Test
   public void testNegativeRetryAfter() throws IOException, URISyntaxException {
 
-    AsyncRequestWrapperImpl req = createAsyncRequestWrapperImplWithRetryAfter(-1);
-    AsyncResponseWrapper wrappedResponse = req.execute();
+    AsyncRequestWrapperImpl<ODataResponse> req = createAsyncRequestWrapperImplWithRetryAfter(-1);
+    AsyncResponseWrapper<ODataResponse> wrappedResponse = req.execute();
     assertTrue(wrappedResponse instanceof AsyncResponseWrapperImpl);
     AsyncResponseWrapperImpl wrappedResponseImpl = (AsyncResponseWrapperImpl) wrappedResponse;
     assertEquals(AsyncResponseWrapperImpl.DEFAULT_RETRY_AFTER, wrappedResponseImpl.retryAfter);
@@ -156,8 +158,8 @@ public class AsyncRequestWrapperTest {
 
     int retryAfter = 7;
     assertNotEquals(retryAfter, AsyncResponseWrapperImpl.DEFAULT_RETRY_AFTER);
-    AsyncRequestWrapperImpl req = createAsyncRequestWrapperImplWithRetryAfter(retryAfter);
-    AsyncResponseWrapper wrappedResponse = req.execute();
+    AsyncRequestWrapperImpl<ODataResponse> req = createAsyncRequestWrapperImplWithRetryAfter(retryAfter);
+    AsyncResponseWrapper<ODataResponse> wrappedResponse = req.execute();
     assertTrue(wrappedResponse instanceof AsyncResponseWrapperImpl);
     AsyncResponseWrapperImpl wrappedResponseImpl = (AsyncResponseWrapperImpl) wrappedResponse;
     assertEquals(retryAfter, wrappedResponseImpl.retryAfter);
@@ -166,7 +168,7 @@ public class AsyncRequestWrapperTest {
   @Test
   public void testWrapper() {
 
-    Wrapper wrap = new Wrapper();
+    Wrapper<String> wrap = new Wrapper<>();
     wrap.setWrapped("test");
     assertEquals("test", wrap.getWrapped());
   }
@@ -178,7 +180,7 @@ public class AsyncRequestWrapperTest {
     assertEquals("Exception", ex.getMessage());
   }
 
-  private AsyncResponseWrapperImpl createAsyncRequestWrapperImplWithLocation(String target, String location)
+  private AsyncRequestWrapperImpl<ODataResponse>.AsyncResponseWrapperImpl createAsyncRequestWrapperImplWithLocation(String target, String location)
       throws IOException, URISyntaxException {
 
     HttpClient httpClient = mock(HttpClient.class);
@@ -207,10 +209,10 @@ public class AsyncRequestWrapperTest {
     when(oDataRequest.getURI()).thenReturn(new URI(target));
     when(oDataRequest.getResponseTemplate()).thenReturn(oDataResponse);
 
-    AsyncRequestWrapperImpl req = new AsyncRequestWrapperImpl(oDataClient, oDataRequest);
-    AsyncResponseWrapper wrappedResponse = req.execute();
+    AsyncRequestWrapperImpl<ODataResponse> req = new AsyncRequestWrapperImpl<>(oDataClient, oDataRequest);
+    AsyncResponseWrapper<ODataResponse> wrappedResponse = req.execute();
     assertTrue(wrappedResponse instanceof AsyncResponseWrapperImpl);
-    return (AsyncResponseWrapperImpl) wrappedResponse;
+    return (AsyncRequestWrapperImpl<ODataResponse>.AsyncResponseWrapperImpl) wrappedResponse;
   }
 
   @Test(expected = AsyncRequestException.class)
@@ -238,7 +240,7 @@ public class AsyncRequestWrapperTest {
   public void testLocationWithDifferentPaths() throws IOException, URISyntaxException {
     String target = "http://server/path";
     String location = "http://server/monitor";
-    AsyncResponseWrapperImpl wrapper = createAsyncRequestWrapperImplWithLocation(target, location);
+    AsyncRequestWrapperImpl<ODataResponse>.AsyncResponseWrapperImpl wrapper = createAsyncRequestWrapperImplWithLocation(target, location);
     assertEquals(new URI(location), wrapper.location);
   }
 

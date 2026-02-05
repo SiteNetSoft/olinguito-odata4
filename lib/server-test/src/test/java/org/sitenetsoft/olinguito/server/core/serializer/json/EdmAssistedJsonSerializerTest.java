@@ -15,14 +15,15 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import org.apache.commons.io.IOUtils;
@@ -36,7 +37,6 @@ import org.sitenetsoft.olinguito.commons.api.data.Property;
 import org.sitenetsoft.olinguito.commons.api.data.ValueType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
-import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
@@ -51,7 +51,7 @@ import org.junit.Test;
 public class EdmAssistedJsonSerializerTest {
   private static final OData oData = OData.newInstance();
   private static final ServiceMetadata metadata = oData.createServiceMetadata(
-      new EdmTechProvider(), Collections.<EdmxReference> emptyList(), null);
+      new EdmTechProvider(), Collections.emptyList(), null);
   private static final EdmEntityContainer entityContainer = metadata.getEdm().getEntityContainer();
   private final EdmAssistedSerializer serializer;
   private final EdmAssistedSerializer serializerMin;
@@ -254,7 +254,7 @@ public class EdmAssistedJsonSerializerTest {
 
   @Test
   public void metadata() throws Exception {
-    final ServiceMetadata metadata = oData.createServiceMetadata(null, Collections.<EdmxReference> emptyList(),
+    final ServiceMetadata metadata = oData.createServiceMetadata(null, Collections.emptyList(),
         new MetadataETagSupport("W/\"42\""));
     Entity entity = new Entity();
     entity.setType("Namespace.EntityType");
@@ -353,27 +353,26 @@ public class EdmAssistedJsonSerializerTest {
   private String serialize(final EdmAssistedSerializer serializer, final ServiceMetadata metadata,
       final EdmEntitySet edmEntitySet, final AbstractEntityCollection entityCollection, final String selectList)
       throws SerializerException, IOException {
-    ContextURL.Builder contextURLBuilder = ContextURL.with();
-    contextURLBuilder = edmEntitySet == null ?
-        contextURLBuilder.entitySetOrSingletonOrType("EntitySet") :
-        contextURLBuilder.entitySet(edmEntitySet);
+    ContextURL.Builder contextURLBuilder = edmEntitySet == null ?
+        ContextURL.with().entitySetOrSingletonOrType("EntitySet") :
+        ContextURL.with().entitySet(edmEntitySet);
     if (selectList == null) {
       if (edmEntitySet == null) {
         StringBuilder names = new StringBuilder();
         for (final Property property : entityCollection.iterator().next().getProperties()) {
-          names.append(names.length() > 0 ? ',' : "").append(property.getName());
+          names.append(!names.isEmpty() ? ',' : "").append(property.getName());
         }
-        contextURLBuilder = contextURLBuilder.selectList(names.toString());
+        contextURLBuilder.selectList(names.toString());
       }
     } else {
-      contextURLBuilder = contextURLBuilder.selectList(selectList);
+      contextURLBuilder.selectList(selectList);
     }
     return IOUtils.toString(
         serializer.entityCollection(metadata,
             edmEntitySet == null ? null : edmEntitySet.getEntityType(),
             entityCollection,
             EdmAssistedSerializerOptions.with().contextURL(contextURLBuilder.build()).build())
-            .getContent());
+            .getContent(), StandardCharsets.UTF_8);
   }
   
 
@@ -408,7 +407,7 @@ public class EdmAssistedJsonSerializerTest {
         .addProperty(new Property(null, "Property1", ValueType.PRIMITIVE, 1));
     Calendar date = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
     date.clear();
-    date.set(2000, 1, 29);
+    date.set(2000, Calendar.FEBRUARY, 29);
     entity.addProperty(new Property("Edm.Date", "Property2", ValueType.PRIMITIVE, date))
         .addProperty(new Property("Edm.DateTimeOffset", "Property3", ValueType.PRIMITIVE, date))
         .addProperty(new Property(null, "Property4", ValueType.COLLECTION_PRIMITIVE,
@@ -640,7 +639,7 @@ public class EdmAssistedJsonSerializerTest {
 
   @Test
   public void metadataMin() throws Exception {
-    final ServiceMetadata metadata = oData.createServiceMetadata(null, Collections.<EdmxReference> emptyList(),
+    final ServiceMetadata metadata = oData.createServiceMetadata(null, Collections.emptyList(),
         new MetadataETagSupport("W/\"42\""));
     Entity entity = new Entity();
     entity.setType("Namespace.EntityType");
@@ -667,7 +666,6 @@ public class EdmAssistedJsonSerializerTest {
   public void entityCollectionWithBigDecimalProperty() throws Exception {
     EntityCollection entityCollection = new EntityCollection();
     BigDecimal b = new BigDecimal("1.666666666666666666666666666666667");
-    b.abs(new MathContext(0, RoundingMode.UNNECESSARY));
     entityCollection.getEntities().add(new Entity()
         .addProperty(new Property(null, "Property1", ValueType.PRIMITIVE, b)));
     Assert.assertTrue(

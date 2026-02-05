@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
  */
 package org.sitenetsoft.olinguito.server.core.uri;
 
@@ -34,9 +36,7 @@ import org.sitenetsoft.olinguito.server.api.uri.UriHelper;
 import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class UriHelperTest {
 
@@ -82,10 +82,7 @@ public class UriHelperTest {
     entity.getProperty("PropertyInt16").setValue(ValueType.PRIMITIVE, "wrong");
     helper.buildCanonicalURL(entitySet, entity);
   }
-  
-  @Rule
-  public ExpectedException expectedEx = ExpectedException.none(); 
-  
+
   @Test(expected = SerializerException.class)
   public void canonicalURLWithoutKeys() throws Exception {
     final EdmEntitySet entitySet = container.getEntitySet("ESAllPrim");
@@ -93,10 +90,8 @@ public class UriHelperTest {
     List<Property> properties = entity.getProperties();
     properties.remove(0);
     helper.buildCanonicalURL(entitySet, entity);
-    expectedEx.expect(SerializerException.class);
-    expectedEx.expectMessage("Key Value Cannot be null for property: PropertyInt16");
   }
-  
+
   @Test(expected = SerializerException.class)
   public void canonicalURLWithKeyHavingNullValue() throws Exception {
     final EdmEntitySet entitySet = container.getEntitySet("ESAllPrim");
@@ -104,7 +99,5 @@ public class UriHelperTest {
     Property property = entity.getProperties().get(0);
     property.setValue(property.getValueType(), null);
     helper.buildCanonicalURL(entitySet, entity);
-    expectedEx.expect(SerializerException.class);
-    expectedEx.expectMessage("Wrong key value!");
   }
 }

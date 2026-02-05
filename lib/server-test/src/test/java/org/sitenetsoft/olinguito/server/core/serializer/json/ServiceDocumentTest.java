@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -91,7 +93,7 @@ public class ServiceDocumentTest {
   public void serviceDocumentNoMetadata() throws Exception {
     final String result = IOUtils.toString(
         OData.newInstance().createSerializer(ContentType.JSON_NO_METADATA)
-            .serviceDocument(metadata, serviceRoot).getContent());
+            .serviceDocument(metadata, serviceRoot).getContent(), StandardCharsets.UTF_8);
     assertFalse(result.contains("odata.context"));
     assertFalse(result.contains("odata.metadata"));
     assertTrue(result.contains("ESAllPrim"));

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
  */
 package org.sitenetsoft.olinguito.server.core.serializer;
 
@@ -54,17 +56,17 @@ import org.junit.Test;
 
 public class BatchResponseSerializerTest {
   private static final String CRLF = "\r\n";
-  private static final String BOUNDARY = "batch_" + UUID.randomUUID().toString();
+  private static final String BOUNDARY = "batch_" + UUID.randomUUID();
 
   private static final Charset CS_ISO_8859_1 = StandardCharsets.ISO_8859_1;
 
   @Test
   public void batchResponse() throws Exception {
-    final List<ODataResponsePart> parts = new ArrayList<ODataResponsePart>();
+    final List<ODataResponsePart> parts = new ArrayList<>();
     ODataResponse response = new ODataResponse();
     response.setStatusCode(HttpStatusCode.OK.getStatusCode());
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.TEXT_PLAIN.toContentTypeString());
-    response.setContent(IOUtils.toInputStream("Walter Winter" + CRLF));
+    response.setContent(IOUtils.toInputStream("Walter Winter" + CRLF, StandardCharsets.UTF_8));
     parts.add(new ODataResponsePart(Collections.singletonList(response), false));
 
     ODataResponse changeSetResponse = new ODataResponse();
@@ -104,17 +106,17 @@ public class BatchResponseSerializerTest {
     assertEquals(CRLF, body.get(line++));
     assertEquals(CRLF, body.get(line++));
     assertTrue(body.get(line++).startsWith("--changeset_"));
-    assertEquals("--" + BOUNDARY + "--" + CRLF, body.get(line++));
+    assertEquals("--" + BOUNDARY + "--" + CRLF, body.get(line));
   }
 
   @Test
   public void batchResponseUmlautsUtf8() throws Exception {
-    List<ODataResponsePart> parts = new ArrayList<ODataResponsePart>();
+    List<ODataResponsePart> parts = new ArrayList<>();
 
     ODataResponse response = new ODataResponse();
     response.setStatusCode(HttpStatusCode.OK.getStatusCode());
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.APPLICATION_JSON.toContentTypeString());
-    response.setContent(IOUtils.toInputStream("{\"name\":\"Wälter Winter\"}" + CRLF));
+    response.setContent(IOUtils.toInputStream("{\"name\":\"Wälter Winter\"}" + CRLF, StandardCharsets.UTF_8));
     parts.add(new ODataResponsePart(Collections.singletonList(response), false));
 
     ODataResponse changeSetResponse = new ODataResponse();
@@ -154,18 +156,18 @@ public class BatchResponseSerializerTest {
     assertEquals(CRLF, body.get(line++));
     assertEquals(CRLF, body.get(line++));
     assertTrue(body.get(line++).startsWith("--changeset_"));
-    assertEquals("--" + BOUNDARY + "--" + CRLF, body.get(line++));
+    assertEquals("--" + BOUNDARY + "--" + CRLF, body.get(line));
   }
 
   @Test
   public void batchResponseUmlautsUtf8BodyIsoHeader() throws Exception {
-    List<ODataResponsePart> parts = new ArrayList<ODataResponsePart>();
+    List<ODataResponsePart> parts = new ArrayList<>();
 
     ODataResponse response = new ODataResponse();
     response.setStatusCode(HttpStatusCode.OK.getStatusCode());
     response.setHeader(HttpHeader.CONTENT_TYPE,
         ContentType.create(ContentType.TEXT_PLAIN, ContentType.PARAMETER_CHARSET, "UTF-8").toContentTypeString());
-    response.setContent(IOUtils.toInputStream("Wälter Winter" + CRLF));
+    response.setContent(IOUtils.toInputStream("Wälter Winter" + CRLF, StandardCharsets.UTF_8));
     parts.add(new ODataResponsePart(Collections.singletonList(response), false));
 
     ODataResponse changeSetResponse = new ODataResponse();
@@ -207,17 +209,17 @@ public class BatchResponseSerializerTest {
     assertEquals(CRLF, body.get(line++));
     assertEquals(CRLF, body.get(line++));
     assertTrue(body.get(line++).startsWith("--changeset_"));
-    assertEquals("--" + BOUNDARY + "--" + CRLF, body.get(line++));
+    assertEquals("--" + BOUNDARY + "--" + CRLF, body.get(line));
   }
 
   @Test
   public void batchResponseUmlautsUtf8BodyAndHeader() throws Exception {
-    List<ODataResponsePart> parts = new ArrayList<ODataResponsePart>();
+    List<ODataResponsePart> parts = new ArrayList<>();
 
     ODataResponse response = new ODataResponse();
     response.setStatusCode(HttpStatusCode.OK.getStatusCode());
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.APPLICATION_JSON.toContentTypeString());
-    response.setContent(IOUtils.toInputStream("{\"name\":\"Wälter Winter\"}" + CRLF));
+    response.setContent(IOUtils.toInputStream("{\"name\":\"Wälter Winter\"}" + CRLF, StandardCharsets.UTF_8));
     parts.add(new ODataResponsePart(Collections.singletonList(response), false));
 
     ODataResponse changeSetResponse = new ODataResponse();
@@ -234,15 +236,13 @@ public class BatchResponseSerializerTest {
     reader.close();
 
     assertEquals(25, body.size());
-    // TODO: check: with latest change in BatchResponseSerializer is not possible
-    // to set header values with UTF-8 (only iso-8859-1)
-    //    assertEquals("Custom-Header: Ã¤Ã¼Ã¶" + CRLF, body.get(19));
+    // BatchResponseSerializer encodes header values as UTF-8
     assertEquals("Custom-Header: äüö" + CRLF, body.get(19));
   }
 
   @Test
   public void batchResponseUmlautsIso() throws Exception {
-    List<ODataResponsePart> parts = new ArrayList<ODataResponsePart>();
+    List<ODataResponsePart> parts = new ArrayList<>();
 
     ODataResponse response = new ODataResponse();
     response.setStatusCode(HttpStatusCode.OK.getStatusCode());
@@ -289,17 +289,17 @@ public class BatchResponseSerializerTest {
     assertEquals(CRLF, body.get(line++));
     assertEquals(CRLF, body.get(line++));
     assertTrue(body.get(line++).startsWith("--changeset_"));
-    assertEquals("--" + BOUNDARY + "--" + CRLF, body.get(line++));
+    assertEquals("--" + BOUNDARY + "--" + CRLF, body.get(line));
   }
 
   @Test
   public void batchResponseWithEndingCRLF() throws Exception {
-    List<ODataResponsePart> parts = new ArrayList<ODataResponsePart>();
+    List<ODataResponsePart> parts = new ArrayList<>();
 
     ODataResponse response = new ODataResponse();
     response.setStatusCode(HttpStatusCode.OK.getStatusCode());
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.TEXT_PLAIN.toContentTypeString());
-    response.setContent(IOUtils.toInputStream("Walter Winter"));
+    response.setContent(IOUtils.toInputStream("Walter Winter", StandardCharsets.UTF_8));
     parts.add(new ODataResponsePart(Collections.singletonList(response), false));
 
     ODataResponse changeSetResponse = new ODataResponse();
@@ -338,17 +338,17 @@ public class BatchResponseSerializerTest {
     assertEquals(CRLF, body.get(line++));
     assertEquals(CRLF, body.get(line++));
     assertTrue(body.get(line++).startsWith("--changeset_"));
-    assertEquals("--" + BOUNDARY + "--" + CRLF, body.get(line++));
+    assertEquals("--" + BOUNDARY + "--" + CRLF, body.get(line));
   }
 
   @Test
   public void response() throws Exception {
-    List<ODataResponsePart> parts = new ArrayList<ODataResponsePart>();
+    List<ODataResponsePart> parts = new ArrayList<>();
 
     ODataResponse response = new ODataResponse();
     response.setStatusCode(HttpStatusCode.OK.getStatusCode());
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.TEXT_PLAIN.toContentTypeString());
-    response.setContent(IOUtils.toInputStream("Walter Winter"));
+    response.setContent(IOUtils.toInputStream("Walter Winter", StandardCharsets.UTF_8));
     parts.add(new ODataResponsePart(Collections.singletonList(response), false));
 
     final BatchResponseSerializer serializer = new BatchResponseSerializer();
@@ -370,18 +370,18 @@ public class BatchResponseSerializerTest {
     assertEquals("Content-Length: 13" + CRLF, body.get(line++));
     assertEquals(CRLF, body.get(line++));
     assertEquals("Walter Winter" + CRLF, body.get(line++));
-    assertEquals("--" + BOUNDARY + "--" + CRLF, body.get(line++));
+    assertEquals("--" + BOUNDARY + "--" + CRLF, body.get(line));
   }
 
   @Test
   public void bigResponse() throws Exception {
-    List<ODataResponsePart> parts = new ArrayList<ODataResponsePart>();
+    List<ODataResponsePart> parts = new ArrayList<>();
 
     ODataResponse response = new ODataResponse();
     response.setStatusCode(HttpStatusCode.OK.getStatusCode());
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.TEXT_PLAIN.toContentTypeString());
     String bigData = generateData(10000);
-    response.setContent(IOUtils.toInputStream(bigData));
+    response.setContent(IOUtils.toInputStream(bigData, StandardCharsets.UTF_8));
     parts.add(new ODataResponsePart(Collections.singletonList(response), false));
 
     final BatchResponseSerializer serializer = new BatchResponseSerializer();
@@ -403,12 +403,12 @@ public class BatchResponseSerializerTest {
     assertEquals("Content-Length: 10000" + CRLF, body.get(line++));
     assertEquals(CRLF, body.get(line++));
     assertEquals(bigData + CRLF, body.get(line++));
-    assertEquals("--" + BOUNDARY + "--" + CRLF, body.get(line++));
+    assertEquals("--" + BOUNDARY + "--" + CRLF, body.get(line));
   }
 
   @Test
   public void changeSetResponse() throws Exception {
-    List<ODataResponsePart> parts = new ArrayList<ODataResponsePart>();
+    List<ODataResponsePart> parts = new ArrayList<>();
 
     ODataResponse response = new ODataResponse();
     response.setHeader(HttpHeader.CONTENT_ID, "1");
@@ -439,7 +439,7 @@ public class BatchResponseSerializerTest {
     assertEquals(CRLF, body.get(line++));
     assertEquals(CRLF, body.get(line++));
     assertTrue(body.get(line++).startsWith("--changeset_"));
-    assertEquals("--" + BOUNDARY + "--" + CRLF, body.get(line++));
+    assertEquals("--" + BOUNDARY + "--" + CRLF, body.get(line));
   }
 
   @Test
@@ -470,17 +470,17 @@ public class BatchResponseSerializerTest {
         + "Content-Length: 256" + CRLF
         + CRLF;
     byte[] beforeContent = new byte[beforeExpected.length()];
-    batchResponse.read(beforeContent, 0, beforeExpected.length());
+    assertEquals(beforeExpected.length(), batchResponse.read(beforeContent, 0, beforeExpected.length()));
     assertArrayEquals(beforeExpected.getBytes(CS_ISO_8859_1), beforeContent);
 
     byte[] binaryContent = new byte[Byte.MAX_VALUE - Byte.MIN_VALUE + 1];
-    batchResponse.read(binaryContent, 0, binaryContent.length);
+    assertEquals(binaryContent.length, batchResponse.read(binaryContent, 0, binaryContent.length));
     assertArrayEquals(content, binaryContent);
 
     final String afterExpected = CRLF
         + "--" + BOUNDARY + "--" + CRLF;
     byte[] afterContent = new byte[afterExpected.length()];
-    batchResponse.read(afterContent, 0, afterExpected.length());
+    assertEquals(afterExpected.length(), batchResponse.read(afterContent, 0, afterExpected.length()));
     assertArrayEquals(afterExpected.getBytes(CS_ISO_8859_1), afterContent);
 
     assertEquals(-1, batchResponse.read());
@@ -503,7 +503,7 @@ public class BatchResponseSerializerTest {
   
   @Test
   public void testODataContentResponse() throws Exception {
-    List<ODataResponsePart> parts = new ArrayList<ODataResponsePart>();
+    List<ODataResponsePart> parts = new ArrayList<>();
     ServiceMetadata serviceMetadata = mock(ServiceMetadata.class);
     final EdmEntityType edmEntityType = mock(EdmEntityType.class);
     EntityIterator entityCollection = new EntityIterator() {
@@ -550,12 +550,12 @@ public class BatchResponseSerializerTest {
     assertEquals("Content-Length: 47" + CRLF, body.get(line++));
     assertEquals(CRLF, body.get(line++));
     assertEquals("{\"@odata.context\":\"../../$metadata\",\"value\":[]}" + CRLF, body.get(line++));
-    assertEquals("--" + BOUNDARY + "--" + CRLF, body.get(line++));
+    assertEquals("--" + BOUNDARY + "--" + CRLF, body.get(line));
   }
   
   @Test
   public void changeSetODataContentResponse() throws Exception {
-    List<ODataResponsePart> parts = new ArrayList<ODataResponsePart>();
+    List<ODataResponsePart> parts = new ArrayList<>();
     ServiceMetadata serviceMetadata = mock(ServiceMetadata.class);
     final EdmEntityType edmEntityType = mock(EdmEntityType.class);
     EntityIterator entityCollection = new EntityIterator() {
@@ -608,18 +608,18 @@ public class BatchResponseSerializerTest {
     assertEquals(CRLF, body.get(line++));
     assertEquals("{\"@odata.context\":\"../../$metadata\",\"value\":[]}" + CRLF, body.get(line++));
     assertTrue(body.get(line++).startsWith("--changeset_"));
-    assertEquals("--" + BOUNDARY + "--" + CRLF, body.get(line++));
+    assertEquals("--" + BOUNDARY + "--" + CRLF, body.get(line));
   }
   
   @Test
   public void testODataContentWithODataResponse() throws Exception {
-    List<ODataResponsePart> parts = new ArrayList<ODataResponsePart>();
+    List<ODataResponsePart> parts = new ArrayList<>();
     
     ODataResponse response = new ODataResponse();
     response.setStatusCode(HttpStatusCode.OK.getStatusCode());
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.TEXT_PLAIN.toContentTypeString());
     String bigData = generateData(10000);
-    response.setContent(IOUtils.toInputStream(bigData));
+    response.setContent(IOUtils.toInputStream(bigData, StandardCharsets.UTF_8));
     parts.add(new ODataResponsePart(response, false));
     
     ServiceMetadata serviceMetadata = mock(ServiceMetadata.class);
@@ -677,6 +677,6 @@ public class BatchResponseSerializerTest {
     assertEquals("Content-Length: 47" + CRLF, body.get(line++));
     assertEquals(CRLF, body.get(line++));
     assertEquals("{\"@odata.context\":\"../../$metadata\",\"value\":[]}" + CRLF, body.get(line++));
-    assertEquals("--" + BOUNDARY + "--" + CRLF, body.get(line++));
+    assertEquals("--" + BOUNDARY + "--" + CRLF, body.get(line));
   }
 }

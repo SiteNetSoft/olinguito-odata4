@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
  */
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
@@ -45,7 +47,6 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
-import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
@@ -79,6 +80,7 @@ import org.custommonkey.xmlunit.DifferenceListener;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -88,7 +90,7 @@ import org.xml.sax.SAXException;
 
 public class ODataXmlSerializerTest {
   private static final ServiceMetadata metadata = new ServiceMetadataImpl(
-      new EdmTechProvider(), Collections.<EdmxReference> emptyList(), new MetadataETagSupport("metadataETag"));
+      new EdmTechProvider(), Collections.emptyList(), new MetadataETagSupport("metadataETag"));
   private static final EdmEntityContainer entityContainer = metadata.getEdm().getEntityContainer();
   private static final DifferenceListener DIFFERENCE_LISTENER = new CustomDifferenceListener();
   private static final int MAX_ALLOWED_UPDATED_DIFFERENCE = 2000;
@@ -431,8 +433,7 @@ public class ODataXmlSerializerTest {
         "   <m:action metadata=\"#olingo.odata.test1.BAETAllPrimRT\" "+
         "      title=\"olingo.odata.test1.BAETAllPrimRT\" "+
         "      target=\"ESAllPrim(32767)/olingo.odata.test1.BAETAllPrimRT\" />\n" + 
-        "</a:entry>\n" +
-        "";
+        "</a:entry>\n";
     checkXMLEqual(expected, resultString);
   }
 
@@ -461,8 +462,8 @@ public class ODataXmlSerializerTest {
     } catch (final SerializerException e) {
       Assert.assertEquals(SerializerException.MessageKeys.WRONG_PROPERTY_VALUE, e.getMessageKey());
       final String message = e.getLocalizedMessage();
-      Assert.assertThat(message, CoreMatchers.containsString("PropertyInt16"));
-      Assert.assertThat(message, CoreMatchers.containsString("false"));
+      MatcherAssert.assertThat(message, CoreMatchers.containsString("PropertyInt16"));
+      MatcherAssert.assertThat(message, CoreMatchers.containsString("false"));
     }
   }
 
@@ -1016,8 +1017,7 @@ public class ODataXmlSerializerTest {
         " </a:content>\n" +
         " <m:action metadata=\"#olingo.odata.test1.BAETAllPrimRT\" title=\"olingo.odata.test1.BAETAllPrimRT\" \n" +
         " target=\"ESAllPrim(0)/olingo.odata.test1.BAETAllPrimRT\"/>\n" +
-        "</a:entry>\n" +
-        "";
+        "</a:entry>\n";
         checkXMLEqual(expected, resultString);
   }
   
@@ -1118,12 +1118,10 @@ public class ODataXmlSerializerTest {
         " <m:action metadata=\"#olingo.odata.test1.BAETAllPrimRT\" \n" +
         " title=\"olingo.odata.test1.BAETAllPrimRT\" \n" +
         " target=\"ESAllPrim(32767)/olingo.odata.test1.BAETAllPrimRT\"/>\n" +
-        "</a:entry>\n" +
-        "";
+        "</a:entry>\n";
     checkXMLEqual(expected, resultString);
   }
 
-  
   @Test
   public void deriveEntityWithNull() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrimDerived");
@@ -1184,8 +1182,7 @@ public class ODataXmlSerializerTest {
     " </a:content>\n" +
     " <m:action metadata=\"#olingo.odata.test1.BAETAllPrimRT\" title=\"olingo.odata.test1.BAETAllPrimRT\"\n" +
     " target=\"ESAllPrim(-32768)/olingo.odata.test1.BAETAllPrimRT\"/>\n" +
-    "</a:entry>\n" +
-    "";
+    "</a:entry>\n";
     checkXMLEqual(expected, resultString);
   }
 
@@ -1212,7 +1209,7 @@ public class ODataXmlSerializerTest {
     final String resultString = IOUtils.toString(serializer.entity(metadata, edmEntitySet.getEntityType(), entity,
         EntitySerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
-            .build()).getContent());
+            .build()).getContent(), StandardCharsets.UTF_8);
     checkXMLEqual(resultString,
         "<?xml version='1.0' encoding='UTF-8'?>\n"
         + "<a:entry xmlns:a=\"" + Constants.NS_ATOM + "\""
@@ -1440,8 +1437,7 @@ public class ODataXmlSerializerTest {
         "      <d:PropertyInt16 m:type=\"Int16\">4</d:PropertyInt16>\n" +
         "    </m:properties>\n" +
         "  </a:entry>\n" +
-        "</a:feed>\n" +
-        "";
+        "</a:feed>\n";
     checkXMLEqual(expectedResult, resultString);
   }
 
@@ -2074,8 +2070,7 @@ public class ODataXmlSerializerTest {
            "<m:action metadata=\"#olingo.odata.test1.BAETTwoPrimRTCollCTAllPrim\" "+
              "title=\"olingo.odata.test1.BAETTwoPrimRTCollCTAllPrim\" "+
              "target=\"ESTwoPrim(32767)/olingo.odata.test1.BAETTwoPrimRTCollCTAllPrim\"/>" +
-        "</a:entry>\n" +
-        "";
+        "</a:entry>\n";
     checkXMLEqual(expected, resultString);
   }
 
@@ -2321,8 +2316,7 @@ public class ODataXmlSerializerTest {
         "   <m:action metadata=\"#olingo.odata.test1.BAETAllPrimRT\" "+
         "      title=\"olingo.odata.test1.BAETAllPrimRT\" "+
         "      target=\"ESAllPrim(32767)/olingo.odata.test1.BAETAllPrimRT\" />\n" + 
-        "</a:entry>\n" +
-        "";
+        "</a:entry>\n";
         checkXMLEqual(expected, resultString);
   }
 
@@ -2701,7 +2695,7 @@ public class ODataXmlSerializerTest {
                 .contextURL(ContextURL.with()
                     .entitySet(edmEntitySet).keyPath("32767").navOrPropertyPath(edmProperty.getName())
                     .build())
-                .build()).getContent());
+                .build()).getContent(), StandardCharsets.UTF_8);
 
     String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
         + "<m:value xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\" "
@@ -2725,7 +2719,7 @@ public class ODataXmlSerializerTest {
                     .build())
                 .xml10InvalidCharReplacement("XX")
                 .unicode(Boolean.TRUE)
-                .build()).getContent());
+                .build()).getContent(), StandardCharsets.UTF_8);
 
     String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
         + "<m:value xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\" "
@@ -2746,7 +2740,7 @@ public class ODataXmlSerializerTest {
             .contextURL(ContextURL.with()
                 .entitySet(edmEntitySet).keyPath("4242").navOrPropertyPath(edmProperty.getName())
                 .build())
-            .build()).getContent());
+            .build()).getContent(), StandardCharsets.UTF_8);
     String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
         + "<m:value xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\" "
         + "m:context=\"../$metadata#ESAllPrim(4242)/PropertyString\" "
@@ -2767,7 +2761,7 @@ public class ODataXmlSerializerTest {
                 .contextURL(ContextURL.with()
                     .entitySet(edmEntitySet).keyPath("1").navOrPropertyPath(edmProperty.getName())
                     .build())
-                .build()).getContent());
+                .build()).getContent(), StandardCharsets.UTF_8);
     String expected = "<?xml version='1.0' encoding='UTF-8'?>"
         + "<m:value xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\" "
         + "m:context=\"../$metadata#ESCollAllPrim(1)/CollPropertyString\" "
@@ -2791,7 +2785,7 @@ public class ODataXmlSerializerTest {
                 .contextURL(ContextURL.with()
                     .entitySet(edmEntitySet).keyPath("32767").navOrPropertyPath(edmProperty.getName())
                     .build())
-                .build()).getContent());
+                .build()).getContent(), StandardCharsets.UTF_8);
     String expected = "<?xml version='1.0' encoding='UTF-8'?>"
         + "<m:value xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\" "
         + "xmlns:d=\"http://docs.oasis-open.org/odata/ns/data\" "
@@ -2816,45 +2810,46 @@ public class ODataXmlSerializerTest {
                 .contextURL(ContextURL.with()
                     .entitySet(edmEntitySet).keyPath("32767").navOrPropertyPath(edmProperty.getName())
                     .build())
-                .build()).getContent());
-    String expected = "<?xml version='1.0' encoding='UTF-8'?>\n"
-        + "<m:value xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\"\n" +
-        "  xmlns:d=\"http://docs.oasis-open.org/odata/ns/data\" xmlns:a=\"http://www.w3.org/2005/Atom\" "
-        + "m:type=\"#Collection(olingo.odata.test1.CTTwoPrim)\"\n" +
-        "  m:context=\"../$metadata#ESMixPrimCollComp(32767)/CollPropertyComp\"\n" +
-        "  m:metadata-etag=\"metadataETag\">\n" +
-        "  <m:element>\n" +
-        "    <d:PropertyInt16 m:type=\"Int16\">123</d:PropertyInt16>\n" +
-        "    <d:PropertyString>TEST 1</d:PropertyString>\n" +
-        "<a:link rel=\"http://docs.oasis-open.org/odata/ns/related/NavPropertyETTwoKeyNavOne\" "
-        + "type=\"application/atom+xml;type=entry\" title=\"NavPropertyETTwoKeyNavOne\" "
-        + "href=\"ESTwoKeyNav(PropertyInt16=1,PropertyString='2')\"/>\n" +
-        "<a:link rel=\"http://docs.oasis-open.org/odata/ns/related/NavPropertyETMediaOne\" "
-        + "type=\"application/atom+xml;type=feed\" title=\"NavPropertyETMediaOne\" "
-        + "href=\"CollPropertyComp/NavPropertyETMediaOne\"/>\n" +
-        "  </m:element>\n" +
-        "  <m:element>\n" +
-        "    <d:PropertyInt16 m:type=\"Int16\">456</d:PropertyInt16>\n" +
-        "    <d:PropertyString>TEST 2</d:PropertyString>\n" +
-        "<a:link rel=\"http://docs.oasis-open.org/odata/ns/related/NavPropertyETTwoKeyNavOne\" "
-        + "type=\"application/atom+xml;type=entry\" title=\"NavPropertyETTwoKeyNavOne\" "
-        + "href=\"ESTwoKeyNav(PropertyInt16=1,PropertyString='2')\"/>\n" +
-        "<a:link rel=\"http://docs.oasis-open.org/odata/ns/related/NavPropertyETMediaOne\" "
-        + "type=\"application/atom+xml;type=feed\" title=\"NavPropertyETMediaOne\" "
-        + "href=\"CollPropertyComp/NavPropertyETMediaOne\"/>\n" +
-        "  </m:element>\n" +
-        "  <m:element m:type=\"olingo.odata.test1.CTBase\">\n" +
-        "    <d:PropertyInt16 m:type=\"Int16\">789</d:PropertyInt16>\n" +
-        "    <d:PropertyString>TEST 3</d:PropertyString>\n" +
-        "    <d:AdditionalPropString>ADD TEST</d:AdditionalPropString>\n" +
-        "<a:link rel=\"http://docs.oasis-open.org/odata/ns/related/NavPropertyETTwoKeyNavOne\" "
-        + "type=\"application/atom+xml;type=entry\" title=\"NavPropertyETTwoKeyNavOne\" "
-        + "href=\"ESTwoKeyNav(PropertyInt16=1,PropertyString='2')\"/>\n" +
-        "<a:link rel=\"http://docs.oasis-open.org/odata/ns/related/NavPropertyETMediaOne\" "
-        + "type=\"application/atom+xml;type=feed\" title=\"NavPropertyETMediaOne\" "
-        + "href=\"CollPropertyComp/NavPropertyETMediaOne\"/>\n" +
-        "  </m:element>\n" +
-        "</m:value>";
+                .build()).getContent(), StandardCharsets.UTF_8);
+    String expected = """
+            <?xml version='1.0' encoding='UTF-8'?>
+            <m:value xmlns:m="http://docs.oasis-open.org/odata/ns/metadata"
+              xmlns:d="http://docs.oasis-open.org/odata/ns/data" xmlns:a="http://www.w3.org/2005/Atom" \
+            m:type="#Collection(olingo.odata.test1.CTTwoPrim)"
+              m:context="../$metadata#ESMixPrimCollComp(32767)/CollPropertyComp"
+              m:metadata-etag="metadataETag">
+              <m:element>
+                <d:PropertyInt16 m:type="Int16">123</d:PropertyInt16>
+                <d:PropertyString>TEST 1</d:PropertyString>
+            <a:link rel="http://docs.oasis-open.org/odata/ns/related/NavPropertyETTwoKeyNavOne" \
+            type="application/atom+xml;type=entry" title="NavPropertyETTwoKeyNavOne" \
+            href="ESTwoKeyNav(PropertyInt16=1,PropertyString='2')"/>
+            <a:link rel="http://docs.oasis-open.org/odata/ns/related/NavPropertyETMediaOne" \
+            type="application/atom+xml;type=feed" title="NavPropertyETMediaOne" \
+            href="CollPropertyComp/NavPropertyETMediaOne"/>
+              </m:element>
+              <m:element>
+                <d:PropertyInt16 m:type="Int16">456</d:PropertyInt16>
+                <d:PropertyString>TEST 2</d:PropertyString>
+            <a:link rel="http://docs.oasis-open.org/odata/ns/related/NavPropertyETTwoKeyNavOne" \
+            type="application/atom+xml;type=entry" title="NavPropertyETTwoKeyNavOne" \
+            href="ESTwoKeyNav(PropertyInt16=1,PropertyString='2')"/>
+            <a:link rel="http://docs.oasis-open.org/odata/ns/related/NavPropertyETMediaOne" \
+            type="application/atom+xml;type=feed" title="NavPropertyETMediaOne" \
+            href="CollPropertyComp/NavPropertyETMediaOne"/>
+              </m:element>
+              <m:element m:type="olingo.odata.test1.CTBase">
+                <d:PropertyInt16 m:type="Int16">789</d:PropertyInt16>
+                <d:PropertyString>TEST 3</d:PropertyString>
+                <d:AdditionalPropString>ADD TEST</d:AdditionalPropString>
+            <a:link rel="http://docs.oasis-open.org/odata/ns/related/NavPropertyETTwoKeyNavOne" \
+            type="application/atom+xml;type=entry" title="NavPropertyETTwoKeyNavOne" \
+            href="ESTwoKeyNav(PropertyInt16=1,PropertyString='2')"/>
+            <a:link rel="http://docs.oasis-open.org/odata/ns/related/NavPropertyETMediaOne" \
+            type="application/atom+xml;type=feed" title="NavPropertyETMediaOne" \
+            href="CollPropertyComp/NavPropertyETMediaOne"/>
+              </m:element>
+            </m:value>""";
     checkXMLEqual(expected, resultString);
   }
 
@@ -2868,9 +2863,10 @@ public class ODataXmlSerializerTest {
 
     final SerializerResult serializerResult = serializer.reference(metadata, edmEntitySet, entity, options);
     final String resultString = IOUtils.toString(serializerResult.getContent(), StandardCharsets.UTF_8);
-    String expected = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-        "<m:ref xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\"\n" +
-        "  m:context=\"../$metadata#$ref\" id=\"ESAllPrim(32767)\" />";
+    String expected = """
+            <?xml version='1.0' encoding='UTF-8'?>
+            <m:ref xmlns:m="http://docs.oasis-open.org/odata/ns/metadata"
+              m:context="../$metadata#$ref" id="ESAllPrim(32767)" />""";
     checkXMLEqual(expected, resultString);
   }
 
@@ -2887,15 +2883,16 @@ public class ODataXmlSerializerTest {
         entityCollection, options);
 
     final String resultString = IOUtils.toString(serializerResult.getContent(), StandardCharsets.UTF_8);
-    String expected = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-        "<a:feed xmlns:a=\"http://www.w3.org/2005/Atom\"\n" +
-        "  xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\"\n" +
-        "  m:context=\"../$metadata#Collection($ref)\">\n" +
-        "  <m:ref id=\"ESAllPrim(32767)\" />\n" +
-        "  <m:ref id=\"ESAllPrim(-32768)\" />\n" +
-        "  <m:ref id=\"ESAllPrim(0)\" />\n" +
-        "  <m:ref id=\"ESAllPrim(10)\" />\n" +
-        "</a:feed>";
+    String expected = """
+            <?xml version='1.0' encoding='UTF-8'?>
+            <a:feed xmlns:a="http://www.w3.org/2005/Atom"
+              xmlns:m="http://docs.oasis-open.org/odata/ns/metadata"
+              m:context="../$metadata#Collection($ref)">
+              <m:ref id="ESAllPrim(32767)" />
+              <m:ref id="ESAllPrim(-32768)" />
+              <m:ref id="ESAllPrim(0)" />
+              <m:ref id="ESAllPrim(10)" />
+            </a:feed>""";
     checkXMLEqual(expected, resultString);
   }
 
@@ -2913,11 +2910,12 @@ public class ODataXmlSerializerTest {
 
     final String resultString = IOUtils.toString(serializerResult.getContent(), StandardCharsets.UTF_8);
 
-    String expected = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-        "<a:feed xmlns:a=\"http://www.w3.org/2005/Atom\"\n" +
-        "  xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\"\n" +
-        "  m:context=\"../$metadata#Collection($ref)\">\n" +
-        "</a:feed>";
+    String expected = """
+            <?xml version='1.0' encoding='UTF-8'?>
+            <a:feed xmlns:a="http://www.w3.org/2005/Atom"
+              xmlns:m="http://docs.oasis-open.org/odata/ns/metadata"
+              m:context="../$metadata#Collection($ref)">
+            </a:feed>""";
     checkXMLEqual(expected, resultString);
   }
   
@@ -3119,8 +3117,7 @@ public class ODataXmlSerializerTest {
             "         <d:name>B</d:name>\n" + 
             "      </m:properties>\n" + 
             "   </a:content>\n" + 
-            "</a:entry>\n" + 
-            "";
+            "</a:entry>\n";
     checkXMLEqual(expected, resultString);
   }  
 
@@ -3357,7 +3354,7 @@ public class ODataXmlSerializerTest {
 
     @Override
     public void skippedComparison(Node control, Node test) { }
-  };
+  }
   
   @Test
   public void complexCollectionWithSelectProperty() throws Exception {
@@ -3379,7 +3376,7 @@ public class ODataXmlSerializerTest {
                     .entitySet(edmEntitySet).keyPath("1")
                     .navOrPropertyPath("CollPropertyComp")
                     .build()).select(selectOption)
-                .build()).getContent());
+                .build()).getContent(), StandardCharsets.UTF_8);
     final String expectedResult = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
         + "<m:value xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\" "
         + "xmlns:d=\"http://docs.oasis-open.org/odata/ns/data\" xmlns:a=\"http://www.w3.org/2005/Atom\" "

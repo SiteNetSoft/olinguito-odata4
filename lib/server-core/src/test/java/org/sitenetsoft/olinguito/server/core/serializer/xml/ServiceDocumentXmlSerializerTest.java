@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
  */
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
@@ -23,6 +25,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 import org.apache.commons.io.IOUtils;
@@ -70,7 +73,7 @@ public class ServiceDocumentXmlSerializerTest {
         + "metadata:context=\"http://host/svc/$metadata\">"
         + "<app:workspace><atom:title>service.test</atom:title></app:workspace>"
         + "</app:service>",
-        IOUtils.toString(serializer.serviceDocument(metadata, "http://host/svc").getContent()));
+        IOUtils.toString(serializer.serviceDocument(metadata, "http://host/svc").getContent(), StandardCharsets.UTF_8));
   }
 
   @Test
@@ -79,7 +82,7 @@ public class ServiceDocumentXmlSerializerTest {
     ServiceMetadata serviceMetadata = new ServiceMetadataImpl(provider,
         Collections.<EdmxReference> emptyList(), null);
     InputStream metadataStream = serializer.serviceDocument(serviceMetadata, "http://host/svc").getContent();
-    String metadata = IOUtils.toString(metadataStream);
+    String metadata = IOUtils.toString(metadataStream, StandardCharsets.UTF_8);
     assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
         + "<app:service xmlns:atom=\"http://www.w3.org/2005/Atom\" "
         + "xmlns:app=\"http://www.w3.org/2007/app\" "

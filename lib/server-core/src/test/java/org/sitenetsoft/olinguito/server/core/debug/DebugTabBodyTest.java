@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
  */
 package org.sitenetsoft.olinguito.server.core.debug;
 
@@ -23,6 +25,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
@@ -44,10 +47,10 @@ public class DebugTabBodyTest extends AbstractDebugTabTest {
   public void json() throws Exception {
     ODataResponse response = new ODataResponse();
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.JSON_NO_METADATA.toContentTypeString());
-    response.setContent(IOUtils.toInputStream("{\"property\": true}"));
+    response.setContent(IOUtils.toInputStream("{\"property\": true}", StandardCharsets.UTF_8));
     assertEquals("\"{\\\"property\\\": true}\"", createJson(new DebugTabBody(response)));
 
-    response.setContent(IOUtils.toInputStream("{\"property\": false}"));
+    response.setContent(IOUtils.toInputStream("{\"property\": false}", StandardCharsets.UTF_8));
     assertEquals("<pre class=\"code json\">\n{\"property\": false}\n</pre>\n", createHtml(new DebugTabBody(response)));
   }
 
@@ -55,10 +58,10 @@ public class DebugTabBodyTest extends AbstractDebugTabTest {
   public void xml() throws Exception {
     ODataResponse response = new ODataResponse();
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.APPLICATION_XML.toContentTypeString());
-    response.setContent(IOUtils.toInputStream("<?xml version='1.1'?>\n<a xmlns=\"b\" />\n"));
+    response.setContent(IOUtils.toInputStream("<?xml version='1.1'?>\n<a xmlns=\"b\" />\n", StandardCharsets.UTF_8));
     assertEquals("\"<?xml version='1.1'?>\\n<a xmlns=\\\"b\\\" />\\n\"", createJson(new DebugTabBody(response)));
 
-    response.setContent(IOUtils.toInputStream("<?xml version='1.1'?>\n<c xmlns=\"d\" />\n"));
+    response.setContent(IOUtils.toInputStream("<?xml version='1.1'?>\n<c xmlns=\"d\" />\n", StandardCharsets.UTF_8));
     assertEquals("<pre class=\"code xml\">\n&lt;?xml version='1.1'?&gt;\n&lt;c xmlns=\"d\" /&gt;\n\n</pre>\n",
         createHtml(new DebugTabBody(response)));
   }
@@ -66,10 +69,10 @@ public class DebugTabBodyTest extends AbstractDebugTabTest {
   @Test
   public void text() throws Exception {
     ODataResponse response = new ODataResponse();
-    response.setContent(IOUtils.toInputStream("testText\n12"));
+    response.setContent(IOUtils.toInputStream("testText\n12", StandardCharsets.UTF_8));
     assertEquals("\"testText\\n12\"", createJson(new DebugTabBody(response)));
 
-    response.setContent(IOUtils.toInputStream("testText\n34"));
+    response.setContent(IOUtils.toInputStream("testText\n34", StandardCharsets.UTF_8));
     assertEquals("<pre class=\"code\">\ntestText\n34\n</pre>\n", createHtml(new DebugTabBody(response)));
   }
 

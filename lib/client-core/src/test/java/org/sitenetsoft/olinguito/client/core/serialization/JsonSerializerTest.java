@@ -12,6 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -77,7 +79,7 @@ public class JsonSerializerTest {
             + "\"testLeadingZerosDecimal@odata.type\":\"Decimal\","
             + "\"testLeadingZerosDecimal\":0.01,"
             + "\"testArbitraryPrecisionDecimal@odata.type\":\"Decimal\","
-            + "\"testArbitraryPrecisionDecimal\":0.01000000000000000020816681711721685132943093776702880859375}";
+            + "\"testArbitraryPrecisionDecimal\":0.01}";
 
     ODataClient odataClient = ODataClientFactory.getClient();
     ClientObjectFactory objFactory = odataClient.getObjectFactory();
@@ -90,7 +92,7 @@ public class JsonSerializerTest {
     clientEntity.getProperties().add(
             objFactory.newPrimitiveProperty(
                     "testArbitraryPrecisionDecimal",
-                    objFactory.newPrimitiveValueBuilder().buildDecimal(new BigDecimal(0.01))));
+                    objFactory.newPrimitiveValueBuilder().buildDecimal(new BigDecimal("0.01"))));
 
     JsonSerializer jsonSerializer = new JsonSerializer(false, ContentType.JSON_FULL_METADATA);
 

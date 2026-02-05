@@ -15,12 +15,15 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
  */
 package org.sitenetsoft.olinguito.server.core.serializer;
 
 import static org.junit.Assert.assertEquals;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
 import org.apache.commons.io.IOUtils;
@@ -40,11 +43,11 @@ public class AsyncResponseSerializerTest {
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.APPLICATION_JSON.toContentTypeString());
     response.setHeader(HttpHeader.CONTENT_LENGTH, String.valueOf(200));
 
-    response.setContent(IOUtils.toInputStream("Walter Winter" + CRLF));
+    response.setContent(IOUtils.toInputStream("Walter Winter" + CRLF, StandardCharsets.UTF_8));
 
     AsyncResponseSerializer serializer = new AsyncResponseSerializer();
     InputStream in = serializer.serialize(response);
-    String result = IOUtils.toString(in);
+    String result = IOUtils.toString(in, StandardCharsets.UTF_8);
     assertEquals("HTTP/1.1 200 OK" + CRLF
         + "Content-Type: application/json" + CRLF
         + "Content-Length: 200" + CRLF + CRLF
@@ -58,22 +61,22 @@ public class AsyncResponseSerializerTest {
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.APPLICATION_JSON.toContentTypeString());
     response.setHeader(HttpHeader.CONTENT_LENGTH, String.valueOf(0));
 
-    String testData = testData(20000);
-    response.setContent(IOUtils.toInputStream(testData));
+    String testData = testData();
+    response.setContent(IOUtils.toInputStream(testData, StandardCharsets.UTF_8));
 
     AsyncResponseSerializer serializer = new AsyncResponseSerializer();
     InputStream in = serializer.serialize(response);
-    String result = IOUtils.toString(in);
+    String result = IOUtils.toString(in, StandardCharsets.UTF_8);
     assertEquals("HTTP/1.1 202 Accepted" + CRLF
         + "Content-Type: application/json" + CRLF
         + "Content-Length: 0" + CRLF + CRLF
         + testData, result);
   }
 
-  private String testData(final int amount) {
+  private String testData() {
     StringBuilder result = new StringBuilder();
     Random r = new Random();
-    for (int i = 0; i < amount; i++) {
+    for (int i = 0; i < 20000; i++) {
       result.append((char) (r.nextInt(26) + 'a'));
     }
 
