@@ -82,6 +82,12 @@
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- JUnit vintage engine to run JUnit 4 tests with JUnit 5 platform -->
+    <dependency>
+      <groupId>org.junit.vintage</groupId>
+      <artifactId>junit-vintage-engine</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <!-- pax-exam -->
     <dependency>

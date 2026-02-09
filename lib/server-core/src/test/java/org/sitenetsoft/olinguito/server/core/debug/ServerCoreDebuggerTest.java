@@ -18,8 +18,8 @@
  */
 package org.sitenetsoft.olinguito.server.core.debug;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -30,15 +30,15 @@ import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.ODataResponse;
 import org.sitenetsoft.olinguito.server.api.debug.DebugInformation;
 import org.sitenetsoft.olinguito.server.api.debug.DebugSupport;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ServerCoreDebuggerTest {
 
   private final OData odata = OData.newInstance();
   private ServerCoreDebugger debugger;
 
-  @Before
+  @BeforeEach
   public void setupDebugger() {
     debugger = new ServerCoreDebugger(odata);
     DebugSupport processor = mock(DebugSupport.class);

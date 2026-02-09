@@ -35,7 +35,7 @@ import org.sitenetsoft.olinguito.server.tecsvc.provider.EnumTypeProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.FunctionProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.PropertyProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.TypeDefinitionProvider;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** Tests of the parts of the URI parser that parse the sytem query option $select. */
 public class SelectParserTest {

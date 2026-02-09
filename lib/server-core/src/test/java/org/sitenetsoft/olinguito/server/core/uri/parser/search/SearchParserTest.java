@@ -18,10 +18,10 @@
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser.search;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -32,7 +32,7 @@ import org.sitenetsoft.olinguito.server.api.uri.queryoption.search.SearchBinaryO
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.search.SearchExpression;
 import org.sitenetsoft.olinguito.server.core.uri.parser.search.SearchParserException.MessageKeys;
 import org.sitenetsoft.olinguito.server.core.uri.parser.search.SearchQueryToken.Token;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SearchParserTest extends SearchParser {
 

@@ -18,14 +18,14 @@
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class FunctionMapKeyTest {
 

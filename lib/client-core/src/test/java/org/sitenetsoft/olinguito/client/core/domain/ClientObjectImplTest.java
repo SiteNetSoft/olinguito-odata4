@@ -37,9 +37,9 @@ import org.sitenetsoft.olinguito.client.core.ODataClientImpl;
 import org.sitenetsoft.olinguito.client.core.domain.ClientPrimitiveValueImpl.BuilderImpl;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ClientObjectImplTest {
 

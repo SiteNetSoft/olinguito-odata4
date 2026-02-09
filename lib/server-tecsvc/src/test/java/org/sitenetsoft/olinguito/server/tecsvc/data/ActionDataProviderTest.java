@@ -18,11 +18,12 @@
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
@@ -41,7 +42,7 @@ import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider.DataProviderException;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ActionDataProviderTest {
 
@@ -62,9 +63,9 @@ public class ActionDataProviderTest {
     assertEquals("UARTString string value", result.asPrimitive());
   }
 
-  @Test(expected = DataProviderException.class)
+  @Test
   public void actionUARTStringNegative() throws Exception {
-    ActionData.primitiveAction("Wrong", null);
+      assertThrows(DataProviderException.class, () -> ActionData.primitiveAction("Wrong", null));
   }
 
   @Test

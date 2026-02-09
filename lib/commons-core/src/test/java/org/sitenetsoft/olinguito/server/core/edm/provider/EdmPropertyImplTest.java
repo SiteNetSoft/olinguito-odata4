@@ -18,12 +18,13 @@
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -42,7 +43,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlProperty;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlTypeDefinition;
 import org.sitenetsoft.olinguito.commons.core.edm.EdmPropertyImpl;
 import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class EdmPropertyImplTest {
 
@@ -144,26 +145,30 @@ public class EdmPropertyImplTest {
     assertEquals("definition", type.getName());
   }
 
-  @Test(expected = EdmException.class)
+  @Test
   public void getTypeReturnsWrongType() throws Exception {
-    CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
-    EdmProviderImpl edm = new EdmProviderImpl(provider);
-    final CsdlProperty propertyProvider = new CsdlProperty()
-        .setType(new FullQualifiedName("ns", "wrong"));
-    final EdmProperty property = new EdmPropertyImpl(edm, propertyProvider);
-    property.getType();
-    fail();
+      assertThrows(EdmException.class, () -> {
+          CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
+          EdmProviderImpl edm = new EdmProviderImpl(provider);
+          final CsdlProperty propertyProvider = new CsdlProperty()
+          .setType(new FullQualifiedName("ns", "wrong"));
+          final EdmProperty property = new EdmPropertyImpl(edm, propertyProvider);
+          property.getType();
+          fail();
+      });
   }
 
-  @Test(expected = EdmException.class)
+  @Test
   public void getTypeReturnsNoTypeKind() throws Exception {
-    CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
-    EdmProviderImpl edm = new EdmProviderImpl(provider);
-    final CsdlProperty propertyProvider = new CsdlProperty()
-        .setType(new FullQualifiedName(EdmPrimitiveType.EDM_NAMESPACE, "type"));
-    final EdmProperty property = new EdmPropertyImpl(edm, propertyProvider);
-    property.getType();
-    fail();
+      assertThrows(EdmException.class, () -> {
+          CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
+          EdmProviderImpl edm = new EdmProviderImpl(provider);
+          final CsdlProperty propertyProvider = new CsdlProperty()
+          .setType(new FullQualifiedName(EdmPrimitiveType.EDM_NAMESPACE, "type"));
+          final EdmProperty property = new EdmPropertyImpl(edm, propertyProvider);
+          property.getType();
+          fail();
+      });
   }
 
   @Test

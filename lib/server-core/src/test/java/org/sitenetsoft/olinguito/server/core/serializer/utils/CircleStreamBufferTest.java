@@ -18,14 +18,15 @@
  */
 package org.sitenetsoft.olinguito.server.core.serializer.utils;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -245,27 +246,28 @@ public class CircleStreamBufferTest {
     assertEquals(testData, result);
   }
 
-  @Test(expected = IOException.class)
+  @Test
   public void testCloseInputStream() throws Exception {
-    CircleStreamBuffer csb = new CircleStreamBuffer();
-
-    OutputStream write = csb.getOutputStream();
-    write.write("Test".getBytes(DEFAULT_CHARSET), 0, 4);
-
-    InputStream inStream = csb.getInputStream();
-    inStream.close();
-    byte[] buffer = new byte[4];
-    int count = inStream.read(buffer);
-    assertEquals(4, count);
+      assertThrows(IOException.class, () -> {
+          CircleStreamBuffer csb = new CircleStreamBuffer();
+          OutputStream write = csb.getOutputStream();
+          write.write("Test".getBytes(DEFAULT_CHARSET), 0, 4);
+          InputStream inStream = csb.getInputStream();
+          inStream.close();
+          byte[] buffer = new byte[4];
+          int count = inStream.read(buffer);
+          assertEquals(4, count);
+      });
   }
 
-  @Test(expected = IOException.class)
+  @Test
   public void testCloseOutputStream() throws Exception {
-    CircleStreamBuffer csb = new CircleStreamBuffer();
-
-    OutputStream write = csb.getOutputStream();
-    write.close();
-    write.write("Test".getBytes(DEFAULT_CHARSET), 0, 4);
+      assertThrows(IOException.class, () -> {
+          CircleStreamBuffer csb = new CircleStreamBuffer();
+          OutputStream write = csb.getOutputStream();
+          write.close();
+          write.write("Test".getBytes(DEFAULT_CHARSET), 0, 4);
+      });
   }
 
   // ###################################################

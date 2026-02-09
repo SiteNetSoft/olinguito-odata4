@@ -18,14 +18,14 @@
  */
 package org.sitenetsoft.olinguito.server.core.debug;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.sitenetsoft.olinguito.server.api.ODataRequest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DebugTabRequestTest extends AbstractDebugTabTest {
 

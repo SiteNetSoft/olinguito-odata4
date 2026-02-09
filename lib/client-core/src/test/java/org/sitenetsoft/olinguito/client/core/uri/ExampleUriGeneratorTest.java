@@ -20,9 +20,9 @@ package org.sitenetsoft.olinguito.client.core.uri;
 
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ExampleUriGeneratorTest {
     /**

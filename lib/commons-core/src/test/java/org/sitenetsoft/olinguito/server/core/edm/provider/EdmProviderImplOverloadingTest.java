@@ -18,12 +18,13 @@
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -42,8 +43,8 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlFunction;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlParameter;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlProperty;
 import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class EdmProviderImplOverloadingTest {
 
@@ -54,7 +55,7 @@ public class EdmProviderImplOverloadingTest {
   private final FullQualifiedName wrongOperationName = new FullQualifiedName("wrong", "wrong");
   private final FullQualifiedName badOperationName = new FullQualifiedName("bad", "bad");
 
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
     CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
 
@@ -195,9 +196,9 @@ public class EdmProviderImplOverloadingTest {
     assertNotSame(function2, function4);
   }
 
-  @Test(expected = EdmException.class)
+  @Test
   public void noParametersAtBoundFunctionReslutsInException() {
-    edm.getBoundFunction(badOperationName, operationType1, true, null);
+      assertThrows(EdmException.class, () -> edm.getBoundFunction(badOperationName, operationType1, true, null));
   }
 
 }

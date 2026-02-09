@@ -18,9 +18,10 @@
  */
 package org.sitenetsoft.olinguito.server.core.batchhandler;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -55,8 +56,8 @@ import org.sitenetsoft.olinguito.server.api.serializer.BatchSerializerException;
 import org.sitenetsoft.olinguito.server.core.ODataHandlerImpl;
 import org.sitenetsoft.olinguito.server.core.deserializer.batch.BatchLineReader;
 import org.sitenetsoft.olinguito.server.core.deserializer.batch.BatchParserCommon;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -71,7 +72,7 @@ public class MockedBatchHandlerTest {
   private BatchHandler batchHandler;
   private int entityCounter = 1;
 
-  @Before
+  @BeforeEach
   public void setup() {
     final BatchProcessor batchProcessor = new BatchTestProcessorImpl();
     batchProcessor.init(OData.newInstance(), null);
@@ -465,58 +466,58 @@ public class MockedBatchHandlerTest {
     assertEquals(44, line);
   }
 
-  @Test(expected = BatchDeserializerException.class)
+  @Test
   public void testInvalidMethod() throws Exception {
-    final String content = ""
-            + "--batch_12345" + CRLF
-            + "Content-Type: multipart/mixed; boundary=changeset_12345" + CRLF
-            + CRLF
-            + "--changeset_12345" + CRLF
-            + "Content-Type: application/http" + CRLF
-            + "Content-Transfer-Encoding: binary" + CRLF
-            + "Content-Id: 1" + CRLF
-            + CRLF
-            + "PUT ESAllPrim(1) HTTP/1.1" + CRLF
-            + "Content-Type: application/json;odata=verbose" + CRLF
-            + CRLF
-            + CRLF
-            + "--changeset_12345--" + CRLF
-            + CRLF
-            + "--batch_12345--";
-
-    final Map<String, List<String>> header = getMimeHeader();
-    final ODataResponse response = new ODataResponse();
-    final ODataRequest request = buildODataRequest(content, header);
-    request.setMethod(HttpMethod.GET);
-
-    batchHandler.process(request, response, true);
+      assertThrows(BatchDeserializerException.class, () -> {
+          final String content = ""
+          + "--batch_12345" + CRLF
+          + "Content-Type: multipart/mixed; boundary=changeset_12345" + CRLF
+          + CRLF
+          + "--changeset_12345" + CRLF
+          + "Content-Type: application/http" + CRLF
+          + "Content-Transfer-Encoding: binary" + CRLF
+          + "Content-Id: 1" + CRLF
+          + CRLF
+          + "PUT ESAllPrim(1) HTTP/1.1" + CRLF
+          + "Content-Type: application/json;odata=verbose" + CRLF
+          + CRLF
+          + CRLF
+          + "--changeset_12345--" + CRLF
+          + CRLF
+          + "--batch_12345--";
+          final Map<String, List<String>> header = getMimeHeader();
+          final ODataResponse response = new ODataResponse();
+          final ODataRequest request = buildODataRequest(content, header);
+          request.setMethod(HttpMethod.GET);
+          batchHandler.process(request, response, true);
+      });
   }
 
-  @Test(expected = BatchDeserializerException.class)
+  @Test
   public void testInvalidContentType() throws Exception {
-    final String content = ""
-            + "--batch_12345" + CRLF
-            + "Content-Type: multipart/mixed; boundary=changeset_12345" + CRLF
-            + CRLF
-            + "--changeset_12345" + CRLF
-            + "Content-Type: application/http" + CRLF
-            + "Content-Transfer-Encoding: binary" + CRLF
-            + "Content-Id: 1" + CRLF
-            + CRLF
-            + "PUT ESAllPrim(1) HTTP/1.1" + CRLF
-            + "Content-Type: application/json;odata=verbose" + CRLF
-            + CRLF
-            + CRLF
-            + "--changeset_12345--" + CRLF
-            + CRLF
-            + "--batch_12345--";
-
-    final Map<String, List<String>> header = new HashMap<String, List<String>>();
-    header.put(HttpHeader.CONTENT_TYPE, Arrays.asList(new String[] { "application/http" }));
-    final ODataResponse response = new ODataResponse();
-    final ODataRequest request = buildODataRequest(content, header);
-
-    batchHandler.process(request, response, true);
+      assertThrows(BatchDeserializerException.class, () -> {
+          final String content = ""
+          + "--batch_12345" + CRLF
+          + "Content-Type: multipart/mixed; boundary=changeset_12345" + CRLF
+          + CRLF
+          + "--changeset_12345" + CRLF
+          + "Content-Type: application/http" + CRLF
+          + "Content-Transfer-Encoding: binary" + CRLF
+          + "Content-Id: 1" + CRLF
+          + CRLF
+          + "PUT ESAllPrim(1) HTTP/1.1" + CRLF
+          + "Content-Type: application/json;odata=verbose" + CRLF
+          + CRLF
+          + CRLF
+          + "--changeset_12345--" + CRLF
+          + CRLF
+          + "--batch_12345--";
+          final Map<String, List<String>> header = new HashMap<String, List<String>>();
+          header.put(HttpHeader.CONTENT_TYPE, Arrays.asList(new String[] { "application/http" }));
+          final ODataResponse response = new ODataResponse();
+          final ODataRequest request = buildODataRequest(content, header);
+          batchHandler.process(request, response, true);
+      });
   }
 
   /*

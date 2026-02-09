@@ -18,13 +18,13 @@
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.batch;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchDeserializerException;
 import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchDeserializerException.MessageKeys;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class HttpRequestStatusLineTest {
 

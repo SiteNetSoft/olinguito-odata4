@@ -18,8 +18,8 @@
  */
 package org.sitenetsoft.olinguito.netty.server.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -39,8 +39,8 @@ import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
 import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
 import org.sitenetsoft.olinguito.server.core.MetadataParser;
 import org.sitenetsoft.olinguito.server.core.SchemaBasedEdmProvider;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.netty.buffer.Unpooled;
@@ -56,7 +56,7 @@ public class NettyServiceDispatcherTest {
   ODataNetty odata = ODataNetty.newInstance();
   SchemaBasedEdmProvider provider = null;
   
-  @Before
+  @BeforeEach
   public void beforeTest() throws Exception {
     MetadataParser parser = new MetadataParser();
     parser.parseAnnotations(true);
@@ -64,7 +64,7 @@ public class NettyServiceDispatcherTest {
     parser.implicitlyLoadCoreVocabularies(true);
 
     InputStream in = getClass().getClassLoader().getResourceAsStream("trippin/trippin.xml");
-    assertNotNull("trippin/trippin.xml not found on test classpath", in);
+    assertNotNull(in, "trippin/trippin.xml not found on test classpath");
 
     metadata = parser.buildServiceMetadata(new InputStreamReader(in, StandardCharsets.UTF_8));
     provider  = parser.buildEdmProvider(new InputStreamReader(

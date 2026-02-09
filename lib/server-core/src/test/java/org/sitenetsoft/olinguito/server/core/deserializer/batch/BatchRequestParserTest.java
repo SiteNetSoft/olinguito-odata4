@@ -35,8 +35,8 @@ import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchDeserializer
 import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchDeserializerException.MessageKeys;
 import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchOptions;
 import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchRequestPart;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class BatchRequestParserTest {
 
@@ -94,39 +94,39 @@ public class BatchRequestParserTest {
         + "--" + BOUNDARY + "--";
     final List<BatchRequestPart> batchRequestParts = parse(batch);
 
-    Assert.assertNotNull(batchRequestParts);
-    Assert.assertFalse(batchRequestParts.isEmpty());
+    Assertions.assertNotNull(batchRequestParts);
+    Assertions.assertFalse(batchRequestParts.isEmpty());
 
     for (final BatchRequestPart object : batchRequestParts) {
-      Assert.assertEquals(1, object.getRequests().size());
+      Assertions.assertEquals(1, object.getRequests().size());
       final ODataRequest request = object.getRequests().get(0);
-      Assert.assertEquals(SERVICE_ROOT, request.getRawBaseUri());
-      Assert.assertEquals("/" + PROPERTY_URI, request.getRawODataPath());
+      Assertions.assertEquals(SERVICE_ROOT, request.getRawBaseUri());
+      Assertions.assertEquals("/" + PROPERTY_URI, request.getRawODataPath());
 
       if (!object.isChangeSet()) {
-        Assert.assertEquals(HttpMethod.GET, request.getMethod());
+        Assertions.assertEquals(HttpMethod.GET, request.getMethod());
 
         if (request.getHeaders(HttpHeader.ACCEPT_LANGUAGE) != null) {
-          Assert.assertEquals(3, request.getHeaders(HttpHeader.ACCEPT_LANGUAGE).size());
+          Assertions.assertEquals(3, request.getHeaders(HttpHeader.ACCEPT_LANGUAGE).size());
         }
 
-        Assert.assertEquals(SERVICE_ROOT + "/" + PROPERTY_URI + "?$format=json", request.getRawRequestUri());
-        Assert.assertEquals("$format=json", request.getRawQueryPath());
+        Assertions.assertEquals(SERVICE_ROOT + "/" + PROPERTY_URI + "?$format=json", request.getRawRequestUri());
+        Assertions.assertEquals("$format=json", request.getRawQueryPath());
 
       } else {
-        Assert.assertEquals(HttpMethod.PUT, request.getMethod());
-        Assert.assertEquals("100000", request.getHeader(HttpHeader.CONTENT_LENGTH));
-        Assert.assertEquals(APPLICATION_JSON, request.getHeader(HttpHeader.CONTENT_TYPE));
+        Assertions.assertEquals(HttpMethod.PUT, request.getMethod());
+        Assertions.assertEquals("100000", request.getHeader(HttpHeader.CONTENT_LENGTH));
+        Assertions.assertEquals(APPLICATION_JSON, request.getHeader(HttpHeader.CONTENT_TYPE));
 
         final List<String> acceptHeader = request.getHeaders(HttpHeader.ACCEPT);
-        Assert.assertEquals(4, request.getHeaders(HttpHeader.ACCEPT).size());
-        Assert.assertEquals("application/atom+xml;q=0.8", acceptHeader.get(2));
-        Assert.assertEquals("*/*;q=0.1", acceptHeader.get(3));
+        Assertions.assertEquals(4, request.getHeaders(HttpHeader.ACCEPT).size());
+        Assertions.assertEquals("application/atom+xml;q=0.8", acceptHeader.get(2));
+        Assertions.assertEquals("*/*;q=0.1", acceptHeader.get(3));
 
-        Assert.assertEquals(SERVICE_ROOT + "/" + PROPERTY_URI, request.getRawRequestUri());
-        Assert.assertEquals("", request.getRawQueryPath()); // No query parameter
+        Assertions.assertEquals(SERVICE_ROOT + "/" + PROPERTY_URI, request.getRawRequestUri());
+        Assertions.assertEquals("", request.getRawQueryPath()); // No query parameter
 
-        Assert.assertEquals("{\"value\":\"€ MODIFIED\"}" + CRLF, IOUtils.toString(request.getBody(), StandardCharsets.UTF_8));
+        Assertions.assertEquals("{\"value\":\"€ MODIFIED\"}" + CRLF, IOUtils.toString(request.getBody(), StandardCharsets.UTF_8));
       }
     }
   }
@@ -155,19 +155,19 @@ public class BatchRequestParserTest {
     final List<BatchRequestPart> BatchRequestParts = parse(batch);
 
     for (final BatchRequestPart part : BatchRequestParts) {
-      Assert.assertEquals(1, part.getRequests().size());
+      Assertions.assertEquals(1, part.getRequests().size());
       final ODataRequest request = part.getRequests().get(0);
       if (!part.isChangeSet()) {
-        Assert.assertEquals(HttpMethod.GET, request.getMethod());
-        Assert.assertEquals(SERVICE_ROOT + "/" + PROPERTY_URI, request.getRawRequestUri());
-        Assert.assertEquals(SERVICE_ROOT, request.getRawBaseUri());
-        Assert.assertEquals("/" + PROPERTY_URI, request.getRawODataPath());
+        Assertions.assertEquals(HttpMethod.GET, request.getMethod());
+        Assertions.assertEquals(SERVICE_ROOT + "/" + PROPERTY_URI, request.getRawRequestUri());
+        Assertions.assertEquals(SERVICE_ROOT, request.getRawBaseUri());
+        Assertions.assertEquals("/" + PROPERTY_URI, request.getRawODataPath());
       } else {
-        Assert.assertEquals(HttpMethod.POST, request.getMethod());
-        Assert.assertEquals("100000", request.getHeader(HttpHeader.CONTENT_LENGTH));
-        Assert.assertEquals("1", request.getHeader(HttpHeader.CONTENT_ID));
-        Assert.assertEquals("image/jpeg", request.getHeader(HttpHeader.CONTENT_TYPE));
-        Assert.assertEquals(content, IOUtils.toString(request.getBody(), StandardCharsets.UTF_8));
+        Assertions.assertEquals(HttpMethod.POST, request.getMethod());
+        Assertions.assertEquals("100000", request.getHeader(HttpHeader.CONTENT_LENGTH));
+        Assertions.assertEquals("1", request.getHeader(HttpHeader.CONTENT_ID));
+        Assertions.assertEquals("image/jpeg", request.getHeader(HttpHeader.CONTENT_TYPE));
+        Assertions.assertEquals(content, IOUtils.toString(request.getBody(), StandardCharsets.UTF_8));
       }
     }
   }
@@ -191,11 +191,11 @@ public class BatchRequestParserTest {
     out.write((CRLF
         + "--" + BOUNDARY + "--").getBytes());
     final List<BatchRequestPart> parts = parse(new ByteArrayInputStream(out.toByteArray()), true);
-    Assert.assertEquals(1, parts.size());
-    Assert.assertEquals(1, parts.get(0).getRequests().size());
+    Assertions.assertEquals(1, parts.size());
+    Assertions.assertEquals(1, parts.get(0).getRequests().size());
     InputStream body = parts.get(0).getRequests().get(0).getBody();
-    Assert.assertNotNull(body);
-    Assert.assertArrayEquals(content, IOUtils.toByteArray(body));
+    Assertions.assertNotNull(body);
+    Assertions.assertArrayEquals(content, IOUtils.toByteArray(body));
   }
 
   @Test
@@ -217,15 +217,15 @@ public class BatchRequestParserTest {
         + "--" + BOUNDARY + "--";
     final List<BatchRequestPart> batchRequestParts = parse(batch);
 
-    Assert.assertEquals(1, batchRequestParts.size());
-    Assert.assertTrue(batchRequestParts.get(0).isChangeSet());
-    Assert.assertEquals(1, batchRequestParts.get(0).getRequests().size());
+    Assertions.assertEquals(1, batchRequestParts.size());
+    Assertions.assertTrue(batchRequestParts.get(0).isChangeSet());
+    Assertions.assertEquals(1, batchRequestParts.get(0).getRequests().size());
     final ODataRequest request = batchRequestParts.get(0).getRequests().get(0);
-    Assert.assertEquals(HttpMethod.POST, request.getMethod());
-    Assert.assertEquals("100", request.getHeader(HttpHeader.CONTENT_LENGTH));
-    Assert.assertEquals(APPLICATION_OCTET_STREAM, request.getHeader(HttpHeader.CONTENT_TYPE));
-    Assert.assertNotNull(request.getBody());
-    Assert.assertEquals(-1, request.getBody().read());
+    Assertions.assertEquals(HttpMethod.POST, request.getMethod());
+    Assertions.assertEquals("100", request.getHeader(HttpHeader.CONTENT_LENGTH));
+    Assertions.assertEquals(APPLICATION_OCTET_STREAM, request.getHeader(HttpHeader.CONTENT_TYPE));
+    Assertions.assertNotNull(request.getBody());
+    Assertions.assertEquals(-1, request.getBody().read());
   }
 
   @Test
@@ -239,8 +239,8 @@ public class BatchRequestParserTest {
         boundary,
         BatchOptions.with().isStrict(true).rawBaseUri(SERVICE_ROOT).build());
 
-    Assert.assertNotNull(batchRequestParts);
-    Assert.assertFalse(batchRequestParts.isEmpty());
+    Assertions.assertNotNull(batchRequestParts);
+    Assertions.assertFalse(batchRequestParts.isEmpty());
   }
 
   @Test
@@ -250,7 +250,7 @@ public class BatchRequestParserTest {
         + "--" + BOUNDARY + "--";
 
     final List<BatchRequestPart> parts = parse(batch);
-    Assert.assertEquals(0, parts.size());
+    Assertions.assertEquals(0, parts.size());
   }
 
   @Test
@@ -430,26 +430,26 @@ public class BatchRequestParserTest {
 
     final List<BatchRequestPart> requests = parse(batch);
 
-    Assert.assertEquals(HttpMethod.POST, requests.get(0).getRequests().get(0).getMethod());
-    Assert.assertEquals("/ESAllPrim", requests.get(0).getRequests().get(0).getRawODataPath());
-    Assert.assertEquals("{ \"PropertyString\": \"Foo\" }",
+    Assertions.assertEquals(HttpMethod.POST, requests.get(0).getRequests().get(0).getMethod());
+    Assertions.assertEquals("/ESAllPrim", requests.get(0).getRequests().get(0).getRawODataPath());
+    Assertions.assertEquals("{ \"PropertyString\": \"Foo\" }",
         IOUtils.toString(requests.get(0).getRequests().get(0).getBody(), StandardCharsets.UTF_8));
 
-    Assert.assertEquals(HttpMethod.DELETE, requests.get(1).getRequests().get(0).getMethod());
-    Assert.assertEquals("/ESAllPrim(32767)", requests.get(1).getRequests().get(0).getRawODataPath());
+    Assertions.assertEquals(HttpMethod.DELETE, requests.get(1).getRequests().get(0).getMethod());
+    Assertions.assertEquals("/ESAllPrim(32767)", requests.get(1).getRequests().get(0).getRawODataPath());
 
-    Assert.assertEquals(HttpMethod.PATCH, requests.get(2).getRequests().get(0).getMethod());
-    Assert.assertEquals("/ESAllPrim(32767)", requests.get(2).getRequests().get(0).getRawODataPath());
-    Assert.assertEquals("{ \"PropertyString\": \"Foo\" }",
+    Assertions.assertEquals(HttpMethod.PATCH, requests.get(2).getRequests().get(0).getMethod());
+    Assertions.assertEquals("/ESAllPrim(32767)", requests.get(2).getRequests().get(0).getRawODataPath());
+    Assertions.assertEquals("{ \"PropertyString\": \"Foo\" }",
         IOUtils.toString(requests.get(2).getRequests().get(0).getBody(), StandardCharsets.UTF_8));
 
-    Assert.assertEquals(HttpMethod.PUT, requests.get(3).getRequests().get(0).getMethod());
-    Assert.assertEquals("/ESAllPrim(32767)", requests.get(3).getRequests().get(0).getRawODataPath());
-    Assert.assertEquals("{ \"PropertyString\": \"Foo\" }",
+    Assertions.assertEquals(HttpMethod.PUT, requests.get(3).getRequests().get(0).getMethod());
+    Assertions.assertEquals("/ESAllPrim(32767)", requests.get(3).getRequests().get(0).getRawODataPath());
+    Assertions.assertEquals("{ \"PropertyString\": \"Foo\" }",
         IOUtils.toString(requests.get(3).getRequests().get(0).getBody(), StandardCharsets.UTF_8));
 
-    Assert.assertEquals(HttpMethod.GET, requests.get(4).getRequests().get(0).getMethod());
-    Assert.assertEquals("/ESAllPrim(32767)", requests.get(4).getRequests().get(0).getRawODataPath());
+    Assertions.assertEquals(HttpMethod.GET, requests.get(4).getRequests().get(0).getMethod());
+    Assertions.assertEquals("/ESAllPrim(32767)", requests.get(4).getRequests().get(0).getRawODataPath());
   }
 
   @Test
@@ -467,7 +467,7 @@ public class BatchRequestParserTest {
   public void emptyRequest() throws Exception {
     final String batch = "--" + BOUNDARY + "--";
 
-    Assert.assertEquals(0, parse(batch).size());
+    Assertions.assertEquals(0, parse(batch).size());
   }
 
   @Test
@@ -527,11 +527,11 @@ public class BatchRequestParserTest {
         + "--" + BOUNDARY + "--";
 
     final List<BatchRequestPart> parts = parse(batch);
-    Assert.assertEquals(1, parts.size());
+    Assertions.assertEquals(1, parts.size());
 
     final BatchRequestPart part = parts.get(0);
-    Assert.assertTrue(part.isChangeSet());
-    Assert.assertEquals(0, part.getRequests().size());
+    Assertions.assertTrue(part.isChangeSet());
+    Assertions.assertEquals(0, part.getRequests().size());
   }
 
   @Test
@@ -607,16 +607,16 @@ public class BatchRequestParserTest {
     final List<BatchRequestPart> batchRequestParts = parse(
         createBatchWithGetRequest(SERVICE_ROOT + "/ESAllPrim?$top=1", null));
 
-    Assert.assertEquals(1, batchRequestParts.size());
+    Assertions.assertEquals(1, batchRequestParts.size());
     final BatchRequestPart part = batchRequestParts.get(0);
 
-    Assert.assertEquals(1, part.getRequests().size());
+    Assertions.assertEquals(1, part.getRequests().size());
     final ODataRequest request = part.getRequests().get(0);
 
-    Assert.assertEquals("/ESAllPrim", request.getRawODataPath());
-    Assert.assertEquals("$top=1", request.getRawQueryPath());
-    Assert.assertEquals(SERVICE_ROOT + "/ESAllPrim?$top=1", request.getRawRequestUri());
-    Assert.assertEquals(SERVICE_ROOT, request.getRawBaseUri());
+    Assertions.assertEquals("/ESAllPrim", request.getRawODataPath());
+    Assertions.assertEquals("$top=1", request.getRawQueryPath());
+    Assertions.assertEquals(SERVICE_ROOT + "/ESAllPrim?$top=1", request.getRawRequestUri());
+    Assertions.assertEquals(SERVICE_ROOT, request.getRawBaseUri());
   }
 
   @Test
@@ -624,10 +624,10 @@ public class BatchRequestParserTest {
     final List<BatchRequestPart> batchRequestParts = parse(
         createBatchWithGetRequest("/odata/" + PROPERTY_URI, "Host: localhost"));
     final BatchRequestPart part = batchRequestParts.get(0);
-    Assert.assertEquals(1, part.getRequests().size());
+    Assertions.assertEquals(1, part.getRequests().size());
     final ODataRequest request = part.getRequests().get(0);
-    Assert.assertEquals("/" + PROPERTY_URI, request.getRawODataPath());
-    Assert.assertEquals(SERVICE_ROOT + "/" + PROPERTY_URI, request.getRawRequestUri());
+    Assertions.assertEquals("/" + PROPERTY_URI, request.getRawODataPath());
+    Assertions.assertEquals(SERVICE_ROOT + "/" + PROPERTY_URI, request.getRawRequestUri());
   }
 
   @Test
@@ -635,10 +635,10 @@ public class BatchRequestParserTest {
     final List<BatchRequestPart> batchRequestParts = parse(
         createBatchWithGetRequest("/odata/" + PROPERTY_URI, null));
     final BatchRequestPart part = batchRequestParts.get(0);
-    Assert.assertEquals(1, part.getRequests().size());
+    Assertions.assertEquals(1, part.getRequests().size());
     final ODataRequest request = part.getRequests().get(0);
-    Assert.assertEquals("/" + PROPERTY_URI, request.getRawODataPath());
-    Assert.assertEquals(SERVICE_ROOT + "/" + PROPERTY_URI, request.getRawRequestUri());
+    Assertions.assertEquals("/" + PROPERTY_URI, request.getRawODataPath());
+    Assertions.assertEquals(SERVICE_ROOT + "/" + PROPERTY_URI, request.getRawRequestUri());
   }
 
   @Test
@@ -725,15 +725,15 @@ public class BatchRequestParserTest {
         + "--" + BOUNDARY + "--";
     final List<BatchRequestPart> batchRequestParts = parse(batch);
 
-    Assert.assertNotNull(batchRequestParts);
-    Assert.assertEquals(1, batchRequestParts.size());
+    Assertions.assertNotNull(batchRequestParts);
+    Assertions.assertEquals(1, batchRequestParts.size());
 
     final BatchRequestPart part = batchRequestParts.get(0);
-    Assert.assertTrue(part.isChangeSet());
-    Assert.assertEquals(1, part.getRequests().size());
+    Assertions.assertTrue(part.isChangeSet());
+    Assertions.assertEquals(1, part.getRequests().size());
 
     final ODataRequest request = part.getRequests().get(0);
-    Assert.assertEquals("{\"PropertyString\":\"new\"}", IOUtils.toString(request.getBody(), StandardCharsets.UTF_8));
+    Assertions.assertEquals("{\"PropertyString\":\"new\"}", IOUtils.toString(request.getBody(), StandardCharsets.UTF_8));
   }
 
   @Test
@@ -755,15 +755,15 @@ public class BatchRequestParserTest {
         + "--" + BOUNDARY + "--";
     final List<BatchRequestPart> batchRequestParts = parse(batch);
 
-    Assert.assertNotNull(batchRequestParts);
-    Assert.assertEquals(1, batchRequestParts.size());
+    Assertions.assertNotNull(batchRequestParts);
+    Assertions.assertEquals(1, batchRequestParts.size());
 
     final BatchRequestPart part = batchRequestParts.get(0);
-    Assert.assertTrue(part.isChangeSet());
-    Assert.assertEquals(1, part.getRequests().size());
+    Assertions.assertTrue(part.isChangeSet());
+    Assertions.assertEquals(1, part.getRequests().size());
 
     final ODataRequest request = part.getRequests().get(0);
-    Assert.assertEquals("{\"Property", IOUtils.toString(request.getBody(), StandardCharsets.UTF_8));
+    Assertions.assertEquals("{\"Property", IOUtils.toString(request.getBody(), StandardCharsets.UTF_8));
   }
 
   @Test
@@ -803,18 +803,18 @@ public class BatchRequestParserTest {
 
     final List<BatchRequestPart> requests = parse(batch, false);
 
-    Assert.assertNotNull(requests);
-    Assert.assertEquals(1, requests.size());
+    Assertions.assertNotNull(requests);
+    Assertions.assertEquals(1, requests.size());
 
     final BatchRequestPart part = requests.get(0);
-    Assert.assertTrue(part.isChangeSet());
-    Assert.assertNotNull(part.getRequests());
-    Assert.assertEquals(1, part.getRequests().size());
+    Assertions.assertTrue(part.isChangeSet());
+    Assertions.assertNotNull(part.getRequests());
+    Assertions.assertEquals(1, part.getRequests().size());
 
     final ODataRequest changeRequest = part.getRequests().get(0);
-    Assert.assertEquals("{\"PropertyString\":\"new\"}", IOUtils.toString(changeRequest.getBody(), StandardCharsets.UTF_8));
-    Assert.assertEquals(APPLICATION_JSON, changeRequest.getHeader(HttpHeader.CONTENT_TYPE));
-    Assert.assertEquals(HttpMethod.PATCH, changeRequest.getMethod());
+    Assertions.assertEquals("{\"PropertyString\":\"new\"}", IOUtils.toString(changeRequest.getBody(), StandardCharsets.UTF_8));
+    Assertions.assertEquals(APPLICATION_JSON, changeRequest.getHeader(HttpHeader.CONTENT_TYPE));
+    Assertions.assertEquals(HttpMethod.PATCH, changeRequest.getMethod());
   }
 
   @Test
@@ -872,20 +872,20 @@ public class BatchRequestParserTest {
         + "--" + BOUNDARY + "--";
 
     final List<BatchRequestPart> batchRequestParts = parse(batch);
-    Assert.assertNotNull(batchRequestParts);
+    Assertions.assertNotNull(batchRequestParts);
 
     for (BatchRequestPart multipart : batchRequestParts) {
       if (!multipart.isChangeSet()) {
-        Assert.assertEquals(1, multipart.getRequests().size());
-        Assert.assertEquals("BBB", multipart.getRequests().get(0).getHeader(HttpHeader.CONTENT_ID));
+        Assertions.assertEquals(1, multipart.getRequests().size());
+        Assertions.assertEquals("BBB", multipart.getRequests().get(0).getHeader(HttpHeader.CONTENT_ID));
       } else {
         for (ODataRequest request : multipart.getRequests()) {
           if (HttpMethod.POST.equals(request.getMethod())) {
-            Assert.assertEquals("1", request.getHeader(HttpHeader.CONTENT_ID));
+            Assertions.assertEquals("1", request.getHeader(HttpHeader.CONTENT_ID));
           } else if (HttpMethod.PUT.equals(request.getMethod())) {
-            Assert.assertEquals("2", request.getHeader(HttpHeader.CONTENT_ID));
-            Assert.assertEquals("/$1/PropertyInt16", request.getRawODataPath());
-            Assert.assertEquals(SERVICE_ROOT + "/$1/PropertyInt16", request.getRawRequestUri());
+            Assertions.assertEquals("2", request.getHeader(HttpHeader.CONTENT_ID));
+            Assertions.assertEquals("/$1/PropertyInt16", request.getRawODataPath());
+            Assertions.assertEquals(SERVICE_ROOT + "/$1/PropertyInt16", request.getRawRequestUri());
           }
         }
       }
@@ -974,21 +974,21 @@ public class BatchRequestParserTest {
         + "--" + BOUNDARY + "--";
     final List<BatchRequestPart> batchRequestParts = parse(batch);
 
-    Assert.assertNotNull(batchRequestParts);
-    Assert.assertEquals(2, batchRequestParts.size());
+    Assertions.assertNotNull(batchRequestParts);
+    Assertions.assertEquals(2, batchRequestParts.size());
 
     final BatchRequestPart getRequestPart = batchRequestParts.get(0);
-    Assert.assertEquals(1, getRequestPart.getRequests().size());
+    Assertions.assertEquals(1, getRequestPart.getRequests().size());
 
     final ODataRequest getRequest = getRequestPart.getRequests().get(0);
-    Assert.assertEquals(HttpMethod.GET, getRequest.getMethod());
+    Assertions.assertEquals(HttpMethod.GET, getRequest.getMethod());
 
     final BatchRequestPart changeSetPart = batchRequestParts.get(1);
-    Assert.assertEquals(2, changeSetPart.getRequests().size());
-    Assert.assertEquals("iVBORw0KGgoAAAANSUhEUgAAABQAAAAMCAIAAADtbgqsAAAABmJLR0QA/wD/AP+gvaeTAAAAH0lE"
+    Assertions.assertEquals(2, changeSetPart.getRequests().size());
+    Assertions.assertEquals("iVBORw0KGgoAAAANSUhEUgAAABQAAAAMCAIAAADtbgqsAAAABmJLR0QA/wD/AP+gvaeTAAAAH0lE"
         + "QVQokWNgGHmA8S4FmpkosXngNDP+PzdANg+cZgBqiQK5mkdWWgAAAABJRU5ErkJggg==" + CRLF,
         IOUtils.toString(changeSetPart.getRequests().get(0).getBody(), StandardCharsets.UTF_8));
-    Assert.assertEquals("{\"value\":5}", IOUtils.toString(changeSetPart.getRequests().get(1).getBody(), StandardCharsets.UTF_8));
+    Assertions.assertEquals("{\"value\":5}", IOUtils.toString(changeSetPart.getRequests().get(1).getBody(), StandardCharsets.UTF_8));
   }
 
   @Test
@@ -1030,10 +1030,10 @@ public class BatchRequestParserTest {
         + "--" + BOUNDARY + "--";
     final List<BatchRequestPart> batchRequestParts = parse(batch);
 
-    Assert.assertNotNull(batchRequestParts);
-    Assert.assertEquals(1, batchRequestParts.size());
-    Assert.assertTrue(batchRequestParts.get(0).isChangeSet());
-    Assert.assertEquals(1, batchRequestParts.get(0).getRequests().size());
+    Assertions.assertNotNull(batchRequestParts);
+    Assertions.assertEquals(1, batchRequestParts.size());
+    Assertions.assertTrue(batchRequestParts.get(0).isChangeSet());
+    Assertions.assertEquals(1, batchRequestParts.get(0).getRequests().size());
   }
 
   @Test
@@ -1077,20 +1077,20 @@ public class BatchRequestParserTest {
         + "----1242";
     final List<BatchRequestPart> batchRequestParts = parse(batch);
 
-    Assert.assertNotNull(batchRequestParts);
-    Assert.assertEquals(2, batchRequestParts.size());
+    Assertions.assertNotNull(batchRequestParts);
+    Assertions.assertEquals(2, batchRequestParts.size());
 
     BatchRequestPart getRequestPart = batchRequestParts.get(0);
-    Assert.assertEquals(1, getRequestPart.getRequests().size());
+    Assertions.assertEquals(1, getRequestPart.getRequests().size());
     ODataRequest getRequest = getRequestPart.getRequests().get(0);
-    Assert.assertEquals(HttpMethod.GET, getRequest.getMethod());
+    Assertions.assertEquals(HttpMethod.GET, getRequest.getMethod());
 
     BatchRequestPart changeSetPart = batchRequestParts.get(1);
-    Assert.assertEquals(2, changeSetPart.getRequests().size());
-    Assert.assertEquals("iVBORw0KGgoAAAANSUhEUgAAABQAAAAMCAIAAADtbgqsAAAABmJLR0QA/wD/AP+gvaeTAAAAH0lE"
+    Assertions.assertEquals(2, changeSetPart.getRequests().size());
+    Assertions.assertEquals("iVBORw0KGgoAAAANSUhEUgAAABQAAAAMCAIAAADtbgqsAAAABmJLR0QA/wD/AP+gvaeTAAAAH0lE"
         + "QVQokWNgGHmA8S4FmpkosXngNDP+PzdANg+cZgBqiQK5mkdWWgAAAABJRU5ErkJggg==" + CRLF,
         IOUtils.toString(changeSetPart.getRequests().get(0).getBody(), StandardCharsets.UTF_8));
-    Assert.assertEquals("{\"value\":5}",
+    Assertions.assertEquals("{\"value\":5}",
         IOUtils.toString(changeSetPart.getRequests().get(1).getBody(), StandardCharsets.UTF_8));
   }
 
@@ -1154,7 +1154,7 @@ public class BatchRequestParserTest {
     final List<BatchRequestPart> batchRequestParts =
         new BatchParser().parseBatchRequest(in, BOUNDARY,
             BatchOptions.with().isStrict(isStrict).rawBaseUri(SERVICE_ROOT).build());
-    Assert.assertNotNull(batchRequestParts);
+    Assertions.assertNotNull(batchRequestParts);
     return batchRequestParts;
   }
 
@@ -1170,9 +1170,9 @@ public class BatchRequestParserTest {
     try {
       new BatchParser().parseBatchRequest(IOUtils.toInputStream(batch, StandardCharsets.UTF_8), BOUNDARY,
           BatchOptions.with().isStrict(isStrict).rawBaseUri(SERVICE_ROOT).build());
-      Assert.fail("No exception thrown. Expected: " + key);
+      Assertions.fail("No exception thrown. Expected: " + key);
     } catch (BatchDeserializerException e) {
-      Assert.assertEquals(key, e.getMessageKey());
+      Assertions.assertEquals(key, e.getMessageKey());
     }
   }
 

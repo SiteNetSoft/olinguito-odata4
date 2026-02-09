@@ -35,7 +35,7 @@ import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidationExceptio
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EntityTypeProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.PropertyProvider;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** Tests of the URI parser as a whole - please put more specific tests elsewhere. */
 public class UriParserTest {

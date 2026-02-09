@@ -18,7 +18,7 @@
  */
 package org.sitenetsoft.olinguito.server.core;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -33,7 +33,7 @@ import org.sitenetsoft.olinguito.server.api.ODataRequest;
 import org.sitenetsoft.olinguito.server.api.serializer.CustomContentTypeSupport;
 import org.sitenetsoft.olinguito.server.api.serializer.RepresentationType;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.FormatOption;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 
 public class ContentNegotiatorTest {

@@ -18,7 +18,7 @@
  */
 package org.sitenetsoft.olinguito.server.core;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.FileReader;
 import java.io.InputStream;
@@ -47,19 +47,19 @@ import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserException;
 import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserSemanticException;
 import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserSyntaxException;
 import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidationException;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ErrorHandlerTest {
   CsdlEdmProvider provider = null;
   
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     MetadataParser parser = new MetadataParser();
     parser.parseAnnotations(true);
     parser.useLocalCoreVocabularies(true);
     InputStream in = getClass().getClassLoader().getResourceAsStream("annotations.xml");
-    assertNotNull("annotations.xml not found on test classpath", in);
+    assertNotNull(in, "annotations.xml not found on test classpath");
     provider = (CsdlEdmProvider) parser.buildEdmProvider(new InputStreamReader(in, StandardCharsets.UTF_8));
   }
   

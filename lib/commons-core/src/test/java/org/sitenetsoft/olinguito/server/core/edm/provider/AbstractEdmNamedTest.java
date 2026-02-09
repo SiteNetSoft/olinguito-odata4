@@ -18,8 +18,8 @@
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +29,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmNamed;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotatable;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
 import org.sitenetsoft.olinguito.commons.core.edm.AbstractEdmNamed;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class AbstractEdmNamedTest {
 

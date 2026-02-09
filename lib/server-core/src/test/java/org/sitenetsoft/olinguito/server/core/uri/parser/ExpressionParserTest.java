@@ -18,10 +18,11 @@
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
@@ -47,7 +48,7 @@ import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Expressio
 import org.sitenetsoft.olinguito.server.core.uri.parser.UriTokenizer.TokenKind;
 import org.sitenetsoft.olinguito.server.core.uri.queryoption.AliasQueryOptionImpl;
 import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidationException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class ExpressionParserTest {
@@ -447,41 +448,43 @@ public class ExpressionParserTest {
     return keyProperty;
   }
   
-  @Test(expected = UriParserSemanticException.class)
+  @Test
   public void testPropertyPathExpWithoutType() throws Exception {
-    final String entitySetName = "ESName";
-    final String keyPropertyName = "a";
-    EdmProperty keyProperty = mockProperty(keyPropertyName,
-        OData.newInstance().createPrimitiveTypeInstance(EdmPrimitiveTypeKind.String));
-    EdmKeyPropertyRef keyPropertyRef = mockKeyPropertyRef(keyPropertyName, keyProperty);
-    EdmEntityType entityType = mockEntityType(keyPropertyName, keyPropertyRef);
-    Mockito.when(entityType.getPropertyNames()).thenReturn(Collections.singletonList(keyPropertyName));
-    Mockito.when(entityType.getProperty(keyPropertyName)).thenReturn(keyProperty);
-    EdmEntitySet entitySet = mockEntitySet(entitySetName, entityType);
-    EdmEntityContainer container = mockContainer(entitySetName, entitySet);
-    Edm mockedEdm = Mockito.mock(Edm.class);
-    Mockito.when(mockedEdm.getEntityContainer()).thenReturn(container);
-    
-    UriTokenizer tokenizer = new UriTokenizer("a eq \'abc\'");
-    new ExpressionParser(mockedEdm, odata).parse(tokenizer, null, null, null);
+      assertThrows(UriParserSemanticException.class, () -> {
+          final String entitySetName = "ESName";
+          final String keyPropertyName = "a";
+          EdmProperty keyProperty = mockProperty(keyPropertyName,
+          OData.newInstance().createPrimitiveTypeInstance(EdmPrimitiveTypeKind.String));
+          EdmKeyPropertyRef keyPropertyRef = mockKeyPropertyRef(keyPropertyName, keyProperty);
+          EdmEntityType entityType = mockEntityType(keyPropertyName, keyPropertyRef);
+          Mockito.when(entityType.getPropertyNames()).thenReturn(Collections.singletonList(keyPropertyName));
+          Mockito.when(entityType.getProperty(keyPropertyName)).thenReturn(keyProperty);
+          EdmEntitySet entitySet = mockEntitySet(entitySetName, entityType);
+          EdmEntityContainer container = mockContainer(entitySetName, entitySet);
+          Edm mockedEdm = Mockito.mock(Edm.class);
+          Mockito.when(mockedEdm.getEntityContainer()).thenReturn(container);
+          UriTokenizer tokenizer = new UriTokenizer("a eq \'abc\'");
+          new ExpressionParser(mockedEdm, odata).parse(tokenizer, null, null, null);
+      });
   }
   
-  @Test(expected = UriParserSemanticException.class)
+  @Test
   public void testPropertyPathExpWithoutProperty() throws Exception {
-    final String entitySetName = "ESName";
-    final String keyPropertyName = "a";
-    EdmProperty keyProperty = mockProperty(keyPropertyName, 
-        OData.newInstance().createPrimitiveTypeInstance(EdmPrimitiveTypeKind.String));
-    EdmKeyPropertyRef keyPropertyRef = mockKeyPropertyRef(keyPropertyName, keyProperty);
-    EdmEntityType entityType = mockEntityType(keyPropertyName, keyPropertyRef);
-    Mockito.when(entityType.getFullQualifiedName()).thenReturn(new FullQualifiedName("test.ETName"));
-    EdmEntitySet entitySet = mockEntitySet(entitySetName, entityType);
-    EdmEntityContainer container = mockContainer(entitySetName, entitySet);
-    Edm mockedEdm = Mockito.mock(Edm.class);
-    Mockito.when(mockedEdm.getEntityContainer()).thenReturn(container);
-    
-    UriTokenizer tokenizer = new UriTokenizer("a eq \'abc\'");
-    new ExpressionParser(mockedEdm, odata).parse(tokenizer, entityType, null, null);
+      assertThrows(UriParserSemanticException.class, () -> {
+          final String entitySetName = "ESName";
+          final String keyPropertyName = "a";
+          EdmProperty keyProperty = mockProperty(keyPropertyName,
+          OData.newInstance().createPrimitiveTypeInstance(EdmPrimitiveTypeKind.String));
+          EdmKeyPropertyRef keyPropertyRef = mockKeyPropertyRef(keyPropertyName, keyProperty);
+          EdmEntityType entityType = mockEntityType(keyPropertyName, keyPropertyRef);
+          Mockito.when(entityType.getFullQualifiedName()).thenReturn(new FullQualifiedName("test.ETName"));
+          EdmEntitySet entitySet = mockEntitySet(entitySetName, entityType);
+          EdmEntityContainer container = mockContainer(entitySetName, entitySet);
+          Edm mockedEdm = Mockito.mock(Edm.class);
+          Mockito.when(mockedEdm.getEntityContainer()).thenReturn(container);
+          UriTokenizer tokenizer = new UriTokenizer("a eq \'abc\'");
+          new ExpressionParser(mockedEdm, odata).parse(tokenizer, entityType, null, null);
+      });
   }
 
   /**

@@ -26,7 +26,7 @@ import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.core.uri.parser.search.SearchParserException;
 import org.sitenetsoft.olinguito.server.core.uri.testutil.TestUriValidator;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** Tests of the parts of the URI parser that parse the sytem query option $search. */
 public class SearchParserTest {
