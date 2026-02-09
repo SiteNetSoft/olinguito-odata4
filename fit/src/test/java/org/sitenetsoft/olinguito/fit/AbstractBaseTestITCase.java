@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Added VFS reset in test teardown for test isolation
  */
 package org.sitenetsoft.olinguito.fit;
 
@@ -30,6 +32,7 @@ import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.fit.server.TestServer;
 import org.sitenetsoft.olinguito.fit.server.TestServerFactory;
 import org.sitenetsoft.olinguito.fit.server.TomcatTestServer;
+import org.sitenetsoft.olinguito.fit.utils.FSManager;
 import org.sitenetsoft.olinguito.server.tecsvc.TechnicalServlet;
 import org.sitenetsoft.olinguito.server.tecsvc.async.TechnicalStatusMonitorServlet;
 import org.junit.AfterClass;
@@ -81,6 +84,7 @@ public abstract class AbstractBaseTestITCase {
     if (server != null) {
       server.invalidateAllSessions();
     }
+    FSManager.reset();
   }
 
   /**

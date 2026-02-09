@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed logger class, constants, and code quality warnings
+ * Copyright 2026 SiteNetSoft - Added reset() for VFS test isolation (CVE-2024-1938, CVE-2024-1939)
  */
 package org.sitenetsoft.olinguito.fit.utils;
 
@@ -63,11 +64,20 @@ public class FSManager {
 
   private static FSManager instance = null;
 
-  public static FSManager instance() throws IOException {
+  public static synchronized FSManager instance() throws IOException {
     if (instance == null) {
       instance = new FSManager();
     }
     return instance;
+  }
+
+  public static synchronized void reset() {
+    instance = null;
+    try {
+      VFS.close();
+    } catch (final Exception e) {
+      LOG.warn("Error closing VFS FileSystemManager", e);
+    }
   }
 
   private FSManager() throws IOException {
@@ -148,13 +158,16 @@ public class FSManager {
       final FileObject fileObject = fsManager.resolveFile(fs + path);
 
       if (fileObject.exists()) {
-        // return new in-memory content
-        return fileObject.getContent().getInputStream();
+        // Return a detached byte-array copy so the VFS file is not held open by callers.
+        // VFS 2.10.0 enforces strict stream lifecycle: files cannot be deleted while open.
+        try (InputStream in = fileObject.getContent().getInputStream()) {
+          return new ByteArrayInputStream(IOUtils.toByteArray(in));
+        }
       } else {
         LOG.warn("In-memory path '{}' not found", path);
         throw new NotFoundException();
       }
-    } catch (FileSystemException e) {
+    } catch (IOException e) {
       throw new NotFoundException();
     }
   }
