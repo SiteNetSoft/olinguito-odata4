@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
@@ -34,6 +36,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -510,7 +513,7 @@ public class BasicITCase extends AbstractParamTecSvcITCase {
  
     StringWriter writer = new StringWriter();
     InputStream stream = response2.getRawResponse();
-    IOUtils.copy(stream, writer);
+    IOUtils.copy(stream, writer, StandardCharsets.UTF_8);
     assertNotNull(writer.toString());  
     final ClientEntity entity = response2.getBody();
     assertNotNull(entity);

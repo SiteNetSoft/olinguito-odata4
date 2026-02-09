@@ -15,10 +15,13 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.batch;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -38,7 +41,7 @@ import org.sitenetsoft.olinguito.client.core.communication.request.Wrapper;
 public abstract class AbstractBatchManager extends AbstractODataStreamManager<ODataBatchResponse> {
 
   protected final boolean continueOnError;
-  private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+  private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
   private final ODataBatchRequestContext batchRequestController = new ODataBatchRequestContext();
 
   /**

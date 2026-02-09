@@ -15,10 +15,13 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.retrieve;
 
 import java.net.URI;
+import java.util.Objects;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -75,7 +78,7 @@ public class ODataEntitySetIteratorRequestImpl<ES extends ClientEntitySet, E ext
     public ClientEntitySetIterator<ES, E> getBody() {
       if (entitySetIterator == null) {
         entitySetIterator = new ClientEntitySetIterator<>(
-                odataClient, getRawResponse(), ContentType.parse(getContentType()));
+                odataClient, getRawResponse(), Objects.requireNonNull(ContentType.parse(getContentType())));
       }
       return entitySetIterator;
     }

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
@@ -216,7 +218,7 @@ public class URIBuilderImpl implements URIBuilder {
 
   @Override
   public URIBuilder count() {
-    segments.add(new Segment(SegmentType.ROOT_QUERY_OPTION, "$" + QueryOption.COUNT.toString()));
+    segments.add(new Segment(SegmentType.ROOT_QUERY_OPTION, "$" + QueryOption.COUNT));
     return this;
   }
 
@@ -273,7 +275,7 @@ public class URIBuilderImpl implements URIBuilder {
     final StringBuilder segmentsBuilder = new StringBuilder();
 
     for (Segment seg : segments) {
-      if (segmentsBuilder.length() > 0 && seg.getType() != SegmentType.KEY) {
+      if (!segmentsBuilder.isEmpty() && seg.getType() != SegmentType.KEY) {
         switch (seg.getType()) {
         case BOUND_OPERATION:
           segmentsBuilder.append(getBoundOperationSeparator());
@@ -282,7 +284,7 @@ public class URIBuilderImpl implements URIBuilder {
           segmentsBuilder.append(getBoundOperationSeparator());
           break;
         default:
-          if (segmentsBuilder.length() > 0 && segmentsBuilder.charAt(segmentsBuilder.length() - 1) != '/') {
+          if (!segmentsBuilder.isEmpty() && segmentsBuilder.charAt(segmentsBuilder.length() - 1) != '/') {
             segmentsBuilder.append('/');
           }
         }
@@ -329,7 +331,7 @@ public class URIBuilderImpl implements URIBuilder {
     final StringBuilder builder = new StringBuilder();
 
     for (NameValuePair pair : list) {
-      if (builder.length() > 0) {
+      if (!builder.isEmpty()) {
         builder.append("&");
       }
 
@@ -413,9 +415,9 @@ public class URIBuilderImpl implements URIBuilder {
 
   @Override
   public URIBuilder appendCrossjoinSegment(final String... segmentValues) {
-    final StringBuilder segValue = new StringBuilder(SegmentType.CROSS_JOIN.getValue()).
-        append('(').append(StringUtils.join(segmentValues, ",")).append(')');
-    segments.add(new Segment(SegmentType.CROSS_JOIN, segValue.toString()));
+    String segValue = SegmentType.CROSS_JOIN.getValue() +
+            '(' + StringUtils.join(segmentValues, ",") + ')';
+    segments.add(new Segment(SegmentType.CROSS_JOIN, segValue));
     return this;
   }
 

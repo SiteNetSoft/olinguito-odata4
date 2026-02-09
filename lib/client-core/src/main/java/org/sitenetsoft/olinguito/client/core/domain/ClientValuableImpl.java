@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.domain;
 
@@ -24,6 +26,8 @@ import org.sitenetsoft.olinguito.client.api.domain.ClientEnumValue;
 import org.sitenetsoft.olinguito.client.api.domain.ClientPrimitiveValue;
 import org.sitenetsoft.olinguito.client.api.domain.ClientValuable;
 import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
+
+import java.util.Objects;
 
 public class ClientValuableImpl implements ClientValuable {
 
@@ -60,7 +64,7 @@ public class ClientValuableImpl implements ClientValuable {
 
   @Override
   public ClientCollectionValue<ClientValue> getCollectionValue() {
-    return hasCollectionValue() ? getValue().<ClientValue> asCollection() : null;
+    return hasCollectionValue() ? getValue().asCollection() : null;
   }
 
   @Override
@@ -93,7 +97,7 @@ public class ClientValuableImpl implements ClientValuable {
     }
 
     ClientValuableImpl that = (ClientValuableImpl) o;
-    return !(value != null ? !value.equals(that.value) : that.value != null);
+    return Objects.equals(value, that.value);
   }
 
   @Override

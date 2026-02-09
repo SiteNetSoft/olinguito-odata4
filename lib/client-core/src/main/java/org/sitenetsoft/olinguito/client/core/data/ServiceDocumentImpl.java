@@ -15,12 +15,15 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.data;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.sitenetsoft.olinguito.client.api.data.ServiceDocument;
 import org.sitenetsoft.olinguito.client.api.data.ServiceDocumentItem;
@@ -131,7 +134,7 @@ public final class ServiceDocumentImpl implements ServiceDocument {
 
     ServiceDocumentImpl that = (ServiceDocumentImpl) o;
 
-    if (title != null ? !title.equals(that.title) : that.title != null) {
+    if (!Objects.equals(title, that.title)) {
       return false;
     }
     if (!entitySets.equals(that.entitySets)) {
@@ -146,7 +149,7 @@ public final class ServiceDocumentImpl implements ServiceDocument {
     if (!relatedServiceDocuments.equals(that.relatedServiceDocuments)) {
       return false;
     }
-    return !(metadata != null ? !metadata.equals(that.metadata) : that.metadata != null);
+    return Objects.equals(metadata, that.metadata);
 
   }
 

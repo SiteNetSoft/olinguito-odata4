@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.edm.xml;
 
@@ -29,11 +31,13 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlReturnType;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 
 @JsonDeserialize(using = ClientCsdlReturnType.ReturnTypeDeserializer.class)
 class ClientCsdlReturnType extends CsdlReturnType implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = 6261092793901735110L;
 
   static class ReturnTypeDeserializer extends AbstractClientCsdlEdmDeserializer<ClientCsdlReturnType> {
@@ -59,13 +63,13 @@ class ClientCsdlReturnType extends CsdlReturnType implements Serializable {
             returnType.setNullable(BooleanUtils.toBoolean(jp.nextTextValue()));
           } else if ("MaxLength".equals(jp.currentName())) {
             final String maxLenght = jp.nextTextValue();
-            returnType.setMaxLength("max".equalsIgnoreCase(maxLenght) ? Integer.MAX_VALUE : Integer.valueOf(maxLenght));
+            returnType.setMaxLength("max".equalsIgnoreCase(maxLenght) ? Integer.MAX_VALUE : Integer.parseInt(maxLenght));
           } else if ("Precision".equals(jp.currentName())) {
             returnType.setPrecision(Integer.valueOf(jp.nextTextValue()));
           } else if ("Scale".equals(jp.currentName())) {
             final String scale = jp.nextTextValue();
             returnType.setScale("variable".equalsIgnoreCase(scale) || "floating".equalsIgnoreCase(scale) ?
-                0 : Integer.valueOf(scale));
+                0 : Integer.parseInt(scale));
           } else if ("SRID".equals(jp.currentName())) {
             final String srid = jp.nextTextValue();
             if (srid != null) {

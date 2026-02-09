@@ -15,11 +15,16 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.http;
 
+import java.io.Serial;
+
 public class OAuth2Exception extends RuntimeException {
 
+  @Serial
   private static final long serialVersionUID = 5695438980473040134L;
 
   public OAuth2Exception(final String message) {

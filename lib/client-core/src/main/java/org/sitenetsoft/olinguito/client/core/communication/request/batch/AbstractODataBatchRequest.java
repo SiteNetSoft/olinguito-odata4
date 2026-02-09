@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.batch;
 
@@ -60,7 +62,7 @@ public abstract class AbstractODataBatchRequest<V extends ODataResponse, T exten
     super(odataClient, HttpMethod.POST, uri);
 
     // create a random UUID value for boundary
-    boundary = "batch_" + UUID.randomUUID().toString();
+    boundary = "batch_" + UUID.randomUUID();
 
     // specify the contentType header
     setContentType(ContentType.MULTIPART_MIXED + ";" + ODataBatchConstants.BOUNDARY + "=" + boundary);

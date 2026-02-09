@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed addLink bug and code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.domain;
 
@@ -80,12 +82,12 @@ public class ClientComplexValueImpl extends AbstractClientValue implements Clien
 
     switch (link.getType()) {
     case ASSOCIATION:
-      result = associationLinks.contains(link) ? false : associationLinks.add(link);
+      result = !associationLinks.contains(link) && associationLinks.add(link);
       break;
 
     case ENTITY_NAVIGATION:
     case ENTITY_SET_NAVIGATION:
-      result = navigationLinks.contains(link) ? false : navigationLinks.add(link);
+      result = !navigationLinks.contains(link) && navigationLinks.add(link);
       break;
 
     case MEDIA_EDIT:
@@ -222,39 +224,19 @@ public class ClientComplexValueImpl extends AbstractClientValue implements Clien
     if (!super.equals(obj)) {
       return false;
     }
-    if (!(obj instanceof ClientComplexValueImpl)) {
+    if (!(obj instanceof ClientComplexValueImpl other)) {
       return false;
     }
-    ClientComplexValueImpl other = (ClientComplexValueImpl) obj;
-    if (annotations == null) {
-      if (other.annotations != null) {
+      if (!annotations.equals(other.annotations)) {
         return false;
       }
-    } else if (!annotations.equals(other.annotations)) {
-      return false;
-    }
-    if (associationLinks == null) {
-      if (other.associationLinks != null) {
+      if (!associationLinks.equals(other.associationLinks)) {
         return false;
       }
-    } else if (!associationLinks.equals(other.associationLinks)) {
-      return false;
-    }
-    if (fields == null) {
-      if (other.fields != null) {
+      if (!fields.equals(other.fields)) {
         return false;
       }
-    } else if (!fields.equals(other.fields)) {
-      return false;
-    }
-    if (navigationLinks == null) {
-      if (other.navigationLinks != null) {
-        return false;
-      }
-    } else if (!navigationLinks.equals(other.navigationLinks)) {
-      return false;
-    }
-    return true;
+      return navigationLinks.equals(other.navigationLinks);
   }
 
   @Override

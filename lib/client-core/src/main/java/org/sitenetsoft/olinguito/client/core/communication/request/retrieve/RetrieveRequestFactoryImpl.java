@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.retrieve;
 
@@ -81,7 +83,7 @@ public class RetrieveRequestFactoryImpl implements RetrieveRequestFactory {
   @Override
   public ODataServiceDocumentRequest getServiceDocumentRequest(final String serviceRoot) {
     return new ODataServiceDocumentRequestImpl(client,
-        serviceRoot != null && !serviceRoot.isEmpty() && serviceRoot.endsWith("/") ?
+        serviceRoot != null && serviceRoot.endsWith("/") ?
             client.newURIBuilder(serviceRoot).build() :
             client.newURIBuilder(serviceRoot + '/').build());
   }

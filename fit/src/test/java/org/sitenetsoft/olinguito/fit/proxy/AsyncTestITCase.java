@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
  */
 package org.sitenetsoft.olinguito.fit.proxy;
 
@@ -56,7 +58,7 @@ public class AsyncTestITCase extends AbstractTestITCase {
 
   @Test
   public void updateEntity() throws Exception {
-    final String randomFirstName = RandomStringUtils.random(10, "abcedfghijklmnopqrstuvwxyz");
+    final String randomFirstName = RandomStringUtils.secure().next(10, "abcedfghijklmnopqrstuvwxyz");
 
     final Person person = container.getPeople().getByKey(1);
     person.setFirstName(randomFirstName);

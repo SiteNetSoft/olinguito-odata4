@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.streamed;
 
@@ -22,7 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.Charset;
-import java.util.concurrent.Callable;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Future;
 
 import org.apache.commons.io.IOUtils;
@@ -54,7 +56,7 @@ public abstract class AbstractODataStreamedRequest<V extends ODataResponse, T ex
    * OData payload stream manager.
    */
   protected ODataPayloadManager<V> payloadManager;
-  private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+  private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
   private static final byte[] CRLF = {13, 10};
 
   /**
@@ -99,30 +101,24 @@ public abstract class AbstractODataStreamedRequest<V extends ODataResponse, T ex
     payloadManager = getPayloadManager();
 
     if (URIUtils.shouldUseRepeatableHttpBodyEntry(odataClient)) {
-      futureWrapper.setWrapped(odataClient.getConfiguration().getExecutor().submit(new Callable<HttpResponse>() {
-        @Override
-        public HttpResponse call() throws Exception { //NOSONAR
-          ((HttpEntityEnclosingRequestBase) request).setEntity(
-                  URIUtils.buildInputStreamEntity(odataClient, payloadManager.getBody()));
-          try {
-            return doExecute();
-          } finally {
-            payloadManager.finalizeBody();
-          }
+      futureWrapper.setWrapped(odataClient.getConfiguration().getExecutor().submit(() -> { //NOSONAR
+        ((HttpEntityEnclosingRequestBase) request).setEntity(
+                URIUtils.buildInputStreamEntity(odataClient, payloadManager.getBody()));
+        try {
+          return doExecute();
+        } finally {
+          payloadManager.finalizeBody();
         }
       }));
     } else {
       ((HttpEntityEnclosingRequestBase) request).setEntity(
               URIUtils.buildInputStreamEntity(odataClient, payloadManager.getBody()));
 
-      futureWrapper.setWrapped(odataClient.getConfiguration().getExecutor().submit(new Callable<HttpResponse>() {
-        @Override
-        public HttpResponse call() throws Exception { //NOSONAR
-          try {
-            return doExecute();
-          } finally {
-            payloadManager.finalizeBody();
-          }
+      futureWrapper.setWrapped(odataClient.getConfiguration().getExecutor().submit(() -> { //NOSONAR
+        try {
+          return doExecute();
+        } finally {
+          payloadManager.finalizeBody();
         }
       }));
     }

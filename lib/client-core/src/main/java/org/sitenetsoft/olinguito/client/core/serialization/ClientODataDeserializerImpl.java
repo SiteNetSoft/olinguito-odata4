@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -59,7 +61,6 @@ import org.xml.sax.SAXException;
 import com.fasterxml.aalto.stax.InputFactoryImpl;
 import com.fasterxml.aalto.stax.OutputFactoryImpl;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.deser.DeserializationProblemHandler;
@@ -118,7 +119,7 @@ public class ClientODataDeserializerImpl implements ClientODataDeserializer {
       public boolean handleUnknownProperty(final DeserializationContext ctxt, final JsonParser jp,
           final com.fasterxml.jackson.databind.JsonDeserializer<?> deserializer,
           final Object beanOrClass, final String propertyName)
-          throws IOException, JsonProcessingException {
+          throws IOException {
 
         // skip any unknown property
         ctxt.getParser().skipChildren();
@@ -182,25 +183,30 @@ public class ClientODataDeserializerImpl implements ClientODataDeserializer {
 		
 		for (int temp = 0; temp < nList.getLength(); temp++) {
 			Node nNode = nList.item(temp);
-			List<String> nameSpaces = new ArrayList <>();
-			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-				Element eElement = (Element) nNode;
-				NamedNodeMap attributes = eElement.getAttributes();
-				int len = attributes.getLength();
-				for(int i =0;i<len;i++){
-					// check for all atributes begining with name xmlns or xmlns:
-					String attrName = attributes.item(i).getNodeName();
-					if( XMLNS.equals(attrName) || attrName.startsWith(XMLNS+":")){
-						nameSpaces.add(attributes.item(i).getNodeValue());
-					}
-				}
-			}
-			schemaNameSpaces.add(nameSpaces);
+            List<String> nameSpaces = getNameSpaces(nNode);
+            schemaNameSpaces.add(nameSpaces);
 		}
 	return schemaNameSpaces;
 	}
 
-  @Override
+    private static List<String> getNameSpaces(Node nNode) {
+        List<String> nameSpaces = new ArrayList <>();
+        if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+            Element eElement = (Element) nNode;
+            NamedNodeMap attributes = eElement.getAttributes();
+            int len = attributes.getLength();
+            for(int i =0;i<len;i++){
+                // check for all atributes begining with name xmlns or xmlns:
+                String attrName = attributes.item(i).getNodeName();
+                if( XMLNS.equals(attrName) || attrName.startsWith(XMLNS+":")){
+                    nameSpaces.add(attributes.item(i).getNodeValue());
+                }
+            }
+        }
+        return nameSpaces;
+    }
+
+    @Override
   public ResWrap<ServiceDocument> toServiceDocument(final InputStream input) throws ODataDeserializerException {
     return contentType.isCompatible(ContentType.APPLICATION_XML) ?
         new XMLServiceDocumentDeserializer(false).toServiceDocument(input) :

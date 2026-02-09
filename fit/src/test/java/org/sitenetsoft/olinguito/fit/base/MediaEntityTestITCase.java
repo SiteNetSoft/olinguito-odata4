@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
  */
 package org.sitenetsoft.olinguito.fit.base;
 
@@ -25,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.UUID;
@@ -97,8 +100,8 @@ public class MediaEntityTestITCase extends AbstractTestITCase {
   }
 
   private void create(final ContentType contentType) throws IOException {
-    final String random = RandomStringUtils.random(110);
-    final InputStream input = IOUtils.toInputStream(random);
+    final String random = RandomStringUtils.secure().next(110);
+    final InputStream input = IOUtils.toInputStream(random, StandardCharsets.UTF_8);
 
     final URI uri = client.newURIBuilder(testDemoServiceRootURL).appendEntitySetSegment("Advertisements").build();
     final ODataMediaEntityCreateRequest<ClientEntity> createReq =
@@ -150,11 +153,11 @@ public class MediaEntityTestITCase extends AbstractTestITCase {
         appendEntitySetSegment("Advertisements").
         appendKeySegment(UUID.fromString("f89dee73-af9f-4cd4-b330-db93c25ff3c7")).build();
 
-    final String random = RandomStringUtils.random(124);
+    final String random = RandomStringUtils.secure().next(124);
 
     // 1. update providing media content
     final ODataMediaEntityUpdateRequest<ClientEntity> updateReq = client.getCUDRequestFactory().
-        getMediaEntityUpdateRequest(uri, IOUtils.toInputStream(random));
+        getMediaEntityUpdateRequest(uri, IOUtils.toInputStream(random, StandardCharsets.UTF_8));
     updateReq.setFormat(contentType);
 
     final MediaEntityUpdateStreamManager<ClientEntity> streamManager = updateReq.payloadManager();

@@ -15,11 +15,14 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.cud;
 
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -86,7 +89,7 @@ public class ODataValueUpdateRequestImpl extends AbstractODataBasicRequest<OData
    */
   @Override
   public InputStream getPayload() {
-    return IOUtils.toInputStream(value.toString());
+    return IOUtils.toInputStream(value.toString(), StandardCharsets.UTF_8);
   }
 
   /**
@@ -108,7 +111,8 @@ public class ODataValueUpdateRequestImpl extends AbstractODataBasicRequest<OData
         final ContentType contentType = ContentType.parse(getAccept());
         
         try {
-          resValue = odataClient.getObjectFactory().newPrimitiveValueBuilder().
+            assert contentType != null;
+            resValue = odataClient.getObjectFactory().newPrimitiveValueBuilder().
                   setType(contentType.isCompatible(ContentType.TEXT_PLAIN)
                           ? EdmPrimitiveTypeKind.String : EdmPrimitiveTypeKind.Stream).
                   setValue(getRawResponse()).

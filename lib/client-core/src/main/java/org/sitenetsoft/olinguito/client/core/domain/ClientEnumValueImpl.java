@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.domain;
 
@@ -72,17 +74,11 @@ public class ClientEnumValueImpl extends AbstractClientValue implements ClientEn
     if (!super.equals(obj)) {
       return false;
     }
-    if (!(obj instanceof ClientEnumValueImpl)) {
+    if (!(obj instanceof ClientEnumValueImpl other)) {
       return false;
     }
-    ClientEnumValueImpl other = (ClientEnumValueImpl) obj;
-    if (value == null) {
-      if (other.value != null) {
-        return false;
-      }
-    } else if (!value.equals(other.value)) {
-      return false;
-    }
-    return true;
+      if (value == null) {
+          return other.value == null;
+    } else return value.equals(other.value);
   }
 }

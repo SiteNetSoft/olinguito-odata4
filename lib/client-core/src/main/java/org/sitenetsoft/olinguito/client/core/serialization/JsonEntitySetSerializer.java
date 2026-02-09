@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -38,7 +40,7 @@ public class JsonEntitySetSerializer extends JsonSerializer {
 
   protected void doSerialize(final EntityCollection entitySet, final JsonGenerator jgen)
       throws IOException, EdmPrimitiveTypeException {
-    doContainerSerialize(new ResWrap<EntityCollection>(null, null, entitySet), jgen);
+    doContainerSerialize(new ResWrap<>(null, null, entitySet), jgen);
   }
   
   protected void doContainerSerialize(final ResWrap<EntityCollection> container, final JsonGenerator jgen)
@@ -61,7 +63,7 @@ public class JsonEntitySetSerializer extends JsonSerializer {
     if (entitySet.getId() != null && isODataMetadataFull) {
       jgen.writeStringField(Constants.JSON_ID, entitySet.getId().toASCIIString());
     }
-    final Integer count = entitySet.getCount() == null ? entitySet.getEntities().size() : entitySet.getCount();
+    final int count = entitySet.getCount() == null ? entitySet.getEntities().size() : entitySet.getCount();
     if (isIEEE754Compatible) {
       jgen.writeStringField(Constants.JSON_COUNT, Integer.toString(count));
     } else {

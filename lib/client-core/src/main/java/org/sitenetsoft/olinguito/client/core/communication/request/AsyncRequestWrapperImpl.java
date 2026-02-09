@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements and fixed interrupt handling
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -97,10 +99,8 @@ public class AsyncRequestWrapperImpl<R extends ODataResponse> extends AbstractRe
 
     this.request = odataClient.getConfiguration().getHttpUriRequestFactory().create(method, this.uri);
 
-    if (request instanceof HttpEntityEnclosingRequestBase && odataRequest instanceof AbstractODataBasicRequest) {
-      AbstractODataBasicRequest<?> br = (AbstractODataBasicRequest<?>) odataRequest;
-      HttpEntityEnclosingRequestBase httpRequest = ((HttpEntityEnclosingRequestBase) request);
-      httpRequest.setEntity(new InputStreamEntity(br.getPayload(), -1));
+    if (request instanceof HttpEntityEnclosingRequestBase httpRequest && odataRequest instanceof AbstractODataBasicRequest<?> br) {
+        httpRequest.setEntity(new InputStreamEntity(br.getPayload(), -1));
     }
   }
 
@@ -220,8 +220,9 @@ public class AsyncRequestWrapperImpl<R extends ODataResponse> extends AbstractRe
           try {
             // wait for retry-after
             Thread.sleep((long) retryAfter * 1000);
-          } catch (InterruptedException ignore) {
-            // ignore
+          } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            break;
           }
 
         } else {
@@ -231,7 +232,7 @@ public class AsyncRequestWrapperImpl<R extends ODataResponse> extends AbstractRe
       }
 
       if (response == null) {
-        throw new ODataClientErrorException(res == null ? null : res.getStatusLine());
+        throw new ODataClientErrorException(res.getStatusLine());
       }
 
       return response;

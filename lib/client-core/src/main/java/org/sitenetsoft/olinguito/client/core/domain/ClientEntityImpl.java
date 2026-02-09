@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.domain;
 
@@ -151,17 +153,17 @@ public class ClientEntityImpl extends AbstractClientPayload implements ClientEnt
 
     switch (link.getType()) {
       case ASSOCIATION:
-        result = associationLinks.contains(link) ? false : associationLinks.add(link);
+        result = !associationLinks.contains(link) && associationLinks.add(link);
         break;
 
       case ENTITY_NAVIGATION:
       case ENTITY_SET_NAVIGATION:
-        result = navigationLinks.contains(link) ? false : navigationLinks.add(link);
+        result = !navigationLinks.contains(link) && navigationLinks.add(link);
         break;
 
       case MEDIA_EDIT:
       case MEDIA_READ:
-        result = mediaEditLinks.contains(link) ? false : mediaEditLinks.add(link);
+        result = !mediaEditLinks.contains(link) && mediaEditLinks.add(link);
         break;
 
       default:
@@ -301,19 +303,19 @@ public class ClientEntityImpl extends AbstractClientPayload implements ClientEnt
   public int hashCode() {
     final int prime = 31;
     int result = super.hashCode();
-    result = prime * result + ((annotations == null) ? 0 : annotations.hashCode());
-    result = prime * result + ((associationLinks == null) ? 0 : associationLinks.hashCode());
+    result = prime * result + annotations.hashCode();
+    result = prime * result + associationLinks.hashCode();
     result = prime * result + ((eTag == null) ? 0 : eTag.hashCode());
     result = prime * result + ((editLink == null) ? 0 : editLink.hashCode());
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     result = prime * result + ((mediaContentSource == null) ? 0 : mediaContentSource.hashCode());
     result = prime * result + ((mediaContentType == null) ? 0 : mediaContentType.hashCode());
     result = prime * result + ((mediaETag == null) ? 0 : mediaETag.hashCode());
-    result = prime * result + ((mediaEditLinks == null) ? 0 : mediaEditLinks.hashCode());
+    result = prime * result + mediaEditLinks.hashCode();
     result = prime * result + (mediaEntity ? 1231 : 1237);
-    result = prime * result + ((navigationLinks == null) ? 0 : navigationLinks.hashCode());
-    result = prime * result + ((operations == null) ? 0 : operations.hashCode());
-    result = prime * result + ((properties == null) ? 0 : properties.hashCode());
+    result = prime * result + navigationLinks.hashCode();
+    result = prime * result + operations.hashCode();
+    result = prime * result + properties.hashCode();
     result = prime * result + ((typeName == null) ? 0 : typeName.hashCode());
     return result;
   }
@@ -326,24 +328,15 @@ public class ClientEntityImpl extends AbstractClientPayload implements ClientEnt
     if (!super.equals(obj)) {
       return false;
     }
-    if (!(obj instanceof ClientEntityImpl)) {
+    if (!(obj instanceof ClientEntityImpl other)) {
       return false;
     }
-    ClientEntityImpl other = (ClientEntityImpl) obj;
-    if (annotations == null) {
-      if (other.annotations != null) {
+      if (!annotations.equals(other.annotations)) {
         return false;
       }
-    } else if (!annotations.equals(other.annotations)) {
-      return false;
-    }
-    if (associationLinks == null) {
-      if (other.associationLinks != null) {
+      if (!associationLinks.equals(other.associationLinks)) {
         return false;
       }
-    } else if (!associationLinks.equals(other.associationLinks)) {
-      return false;
-    }
     if (eTag == null) {
       if (other.eTag != null) {
         return false;
@@ -386,45 +379,24 @@ public class ClientEntityImpl extends AbstractClientPayload implements ClientEnt
     } else if (!mediaETag.equals(other.mediaETag)) {
       return false;
     }
-    if (mediaEditLinks == null) {
-      if (other.mediaEditLinks != null) {
+      if (!mediaEditLinks.equals(other.mediaEditLinks)) {
         return false;
       }
-    } else if (!mediaEditLinks.equals(other.mediaEditLinks)) {
-      return false;
-    }
     if (mediaEntity != other.mediaEntity) {
       return false;
     }
-    if (navigationLinks == null) {
-      if (other.navigationLinks != null) {
+      if (!navigationLinks.equals(other.navigationLinks)) {
         return false;
       }
-    } else if (!navigationLinks.equals(other.navigationLinks)) {
-      return false;
-    }
-    if (operations == null) {
-      if (other.operations != null) {
+      if (!operations.equals(other.operations)) {
         return false;
       }
-    } else if (!operations.equals(other.operations)) {
-      return false;
-    }
-    if (properties == null) {
-      if (other.properties != null) {
+      if (!properties.equals(other.properties)) {
         return false;
       }
-    } else if (!properties.equals(other.properties)) {
-      return false;
-    }
     if (typeName == null) {
-      if (other.typeName != null) {
-        return false;
-      }
-    } else if (!typeName.equals(other.typeName)) {
-      return false;
-    }
-    return true;
+        return other.typeName == null;
+    } else return typeName.equals(other.typeName);
   }
 
   @Override

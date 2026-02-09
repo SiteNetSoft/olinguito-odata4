@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.fit.utils;
 
@@ -191,12 +193,12 @@ public abstract class AbstractUtilities {
     // -----------------------------------------
     Set<String> linksToBeKept;
     try {
-      linksToBeKept = new HashSet<String>(navigationProperties.keySet());
+      linksToBeKept = new HashSet<>(navigationProperties.keySet());
     } catch (NullPointerException e) {
       linksToBeKept = Collections.<String> emptySet();
     }
 
-    for (String availableLink : new HashSet<String>(linksToBeKept)) {
+    for (String availableLink : new HashSet<>(linksToBeKept)) {
       try {
         fsManager.resolve(Commons.getLinksPath(entitySetName, key, availableLink, Accept.JSON_FULLMETA));
       } catch (Exception e) {
@@ -257,7 +259,7 @@ public abstract class AbstractUtilities {
       putLinksInMemory(path, entitySetName, entityKey, link.getKey(), link.getValue());
     }
 
-    final List<String> hrefs = new ArrayList<String>();
+    final List<String> hrefs = new ArrayList<>();
 
     for (final Link link : entry.getNavigationLinks()) {
       final NavigationProperty navProp =
@@ -325,7 +327,7 @@ public abstract class AbstractUtilities {
       final String linkName,
       final Collection<String> links) throws Exception {
 
-    final HashSet<String> uris = new HashSet<String>();
+    final HashSet<String> uris = new HashSet<>();
 
     final Map<String, NavigationProperty> navigationProperties = metadata.getNavigationProperties(entitySetName);
 
@@ -349,11 +351,11 @@ public abstract class AbstractUtilities {
           throws Exception {
 
     fsManager.putInMemory(
-        Commons.getLinksAsJSON(entitySetName, new SimpleEntry<String, Collection<String>>(linkName, uris)),
+        Commons.getLinksAsJSON(entitySetName, new SimpleEntry<>(linkName, uris)),
         Commons.getLinksPath(basePath, linkName, Accept.JSON_FULLMETA));
 
     fsManager.putInMemory(
-        Commons.getLinksAsATOM(new SimpleEntry<String, Collection<String>>(linkName, uris)),
+        Commons.getLinksAsATOM(new SimpleEntry<>(linkName, uris)),
         Commons.getLinksPath(basePath, linkName, Accept.XML));
   }
 
@@ -385,7 +387,7 @@ public abstract class AbstractUtilities {
 
   public Response createBatchResponse(final InputStream stream) {
     final Response.ResponseBuilder builder = Response.ok(stream);
-    builder.header(Constants.get(ConstantKey.ODATA_SERVICE_VERSION), ODataServiceVersion.V40.toString() + ";");
+    builder.header(Constants.get(ConstantKey.ODATA_SERVICE_VERSION), ODataServiceVersion.V40 + ";");
     return builder.build();
   }
 
@@ -518,7 +520,7 @@ public abstract class AbstractUtilities {
   }
 
   public Entity readEntity(final Accept accept, final InputStream entity)
-      throws IOException, ODataDeserializerException {
+      throws ODataDeserializerException {
     return readContainerEntity(accept, entity).getPayload();
   }
 
@@ -585,7 +587,7 @@ public abstract class AbstractUtilities {
     return res;
   }
 
-  public String getDefaultEntryKey(final String entitySetName, final Entity entity) throws IOException {
+  public String getDefaultEntryKey(final String entitySetName, final Entity entity) {
     try {
       String res;
 
@@ -594,7 +596,7 @@ public abstract class AbstractUtilities {
         if (entity.getProperty("OrderID") == null || entity.getProperty("ProductID") == null) {
           if (Commons.SEQUENCE.containsKey(entitySetName)) {
             productID = Commons.SEQUENCE.get(entitySetName) + 1;
-            res = "OrderID=1" + ",ProductID=" + String.valueOf(productID);
+            res = "OrderID=1" + ",ProductID=" + productID;
           } else {
             throw new IOException(String.format("Unable to retrieve entity key value for %s", entitySetName));
           }
@@ -609,7 +611,7 @@ public abstract class AbstractUtilities {
         if (entity.getProperty("MessageId") == null || entity.getProperty("FromUsername") == null) {
           if (Commons.SEQUENCE.containsKey(entitySetName)) {
             messageId = Commons.SEQUENCE.get(entitySetName) + 1;
-            res = "FromUsername=1" + ",MessageId=" + String.valueOf(messageId);
+            res = "FromUsername=1" + ",MessageId=" + messageId;
           } else {
             throw new IOException(String.format("Unable to retrieve entity key value for %s", entitySetName));
           }
@@ -654,7 +656,7 @@ public abstract class AbstractUtilities {
           if (Commons.SEQUENCE.containsKey(entitySetName) && Commons.SEQUENCE.containsKey("Products")) {
             productId = Commons.SEQUENCE.get("Products") + 1;
             productDetailId = Commons.SEQUENCE.get(entitySetName) + 1;
-            res = "ProductID=" + String.valueOf(productId) + ",ProductDetailID=" + String.valueOf(productDetailId);
+            res = "ProductID=" + productId + ",ProductDetailID=" + productDetailId;
           } else {
             throw new IOException(String.format("Unable to retrieve entity key value for %s", entitySetName));
           }
@@ -735,8 +737,8 @@ public abstract class AbstractUtilities {
   public Map.Entry<String, InputStream> readMediaEntity(
       final String entitySetName, final String entityId, final String name) {
     final String basePath = Commons.getEntityBasePath(entitySetName, entityId);
-    return new SimpleEntry<String, InputStream>(basePath, fsManager.readFile(basePath
-        + (name == null ? Constants.get(ConstantKey.MEDIA_CONTENT_FILENAME) : name)));
+    return new SimpleEntry<>(basePath, fsManager.readFile(basePath
+            + (name == null ? Constants.get(ConstantKey.MEDIA_CONTENT_FILENAME) : name)));
   }
 
   public Map.Entry<String, InputStream> readEntity(
@@ -747,8 +749,8 @@ public abstract class AbstractUtilities {
     }
 
     final String basePath = Commons.getEntityBasePath(entitySetName, entityId);
-    return new SimpleEntry<String, InputStream>(basePath,
-        fsManager.readFile(basePath + Constants.get(ConstantKey.ENTITY), accept));
+    return new SimpleEntry<>(basePath,
+            fsManager.readFile(basePath + Constants.get(ConstantKey.ENTITY), accept));
   }
 
   public InputStream expandEntity(

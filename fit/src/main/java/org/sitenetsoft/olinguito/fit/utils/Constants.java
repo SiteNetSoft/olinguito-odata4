@@ -15,24 +15,27 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.fit.utils;
 
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CodingErrorAction;
+import java.nio.charset.StandardCharsets;
 import java.util.EnumMap;
 import java.util.Map;
 
 public class Constants {
 
-  private static Map<ConstantKey, String> constants = new EnumMap<ConstantKey, String>(ConstantKey.class);
+  private static final Map<ConstantKey, String> constants = new EnumMap<>(ConstantKey.class);
 
   /**
    * CR/LF.
    */
   public static final byte[] CRLF = { 13, 10 };
-  public static final Charset ENCODING = Charset.forName("UTF-8");
+  public static final Charset ENCODING = StandardCharsets.UTF_8;
   public static final CharsetDecoder DECODER = ENCODING.newDecoder();
 
   static {

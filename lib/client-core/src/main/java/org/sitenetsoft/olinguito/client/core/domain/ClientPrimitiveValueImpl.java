@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.domain;
 
@@ -58,7 +60,7 @@ public class ClientPrimitiveValueImpl extends AbstractClientValue implements Cli
     public BuilderImpl setType(final EdmPrimitiveTypeKind type) {
       if (type == EdmPrimitiveTypeKind.Stream) {
         throw new IllegalArgumentException(String.format(
-                "Cannot build a primitive value for %s", EdmPrimitiveTypeKind.Stream.toString()));
+                "Cannot build a primitive value for %s", EdmPrimitiveTypeKind.Stream));
       }
       if (type == EdmPrimitiveTypeKind.Geography || type == EdmPrimitiveTypeKind.Geometry) {
         throw new IllegalArgumentException(
@@ -257,11 +259,10 @@ public class ClientPrimitiveValueImpl extends AbstractClientValue implements Cli
     if (!super.equals(obj)) {
       return false;
     }
-    if (!(obj instanceof ClientPrimitiveValueImpl)) {
+    if (!(obj instanceof ClientPrimitiveValueImpl other)) {
       return false;
     }
-    ClientPrimitiveValueImpl other = (ClientPrimitiveValueImpl) obj;
-    if (type == null) {
+      if (type == null) {
       if (other.type != null) {
         return false;
       }
@@ -272,13 +273,8 @@ public class ClientPrimitiveValueImpl extends AbstractClientValue implements Cli
       return false;
     }
     if (value == null) {
-      if (other.value != null) {
-        return false;
-      }
-    } else if (!value.equals(other.value)) {
-      return false;
-    }
-    return true;
+        return other.value == null;
+    } else return value.equals(other.value);
   }
 
 }

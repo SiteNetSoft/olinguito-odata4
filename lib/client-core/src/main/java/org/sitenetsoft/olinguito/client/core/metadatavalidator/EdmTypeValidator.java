@@ -15,10 +15,11 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.metadatavalidator;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,24 +38,20 @@ import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 
 public class EdmTypeValidator {
   
-  private Map<String, String> aliasNamespaceMap = new HashMap<>();
-  private Map<FullQualifiedName, EdmEntityContainer> edmContainersMap = 
-      new HashMap<>();
-  private Map<FullQualifiedName, EdmEntityType> edmEntityTypesMap = 
-      new HashMap<>();
-  private Map<FullQualifiedName, EdmComplexType> edmComplexTypesMap = 
-      new HashMap<>();
-  private Map<FullQualifiedName, EdmFunction> edmFunctionsMap = 
-      new HashMap<>();
+  private final Map<String, String> aliasNamespaceMap;
+  private final Map<FullQualifiedName, EdmEntityContainer> edmContainersMap;
+  private final Map<FullQualifiedName, EdmEntityType> edmEntityTypesMap;
+  private final Map<FullQualifiedName, EdmComplexType> edmComplexTypesMap;
+  private final Map<FullQualifiedName, EdmFunction> edmFunctionsMap;
 
   /**
-   * 
-   * @param aliasNamespaceMap
-   * @param edmContainersMap
-   * @param edmEntityTypesMap
-   * @param edmComplexTypesMap
-   * @param edmFunctionsMap
-   * @param edmTermsMap
+   * Constructs an EdmTypeValidator with the given EDM metadata maps.
+   *
+   * @param aliasNamespaceMap mapping of namespace aliases to full namespaces
+   * @param edmContainersMap mapping of qualified names to entity containers
+   * @param edmEntityTypesMap mapping of qualified names to entity types
+   * @param edmComplexTypesMap mapping of qualified names to complex types
+   * @param edmFunctionsMap mapping of qualified names to functions
    */
   public EdmTypeValidator(Map<String, String> aliasNamespaceMap,
       Map<FullQualifiedName, EdmEntityContainer> edmContainersMap,
@@ -116,9 +113,9 @@ public class EdmTypeValidator {
 
   /**
    * This method checks if the target entity of the navigation binding path is defined.
-   * It checks if the type of navigation property of the source entity and target entity is the same
-   * @param entitySet
-   * @param container 
+   * It checks if the type of navigation property of the source entity and target entity is the same.
+   *
+   * @param entitySet the entity set whose navigation bindings to validate
    */
   private void validateNavigationBindingPaths(EdmEntitySet entitySet) {
     List<EdmNavigationPropertyBinding> navigationPropertyBindings = entitySet.getNavigationPropertyBindings();
@@ -133,7 +130,7 @@ public class EdmTypeValidator {
         }
         
         EdmEntityType targetEntityType = edmBindingTarget.getEntityType();
-        EdmNavigationProperty navProperty = null;
+        EdmNavigationProperty navProperty;
         if (navBindingPath.contains("/")) {
           navProperty = findLastQualifiedNameHavingNavigationProperty(navBindingPath, sourceEntityType);
         } else {
@@ -153,9 +150,11 @@ public class EdmTypeValidator {
   }
 
   /**
-   * @param sourceEntityType
-   * @param targetEntityType
-   * @param navProperty
+   * Validates referential constraints between source and target entity types.
+   *
+   * @param sourceEntityType the source entity type
+   * @param targetEntityType the target entity type
+   * @param navProperty the navigation property containing the referential constraints
    */
   private void validateReferentialConstraint(EdmEntityType sourceEntityType, EdmEntityType targetEntityType,
       EdmNavigationProperty navProperty) {
@@ -173,13 +172,13 @@ public class EdmTypeValidator {
   
   /**
    * This looks for the last fully qualified identifier to fetch the navigation property
-   * e.g if navigation property path is Microsoft.Exchange.Services.OData.Model.ItemAttachment/Item 
+   * e.g. if navigation property path is Microsoft.Exchange.Services.OData.Model.ItemAttachment/Item
    * then it fetches the entity ItemAttachment and fetches the navigation property Item
    * if navigation property path is EntityType/ComplexType/OData.Model.DerivedComplexType/Item
    * then it fetches the complex type DerivedComplexType and fetches the navigation property Item
-   * @param navBindingPath
-   * @param sourceEntityType 
-   * @return EdmNavigationProperty
+   * @param navBindingPath the navigation binding path containing qualified type segments
+   * @param sourceEntityType the source entity type to start resolution from
+   * @return the resolved navigation property
    */
   private EdmNavigationProperty findLastQualifiedNameHavingNavigationProperty(String navBindingPath, 
       EdmEntityType sourceEntityType) {
@@ -192,13 +191,13 @@ public class EdmTypeValidator {
     }
     String strNavProperty = paths[paths.length - 1];
     String remainingPath = navBindingPath.substring(navBindingPath.indexOf(lastFullQualifiedName) 
-        + lastFullQualifiedName.length() + (lastFullQualifiedName.length() == 0 ? 0 : 1), 
+        + lastFullQualifiedName.length() + (lastFullQualifiedName.isEmpty() ? 0 : 1),
         navBindingPath.lastIndexOf(strNavProperty));
-    if (remainingPath.length() > 0) {
+    if (!remainingPath.isEmpty()) {
       remainingPath = remainingPath.substring(0, remainingPath.length() - 1);
     }
-    EdmNavigationProperty navProperty = null;
-    EdmEntityType sourceEntityTypeHavingNavProp = lastFullQualifiedName.length() == 0 ? sourceEntityType : 
+    EdmNavigationProperty navProperty;
+    EdmEntityType sourceEntityTypeHavingNavProp = lastFullQualifiedName.isEmpty() ? sourceEntityType :
       (edmEntityTypesMap.containsKey(new FullQualifiedName(lastFullQualifiedName)) ? 
         edmEntityTypesMap.get(new FullQualifiedName(lastFullQualifiedName)) : 
           edmEntityTypesMap.get(fetchCorrectNamespaceFromAlias(new FullQualifiedName(lastFullQualifiedName))));
@@ -211,10 +210,10 @@ public class EdmTypeValidator {
         throw new RuntimeException("The fully Qualified type " + lastFullQualifiedName + 
             " mentioned in navigation binding path not found ");
       }
-      navProperty = remainingPath.length() > 0 ? fetchNavigationProperty(remainingPath, strNavProperty, 
+      navProperty = !remainingPath.isEmpty() ? fetchNavigationProperty(remainingPath, strNavProperty,
           sourceComplexTypeHavingNavProp) : sourceComplexTypeHavingNavProp.getNavigationProperty(strNavProperty);
     } else {
-      navProperty = remainingPath.length() > 0 ? fetchNavigationProperty(remainingPath, strNavProperty, 
+      navProperty = !remainingPath.isEmpty() ? fetchNavigationProperty(remainingPath, strNavProperty,
           sourceEntityTypeHavingNavProp) : sourceEntityTypeHavingNavProp.getNavigationProperty(strNavProperty);
     }
     return navProperty;
@@ -222,10 +221,10 @@ public class EdmTypeValidator {
   
   /**
    * Fetch the correct navigation property from the remaining path
-   * @param remainingPath
-   * @param strNavProperty
-   * @param sourceTypeHavingNavProp
-   * @return EdmNavigationProperty
+   * @param remainingPath the remaining path segments to traverse
+   * @param strNavProperty the navigation property name at the end of the path
+   * @param sourceTypeHavingNavProp the structured type to start traversal from
+   * @return the resolved navigation property
    */
   private EdmNavigationProperty fetchNavigationProperty(String remainingPath,
       String strNavProperty, EdmStructuredType sourceTypeHavingNavProp) {
@@ -233,9 +232,9 @@ public class EdmTypeValidator {
     for (String path : paths) {
       FullQualifiedName fqName = null;
       if (sourceTypeHavingNavProp instanceof EdmComplexType) {
-        fqName = ((EdmComplexType)sourceTypeHavingNavProp).getProperty(path).getType().getFullQualifiedName();
+        fqName = sourceTypeHavingNavProp.getProperty(path).getType().getFullQualifiedName();
       } else if (sourceTypeHavingNavProp instanceof EdmEntityType) {
-        fqName = ((EdmEntityType)sourceTypeHavingNavProp).getProperty(path).getType().getFullQualifiedName();
+        fqName = sourceTypeHavingNavProp.getProperty(path).getType().getFullQualifiedName();
       }
       if (fqName != null) {
         String namespace = aliasNamespaceMap.get(fqName.getNamespace());
@@ -250,9 +249,10 @@ public class EdmTypeValidator {
   }
 
   /**
-   * This validates the namespace to alias mapping
-   * @param fQName
-   * @return FullQualifiedName
+   * This validates the namespace to alias mapping.
+   *
+   * @param fqName the fully qualified name that may use an alias as namespace
+   * @return the resolved fully qualified name with the actual namespace
    */
   private FullQualifiedName fetchCorrectNamespaceFromAlias(FullQualifiedName fqName) {
     if (aliasNamespaceMap.containsKey(fqName.getNamespace())) {
@@ -263,7 +263,7 @@ public class EdmTypeValidator {
   }
 
   /**
-   * This methods validates edm function imports.
+   * These methods validate edm function imports.
    * It checks if function imports are part of correct container and
    * functions defined for function imports are correct
    */
@@ -279,9 +279,10 @@ public class EdmTypeValidator {
   }
 
   /**
-   * This validates the namespace to alias mapping
-   * @param aliasName
-   * @return FullQualifiedName
+   * Validates that a function referenced by alias exists in the EDM functions map.
+   *
+   * @param aliasName the fully qualified name using an alias as namespace
+   * @return the resolved fully qualified name with the actual namespace
    */
   private FullQualifiedName validateEdmFunctionsWithAlias(FullQualifiedName aliasName) {
     String namespace = aliasNamespaceMap.get(aliasName.getNamespace());

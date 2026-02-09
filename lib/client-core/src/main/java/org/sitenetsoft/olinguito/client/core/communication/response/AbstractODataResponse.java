@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed logger class, deprecated API usages, and code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.communication.response;
 
@@ -22,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -58,7 +61,7 @@ public abstract class AbstractODataResponse implements ODataResponse {
   /**
    * Logger.
    */
-  protected static final Logger LOG = LoggerFactory.getLogger(ODataResponse.class);
+  protected static final Logger LOG = LoggerFactory.getLogger(AbstractODataResponse.class);
 
   protected final ODataClient odataClient;
 
@@ -224,7 +227,7 @@ public abstract class AbstractODataResponse implements ODataResponse {
       final ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
       while (batchLineIterator.hasNext()) {
-        bos.write(batchLineIterator.nextLine().getBytes(Constants.UTF8));
+        bos.write(batchLineIterator.nextLine().getBytes(StandardCharsets.UTF_8));
         bos.write(CRLF);
       }
 
@@ -267,7 +270,7 @@ public abstract class AbstractODataResponse implements ODataResponse {
   public InputStream getRawResponse() {
 
 
-    InputStream inputStream = null;
+    InputStream inputStream;
     if (HttpStatus.SC_NO_CONTENT == getStatusCode()) {
       throw new NoContentException();
     }
@@ -280,16 +283,13 @@ public abstract class AbstractODataResponse implements ODataResponse {
         final PipedOutputStream os = new PipedOutputStream((PipedInputStream) payload,
                 ConfigurationImpl.DEFAULT_BUFFER_SIZE);
 
-        new Thread(new Runnable() {
-          @Override
-          public void run() {
-            try {
-              ODataBatchUtilities.readBatchPart(batchInfo, os, true);
-            } catch (Exception e) {
-              LOG.error("Error streaming batch item payload", e);
-            } finally {
-              IOUtils.closeQuietly(os);
-            }
+        new Thread(() -> {
+          try {
+            ODataBatchUtilities.readBatchPart(batchInfo, os, true);
+          } catch (Exception e) {
+            LOG.error("Error streaming batch item payload", e);
+          } finally {
+            IOUtils.closeQuietly(os);
           }
         }).start();
       } catch (Exception e) {

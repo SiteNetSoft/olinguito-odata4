@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.fit.utils;
 
@@ -45,7 +47,7 @@ public class XMLElement {
 
   private EndElement end;
 
-  private ByteArrayOutputStream content = new ByteArrayOutputStream();
+  private final ByteArrayOutputStream content = new ByteArrayOutputStream();
 
   public StartElement getStart() {
     return start;
@@ -100,13 +102,10 @@ public class XMLElement {
       osw.close();
 
       res = new ByteArrayInputStream(bos.toByteArray());
-    } catch (IOException e) {
-      LOG.error("Error serializing element", e);
-      res = null;
-    } catch (XMLStreamException e) {
+    } catch (IOException | XMLStreamException e) {
       LOG.error("Error serializing element", e);
       res = null;
     }
-    return res;
+      return res;
   }
 }

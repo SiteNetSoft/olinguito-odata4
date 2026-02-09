@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.fit.metadata;
 
@@ -30,7 +32,7 @@ public class Container extends AbstractMetadataElement {
 
   public Container(final String name) {
     this.name = name;
-    entitySets = new HashMap<String, EntitySet>();
+    entitySets = new HashMap<>();
   }
 
   public String getName() {
@@ -42,7 +44,7 @@ public class Container extends AbstractMetadataElement {
   }
 
   public Collection<EntitySet> getEntitySets(final String namespace, final String entityTypeName) {
-    final Collection<EntitySet> res = new HashSet<EntitySet>();
+    final Collection<EntitySet> res = new HashSet<>();
     for (EntitySet entitySet : entitySets.values()) {
       if ((namespace + "." + entityTypeName).equals(entitySet.getType())) {
         res.add(entitySet);

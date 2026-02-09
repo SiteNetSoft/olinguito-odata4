@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.fit.metadata;
 
@@ -31,7 +33,7 @@ public class EntitySet extends AbstractMetadataElement {
   public EntitySet(final String name, final boolean singleton) {
     this.name = name;
     this.singleton = singleton;
-    binding = new LinkedHashMap<String, String>();
+    binding = new LinkedHashMap<>();
   }
 
   public EntitySet(final String name) {

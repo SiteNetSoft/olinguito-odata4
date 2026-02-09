@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
  */
 package org.sitenetsoft.olinguito.client.core.communication.header;
 
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public final class ODataErrorResponseChecker {
@@ -83,7 +86,7 @@ public final class ODataErrorResponseChecker {
         error.setCode(String.valueOf(statusLine.getStatusCode()));
         error.setTarget(statusLine.getReasonPhrase());
         try {
-          error.setMessage(IOUtils.toString(entity));
+          error.setMessage(IOUtils.toString(entity, StandardCharsets.UTF_8));
         } catch (IOException e) {
           LOG.warn("Error deserializing error response", e);
           error = getGenericError(
@@ -94,7 +97,7 @@ public final class ODataErrorResponseChecker {
 
       if (statusLine.getStatusCode() >= 500 && error!= null &&
           (error.getDetails() == null || error.getDetails().isEmpty()) &&
-          (error.getInnerError() == null || error.getInnerError().size() == 0)) {
+          (error.getInnerError() == null || error.getInnerError().isEmpty())) {
         result = new ODataServerErrorException(statusLine, entityForException);
       } else {
         result = new ODataClientErrorException(statusLine, error, entityForException);

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -100,7 +102,7 @@ public class ContextURLParser {
 
     if (!firstToken.equals(rest)) {
       final String[] pathElems = StringUtils.substringAfter(rest, "/").split("/");
-      if (pathElems.length > 0 && pathElems[0].length() > 0) {
+      if (pathElems.length > 0 && !pathElems[0].isEmpty()) {
         if (pathElems[0].indexOf('.') == -1) {
           contextUrl.navOrPropertyPath(pathElems[0]);
         } else {

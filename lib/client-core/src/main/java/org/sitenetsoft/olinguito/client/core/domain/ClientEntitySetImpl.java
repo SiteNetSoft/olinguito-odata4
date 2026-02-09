@@ -15,12 +15,15 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.domain;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.sitenetsoft.olinguito.client.api.domain.AbstractClientPayload;
 import org.sitenetsoft.olinguito.client.api.domain.ClientAnnotation;
@@ -124,9 +127,9 @@ public class ClientEntitySetImpl extends AbstractClientPayload implements Client
     int result = super.hashCode();
     result = prime * result + ((count == null) ? 0 : count.hashCode());
     result = prime * result + ((next == null) ? 0 : next.hashCode());
-    result = prime * result + ((annotations == null) ? 0 : annotations.hashCode());
+    result = prime * result + annotations.hashCode();
     result = prime * result + ((deltaLink == null) ? 0 : deltaLink.hashCode());
-    result = prime * result + ((entities == null) ? 0 : entities.hashCode());
+    result = prime * result + entities.hashCode();
     return result;
   }
 
@@ -135,14 +138,13 @@ public class ClientEntitySetImpl extends AbstractClientPayload implements Client
     if (this == obj) {
       return true;
     }
-    if (obj == null || !(obj instanceof ClientEntitySetImpl)) {
+    if (!(obj instanceof ClientEntitySetImpl other)) {
       return false;
     }
-    final ClientEntitySetImpl other = (ClientEntitySetImpl) obj;
-    return (count == null ? other.count == null : count.equals(other.count))
-        && (next == null ? other.next == null : next.equals(other.next))
+      return (Objects.equals(count, other.count))
+        && (Objects.equals(next, other.next))
         && annotations.equals(other.annotations)
-        && (deltaLink == null ? other.deltaLink == null : deltaLink.equals(other.deltaLink))
+        && (Objects.equals(deltaLink, other.deltaLink))
         && entities.equals(other.entities);
   }
 

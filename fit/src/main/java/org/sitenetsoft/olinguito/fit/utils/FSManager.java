@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed logger class, constants, and code quality warnings
  */
 package org.sitenetsoft.olinguito.fit.utils;
 
@@ -51,11 +53,11 @@ public class FSManager {
   /**
    * Logger.
    */
-  protected static final Logger LOG = LoggerFactory.getLogger(AbstractUtilities.class);
+  protected static final Logger LOG = LoggerFactory.getLogger(FSManager.class);
 
-  private static String MEM_PREFIX = "ram://";
+  private static final String MEM_PREFIX = "ram://";
 
-  private static String RES_PREFIX = "res://";
+  private static final String RES_PREFIX = "res://";
 
   private final FileSystemManager fsManager;
 
@@ -160,7 +162,7 @@ public class FSManager {
   public void deleteFile(final String relativePath) {
     for (Accept accept : Accept.values()) {
       final String path = getAbsolutePath(relativePath, accept);
-      LOG.info("Delete {}", path);
+      LOG.info("Delete file {}", path);
 
       try {
         final FileObject fileObject = fsManager.resolveFile(MEM_PREFIX + path);
@@ -176,7 +178,7 @@ public class FSManager {
 
   public void deleteEntity(final String relativePath) {
     final String path = getAbsolutePath(relativePath, null);
-    LOG.info("Delete {}", path);
+    LOG.info("Delete entity {}", path);
 
     try {
       final FileObject fileObject = fsManager.resolveFile(MEM_PREFIX + path);
@@ -184,12 +186,12 @@ public class FSManager {
       if (fileObject.exists()) {
         fileObject.delete(new FileSelector() {
           @Override
-          public boolean includeFile(final FileSelectInfo fileInfo) throws Exception {
+          public boolean includeFile(final FileSelectInfo fileInfo) {
             return true;
           }
 
           @Override
-          public boolean traverseDescendents(final FileSelectInfo fileInfo) throws Exception {
+          public boolean traverseDescendents(final FileSelectInfo fileInfo) {
             return true;
           }
         });
@@ -212,12 +214,12 @@ public class FSManager {
   public final FileObject[] find(final FileObject fo, final String ext) throws FileSystemException {
     return fo.findFiles(new FileSelector() {
       @Override
-      public boolean includeFile(final FileSelectInfo fileInfo) throws Exception {
-        return ext == null ? true : fileInfo.getFile().getName().getExtension().equals(ext);
+      public boolean includeFile(final FileSelectInfo fileInfo) {
+        return ext == null || fileInfo.getFile().getName().getExtension().equals(ext);
       }
 
       @Override
-      public boolean traverseDescendents(final FileSelectInfo fileInfo) throws Exception {
+      public boolean traverseDescendents(final FileSelectInfo fileInfo) {
         return true;
       }
     });

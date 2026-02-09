@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.domain;
 
@@ -136,18 +138,10 @@ public class ClientCollectionValueImpl<OV extends ClientValue> extends AbstractC
     if (!super.equals(obj)) {
       return false;
     }
-    if (!(obj instanceof ClientCollectionValueImpl)) {
+    if (!(obj instanceof ClientCollectionValueImpl<?> other)) {
       return false;
     }
-    ClientCollectionValueImpl<?> other = (ClientCollectionValueImpl<?>) obj;
-    if (values == null) {
-      if (other.values != null) {
-        return false;
-      }
-    } else if (!values.equals(other.values)) {
-      return false;
-    }
-    return true;
+      return values.equals(other.values);
   }
 
   @Override

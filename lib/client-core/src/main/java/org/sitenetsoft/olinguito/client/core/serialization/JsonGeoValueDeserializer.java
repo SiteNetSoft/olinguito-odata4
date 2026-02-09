@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -72,7 +74,7 @@ class JsonGeoValueDeserializer {
       }
       multiPoint = new MultiPoint(GeoUtils.getDimension(type), srid, points);
     } else {
-      multiPoint = new MultiPoint(GeoUtils.getDimension(type), srid, Collections.<Point> emptyList());
+      multiPoint = new MultiPoint(GeoUtils.getDimension(type), srid, Collections.emptyList());
     }
 
     return multiPoint;
@@ -89,7 +91,7 @@ class JsonGeoValueDeserializer {
       }
       lineString = new LineString(GeoUtils.getDimension(type), srid, points);
     } else {
-      lineString = new LineString(GeoUtils.getDimension(type), srid, Collections.<Point> emptyList());
+      lineString = new LineString(GeoUtils.getDimension(type), srid, Collections.emptyList());
     }
 
     return lineString;
@@ -108,7 +110,7 @@ class JsonGeoValueDeserializer {
       }
       multiLineString = new MultiLineString(GeoUtils.getDimension(type), srid, lineStrings);
     } else {
-      multiLineString = new MultiLineString(GeoUtils.getDimension(type), srid, Collections.<LineString> emptyList());
+      multiLineString = new MultiLineString(GeoUtils.getDimension(type), srid, Collections.emptyList());
     }
 
     return multiLineString;
@@ -127,7 +129,7 @@ class JsonGeoValueDeserializer {
       }
     }
 
-    List<LineString> intRings = new ArrayList<LineString>();
+    List<LineString> intRings = new ArrayList<>();
     while (itor.hasNext()) {
       final Iterator<JsonNode> intItor = itor.next().elements();
       if (intItor.hasNext()) {
@@ -155,7 +157,7 @@ class JsonGeoValueDeserializer {
       }
       multiPolygon = new MultiPolygon(GeoUtils.getDimension(type), srid, polygons);
     } else {
-      multiPolygon = new MultiPolygon(GeoUtils.getDimension(type), srid, Collections.<Polygon> emptyList());
+      multiPolygon = new MultiPolygon(GeoUtils.getDimension(type), srid, Collections.emptyList());
     }
 
     return multiPolygon;
@@ -187,7 +189,7 @@ class JsonGeoValueDeserializer {
 
       collection = new GeospatialCollection(GeoUtils.getDimension(type), srid, geospatials);
     } else {
-      collection = new GeospatialCollection(GeoUtils.getDimension(type), srid, Collections.<Geospatial> emptyList());
+      collection = new GeospatialCollection(GeoUtils.getDimension(type), srid, Collections.emptyList());
     }
 
     return collection;
@@ -211,7 +213,7 @@ class JsonGeoValueDeserializer {
 
     final Iterator<JsonNode> cooItor = node.has(Constants.JSON_COORDINATES)
         ? node.get(Constants.JSON_COORDINATES).elements()
-            : Collections.<JsonNode> emptyList().iterator();
+            : Collections.emptyIterator();
 
         SRID srid = null;
         if (node.has(Constants.JSON_CRS)) {

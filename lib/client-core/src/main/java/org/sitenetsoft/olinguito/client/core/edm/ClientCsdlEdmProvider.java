@@ -15,12 +15,15 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.edm;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAbstractEdmProvider;
@@ -51,7 +54,7 @@ public class ClientCsdlEdmProvider extends CsdlAbstractEdmProvider {
   }
 
   @Override
-  public CsdlEnumType getEnumType(final FullQualifiedName enumTypeName) throws ODataException {
+  public CsdlEnumType getEnumType(final FullQualifiedName enumTypeName) {
     CsdlSchema schema = xmlSchemas.get(enumTypeName.getNamespace());
     if (schema != null) {
       return schema.getEnumType(enumTypeName.getName());
@@ -60,7 +63,7 @@ public class ClientCsdlEdmProvider extends CsdlAbstractEdmProvider {
   }
 
   @Override
-  public CsdlTypeDefinition getTypeDefinition(final FullQualifiedName typeDefinitionName) throws ODataException {
+  public CsdlTypeDefinition getTypeDefinition(final FullQualifiedName typeDefinitionName) {
     CsdlSchema schema = xmlSchemas.get(typeDefinitionName.getNamespace());
     if (schema != null) {
       return schema.getTypeDefinition(typeDefinitionName.getName());
@@ -78,7 +81,7 @@ public class ClientCsdlEdmProvider extends CsdlAbstractEdmProvider {
   }
 
   @Override
-  public CsdlComplexType getComplexType(final FullQualifiedName complexTypeName) throws ODataException {
+  public CsdlComplexType getComplexType(final FullQualifiedName complexTypeName) {
     CsdlSchema schema = xmlSchemas.get(complexTypeName.getNamespace());
     if (schema != null) {
       return schema.getComplexType(complexTypeName.getName());
@@ -87,7 +90,7 @@ public class ClientCsdlEdmProvider extends CsdlAbstractEdmProvider {
   }
 
   @Override
-  public List<CsdlAction> getActions(final FullQualifiedName actionName) throws ODataException {
+  public List<CsdlAction> getActions(final FullQualifiedName actionName) {
     CsdlSchema schema = xmlSchemas.get(actionName.getNamespace());
     if (schema != null) {
       return schema.getActions(actionName.getName());
@@ -96,7 +99,7 @@ public class ClientCsdlEdmProvider extends CsdlAbstractEdmProvider {
   }
 
   @Override
-  public List<CsdlFunction> getFunctions(final FullQualifiedName functionName) throws ODataException {
+  public List<CsdlFunction> getFunctions(final FullQualifiedName functionName) {
     CsdlSchema schema = xmlSchemas.get(functionName.getNamespace());
     if (schema != null) {
       return schema.getFunctions(functionName.getName());
@@ -124,8 +127,7 @@ public class ClientCsdlEdmProvider extends CsdlAbstractEdmProvider {
   }
 
   @Override
-  public CsdlSingleton getSingleton(final FullQualifiedName entityContainer, final String singletonName)
-      throws ODataException {
+  public CsdlSingleton getSingleton(final FullQualifiedName entityContainer, final String singletonName) {
     CsdlSchema schema = xmlSchemas.get(entityContainer.getNamespace());
     if (schema != null) {
       return schema.getEntityContainer().getSingleton(singletonName);
@@ -134,8 +136,7 @@ public class ClientCsdlEdmProvider extends CsdlAbstractEdmProvider {
   }
 
   @Override
-  public CsdlActionImport getActionImport(final FullQualifiedName entityContainer, final String actionImportName)
-      throws ODataException {
+  public CsdlActionImport getActionImport(final FullQualifiedName entityContainer, final String actionImportName) {
     CsdlSchema schema = xmlSchemas.get(entityContainer.getNamespace());
     if (schema != null) {
       return schema.getEntityContainer().getActionImport(actionImportName);
@@ -144,8 +145,7 @@ public class ClientCsdlEdmProvider extends CsdlAbstractEdmProvider {
   }
 
   @Override
-  public CsdlFunctionImport getFunctionImport(final FullQualifiedName entityContainer, final String functionImportName)
-      throws ODataException {
+  public CsdlFunctionImport getFunctionImport(final FullQualifiedName entityContainer, final String functionImportName) {
     CsdlSchema schema = xmlSchemas.get(entityContainer.getNamespace());
     if (schema != null) {
       return schema.getEntityContainer().getFunctionImport(functionImportName);
@@ -154,17 +154,12 @@ public class ClientCsdlEdmProvider extends CsdlAbstractEdmProvider {
   }
 
   @Override
-  public CsdlEntityContainerInfo getEntityContainerInfo(final FullQualifiedName entityContainerName)
-      throws ODataException {
+  public CsdlEntityContainerInfo getEntityContainerInfo(final FullQualifiedName entityContainerName) {
     for (CsdlSchema schema : xmlSchemas.values()) {
       CsdlEntityContainer entityContainer = schema.getEntityContainer();
       if (entityContainer != null) {
         FullQualifiedName containerFQN;
-        if (entityContainerName == null) {
-          containerFQN = new FullQualifiedName(schema.getNamespace(), entityContainer.getName());
-        } else {
-          containerFQN = entityContainerName;
-        }
+          containerFQN = Objects.requireNonNullElseGet(entityContainerName, () -> new FullQualifiedName(schema.getNamespace(), entityContainer.getName()));
         return new CsdlEntityContainerInfo().setContainerName(containerFQN).setExtendsContainer(
             entityContainer.getExtendsContainerFQN());
       }
@@ -173,7 +168,7 @@ public class ClientCsdlEdmProvider extends CsdlAbstractEdmProvider {
   }
 
   @Override
-  public List<CsdlAliasInfo> getAliasInfos() throws ODataException {
+  public List<CsdlAliasInfo> getAliasInfos() {
     ArrayList<CsdlAliasInfo> aliasInfo = new ArrayList<>();
     for (CsdlSchema schema : xmlSchemas.values()) {
       if (schema.getAlias() != null) {
@@ -199,7 +194,7 @@ public class ClientCsdlEdmProvider extends CsdlAbstractEdmProvider {
   }
 
   @Override
-  public CsdlAnnotations getAnnotationsGroup(FullQualifiedName targetName, String qualifier) throws ODataException {
+  public CsdlAnnotations getAnnotationsGroup(FullQualifiedName targetName, String qualifier) {
     CsdlSchema schema = xmlSchemas.get(targetName.getNamespace());
     if (schema != null) {
       return schema.getAnnotationGroup(targetName.getFullQualifiedNameAsString(), qualifier);

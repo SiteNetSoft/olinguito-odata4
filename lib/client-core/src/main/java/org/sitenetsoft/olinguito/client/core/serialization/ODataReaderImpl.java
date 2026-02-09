@@ -21,9 +21,9 @@
 package org.sitenetsoft.olinguito.client.core.serialization;
 
 import java.io.InputStream;
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
@@ -96,10 +96,10 @@ public class ODataReaderImpl implements ODataReader {
     try {
       if (ClientEntitySetIterator.class.isAssignableFrom(reference)) {
         res = new ResWrap<>(
-            (URI) null,
+                null,
             null,
-            reference.cast(new ClientEntitySetIterator<ClientEntitySet, ClientEntity>(
-                client, src, ContentType.parse(format))));
+            reference.cast(new ClientEntitySetIterator<>(
+                    client, src, Objects.requireNonNull(ContentType.parse(format)))));
       } else if (ClientEntitySet.class.isAssignableFrom(reference)) {
         final ResWrap<EntityCollection> resource = client.getDeserializer(ContentType.parse(format))
             .toEntitySet(src);
@@ -121,16 +121,16 @@ public class ODataReaderImpl implements ODataReader {
             reference.cast(client.getBinder().getODataProperty(container)));
       } else if (ClientValue.class.isAssignableFrom(reference)) {
         res = new ResWrap<>(
-            (URI) null,
+                null,
             null,
             reference.cast(client.getObjectFactory().newPrimitiveValueBuilder().
-                setType(ContentType.parse(format).equals(ContentType.TEXT_PLAIN)
+                setType(Objects.equals(ContentType.parse(format), ContentType.TEXT_PLAIN)
                     ? EdmPrimitiveTypeKind.String : EdmPrimitiveTypeKind.Stream).
                 setValue(IOUtils.toString(src, java.nio.charset.StandardCharsets.UTF_8))
                 .build()));
       } else if (XMLMetadata.class.isAssignableFrom(reference)) {
         res = new ResWrap<>(
-            (URI) null,
+                null,
             null,
             reference.cast(readMetadata(src)));
       } else if (ClientServiceDocument.class.isAssignableFrom(reference)) {
@@ -142,7 +142,7 @@ public class ODataReaderImpl implements ODataReader {
             reference.cast(client.getBinder().getODataServiceDocument(resource.getPayload())));
       } else if (ODataError.class.isAssignableFrom(reference)) {
         res = new ResWrap<>(
-            (URI) null,
+                null,
             null,
             reference.cast(readError(src, ContentType.parse(format))));
       } else {

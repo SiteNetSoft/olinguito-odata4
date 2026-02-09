@@ -15,28 +15,21 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  ******************************************************************************/
 package org.sitenetsoft.olinguito.fit.server;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.UUID;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.SimpleFormatter;
 
 import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -135,12 +128,11 @@ public class TomcatTestServer implements TestServer {
         LOG.info("...and run as long as the thread is running.");
         serverBuilder.start();
       }
-    } catch (IOException e) {
-      throw new RuntimeException("Failed to start Tomcat server from main method.", e);
-    } catch (LifecycleException e) {
+    } catch (IOException | LifecycleException e) {
       throw new RuntimeException("Failed to start Tomcat server from main method.", e);
     } finally {
-      serverBuilder.stop();
+        assert serverBuilder != null;
+        serverBuilder.stop();
     }
   }
 
@@ -157,6 +149,7 @@ public class TomcatTestServer implements TestServer {
   }
 
   public static class StaticContent extends HttpServlet {
+    @Serial
     private static final long serialVersionUID = 6850459331131987539L;
     private final String uri;
     private final String resource;
@@ -168,13 +161,13 @@ public class TomcatTestServer implements TestServer {
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp)
-        throws ServletException, IOException {
+        throws IOException {
 
       String result;
       File resourcePath = new File(resource);
       if (resourcePath.exists() && resourcePath.isFile()) {
         FileInputStream fin = new FileInputStream(resourcePath);
-        result = IOUtils.toString(fin, "UTF-8");
+        result = IOUtils.toString(fin, StandardCharsets.UTF_8);
         LOG.info("Mapped uri '{}' to resource '{}'.", uri, resource);
         LOG.trace("Resource content {\n\n{}\n\n}", result);
       } else {
@@ -360,13 +353,13 @@ public class TomcatTestServer implements TestServer {
 
     public TomcatTestServerBuilder addAuthServlet(final Class<? extends HttpServlet> factoryClass,
             final String servletPath, final String contextPath)
-        throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException, ServletException,
-               NoSuchMethodException, java.lang.reflect.InvocationTargetException {
+        throws InstantiationException, IllegalAccessException, ClassNotFoundException,
+            NoSuchMethodException, java.lang.reflect.InvocationTargetException {
       if (server != null) {
         return this;
       }
       final String TOMCAT_WEB_XML = "web.xml";
-      String webXMLPath = Thread.currentThread().getContextClassLoader().getResource(TOMCAT_WEB_XML).getPath();
+      String webXMLPath = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(TOMCAT_WEB_XML)).getPath();
       String servletClassname = factoryClass.getName();
       HttpServlet httpServlet = (HttpServlet) Class.forName(servletClassname).getDeclaredConstructor().newInstance();
       Context cxt = tomcat.addWebapp(servletPath, baseDir.getAbsolutePath());
@@ -387,13 +380,12 @@ public class TomcatTestServer implements TestServer {
     }
 
     @Override
-    public TomcatTestServerBuilder addServlet(final HttpServlet httpServlet, final String path) throws IOException {
+    public TomcatTestServerBuilder addServlet(final HttpServlet httpServlet, final String path) {
       String name = UUID.randomUUID().toString();
       return addServlet(httpServlet, name, path);
     }
 
-    public TomcatTestServerBuilder addServlet(final HttpServlet httpServlet, final String name, final String path)
-        throws IOException {
+    public TomcatTestServerBuilder addServlet(final HttpServlet httpServlet, final String name, final String path) {
       if (server != null) {
         return this;
       }
@@ -429,9 +421,7 @@ public class TomcatTestServer implements TestServer {
       tomcat.start();
 
       int actualPort = tomcat.getConnector().getPort();
-      LOG.info("Started server at endpoint "
-          + tomcat.getServer().getAddress() + ":" + actualPort +
-          " (with base dir: " + baseDir.getAbsolutePath());
+        LOG.info("Started server at endpoint {}:{} (with base dir: {}", tomcat.getServer().getAddress(), actualPort, baseDir.getAbsolutePath());
 
       server = new TomcatTestServer(tomcat, actualPort);
       return server;
@@ -461,19 +451,15 @@ public class TomcatTestServer implements TestServer {
   public static class SessionHolder implements HttpSessionListener {
 
     private static final Map<ServletContext, Set<HttpSession>> ALL_SESSIONS =
-            Collections.synchronizedMap(new HashMap<ServletContext, Set<HttpSession>>());
+            Collections.synchronizedMap(new HashMap<>());
 
     @Override
     public void sessionCreated(HttpSessionEvent se) {
       LOG.info("Created session: {}", se);
 
       ServletContext c = se.getSession().getServletContext();
-      Set<HttpSession> set = ALL_SESSIONS.get(c);
-      if (set == null) {
-        set = new HashSet<HttpSession>();
-        ALL_SESSIONS.put(c, set);
-      }
-      set.add(se.getSession());
+        Set<HttpSession> set = ALL_SESSIONS.computeIfAbsent(c, k -> new HashSet<>());
+        set.add(se.getSession());
     }
 
     @Override

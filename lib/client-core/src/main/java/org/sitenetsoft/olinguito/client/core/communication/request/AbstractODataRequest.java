@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -47,6 +49,7 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 
 /**
@@ -59,7 +62,7 @@ import java.util.Collection;
 public abstract class AbstractODataRequest extends AbstractRequest implements ODataRequest {
 
   private static final byte[] CRLF = {13, 10};
-  private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+  private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
   protected final ODataClient odataClient;
 
   /**
@@ -225,10 +228,8 @@ public abstract class AbstractODataRequest extends AbstractRequest implements OD
   public byte[] toByteArray() {
     final ByteArrayOutputStream baos = new ByteArrayOutputStream();
     try {
-      final StringBuilder requestBuilder = new StringBuilder();
-      requestBuilder.append(getMethod().toString()).append(' ').append(uri.toString()).append(' ').append("HTTP/1.1");
 
-      baos.write(requestBuilder.toString().getBytes(DEFAULT_CHARSET));
+        baos.write((getMethod().toString() + ' ' + uri.toString() + ' ' + "HTTP/1.1").getBytes(DEFAULT_CHARSET));
 
       baos.write(CRLF);
 
@@ -301,7 +302,7 @@ public abstract class AbstractODataRequest extends AbstractRequest implements OD
 
     if (LOG.isDebugEnabled()) {
       for (Header header : request.getAllHeaders()) {
-        LOG.debug("HTTP header being sent: " + header);
+          LOG.debug("HTTP header being sent: {}", header);
       }
     }
 

@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.batch;
 
@@ -36,7 +38,7 @@ public abstract class AbstractODataBatchResponseItem implements ODataBatchRespon
   /**
    * Logger.
    */
-  protected static final Logger LOG = LoggerFactory.getLogger(ODataBatchResponseItem.class);
+  protected static final Logger LOG = LoggerFactory.getLogger(AbstractODataBatchResponseItem.class);
 
   /**
    * Expected OData responses for the current batch response item.

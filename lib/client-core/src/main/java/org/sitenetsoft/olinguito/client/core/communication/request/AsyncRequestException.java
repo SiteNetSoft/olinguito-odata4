@@ -15,11 +15,16 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Added @Serial annotation
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
+import java.io.Serial;
+
 public class AsyncRequestException extends RuntimeException {
 
+  @Serial
   private static final long serialVersionUID = -6080844898544654406L;
 
   public AsyncRequestException(final String message) {

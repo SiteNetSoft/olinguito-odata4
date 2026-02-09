@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
  */
 package org.sitenetsoft.olinguito.fit.base;
 
@@ -24,7 +26,7 @@ import static org.junit.Assert.assertNotNull;
 import java.net.URI;
 import java.util.Calendar;
 
-import org.apache.commons.lang3.RandomUtils;
+import java.util.concurrent.ThreadLocalRandom;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataEntityCreateRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataDeleteResponse;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataEntityCreateResponse;
@@ -60,7 +62,7 @@ public class EntityCreateTestITCase extends AbstractTestITCase {
     final ClientEntity instrument = getClient().getObjectFactory().
         newEntity(new FullQualifiedName("Microsoft.Test.OData.Services.ODataWCFService.PaymentInstrument"));
 
-    int id = RandomUtils.nextInt(101999, 105000);
+    int id = ThreadLocalRandom.current().nextInt(101999, 105000);
     instrument.getProperties().add(getClient().getObjectFactory().newPrimitiveProperty("PaymentInstrumentID",
         getClient().getObjectFactory().newPrimitiveValueBuilder().buildInt32(id)));
     instrument.getProperties().add(getClient().getObjectFactory().newPrimitiveProperty("FriendlyName",

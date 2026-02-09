@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.batch;
 
@@ -22,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.HashSet;
@@ -138,7 +141,7 @@ public class ODataBatchUtilities {
             notEndLine = isNotEndLine(controller, currentLine);
 
             if (notEndLine && os != null && currentLine!=null) {
-              os.write(currentLine.getBytes(Constants.UTF8));
+              os.write(currentLine.getBytes(StandardCharsets.UTF_8));
               os.write(CRLF);
             }
           }
@@ -189,7 +192,7 @@ public class ODataBatchUtilities {
 
       final LineIterator headers = IOUtils.lineIterator(new ByteArrayInputStream(baos.toByteArray()), Constants.UTF8);
       while (headers.hasNext()) {
-        final String line = headers.nextLine().trim();
+        final String line = headers.next().trim();
         if (StringUtils.isNotBlank(line)) {
           addHeaderLine(line, target);
         }

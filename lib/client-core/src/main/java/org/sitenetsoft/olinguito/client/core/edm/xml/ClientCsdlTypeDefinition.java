@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.edm.xml;
 
@@ -29,11 +31,13 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlTypeDefinition;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 
 @JsonDeserialize(using = ClientCsdlTypeDefinition.TypeDefinitionDeserializer.class)
 class ClientCsdlTypeDefinition extends CsdlTypeDefinition implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = -902407149079419602L;
 
   static class TypeDefinitionDeserializer extends AbstractClientCsdlEdmDeserializer<ClientCsdlTypeDefinition> {
@@ -58,7 +62,7 @@ class ClientCsdlTypeDefinition extends CsdlTypeDefinition implements Serializabl
           } else if ("Scale".equals(jp.currentName())) {
             final String scale = jp.nextTextValue();
             typeDefinition.setScale("variable".equalsIgnoreCase(scale) || "floating".equalsIgnoreCase(scale) ?
-                0 : Integer.valueOf(scale));
+                0 : Integer.parseInt(scale));
           } else if ("SRID".equals(jp.currentName())) {
             final String srid = jp.nextTextValue();
             if (srid != null) {

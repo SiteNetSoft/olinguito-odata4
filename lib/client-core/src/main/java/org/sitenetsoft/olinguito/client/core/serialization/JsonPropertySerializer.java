@@ -43,7 +43,7 @@ public class JsonPropertySerializer extends JsonSerializer {
 
   protected void doSerialize(final Property property, final JsonGenerator jgen)
       throws IOException, EdmPrimitiveTypeException {
-    doContainerSerialize(new ResWrap<Property>((URI) null, null, property), jgen);
+    doContainerSerialize(new ResWrap<>((URI) null, null, property), jgen);
   }
 
   protected void doContainerSerialize(final ResWrap<Property> container, final JsonGenerator jgen)

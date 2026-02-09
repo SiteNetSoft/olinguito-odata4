@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
  */
 package org.sitenetsoft.olinguito.fit.proxy;
 
@@ -25,7 +27,7 @@ import java.lang.reflect.Proxy;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
-import org.apache.commons.lang3.RandomUtils;
+import java.util.concurrent.ThreadLocalRandom;
 import org.sitenetsoft.olinguito.ext.proxy.api.ComplexType;
 import org.sitenetsoft.olinguito.ext.proxy.api.EntityCollection;
 import org.sitenetsoft.olinguito.ext.proxy.api.EntityType;
@@ -128,7 +130,7 @@ public class ChangeDetectionTestITCase extends AbstractTestITCase {
     assertFalse(isChanged(account));
 
     final PaymentInstrument instrument = getContainer().newEntityInstance(PaymentInstrument.class);
-    final int id = RandomUtils.nextInt(101999, 105000);
+    final int id = ThreadLocalRandom.current().nextInt(101999, 105000);
     instrument.setPaymentInstrumentID(id);
     instrument.setFriendlyName("New one");
     instrument.setCreatedDate(new Timestamp(Calendar.getInstance().getTimeInMillis()));

@@ -15,11 +15,12 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
 import java.io.IOException;
-import java.net.URI;
 
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;
 import org.sitenetsoft.olinguito.commons.api.Constants;
@@ -53,6 +54,6 @@ public class JsonODataErrorDetailDeserializer extends JsonDeserializer {
       error.setTarget(errorNode.get(Constants.ERROR_TARGET).textValue());
     }
 
-    return new ResWrap<>((URI) null, null, error);
+    return new ResWrap<>(null, null, error);
   }
 }

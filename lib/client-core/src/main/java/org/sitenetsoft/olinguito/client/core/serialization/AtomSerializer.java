@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -220,45 +222,34 @@ public class AtomSerializer implements ODataSerializer {
     for (Link link : links) {
     
       if (link.getInlineEntity() != null || link.getInlineEntitySet() != null) {
-        writeLink(writer, link, new ExtraContent() {
-          @Override
-          public void write(XMLStreamWriter writer, Link link) throws XMLStreamException, EdmPrimitiveTypeException {
-            writer.writeStartElement(Constants.PREFIX_METADATA, Constants.ATOM_ELEM_INLINE, Constants.NS_METADATA);
-            if (link.getInlineEntity() != null) {
-              writer.writeStartElement(Constants.NS_ATOM, Constants.ATOM_ELEM_ENTRY);
-              entity(writer, link.getInlineEntity());
-              writer.writeEndElement();
-            }
-            if (link.getInlineEntitySet() != null) {
-              writer.writeStartElement(Constants.NS_ATOM, Constants.ATOM_ELEM_FEED);
-              entitySet(writer, link.getInlineEntitySet());
-              writer.writeEndElement();
-            }
-            writer.writeEndElement(); // inline    
+        writeLink(writer, link, (ExtraContent) (writer1, link1) -> {
+          writer1.writeStartElement(Constants.PREFIX_METADATA, Constants.ATOM_ELEM_INLINE, Constants.NS_METADATA);
+          if (link1.getInlineEntity() != null) {
+            writer1.writeStartElement(Constants.NS_ATOM, Constants.ATOM_ELEM_ENTRY);
+            entity(writer1, link1.getInlineEntity());
+            writer1.writeEndElement();
           }
+          if (link1.getInlineEntitySet() != null) {
+            writer1.writeStartElement(Constants.NS_ATOM, Constants.ATOM_ELEM_FEED);
+            entitySet(writer1, link1.getInlineEntitySet());
+            writer1.writeEndElement();
+          }
+          writer1.writeEndElement(); // inline
         });
         
       } else if (link.getBindingLink() != null) {
-        writeLink(writer, link, new ExtraContent() {
-          @Override
-          public void write(XMLStreamWriter writer, Link link) throws XMLStreamException, EdmPrimitiveTypeException {
-            writer.writeAttribute(Constants.ATTR_HREF, link.getBindingLink());
-          }
-        });
+        writeLink(writer, link, (ExtraContent) (writer2, link2) -> writer2.writeAttribute(Constants.ATTR_HREF, link2.getBindingLink()));
       } else if (link.getBindingLinks() != null && !link.getBindingLinks().isEmpty()) {
-        writeLink(writer, link, new ExtraContent() {
-          @Override
-          public void write(XMLStreamWriter writer, Link link) throws XMLStreamException, EdmPrimitiveTypeException {
-            writer.writeStartElement(Constants.PREFIX_METADATA, Constants.ATOM_ELEM_INLINE, Constants.NS_METADATA);
-            writer.writeStartElement(Constants.NS_ATOM, Constants.ATOM_ELEM_FEED);
-            for (String binding:link.getBindingLinks()) {            
-              Entity entity = new Entity();
-              entity.setId(URI.create(binding));
-              inlineEntityRef(writer, entity);                      
-            }
-            writer.writeEndElement(); //feed            
-            writer.writeEndElement(); //inline
+        writeLink(writer, link, (ExtraContent) (writer3, link3) -> {
+          writer3.writeStartElement(Constants.PREFIX_METADATA, Constants.ATOM_ELEM_INLINE, Constants.NS_METADATA);
+          writer3.writeStartElement(Constants.NS_ATOM, Constants.ATOM_ELEM_FEED);
+          for (String binding: link3.getBindingLinks()) {
+            Entity entity = new Entity();
+            entity.setId(URI.create(binding));
+            inlineEntityRef(writer3, entity);
           }
+          writer3.writeEndElement(); //feed
+          writer3.writeEndElement(); //inline
         });
       } else {
         if (isEntitySetNavigation(link)) {
@@ -273,11 +264,7 @@ public class AtomSerializer implements ODataSerializer {
             uris.add(link.getHref());
           }
         } else {
-          writeLink(writer, link, new ExtraContent() {
-            @Override
-            public void write(XMLStreamWriter writer, Link link) 
-                throws XMLStreamException, EdmPrimitiveTypeException {
-            }
+          writeLink(writer, link, (ExtraContent) (writer4, link4) -> {
           });
         }
       }
@@ -290,20 +277,17 @@ public class AtomSerializer implements ODataSerializer {
         link.setType(Constants.ENTITY_SET_NAVIGATION_LINK_TYPE);
         link.setRel(Constants.NS_NAVIGATION_LINK_REL+entry.getKey());
 
-        writeLink(writer, link, new ExtraContent() {
-          @Override
-          public void write(XMLStreamWriter writer, Link link) throws XMLStreamException, EdmPrimitiveTypeException {
-            writer.writeStartElement(Constants.PREFIX_METADATA, Constants.ATOM_ELEM_INLINE, Constants.NS_METADATA);
-            writer.writeStartElement(Constants.NS_ATOM, Constants.ATOM_ELEM_FEED);
-            for (String binding:entitySetLink) {            
-              Entity entity = new Entity();
-              entity.setId(URI.create(binding));
-              inlineEntityRef(writer, entity);                      
-            }
-            writer.writeEndElement();    
-            writer.writeEndElement();
+        writeLink(writer, link, (ExtraContent) (writer5, link5) -> {
+          writer5.writeStartElement(Constants.PREFIX_METADATA, Constants.ATOM_ELEM_INLINE, Constants.NS_METADATA);
+          writer5.writeStartElement(Constants.NS_ATOM, Constants.ATOM_ELEM_FEED);
+          for (String binding:entitySetLink) {
+            Entity entity = new Entity();
+            entity.setId(URI.create(binding));
+            inlineEntityRef(writer5, entity);
           }
-        });                
+          writer5.writeEndElement();
+          writer5.writeEndElement();
+        });
       }
     }   
   }
@@ -311,11 +295,7 @@ public class AtomSerializer implements ODataSerializer {
   private void links(final XMLStreamWriter writer, final List<Link> links)
       throws XMLStreamException, EdmPrimitiveTypeException {
     for (Link link : links) {
-      writeLink(writer, link, new ExtraContent() {
-        @Override
-        public void write(XMLStreamWriter writer, Link link) 
-            throws XMLStreamException, EdmPrimitiveTypeException {
-        }
+      writeLink(writer, link, (ExtraContent) (writer1, link1) -> {
       });
     }
   }
@@ -569,14 +549,14 @@ public class AtomSerializer implements ODataSerializer {
         next.setRel(Constants.NEXT_LINK_REL);
         next.setHref(entitySet.getNext().toASCIIString());
 
-        links(writer, Collections.<Link> singletonList(next));
+        links(writer, Collections.singletonList(next));
       }
       if (entitySet.getDeltaLink() != null) {
         final Link next = new Link();
         next.setRel(Constants.NS_DELTA_LINK_REL);
         next.setHref(entitySet.getDeltaLink().toASCIIString());
 
-        links(writer, Collections.<Link> singletonList(next));
+        links(writer, Collections.singletonList(next));
       }
     }
   }

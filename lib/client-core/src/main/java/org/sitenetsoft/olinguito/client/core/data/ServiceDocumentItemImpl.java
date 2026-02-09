@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.data;
 
@@ -73,11 +75,10 @@ public final class ServiceDocumentItemImpl implements ServiceDocumentItem {
     if (obj == null) {
       return false;
     }
-    if (!(obj instanceof ServiceDocumentItemImpl)) {
+    if (!(obj instanceof ServiceDocumentItemImpl other)) {
       return false;
     }
-    ServiceDocumentItemImpl other = (ServiceDocumentItemImpl) obj;
-    if (name == null) {
+      if (name == null) {
       if (other.name != null) {
         return false;
       }
@@ -92,13 +93,8 @@ public final class ServiceDocumentItemImpl implements ServiceDocumentItem {
       return false;
     }
     if (url == null) {
-      if (other.url != null) {
-        return false;
-      }
-    } else if (!url.equals(other.url)) {
-      return false;
-    }
-    return true;
+        return other.url == null;
+    } else return url.equals(other.url);
   }
 
   @Override

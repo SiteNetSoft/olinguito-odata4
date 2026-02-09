@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -22,7 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.Charset;
-import java.util.concurrent.Callable;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Future;
 
 import org.apache.commons.io.IOUtils;
@@ -43,7 +45,7 @@ import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 public abstract class AbstractODataBasicRequest<T extends ODataResponse>
     extends AbstractODataRequest implements ODataBasicRequest<T> {
 
-  private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+  private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
   private static final byte[] CRLF = {13, 10};
 
   /**
@@ -68,12 +70,8 @@ public abstract class AbstractODataBasicRequest<T extends ODataResponse>
 
   @Override
   public final Future<T> asyncExecute() {
-    return odataClient.getConfiguration().getExecutor().submit(new Callable<T>() {
-      @Override
-      public T call() throws Exception { //NOSONAR
-        return execute();
-      }
-    });
+      //NOSONAR
+      return odataClient.getConfiguration().getExecutor().submit(this::execute);
   }
 
   /**

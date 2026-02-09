@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
@@ -269,11 +271,8 @@ public final class URIUtils {
     HttpClientFactory httpclientFactory = client.getConfiguration().getHttpClientFactory();
     if (httpclientFactory instanceof BasicAuthHttpClientFactory) {
       return true;
-    } else if (httpclientFactory instanceof WrappingHttpClientFactory) {
-      WrappingHttpClientFactory tmp = (WrappingHttpClientFactory) httpclientFactory;
-      if (tmp.getWrappedHttpClientFactory() instanceof BasicAuthHttpClientFactory) {
-        return true;
-      }
+    } else if (httpclientFactory instanceof WrappingHttpClientFactory tmp) {
+        return tmp.getWrappedHttpClientFactory() instanceof BasicAuthHttpClientFactory;
     }
 
     return false;
@@ -284,7 +283,7 @@ public final class URIUtils {
     boolean useChunked = client.getConfiguration().isUseChuncked();
 
     if (shouldUseRepeatableHttpBodyEntry(client) || !useChunked) {
-      byte[] bytes = new byte[0];
+      byte[] bytes;
       try {
         bytes = IOUtils.toByteArray(input);
         IOUtils.closeQuietly(input);
@@ -323,17 +322,17 @@ public final class URIUtils {
 
   public static URI buildFunctionInvokeURI(final URI uri, final Map<String, ClientValue> parameters) {
     final String rawQuery = uri.getRawQuery();
-    String baseURI = null;
+    String baseURI;
     String uriOption = "";
     String pathSegments = null;
     // Check if Query contains /$ and extract options like /$count, /$value and /$ref
-    if (uri.toASCIIString().indexOf(URI_OPTIONS) != -1) {
+    if (uri.toASCIIString().contains(URI_OPTIONS)) {
       uriOption = uri.toASCIIString().substring(uri.toASCIIString().indexOf(URI_OPTIONS), 
           (rawQuery == null ? uri.toASCIIString().length() : uri.toASCIIString().indexOf(rawQuery) - 1));
     }
     if (rawQuery != null) {
       baseURI = StringUtils.substringBefore(uri.toASCIIString(), uriOption + "?" + rawQuery);
-    } else if (uriOption.length() > 0) {
+    } else if (!uriOption.isEmpty()) {
       baseURI = StringUtils.substringBefore(uri.toASCIIString(), uriOption);
     } else {
       baseURI = StringUtils.substringBefore(uri.toASCIIString(), null);
@@ -341,8 +340,8 @@ public final class URIUtils {
     if (baseURI.endsWith("()")) {
       baseURI = baseURI.substring(0, baseURI.length() - 2);
     } else {
-      /**
-       * If FunctionName is followed by a Navigation segment or Actions, 
+      /*
+       * If FunctionName is followed by a Navigation segment or Actions,
        * then get the substring till function name so that parameters can be appended to it.
        */
       int bracIndex = baseURI.indexOf("()");
@@ -369,7 +368,7 @@ public final class URIUtils {
       inlineParams.append(URIUtils.escape(value)).append(',');
     }
 
-    if (inlineParams.length() > 0) {
+    if (!inlineParams.isEmpty()) {
       inlineParams.deleteCharAt(inlineParams.length() - 1);
     }
 
