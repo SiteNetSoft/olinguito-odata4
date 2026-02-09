@@ -20,7 +20,7 @@
  */
 package org.sitenetsoft.olinguito.server.core.serializer;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
@@ -34,7 +34,7 @@ import org.sitenetsoft.olinguito.server.api.serializer.FixedFormatSerializer;
 import org.sitenetsoft.olinguito.server.api.serializer.PrimitiveValueSerializerOptions;
 import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
 import org.sitenetsoft.olinguito.server.api.serializer.SerializerStreamResult;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class FixedFormatSerializerTest {
 

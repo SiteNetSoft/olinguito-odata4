@@ -30,7 +30,7 @@ import org.sitenetsoft.olinguito.client.api.serialization.ODataSerializerExcepti
 import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class JsonSerializerTest {
 

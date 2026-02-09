@@ -18,9 +18,9 @@
  */
 package org.sitenetsoft.olinguito.server.core.uri.queryoption;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +36,7 @@ import org.sitenetsoft.olinguito.server.core.uri.UriInfoImpl;
 import org.sitenetsoft.olinguito.server.core.uri.parser.search.SearchTermImpl;
 import org.sitenetsoft.olinguito.server.core.uri.queryoption.expression.AliasImpl;
 import org.sitenetsoft.olinguito.server.core.uri.queryoption.expression.LiteralImpl;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class QueryOptionTest {
 

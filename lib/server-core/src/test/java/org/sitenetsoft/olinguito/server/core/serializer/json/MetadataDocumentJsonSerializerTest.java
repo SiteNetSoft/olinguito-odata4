@@ -20,9 +20,10 @@
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -108,14 +109,14 @@ import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 import org.sitenetsoft.olinguito.server.api.serializer.ODataSerializer;
 import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
 import org.sitenetsoft.olinguito.server.core.ServiceMetadataImpl;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class MetadataDocumentJsonSerializerTest {
 
   private static ODataSerializer serializer;
   
-  @BeforeClass
+  @BeforeAll
   public static void init() throws SerializerException {
     serializer = OData.newInstance().createSerializer(ContentType.APPLICATION_JSON);
   }
@@ -297,16 +298,18 @@ public class MetadataDocumentJsonSerializerTest {
         IOUtils.toString(metadata, StandardCharsets.UTF_8));
   }
   
-  @Test(expected=SerializerException.class)
+  @Test
   public void testNullMetadata() throws Exception {
-    serializer.metadataDocument(null).getContent();
+      assertThrows(SerializerException.class, () -> serializer.metadataDocument(null).getContent());
   }
   
-  @Test(expected=SerializerException.class)
+  @Test
   public void testNullEdm() throws Exception {
-    ServiceMetadata serviceMetadata = mock(ServiceMetadata.class);
-    when(serviceMetadata.getEdm()).thenReturn(null);
-    serializer.metadataDocument(serviceMetadata).getContent();
+      assertThrows(SerializerException.class, () -> {
+          ServiceMetadata serviceMetadata = mock(ServiceMetadata.class);
+          when(serviceMetadata.getEdm()).thenReturn(null);
+          serializer.metadataDocument(serviceMetadata).getContent();
+      });
   }
   
   @Test

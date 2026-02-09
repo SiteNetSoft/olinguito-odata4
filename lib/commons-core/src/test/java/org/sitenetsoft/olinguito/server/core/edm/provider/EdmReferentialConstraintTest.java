@@ -18,15 +18,15 @@
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmReferentialConstraint;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlReferentialConstraint;
 import org.sitenetsoft.olinguito.commons.core.edm.EdmReferentialConstraintImpl;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class EdmReferentialConstraintTest {
 

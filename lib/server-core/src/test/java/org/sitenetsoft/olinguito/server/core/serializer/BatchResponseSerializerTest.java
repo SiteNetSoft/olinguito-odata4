@@ -20,10 +20,10 @@
  */
 package org.sitenetsoft.olinguito.server.core.serializer;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import java.io.ByteArrayInputStream;
@@ -52,7 +52,7 @@ import org.sitenetsoft.olinguito.server.api.deserializer.batch.ODataResponsePart
 import org.sitenetsoft.olinguito.server.api.serializer.EntityCollectionSerializerOptions;
 import org.sitenetsoft.olinguito.server.api.serializer.SerializerStreamResult;
 import org.sitenetsoft.olinguito.server.core.deserializer.batch.BatchLineReader;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class BatchResponseSerializerTest {
   private static final String CRLF = "\r\n";

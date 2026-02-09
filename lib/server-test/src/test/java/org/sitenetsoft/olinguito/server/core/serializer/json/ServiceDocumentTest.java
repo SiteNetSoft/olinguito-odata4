@@ -20,9 +20,9 @@
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -36,7 +36,7 @@ import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 import org.sitenetsoft.olinguito.server.api.etag.ServiceMetadataETagSupport;
 import org.sitenetsoft.olinguito.server.api.serializer.ODataSerializer;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ServiceDocumentTest {
 

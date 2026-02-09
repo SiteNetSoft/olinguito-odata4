@@ -18,8 +18,8 @@
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.cud;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -36,7 +36,7 @@ import org.sitenetsoft.olinguito.client.core.domain.ClientComplexValueImpl;
 import org.sitenetsoft.olinguito.client.core.domain.ClientEntityImpl;
 import org.sitenetsoft.olinguito.client.core.domain.ClientPropertyImpl;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ODataRequestImplTest {
 

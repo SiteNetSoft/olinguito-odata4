@@ -18,11 +18,12 @@
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -43,7 +44,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlPropertyRef;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlReferentialConstraint;
 import org.sitenetsoft.olinguito.commons.core.edm.EdmNavigationPropertyImpl;
 import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class EdmNavigationPropertyImplTest {
 
@@ -127,31 +128,34 @@ public class EdmNavigationPropertyImplTest {
     assertTrue(partner == property.getPartner());
   }
 
-  @Test(expected = EdmException.class)
+  @Test
   public void navigationPropertyWithNonexistentPartner() throws Exception {
-    CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
-    EdmProviderImpl edm = new EdmProviderImpl(provider);
-    final FullQualifiedName entityTypeName = new FullQualifiedName("ns", "entity");
-    CsdlEntityType entityTypeProvider = new CsdlEntityType();
-    entityTypeProvider.setKey(Collections.<CsdlPropertyRef> emptyList());
-
-    List<CsdlNavigationProperty> navigationProperties = new ArrayList<CsdlNavigationProperty>();
-    navigationProperties.add(new CsdlNavigationProperty().setName("partnerName").setType(entityTypeName));
-    entityTypeProvider.setNavigationProperties(navigationProperties);
-    when(provider.getEntityType(entityTypeName)).thenReturn(entityTypeProvider);
-    CsdlNavigationProperty propertyProvider = new CsdlNavigationProperty();
-    propertyProvider.setType(entityTypeName);
-    propertyProvider.setNullable(false);
-    propertyProvider.setPartner("wrong");
-    EdmNavigationProperty property = new EdmNavigationPropertyImpl(edm, propertyProvider);
-    property.getPartner();
+      assertThrows(EdmException.class, () -> {
+          CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
+          EdmProviderImpl edm = new EdmProviderImpl(provider);
+          final FullQualifiedName entityTypeName = new FullQualifiedName("ns", "entity");
+          CsdlEntityType entityTypeProvider = new CsdlEntityType();
+          entityTypeProvider.setKey(Collections.<CsdlPropertyRef> emptyList());
+          List<CsdlNavigationProperty> navigationProperties = new ArrayList<CsdlNavigationProperty>();
+          navigationProperties.add(new CsdlNavigationProperty().setName("partnerName").setType(entityTypeName));
+          entityTypeProvider.setNavigationProperties(navigationProperties);
+          when(provider.getEntityType(entityTypeName)).thenReturn(entityTypeProvider);
+          CsdlNavigationProperty propertyProvider = new CsdlNavigationProperty();
+          propertyProvider.setType(entityTypeName);
+          propertyProvider.setNullable(false);
+          propertyProvider.setPartner("wrong");
+          EdmNavigationProperty property = new EdmNavigationPropertyImpl(edm, propertyProvider);
+          property.getPartner();
+      });
   }
 
-  @Test(expected = EdmException.class)
+  @Test
   public void navigationPropertyWithNonExistentType() throws Exception {
-    EdmProviderImpl edm = mock(EdmProviderImpl.class);
-    CsdlNavigationProperty propertyProvider = new CsdlNavigationProperty();
-    EdmNavigationProperty property = new EdmNavigationPropertyImpl(edm, propertyProvider);
-    property.getType();
+      assertThrows(EdmException.class, () -> {
+          EdmProviderImpl edm = mock(EdmProviderImpl.class);
+          CsdlNavigationProperty propertyProvider = new CsdlNavigationProperty();
+          EdmNavigationProperty property = new EdmNavigationPropertyImpl(edm, propertyProvider);
+          property.getType();
+      });
   }
 }

@@ -18,8 +18,8 @@
  */
 package org.sitenetsoft.olinguito.client.core.communication.response.batch;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -42,7 +42,7 @@ import org.sitenetsoft.olinguito.client.api.communication.response.ODataResponse
 import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataBatchLineIteratorImpl;
 import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataBatchUtilities;
 import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataChangesetResponseItem;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ODataBatchResponseTest {
 

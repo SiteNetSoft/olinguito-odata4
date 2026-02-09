@@ -18,9 +18,9 @@
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
 import java.util.List;
@@ -36,7 +36,7 @@ import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerResult;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandItem;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandOption;
 import org.sitenetsoft.olinguito.server.core.deserializer.AbstractODataDeserializerTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ODataDeserializerDeepInsertTest extends AbstractODataDeserializerTest {
 

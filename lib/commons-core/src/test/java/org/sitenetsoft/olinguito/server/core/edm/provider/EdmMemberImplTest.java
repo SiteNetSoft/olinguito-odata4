@@ -18,13 +18,13 @@
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEnumMember;
 import org.sitenetsoft.olinguito.commons.core.edm.EdmMemberImpl;
 import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class EdmMemberImplTest {
 

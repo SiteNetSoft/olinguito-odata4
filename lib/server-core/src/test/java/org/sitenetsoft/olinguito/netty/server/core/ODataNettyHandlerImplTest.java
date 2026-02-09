@@ -18,15 +18,15 @@
  */
 package org.sitenetsoft.olinguito.netty.server.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
 import org.sitenetsoft.olinguito.server.api.ODataRequest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;

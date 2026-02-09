@@ -18,7 +18,8 @@
  */
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -31,7 +32,7 @@ import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.ODataServerError;
 import org.sitenetsoft.olinguito.server.api.serializer.ODataSerializer;
 import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ServerErrorXmlSerializerTest {
 
@@ -55,9 +56,9 @@ public class ServerErrorXmlSerializerTest {
         jsonString);
   }
 
-  @Test(expected = SerializerException.class)
+  @Test
   public void nullErrorResultsInException() throws Exception {
-    ser.error(null);
+      assertThrows(SerializerException.class, () -> ser.error(null));
   }
 
   @Test

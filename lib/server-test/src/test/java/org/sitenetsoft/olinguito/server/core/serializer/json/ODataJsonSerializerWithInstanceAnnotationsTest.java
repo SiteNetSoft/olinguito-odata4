@@ -45,8 +45,8 @@ import org.sitenetsoft.olinguito.server.api.uri.UriHelper;
 import org.sitenetsoft.olinguito.server.tecsvc.MetadataETagSupport;
 import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ODataJsonSerializerWithInstanceAnnotationsTest {
   private static final OData odata = OData.newInstance();
@@ -103,7 +103,7 @@ public class ODataJsonSerializerWithInstanceAnnotationsTest {
         + "\"PropertyGuid\":\"01234567-89ab-cdef-0123-456789abcdef\","
         + "\"PropertyTimeOfDay\":\"03:26:05\""
         + "}";
-    Assert.assertEquals(expectedResult, resultString);
+    Assertions.assertEquals(expectedResult, resultString);
   }
   
   @Test
@@ -177,7 +177,7 @@ public class ODataJsonSerializerWithInstanceAnnotationsTest {
 	+		"\"target\":\"ESAllPrim(32767)/olingo.odata.test1.BAETAllPrimRT\""
 	+	"}"
 	+"}";
-    Assert.assertEquals(expectedResult, resultString);
+    Assertions.assertEquals(expectedResult, resultString);
   }
   
   @Test
@@ -281,6 +281,6 @@ public class ODataJsonSerializerWithInstanceAnnotationsTest {
     		+ "\"ESMixPrimCollComp(32767)/olingo.odata.test1.BAETMixPrimCollCompRTCTTwoPrim\""
     		+	"}"
     		+"}";
-    Assert.assertEquals(expectedResult, resultString);
+    Assertions.assertEquals(expectedResult, resultString);
   }
 }

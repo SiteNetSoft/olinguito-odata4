@@ -18,10 +18,11 @@
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.batch;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -42,7 +43,7 @@ import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBat
 import org.sitenetsoft.olinguito.client.api.domain.ClientInvokeResult;
 import org.sitenetsoft.olinguito.client.core.communication.request.invoke.ODataInvokeRequestImpl;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ODataBatchUtilitiesTest {
   
@@ -91,36 +92,40 @@ public class ODataBatchUtilitiesTest {
     
   }
   
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testChangeSetNeg() throws URISyntaxException{
-    ODataClient client = ODataClientBuilder.createClient();
-    URI uri = new URI("test");
-    ODataBatchRequest req = new ODataBatchRequestImpl(client, uri);;
-    ODataChangesetResponseItem expectedResItem = new ODataChangesetResponseItem(true);
-    ODataChangesetImpl change = new ODataChangesetImpl(req , expectedResItem, new ODataBatchRequestContext());
-    assertNotNull(change);
-    ODataBatchableRequest request = new ODataInvokeRequestImpl<ClientInvokeResult>(
-        client, ClientInvokeResult.class, HttpMethod.GET, uri);
-    change.addRequest(request);
-    assertNotNull(change.getBodyStreamWriter());
-    change.close();
-    change.closeItem();
+      assertThrows(IllegalArgumentException.class, () -> {
+          ODataClient client = ODataClientBuilder.createClient();
+          URI uri = new URI("test");
+          ODataBatchRequest req = new ODataBatchRequestImpl(client, uri);;
+          ODataChangesetResponseItem expectedResItem = new ODataChangesetResponseItem(true);
+          ODataChangesetImpl change = new ODataChangesetImpl(req , expectedResItem, new ODataBatchRequestContext());
+          assertNotNull(change);
+          ODataBatchableRequest request = new ODataInvokeRequestImpl<ClientInvokeResult>(
+          client, ClientInvokeResult.class, HttpMethod.GET, uri);
+          change.addRequest(request);
+          assertNotNull(change.getBodyStreamWriter());
+          change.close();
+          change.closeItem();
+      });
   }
   
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void testChangeSetCloseNeg() throws URISyntaxException{
-    ODataClient client = ODataClientBuilder.createClient();
-    URI uri = new URI("test");
-    ODataBatchRequest req = new ODataBatchRequestImpl(client, uri);;
-    ODataChangesetResponseItem expectedResItem = new ODataChangesetResponseItem(true);
-    ODataChangesetImpl change = new ODataChangesetImpl(req , expectedResItem, new ODataBatchRequestContext());
-    assertNotNull(change);
-    assertNotNull(change.getBodyStreamWriter());
-    change.close();
-    change.closeItem();
-    ODataBatchableRequest request = new ODataInvokeRequestImpl<ClientInvokeResult>(
-        client, ClientInvokeResult.class, HttpMethod.POST, uri);
-    change.addRequest(request);
+      assertThrows(IllegalStateException.class, () -> {
+          ODataClient client = ODataClientBuilder.createClient();
+          URI uri = new URI("test");
+          ODataBatchRequest req = new ODataBatchRequestImpl(client, uri);;
+          ODataChangesetResponseItem expectedResItem = new ODataChangesetResponseItem(true);
+          ODataChangesetImpl change = new ODataChangesetImpl(req , expectedResItem, new ODataBatchRequestContext());
+          assertNotNull(change);
+          assertNotNull(change.getBodyStreamWriter());
+          change.close();
+          change.closeItem();
+          ODataBatchableRequest request = new ODataInvokeRequestImpl<ClientInvokeResult>(
+          client, ClientInvokeResult.class, HttpMethod.POST, uri);
+          change.addRequest(request);
+      });
   }
   
   @Test

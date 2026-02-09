@@ -18,8 +18,9 @@
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.batch;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -27,7 +28,7 @@ import java.io.Reader;
 
 import org.apache.commons.io.LineIterator;
 import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchLineIterator;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ODataBatchControllerTest {
   
@@ -47,11 +48,13 @@ public class ODataBatchControllerTest {
     assertNotNull(iterator.getCurrent());
   }
   
-  @Test(expected = UnsupportedOperationException.class)
+  @Test
   public void testControllerNeg(){
-    final InputStream input = getClass().getResourceAsStream("batchResponse.batch");
-    Reader reader = new InputStreamReader(input);
-    ODataBatchLineIterator iterator = new ODataBatchLineIteratorImpl(new LineIterator(reader ));
-    iterator.remove();
+      assertThrows(UnsupportedOperationException.class, () -> {
+          final InputStream input = getClass().getResourceAsStream("batchResponse.batch");
+          Reader reader = new InputStreamReader(input);
+          ODataBatchLineIterator iterator = new ODataBatchLineIteratorImpl(new LineIterator(reader ));
+          iterator.remove();
+      });
   }
 }

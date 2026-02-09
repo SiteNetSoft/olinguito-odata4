@@ -20,7 +20,7 @@
  */
 package org.sitenetsoft.olinguito.server.core.serializer;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -31,7 +31,7 @@ import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
 import org.sitenetsoft.olinguito.server.api.ODataResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class AsyncResponseSerializerTest {
   private static final String CRLF = "\r\n";

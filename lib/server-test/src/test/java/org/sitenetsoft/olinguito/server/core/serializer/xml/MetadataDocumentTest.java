@@ -21,7 +21,7 @@
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.net.URI;
@@ -35,7 +35,7 @@ import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class MetadataDocumentTest {
 

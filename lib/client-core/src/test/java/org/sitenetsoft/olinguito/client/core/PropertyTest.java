@@ -18,9 +18,9 @@
  */
 package org.sitenetsoft.olinguito.client.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.InputStream;
 import java.util.Iterator;
@@ -32,7 +32,7 @@ import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
 import org.sitenetsoft.olinguito.client.api.serialization.ODataDeserializerException;
 import org.sitenetsoft.olinguito.client.api.serialization.ODataSerializerException;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class PropertyTest extends AbstractTest {
 

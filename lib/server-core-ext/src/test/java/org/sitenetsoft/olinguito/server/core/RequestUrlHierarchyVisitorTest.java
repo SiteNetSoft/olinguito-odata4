@@ -18,7 +18,7 @@
  */
 package org.sitenetsoft.olinguito.server.core;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.sitenetsoft.olinguito.server.api.uri.UriInfoEntityId;
 import org.sitenetsoft.olinguito.server.api.uri.UriInfoKind;
@@ -47,7 +47,7 @@ import org.sitenetsoft.olinguito.server.core.uri.queryoption.SearchOptionImpl;
 import org.sitenetsoft.olinguito.server.core.uri.queryoption.SkipOptionImpl;
 import org.sitenetsoft.olinguito.server.core.uri.queryoption.SkipTokenOptionImpl;
 import org.sitenetsoft.olinguito.server.core.uri.queryoption.TopOptionImpl;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class RequestUrlHierarchyVisitorTest {
   

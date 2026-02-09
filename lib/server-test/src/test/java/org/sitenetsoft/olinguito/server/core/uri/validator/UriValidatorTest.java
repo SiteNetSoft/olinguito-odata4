@@ -18,8 +18,8 @@
  */
 package org.sitenetsoft.olinguito.server.core.uri.validator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Collections;
 
@@ -32,7 +32,7 @@ import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserException;
 import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserSemanticException;
 import org.sitenetsoft.olinguito.server.core.uri.testutil.TestUriValidator;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class UriValidatorTest {
 

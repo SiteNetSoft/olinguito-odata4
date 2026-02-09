@@ -18,10 +18,11 @@
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -33,7 +34,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmKeyPropertyRef;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlPropertyRef;
 import org.sitenetsoft.olinguito.commons.core.edm.EdmKeyPropertyRefImpl;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class EdmKeyPropertyRefImplTest {
 
@@ -71,30 +72,34 @@ public class EdmKeyPropertyRefImplTest {
     assertTrue(property == keyPropertyMock);
   }
 
-  @Test(expected = EdmException.class)
+  @Test
   public void aliasForPropertyInComplexPropertyButWrongPath() {
-    CsdlPropertyRef providerRef = new CsdlPropertyRef().setName("comp/wrong").setAlias("alias");
-    EdmEntityType etMock = mock(EdmEntityType.class);
-    EdmProperty keyPropertyMock = mock(EdmProperty.class);
-    EdmElement compMock = mock(EdmProperty.class);
-    EdmComplexType compTypeMock = mock(EdmComplexType.class);
-    when(compTypeMock.getProperty("Id")).thenReturn(keyPropertyMock);
-    when(compMock.getType()).thenReturn(compTypeMock);
-    when(etMock.getProperty("comp")).thenReturn(compMock);
-    new EdmKeyPropertyRefImpl(etMock, providerRef).getProperty();
+      assertThrows(EdmException.class, () -> {
+          CsdlPropertyRef providerRef = new CsdlPropertyRef().setName("comp/wrong").setAlias("alias");
+          EdmEntityType etMock = mock(EdmEntityType.class);
+          EdmProperty keyPropertyMock = mock(EdmProperty.class);
+          EdmElement compMock = mock(EdmProperty.class);
+          EdmComplexType compTypeMock = mock(EdmComplexType.class);
+          when(compTypeMock.getProperty("Id")).thenReturn(keyPropertyMock);
+          when(compMock.getType()).thenReturn(compTypeMock);
+          when(etMock.getProperty("comp")).thenReturn(compMock);
+          new EdmKeyPropertyRefImpl(etMock, providerRef).getProperty();
+      });
   }
 
-  @Test(expected = EdmException.class)
+  @Test
   public void aliasForPropertyInComplexPropertyButWrongPath2() {
-    CsdlPropertyRef providerRef = new CsdlPropertyRef().setName("wrong/Id").setAlias("alias");
-    EdmEntityType etMock = mock(EdmEntityType.class);
-    EdmProperty keyPropertyMock = mock(EdmProperty.class);
-    EdmElement compMock = mock(EdmProperty.class);
-    EdmComplexType compTypeMock = mock(EdmComplexType.class);
-    when(compTypeMock.getProperty("Id")).thenReturn(keyPropertyMock);
-    when(compMock.getType()).thenReturn(compTypeMock);
-    when(etMock.getProperty("comp")).thenReturn(compMock);
-    new EdmKeyPropertyRefImpl(etMock, providerRef).getProperty();
+      assertThrows(EdmException.class, () -> {
+          CsdlPropertyRef providerRef = new CsdlPropertyRef().setName("wrong/Id").setAlias("alias");
+          EdmEntityType etMock = mock(EdmEntityType.class);
+          EdmProperty keyPropertyMock = mock(EdmProperty.class);
+          EdmElement compMock = mock(EdmProperty.class);
+          EdmComplexType compTypeMock = mock(EdmComplexType.class);
+          when(compTypeMock.getProperty("Id")).thenReturn(keyPropertyMock);
+          when(compMock.getType()).thenReturn(compTypeMock);
+          when(etMock.getProperty("comp")).thenReturn(compMock);
+          new EdmKeyPropertyRefImpl(etMock, providerRef).getProperty();
+      });
   }
 
   @Test
@@ -118,24 +123,30 @@ public class EdmKeyPropertyRefImplTest {
     assertTrue(property == keyPropertyMock);
   }
 
-  @Test(expected = EdmException.class)
+  @Test
   public void oneKeyNoAliasButInvalidProperty() {
-    CsdlPropertyRef providerRef = new CsdlPropertyRef().setName("Id");
-    EdmKeyPropertyRef ref = new EdmKeyPropertyRefImpl(mock(EdmEntityType.class), providerRef);
-    ref.getProperty();
+      assertThrows(EdmException.class, () -> {
+          CsdlPropertyRef providerRef = new CsdlPropertyRef().setName("Id");
+          EdmKeyPropertyRef ref = new EdmKeyPropertyRefImpl(mock(EdmEntityType.class), providerRef);
+          ref.getProperty();
+      });
   }
 
-  @Test(expected = EdmException.class)
+  @Test
   public void aliasButNoPath() {
-    CsdlPropertyRef providerRef = new CsdlPropertyRef().setName("Id").setAlias("alias");
-    EdmKeyPropertyRef ref = new EdmKeyPropertyRefImpl(mock(EdmEntityType.class), providerRef);
-    ref.getProperty();
+      assertThrows(EdmException.class, () -> {
+          CsdlPropertyRef providerRef = new CsdlPropertyRef().setName("Id").setAlias("alias");
+          EdmKeyPropertyRef ref = new EdmKeyPropertyRefImpl(mock(EdmEntityType.class), providerRef);
+          ref.getProperty();
+      });
   }
 
-  @Test(expected = EdmException.class)
+  @Test
   public void aliasButEmptyPath() {
-    CsdlPropertyRef providerRef = new CsdlPropertyRef().setName("").setAlias("alias");
-    EdmKeyPropertyRef ref = new EdmKeyPropertyRefImpl(mock(EdmEntityType.class), providerRef);
-    ref.getProperty();
+      assertThrows(EdmException.class, () -> {
+          CsdlPropertyRef providerRef = new CsdlPropertyRef().setName("").setAlias("alias");
+          EdmKeyPropertyRef ref = new EdmKeyPropertyRefImpl(mock(EdmEntityType.class), providerRef);
+          ref.getProperty();
+      });
   }
 }

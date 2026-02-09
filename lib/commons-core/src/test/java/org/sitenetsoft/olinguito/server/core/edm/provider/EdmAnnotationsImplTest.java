@@ -18,24 +18,24 @@
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmAnnotations;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotations;
 import org.sitenetsoft.olinguito.commons.core.edm.EdmAnnotationsImpl;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class EdmAnnotationsImplTest {
 
   private Edm edm;
 
-  @Before
+  @BeforeEach
   public void setupEdm() {
     edm = mock(Edm.class);
   }

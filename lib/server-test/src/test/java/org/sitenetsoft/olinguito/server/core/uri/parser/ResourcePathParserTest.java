@@ -36,7 +36,7 @@ import org.sitenetsoft.olinguito.server.tecsvc.provider.EntityTypeProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EnumTypeProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.PropertyProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.TypeDefinitionProvider;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** Tests of the parts of the URI parser that parse the resource path without query options. */
 public class ResourcePathParserTest {

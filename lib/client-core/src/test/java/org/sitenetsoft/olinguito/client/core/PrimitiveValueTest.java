@@ -18,7 +18,7 @@
  */
 package org.sitenetsoft.olinguito.client.core;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
@@ -26,7 +26,7 @@ import java.util.Calendar;
 import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class PrimitiveValueTest extends AbstractTest {
 

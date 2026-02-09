@@ -21,13 +21,13 @@ package org.sitenetsoft.olinguito.client.core;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 
 public abstract class AbstractTest {
 
   protected static final ODataClient client = ODataClientFactory.getClient();
 
-  @BeforeClass
+  @BeforeAll
   public static void setUp() {
     XMLUnit.setIgnoreComments(true);
     XMLUnit.setIgnoreAttributeOrder(true);

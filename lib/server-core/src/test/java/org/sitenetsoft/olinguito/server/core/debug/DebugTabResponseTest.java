@@ -18,11 +18,11 @@
  */
 package org.sitenetsoft.olinguito.server.core.debug;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
 import org.sitenetsoft.olinguito.server.api.ODataResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DebugTabResponseTest extends AbstractDebugTabTest {
 

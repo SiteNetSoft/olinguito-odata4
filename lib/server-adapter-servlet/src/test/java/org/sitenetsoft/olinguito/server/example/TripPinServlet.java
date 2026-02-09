@@ -36,7 +36,7 @@ import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 import org.sitenetsoft.olinguito.server.core.MetadataParser;
 import org.sitenetsoft.olinguito.server.core.OData4Impl;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class TripPinServlet extends HttpServlet {
   private static final long serialVersionUID = 2663595419366214401L;
@@ -59,7 +59,7 @@ public class TripPinServlet extends HttpServlet {
       parser.implicitlyLoadCoreVocabularies(true);
 
       InputStream in = getClass().getClassLoader().getResourceAsStream("trippin/trippin.xml");
-      assertNotNull("trippin/trippin.xml not found on test classpath", in);
+      assertNotNull(in, "trippin/trippin.xml not found on test classpath");
 
       metadata = parser.buildServiceMetadata(new InputStreamReader(in, StandardCharsets.UTF_8));
     } catch (XMLStreamException e) {

@@ -18,8 +18,8 @@
  */
 package org.sitenetsoft.olinguito.server.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Locale;
 
@@ -33,7 +33,7 @@ import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
 import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserException;
 import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserSemanticException;
 import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidationException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ExceptionHelperTest {
 
@@ -169,7 +169,7 @@ public class ExceptionHelperTest {
   
   private void checkStatusCode(final ODataServerError serverError, final HttpStatusCode statusCode,
       final ODataLibraryException exception) {
-    assertEquals("FailedKey: " + exception.getMessageKey().getKey(),
-        statusCode.getStatusCode(), serverError.getStatusCode());
+    assertEquals(statusCode.getStatusCode(), serverError.getStatusCode(),
+        "FailedKey: " + exception.getMessageKey().getKey());
   }
 }
