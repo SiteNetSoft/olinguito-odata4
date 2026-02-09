@@ -20,6 +20,7 @@
 
   Copyright 2026 SiteNetSoft - Replaced Cobertura with JaCoCo for code coverage
   Copyright 2026 SiteNetSoft - Migrated from JUnit 4 to JUnit 5 (Jupiter)
+  Copyright 2026 SiteNetSoft - Migrated Velocity 1.7 to 2.4.1 (CVE-2020-13936)
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -94,10 +95,7 @@
     <cxf.version>4.0.10</cxf.version>
     <netty.version>4.1.129.Final</netty.version>
 
-    <!-- Velocity 1.7 is legacy; 2.x requires code changes (module access issues on Java 17).
-         Known unaddressed CVE: CVE-2020-13936 (9.8 Critical) - RCE via template modification.
-         TODO: Migrate to Velocity Engine 2.x (requires add-opens JVM args or code changes). -->
-    <velocity.version>1.7</velocity.version>
+    <velocity-engine.version>2.4.1</velocity-engine.version>
     <maven.plugin.api.version>3.9.9</maven.plugin.api.version>
     <maven.plugin.tools.version>3.13.1</maven.plugin.tools.version>
     <maven.bundle.plugin.version>5.1.9</maven.bundle.plugin.version>
@@ -295,8 +293,8 @@
       <!-- Pojogen Maven Plugin depenencies -->
       <dependency>
         <groupId>org.apache.velocity</groupId>
-        <artifactId>velocity</artifactId>
-        <version>${velocity.version}</version>
+        <artifactId>velocity-engine-core</artifactId>
+        <version>${velocity-engine.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
