@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
  */
 package org.sitenetsoft.olinguito.fit.utils;
 
@@ -27,6 +29,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -545,7 +548,7 @@ public class XMLUtilities extends AbstractUtilities {
         writer.add(entryElement.getContentReader());
 
         addAtomElement(
-            IOUtils.toInputStream(String.format("<content type=\"*/*\" src=\"%s/$value\" />", href)),
+            IOUtils.toInputStream(String.format("<content type=\"*/*\" src=\"%s/$value\" />", href), Constants.ENCODING),
             writer);
 
         writer.add(entryElement.getEnd());
@@ -556,7 +559,7 @@ public class XMLUtilities extends AbstractUtilities {
                   Constants.get(ConstantKey.PROPERTIES)), 0, 2, 3).getValue();
 
           addAtomElement(
-              IOUtils.toInputStream("<content type=\"application/xml\">"),
+              IOUtils.toInputStream("<content type=\"application/xml\">", Constants.ENCODING),
               writer);
 
           writer.add(entryElement.getStart());
@@ -564,7 +567,7 @@ public class XMLUtilities extends AbstractUtilities {
           writer.add(entryElement.getEnd());
 
           addAtomElement(
-              IOUtils.toInputStream("</content>"),
+              IOUtils.toInputStream("</content>", Constants.ENCODING),
               writer);
         } catch (Exception nf) {
           reader.close();
@@ -579,7 +582,7 @@ public class XMLUtilities extends AbstractUtilities {
           writer.add(entryElement.getContentReader());
 
           addAtomElement(
-              IOUtils.toInputStream("<content type=\"application/xml\"/>"),
+              IOUtils.toInputStream("<content type=\"application/xml\"/>", Constants.ENCODING),
               writer);
 
           writer.add(entryElement.getEnd());
@@ -1033,7 +1036,7 @@ public class XMLUtilities extends AbstractUtilities {
     try {
       while (true) {
         links.add(IOUtils.toString(extractElement(reader, null, Collections.<String> singletonList("uri"), 0, -1, -1).
-            getValue().getContent()));
+            getValue().getContent(), StandardCharsets.UTF_8));
       }
     } catch (Exception ignore) {
       // End document reached ...
@@ -1045,7 +1048,7 @@ public class XMLUtilities extends AbstractUtilities {
     reader = getEventReader(new ByteArrayInputStream(bos.toByteArray()));
     try {
       next = IOUtils.toString(extractElement(reader, null, Collections.<String> singletonList("next"), 0, -1, -1).
-          getValue().getContent());
+          getValue().getContent(), StandardCharsets.UTF_8);
     } catch (Exception ignore) {
       // next link is not mandatory
       next = null;

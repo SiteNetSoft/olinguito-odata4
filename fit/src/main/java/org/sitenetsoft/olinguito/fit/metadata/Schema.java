@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.fit.metadata;
 
@@ -30,8 +32,8 @@ public class Schema extends AbstractMetadataElement {
 
   public Schema(final String namespace) {
     this.namespace = namespace;
-    entityTypes = new HashMap<String, EntityType>();
-    containers = new HashMap<String, Container>();
+    entityTypes = new HashMap<>();
+    containers = new HashMap<>();
   }
 
   public String getNamespace() {

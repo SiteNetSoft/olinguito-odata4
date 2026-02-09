@@ -56,13 +56,10 @@ public final class TestServerFactory {
         String serverType = System.getProperty(SERVER_TYPE_PROPERTY, SERVER_TYPE_TOMCAT);
         LOG.info("Creating test server of type: {}", serverType);
 
-        switch (serverType.toLowerCase()) {
-            case SERVER_TYPE_QUARKUS:
-                return createQuarkusBuilder(port);
-            case SERVER_TYPE_TOMCAT:
-            default:
-                return TomcatTestServer.init(port);
-        }
+        return switch (serverType.toLowerCase()) {
+            case SERVER_TYPE_QUARKUS -> createQuarkusBuilder(port);
+            default -> TomcatTestServer.init(port);
+        };
     }
 
     private static TestServerBuilder<?> createQuarkusBuilder(int port) {

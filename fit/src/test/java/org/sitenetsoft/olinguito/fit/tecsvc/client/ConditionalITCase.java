@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
@@ -27,6 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.client.api.communication.ODataClientErrorException;
@@ -149,7 +152,7 @@ public class ConditionalITCase extends AbstractParamTecSvcITCase {
   @Test
   public void updateMediaWithWrongIfMatch() throws Exception {
     ODataMediaEntityUpdateRequest<ClientEntity> request =
-            getClient().getCUDRequestFactory().getMediaEntityUpdateRequest(uriMedia, IOUtils.toInputStream("ignored"));
+            getClient().getCUDRequestFactory().getMediaEntityUpdateRequest(uriMedia, IOUtils.toInputStream("ignored", StandardCharsets.UTF_8));
     request.setIfMatch("W/\"42\"");
 
     try {

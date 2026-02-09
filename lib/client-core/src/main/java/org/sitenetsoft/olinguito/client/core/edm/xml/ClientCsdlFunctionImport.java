@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.edm.xml;
 
@@ -28,11 +30,13 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlFunctionImport;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 
 @JsonDeserialize(using = ClientCsdlFunctionImport.FunctionImportDeserializer.class)
 class ClientCsdlFunctionImport extends CsdlFunctionImport implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = -1686801084142932402L;
 
   static class FunctionImportDeserializer extends AbstractClientCsdlEdmDeserializer<ClientCsdlFunctionImport> {

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
  */
 package org.sitenetsoft.olinguito.fit;
 
@@ -484,9 +486,9 @@ public class Services {
 
         if ("PATCH".equals(method) || "MERGE".equals(method)) {
           client.header("X-HTTP-METHOD", method);
-          res = client.invoke("POST", IOUtils.toInputStream(content));
+          res = client.invoke("POST", IOUtils.toInputStream(content, Constants.ENCODING));
         } else {
-          res = client.invoke(method, IOUtils.toInputStream(content));
+          res = client.invoke(method, IOUtils.toInputStream(content, Constants.ENCODING));
         }
       }
 
@@ -1107,7 +1109,7 @@ public class Services {
       @QueryParam("$skiptoken") @DefaultValue(StringUtils.EMPTY) final String skiptoken) {
 
     return StringUtils.isBlank(filter) && StringUtils.isBlank(search) ?
-        NumberUtils.isNumber(type) ?
+        NumberUtils.isCreatable(type) ?
             getEntityInternal(uriInfo.getRequestUri().toASCIIString(), accept, "People", type, format, null, null) :
             getEntitySet(accept, "People", type) :
         getEntitySet(uriInfo, accept, "People", top, skip, format, count, filter, orderby, skiptoken, type);

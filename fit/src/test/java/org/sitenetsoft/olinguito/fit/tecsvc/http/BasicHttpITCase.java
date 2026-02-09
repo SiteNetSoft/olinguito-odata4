@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.http;
 
@@ -26,6 +28,7 @@ import static org.junit.Assert.assertTrue;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
@@ -52,10 +55,10 @@ public class BasicHttpITCase extends AbstractBaseTestITCase {
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
     assertNull(connection.getHeaderField(HttpHeader.CONTENT_TYPE));
-    assertEquals("", IOUtils.toString(connection.getInputStream()));
+    assertEquals("", IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8));
     connection.disconnect();
   }
-  
+
   @Test
   public void testHeadMethodOnMetadataDocument() throws Exception {
     URL url = new URL(SERVICE_URI + "$metadata");
@@ -67,7 +70,7 @@ public class BasicHttpITCase extends AbstractBaseTestITCase {
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
     assertNull(connection.getHeaderField(HttpHeader.CONTENT_TYPE));
-    assertEquals("", IOUtils.toString(connection.getInputStream()));
+    assertEquals("", IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8));
     connection.disconnect();
   }
 
@@ -192,7 +195,7 @@ public class BasicHttpITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), connection.getResponseCode());
-    assertTrue(IOUtils.toString(connection.getErrorStream()).
+    assertTrue(IOUtils.toString(connection.getErrorStream(), StandardCharsets.UTF_8).
         contains("The system query option '$top' has the not-allowed value ''."));
   }
  
@@ -205,7 +208,7 @@ public class BasicHttpITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), connection.getResponseCode());
-    assertTrue(IOUtils.toString(connection.getErrorStream()).
+    assertTrue(IOUtils.toString(connection.getErrorStream(), StandardCharsets.UTF_8).
         contains("The system query option '$skip' has the not-allowed value ''."));
   }
   
@@ -403,7 +406,7 @@ public class BasicHttpITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    assertEquals("3", IOUtils.toString(connection.getInputStream()));
+    assertEquals("3", IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8));
     connection.disconnect();
   }
   
@@ -417,7 +420,7 @@ public class BasicHttpITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    String content = IOUtils.toString(connection.getInputStream());
+    String content = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
     assertNotNull(content);
     assertTrue(content.contains("\"value\":[{\"PropertyInt16\":-32768,"
         + "\"PropertyString\":\"Second Resource - negative values\","

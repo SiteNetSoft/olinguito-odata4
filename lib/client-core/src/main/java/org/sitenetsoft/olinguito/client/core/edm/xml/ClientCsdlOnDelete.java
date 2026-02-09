@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.edm.xml;
 
@@ -27,11 +29,13 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlOnDelete;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlOnDeleteAction;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 
 @JsonDeserialize(using = ClientCsdlOnDelete.OnDeleteDeserializer.class)
 class ClientCsdlOnDelete extends CsdlOnDelete implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = -7130889202653716784L;
 
   static class OnDeleteDeserializer extends AbstractClientCsdlEdmDeserializer<CsdlOnDelete> {

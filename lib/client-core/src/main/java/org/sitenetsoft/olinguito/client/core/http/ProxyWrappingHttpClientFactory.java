@@ -38,9 +38,9 @@ public class ProxyWrappingHttpClientFactory implements WrappingHttpClientFactory
 
   private final URI proxy;
 
-  private String proxyUsername;
+  private final String proxyUsername;
 
-  private String proxyPassword;
+  private final String proxyPassword;
 
   private final DefaultHttpClientFactory wrapped;
 

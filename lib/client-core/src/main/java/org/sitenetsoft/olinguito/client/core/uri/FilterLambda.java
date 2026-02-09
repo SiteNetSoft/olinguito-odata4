@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
@@ -52,7 +54,7 @@ public class FilterLambda implements FilterArg {
     StringBuilder builder = new StringBuilder(collection.build()).
         append(SLASH).
         append(operator);
-    if (this.lambdaVariable != null && this.lambdaVariable.length() > 0) {
+    if (this.lambdaVariable != null && !this.lambdaVariable.isEmpty()) {
       builder.append(OPENBRAC).
           append(lambdaVariable).append(COLON).
           append(expression.build()).

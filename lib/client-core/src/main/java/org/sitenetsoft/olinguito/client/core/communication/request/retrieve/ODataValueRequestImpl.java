@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.retrieve;
 
@@ -78,7 +80,8 @@ public class ODataValueRequestImpl extends AbstractODataRetrieveRequest<ClientPr
         final ContentType contentType = ContentType.parse(getContentType());
 
         try {
-          value = odataClient.getObjectFactory().newPrimitiveValueBuilder().
+            assert contentType != null;
+            value = odataClient.getObjectFactory().newPrimitiveValueBuilder().
                   setType(contentType.isCompatible(ContentType.TEXT_PLAIN)
                           ? EdmPrimitiveTypeKind.String : EdmPrimitiveTypeKind.Stream).
                   setValue(IOUtils.toString(getRawResponse(), StandardCharsets.UTF_8)).build();

@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
@@ -41,10 +43,9 @@ public class FilterFunction implements FilterArg {
       }
     }
     
-    return new StringBuilder(function).
-            append('(').
-            append(strParams.length == 0 ? StringUtils.EMPTY : StringUtils.join(strParams, ',')).
-            append(')').
-            toString();
+    return function +
+            '(' +
+            (strParams.length == 0 ? StringUtils.EMPTY : StringUtils.join(strParams, ',')) +
+            ')';
   }
 }

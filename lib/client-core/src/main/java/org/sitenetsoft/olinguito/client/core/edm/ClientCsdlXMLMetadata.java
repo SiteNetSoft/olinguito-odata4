@@ -15,9 +15,12 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.edm;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +38,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlSchema;
  */
 public class ClientCsdlXMLMetadata extends CsdlAbstractEdmItem implements Serializable, XMLMetadata {
 
+  @Serial
   private static final long serialVersionUID = 6025723060298454901L;
   protected final Edmx edmx;
   private  List<List<String>> schemaNameSpaces = null;

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.fit.metadata;
 
@@ -55,7 +57,7 @@ public class Metadata extends AbstractMetadataElement {
 
   public Metadata(final InputStream is) {
     DEF_NS = Constants.get(ConstantKey.EDM_NS);
-    schemas = new HashMap<String, Schema>();
+    schemas = new HashMap<>();
 
     try {
       final XMLInputFactory ifactory = XMLInputFactory.newInstance();
@@ -259,7 +261,7 @@ public class Metadata extends AbstractMetadataElement {
     return entityType;
   }
 
-  private Property getProperty(final StartElement start) throws XMLStreamException {
+  private Property getProperty(final StartElement start) {
     final Property property =
         new Property(start.getAttributeByName(new QName("Name")).getValue());
 
@@ -272,7 +274,7 @@ public class Metadata extends AbstractMetadataElement {
     return property;
   }
 
-  private NavigationProperty getNavigationProperty(final StartElement start) throws XMLStreamException {
+  private NavigationProperty getNavigationProperty(final StartElement start) {
     final NavigationProperty property =
         new NavigationProperty(start.getAttributeByName(new QName("Name")).getValue());
 

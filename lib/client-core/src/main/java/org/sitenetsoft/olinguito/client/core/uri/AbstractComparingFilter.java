@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
@@ -36,10 +38,8 @@ abstract class AbstractComparingFilter implements URIFilter {
 
   @Override
   public String build() {
-    return new StringBuilder().
-            append('(').append(left.build()).
-            append(' ').append(getOp()).append(' ').
-            append(right.build()).append(')').
-            toString();
+    return '(' + left.build() +
+            ' ' + getOp() + ' ' +
+            right.build() + ')';
   }
 }

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.fit.rest;
 
@@ -67,7 +69,7 @@ public class OAuth2Provider implements AuthorizationCodeDataProvider {
 
   @Override
   public List<OAuthPermission> convertScopeToPermissions(final Client client, final List<String> list) {
-    return list.stream().map(l -> new OAuthPermission((l))).collect(Collectors.toList());
+    return list.stream().map(OAuthPermission::new).collect(Collectors.toList());
   }
 
   @Override

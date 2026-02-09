@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -83,7 +85,7 @@ public class JsonDeserializer implements ODataDeserializer {
   }
 
   protected String getJSONAnnotation(final String string) {
-    return StringUtils.prependIfMissing(string, "@");
+    return string.startsWith("@") ? string : "@" + string;
   }
 
   protected String getTitle(final Map.Entry<String, JsonNode> entry) {

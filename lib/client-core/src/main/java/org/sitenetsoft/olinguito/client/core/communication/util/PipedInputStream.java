@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed array index out of bounds in read()
  */
 package org.sitenetsoft.olinguito.client.core.communication.util;
 
@@ -26,9 +28,9 @@ import java.io.IOException;
  * This class is equivalent to <code>java.io.PipedInputStream</code>. In the
  * interface it only adds a constructor which allows for specifying the buffer
  * size. Its implementation, however, is much simpler and a lot more efficient
- * than its equivalent. It doesn't rely on polling. Instead it uses proper
+ * than its equivalent. It doesn't rely on polling. Instead, it uses proper
  * synchronization with its counterpart <code>be.re.io.PipedOutputStream</code>.
- *
+ * <p>
  * Multiple readers can read from this stream concurrently. The block asked for
  * by a reader is delivered completely, or until the end of the stream if less
  * is available. Other readers can't come in between.
@@ -56,9 +58,7 @@ public class PipedInputStream extends java.io.PipedInputStream {
   /**
    * Creates a PipedInputStream with a default buffer size and connects it to
    * <code>source</code>.
-   * 
-   * @exception IOException
-   *   It was already connected.
+   *
    */
   public PipedInputStream(PipedOutputStream source) {
     this(source, ConfigurationImpl.DEFAULT_BUFFER_SIZE);
@@ -139,10 +139,10 @@ public class PipedInputStream extends java.io.PipedInputStream {
   }
 
   public int read() throws IOException {
-    byte[] b = new byte[0];
+    byte[] b = new byte[1];
     int result = read(b);
 
-    return result == -1 ? -1 : b[0];
+    return (result == -1 ? -1 : b[0]) & 0xFF;
   }
 
   public int read(byte[] b) throws IOException {

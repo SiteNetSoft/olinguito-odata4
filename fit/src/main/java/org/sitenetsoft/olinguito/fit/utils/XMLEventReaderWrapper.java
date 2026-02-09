@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.fit.utils;
 
@@ -23,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -35,7 +38,7 @@ import static javax.xml.stream.XMLInputFactory.*;
 
 public class XMLEventReaderWrapper implements XMLEventReader {
 
-  private static final Charset ENCODING = Charset.forName(org.sitenetsoft.olinguito.commons.api.Constants.UTF8);
+  private static final Charset ENCODING = StandardCharsets.UTF_8;
 
   public final static String CONTENT = "CONTENT_TAG";
 
@@ -49,15 +52,13 @@ public class XMLEventReaderWrapper implements XMLEventReader {
 
   public XMLEventReaderWrapper(final InputStream stream)
       throws IOException, XMLStreamException {
-    final StringBuilder startBuilder = new StringBuilder();
-    startBuilder.append("<").append(CONTENT).
-    append(" xmlns:m").append("=\"").append(Constants.get(ConstantKey.METADATA_NS)).append("\"").
-    append(" xmlns:d").append("=\"").append(Constants.get(ConstantKey.DATASERVICES_NS)).append("\"").
-    append(" xmlns:georss").append("=\"").append(Constants.get(ConstantKey.GEORSS_NS)).append("\"").
-    append(" xmlns:gml").append("=\"").append(Constants.get(ConstantKey.GML_NS)).append("\"").
-    append(">");
 
-    CONTENT_STAG = startBuilder.toString();
+      CONTENT_STAG = "<" + CONTENT +
+              " xmlns:m" + "=\"" + Constants.get(ConstantKey.METADATA_NS) + "\"" +
+              " xmlns:d" + "=\"" + Constants.get(ConstantKey.DATASERVICES_NS) + "\"" +
+              " xmlns:georss" + "=\"" + Constants.get(ConstantKey.GEORSS_NS) + "\"" +
+              " xmlns:gml" + "=\"" + Constants.get(ConstantKey.GML_NS) + "\"" +
+              ">";
 
     final XMLInputFactory factory = XMLInputFactory.newInstance();
     factory.setProperty(SUPPORT_DTD, false);

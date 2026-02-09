@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.domain;
 
@@ -68,21 +70,17 @@ public class ClientDeletedEntityImpl extends ClientItem implements ClientDeleted
     if (!super.equals(obj)) {
       return false;
     }
-    if (!(obj instanceof ClientDeletedEntityImpl)) {
+    if (!(obj instanceof ClientDeletedEntityImpl other)) {
       return false;
     }
-    ClientDeletedEntityImpl other = (ClientDeletedEntityImpl) obj;
-    if (id == null) {
+      if (id == null) {
       if (other.id != null) {
         return false;
       }
     } else if (!id.equals(other.id)) {
       return false;
     }
-    if (reason != other.reason) {
-      return false;
-    }
-    return true;
+      return reason == other.reason;
   }
 
   @Override

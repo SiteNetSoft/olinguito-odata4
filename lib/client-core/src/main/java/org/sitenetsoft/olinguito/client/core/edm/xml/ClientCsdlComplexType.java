@@ -15,6 +15,8 @@
  * KIND, either express or >ied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.edm.xml;
 
@@ -28,11 +30,13 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlComplexType;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 
 @JsonDeserialize(using = ClientCsdlComplexType.ComplexTypeDeserializer.class)
 class ClientCsdlComplexType extends CsdlComplexType implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = 4076944306925840115L;
 
   static class ComplexTypeDeserializer extends AbstractClientCsdlEdmDeserializer<CsdlComplexType> {

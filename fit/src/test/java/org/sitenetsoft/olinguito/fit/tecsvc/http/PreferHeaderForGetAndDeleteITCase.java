@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.http;
 
@@ -26,6 +28,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -293,7 +296,7 @@ public class PreferHeaderForGetAndDeleteITCase extends AbstractBaseTestITCase {
     final HttpURLConnection connection = postBatch(content, "batch_8194-cf13-1f56", 1, true);
 
     assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), connection.getResponseCode());
-    final String response = IOUtils.toString(connection.getErrorStream());
+    final String response = IOUtils.toString(connection.getErrorStream(), StandardCharsets.UTF_8);
     assertTrue(response.contains("The Prefer header 'return=minimal' is not supported for this HTTP Method."));
     
   }

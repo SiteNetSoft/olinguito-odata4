@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
  */
 package org.sitenetsoft.olinguito.fit.utils;
 
@@ -22,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,7 +44,6 @@ import org.sitenetsoft.olinguito.fit.metadata.NavigationProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
@@ -79,7 +81,7 @@ public class JSONUtilities extends AbstractUtilities {
     final ObjectNode srcNode = (ObjectNode) mapper.readTree(is);
     IOUtils.closeQuietly(is);
 
-    final Set<String> links = new HashSet<String>();
+    final Set<String> links = new HashSet<>();
 
     final Iterator<String> fieldIter = srcNode.fieldNames();
 
@@ -118,9 +120,9 @@ public class JSONUtilities extends AbstractUtilities {
       final Map.Entry<String, JsonNode> field = fieldIter.next();
       if (field.getKey().endsWith(Constants.get(ConstantKey.JSON_NAVIGATION_BIND_SUFFIX))) {
         final String title = field.getKey().substring(0, field.getKey().indexOf('@'));
-        final List<String> hrefs = new ArrayList<String>();
+        final List<String> hrefs = new ArrayList<>();
         if (field.getValue().isArray()) {
-          for (JsonNode href : ((ArrayNode) field.getValue())) {
+          for (JsonNode href : field.getValue()) {
             final String uri = href.asText();
             hrefs.add(uri.substring(uri.lastIndexOf('/') + 1));
           }
@@ -155,7 +157,7 @@ public class JSONUtilities extends AbstractUtilities {
       }
 
       for (String linkTitle : links.getInlineNames()) {
-        // normalize link if exist; declare a new one if missing
+        // normalize link if existed; declare a new one if missing
         srcNode.remove(linkTitle + Constants.get(ConstantKey.JSON_NAVIGATION_BIND_SUFFIX));
         srcNode.set(
             linkTitle + Constants.get(ConstantKey.JSON_NAVIGATION_SUFFIX),
@@ -224,7 +226,7 @@ public class JSONUtilities extends AbstractUtilities {
 
     final ObjectNode srcNode = (ObjectNode) mapper.readTree(src);
 
-    final Set<String> retain = new HashSet<String>();
+    final Set<String> retain = new HashSet<>();
     retain.add(Constants.get(ConstantKey.JSON_ID_NAME));
     retain.add(Constants.get(ConstantKey.JSON_TYPE_NAME));
     retain.add(Constants.get(ConstantKey.JSON_EDITLINK_NAME));
@@ -316,7 +318,7 @@ public class JSONUtilities extends AbstractUtilities {
 
   @Override
   protected Map<String, InputStream> getChanges(final InputStream src) throws IOException {
-    final Map<String, InputStream> res = new HashMap<String, InputStream>();
+    final Map<String, InputStream> res = new HashMap<>();
 
     final JsonNode srcObject = mapper.readTree(src);
 
@@ -342,7 +344,7 @@ public class JSONUtilities extends AbstractUtilities {
     final ObjectNode srcNode = (ObjectNode) mapper.readTree(is);
     IOUtils.closeQuietly(is);
 
-    final List<String> links = new ArrayList<String>();
+    final List<String> links = new ArrayList<>();
 
     JsonNode uris = srcNode.get("value");
     if (uris == null) {
@@ -351,15 +353,14 @@ public class JSONUtilities extends AbstractUtilities {
         links.add(url.textValue());
       }
     } else {
-      final Iterator<JsonNode> iter = ((ArrayNode) uris).iterator();
-      while (iter.hasNext()) {
-        links.add(iter.next().get("url").textValue());
-      }
+        for (JsonNode jsonNode : uris) {
+            links.add(jsonNode.get("url").textValue());
+        }
     }
 
     final JsonNode next = srcNode.get(Constants.get(ConstantKey.JSON_NEXTLINK_NAME));
 
-    return new SimpleEntry<String, List<String>>(next == null ? null : next.asText(), links);
+    return new SimpleEntry<>(next == null ? null : next.asText(), links);
   }
 
   @Override
@@ -398,7 +399,7 @@ public class JSONUtilities extends AbstractUtilities {
 
     JsonNode replacementNode;
     if (justValue) {
-      replacementNode = new TextNode(IOUtils.toString(replacement));
+      replacementNode = new TextNode(IOUtils.toString(replacement, StandardCharsets.UTF_8));
     } else {
       replacementNode = mapper.readTree(replacement);
       if (replacementNode.has("value")) {
@@ -407,15 +408,8 @@ public class JSONUtilities extends AbstractUtilities {
     }
     IOUtils.closeQuietly(replacement);
 
-    JsonNode node = srcNode;
-    for (int i = 0; i < path.size() - 1; i++) {
-      node = node.get(path.get(i));
-      if (node == null) {
-        throw new NotFoundException();
-      }
-    }
-
-    ((ObjectNode) node).set(path.get(path.size() - 1), replacementNode);
+    final ObjectNode parent = (ObjectNode) traversePath(srcNode, path);
+    parent.set(path.get(path.size() - 1), replacementNode);
 
     return IOUtils.toInputStream(srcNode.toString(), Constants.ENCODING);
   }
@@ -426,16 +420,20 @@ public class JSONUtilities extends AbstractUtilities {
     final ObjectNode srcNode = (ObjectNode) mapper.readTree(src);
     IOUtils.closeQuietly(src);
 
-    JsonNode node = srcNode;
+    final ObjectNode parent = (ObjectNode) traversePath(srcNode, path);
+    parent.set(path.get(path.size() - 1), null);
+
+    return IOUtils.toInputStream(srcNode.toString(), Constants.ENCODING);
+  }
+
+  private static JsonNode traversePath(final JsonNode root, final List<String> path) {
+    JsonNode node = root;
     for (int i = 0; i < path.size() - 1; i++) {
       node = node.get(path.get(i));
       if (node == null) {
         throw new NotFoundException();
       }
     }
-
-    ((ObjectNode) node).set(path.get(path.size() - 1), null);
-
-    return IOUtils.toInputStream(srcNode.toString(), Constants.ENCODING);
+    return node;
   }
 }

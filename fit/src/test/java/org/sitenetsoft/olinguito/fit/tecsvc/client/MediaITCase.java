@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
@@ -27,6 +29,7 @@ import static org.junit.Assert.fail;
 
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.client.api.communication.ODataClientErrorException;
@@ -62,7 +65,7 @@ public class MediaITCase extends AbstractParamTecSvcITCase {
 
     InputStream media = response.getBody();
     assertNotNull(media);
-    assertThat(IOUtils.toString(media), startsWith("<?xml"));
+    assertThat(IOUtils.toString(media, StandardCharsets.UTF_8), startsWith("<?xml"));
   }
   
   @Test
@@ -79,7 +82,7 @@ public class MediaITCase extends AbstractParamTecSvcITCase {
 
     InputStream media = response.getBody();
     assertNotNull(media);
-    assertThat(IOUtils.toString(media), startsWith("<?xml"));
+    assertThat(IOUtils.toString(media, StandardCharsets.UTF_8), startsWith("<?xml"));
   }
 
   @Test
@@ -111,7 +114,7 @@ public class MediaITCase extends AbstractParamTecSvcITCase {
         .appendEntitySetSegment("ESMedia").appendKeySegment(4).appendValueSegment().build();
     ODataMediaEntityUpdateRequest<ClientEntity> request =
         getClient().getCUDRequestFactory().getMediaEntityUpdateRequest(uri,
-            IOUtils.toInputStream("just a test"));
+            IOUtils.toInputStream("just a test", StandardCharsets.UTF_8));
     request.setContentType(ContentType.TEXT_PLAIN.toContentTypeString());
     request.setIfMatch("W/\"4\"");
     assertNotNull(request);
@@ -126,7 +129,7 @@ public class MediaITCase extends AbstractParamTecSvcITCase {
     ODataRetrieveResponse<InputStream> mediaResponse = mediaRequest.execute();
     assertEquals(HttpStatusCode.OK.getStatusCode(), mediaResponse.getStatusCode());
     assertEquals(ContentType.TEXT_PLAIN.toContentTypeString(), mediaResponse.getContentType());
-    assertEquals("just a test", IOUtils.toString(mediaResponse.getBody()));
+    assertEquals("just a test", IOUtils.toString(mediaResponse.getBody(), StandardCharsets.UTF_8));
     assertNotNull(mediaResponse.getETag());
     assertNotEquals("W/\"4\"", mediaResponse.getETag());
   }
@@ -136,7 +139,7 @@ public class MediaITCase extends AbstractParamTecSvcITCase {
     ODataMediaEntityCreateRequest<ClientEntity> request =
         getClient().getCUDRequestFactory().getMediaEntityCreateRequest(
             getClient().newURIBuilder(TecSvcConst.BASE_URI).appendEntitySetSegment("ESMedia").build(),
-            IOUtils.toInputStream("just a test"));
+            IOUtils.toInputStream("just a test", StandardCharsets.UTF_8));
     request.setContentType(ContentType.TEXT_PLAIN.toContentTypeString());
     assertNotNull(request);
 
@@ -159,6 +162,6 @@ public class MediaITCase extends AbstractParamTecSvcITCase {
     ODataRetrieveResponse<InputStream> mediaResponse = mediaRequest.execute();
     assertEquals(HttpStatusCode.OK.getStatusCode(), mediaResponse.getStatusCode());
     assertEquals(ContentType.TEXT_PLAIN.toContentTypeString(), mediaResponse.getContentType());
-    assertEquals("just a test", IOUtils.toString(mediaResponse.getBody()));
+    assertEquals("just a test", IOUtils.toString(mediaResponse.getBody(), StandardCharsets.UTF_8));
   }
 }

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
  */
 package org.sitenetsoft.olinguito.fit.base;
 
@@ -24,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntityRequest;
@@ -113,7 +116,7 @@ public class JSONFormatConformanceTestITCase extends AbstractTestITCase {
         + "\"GeographyPoint\": {\"type\": \"Point\",\"coordinates\":[142.1,64.1]}"
         + "}";
 
-    final ClientEntity entity = client.getReader().readEntity(IOUtils.toInputStream(fromSection71), ContentType.JSON);
+    final ClientEntity entity = client.getReader().readEntity(IOUtils.toInputStream(fromSection71, StandardCharsets.UTF_8), ContentType.JSON);
 
     assertTrue(entity.getProperty("NullValue").hasNullValue());
 
@@ -184,7 +187,7 @@ public class JSONFormatConformanceTestITCase extends AbstractTestITCase {
         + "}";
 
     final ResWrap<Entity> entity =
-        client.getDeserializer(ContentType.JSON).toEntity(IOUtils.toInputStream(fromSection45_1));
+        client.getDeserializer(ContentType.JSON).toEntity(IOUtils.toInputStream(fromSection45_1, StandardCharsets.UTF_8));
 
     assertEquals("http://host/service/$metadata#Customers/$entity", entity.getContextURL().toASCIIString());
     assertEquals("W/\"A1FF3E230954908F\"", entity.getMetadataETag());
@@ -206,7 +209,7 @@ public class JSONFormatConformanceTestITCase extends AbstractTestITCase {
         + "}";
 
     final ResWrap<EntityCollection> entitySet =
-        client.getDeserializer(ContentType.JSON).toEntitySet(IOUtils.toInputStream(fromSection45_2));
+        client.getDeserializer(ContentType.JSON).toEntitySet(IOUtils.toInputStream(fromSection45_2, StandardCharsets.UTF_8));
 
     assertEquals(5, entitySet.getPayload().getCount(), 0);
     assertEquals("Customers?$expand=Orders&$skipToken=5", entitySet.getPayload().getNext().toASCIIString());
@@ -236,7 +239,7 @@ public class JSONFormatConformanceTestITCase extends AbstractTestITCase {
         + "}";
 
     final ClientEntitySet entitySet = client.getReader().
-        readEntitySet(IOUtils.toInputStream(sample), ContentType.JSON);
+        readEntitySet(IOUtils.toInputStream(sample, StandardCharsets.UTF_8), ContentType.JSON);
 
     assertEquals(2, entitySet.getAnnotations().size());
 

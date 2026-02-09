@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated Jackson API and code quality warnings
  */
 package org.sitenetsoft.olinguito.fit.utils;
 
@@ -44,7 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -60,10 +62,10 @@ public abstract class Commons {
 
   protected static final Pattern MULTIKEY_PATTERN = Pattern.compile("(.*=.*,?)+");
 
-  protected static final Map<String, Integer> SEQUENCE = new HashMap<String, Integer>();
+  protected static final Map<String, Integer> SEQUENCE = new HashMap<>();
 
   protected static final Map<String, Pair<String, EdmPrimitiveTypeKind>> MEDIA_CONTENT =
-      new HashMap<String, Pair<String, EdmPrimitiveTypeKind>>();
+          new HashMap<>();
 
   static {
     SEQUENCE.put("Customer", 1000);
@@ -86,13 +88,13 @@ public abstract class Commons {
     SEQUENCE.put("People", 1000);
 
     MEDIA_CONTENT.put("CustomerInfo",
-        new ImmutablePair<String, EdmPrimitiveTypeKind>("CustomerInfoId", EdmPrimitiveTypeKind.Int32));
+            new ImmutablePair<>("CustomerInfoId", EdmPrimitiveTypeKind.Int32));
     MEDIA_CONTENT.put("Car",
-        new ImmutablePair<String, EdmPrimitiveTypeKind>("VIN", EdmPrimitiveTypeKind.Int32));
+            new ImmutablePair<>("VIN", EdmPrimitiveTypeKind.Int32));
     MEDIA_CONTENT.put("Car/Photo", null);
     MEDIA_CONTENT.put("PersonDetails/Photo", null);
     MEDIA_CONTENT.put("Advertisements",
-        new ImmutablePair<String, EdmPrimitiveTypeKind>("ID", EdmPrimitiveTypeKind.Guid));
+            new ImmutablePair<>("ID", EdmPrimitiveTypeKind.Guid));
   }
 
   private static final Metadata METADATA =
@@ -117,8 +119,7 @@ public abstract class Commons {
         + (entityKey == null || entityKey.isEmpty() ? "" : getEntityKey(entityKey) + File.separatorChar);
   }
 
-  public static String getLinksURI(final String entitySetName, final String entityId, final String linkName)
-      throws IOException {
+  public static String getLinksURI(final String entitySetName, final String entityId, final String linkName) {
     return getEntityURI(entitySetName, entityId) + "/" + linkName;
   }
 
@@ -145,7 +146,7 @@ public abstract class Commons {
       final String[] keys = entityId.split(",");
       final StringBuilder keyBuilder = new StringBuilder();
       for (String part : keys) {
-        if (keyBuilder.length() > 0) {
+        if (!keyBuilder.isEmpty()) {
           keyBuilder.append(" ");
         }
         keyBuilder.append(part.split("=")[1].replaceAll("'", "").trim());
@@ -156,7 +157,7 @@ public abstract class Commons {
     }
   }
 
-  public static InputStream getLinksAsATOM(final Map.Entry<String, Collection<String>> link) throws IOException {
+  public static InputStream getLinksAsATOM(final Map.Entry<String, Collection<String>> link) {
 
     final StringBuilder builder = new StringBuilder();
     builder.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
@@ -178,8 +179,7 @@ public abstract class Commons {
   }
 
   public static InputStream
-  getLinksAsJSON(final String entitySetName, final Map.Entry<String, Collection<String>> link)
-      throws IOException {
+  getLinksAsJSON(final String entitySetName, final Map.Entry<String, Collection<String>> link) {
 
     final ObjectNode links = new ObjectNode(JsonNodeFactory.instance);
     links.put(
@@ -215,7 +215,7 @@ public abstract class Commons {
       IOUtils.closeQuietly(is);
 
       final ObjectMapper mapper = new ObjectMapper(
-          new JsonFactory().configure(JsonParser.Feature.ALLOW_NUMERIC_LEADING_ZEROS, true));
+          JsonFactory.builder().configure(JsonReadFeature.ALLOW_LEADING_ZEROS_FOR_NUMBERS, true).build());
       final JsonNode node =
           changeFormat((ObjectNode) mapper.readTree(new ByteArrayInputStream(bos.toByteArray())), target);
 
@@ -230,7 +230,7 @@ public abstract class Commons {
 
   @SuppressWarnings("fallthrough")
   public static JsonNode changeFormat(final ObjectNode node, final Accept target) {
-    final List<String> toBeRemoved = new ArrayList<String>();
+    final List<String> toBeRemoved = new ArrayList<>();
     switch (target) {
     case JSON_NOMETA:
       // nometa + minimal
@@ -302,6 +302,6 @@ public abstract class Commons {
       eid = null;
     }
 
-    return new SimpleEntry<String, String>(es, eid);
+    return new SimpleEntry<>(es, eid);
   }
 }

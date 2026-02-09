@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
  */
 package org.sitenetsoft.olinguito.fit.proxy;
 
@@ -28,6 +30,7 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.lang.reflect.Proxy;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -391,17 +394,17 @@ public class APIBasicDesignTestITCase extends AbstractTestITCase {
     assertNotNull(dcontainer);
     dservice.getContext().detachAll();
     // ---------------------------------------
-    final String random = RandomStringUtils.random(124, "abcdefghijklmnopqrstuvwxyz");
+    final String random = RandomStringUtils.secure().next(124, "abcdefghijklmnopqrstuvwxyz");
 
     final PersonDetail personDetail = dcontainer.getPersonDetails().getByKey(1); // NO HTTP Request
 
     // 1 HTTP Request to add an Edm.Stream property value about MediaEditLink Photo
-    personDetail.setPhoto(dcontainer.newEdmStreamValue("application/octet-stream", IOUtils.toInputStream(random)));
+    personDetail.setPhoto(dcontainer.newEdmStreamValue("application/octet-stream", IOUtils.toInputStream(random, StandardCharsets.UTF_8)));
 
     dcontainer.flush();
 
     final EdmStreamValue actual = dcontainer.getPersonDetails().getByKey(1).getPhoto().load(); // 1 HTTP Request
-    assertEquals(random, IOUtils.toString(actual.getStream()));
+    assertEquals(random, IOUtils.toString(actual.getStream(), StandardCharsets.UTF_8));
 
     dservice.getContext().detachAll(); // avoid influences
   }

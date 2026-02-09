@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.http;
 
@@ -35,35 +37,13 @@ public class DefaultHttpUriRequestFactory implements HttpUriRequestFactory {
 
   @Override
   public HttpUriRequest create(final HttpMethod method, final URI uri) {
-    HttpUriRequest result;
-
-    switch (method) {
-      case POST:
-        result = new HttpPost(uri);
-        break;
-
-      case PUT:
-        result = new HttpPut(uri);
-        break;
-
-      case PATCH:
-        result = new HttpPatch(uri);
-        break;
-
-      case MERGE:
-        result = new HttpMerge(uri);
-        break;
-
-      case DELETE:
-        result = new HttpDelete(uri);
-        break;
-
-      case GET:
-      default:
-        result = new HttpGet(uri);
-        break;
-    }
-
-    return result;
+      return switch (method) {
+          case POST -> new HttpPost(uri);
+          case PUT -> new HttpPut(uri);
+          case PATCH -> new HttpPatch(uri);
+          case MERGE -> new HttpMerge(uri);
+          case DELETE -> new HttpDelete(uri);
+          default -> new HttpGet(uri);
+      };
   }
 }

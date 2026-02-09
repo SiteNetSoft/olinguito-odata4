@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
@@ -369,9 +371,7 @@ public class FunctionImportITCase extends AbstractParamTecSvcITCase {
     assertShortOrInt(9, response.getBody().getPrimitiveValue().toValue());
 
     // All parameters having the null value should also work, without any aliases.
-    for (final String name : parameters.keySet()) {
-      parameters.put(name, getFactory().newPrimitiveValueBuilder().build());
-    }
+    parameters.replaceAll((n, v) -> getFactory().newPrimitiveValueBuilder().build());
     request = getClient().getInvokeRequestFactory().getFunctionInvokeRequest(
         getClient().newURIBuilder(TecSvcConst.BASE_URI).appendOperationCallSegment("FINRTByteNineParam").build(),
         ClientProperty.class,

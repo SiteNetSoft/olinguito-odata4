@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.domain;
 
@@ -75,32 +77,16 @@ public class ClientDeltaImpl extends ClientEntitySetImpl implements ClientDelta 
     if (!super.equals(obj)) {
       return false;
     }
-    if (!(obj instanceof ClientDeltaImpl)) {
+    if (!(obj instanceof ClientDeltaImpl other)) {
       return false;
     }
-    ClientDeltaImpl other = (ClientDeltaImpl) obj;
-    if (addedLinks == null) {
-      if (other.addedLinks != null) {
+      if (!addedLinks.equals(other.addedLinks)) {
         return false;
       }
-    } else if (!addedLinks.equals(other.addedLinks)) {
-      return false;
-    }
-    if (deletedEntities == null) {
-      if (other.deletedEntities != null) {
+      if (!deletedEntities.equals(other.deletedEntities)) {
         return false;
       }
-    } else if (!deletedEntities.equals(other.deletedEntities)) {
-      return false;
-    }
-    if (deletedLinks == null) {
-      if (other.deletedLinks != null) {
-        return false;
-      }
-    } else if (!deletedLinks.equals(other.deletedLinks)) {
-      return false;
-    }
-    return true;
+      return deletedLinks.equals(other.deletedLinks);
   }
 
   @Override

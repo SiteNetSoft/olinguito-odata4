@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
@@ -30,6 +32,6 @@ public class NotFilter implements URIFilter {
 
   @Override
   public String build() {
-    return new StringBuilder("not (").append(filter.build()).append(')').toString();
+    return "not (" + filter.build() + ')';
   }
 }

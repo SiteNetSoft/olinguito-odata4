@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -50,7 +52,7 @@ public class JsonEntitySetDeserializer extends JsonDeserializer {
 
   protected ResWrap<EntityCollection> doDeserialize(final JsonParser parser) throws IOException {
 
-    final ObjectNode tree = (ObjectNode) parser.getCodec().readTree(parser);
+    final ObjectNode tree = parser.getCodec().readTree(parser);
 
     if (!tree.has(Constants.VALUE)) {
       return null;

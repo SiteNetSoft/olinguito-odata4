@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.domain;
 
@@ -79,7 +81,7 @@ public class ClientDeltaLinkImpl extends ClientItem implements ClientDeltaLink {
   public int hashCode() {
     final int prime = 31;
     int result = super.hashCode();
-    result = prime * result + ((annotations == null) ? 0 : annotations.hashCode());
+    result = prime * result + annotations.hashCode();
     result = prime * result + ((relationship == null) ? 0 : relationship.hashCode());
     result = prime * result + ((source == null) ? 0 : source.hashCode());
     result = prime * result + ((target == null) ? 0 : target.hashCode());
@@ -94,17 +96,12 @@ public class ClientDeltaLinkImpl extends ClientItem implements ClientDeltaLink {
     if (!super.equals(obj)) {
       return false;
     }
-    if (!(obj instanceof ClientDeltaLinkImpl)) {
+    if (!(obj instanceof ClientDeltaLinkImpl other)) {
       return false;
     }
-    ClientDeltaLinkImpl other = (ClientDeltaLinkImpl) obj;
-    if (annotations == null) {
-      if (other.annotations != null) {
+      if (!annotations.equals(other.annotations)) {
         return false;
       }
-    } else if (!annotations.equals(other.annotations)) {
-      return false;
-    }
     if (relationship == null) {
       if (other.relationship != null) {
         return false;
@@ -120,13 +117,8 @@ public class ClientDeltaLinkImpl extends ClientItem implements ClientDeltaLink {
       return false;
     }
     if (target == null) {
-      if (other.target != null) {
-        return false;
-      }
-    } else if (!target.equals(other.target)) {
-      return false;
-    }
-    return true;
+        return other.target == null;
+    } else return target.equals(other.target);
   }
 
   @Override

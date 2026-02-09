@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.batch;
 
@@ -29,7 +31,7 @@ import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBat
 public class ODataBatchLineIteratorImpl implements ODataBatchLineIterator {
 
   /**
-   * Stream line iterator.
+   * Streamline iterator.
    */
   private final LineIterator batchLineIterator;
 
@@ -51,7 +53,7 @@ public class ODataBatchLineIteratorImpl implements ODataBatchLineIterator {
   /**
    * Checks if batch has next line.
    *
-   * @return 'TRUE' if has next line; 'FALSE' otherwise.
+   * @return 'TRUE' if it has next line; 'FALSE' otherwise.
    */
   @Override
   public boolean hasNext() {
@@ -76,7 +78,7 @@ public class ODataBatchLineIteratorImpl implements ODataBatchLineIterator {
    */
   @Override
   public String nextLine() {
-    current = batchLineIterator.nextLine();
+    current = batchLineIterator.next();
     return current;
   }
 

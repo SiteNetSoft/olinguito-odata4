@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.ext.proxy.commons;
 
@@ -25,7 +27,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -89,7 +90,7 @@ public class InvokerInvocationHandler<T, O extends Operations> extends AbstractI
     this.operation = operation;
     this.edmOperation = edmOperation;
     if (references.length > 0) {
-      this.targetRef = ClassUtils.<T>getTypeClass(references[0]);
+      this.targetRef = ClassUtils.getTypeClass(references[0]);
       this.operationRef = references.length > 1 ? ClassUtils.<T>getTypeClass(references[1]) : null;
     } else {
       this.targetRef = null;
@@ -98,13 +99,7 @@ public class InvokerInvocationHandler<T, O extends Operations> extends AbstractI
   }
 
   public Future<T> executeAsync() {
-    return service.getClient().getConfiguration().getExecutor().submit(new Callable<T>() {
-
-      @Override
-      public T call() throws Exception {
-        return execute();
-      }
-    });
+    return service.getClient().getConfiguration().getExecutor().submit(this::execute);
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})

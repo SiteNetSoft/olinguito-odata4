@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Disambiguated similar log messages
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.batch;
 
@@ -79,10 +81,10 @@ public class ODataChangesetResponseItem extends AbstractODataBatchResponseItem {
     }
 
     final Map.Entry<Integer, String> responseLine = ODataBatchUtilities.readResponseLine(batchLineIterator);
-    LOG.debug("Retrieved item response {}", responseLine);
+    LOG.debug("Retrieved expected item response {}", responseLine);
 
     final Map<String, Collection<String>> headers = ODataBatchUtilities.readHeaders(batchLineIterator);
-    LOG.debug("Retrieved item headers {}", headers);
+    LOG.debug("Retrieved expected item headers {}", headers);
 
     Collection<String> contentId = nextItemHeaders.get(ODataBatchConstants.CHANGESET_CONTENT_ID_NAME);
 
@@ -112,10 +114,10 @@ public class ODataChangesetResponseItem extends AbstractODataBatchResponseItem {
 
   private ODataResponse nextUnexpected() {
     final Map.Entry<Integer, String> responseLine = ODataBatchUtilities.readResponseLine(batchLineIterator);
-    LOG.debug("Retrieved item response {}", responseLine);
+    LOG.debug("Retrieved unexpected item response {}", responseLine);
 
     final Map<String, Collection<String>> headers = ODataBatchUtilities.readHeaders(batchLineIterator);
-    LOG.debug("Retrieved item headers {}", headers);
+    LOG.debug("Retrieved unexpected item headers {}", headers);
 
     if (responseLine.getKey() == 202) {
       // generate async response

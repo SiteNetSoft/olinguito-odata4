@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -151,33 +153,33 @@ public abstract class AbstractODataStreamManager<T extends ODataResponse> extend
    */
   @Override
   public final Future<T> getAsyncResponse() {
-    return new Future<T>() {
-      @Override
-      public boolean cancel(final boolean mayInterruptIfRunning) {
-        return futureWrap.getWrapped().cancel(mayInterruptIfRunning);
-      }
+    return new Future<>() {
+        @Override
+        public boolean cancel(final boolean mayInterruptIfRunning) {
+            return futureWrap.getWrapped().cancel(mayInterruptIfRunning);
+        }
 
-      @Override
-      public boolean isCancelled() {
-        return futureWrap.getWrapped().isCancelled();
-      }
+        @Override
+        public boolean isCancelled() {
+            return futureWrap.getWrapped().isCancelled();
+        }
 
-      @Override
-      public boolean isDone() {
-        return futureWrap.getWrapped().isDone();
-      }
+        @Override
+        public boolean isDone() {
+            return futureWrap.getWrapped().isDone();
+        }
 
-      @Override
-      public T get() throws InterruptedException, ExecutionException {
-        return getResponse(0, TimeUnit.SECONDS);
-      }
+        @Override
+        public T get() throws InterruptedException, ExecutionException {
+            return getResponse(0, TimeUnit.SECONDS);
+        }
 
-      @Override
-      public T get(final long timeout, final TimeUnit unit)
-              throws InterruptedException, ExecutionException, TimeoutException {
+        @Override
+        public T get(final long timeout, final TimeUnit unit)
+                throws InterruptedException, ExecutionException, TimeoutException {
 
-        return getResponse(timeout, unit);
-      }
+            return getResponse(timeout, unit);
+        }
     };
   }
 }

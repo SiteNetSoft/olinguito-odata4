@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -22,8 +24,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -36,7 +38,6 @@ import org.sitenetsoft.olinguito.client.api.domain.ClientProperty;
 import org.sitenetsoft.olinguito.client.api.serialization.ODataSerializer;
 import org.sitenetsoft.olinguito.client.api.serialization.ODataSerializerException;
 import org.sitenetsoft.olinguito.client.api.serialization.ODataWriter;
-import org.sitenetsoft.olinguito.commons.api.Constants;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 
 public class ODataWriterImpl implements ODataWriter {
@@ -51,12 +52,7 @@ public class ODataWriterImpl implements ODataWriter {
   public InputStream writeEntities(final Collection<ClientEntity> entities, final ContentType contentType)
       throws ODataSerializerException {
     ByteArrayOutputStream output = new ByteArrayOutputStream();
-    OutputStreamWriter writer;
-    try {
-      writer = new OutputStreamWriter(output, Constants.UTF8);
-    } catch (final UnsupportedEncodingException e) {
-      writer = null;
-    }
+    OutputStreamWriter writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
     try {
       final ODataSerializer serializer = client.getSerializer(contentType);
       for (ClientEntity entity : entities) {
@@ -72,19 +68,14 @@ public class ODataWriterImpl implements ODataWriter {
   @Override
   public InputStream writeEntity(final ClientEntity entity, final ContentType contentType)
       throws ODataSerializerException {
-    return writeEntities(Collections.<ClientEntity>singleton(entity), contentType);
+    return writeEntities(Collections.singleton(entity), contentType);
   }
 
   @Override
   public InputStream writeProperty(final ClientProperty property, final ContentType contentType)
       throws ODataSerializerException {
     final ByteArrayOutputStream output = new ByteArrayOutputStream();
-    OutputStreamWriter writer;
-    try {
-      writer = new OutputStreamWriter(output, Constants.UTF8);
-    } catch (final UnsupportedEncodingException e) {
-      writer = null;
-    }
+    OutputStreamWriter writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
     try {
       client.getSerializer(contentType).write(writer, client.getBinder().getProperty(property));
 
@@ -97,12 +88,7 @@ public class ODataWriterImpl implements ODataWriter {
   @Override
   public InputStream writeLink(final ClientLink link, final ContentType contentType) throws ODataSerializerException {
     final ByteArrayOutputStream output = new ByteArrayOutputStream();
-    OutputStreamWriter writer;
-    try {
-      writer = new OutputStreamWriter(output, Constants.UTF8);
-    } catch (final UnsupportedEncodingException e) {
-      writer = null;
-    }
+    OutputStreamWriter writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
     try {
       client.getSerializer(contentType).write(writer, client.getBinder().getLink(link));
 
@@ -115,14 +101,7 @@ public class ODataWriterImpl implements ODataWriter {
   @Override
   public InputStream writeReference(ResWrap<URI> reference, ContentType contenType) throws ODataSerializerException {
     final ByteArrayOutputStream output = new ByteArrayOutputStream();
-    OutputStreamWriter writer;
-    
-    try {
-      writer = new OutputStreamWriter(output, Constants.UTF8);
-    } catch (final UnsupportedEncodingException e) {
-      writer = null;
-    }
-    
+    OutputStreamWriter writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
     try {
       client.getSerializer(contenType).write(writer, reference);
 

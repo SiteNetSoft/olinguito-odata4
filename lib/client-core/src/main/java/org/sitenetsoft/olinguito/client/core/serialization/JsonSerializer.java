@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -32,7 +34,6 @@ import org.sitenetsoft.olinguito.client.api.data.ResWrap;
 import org.sitenetsoft.olinguito.client.api.serialization.ODataSerializer;
 import org.sitenetsoft.olinguito.client.api.serialization.ODataSerializerException;
 import org.sitenetsoft.olinguito.commons.api.Constants;
-import org.sitenetsoft.olinguito.commons.api.data.Annotatable;
 import org.sitenetsoft.olinguito.commons.api.data.Annotation;
 import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
 import org.sitenetsoft.olinguito.commons.api.data.Entity;
@@ -298,8 +299,7 @@ public class JsonSerializer implements ODataSerializer {
     } else {
       Integer precision = Constants.DEFAULT_PRECISION;
       Integer scale = Constants.DEFAULT_SCALE;
-      if(kind == EdmPrimitiveTypeKind.Decimal && value instanceof BigDecimal){
-          BigDecimal bigDecimal = (BigDecimal)value;
+      if(kind == EdmPrimitiveTypeKind.Decimal && value instanceof BigDecimal bigDecimal){
           precision = bigDecimal.precision();
           scale = bigDecimal.scale();
           if (precision == 0) {
@@ -379,7 +379,7 @@ public class JsonSerializer implements ODataSerializer {
       }
     }
 
-    for (Annotation annotation : ((Annotatable) valuable).getAnnotations()) {
+    for (Annotation annotation : valuable.getAnnotations()) {
       valuable(jgen, annotation, name + "@" + annotation.getTerm());
     }
 
@@ -389,7 +389,7 @@ public class JsonSerializer implements ODataSerializer {
 
   private boolean isIEEE754Compatible() {
     final String parameter = contentType.getParameters().get(ContentType.PARAMETER_IEEE754_COMPATIBLE);
-    return parameter == null ? false : "true".equalsIgnoreCase(parameter);
+    return "true".equalsIgnoreCase(parameter);
   }
 
   private boolean isODataMetadataNone() {

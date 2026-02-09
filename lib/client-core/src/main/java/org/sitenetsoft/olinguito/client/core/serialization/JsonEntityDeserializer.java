@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -60,7 +62,7 @@ public class JsonEntityDeserializer extends JsonDeserializer {
     final ObjectNode tree = parser.getCodec().readTree(parser);
 
     if (tree.has(Constants.VALUE) && tree.get(Constants.VALUE).isArray()) {
-      throw new JsonParseException("Expected OData Entity, found EntitySet", parser.getCurrentLocation());
+      throw new JsonParseException(parser, "Expected OData Entity, found EntitySet");
     }
 
     final Entity entity = new Entity();
@@ -205,7 +207,7 @@ public class JsonEntityDeserializer extends JsonDeserializer {
         }
 
         if (!annotations.containsKey(customAnnotation.group(1))) {
-          annotations.put(customAnnotation.group(1), new ArrayList<Annotation>());
+          annotations.put(customAnnotation.group(1), new ArrayList<>());
         }
         annotations.get(customAnnotation.group(1)).add(annotation);
       }

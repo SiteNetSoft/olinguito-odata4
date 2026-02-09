@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.fit.utils;
 
@@ -32,7 +34,7 @@ public enum Accept {
   JSON_NOMETA(ContentType.JSON_NO_METADATA, ".full.json"),
   JSON_FULLMETA(ContentType.JSON_FULL_METADATA, ".full.json");
 
-  private static Pattern allTypesPattern = Pattern.compile("(.*,)?\\*/\\*([,;].*)?");
+  private static final Pattern allTypesPattern = Pattern.compile("(.*,)?\\*/\\*([,;].*)?");
 
   private final ContentType contentType;
   private final String fileExtension;

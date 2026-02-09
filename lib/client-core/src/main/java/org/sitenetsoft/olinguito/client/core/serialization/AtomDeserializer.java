@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -192,14 +194,16 @@ public class AtomDeserializer implements ODataDeserializer {
 
           if (link.getRel().startsWith(Constants.NS_NAVIGATION_LINK_REL)) {
 
-            ((ComplexValue) value).getNavigationLinks().add(link);
+              assert value instanceof ComplexValue;
+              ((ComplexValue) value).getNavigationLinks().add(link);
             inline(reader, event.asStartElement(), link);
           } else if (link.getRel().startsWith(Constants.NS_ASSOCIATION_LINK_REL)) {
 
             ((Valuable) value).asComplex().getAssociationLinks().add(link);
           }
         } else {
-          ((ComplexValue) value).getValue().add(property(reader, event.asStartElement()));
+            assert value instanceof ComplexValue;
+            ((ComplexValue) value).getValue().add(property(reader, event.asStartElement()));
         }
       }
 
@@ -578,7 +582,7 @@ public class AtomDeserializer implements ODataDeserializer {
           final String target = event.asStartElement().
               getAttributeByName(QName.valueOf(Constants.ATTR_TARGET)).getValue();
           if (!annotations.containsKey(target)) {
-            annotations.put(target, new ArrayList<Annotation>());
+            annotations.put(target, new ArrayList<>());
           }
           annotations.get(target).add(annotation(reader, event.asStartElement()));
         } else {
@@ -609,7 +613,7 @@ public class AtomDeserializer implements ODataDeserializer {
     return annotation;
   }
 
-  private Entity entityRef(final StartElement start) throws XMLStreamException {
+  private Entity entityRef(final StartElement start) {
     final Entity entity = new Entity();
 
     final Attribute entityRefId = start.getAttributeByName(Constants.QNAME_ATOM_ATTR_ID);
@@ -846,7 +850,7 @@ public class AtomDeserializer implements ODataDeserializer {
 
   private ODataError error(final XMLEventReader reader, final StartElement start) throws XMLStreamException {
     final ODataError error = new ODataError();
-    error.setDetails(new ArrayList<ODataErrorDetail>(0));
+    error.setDetails(new ArrayList<>(0));
     ODataErrorDetail errorDetail = null;
     
     boolean setCode = false;

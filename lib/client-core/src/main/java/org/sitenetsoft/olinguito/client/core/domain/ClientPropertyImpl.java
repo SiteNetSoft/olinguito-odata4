@@ -15,11 +15,14 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.sitenetsoft.olinguito.client.api.domain.ClientAnnotation;
 import org.sitenetsoft.olinguito.client.api.domain.ClientOperation;
@@ -78,7 +81,7 @@ public final class ClientPropertyImpl extends ClientValuableImpl implements Clie
   @Override
   public boolean hasNullValue() {
     return value == null || value.isPrimitive() && value.asPrimitive().toValue() == null
-        || value.isComplex() && value.asComplex().asJavaMap().size() == 0;
+        || value.isComplex() && value.asComplex().asJavaMap().isEmpty();
   }
 
   @Override
@@ -86,20 +89,19 @@ public final class ClientPropertyImpl extends ClientValuableImpl implements Clie
     if (this == obj) {
       return true;
     }
-    if (obj == null || !(obj instanceof ClientPropertyImpl)) {
+    if (!(obj instanceof ClientPropertyImpl other)) {
       return false;
     }
-    final ClientPropertyImpl other = (ClientPropertyImpl) obj;
-    return annotations.equals(other.annotations)
-        && (name == null ? other.name == null : name.equals(other.name))
-        && (value == null ? other.value == null : value.equals(other.value));
+      return annotations.equals(other.annotations)
+        && (Objects.equals(name, other.name))
+        && (Objects.equals(value, other.value));
   }
 
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((annotations == null) ? 0 : annotations.hashCode());
+    result = prime * result + annotations.hashCode();
     result = prime * result + ((name == null) ? 0 : name.hashCode());
     result = prime * result + ((value == null) ? 0 : value.hashCode());
     return result;

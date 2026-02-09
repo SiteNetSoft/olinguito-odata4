@@ -15,10 +15,13 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.batch;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.sitenetsoft.olinguito.client.api.ODataBatchConstants;
 import org.sitenetsoft.olinguito.client.api.communication.request.ODataBatchableRequest;
@@ -37,7 +40,7 @@ public abstract class AbstractODataBatchRequestItem extends AbstractODataStreame
    * Stream started check.
    */
   protected boolean hasStreamedSomething = false;
-  private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+  private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
   /**
    * Stream open check.

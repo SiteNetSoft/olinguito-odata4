@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -86,7 +88,7 @@ class AtomGeoValueDeserializer {
   private MultiPoint multipoint(final XMLEventReader reader, final StartElement start,
       final EdmPrimitiveTypeKind type, final SRID srid) throws XMLStreamException {
 
-    List<Point> points = Collections.<Point> emptyList();
+    List<Point> points = Collections.emptyList();
 
     boolean foundEndProperty = false;
     while (reader.hasNext() && !foundEndProperty) {
@@ -114,7 +116,7 @@ class AtomGeoValueDeserializer {
       final EdmPrimitiveTypeKind type, final SRID srid) throws XMLStreamException {
 
 	LineString extPoints = null;
-    List<LineString> intRings = new ArrayList<LineString>();
+    List<LineString> intRings = new ArrayList<>();
 
     boolean foundEndProperty = false;
     while (reader.hasNext() && !foundEndProperty) {
@@ -223,49 +225,16 @@ class AtomGeoValueDeserializer {
       srid = SRID.valueOf(StringUtils.substringAfterLast(srsName.getValue(), "/"));
     }
 
-    Geospatial value;
-
-    switch (type) {
-    case GeographyPoint:
-    case GeometryPoint:
-      value = points(reader, start, type, srid).get(0);
-      break;
-
-    case GeographyMultiPoint:
-    case GeometryMultiPoint:
-      value = multipoint(reader, start, type, srid);
-      break;
-
-    case GeographyLineString:
-    case GeometryLineString:
-      value = lineString(reader, start, type, srid);
-      break;
-
-    case GeographyMultiLineString:
-    case GeometryMultiLineString:
-      value = multiLineString(reader, start, type, srid);
-      break;
-
-    case GeographyPolygon:
-    case GeometryPolygon:
-      value = polygon(reader, start, type, srid);
-      break;
-
-    case GeographyMultiPolygon:
-    case GeometryMultiPolygon:
-      value = multiPolygon(reader, start, type, srid);
-      break;
-
-    case GeographyCollection:
-    case GeometryCollection:
-      value = collection(reader, start, type, srid);
-      break;
-
-    default:
-      value = null;
-    }
-
-    return value;
+      return switch (type) {
+          case GeographyPoint, GeometryPoint -> points(reader, start, type, srid).get(0);
+          case GeographyMultiPoint, GeometryMultiPoint -> multipoint(reader, start, type, srid);
+          case GeographyLineString, GeometryLineString -> lineString(reader, start, type, srid);
+          case GeographyMultiLineString, GeometryMultiLineString -> multiLineString(reader, start, type, srid);
+          case GeographyPolygon, GeometryPolygon -> polygon(reader, start, type, srid);
+          case GeographyMultiPolygon, GeometryMultiPolygon -> multiPolygon(reader, start, type, srid);
+          case GeographyCollection, GeometryCollection -> collection(reader, start, type, srid);
+          default -> null;
+      };
   }
 
 }

@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.api.domain;
 
@@ -24,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -31,7 +34,6 @@ import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;
 import org.sitenetsoft.olinguito.client.api.serialization.ODataDeserializerException;
-import org.sitenetsoft.olinguito.commons.api.Constants;
 import org.sitenetsoft.olinguito.commons.api.data.Entity;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.slf4j.Logger;
@@ -211,11 +213,7 @@ public class ClientEntitySetIterator<T extends ClientEntitySet, E extends Client
             stringCount--;
           }
           entity.write(c);
-          if (c == '\\' && !previousCharIsEscape) {
-            previousCharIsEscape = true;
-          } else {
-            previousCharIsEscape = false;
-          }
+            previousCharIsEscape = c == '\\' && !previousCharIsEscape;
         }
 
         if (c >= 0) {
@@ -243,9 +241,9 @@ public class ClientEntitySetIterator<T extends ClientEntitySet, E extends Client
 
     try {
       if (consume(input, "<entry>", osEntitySet, false) >= 0) {
-        entity.write("<entry ".getBytes(Constants.UTF8));
-        entity.write(namespaces.getBytes(Constants.UTF8));
-        entity.write(">".getBytes(Constants.UTF8));
+        entity.write("<entry ".getBytes(StandardCharsets.UTF_8));
+        entity.write(namespaces.getBytes(StandardCharsets.UTF_8));
+        entity.write(">".getBytes(StandardCharsets.UTF_8));
 
         if (consume(input, "</entry>", entity, true) >= 0) {
           atomEntity = odataClient.getDeserializer(ContentType.APPLICATION_ATOM_XML).
@@ -274,7 +272,7 @@ public class ClientEntitySetIterator<T extends ClientEntitySet, E extends Client
         os.write('>');
       }
 
-      res = attrsDeclaration == null ? "" : new String(attrsDeclaration, Constants.UTF8).trim();
+      res = attrsDeclaration == null ? "" : new String(attrsDeclaration, StandardCharsets.UTF_8).trim();
     } catch (Exception e) {
       LOG.error("Error retrieving entities from EntitySet", e);
       res = "";

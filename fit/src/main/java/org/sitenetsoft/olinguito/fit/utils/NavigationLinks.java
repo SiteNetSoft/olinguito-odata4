@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.fit.utils;
 
@@ -30,9 +32,9 @@ import org.apache.commons.io.IOUtils;
 
 public class NavigationLinks {
 
-  private final Map<String, List<InputStream>> inlines = new HashMap<String, List<InputStream>>();
+  private final Map<String, List<InputStream>> inlines = new HashMap<>();
 
-  private final Map<String, List<String>> links = new HashMap<String, List<String>>();
+  private final Map<String, List<String>> links = new HashMap<>();
 
   public NavigationLinks addInlines(final String name, final InputStream inline) {
     return addInlines(name, Collections.<InputStream> singletonList(inline));
@@ -43,7 +45,7 @@ public class NavigationLinks {
     if (inlines.containsKey(name)) {
       inlineStreams = inlines.get(name);
     } else {
-      inlineStreams = new ArrayList<InputStream>();
+      inlineStreams = new ArrayList<>();
       inlines.put(name, inlineStreams);
     }
 
@@ -53,7 +55,7 @@ public class NavigationLinks {
   }
 
   public NavigationLinks addLinks(final String name, final String uri) {
-    return addLinks(name, Collections.<String> singletonList(uri));
+    return addLinks(name, Collections.singletonList(uri));
   }
 
   public NavigationLinks addLinks(final String name, final List<String> uris) {
@@ -61,7 +63,7 @@ public class NavigationLinks {
     if (links.containsKey(name)) {
       current = links.get(name);
     } else {
-      current = new ArrayList<String>();
+      current = new ArrayList<>();
       links.put(name, current);
     }
 
@@ -71,19 +73,19 @@ public class NavigationLinks {
   }
 
   public Set<String> getInlineNames() {
-    return Collections.<String> unmodifiableSet(inlines.keySet());
+    return Collections.unmodifiableSet(inlines.keySet());
   }
 
   public Set<String> getLinkNames() {
-    return Collections.<String> unmodifiableSet(links.keySet());
+    return Collections.unmodifiableSet(links.keySet());
   }
 
   public List<InputStream> getInlines(final String name) {
-    return Collections.<InputStream> unmodifiableList(inlines.get(name));
+    return Collections.unmodifiableList(inlines.get(name));
   }
 
   public List<String> getLinks(final String name) {
-    return Collections.<String> unmodifiableList(links.get(name));
+    return Collections.unmodifiableList(links.get(name));
   }
 
   public Iterable<Map.Entry<String, List<InputStream>>> getInlines() {

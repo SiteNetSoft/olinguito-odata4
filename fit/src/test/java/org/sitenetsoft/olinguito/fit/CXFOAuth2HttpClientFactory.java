@@ -15,10 +15,11 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.fit;
 
-import java.io.IOException;
 import java.net.URI;
 
 import jakarta.ws.rs.core.MediaType;
@@ -33,10 +34,7 @@ import org.apache.cxf.rs.security.oauth2.grants.code.AuthorizationCodeGrant;
 import org.apache.cxf.rs.security.oauth2.grants.refresh.RefreshTokenGrant;
 import org.apache.cxf.rs.security.oauth2.provider.OAuthServiceException;
 import org.apache.http.Header;
-import org.apache.http.HttpException;
 import org.apache.http.HttpHeaders;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.params.ClientPNames;
@@ -44,7 +42,6 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.sitenetsoft.olinguito.client.core.http.AbstractOAuth2HttpClientFactory;
 import org.sitenetsoft.olinguito.client.core.http.OAuth2Exception;
@@ -94,8 +91,8 @@ public class CXFOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFactory 
     params.setParameter(ClientPNames.HANDLE_REDIRECTS, false);
     final DefaultHttpClient httpClient = new DefaultHttpClient(params);
 
-    JsonNode oAuthAuthorizationData = null;
-    String authenticityCookie = null;
+    JsonNode oAuthAuthorizationData;
+    String authenticityCookie;
     try {
       // 1. Need to (basic) authenticate against the OAuth2 service
       final HttpGet method = new HttpGet(authURI);
@@ -114,7 +111,7 @@ public class CXFOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFactory 
       throw new OAuth2Exception(e);
     }
 
-    String code = null;
+    String code;
     try {
       // 3. Submit the HTTP form for allowing access to the application
       final URI location = new URIBuilder(oAuthAuthorizationData.get("replyTo").asText()).
@@ -158,13 +155,9 @@ public class CXFOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFactory 
 
   @Override
   protected void accessToken(final DefaultHttpClient client) throws OAuth2Exception {
-    client.addRequestInterceptor(new HttpRequestInterceptor() {
-
-      @Override
-      public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
-        request.removeHeaders(HttpHeaders.AUTHORIZATION);
-        request.addHeader(HttpHeaders.AUTHORIZATION, OAuthClientUtils.createAuthorizationHeader(accessToken));
-      }
+    client.addRequestInterceptor((request, context) -> {
+      request.removeHeaders(HttpHeaders.AUTHORIZATION);
+      request.addHeader(HttpHeaders.AUTHORIZATION, OAuthClientUtils.createAuthorizationHeader(accessToken));
     });
   }
 

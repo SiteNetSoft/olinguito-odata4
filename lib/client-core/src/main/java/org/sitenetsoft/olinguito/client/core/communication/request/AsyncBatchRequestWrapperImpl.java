@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -35,7 +37,7 @@ import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 public class AsyncBatchRequestWrapperImpl extends AsyncRequestWrapperImpl<ODataBatchResponse>
     implements AsyncBatchRequestWrapper {
 
-  private BatchManager batchManager;
+  private final BatchManager batchManager;
 
   protected AsyncBatchRequestWrapperImpl(final ODataClient odataClient, final ODataBatchRequest odataRequest) {
     super(odataClient, odataRequest);

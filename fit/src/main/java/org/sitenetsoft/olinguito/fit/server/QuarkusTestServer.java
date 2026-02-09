@@ -20,7 +20,6 @@ import jakarta.servlet.http.HttpServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,7 +41,7 @@ public class QuarkusTestServer implements TestServer {
         "org.sitenetsoft.olinguito.server.tecsvc.quarkus.SessionManager";
 
     private final int port;
-    private Object sessionManager;  // SessionManager loaded via reflection
+    private final Object sessionManager;  // SessionManager loaded via reflection
     private volatile boolean running = false;
 
     private QuarkusTestServer(int port, Object sessionManager) {
@@ -58,7 +57,7 @@ public class QuarkusTestServer implements TestServer {
     }
 
     @Override
-    public void stop() throws Exception {
+    public void stop() {
         // Quarkus is stopped via the test framework
         running = false;
         LOG.info("QuarkusTestServer stopped");
@@ -121,7 +120,7 @@ public class QuarkusTestServer implements TestServer {
         }
 
         @Override
-        public Builder addServlet(Class<? extends HttpServlet> servletClass, String path) throws Exception {
+        public Builder addServlet(Class<? extends HttpServlet> servletClass, String path) {
             servletMappings.add(new ServletMapping(servletClass, path));
             LOG.info("Servlet mapping registered (will be ignored in Quarkus mode): {} -> {}",
                     servletClass.getName(), path);
@@ -129,14 +128,14 @@ public class QuarkusTestServer implements TestServer {
         }
 
         @Override
-        public Builder addServlet(HttpServlet servlet, String path) throws IOException {
+        public Builder addServlet(HttpServlet servlet, String path) {
             LOG.info("Servlet instance registered (will be ignored in Quarkus mode): {} -> {}",
                     servlet.getClass().getName(), path);
             return this;
         }
 
         @Override
-        public Builder addStaticContent(String uri, String resource) throws IOException {
+        public Builder addStaticContent(String uri, String resource) {
             staticContent.put(uri, resource);
             LOG.info("Static content registered (will be ignored in Quarkus mode): {} -> {}", uri, resource);
             return this;

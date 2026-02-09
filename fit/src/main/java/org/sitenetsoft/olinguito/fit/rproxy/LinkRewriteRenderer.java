@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
  */
 package org.sitenetsoft.olinguito.fit.rproxy;
 
@@ -28,9 +30,9 @@ public class LinkRewriteRenderer implements Renderer {
 
   private static final char SLASH = '/';
 
-  private String baseUrl;
+  private final String baseUrl;
 
-  private String replacementUrl;
+  private final String replacementUrl;
 
   public LinkRewriteRenderer(final String baseUrl, final String visibleBaseUrl) {
     if (visibleBaseUrl == null || visibleBaseUrl.isEmpty()) {
