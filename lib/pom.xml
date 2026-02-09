@@ -18,6 +18,8 @@
     specific language governing permissions and limitations
     under the License.
 
+    Copyright 2026 SiteNetSoft - Replaced Cobertura with JaCoCo for code coverage
+
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -52,7 +54,7 @@
   </modules>
 
   <properties>
-    <cobertura.skip>true</cobertura.skip>
+    <jacoco.skip>true</jacoco.skip>
     <!-- exclude proxy tests by default -->
     <exclude.regex>.*proxy.*</exclude.regex>
   </properties>
@@ -82,7 +84,7 @@
     <profile>
       <id>build.quality</id>
       <properties>
-        <cobertura.skip>false</cobertura.skip>
+        <jacoco.skip>false</jacoco.skip>
         <!-- nothing excluded -->
         <exclude.regex></exclude.regex>
       </properties>
