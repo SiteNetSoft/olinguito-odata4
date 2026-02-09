@@ -15,11 +15,12 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Migrated Velocity 1.7 to 2.4.1 (CVE-2020-13936)
  */
 package org.sitenetsoft.olinguito.ext.pojogen;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmAction;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
@@ -359,7 +360,8 @@ public abstract class AbstractUtility {
 
   public Map<String, String> getEntityKeyType(final EdmEntityType entityType) {
     EdmEntityType baseType = entityType;
-    while (CollectionUtils.isEmpty(baseType.getKeyPredicateNames()) && baseType.getBaseType() != null) {
+    while ((baseType.getKeyPredicateNames() == null || baseType.getKeyPredicateNames().isEmpty())
+            && baseType.getBaseType() != null) {
       baseType = getEdmTypeInfo(baseType.getBaseType().getFullQualifiedName().toString()).getEntityType();
     }
 

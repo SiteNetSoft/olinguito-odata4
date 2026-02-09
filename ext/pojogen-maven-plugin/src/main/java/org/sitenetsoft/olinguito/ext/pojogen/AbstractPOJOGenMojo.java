@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Migrated Velocity 1.7 to 2.4.1 (CVE-2020-13936)
  */
 package org.sitenetsoft.olinguito.ext.pojogen;
 
@@ -36,7 +38,7 @@ import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.maven.plugin.AbstractMojo;
@@ -58,9 +60,8 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmTerm;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
-import org.codehaus.plexus.util.FileUtils;
 
 public abstract class AbstractPOJOGenMojo extends AbstractMojo {
 
@@ -89,6 +90,8 @@ public abstract class AbstractPOJOGenMojo extends AbstractMojo {
   protected String basePackage;
 
   protected final Set<String> namespaces = new HashSet<String>();
+
+  private VelocityEngine engine;
 
   protected static String TOOL_DIR = "ojc-plugin";
 
@@ -188,7 +191,7 @@ public abstract class AbstractPOJOGenMojo extends AbstractMojo {
       }
     }
 
-    final Template template = Velocity.getTemplate(name + ".vm");
+    final Template template = engine.getTemplate(name + ".vm");
     writeFile(out, base, ctx, template, append);
   }
 
@@ -216,7 +219,7 @@ public abstract class AbstractPOJOGenMojo extends AbstractMojo {
       metadataETag = res.getETag();
       edm = res.getBody();
     } else if (StringUtils.isNotEmpty(localEdm)) {
-      final FileInputStream fis = new FileInputStream(FileUtils.getFile(localEdm));
+      final FileInputStream fis = new FileInputStream(new File(localEdm));
       try {
         metadata = getClient().getDeserializer(ContentType.APPLICATION_XML).toMetadata(fis);
         edm = getClient().getReader().readMetadata(metadata.getSchemaByNsOrAlias());
@@ -238,8 +241,10 @@ public abstract class AbstractPOJOGenMojo extends AbstractMojo {
       return;
     }
 
-    Velocity.addProperty(Velocity.RESOURCE_LOADER, "class");
-    Velocity.addProperty("class.resource.loader.class", ClasspathResourceLoader.class.getName());
+    engine = new VelocityEngine();
+    engine.setProperty("resource.loaders", "class");
+    engine.setProperty("resource.loader.class.class", ClasspathResourceLoader.class.getName());
+    engine.init();
 
     try {
       final Triple<XMLMetadata, String, Edm> metadata = getMetadata();
