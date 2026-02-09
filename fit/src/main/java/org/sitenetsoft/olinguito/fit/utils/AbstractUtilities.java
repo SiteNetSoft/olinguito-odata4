@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Fixed VFS stream lifecycle for commons-vfs2 2.10.0 upgrade
  */
 package org.sitenetsoft.olinguito.fit.utils;
 
@@ -166,7 +167,8 @@ public abstract class AbstractUtilities {
     final FileObject fo = fsManager.putInMemory(normalized, fsManager.getAbsolutePath(path, getDefaultFormat()));
     // -----------------------------------------
 
-    return fo.getContent().getInputStream();
+    // Return a detached copy so the VFS file is not held open by callers
+    return detachedCopy(fo);
   }
 
   private InputStream toInputStream(final Entity entry) throws ODataSerializerException {
@@ -297,7 +299,8 @@ public abstract class AbstractUtilities {
     }
     // -----------------------------------------
 
-    return fo.getContent().getInputStream();
+    // Return a detached copy so the VFS file is not held open by callers
+    return detachedCopy(fo);
   }
 
   public void addMediaEntityValue(
@@ -727,7 +730,8 @@ public abstract class AbstractUtilities {
         Commons.getEntityBasePath(entitySetName, entityId)
         + (name == null ? Constants.get(ConstantKey.MEDIA_CONTENT_FILENAME) : name), null));
 
-    return fo.getContent().getInputStream();
+    // Return a detached copy so the VFS file is not held open by callers
+    return detachedCopy(fo);
   }
 
   public Map.Entry<String, InputStream> readMediaEntity(final String entitySetName, final String entityId) {
@@ -848,4 +852,15 @@ public abstract class AbstractUtilities {
   public abstract Map.Entry<String, List<String>> extractLinkURIs(
       final String entitySetName, final String entityId, final String linkName)
           throws Exception;
+
+  /**
+   * Returns a detached copy of the file's content as a ByteArrayInputStream.
+   * This ensures the VFS FileObject's stream is properly closed, preventing
+   * "file is open" errors when the same file is subsequently modified.
+   */
+  private static InputStream detachedCopy(final FileObject fo) throws IOException {
+    try (InputStream in = fo.getContent().getInputStream()) {
+      return new ByteArrayInputStream(IOUtils.toByteArray(in));
+    }
+  }
 }
