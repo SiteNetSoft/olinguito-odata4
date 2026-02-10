@@ -15,26 +15,17 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Migrated XMLUnit 1.6 to 2.11.0
  */
 package org.sitenetsoft.olinguito.client.core;
 
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
-import org.custommonkey.xmlunit.XMLUnit;
-import org.junit.jupiter.api.BeforeAll;
 
 public abstract class AbstractTest {
 
   protected static final ODataClient client = ODataClientFactory.getClient();
-
-  @BeforeAll
-  public static void setUp() {
-    XMLUnit.setIgnoreComments(true);
-    XMLUnit.setIgnoreAttributeOrder(true);
-    XMLUnit.setIgnoreWhitespace(true);
-    XMLUnit.setNormalizeWhitespace(true);
-    XMLUnit.setCompareUnmatched(false);
-  }
 
   protected String getSuffix(final ContentType contentType) {
     return contentType.isCompatible(ContentType.APPLICATION_ATOM_SVC)

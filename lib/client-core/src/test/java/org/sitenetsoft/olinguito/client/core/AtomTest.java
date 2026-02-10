@@ -17,10 +17,12 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
+ * Copyright 2026 SiteNetSoft - Migrated XMLUnit 1.6 to 2.11.0
  */
 package org.sitenetsoft.olinguito.client.core;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -39,6 +41,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;
+import org.sitenetsoft.olinguito.commons.api.Constants;
 import org.sitenetsoft.olinguito.client.api.domain.ClientAnnotation;
 import org.sitenetsoft.olinguito.client.api.domain.ClientCollectionValue;
 import org.sitenetsoft.olinguito.client.api.domain.ClientComplexValue;
@@ -62,10 +65,24 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
-import org.custommonkey.xmlunit.Diff;
 import org.junit.jupiter.api.Test;
+import org.xmlunit.builder.DiffBuilder;
+import org.xmlunit.diff.DefaultNodeMatcher;
+import org.xmlunit.diff.ElementSelector;
+import org.xmlunit.diff.ElementSelectors;
 
 public class AtomTest extends JSONTest {
+
+  private static final ElementSelector atomLinksSelector = (control, test) -> {
+    if (Constants.ATOM_ELEM_LINK.equals(control.getLocalName())
+            && Constants.ATOM_ELEM_LINK.equals(test.getLocalName())) {
+      String controlHref = control.getAttribute("href");
+      String testHref = test.getAttribute("href");
+      return Objects.equals(control.getNamespaceURI(), test.getNamespaceURI())
+              && controlHref != null && controlHref.equals(testHref);
+    }
+    return ElementSelectors.byName.canBeCompared(control, test);
+  };
 
   @Override
   protected ContentType getODataPubFormat() {
@@ -88,11 +105,18 @@ public class AtomTest extends JSONTest {
   }
 
   @Override
-  protected void assertSimilar(final String filename, final String actual, 
+  protected void assertSimilar(final String filename, final String actual,
       boolean isServerMode) throws Exception {
-    final Diff diff = new Diff(cleanup(IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream(filename)), StandardCharsets.UTF_8)), actual);
-    diff.overrideElementQualifier(new AtomLinksQualifier());
-    assertTrue(diff.similar());
+    final String expected = cleanup(IOUtils.toString(
+        Objects.requireNonNull(getClass().getResourceAsStream(filename)), StandardCharsets.UTF_8));
+    org.xmlunit.diff.Diff diff = DiffBuilder.compare(expected).withTest(actual)
+        .ignoreComments()
+        .ignoreWhitespace()
+        .normalizeWhitespace()
+        .withNodeMatcher(new DefaultNodeMatcher(atomLinksSelector, ElementSelectors.byName))
+        .checkForSimilar()
+        .build();
+    assertFalse(diff.hasDifferences(), diff.toString());
   }
 
   @Override

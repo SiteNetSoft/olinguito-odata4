@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements and fixed interrupt handling
+ * Copyright 2026 SiteNetSoft - Replaced deprecated DecompressingHttpClient
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -34,7 +35,6 @@ import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.HttpClientUtils;
 import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.impl.client.DecompressingHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.ODataClientErrorException;
@@ -93,7 +93,7 @@ public class AsyncRequestWrapperImpl<R extends ODataResponse> extends AbstractRe
 
     HttpClient _httpClient = odataClient.getConfiguration().getHttpClientFactory().create(method, this.uri);
     if (odataClient.getConfiguration().isGzipCompression()) {
-      _httpClient = new DecompressingHttpClient(_httpClient);
+      _httpClient = new ContentCompressingHttpClient(_httpClient);
     }
     this.httpClient = _httpClient;
 

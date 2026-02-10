@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality improvements
+ * Copyright 2026 SiteNetSoft - Replaced deprecated DecompressingHttpClient
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -28,7 +29,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.DecompressingHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.sitenetsoft.olinguito.client.api.communication.request.batch.BatchRequestFactory;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.CUDRequestFactory;
@@ -366,7 +366,7 @@ public abstract class AbstractODataRequest extends AbstractRequest implements OD
   private HttpClient getHttpClient(final HttpMethod method, final URI uri) {
     HttpClient client = odataClient.getConfiguration().getHttpClientFactory().create(method, uri);
     if (odataClient.getConfiguration().isGzipCompression()) {
-      client = new DecompressingHttpClient(client);
+      client = new ContentCompressingHttpClient(client);
     }
     return client;
   }
