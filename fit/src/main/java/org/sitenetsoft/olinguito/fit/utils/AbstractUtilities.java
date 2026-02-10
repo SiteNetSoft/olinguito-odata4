@@ -41,7 +41,7 @@ import java.util.UUID;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 
-import org.apache.commons.io.IOUtils;
+import java.nio.charset.StandardCharsets;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;
@@ -175,7 +175,7 @@ public abstract class AbstractUtilities {
     final StringWriter writer = new StringWriter();
     atomSerializer.write(writer, entry);
 
-    return IOUtils.toInputStream(writer.toString(), Constants.ENCODING);
+    return new ByteArrayInputStream(writer.toString().getBytes(Constants.ENCODING));
   }
 
   public InputStream addOrReplaceEntity(
@@ -185,8 +185,8 @@ public abstract class AbstractUtilities {
       final Entity entry) throws Exception {
 
     final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    IOUtils.copy(is, bos);
-    IOUtils.closeQuietly(is);
+    is.transferTo(bos);
+    is.close();
 
     final Map<String, NavigationProperty> navigationProperties = metadata.getNavigationProperties(entitySetName);
 
@@ -235,7 +235,7 @@ public abstract class AbstractUtilities {
     // -----------------------------------------
 
     bos.reset();
-    IOUtils.copy(createdEntity, bos);
+    createdEntity.transferTo(bos);
 
     // -----------------------------------------
     // 4. Add navigation links to be kept
@@ -244,7 +244,7 @@ public abstract class AbstractUtilities {
         addLinks(entitySetName, entityKey, new ByteArrayInputStream(bos.toByteArray()), linksToBeKept);
     // -----------------------------------------
 
-    IOUtils.closeQuietly(bos);
+    bos.close();
 
     // -----------------------------------------
     // 5. save the entity
@@ -319,7 +319,7 @@ public abstract class AbstractUtilities {
     // -----------------------------------------
     fsManager.putInMemory(is, fsManager.getAbsolutePath(path
         + Constants.get(ConstantKey.MEDIA_CONTENT_FILENAME), null));
-    IOUtils.closeQuietly(is);
+    is.close();
     // -----------------------------------------
   }
 
@@ -433,8 +433,8 @@ public abstract class AbstractUtilities {
         }
 
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        IOUtils.copy(toBeStreamedBack, bos);
-        IOUtils.closeQuietly(toBeStreamedBack);
+        toBeStreamedBack.transferTo(bos);
+        toBeStreamedBack.close();
 
         contentLength = bos.size();
         builder.entity(new ByteArrayInputStream(bos.toByteArray()));
@@ -512,7 +512,7 @@ public abstract class AbstractUtilities {
     writer.flush();
     writer.close();
 
-    return IOUtils.toInputStream(writer.toString(), Constants.ENCODING);
+    return new ByteArrayInputStream(writer.toString().getBytes(Constants.ENCODING));
   }
 
   public ResWrap<Entity> readContainerEntity(final Accept accept, final InputStream entity)
@@ -537,7 +537,7 @@ public abstract class AbstractUtilities {
       jsonSerializer.write(writer, container);
     }
 
-    return IOUtils.toInputStream(writer.toString(), Constants.ENCODING);
+    return new ByteArrayInputStream(writer.toString().getBytes(Constants.ENCODING));
   }
 
   public InputStream writeProperty(final Accept accept, final Property property)
@@ -550,7 +550,7 @@ public abstract class AbstractUtilities {
       jsonSerializer.write(writer, property);
     }
 
-    return IOUtils.toInputStream(writer.toString(), Constants.ENCODING);
+    return new ByteArrayInputStream(writer.toString().getBytes(Constants.ENCODING));
   }
 
   public Property readProperty(final Accept accept, final InputStream property) throws ODataDeserializerException {
@@ -569,7 +569,7 @@ public abstract class AbstractUtilities {
       jsonSerializer.write(writer, container);
     }
 
-    return IOUtils.toInputStream(writer.toString(), Constants.ENCODING);
+    return new ByteArrayInputStream(writer.toString().getBytes(Constants.ENCODING));
   }
 
   private String getDefaultEntryKey(final String entitySetName, final Entity entry, final String propertyName)
@@ -860,7 +860,7 @@ public abstract class AbstractUtilities {
    */
   private static InputStream detachedCopy(final FileObject fo) throws IOException {
     try (InputStream in = fo.getContent().getInputStream()) {
-      return new ByteArrayInputStream(IOUtils.toByteArray(in));
+      return new ByteArrayInputStream(in.readAllBytes());
     }
   }
 }

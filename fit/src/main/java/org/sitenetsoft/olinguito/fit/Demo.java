@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced commons-io IOUtils with Java standard library
  */
 package org.sitenetsoft.olinguito.fit;
 
@@ -38,7 +40,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.fit.metadata.Metadata;
 import org.sitenetsoft.olinguito.fit.methods.PATCH;
@@ -59,7 +60,7 @@ public class Demo extends Services {
 
   private Response replaceServiceName(final Response response) {
     try {
-      final String content = IOUtils.toString((InputStream) response.getEntity(), Constants.ENCODING).
+      final String content = new String(((InputStream) response.getEntity()).readAllBytes(), Constants.ENCODING).
           replaceAll("Static\\.svc", "Demo.svc");
 
       final Response.ResponseBuilder builder = Response.status(response.getStatus());
@@ -69,10 +70,9 @@ public class Demo extends Services {
         }
       }
 
-      final InputStream toBeStreamedBack = IOUtils.toInputStream(content, Constants.ENCODING);
+      final byte[] contentBytes = content.getBytes(Constants.ENCODING);
       final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      IOUtils.copy(toBeStreamedBack, baos);
-      IOUtils.closeQuietly(toBeStreamedBack);
+      baos.write(contentBytes);
 
       builder.header("Content-Length", baos.size());
       builder.entity(new ByteArrayInputStream(baos.toByteArray()));

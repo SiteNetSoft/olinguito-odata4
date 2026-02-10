@@ -25,7 +25,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 
-import org.apache.commons.io.IOUtils;
+// IOUtils removed - using Java standard library
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
@@ -51,7 +51,7 @@ public class SelectOnComplexPropertiesITCase extends AbstractBaseTestITCase {
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
     assertEquals(ContentType.JSON, ContentType.create(connection.getHeaderField(HttpHeader.CONTENT_TYPE)));
 
-    final String content = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
     assertTrue(content.contains("\"value\":[{\"PropertyComp\":"
             + "{\"PropertyString\":\"First Resource - positive values\"}},"
             + "{\"PropertyComp\":{\"PropertyString\":\"First Resource - positive values\"}},"
@@ -70,7 +70,7 @@ public class SelectOnComplexPropertiesITCase extends AbstractBaseTestITCase {
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
     assertEquals(ContentType.JSON, ContentType.create(connection.getHeaderField(HttpHeader.CONTENT_TYPE)));
 
-    final String content = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
     assertTrue(content.contains("\"value\":[{\"PropertyInt16\":1},{\"PropertyInt16\":2},{\"PropertyInt16\":3}]"));
   }
   
@@ -86,7 +86,7 @@ public class SelectOnComplexPropertiesITCase extends AbstractBaseTestITCase {
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
     assertEquals(ContentType.JSON, ContentType.create(connection.getHeaderField(HttpHeader.CONTENT_TYPE)));
 
-    final String content = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
     System.out.println("Content is::"+ content);
     assertTrue(content.contains("\"value\":[{\"PropertyComp\":{"
         + "\"PropertyString\":\"First Resource - positive values\","
@@ -133,7 +133,7 @@ public class SelectOnComplexPropertiesITCase extends AbstractBaseTestITCase {
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
     assertEquals(ContentType.JSON, ContentType.create(connection.getHeaderField(HttpHeader.CONTENT_TYPE)));
 
-    final String content = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
     assertTrue(content.contains("\"PropertyCompNav\":{\"PropertyInt16\":1}"));
     connection.disconnect();
   }
@@ -151,7 +151,7 @@ public class SelectOnComplexPropertiesITCase extends AbstractBaseTestITCase {
     assertEquals(ContentType.JSON_FULL_METADATA, ContentType.create(
         connection.getHeaderField(HttpHeader.CONTENT_TYPE)));
 
-    final String content = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
     assertTrue(content.contains("\"@odata.type\":\"#Collection(olingo.odata.test1.CTTwoPrimAno)\","
         + "\"value\":[{\"@odata.type\":\"#olingo.odata.test1.CTBaseAno\","
         + "\"PropertyString\":\"TEST12345\"},{\"@odata.type\":"

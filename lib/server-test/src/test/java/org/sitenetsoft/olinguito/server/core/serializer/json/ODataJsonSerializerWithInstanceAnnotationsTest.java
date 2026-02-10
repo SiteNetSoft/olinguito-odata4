@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.commons.api.data.Annotation;
 import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
 import org.sitenetsoft.olinguito.commons.api.data.ContextURL;
@@ -79,7 +78,7 @@ public class ODataJsonSerializerWithInstanceAnnotationsTest {
         EntitySerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .build()).getContent();
-    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
+    final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
     final String expectedResult = "{"
         + "\"@odata.context\":\"$metadata#ESAllPrim/$entity\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
@@ -128,7 +127,7 @@ public class ODataJsonSerializerWithInstanceAnnotationsTest {
         EntitySerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .build()).getContent();
-    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
+    final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
     final String expectedResult = "{"
 	+	"\"@odata.context\":\"$metadata#ESAllPrim/$entity\","
 	+	"\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
@@ -217,7 +216,7 @@ public class ODataJsonSerializerWithInstanceAnnotationsTest {
         EntitySerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .build()).getContent();
-    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
+    final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
     final String expectedResult = "{"
     		+	"\"@odata.context\":\"$metadata#ESMixPrimCollComp/$entity\","
     		+	"\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","

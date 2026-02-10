@@ -18,6 +18,8 @@
     specific language governing permissions and limitations
     under the License.
 
+    Copyright 2026 SiteNetSoft - Removed commons-codec dependency (replaced with java.util.Base64)
+
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -40,11 +42,6 @@
       <artifactId>odata-commons-api</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-    </dependency>
-
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>

@@ -29,7 +29,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.zip.GZIPOutputStream;
 
-import org.apache.commons.codec.binary.Base64;
+import java.util.Base64;
 import org.sitenetsoft.olinguito.commons.api.edm.constants.ODataServiceVersion;
 import org.sitenetsoft.olinguito.ext.proxy.AbstractService;
 import org.sitenetsoft.olinguito.ext.proxy.api.AbstractTerm;
@@ -53,7 +53,7 @@ public class MetadataDeserializationTest {
     gos.finish();
     gos.flush();
 
-    String compressedCustomMetadata = new Base64().encodeToString(baos.toByteArray());
+    String compressedCustomMetadata = Base64.getEncoder().encodeToString(baos.toByteArray());
 
     assertFalse(CustomXMLMetadata.detectedMethodCalls());
     try {
@@ -80,7 +80,7 @@ public class MetadataDeserializationTest {
     gos.finish();
     gos.flush();
 
-    String compressedCustomMetadata = new Base64().encodeToString(baos.toByteArray());
+    String compressedCustomMetadata = Base64.getEncoder().encodeToString(baos.toByteArray());
 
     assertFalse(CustomXMLMetadata.detectedMethodCalls());
     try {

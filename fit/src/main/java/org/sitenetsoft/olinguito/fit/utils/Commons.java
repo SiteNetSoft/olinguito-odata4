@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
@@ -175,7 +174,7 @@ public abstract class Commons {
 
     builder.append("</links>");
 
-    return IOUtils.toInputStream(builder.toString(), Constants.ENCODING);
+    return new ByteArrayInputStream(builder.toString().getBytes(Constants.ENCODING));
   }
 
   public static InputStream
@@ -204,27 +203,27 @@ public abstract class Commons {
       links.set("value", uris);
     }
 
-    return IOUtils.toInputStream(links.toString(), Constants.ENCODING);
+    return new ByteArrayInputStream(links.toString().getBytes(Constants.ENCODING));
   }
 
   public static InputStream changeFormat(final InputStream is, final Accept target) {
     final ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
     try {
-      IOUtils.copy(is, bos);
-      IOUtils.closeQuietly(is);
+      is.transferTo(bos);
+      is.close();
 
       final ObjectMapper mapper = new ObjectMapper(
           JsonFactory.builder().configure(JsonReadFeature.ALLOW_LEADING_ZEROS_FOR_NUMBERS, true).build());
       final JsonNode node =
           changeFormat((ObjectNode) mapper.readTree(new ByteArrayInputStream(bos.toByteArray())), target);
 
-      return IOUtils.toInputStream(node.toString(), Constants.ENCODING);
+      return new ByteArrayInputStream(node.toString().getBytes(Constants.ENCODING));
     } catch (Exception e) {
       LOG.error("Error changing format", e);
       return new ByteArrayInputStream(bos.toByteArray());
     } finally {
-      IOUtils.closeQuietly(is);
+      try { is.close(); } catch (IOException ignored) { }
     }
   }
 
@@ -278,8 +277,8 @@ public abstract class Commons {
       if (is.available() <= 0) {
         return null;
       } else {
-        final String etag = IOUtils.toString(is, StandardCharsets.UTF_8);
-        IOUtils.closeQuietly(is);
+        final String etag = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+        is.close();
         return etag;
       }
     } catch (Exception e) {

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced commons-io IOUtils with Java standard library
  */
 package org.sitenetsoft.olinguito.fit.rest;
 
@@ -28,7 +30,6 @@ import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.ext.Provider;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.fit.utils.Constants;
 
@@ -43,13 +44,12 @@ public class ServiceNameResponseFilter implements ContainerResponseFilter {
         StringUtils.substringBefore(StringUtils.substringAfter(requestContext.getUriInfo().getPath(), "/"), "/");
 
     if ("OAuth2.svc".equals(svcName) && responseContext.getEntity() != null) {
-      final String content = IOUtils.toString((InputStream) responseContext.getEntity(), Constants.ENCODING).
+      final String content = new String(((InputStream) responseContext.getEntity()).readAllBytes(), Constants.ENCODING).
           replaceAll("Static\\.svc", svcName);
 
-      final InputStream toBeStreamedBack = IOUtils.toInputStream(content, Constants.ENCODING);
+      final byte[] contentBytes = content.getBytes(Constants.ENCODING);
       final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      IOUtils.copy(toBeStreamedBack, baos);
-      IOUtils.closeQuietly(toBeStreamedBack);
+      baos.write(contentBytes);
 
       responseContext.setEntity(new ByteArrayInputStream(baos.toByteArray()));
     }

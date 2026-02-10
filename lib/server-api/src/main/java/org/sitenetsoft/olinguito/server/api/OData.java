@@ -15,11 +15,14 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Class.forName with ServiceLoader to eliminate circular dependency
  */
 package org.sitenetsoft.olinguito.server.api;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.ServiceLoader;
 
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
@@ -48,27 +51,24 @@ import org.sitenetsoft.olinguito.server.api.uri.UriHelper;
  */
 public abstract class OData {
 
-  private static final String IMPLEMENTATION = "org.sitenetsoft.olinguito.server.core.ODataImpl";
-
   /**
    * Use this method to create a new OData instance. Each thread/request should keep its own instance.
+   * <p>The implementation is discovered via {@link ServiceLoader}. Exactly one provider of
+   * {@code OData} must be available on the classpath (typically {@code odata-server-core}).</p>
    * @return a new OData instance
    */
   public static OData newInstance() {
-    try {
-      final Class<?> clazz = Class.forName(OData.IMPLEMENTATION);
-
-      /*
-       * We explicitly do not use the singleton pattern to keep the server state free
-       * and avoid class loading issues also during hot deployment.
-       */
-      final Object object = clazz.getDeclaredConstructor().newInstance();
-
-      return (OData) object;
-
-    } catch (final Exception e) {
-      throw new ODataRuntimeException(e);
+    /*
+     * We explicitly do not use the singleton pattern to keep the server state free
+     * and avoid class loading issues also during hot deployment.
+     */
+    final ServiceLoader<OData> loader = ServiceLoader.load(OData.class);
+    final var iterator = loader.iterator();
+    if (!iterator.hasNext()) {
+      throw new ODataRuntimeException("No OData implementation found on the classpath. "
+          + "Ensure odata-server-core is included as a dependency.");
     }
+    return iterator.next();
   }
 
   /**

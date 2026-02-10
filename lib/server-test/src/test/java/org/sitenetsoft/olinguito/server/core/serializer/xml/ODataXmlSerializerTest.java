@@ -31,7 +31,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.commons.api.Constants;
 import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
 import org.sitenetsoft.olinguito.commons.api.data.ContextURL;
@@ -128,7 +127,7 @@ public class ODataXmlSerializerTest {
         EntitySerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .build()).getContent();
-    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
+    final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
     String expected = "<?xml version='1.0' encoding='UTF-8'?>\n" +
         "<a:entry xmlns:a=\"http://www.w3.org/2005/Atom\" "
         + "xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\"\n" +
@@ -195,7 +194,7 @@ public class ODataXmlSerializerTest {
         EntityCollectionSerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
             .build()).getContent();
-    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
+    final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
     String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
         "<a:feed xmlns:a=\"http://www.w3.org/2005/Atom\" "
         + "xmlns:d=\"http://docs.oasis-open.org/odata/ns/data\" "
@@ -394,7 +393,7 @@ public class ODataXmlSerializerTest {
         EntitySerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .build()).getContent();
-    final String resultString = IOUtils.toString(content, StandardCharsets.UTF_8);
+    final String resultString = new String(content.readAllBytes(), StandardCharsets.UTF_8);
     String expected = "<?xml version='1.0' encoding='UTF-8'?>\n" +
         "<a:entry xmlns:a=\"http://www.w3.org/2005/Atom\"\n" +
         "  xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\"\n" +
@@ -494,7 +493,7 @@ public class ODataXmlSerializerTest {
             .id("http://host/svc/ESCompAllPrim")
             .count(countOption)
             .build()).getContent();
-    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
+    final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
     String prefix = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
         + "<a:feed xmlns:a=\"http://www.w3.org/2005/Atom\" "
         + "xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\" "
@@ -519,7 +518,7 @@ public class ODataXmlSerializerTest {
             .contextURL(ContextURL.with().serviceRoot(URI.create("http://host/service/"))
                 .entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .build()).getContent();
-    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
+    final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
     String expected = "<?xml version='1.0' encoding='UTF-8'?>\n" +
         "<a:entry xmlns:a=\"http://www.w3.org/2005/Atom\" "
         + "xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\"\n" +
@@ -635,7 +634,7 @@ public class ODataXmlSerializerTest {
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .build()).getContent();
 
-    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
+    final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
     String expected = "<?xml version='1.0' encoding='UTF-8'?>\n" +
         "<a:entry xmlns:a=\"http://www.w3.org/2005/Atom\" "
         + "xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\"\n" +
@@ -692,7 +691,7 @@ public class ODataXmlSerializerTest {
         EntitySerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .build()).getContent();
-    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
+    final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
     final String expectedResult = "<?xml version='1.0' encoding='UTF-8'?>\n" +
         "<a:entry xmlns:a=\"http://www.w3.org/2005/Atom\"\n" +
         "  xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\"\n" +
@@ -780,7 +779,7 @@ public class ODataXmlSerializerTest {
         EntitySerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .build()).getContent();
-    final String resultString = IOUtils.toString(content, StandardCharsets.UTF_8);
+    final String resultString = new String(content.readAllBytes(), StandardCharsets.UTF_8);
     final String expectedResult = "<?xml version='1.0' encoding='UTF-8'?>\n" +
         "<a:entry xmlns:a=\"http://www.w3.org/2005/Atom\"\n" +
         "  xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\"\n" +
@@ -821,7 +820,7 @@ public class ODataXmlSerializerTest {
         EntitySerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .build()).getContent();
-    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
+    final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
     final String expectedResult = "<?xml version='1.0' encoding='UTF-8'?>\n" +
         "<a:entry xmlns:a=\"http://www.w3.org/2005/Atom\" xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\" \n" +
         "xmlns:d=\"http://docs.oasis-open.org/odata/ns/data\" m:context=\"$metadata#ESCompCollDerived/$entity\"\n"+
@@ -871,7 +870,7 @@ public class ODataXmlSerializerTest {
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .expand(expand)
             .build()).getContent();
-    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
+    final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
     final String expected = "<?xml version='1.0' encoding='UTF-8'?>\n" +
         "<a:entry xmlns:a=\"http://www.w3.org/2005/Atom\"\n"+
         " xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\" \n" +
@@ -1046,7 +1045,7 @@ public class ODataXmlSerializerTest {
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .expand(expand)
             .build()).getContent();
-    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
+    final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
     final String expected = "<?xml version='1.0' encoding='UTF-8'?>\n" +
         "<a:entry xmlns:a=\"http://www.w3.org/2005/Atom\" xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\" \n" +
         "xmlns:d=\"http://docs.oasis-open.org/odata/ns/data\" m:context=\"$metadata#ESAllPrimDerived/$entity\"\n" +
@@ -1147,7 +1146,7 @@ public class ODataXmlSerializerTest {
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .expand(expand)
             .build()).getContent();
-    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
+    final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
     final String expected = "<?xml version='1.0' encoding='UTF-8'?>\n" +
     "<a:entry xmlns:a=\"http://www.w3.org/2005/Atom\"\n" +
     " xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\"\n" +
@@ -1218,10 +1217,10 @@ public class ODataXmlSerializerTest {
     entity.addProperty(new Property(null, "CollPropertyCompMixedEnumDef", ValueType.COLLECTION_COMPLEX,
         Collections.singletonList(complexValue)));
     final long currentTimeMillis = System.currentTimeMillis();
-    final String resultString = IOUtils.toString(serializer.entity(metadata, edmEntitySet.getEntityType(), entity,
+    final String resultString = new String(serializer.entity(metadata, edmEntitySet.getEntityType(), entity,
         EntitySerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
-            .build()).getContent(), StandardCharsets.UTF_8);
+            .build()).getContent().readAllBytes(), StandardCharsets.UTF_8);
     checkXMLEqual(resultString,
         "<?xml version='1.0' encoding='UTF-8'?>\n"
         + "<a:entry xmlns:a=\"" + Constants.NS_ATOM + "\""
@@ -1289,7 +1288,7 @@ public class ODataXmlSerializerTest {
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     InputStream result = new ODataJsonSerializer(ContentType.JSON_NO_METADATA)
         .entity(metadata, edmEntitySet.getEntityType(), entity, null).getContent();
-    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
+    final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
     final String expectedResult = "{\"PropertyInt16\":32766,\"PropertyString\":\"Test String1\"}";
     Assertions.assertEquals(expectedResult, resultString);
   }
@@ -1302,7 +1301,7 @@ public class ODataXmlSerializerTest {
         .entityCollection(metadata, edmEntitySet.getEntityType(), entitySet,
             EntityCollectionSerializerOptions.with()
                 .contextURL(ContextURL.with().entitySet(edmEntitySet).build()).build()).getContent();
-    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
+    final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
     final String expectedResult = "{\"value\":["
         + "{\"PropertyInt16\":32766,\"PropertyString\":\"Test String1\"},"
         + "{\"PropertyInt16\":-365,\"PropertyString\":\"Test String2\"},"
@@ -1321,7 +1320,7 @@ public class ODataXmlSerializerTest {
         EntitySerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .build()).getContent();
-    final String resultString = IOUtils.toString(content, StandardCharsets.UTF_8);
+    final String resultString = new String(content.readAllBytes(), StandardCharsets.UTF_8);
     final String expectedResult = "<?xml version='1.0' encoding='UTF-8'?>\n" +
         "<a:entry xmlns:a=\"http://www.w3.org/2005/Atom\"\n" +
         "  xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\"\n" +
@@ -1361,7 +1360,7 @@ public class ODataXmlSerializerTest {
             .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
             .id("http://host/svc/ESMedia")
             .build()).getContent();
-    final String resultString = IOUtils.toString(content, StandardCharsets.UTF_8);
+    final String resultString = new String(content.readAllBytes(), StandardCharsets.UTF_8);
 
     final String expectedResult = "<?xml version='1.0' encoding='UTF-8'?>\n" +
         "<a:feed xmlns:a=\"http://www.w3.org/2005/Atom\"\n" +
@@ -1465,7 +1464,7 @@ public class ODataXmlSerializerTest {
                 .entitySet(edmEntitySet).build())
             .id("http://host/svc/ESAllNullable")
             .build()).getContent();
-    final String resultString = IOUtils.toString(content, StandardCharsets.UTF_8);
+    final String resultString = new String(content.readAllBytes(), StandardCharsets.UTF_8);
     String expected = "<?xml version='1.0' encoding='UTF-8'?>\n" +
         "<a:feed xmlns:a=\"http://www.w3.org/2005/Atom\" "
         + "xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\"\n" +
@@ -1608,7 +1607,7 @@ public class ODataXmlSerializerTest {
                     .suffix(Suffix.ENTITY).build())
                 .select(select)
                 .build()).getContent();
-    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);    
+    final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);    
     final String expectedResult = "<?xml version='1.0' encoding='UTF-8'?>\n" +
         "<a:entry xmlns:a=\"http://www.w3.org/2005/Atom\"\n" +
         "  xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\"\n" +
@@ -1665,7 +1664,7 @@ public class ODataXmlSerializerTest {
                 .id("http://host/svc/ESFourKeyAlias")
                 .select(select)
                 .build()).getContent();
-    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
+    final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
     final String expected = "<?xml version='1.0' encoding='UTF-8'?>\n" +
         "<a:feed xmlns:a=\"http://www.w3.org/2005/Atom\"\n" +
             "xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\"\n" +
@@ -1719,7 +1718,7 @@ public class ODataXmlSerializerTest {
                 .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
                 .id("http://host/svc/ESFourKeyAlias")
                 .build()).getContent();
-    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
+    final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
     String expected = "<?xml version='1.0' encoding='UTF-8'?>\n" +
         "<a:feed xmlns:a=\"http://www.w3.org/2005/Atom\"\n" +
             "xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\"\n" +
@@ -1790,7 +1789,7 @@ public class ODataXmlSerializerTest {
                 .id("http://host/svc/ESFourKeyAlias")
                 .select(select)
                 .build()).getContent();
-    final String resultString = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+    final String resultString = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
     String expected = "<?xml version='1.0' encoding='UTF-8'?>\n" +
         "<a:feed xmlns:a=\"http://www.w3.org/2005/Atom\"\n" +
             "xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\"\n" +
@@ -1854,7 +1853,7 @@ public class ODataXmlSerializerTest {
             .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
             .id("http://host/svc/ESCompCollComp")
             .build()).getContent();
-    final String resultString = IOUtils.toString(content, StandardCharsets.UTF_8);
+    final String resultString = new String(content.readAllBytes(), StandardCharsets.UTF_8);
 
     final String expectedResult = "<?xml version='1.0' encoding='UTF-8'?>" + 
             "<a:feed xmlns:a=\"http://www.w3.org/2005/Atom\" " +
@@ -1983,7 +1982,7 @@ public class ODataXmlSerializerTest {
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .expand(expand)
             .build()).getContent();
-    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
+    final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
     String expected = "<?xml version='1.0' encoding='UTF-8'?>\n" +
         "<a:entry xmlns:a=\"http://www.w3.org/2005/Atom\" "
         + "xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\"\n" +
@@ -2105,7 +2104,7 @@ public class ODataXmlSerializerTest {
                     .suffix(Suffix.ENTITY).build())
                 .expand(expand)
                 .build()).getContent();
-    final String resultString = IOUtils.toString(inputStream, StandardCharsets.UTF_8);    
+    final String resultString = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);    
     String expected = "<?xml version='1.0' encoding='UTF-8'?>\n" +
         "<a:entry xmlns:a=\"http://www.w3.org/2005/Atom\" "
         + "xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\"\n" +
@@ -2207,7 +2206,7 @@ public class ODataXmlSerializerTest {
                 .expand(expand)
                 .select(select)
                 .build()).getContent();
-    final String resultString = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+    final String resultString = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
     final String expected = "<?xml version='1.0' encoding='UTF-8'?>\n" +
         "<a:entry xmlns:a=\"http://www.w3.org/2005/Atom\"\n" +
         "  xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\"\n" +
@@ -2352,7 +2351,7 @@ public class ODataXmlSerializerTest {
                 .expand(expand)
                 .select(select)
                 .build()).getContent();
-    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
+    final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
     String expected = "<?xml version='1.0' encoding='UTF-8'?>\n" +
         "<a:entry xmlns:a=\"http://www.w3.org/2005/Atom\" "
         + "xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\"\n" +
@@ -2422,7 +2421,7 @@ public class ODataXmlSerializerTest {
                     .suffix(Suffix.ENTITY).build())
                 .expand(expand)
                 .build()).getContent();
-    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
+    final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
     String expected = "<?xml version='1.0' encoding='UTF-8'?>\n" +
         "<a:entry xmlns:a=\"http://www.w3.org/2005/Atom\" "
         + "xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\"\n" +
@@ -2701,13 +2700,13 @@ public class ODataXmlSerializerTest {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("PropertyString");
     final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty(edmProperty.getName());
-    final String resultString = IOUtils.toString(serializer
+    final String resultString = new String(serializer
         .primitive(metadata, (EdmPrimitiveType) edmProperty.getType(), property,
             PrimitiveSerializerOptions.with()
                 .contextURL(ContextURL.with()
                     .entitySet(edmEntitySet).keyPath("32767").navOrPropertyPath(edmProperty.getName())
                     .build())
-                .build()).getContent(), StandardCharsets.UTF_8);
+                .build()).getContent().readAllBytes(), StandardCharsets.UTF_8);
 
     String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
         + "<m:value xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\" "
@@ -2723,7 +2722,7 @@ public class ODataXmlSerializerTest {
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("PropertyString");
     final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty(edmProperty.getName());
     property.setValue(ValueType.PRIMITIVE, "ab\u0000cd\u0001");
-    final String resultString = IOUtils.toString(serializer
+    final String resultString = new String(serializer
         .primitive(metadata, (EdmPrimitiveType) edmProperty.getType(), property,
             PrimitiveSerializerOptions.with()
                 .contextURL(ContextURL.with()
@@ -2731,7 +2730,7 @@ public class ODataXmlSerializerTest {
                     .build())
                 .xml10InvalidCharReplacement("XX")
                 .unicode(Boolean.TRUE)
-                .build()).getContent(), StandardCharsets.UTF_8);
+                .build()).getContent().readAllBytes(), StandardCharsets.UTF_8);
 
     String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
         + "<m:value xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\" "
@@ -2746,13 +2745,13 @@ public class ODataXmlSerializerTest {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("PropertyString");
     final Property property = new Property("Edm.String", edmProperty.getName(), ValueType.PRIMITIVE, null);
-    String response = IOUtils.toString(serializer.primitive(metadata, (EdmPrimitiveType) edmProperty.getType(),
+    String response = new String(serializer.primitive(metadata, (EdmPrimitiveType) edmProperty.getType(),
         property,
         PrimitiveSerializerOptions.with()
             .contextURL(ContextURL.with()
                 .entitySet(edmEntitySet).keyPath("4242").navOrPropertyPath(edmProperty.getName())
                 .build())
-            .build()).getContent(), StandardCharsets.UTF_8);
+            .build()).getContent().readAllBytes(), StandardCharsets.UTF_8);
     String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
         + "<m:value xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\" "
         + "m:context=\"../$metadata#ESAllPrim(4242)/PropertyString\" "
@@ -2767,13 +2766,13 @@ public class ODataXmlSerializerTest {
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("CollPropertyString");
     final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty(edmProperty.getName());
 
-    final String resultString = IOUtils.toString(serializer
+    final String resultString = new String(serializer
         .primitiveCollection(metadata, (EdmPrimitiveType) edmProperty.getType(), property,
             PrimitiveSerializerOptions.with()
                 .contextURL(ContextURL.with()
                     .entitySet(edmEntitySet).keyPath("1").navOrPropertyPath(edmProperty.getName())
                     .build())
-                .build()).getContent(), StandardCharsets.UTF_8);
+                .build()).getContent().readAllBytes(), StandardCharsets.UTF_8);
     String expected = "<?xml version='1.0' encoding='UTF-8'?>"
         + "<m:value xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\" "
         + "m:context=\"../$metadata#ESCollAllPrim(1)/CollPropertyString\" "
@@ -2791,13 +2790,13 @@ public class ODataXmlSerializerTest {
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("PropertyComp");
     final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty("PropertyComp");
 
-    final String resultString = IOUtils.toString(serializer
+    final String resultString = new String(serializer
         .complex(metadata, (EdmComplexType) edmProperty.getType(), property,
             ComplexSerializerOptions.with()
                 .contextURL(ContextURL.with()
                     .entitySet(edmEntitySet).keyPath("32767").navOrPropertyPath(edmProperty.getName())
                     .build())
-                .build()).getContent(), StandardCharsets.UTF_8);
+                .build()).getContent().readAllBytes(), StandardCharsets.UTF_8);
     String expected = "<?xml version='1.0' encoding='UTF-8'?>"
         + "<m:value xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\" "
         + "xmlns:d=\"http://docs.oasis-open.org/odata/ns/data\" "
@@ -2816,13 +2815,13 @@ public class ODataXmlSerializerTest {
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("CollPropertyComp");
     final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty(edmProperty.getName());
 
-    final String resultString = IOUtils.toString(serializer
+    final String resultString = new String(serializer
         .complexCollection(metadata, (EdmComplexType) edmProperty.getType(), property,
             ComplexSerializerOptions.with()
                 .contextURL(ContextURL.with()
                     .entitySet(edmEntitySet).keyPath("32767").navOrPropertyPath(edmProperty.getName())
                     .build())
-                .build()).getContent(), StandardCharsets.UTF_8);
+                .build()).getContent().readAllBytes(), StandardCharsets.UTF_8);
     String expected = """
             <?xml version='1.0' encoding='UTF-8'?>
             <m:value xmlns:m="http://docs.oasis-open.org/odata/ns/metadata"
@@ -2874,7 +2873,7 @@ public class ODataXmlSerializerTest {
         .contextURL(ContextURL.with().suffix(Suffix.REFERENCE).build()).build();
 
     final SerializerResult serializerResult = serializer.reference(metadata, edmEntitySet, entity, options);
-    final String resultString = IOUtils.toString(serializerResult.getContent(), StandardCharsets.UTF_8);
+    final String resultString = new String(serializerResult.getContent().readAllBytes(), StandardCharsets.UTF_8);
     String expected = """
             <?xml version='1.0' encoding='UTF-8'?>
             <m:ref xmlns:m="http://docs.oasis-open.org/odata/ns/metadata"
@@ -2894,7 +2893,7 @@ public class ODataXmlSerializerTest {
         edmEntitySet,
         entityCollection, options);
 
-    final String resultString = IOUtils.toString(serializerResult.getContent(), StandardCharsets.UTF_8);
+    final String resultString = new String(serializerResult.getContent().readAllBytes(), StandardCharsets.UTF_8);
     String expected = """
             <?xml version='1.0' encoding='UTF-8'?>
             <a:feed xmlns:a="http://www.w3.org/2005/Atom"
@@ -2920,7 +2919,7 @@ public class ODataXmlSerializerTest {
         edmEntitySet,
         entityCollection, options);
 
-    final String resultString = IOUtils.toString(serializerResult.getContent(), StandardCharsets.UTF_8);
+    final String resultString = new String(serializerResult.getContent().readAllBytes(), StandardCharsets.UTF_8);
 
     String expected = """
             <?xml version='1.0' encoding='UTF-8'?>
@@ -2947,7 +2946,7 @@ public class ODataXmlSerializerTest {
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .expand(expand)
             .build());
-    final String resultString = IOUtils.toString(result.getContent(), StandardCharsets.UTF_8);
+    final String resultString = new String(result.getContent().readAllBytes(), StandardCharsets.UTF_8);
 
     String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
             "<a:entry xmlns:a=\"http://www.w3.org/2005/Atom\" "
@@ -3150,7 +3149,7 @@ public class ODataXmlSerializerTest {
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .expand(expand)
             .build()).getContent();
-    final String resultString = IOUtils.toString(result, StandardCharsets.UTF_8);
+    final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
     String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
         "<a:entry xmlns:a=\"http://www.w3.org/2005/Atom\" "
         + "xmlns:d=\"http://docs.oasis-open.org/odata/ns/data\" "
@@ -3357,14 +3356,14 @@ public class ODataXmlSerializerTest {
     final SelectItem selectItem = ExpandSelectMock.mockSelectItemForColComplexProperty(resource);
     final SelectOption selectOption = ExpandSelectMock.mockSelectOption(List.of(selectItem));
     
-    final String resultString = IOUtils.toString(serializer
+    final String resultString = new String(serializer
         .complexCollection(metadata, (EdmComplexType) edmProperty.getType(), property,
             ComplexSerializerOptions.with()
                 .contextURL(ContextURL.with()
                     .entitySet(edmEntitySet).keyPath("1")
                     .navOrPropertyPath("CollPropertyComp")
                     .build()).select(selectOption)
-                .build()).getContent(), StandardCharsets.UTF_8);
+                .build()).getContent().readAllBytes(), StandardCharsets.UTF_8);
     final String expectedResult = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
         + "<m:value xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\" "
         + "xmlns:d=\"http://docs.oasis-open.org/odata/ns/data\" xmlns:a=\"http://www.w3.org/2005/Atom\" "

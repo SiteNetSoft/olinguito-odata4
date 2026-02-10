@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
+// IOUtils removed - using Java standard library
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.request.invoke.ODataInvokeRequest;
 import org.sitenetsoft.olinguito.client.api.domain.ClientCollectionValue;
@@ -66,7 +66,7 @@ public class BasicBoundActionsITCase {
 
     assertEquals(HttpStatusCode.CREATED.getStatusCode(), connection.getResponseCode());
 
-    final String content = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
     final String expected = "\"PropertyInt16\":1,\"PropertyString\":\"1\","
         + "\"PropertyComp\":{\"PropertyInt16\":11,"
         + "\"PropertyComp\":{\"PropertyString\":\"StringValue\","
@@ -111,7 +111,7 @@ public class BasicBoundActionsITCase {
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
 
-    final String content = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
     final String expected = "\"PropertyInt16\":1,\"PropertyString\":\"1\","
         + "\"PropertyComp\":{\"PropertyInt16\":30,\"PropertyComp\":"
         + "{\"PropertyString\":\"StringValue\",\"PropertyBinary\":\"ASNFZ4mrze8=\","

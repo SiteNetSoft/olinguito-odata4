@@ -31,7 +31,6 @@ import java.io.OutputStreamWriter;
 
 import jakarta.ws.rs.NotFoundException;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelectInfo;
 import org.apache.commons.vfs2.FileSelector;
@@ -115,9 +114,9 @@ public class FSManager {
 
     // read in-memory content
     final OutputStream os = memObject.getContent().getOutputStream();
-    IOUtils.copy(is, os);
-    IOUtils.closeQuietly(is);
-    IOUtils.closeQuietly(os);
+    is.transferTo(os);
+    is.close();
+    os.close();
 
     return memObject;
   }
@@ -161,7 +160,7 @@ public class FSManager {
         // Return a detached byte-array copy so the VFS file is not held open by callers.
         // VFS 2.10.0 enforces strict stream lifecycle: files cannot be deleted while open.
         try (InputStream in = fileObject.getContent().getInputStream()) {
-          return new ByteArrayInputStream(IOUtils.toByteArray(in));
+          return new ByteArrayInputStream(in.readAllBytes());
         }
       } else {
         LOG.warn("In-memory path '{}' not found", path);

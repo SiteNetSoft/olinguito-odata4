@@ -67,8 +67,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.core.UriInfo;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.IOUtils;
+import java.util.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -254,7 +253,7 @@ public class Services {
       if (!providedAsync.containsKey(name)) {
         throw new NotFoundException();
       }
-      final InputStream res = IOUtils.toInputStream(providedAsync.get(name), Constants.ENCODING);
+      final InputStream res = new ByteArrayInputStream(providedAsync.get(name).getBytes(Constants.ENCODING));
       providedAsync.remove(name);
       return xml.createMonitorResponse(res);
     } catch (Exception e) {
@@ -273,7 +272,7 @@ public class Services {
       final Accept contentTypeValue = Accept.parse(contentType);
       assert contentTypeValue == Accept.JSON;
 
-      jsonDeserializer.toEntity(IOUtils.toInputStream(content, Constants.ENCODING));
+      jsonDeserializer.toEntity(new ByteArrayInputStream(content.getBytes(Constants.ENCODING)));
 
       return Response.noContent().type(MediaType.APPLICATION_JSON).build();
     } catch (Exception e) {
@@ -413,8 +412,8 @@ public class Services {
       builder.append("Content-Type: ").append(accept)
           .append(new String(Constants.CRLF))
           .append(new String(Constants.CRLF));
-      builder.append(IOUtils.toString(feed, StandardCharsets.UTF_8));
-      IOUtils.closeQuietly(feed);
+      builder.append(new String(feed.readAllBytes(), StandardCharsets.UTF_8));
+      feed.close();
 
       final UUID uuid = UUID.randomUUID();
       providedAsync.put(uuid.toString(), builder.toString());
@@ -475,8 +474,8 @@ public class Services {
         res = client.delete();
       } else {
         final InputStream is = body.getDataHandler().getInputStream();
-        String content = IOUtils.toString(is, StandardCharsets.UTF_8);
-        IOUtils.closeQuietly(is);
+        String content = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+        is.close();
 
         final Matcher refs = REF_PATTERN.matcher(content);
 
@@ -486,9 +485,9 @@ public class Services {
 
         if ("PATCH".equals(method) || "MERGE".equals(method)) {
           client.header("X-HTTP-METHOD", method);
-          res = client.invoke("POST", IOUtils.toInputStream(content, Constants.ENCODING));
+          res = client.invoke("POST", new ByteArrayInputStream(content.getBytes(Constants.ENCODING)));
         } else {
-          res = client.invoke(method, IOUtils.toInputStream(content, Constants.ENCODING));
+          res = client.invoke(method, new ByteArrayInputStream(content.getBytes(Constants.ENCODING)));
         }
       }
 
@@ -543,10 +542,10 @@ public class Services {
             chbos.write(Constants.CRLF);
 
             bos.write(chbos.toByteArray());
-            IOUtils.closeQuietly(chbos);
+            chbos.close();
           } catch (Exception e) {
             LOG.warn("While processing changeset", e);
-            IOUtils.closeQuietly(chbos);
+            chbos.close();
 
             addItemIntro(bos, lastContebtID);
 
@@ -643,7 +642,7 @@ public class Services {
 
     final Object entity = response.getEntity();
     if (entity != null) {
-      bos.write(IOUtils.toByteArray((InputStream) entity));
+      bos.write(((InputStream) entity).readAllBytes());
       bos.write(Constants.CRLF);
     }
 
@@ -1233,7 +1232,7 @@ public class Services {
 
         entityKey = xml.getDefaultEntryKey(entitySetName, entry);
 
-        xml.addMediaEntityValue(entitySetName, entityKey, IOUtils.toInputStream(entity, Constants.ENCODING));
+        xml.addMediaEntityValue(entitySetName, entityKey, new ByteArrayInputStream(entity.getBytes(Constants.ENCODING)));
 
         final Pair<String, EdmPrimitiveTypeKind> id = Commons.getMediaContent().get(entitySetName);
         if (id != null) {
@@ -1261,9 +1260,9 @@ public class Services {
       } else {
         final Accept contentTypeValue = Accept.parse(contentType);
         if (Accept.ATOM == contentTypeValue) {
-          container = atomDeserializer.toEntity(IOUtils.toInputStream(entity, Constants.ENCODING));
+          container = atomDeserializer.toEntity(new ByteArrayInputStream(entity.getBytes(Constants.ENCODING)));
         } else {
-          container = jsonDeserializer.toEntity(IOUtils.toInputStream(entity, Constants.ENCODING));
+          container = jsonDeserializer.toEntity(new ByteArrayInputStream(entity.getBytes(Constants.ENCODING)));
         }
         entry = container.getPayload();
         updateInlineEntities(entry);
@@ -1512,8 +1511,8 @@ public class Services {
       final InputStream feed = FSManager.instance().readFile(path.toString(), acceptType);
 
       final ByteArrayOutputStream copy = new ByteArrayOutputStream();
-      IOUtils.copy(feed, copy);
-      IOUtils.closeQuietly(feed);
+      feed.transferTo(copy);
+      feed.close();
 
       String newContent = new String(copy.toByteArray(), "UTF-8");
       final Pattern salary = Pattern.compile(acceptType == Accept.ATOM
@@ -1529,7 +1528,7 @@ public class Services {
                     "<d:Salary m:type=\"Edm.Int32\">" + newSalary + "</d:Salary>");
       }
 
-      FSManager.instance().putInMemory(IOUtils.toInputStream(newContent, Constants.ENCODING),
+      FSManager.instance().putInMemory(new ByteArrayInputStream(newContent.getBytes(Constants.ENCODING)),
           FSManager.instance().getAbsolutePath(path.toString(), acceptType));
 
       return xml.createResponse(null, null, null, acceptType, Response.Status.NO_CONTENT);
@@ -1558,7 +1557,7 @@ public class Services {
       final InputStream entity = entityInfo.getValue();
       final ResWrap<Entity> container = atomDeserializer.toEntity(entity);
 
-      final Entity param = xml.readEntity(utils.getKey(), IOUtils.toInputStream(argument, Constants.ENCODING));
+      final Entity param = xml.readEntity(utils.getKey(), new ByteArrayInputStream(argument.getBytes(Constants.ENCODING)));
 
       final Property property = param.getProperty("dimensions");
       container.getPayload().getProperty("Dimensions").setValue(property.getValueType(), property.getValue());
@@ -1594,7 +1593,7 @@ public class Services {
       final InputStream entity = entityInfo.getValue();
       final ResWrap<Entity> container = atomDeserializer.toEntity(entity);
 
-      final Entity param = xml.readEntity(utils.getKey(), IOUtils.toInputStream(argument, Constants.ENCODING));
+      final Entity param = xml.readEntity(utils.getKey(), new ByteArrayInputStream(argument.getBytes(Constants.ENCODING)));
 
       Property property = param.getProperty("specifications");
       container.getPayload().getProperty("SpecificationsBag").setValue(property.getValueType(), property.getValue());
@@ -1629,7 +1628,7 @@ public class Services {
       }
 
       final Accept contentTypeValue = Accept.parse(contentType);
-      final Entity entry = xml.readEntity(contentTypeValue, IOUtils.toInputStream(param, Constants.ENCODING));
+      final Entity entry = xml.readEntity(contentTypeValue, new ByteArrayInputStream(param.getBytes(Constants.ENCODING)));
 
       return xml.createResponse(
           null,
@@ -1710,7 +1709,7 @@ public class Services {
       }
 
       final Accept contentTypeValue = Accept.parse(contentType);
-      final Entity entry = xml.readEntity(contentTypeValue, IOUtils.toInputStream(param, Constants.ENCODING));
+      final Entity entry = xml.readEntity(contentTypeValue, new ByteArrayInputStream(param.getBytes(Constants.ENCODING)));
 
       assert 1 == entry.getProperties().size();
       assert entry.getProperty("accessRight") != null;
@@ -1744,7 +1743,7 @@ public class Services {
 
     try {
       final Accept contentTypeValue = Accept.parse(contentType);
-      final Entity entry = xml.readEntity(contentTypeValue, IOUtils.toInputStream(param, Constants.ENCODING));
+      final Entity entry = xml.readEntity(contentTypeValue, new ByteArrayInputStream(param.getBytes(Constants.ENCODING)));
 
       assert 2 == entry.getProperties().size();
       assert entry.getProperty("addresses") != null;
@@ -1781,7 +1780,7 @@ public class Services {
 
     try {
       final Accept contentTypeValue = Accept.parse(contentType);
-      final Entity entry = xml.readEntity(contentTypeValue, IOUtils.toInputStream(param, Constants.ENCODING));
+      final Entity entry = xml.readEntity(contentTypeValue, new ByteArrayInputStream(param.getBytes(Constants.ENCODING)));
 
       assert 1 == entry.getProperties().size();
       assert entry.getProperty("newDate") != null;
@@ -1864,7 +1863,7 @@ public class Services {
         throw new UnsupportedMediaTypeException("Unsupported media type");
       }
 
-      final String filename = Base64.encodeBase64String(path.getBytes("UTF-8"));
+      final String filename = Base64.getEncoder().encodeToString(path.getBytes("UTF-8"));
 
       return utils.getValue().createResponse(
           FSManager.instance().readFile(Constants.get(ConstantKey.REF)
@@ -1921,9 +1920,9 @@ public class Services {
         throw new UnsupportedMediaTypeException("Unsupported media type");
       } else if (contentTypeValue == Accept.ATOM) {
         entryChanges = atomDeserializer.toEntity(
-            IOUtils.toInputStream(changes, Constants.ENCODING)).getPayload();
+            new ByteArrayInputStream(changes.getBytes(Constants.ENCODING))).getPayload();
       } else {
-        final ResWrap<Entity> jcont = jsonDeserializer.toEntity(IOUtils.toInputStream(changes, Constants.ENCODING));
+        final ResWrap<Entity> jcont = jsonDeserializer.toEntity(new ByteArrayInputStream(changes.getBytes(Constants.ENCODING)));
         entryChanges = jcont.getPayload();
       }
 
@@ -2018,8 +2017,8 @@ public class Services {
       }
 
       final InputStream res = getUtilities(acceptType).addOrReplaceEntity(entityId, entitySetName,
-          IOUtils.toInputStream(entity, Constants.ENCODING),
-          xml.readEntity(acceptType, IOUtils.toInputStream(entity, Constants.ENCODING)));
+          new ByteArrayInputStream(entity.getBytes(Constants.ENCODING)),
+          xml.readEntity(acceptType, new ByteArrayInputStream(entity.getBytes(Constants.ENCODING))));
 
       final ResWrap<Entity> cres;
       if (acceptType == Accept.ATOM) {
@@ -2154,7 +2153,7 @@ public class Services {
       } else {
         final Property pchanges = xml.readProperty(
             Accept.parse(contentType),
-            IOUtils.toInputStream(changes, Constants.ENCODING));
+            new ByteArrayInputStream(changes.getBytes(Constants.ENCODING)));
 
         toBeReplaced.setValue(pchanges.getValueType(), pchanges.getValue());
       }
@@ -2302,7 +2301,7 @@ public class Services {
       final AbstractUtilities utils = getUtilities(null);
 
       final InputStream res = utils.putMediaInMemory(
-          entitySetName, entityId, IOUtils.toInputStream(value, Constants.ENCODING));
+          entitySetName, entityId, new ByteArrayInputStream(value.getBytes(Constants.ENCODING)));
 
       final String location = uriInfo.getRequestUri().toASCIIString().replace("/$value", "");
 
@@ -2369,7 +2368,7 @@ public class Services {
       final AbstractUtilities utils = getUtilities(null);
 
       InputStream res = utils.putMediaInMemory(
-          entitySetName, entityId, path, IOUtils.toInputStream(value, Constants.ENCODING));
+          entitySetName, entityId, path, new ByteArrayInputStream(value.getBytes(Constants.ENCODING)));
 
       final Response response;
       if ("return-content".equalsIgnoreCase(prefer)) {
@@ -2566,9 +2565,9 @@ public class Services {
         property);
 
     return xml.createResponse(null,
-        searchForValue ? IOUtils.toInputStream(
-            container.getPayload().isNull() ? StringUtils.EMPTY : stringValue(container.getPayload()),
-                Constants.ENCODING) : utils.writeProperty(acceptType, container),
+        searchForValue ? new ByteArrayInputStream(
+            (container.getPayload().isNull() ? StringUtils.EMPTY : stringValue(container.getPayload()))
+                .getBytes(Constants.ENCODING)) : utils.writeProperty(acceptType, container),
                 Commons.getETag(Commons.getEntityBasePath(entitySetName, entityId)),
                 acceptType);
   }
@@ -2676,11 +2675,11 @@ public class Services {
       final Entity entry;
       final Accept contentTypeValue = Accept.parse(contentType);
       if (Accept.ATOM == contentTypeValue) {
-        entryContainer = atomDeserializer.toEntity(IOUtils.toInputStream(entity, Constants.ENCODING));
+        entryContainer = atomDeserializer.toEntity(new ByteArrayInputStream(entity.getBytes(Constants.ENCODING)));
         entry = entryContainer.getPayload();
       } else {
         final ResWrap<Entity> jcontainer = jsonDeserializer.toEntity(
-            IOUtils.toInputStream(entity, Constants.ENCODING));
+            new ByteArrayInputStream(entity.getBytes(Constants.ENCODING)));
         entry = jcontainer.getPayload();
 
         entryContainer = new ResWrap<Entity>(
@@ -2767,7 +2766,7 @@ public class Services {
 
       final Entity entryChanges;
       if (Accept.ATOM == contentTypeValue) {
-        container = atomDeserializer.toEntity(IOUtils.toInputStream(changes, Constants.ENCODING));
+        container = atomDeserializer.toEntity(new ByteArrayInputStream(changes.getBytes(Constants.ENCODING)));
         entryChanges = container.getPayload();
       } else {
         final String entityType = metadata.getEntitySet(entitySetName).getType();
@@ -2776,7 +2775,7 @@ public class Services {
         final EdmTypeInfo typeInfo = new EdmTypeInfo.Builder().setTypeExpression(containedType).build();
 
         final ResWrap<Entity> jsonContainer = jsonDeserializer.toEntity(
-            IOUtils.toInputStream(changes, Constants.ENCODING));
+            new ByteArrayInputStream(changes.getBytes(Constants.ENCODING)));
         jsonContainer.getPayload().setType(typeInfo.getFullQualifiedName().toString());
         entryChanges = jsonContainer.getPayload();
       }
@@ -3067,11 +3066,11 @@ public class Services {
       Property property;
       if (contentTypeValue == Accept.ATOM) {
         final ResWrap<Property> paramContainer = atomDeserializer.toProperty(
-            IOUtils.toInputStream(param, Constants.ENCODING));
+            new ByteArrayInputStream(param.getBytes(Constants.ENCODING)));
         property = paramContainer.getPayload();
       } else {
         final ResWrap<Property> paramContainer = jsonDeserializer.toProperty(
-            IOUtils.toInputStream(param, Constants.ENCODING));
+            new ByteArrayInputStream(param.getBytes(Constants.ENCODING)));
         property = paramContainer.getPayload();
       }
 
@@ -3117,7 +3116,7 @@ public class Services {
       }
 
       final Accept contentTypeValue = Accept.parse(contentType);
-      final Entity entity = xml.readEntity(contentTypeValue, IOUtils.toInputStream(param, Constants.ENCODING));
+      final Entity entity = xml.readEntity(contentTypeValue, new ByteArrayInputStream(param.getBytes(Constants.ENCODING)));
 
       assert "Microsoft.Test.OData.Services.ODataWCFService.Address".equals(entity.getType());
       assert entity.getProperty("address").isComplex();
@@ -3155,7 +3154,7 @@ public class Services {
       }
 
       final Accept contentTypeValue = Accept.parse(contentType);
-      final Entity entry = xml.readEntity(contentTypeValue, IOUtils.toInputStream(param, Constants.ENCODING));
+      final Entity entry = xml.readEntity(contentTypeValue, new ByteArrayInputStream(param.getBytes(Constants.ENCODING)));
 
       assert 1 == entry.getProperties().size();
       assert "Collection(Edm.String)".equals(entry.getProperty("emails").getType());

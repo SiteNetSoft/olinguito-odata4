@@ -32,7 +32,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,12 +78,12 @@ public class XMLElement {
 
     final InputStreamReader reader = new InputStreamReader(content, Constants.ENCODING);
     final OutputStreamWriter writer = new OutputStreamWriter(this.content, Constants.ENCODING);
-    IOUtils.copyLarge(reader, writer);
+    reader.transferTo(writer);
 
     writer.flush();
-    IOUtils.closeQuietly(reader);
-    IOUtils.closeQuietly(writer);
-    IOUtils.closeQuietly(content);
+    reader.close();
+    writer.close();
+    content.close();
   }
 
   public InputStream toStream() {
@@ -95,7 +94,7 @@ public class XMLElement {
 
       getStart().writeAsEncodedUnicode(osw);
 
-      IOUtils.copy(getContent(), osw, Constants.ENCODING);
+      new InputStreamReader(getContent(), Constants.ENCODING).transferTo(osw);
 
       getEnd().writeAsEncodedUnicode(osw);
       osw.flush();

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Code quality improvements; replaced commons-codec Hex with HexFormat
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
@@ -36,9 +36,8 @@ import java.util.regex.Pattern;
 
 import javax.xml.datatype.Duration;
 
-import org.apache.commons.codec.binary.Hex;
+import java.util.HexFormat;
 import org.sitenetsoft.olinguito.commons.core.Encoder;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
@@ -230,7 +229,7 @@ public final class URIUtils {
                         ? obj.toString()
 
                         : (obj instanceof byte[])
-                            ? EdmBinary.getInstance().toUriLiteral(Hex.encodeHexString((byte[]) obj))
+                            ? EdmBinary.getInstance().toUriLiteral(HexFormat.of().formatHex((byte[]) obj))
                             : (obj instanceof Timestamp)
                                 ? timestamp((Timestamp) obj)
                                 : (obj instanceof Calendar)
@@ -285,8 +284,7 @@ public final class URIUtils {
     if (shouldUseRepeatableHttpBodyEntry(client) || !useChunked) {
       byte[] bytes;
       try {
-        bytes = IOUtils.toByteArray(input);
-        IOUtils.closeQuietly(input);
+        bytes = input.readAllBytes();
       } catch (IOException e) {
         throw new ODataRuntimeException("While reading input for not chunked encoding", e);
       }

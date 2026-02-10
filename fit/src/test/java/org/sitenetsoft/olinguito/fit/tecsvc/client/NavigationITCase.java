@@ -25,7 +25,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.io.IOUtils;
+// IOUtils removed - using Java standard library
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
 import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
 import org.sitenetsoft.olinguito.client.api.domain.ClientEntitySet;
@@ -44,7 +44,7 @@ public class NavigationITCase extends AbstractParamTecSvcITCase {
             .appendEntitySetSegment("ESAllPrim").appendKeySegment(32767).build())
         .rawExecute();
 
-    final String zeroLevelResponseBody = IOUtils.toString(zeroLevelResponse, StandardCharsets.UTF_8);
+    final String zeroLevelResponseBody = new String(zeroLevelResponse.readAllBytes(), StandardCharsets.UTF_8);
     assertTrue(zeroLevelResponseBody.contains("\"$metadata#ESAllPrim/$entity\""));
 
     // one navigation
@@ -54,7 +54,7 @@ public class NavigationITCase extends AbstractParamTecSvcITCase {
             .appendNavigationSegment("NavPropertyETTwoPrimOne").build())
         .rawExecute();
 
-    final String oneLevelResponseBody = IOUtils.toString(oneLevelResponse, StandardCharsets.UTF_8);
+    final String oneLevelResponseBody = new String(oneLevelResponse.readAllBytes(), StandardCharsets.UTF_8);
     assertTrue(oneLevelResponseBody.contains("\"../$metadata#ESTwoPrim/$entity\""));
 
     // two navigation
@@ -65,7 +65,7 @@ public class NavigationITCase extends AbstractParamTecSvcITCase {
             .appendNavigationSegment("NavPropertyETTwoPrimMany").appendKeySegment(-365).build())
         .rawExecute();
 
-    final String twoLevelResponseBody = IOUtils.toString(twoLevelResponse, StandardCharsets.UTF_8);
+    final String twoLevelResponseBody = new String(twoLevelResponse.readAllBytes(), StandardCharsets.UTF_8);
     assertTrue(twoLevelResponseBody.contains("\"../../$metadata#ESTwoPrim/$entity\""));
   }
 

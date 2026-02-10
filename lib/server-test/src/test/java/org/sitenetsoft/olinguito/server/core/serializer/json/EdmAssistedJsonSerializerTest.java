@@ -26,7 +26,6 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.commons.api.data.AbstractEntityCollection;
 import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
 import org.sitenetsoft.olinguito.commons.api.data.ContextURL;
@@ -382,12 +381,12 @@ public class EdmAssistedJsonSerializerTest {
     } else {
       contextURLBuilder.selectList(selectList);
     }
-    return IOUtils.toString(
+    return new String(
         serializer.entityCollection(metadata,
             edmEntitySet == null ? null : edmEntitySet.getEntityType(),
             entityCollection,
             EdmAssistedSerializerOptions.with().contextURL(contextURLBuilder.build()).build())
-            .getContent(), StandardCharsets.UTF_8);
+            .getContent().readAllBytes(), StandardCharsets.UTF_8);
   }
   
 

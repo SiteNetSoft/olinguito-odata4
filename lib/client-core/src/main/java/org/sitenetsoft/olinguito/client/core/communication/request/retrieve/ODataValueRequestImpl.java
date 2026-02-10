@@ -23,7 +23,6 @@ package org.sitenetsoft.olinguito.client.core.communication.request.retrieve;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
@@ -84,7 +83,7 @@ public class ODataValueRequestImpl extends AbstractODataRetrieveRequest<ClientPr
             value = odataClient.getObjectFactory().newPrimitiveValueBuilder().
                   setType(contentType.isCompatible(ContentType.TEXT_PLAIN)
                           ? EdmPrimitiveTypeKind.String : EdmPrimitiveTypeKind.Stream).
-                  setValue(IOUtils.toString(getRawResponse(), StandardCharsets.UTF_8)).build();
+                  setValue(new String(getRawResponse().readAllBytes(), StandardCharsets.UTF_8)).build();
         } catch (Exception e) {
           throw new HttpClientException(e);
         } finally {

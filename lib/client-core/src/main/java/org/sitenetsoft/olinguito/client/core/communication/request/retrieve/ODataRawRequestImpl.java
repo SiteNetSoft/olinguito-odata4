@@ -22,7 +22,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
@@ -80,7 +79,7 @@ public class ODataRawRequestImpl extends AbstractODataRequest implements ODataRa
     public <T> ResWrap<T> getBodyAs(final Class<T> reference) {
       if (obj == null) {
         try {
-          this.obj = IOUtils.toByteArray(getRawResponse());
+          this.obj = getRawResponse().readAllBytes();
         } catch (IOException e) {
           throw new IllegalArgumentException(e);
         } finally {

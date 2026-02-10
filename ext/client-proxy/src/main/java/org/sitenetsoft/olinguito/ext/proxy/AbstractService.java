@@ -17,13 +17,16 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Replaced commons-io with Java standard library
  */
 package org.sitenetsoft.olinguito.ext.proxy;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
+import java.io.ObjectStreamClass;
 import java.lang.reflect.Proxy;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -33,9 +36,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.GZIPInputStream;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.serialization.ValidatingObjectInputStream;
+import java.util.Base64;
 import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
 import org.sitenetsoft.olinguito.client.api.edm.xml.XMLMetadata;
 import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
@@ -89,17 +90,28 @@ public abstract class AbstractService<C extends EdmEnabledODataClient> {
     ObjectInputStream ois = null;
     XMLMetadata metadata = null;
     try {
-      // use commons codec's Base64 in this fashion to stay compatible with Android
-      bais = new ByteArrayInputStream(new Base64().decode(compressedMetadata.getBytes(StandardCharsets.UTF_8)));
+      bais = new ByteArrayInputStream(Base64.getDecoder().decode(compressedMetadata.getBytes(StandardCharsets.UTF_8)));
       gzis = new GZIPInputStream(bais);
       ois = createObjectInputStream(gzis);
       metadata = (XMLMetadata) ois.readObject();
     } catch (Exception e) {
       LOG.error("While deserializing compressed metadata", e);
     } finally {
-      IOUtils.closeQuietly(ois);
-      IOUtils.closeQuietly(gzis);
-      IOUtils.closeQuietly(bais);
+      if (ois != null) {
+        try {
+          ois.close();
+        } catch (IOException ignored) { }
+      }
+      if (gzis != null) {
+        try {
+          gzis.close();
+        } catch (IOException ignored) { }
+      }
+      if (bais != null) {
+        try {
+          bais.close();
+        } catch (IOException ignored) { }
+      }
     }
     final Edm edm;
     if (metadata != null) {
@@ -181,23 +193,40 @@ public abstract class AbstractService<C extends EdmEnabledODataClient> {
   }
 
   /**
-   * Wraps a specified {@link InputStream} into a {@link ValidatingObjectInputStream}
-   * which allowed only a limited set of classes for deserialization.
+   * Wraps a specified {@link InputStream} into an {@link ObjectInputStream}
+   * which allows only a limited set of classes for deserialization.
    * The method calls {@link #getAllowedClasses()} to get a set of classes
-   * which allowed for deserialization.
+   * which are allowed for deserialization.
+   *
+   * <p>SECURITY: This replaces the former {@code ValidatingObjectInputStream} from
+   * commons-io. The {@code resolveClass} method validates each class name against
+   * the allowed patterns before permitting deserialization.</p>
    *
    * @param is The input stream to be wrapped.
-   * @return An instance of {@link ValidatingObjectInputStream}.
+   * @return An {@link ObjectInputStream} that validates class names during deserialization.
    * @throws IOException If something went wrong.
    */
   private ObjectInputStream createObjectInputStream(InputStream is) throws IOException {
-    Set<String> allowedClasses = new HashSet<>(DEFAULT_ALLOWED_CLASSES);
+    final Set<String> allowedClasses = new HashSet<>(DEFAULT_ALLOWED_CLASSES);
     allowedClasses.addAll(getAllowedClasses());
-    ValidatingObjectInputStream.Builder builder = ValidatingObjectInputStream.builder();
-    builder.setInputStream(is);
-    for (String clazz : allowedClasses) {
-      builder.accept(clazz);
-    }
-    return builder.get();
+
+    return new ObjectInputStream(is) {
+      @Override
+      protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+        final String className = desc.getName();
+        for (String pattern : allowedClasses) {
+          if (pattern.endsWith(".*")) {
+            // Wildcard pattern: match package prefix
+            String prefix = pattern.substring(0, pattern.length() - 1);
+            if (className.startsWith(prefix)) {
+              return super.resolveClass(desc);
+            }
+          } else if (pattern.equals(className)) {
+            return super.resolveClass(desc);
+          }
+        }
+        throw new InvalidClassException("Rejected deserialization of class: " + className);
+      }
+    };
   }
 }

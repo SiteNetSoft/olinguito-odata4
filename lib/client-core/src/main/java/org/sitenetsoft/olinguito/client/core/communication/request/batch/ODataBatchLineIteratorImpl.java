@@ -16,13 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages;
+ * replaced commons-io LineIterator with BufferedReader
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.batch;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.NoSuchElementException;
 
-import org.apache.commons.io.LineIterator;
 import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchLineIterator;
 
 /**
@@ -30,10 +32,7 @@ import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBat
  */
 public class ODataBatchLineIteratorImpl implements ODataBatchLineIterator {
 
-  /**
-   * Streamline iterator.
-   */
-  private final LineIterator batchLineIterator;
+  private final BufferedReader reader;
 
   /**
    * Last cached line.
@@ -41,44 +40,52 @@ public class ODataBatchLineIteratorImpl implements ODataBatchLineIterator {
   private String current;
 
   /**
+   * Lookahead line for hasNext() support.
+   */
+  private String lookahead;
+  private boolean lookaheadFetched;
+
+  /**
    * Constructor.
    *
-   * @param batchLineIterator stream line iterator.
+   * @param reader buffered reader to iterate lines from.
    */
-  public ODataBatchLineIteratorImpl(final LineIterator batchLineIterator) {
-    this.batchLineIterator = batchLineIterator;
+  public ODataBatchLineIteratorImpl(final BufferedReader reader) {
+    this.reader = reader;
     this.current = null;
+    this.lookahead = null;
+    this.lookaheadFetched = false;
   }
 
-  /**
-   * Checks if batch has next line.
-   *
-   * @return 'TRUE' if it has next line; 'FALSE' otherwise.
-   */
   @Override
   public boolean hasNext() {
-    return batchLineIterator.hasNext();
+    if (!lookaheadFetched) {
+      try {
+        lookahead = reader.readLine();
+      } catch (IOException e) {
+        lookahead = null;
+      }
+      lookaheadFetched = true;
+    }
+    return lookahead != null;
   }
 
-  /**
-   * Gets next line.
-   *
-   * @return next line.
-   */
   @Override
   public String next() {
-    if(!hasNext()){
+    if (!hasNext()) {
       throw new NoSuchElementException();
     }
     return nextLine();
   }
 
-  /**
-   * {@inheritDoc }
-   */
   @Override
   public String nextLine() {
-    current = batchLineIterator.next();
+    if (!lookaheadFetched) {
+      hasNext();
+    }
+    current = lookahead;
+    lookaheadFetched = false;
+    lookahead = null;
     return current;
   }
 
@@ -90,9 +97,6 @@ public class ODataBatchLineIteratorImpl implements ODataBatchLineIterator {
     throw new UnsupportedOperationException("Unsupported operation");
   }
 
-  /**
-   * {@inheritDoc }
-   */
   @Override
   public String getCurrent() {
     return current;

@@ -22,15 +22,16 @@ package org.sitenetsoft.olinguito.client.core.communication.response;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -211,7 +212,7 @@ public abstract class AbstractODataResponse implements ODataResponse {
       }
 
       final ODataBatchLineIteratorImpl batchLineIterator =
-          new ODataBatchLineIteratorImpl(IOUtils.lineIterator(part, Constants.UTF8));
+          new ODataBatchLineIteratorImpl(new BufferedReader(new InputStreamReader(part, StandardCharsets.UTF_8)));
 
       final Map.Entry<Integer, String> partResponseLine = ODataBatchUtilities.readResponseLine(batchLineIterator);
       LOG.debug("Retrieved async item response {}", partResponseLine);
@@ -289,7 +290,7 @@ public abstract class AbstractODataResponse implements ODataResponse {
           } catch (Exception e) {
             LOG.error("Error streaming batch item payload", e);
           } finally {
-            IOUtils.closeQuietly(os);
+            try { os.close(); } catch (IOException ignored) { }
           }
         }).start();
       } catch (Exception e) {
@@ -299,7 +300,7 @@ public abstract class AbstractODataResponse implements ODataResponse {
     } else if (payload != null) {
       ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
       try {
-        org.apache.commons.io.IOUtils.copy(payload, byteArrayOutputStream);
+        payload.transferTo(byteArrayOutputStream);
        if(inputContent == null){
          inputContent  = byteArrayOutputStream.toByteArray();
        }

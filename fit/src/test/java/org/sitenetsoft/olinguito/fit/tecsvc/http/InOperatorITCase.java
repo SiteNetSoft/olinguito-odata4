@@ -25,7 +25,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 
-import org.apache.commons.io.IOUtils;
+// IOUtils removed - using Java standard library
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
@@ -56,7 +56,7 @@ public class InOperatorITCase extends AbstractBaseTestITCase {
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
     assertEquals(ContentType.JSON, ContentType.create(connection.getHeaderField(HttpHeader.CONTENT_TYPE)));
 
-    final String content = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
     assertTrue(content.contains("\"value\":[{\"PropertyInt16\":-32768,"
         + "\"PropertyString\":\"Second Resource - negative values\","
         + "\"PropertyBoolean\":false,\"PropertyByte\":0,\"PropertySByte\":-128,"
@@ -79,7 +79,7 @@ public class InOperatorITCase extends AbstractBaseTestITCase {
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
     assertEquals(ContentType.JSON, ContentType.create(connection.getHeaderField(HttpHeader.CONTENT_TYPE)));
 
-    final String content = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
     assertTrue(content.contains("\"value\":[{\"PropertyInt16\":10,"
         + "\"PropertyString\":\"Employee1@company.example\","
         + "\"PropertyBoolean\":false,\"PropertyByte\":0,\"PropertySByte\":0,"
@@ -104,7 +104,7 @@ public class InOperatorITCase extends AbstractBaseTestITCase {
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
     assertEquals(ContentType.JSON, ContentType.create(connection.getHeaderField(HttpHeader.CONTENT_TYPE)));
 
-    final String content = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
     assertTrue(content.contains("\"value\":[]"));
   }
 }

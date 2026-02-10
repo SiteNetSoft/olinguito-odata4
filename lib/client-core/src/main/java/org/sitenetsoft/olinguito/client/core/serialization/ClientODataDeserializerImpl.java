@@ -134,7 +134,7 @@ public class ClientODataDeserializerImpl implements ClientODataDeserializer {
     try {
     	
     	ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-    	org.apache.commons.io.IOUtils.copy(input, byteArrayOutputStream);
+    	input.transferTo(byteArrayOutputStream);
     	// copy the content of input stream to reuse it
     	byte[] inputContent = byteArrayOutputStream.toByteArray();
     	

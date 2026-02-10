@@ -15,12 +15,14 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced commons-codec Base64 with java.util.Base64
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
 import java.nio.charset.Charset;
+import java.util.Base64;
 
-import org.apache.commons.codec.binary.Base64;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
 
 /**
@@ -170,7 +172,10 @@ public class EdmBinary extends SingletonPrimitiveType {
       throw new EdmPrimitiveTypeException("The literal '" + value + "' does not match the facets' constraints.");
     }
 
-    final byte[] result = Base64.decodeBase64(value.getBytes(UTF_8));
+    // Normalize URL-safe base64 characters (-_ → +/) before decoding;
+    // MIME decoder tolerates whitespace and missing padding.
+    final String normalized = value.replace('-', '+').replace('_', '/');
+    final byte[] result = Base64.getMimeDecoder().decode(normalized);
 
     if (returnType.isAssignableFrom(byte[].class)) {
       return returnType.cast(result);
@@ -207,6 +212,6 @@ public class EdmBinary extends SingletonPrimitiveType {
       throw new EdmPrimitiveTypeException("The value '" + value + "' does not match the facets' constraints.");
     }
 
-    return new String(Base64.encodeBase64(byteArrayValue, false), UTF_8);
+    return Base64.getEncoder().encodeToString(byteArrayValue);
   }
 }

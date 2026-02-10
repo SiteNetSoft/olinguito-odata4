@@ -36,7 +36,6 @@ import java.util.Set;
 
 import jakarta.ws.rs.NotFoundException;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.fit.metadata.Metadata;
 import org.sitenetsoft.olinguito.fit.metadata.NavigationProperty;
@@ -66,20 +65,20 @@ public class JSONUtilities extends AbstractUtilities {
           throws IOException {
 
     final ObjectNode srcNode = (ObjectNode) mapper.readTree(is);
-    IOUtils.closeQuietly(is);
+    is.close();
 
     for (String link : links) {
       srcNode.set(link + Constants.get(ConstantKey.JSON_NAVIGATION_SUFFIX),
           new TextNode(Commons.getLinksURI(entitySetName, entitykey, link)));
     }
 
-    return IOUtils.toInputStream(srcNode.toString(), Constants.ENCODING);
+    return new ByteArrayInputStream(srcNode.toString().getBytes(Constants.ENCODING));
   }
 
   @Override
   protected Set<String> retrieveAllLinkNames(final InputStream is) throws IOException {
     final ObjectNode srcNode = (ObjectNode) mapper.readTree(is);
-    IOUtils.closeQuietly(is);
+    is.close();
 
     final Set<String> links = new HashSet<>();
 
@@ -108,7 +107,7 @@ public class JSONUtilities extends AbstractUtilities {
       throws IOException {
 
     final ObjectNode srcNode = (ObjectNode) mapper.readTree(is);
-    IOUtils.closeQuietly(is);
+    is.close();
 
     final NavigationLinks links = new NavigationLinks();
 
@@ -133,7 +132,7 @@ public class JSONUtilities extends AbstractUtilities {
 
         links.addLinks(title, hrefs);
       } else if (navigationProperties.containsKey(field.getKey())) {
-        links.addInlines(field.getKey(), IOUtils.toInputStream(field.getValue().toString(), Constants.ENCODING));
+        links.addInlines(field.getKey(), new ByteArrayInputStream(field.getValue().toString().getBytes(Constants.ENCODING)));
       }
     }
 
@@ -175,7 +174,7 @@ public class JSONUtilities extends AbstractUtilities {
         Constants.get(ConstantKey.JSON_EDITLINK_NAME), new TextNode(
             Constants.get(ConstantKey.DEFAULT_SERVICE_URL) + entitySetName + "(" + entityKey + ")"));
 
-    return IOUtils.toInputStream(srcNode.toString(), Constants.ENCODING);
+    return new ByteArrayInputStream(srcNode.toString().getBytes(Constants.ENCODING));
   }
 
   public InputStream addJsonInlinecount(final InputStream src, final int count) throws Exception {
@@ -188,7 +187,7 @@ public class JSONUtilities extends AbstractUtilities {
     mapper.writeValue(bos, srcNode);
 
     final InputStream res = new ByteArrayInputStream(bos.toByteArray());
-    IOUtils.closeQuietly(bos);
+    bos.close();
 
     return res;
   }
@@ -216,7 +215,7 @@ public class JSONUtilities extends AbstractUtilities {
     mapper.writeValue(bos, res);
 
     final InputStream is = new ByteArrayInputStream(bos.toByteArray());
-    IOUtils.closeQuietly(bos);
+    bos.close();
 
     return is;
   }
@@ -243,7 +242,7 @@ public class JSONUtilities extends AbstractUtilities {
 
     srcNode.retain(retain);
 
-    return IOUtils.toInputStream(srcNode.toString(), Constants.ENCODING);
+    return new ByteArrayInputStream(srcNode.toString().getBytes(Constants.ENCODING));
   }
 
   @Override
@@ -273,7 +272,7 @@ public class JSONUtilities extends AbstractUtilities {
           bos.write(",".getBytes());
         }
 
-        IOUtils.copy(entity.getValue(), bos);
+        entity.getValue().transferTo(bos);
       } catch (Exception e) {
         // log and ignore link
         LOG.warn("Error parsing uri {}", link, e);
@@ -291,7 +290,7 @@ public class JSONUtilities extends AbstractUtilities {
       node.set(Constants.get(ConstantKey.JSON_NEXTLINK_NAME), new TextNode(next));
     }
 
-    return IOUtils.toInputStream(node.toString(), Constants.ENCODING);
+    return new ByteArrayInputStream(node.toString().getBytes(Constants.ENCODING));
   }
 
   @Override
@@ -313,7 +312,7 @@ public class JSONUtilities extends AbstractUtilities {
       toBeChangedNode.set(linkName + Constants.get(ConstantKey.JSON_NEXTLINK_SUFFIX), next);
     }
 
-    return IOUtils.toInputStream(toBeChangedNode.toString(), Constants.ENCODING);
+    return new ByteArrayInputStream(toBeChangedNode.toString().getBytes(Constants.ENCODING));
   }
 
   @Override
@@ -325,7 +324,7 @@ public class JSONUtilities extends AbstractUtilities {
     final Iterator<Map.Entry<String, JsonNode>> fields = srcObject.fields();
     while (fields.hasNext()) {
       final Map.Entry<String, JsonNode> field = fields.next();
-      res.put(field.getKey(), IOUtils.toInputStream(field.getValue().toString(), Constants.ENCODING));
+      res.put(field.getKey(), new ByteArrayInputStream(field.getValue().toString().getBytes(Constants.ENCODING)));
     }
 
     return res;
@@ -342,7 +341,7 @@ public class JSONUtilities extends AbstractUtilities {
   public Map.Entry<String, List<String>> extractLinkURIs(final InputStream is) throws IOException {
 
     final ObjectNode srcNode = (ObjectNode) mapper.readTree(is);
-    IOUtils.closeQuietly(is);
+    is.close();
 
     final List<String> links = new ArrayList<>();
 
@@ -368,10 +367,10 @@ public class JSONUtilities extends AbstractUtilities {
       final InputStream content, final String title, final String href) throws IOException {
 
     final ObjectNode srcNode = (ObjectNode) mapper.readTree(content);
-    IOUtils.closeQuietly(content);
+    content.close();
 
     srcNode.set(Constants.get(ConstantKey.JSON_EDITLINK_NAME), new TextNode(href));
-    return IOUtils.toInputStream(srcNode.toString(), Constants.ENCODING);
+    return new ByteArrayInputStream(srcNode.toString().getBytes(Constants.ENCODING));
   }
 
   @Override
@@ -379,14 +378,14 @@ public class JSONUtilities extends AbstractUtilities {
       final String href) throws IOException {
 
     final ObjectNode srcNode = (ObjectNode) mapper.readTree(content);
-    IOUtils.closeQuietly(content);
+    content.close();
 
     final ObjectNode action = mapper.createObjectNode();
     action.set("title", new TextNode(name));
     action.set("target", new TextNode(href));
 
     srcNode.set(metaAnchor, action);
-    return IOUtils.toInputStream(srcNode.toString(), Constants.ENCODING);
+    return new ByteArrayInputStream(srcNode.toString().getBytes(Constants.ENCODING));
   }
 
   @Override
@@ -395,35 +394,35 @@ public class JSONUtilities extends AbstractUtilities {
           throws IOException {
 
     final ObjectNode srcNode = (ObjectNode) mapper.readTree(src);
-    IOUtils.closeQuietly(src);
+    src.close();
 
     JsonNode replacementNode;
     if (justValue) {
-      replacementNode = new TextNode(IOUtils.toString(replacement, StandardCharsets.UTF_8));
+      replacementNode = new TextNode(new String(replacement.readAllBytes(), StandardCharsets.UTF_8));
     } else {
       replacementNode = mapper.readTree(replacement);
       if (replacementNode.has("value")) {
         replacementNode = replacementNode.get("value");
       }
     }
-    IOUtils.closeQuietly(replacement);
+    replacement.close();
 
     final ObjectNode parent = (ObjectNode) traversePath(srcNode, path);
     parent.set(path.get(path.size() - 1), replacementNode);
 
-    return IOUtils.toInputStream(srcNode.toString(), Constants.ENCODING);
+    return new ByteArrayInputStream(srcNode.toString().getBytes(Constants.ENCODING));
   }
 
   @Override
   public InputStream deleteProperty(final InputStream src, final List<String> path) throws IOException {
 
     final ObjectNode srcNode = (ObjectNode) mapper.readTree(src);
-    IOUtils.closeQuietly(src);
+    src.close();
 
     final ObjectNode parent = (ObjectNode) traversePath(srcNode, path);
     parent.set(path.get(path.size() - 1), null);
 
-    return IOUtils.toInputStream(srcNode.toString(), Constants.ENCODING);
+    return new ByteArrayInputStream(srcNode.toString().getBytes(Constants.ENCODING));
   }
 
   private static JsonNode traversePath(final JsonNode root, final List<String> path) {

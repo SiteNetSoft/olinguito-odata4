@@ -25,7 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.apache.commons.io.IOUtils;
+import java.io.IOException;
+
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;
 import org.sitenetsoft.olinguito.client.api.data.ServiceDocument;
@@ -126,7 +127,7 @@ public class ODataReaderImpl implements ODataReader {
             reference.cast(client.getObjectFactory().newPrimitiveValueBuilder().
                 setType(Objects.equals(ContentType.parse(format), ContentType.TEXT_PLAIN)
                     ? EdmPrimitiveTypeKind.String : EdmPrimitiveTypeKind.Stream).
-                setValue(IOUtils.toString(src, java.nio.charset.StandardCharsets.UTF_8))
+                setValue(new String(src.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8))
                 .build()));
       } else if (XMLMetadata.class.isAssignableFrom(reference)) {
         res = new ResWrap<>(
@@ -153,7 +154,7 @@ public class ODataReaderImpl implements ODataReader {
       res = null;
     } finally {
       if (!ClientEntitySetIterator.class.isAssignableFrom(reference)) {
-        IOUtils.closeQuietly(src);
+        try { src.close(); } catch (IOException ignored) { }
       }
     }
 

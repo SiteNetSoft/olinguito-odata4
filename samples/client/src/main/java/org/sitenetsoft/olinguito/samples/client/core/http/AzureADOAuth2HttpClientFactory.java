@@ -17,16 +17,17 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
+ * Copyright 2026 SiteNetSoft - Replaced commons-io with Java standard library
  */
 package org.sitenetsoft.olinguito.samples.client.core.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
@@ -90,7 +91,12 @@ public class AzureADOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFact
     } catch (Exception e) {
       throw new OAuth2Exception(e);
     } finally {
-      IOUtils.closeQuietly(tokenResponse);
+      if (tokenResponse != null) {
+        try {
+          tokenResponse.close();
+        } catch (IOException ignored) {
+        }
+      }
     }
   }
 

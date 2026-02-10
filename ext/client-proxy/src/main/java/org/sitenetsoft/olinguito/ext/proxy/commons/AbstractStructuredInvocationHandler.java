@@ -15,9 +15,12 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced commons-io with Java standard library
  */
 package org.sitenetsoft.olinguito.ext.proxy.commons;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
@@ -35,7 +38,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
@@ -424,7 +426,9 @@ public abstract class AbstractStructuredInvocationHandler extends AbstractInvoca
   private void setStreamedProperty(final Property property, final EdmStreamValue input) {
     final Object obj = streamedPropertyChanges.get(property.name());
     if (obj instanceof InputStream) {
-      IOUtils.closeQuietly((InputStream) obj);
+      try {
+        ((InputStream) obj).close();
+      } catch (IOException ignored) { }
     }
 
     streamedPropertyCache.remove(property.name());
