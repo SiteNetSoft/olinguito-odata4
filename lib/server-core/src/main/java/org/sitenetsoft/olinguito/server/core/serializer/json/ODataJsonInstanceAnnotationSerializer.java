@@ -115,7 +115,7 @@ public class ODataJsonInstanceAnnotationSerializer {
 					json.writeFieldName(name);
 				}
 				json.writeStartArray();
-				List list = annotation.asCollection();
+				List<?> list = annotation.asCollection();
 				for (Object value : list) {
 					writeInstanceAnnotOnPrimitiveProperty(json, annotation, value);
 				}
