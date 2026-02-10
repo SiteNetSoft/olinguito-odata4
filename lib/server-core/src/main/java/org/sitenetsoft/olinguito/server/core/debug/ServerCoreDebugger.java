@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed debugFormat not being set in resolveDebugMode(String)
  */
 package org.sitenetsoft.olinguito.server.core.debug;
 
@@ -85,6 +87,9 @@ public class ServerCoreDebugger {
 
     debugSupport.init(odata);
     isDebugMode = debugSupport.isUserAuthorized();
+    if (isDebugMode) {
+      debugFormat = debugParam;
+    }
   }
 
   public ODataResponse createDebugResponse(final ODataRequest request, final ODataResponse response,

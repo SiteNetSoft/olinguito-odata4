@@ -15,9 +15,14 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Restored debugger tests using servlet-free String API
  */
 package org.sitenetsoft.olinguito.server.core.debug;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
@@ -25,11 +30,15 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.nio.charset.StandardCharsets;
+
 import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.ODataResponse;
 import org.sitenetsoft.olinguito.server.api.debug.DebugInformation;
 import org.sitenetsoft.olinguito.server.api.debug.DebugSupport;
+import org.sitenetsoft.olinguito.server.api.debug.DefaultDebugSupport;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -43,7 +52,7 @@ public class ServerCoreDebuggerTest {
     debugger = new ServerCoreDebugger(odata);
     DebugSupport processor = mock(DebugSupport.class);
     when(processor.isUserAuthorized()).thenReturn(true);
-    when(processor.createDebugResponse(anyString(), any(DebugInformation.class)))
+    when(processor.createDebugResponse(any(), any(DebugInformation.class)))
         .thenThrow(new ODataRuntimeException("Test"));
     debugger.setDebugSupportProcessor(processor);
   }
@@ -60,38 +69,32 @@ public class ServerCoreDebuggerTest {
     assertFalse(localDebugger.isDebugMode());
   }
 
-  /*@Test
+  @Test
   public void resolveDebugModeNullParameter() {
-    HttpServletRequest request = mock(HttpServletRequest.class);
-    when(request.getParameter(DebugSupport.ODATA_DEBUG_QUERY_PARAMETER)).thenReturn(null);
-    debugger.resolveDebugMode(request);
+    debugger.resolveDebugMode((String) null);
     assertFalse(debugger.isDebugMode());
   }
 
   @Test
   public void resolveDebugModeJsonNotAuthorized() {
-    HttpServletRequest request = mock(HttpServletRequest.class);
-    when(request.getParameter(DebugSupport.ODATA_DEBUG_QUERY_PARAMETER)).thenReturn(DebugSupport.ODATA_DEBUG_JSON);
-
     DebugSupport debugSupportMock = mock(DebugSupport.class);
     when(debugSupportMock.isUserAuthorized()).thenReturn(false);
 
     ServerCoreDebugger localDebugger = new ServerCoreDebugger(odata);
     localDebugger.setDebugSupportProcessor(debugSupportMock);
 
-    localDebugger.resolveDebugMode(request);
-    assertFalse(debugger.isDebugMode());
+    localDebugger.resolveDebugMode(DebugSupport.ODATA_DEBUG_JSON);
+    assertFalse(localDebugger.isDebugMode());
   }
 
   @Test
-  public void failResponse() throws IOException {
-    HttpServletRequest request = mock(HttpServletRequest.class);
-    when(request.getParameter(DebugSupport.ODATA_DEBUG_QUERY_PARAMETER)).thenReturn(DebugSupport.ODATA_DEBUG_JSON);
-    debugger.resolveDebugMode(request);
+  public void failResponse() throws Exception {
+    debugger.resolveDebugMode(DebugSupport.ODATA_DEBUG_JSON);
     ODataResponse debugResponse = debugger.createDebugResponse(null, null, null, null, null);
     assertEquals(HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode(), debugResponse.getStatusCode());
-    assertEquals("ODataLibrary: Could not assemble debug response.", IOUtils.toString(debugResponse.getContent()));
-  }*/
+    assertEquals("ODataLibrary: Could not assemble debug response.",
+        new String(debugResponse.getContent().readAllBytes(), StandardCharsets.UTF_8));
+  }
 
   @Test
   public void noDebugModeCreateDebugResponseCallMustDoNothing() {
@@ -101,27 +104,26 @@ public class ServerCoreDebuggerTest {
     assertEquals(odResponse, debugResponse);
   }
 
-  /*@Test
+  @Test
   public void runtimeMeasurement() throws Exception {
     ServerCoreDebugger defaultDebugger = new ServerCoreDebugger(odata);
     defaultDebugger.setDebugSupportProcessor(new DefaultDebugSupport());
-    HttpServletRequest request = mock(HttpServletRequest.class);
-    when(request.getParameter(DebugSupport.ODATA_DEBUG_QUERY_PARAMETER)).thenReturn(DebugSupport.ODATA_DEBUG_JSON);
-    defaultDebugger.resolveDebugMode(request);
+    defaultDebugger.resolveDebugMode(DebugSupport.ODATA_DEBUG_JSON);
 
     final int handle = defaultDebugger.startRuntimeMeasurement("someClass", "someMethod");
     defaultDebugger.stopRuntimeMeasurement(handle);
     assertEquals(0, handle);
 
-    assertThat(IOUtils.toString(defaultDebugger.createDebugResponse(null, null, null, null, null).getContent()),
+    assertThat(new String(defaultDebugger.createDebugResponse(null, null, null, null, null)
+            .getContent().readAllBytes(), StandardCharsets.UTF_8),
         allOf(containsString("\"runtime\""), containsString("\"someClass\""), containsString("\"someMethod\""),
             containsString("]}}")));
 
-    request = mock(HttpServletRequest.class);
-    when(request.getParameter(DebugSupport.ODATA_DEBUG_QUERY_PARAMETER)).thenReturn(DebugSupport.ODATA_DEBUG_HTML);
-    defaultDebugger.resolveDebugMode(request);
-    assertThat(IOUtils.toString(defaultDebugger.createDebugResponse(null, null, null, null, null).getContent()),
+    defaultDebugger.resolveDebugMode(DebugSupport.ODATA_DEBUG_HTML);
+    assertThat(new String(defaultDebugger.createDebugResponse(null, null, null, null, null)
+            .getContent().readAllBytes(), StandardCharsets.UTF_8),
         allOf(containsString(">Runtime<"), containsString(">someClass<"), containsString(">someMethod("),
             containsString("</html>")));
-  }*/
+  }
+
 }

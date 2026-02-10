@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed servlet references from Javadoc
  */
 package org.sitenetsoft.olinguito.server.api.debug;
 
@@ -90,7 +92,7 @@ public class DebugInformation {
   }
 
   /**
-   * A map containing information about the runtime environment. Depending on the servlet or webserver used this map
+   * A map containing information about the runtime environment. Depending on the server framework used this map
    * might contain different information. Will never be null but might be empty.
    * @return environment variables
    */
