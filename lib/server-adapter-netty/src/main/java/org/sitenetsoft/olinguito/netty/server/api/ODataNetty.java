@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Moved to server-adapter-netty module
  */
 package org.sitenetsoft.olinguito.netty.server.api;
 

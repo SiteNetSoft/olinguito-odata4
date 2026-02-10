@@ -18,6 +18,8 @@
   specific language governing permissions and limitations
   under the License.
 
+  Copyright 2026 SiteNetSoft - Moved Netty classes to server-adapter-netty module
+
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -39,10 +41,6 @@
       <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-commons-api</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.netty</groupId>
-      <artifactId>netty-codec-http</artifactId>
     </dependency>
     <!-- Test dependencies -->
     <dependency>
@@ -74,15 +72,13 @@
         <configuration>
           <instructions>
             <Export-Package>
-              org.sitenetsoft.olinguito.server.api*,
-              org.sitenetsoft.olinguito.netty.server.api*
+              org.sitenetsoft.olinguito.server.api*
             </Export-Package>
             <Import-Package>
               *
             </Import-Package>
             <!-- workaround due to the current server-api server-core interdependency -->
             <DynamicImport-Package>
-              org.sitenetsoft.olinguito.netty.server.core,
               org.sitenetsoft.olinguito.server.core
             </DynamicImport-Package>
           </instructions>

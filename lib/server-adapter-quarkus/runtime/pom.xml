@@ -64,6 +64,11 @@
         </dependency>
         <dependency>
             <groupId>org.sitenetsoft.olinguito</groupId>
+            <artifactId>server-adapter-netty</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.sitenetsoft.olinguito</groupId>
             <artifactId>odata-commons-api</artifactId>
             <version>${project.version}</version>
         </dependency>
