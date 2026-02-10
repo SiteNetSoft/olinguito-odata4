@@ -166,7 +166,7 @@ public class ODataNettyHandlerImpl implements ODataNettyHandler {
    */
   private ODataRequest fillODataRequest(final ODataRequest odRequest, final HttpRequest httpRequest,
 	      final int split, final String contextPath) throws ODataLibraryException {
-	    final int requestHandle = debugger.startRuntimeMeasurement("ODataHttpHandlerImpl", "fillODataRequest");
+	    final int requestHandle = debugger.startRuntimeMeasurement("ODataNettyHandlerImpl", "fillODataRequest");
 	    try {
 	    	ByteBuf byteBuf = ((HttpContent)httpRequest).content();
 	    	ByteBufInputStream inputStream = new ByteBufInputStream(byteBuf);

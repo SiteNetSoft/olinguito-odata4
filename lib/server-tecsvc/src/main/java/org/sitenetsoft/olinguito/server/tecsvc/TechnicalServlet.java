@@ -83,7 +83,6 @@ public class TechnicalServlet extends HttpServlet {
         LOG.info("Created new data provider.");
       }
 
-      //ODataHttpHandler handler = odata.createHandler(serviceMetadata);
       ODataRequestHandler core = odata.createHandler(serviceMetadata);
       ODataServletHandler servlet = new ServletODataAdapter(core);
       // Register processors.
@@ -93,9 +92,7 @@ public class TechnicalServlet extends HttpServlet {
       core.register(new TechnicalBatchProcessor(dataProvider));
       // Register helpers.
       core.register(new ETagSupport());
-      //core.register(new DefaultDebugSupport());
       // Process the request.
-      //handler.process(request, response);
       servlet.process(request, response);
     } catch (final RuntimeException e) {
       LOG.error("Server Error", e);
