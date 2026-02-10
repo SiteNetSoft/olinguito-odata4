@@ -39,7 +39,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;
 import org.sitenetsoft.olinguito.commons.api.Constants;
 import org.sitenetsoft.olinguito.client.api.domain.ClientAnnotation;
@@ -107,8 +106,8 @@ public class AtomTest extends JSONTest {
   @Override
   protected void assertSimilar(final String filename, final String actual,
       boolean isServerMode) throws Exception {
-    final String expected = cleanup(IOUtils.toString(
-        Objects.requireNonNull(getClass().getResourceAsStream(filename)), StandardCharsets.UTF_8));
+    final String expected = cleanup(new String(
+        Objects.requireNonNull(getClass().getResourceAsStream(filename)).readAllBytes(), StandardCharsets.UTF_8));
     org.xmlunit.diff.Diff diff = DiffBuilder.compare(expected).withTest(actual)
         .ignoreComments()
         .ignoreWhitespace()
@@ -187,10 +186,10 @@ public class AtomTest extends JSONTest {
     message.setEditLink(URI.create("http://services.odata.org/V4/(S(fe5rsnxo3fkkkk2bvmh1nl1y))/"
         + "TripPinServiceRW/People('russellwhyte')"));
 
-    String actual = IOUtils.toString(client.getWriter().writeEntity(message, ContentType.APPLICATION_ATOM_XML), StandardCharsets.UTF_8);
+    String actual = new String(client.getWriter().writeEntity(message, ContentType.APPLICATION_ATOM_XML).readAllBytes(), StandardCharsets.UTF_8);
     actual = actual.substring(actual.indexOf("<entry"));
     assertNotNull(actual);
-    String expected = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("olingo1073_1.xml")), StandardCharsets.UTF_8);
+    String expected = new String(Objects.requireNonNull(getClass().getResourceAsStream("olingo1073_1.xml")).readAllBytes(), StandardCharsets.UTF_8);
     expected = expected.substring(expected.indexOf("<entry"));
     expected = expected.trim().replace("\n", "").replace("\r", "").replace("\t", "");
     assertEquals(expected, actual);

@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.io.LineIterator;
+import java.io.BufferedReader;
 import org.apache.http.HttpResponse;
 import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchLineIterator;
 import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchResponseItem;
@@ -66,7 +66,7 @@ public class ODataBatchResponseTest {
     header.put("content-type", list);
     final InputStream input = getClass().getResourceAsStream("batchResponse.batch");
     Reader reader = new InputStreamReader(input);
-    ODataBatchLineIterator iterator = new ODataBatchLineIteratorImpl(new LineIterator(reader ));
+    ODataBatchLineIterator iterator = new ODataBatchLineIteratorImpl(new BufferedReader(reader));
     String boundary = "changeset_12ks93js84d";
     iterator.next();
     iterator.next();

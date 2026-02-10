@@ -31,7 +31,7 @@ import static org.junit.Assert.fail;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.io.IOUtils;
+import java.io.ByteArrayInputStream;
 import org.sitenetsoft.olinguito.client.api.communication.ODataClientErrorException;
 import org.sitenetsoft.olinguito.client.api.communication.request.ODataBasicRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataDeleteRequest;
@@ -152,7 +152,7 @@ public class ConditionalITCase extends AbstractParamTecSvcITCase {
   @Test
   public void updateMediaWithWrongIfMatch() throws Exception {
     ODataMediaEntityUpdateRequest<ClientEntity> request =
-            getClient().getCUDRequestFactory().getMediaEntityUpdateRequest(uriMedia, IOUtils.toInputStream("ignored", StandardCharsets.UTF_8));
+            getClient().getCUDRequestFactory().getMediaEntityUpdateRequest(uriMedia, new ByteArrayInputStream("ignored".getBytes(StandardCharsets.UTF_8)));
     request.setIfMatch("W/\"42\"");
 
     try {

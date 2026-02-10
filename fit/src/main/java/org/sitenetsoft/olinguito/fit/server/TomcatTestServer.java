@@ -17,12 +17,19 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Replaced commons-io with Java standard library
  ******************************************************************************/
 package org.sitenetsoft.olinguito.fit.server;
 
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
@@ -44,8 +51,6 @@ import org.apache.catalina.loader.WebappClassLoader;
 import org.apache.catalina.loader.WebappClassLoaderBase;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.startup.Tomcat;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,6 +101,42 @@ public class TomcatTestServer implements TestServer {
   public boolean isRunning() {
     return tomcat.getServer() != null
             && tomcat.getServer().getState() == LifecycleState.STARTED;
+  }
+
+  private static void deleteDirectory(File dir) throws IOException {
+    if (!dir.exists()) {
+      return;
+    }
+    Files.walkFileTree(dir.toPath(), new SimpleFileVisitor<>() {
+      @Override
+      public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+        Files.delete(file);
+        return FileVisitResult.CONTINUE;
+      }
+      @Override
+      public FileVisitResult postVisitDirectory(Path d, IOException exc) throws IOException {
+        if (exc != null) throw exc;
+        Files.delete(d);
+        return FileVisitResult.CONTINUE;
+      }
+    });
+  }
+
+  private static void copyDirectory(File src, File dest) throws IOException {
+    Path srcPath = src.toPath();
+    Path destPath = dest.toPath();
+    Files.walkFileTree(srcPath, new SimpleFileVisitor<>() {
+      @Override
+      public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+        Files.createDirectories(destPath.resolve(srcPath.relativize(dir)));
+        return FileVisitResult.CONTINUE;
+      }
+      @Override
+      public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+        Files.copy(file, destPath.resolve(srcPath.relativize(file)), StandardCopyOption.REPLACE_EXISTING);
+        return FileVisitResult.CONTINUE;
+      }
+    });
   }
 
   public static void main(final String[] params) throws LifecycleException {
@@ -167,7 +208,7 @@ public class TomcatTestServer implements TestServer {
       File resourcePath = new File(resource);
       if (resourcePath.exists() && resourcePath.isFile()) {
         FileInputStream fin = new FileInputStream(resourcePath);
-        result = IOUtils.toString(fin, StandardCharsets.UTF_8);
+        result = new String(fin.readAllBytes(), StandardCharsets.UTF_8);
         LOG.info("Mapped uri '{}' to resource '{}'.", uri, resource);
         LOG.trace("Resource content {\n\n{}\n\n}", result);
       } else {
@@ -208,8 +249,8 @@ public class TomcatTestServer implements TestServer {
       final File webAppDir;
       if (copy) {
         webAppDir = new File(baseDir, tecsvcDir.getName());
-        FileUtils.deleteDirectory(webAppDir);
-        FileUtils.copyDirectory(tecsvcDir, webAppDir);
+        deleteDirectory(webAppDir);
+        copyDirectory(tecsvcDir, webAppDir);
       } else {
         webAppDir = tecsvcDir;
       }
@@ -297,11 +338,11 @@ public class TomcatTestServer implements TestServer {
       final File webAppDir;
       if (copy) {
         webAppDir = new File(baseDir, webAppProjectDir.getName());
-        FileUtils.deleteDirectory(webAppDir);
+        deleteDirectory(webAppDir);
         if (!webAppDir.mkdirs()) {
           throw new RuntimeException("Unable to create temporary directory at {" + webAppDir.getAbsolutePath() + "}");
         }
-        FileUtils.copyDirectory(webAppProjectDir, webAppDir);
+        copyDirectory(webAppProjectDir, webAppDir);
       } else {
         webAppDir = webAppProjectDir;
       }

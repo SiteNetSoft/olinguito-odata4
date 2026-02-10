@@ -34,7 +34,7 @@ import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import org.apache.commons.io.IOUtils;
+import java.io.IOException;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.fit.utils.ConstantKey;
@@ -80,7 +80,7 @@ public class Metadata extends AbstractMetadataElement {
         // ignore
       } finally {
         reader.close();
-        IOUtils.closeQuietly(is);
+        try { is.close(); } catch (IOException ignored) { }
       }
     } catch (Exception e) {
       LOG.error("Error parsing metadata", e);

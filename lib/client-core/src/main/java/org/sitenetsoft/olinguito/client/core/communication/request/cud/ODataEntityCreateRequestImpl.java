@@ -18,10 +18,10 @@
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.cud;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -87,7 +87,7 @@ public class ODataEntityCreateRequestImpl<E extends ClientEntity>
     try {
       return new ODataEntityCreateResponseImpl(odataClient, httpClient, doExecute());
     } finally {
-      IOUtils.closeQuietly(input);
+      try { input.close(); } catch (IOException ignored) { }
     }
   }
 

@@ -15,13 +15,15 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced commons-io with Java standard library
  */
 package org.sitenetsoft.olinguito.ext.proxy.commons;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.URI;
-import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
 import org.sitenetsoft.olinguito.ext.proxy.AbstractService;
 
@@ -85,7 +87,11 @@ public class EdmStreamValueHandler extends AbstractInvocationHandler {
   }
 
   public void close() {
-    IOUtils.closeQuietly(stream);
+    if (stream != null) {
+      try {
+        stream.close();
+      } catch (IOException ignored) { }
+    }
     contentType = null;
     stream = null;
   }

@@ -30,7 +30,6 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.startup.Tomcat;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -132,7 +131,7 @@ public class TripPinServiceTest {
     req.setHeader("Accept", "application/xml");
 
     HttpResponse response = httpSend(req, 200);
-    String actual = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
+    String actual = new String(response.getEntity().getContent().readAllBytes(), StandardCharsets.UTF_8);
     String expected = 
         "<m:properties>"
         +     "<d:AirlineCode>FM</d:AirlineCode>"
@@ -149,7 +148,7 @@ public class TripPinServiceTest {
   public void testmetadata() throws Exception {
     HttpRequest req = new HttpGet(baseURL+"/$metadata");
     HttpResponse response = httpSend(req, 200);
-    IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
+    new String(response.getEntity().getContent().readAllBytes(), StandardCharsets.UTF_8);
   }
   
   @Test
@@ -206,7 +205,7 @@ public class TripPinServiceTest {
     Header[] headers = response.getHeaders("Content-Type");
     assertEquals("application/json;odata.metadata=minimal", headers[0].getValue());
     assertEquals("{\"error\":{\"code\":null,\"message\":\"The key value '' is invalid.\"}}", 
-        IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8));
+        new String(response.getEntity().getContent().readAllBytes(), StandardCharsets.UTF_8));
   }
   
   @Test
@@ -218,7 +217,7 @@ public class TripPinServiceTest {
   @Test
   public void testRead$Count() throws Exception {
     HttpResponse response = httpGET(baseURL + "/Airlines/$count", 200);
-    assertEquals("15", IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8));
+    assertEquals("15", new String(response.getEntity().getContent().readAllBytes(), StandardCharsets.UTF_8));
   }
 
   @Test
@@ -248,7 +247,7 @@ public class TripPinServiceTest {
   @Test
   public void testReadPrimitivePropertyValue() throws Exception {
     HttpResponse response = httpGET(baseURL + "/Airlines('AA')/Name/$value", 200);
-    assertEquals("American Airlines", IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8));
+    assertEquals("American Airlines", new String(response.getEntity().getContent().readAllBytes(), StandardCharsets.UTF_8));
   }
   
   @Test
@@ -262,7 +261,7 @@ public class TripPinServiceTest {
     EntityUtils.consumeQuietly(response.getEntity());
     
     response = httpGET(baseURL + "/Airlines('AF')/Name/$value", 200);
-    assertEquals("Safari", IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8));
+    assertEquals("Safari", new String(response.getEntity().getContent().readAllBytes(), StandardCharsets.UTF_8));
   }
   
   @Test @Disabled

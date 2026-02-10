@@ -32,7 +32,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.UUID;
 
-import org.apache.commons.io.IOUtils;
+import java.io.ByteArrayInputStream;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataEntityUpdateRequest;
@@ -81,7 +81,7 @@ public class MediaEntityTestITCase extends AbstractTestITCase {
     assertEquals(200, streamRes.getStatusCode());
 
     final byte[] actual = new byte[Integer.parseInt(streamRes.getHeader("Content-Length").iterator().next())];
-    IOUtils.read(streamRes.getBody(), actual, 0, actual.length);
+    streamRes.getBody().readNBytes(actual, 0, actual.length);
   }
 
   @Test
@@ -101,7 +101,7 @@ public class MediaEntityTestITCase extends AbstractTestITCase {
 
   private void create(final ContentType contentType) throws IOException {
     final String random = RandomStringUtils.secure().next(110);
-    final InputStream input = IOUtils.toInputStream(random, StandardCharsets.UTF_8);
+    final InputStream input = new ByteArrayInputStream(random.getBytes(StandardCharsets.UTF_8));
 
     final URI uri = client.newURIBuilder(testDemoServiceRootURL).appendEntitySetSegment("Advertisements").build();
     final ODataMediaEntityCreateRequest<ClientEntity> createReq =
@@ -134,7 +134,7 @@ public class MediaEntityTestITCase extends AbstractTestITCase {
     assertEquals(200, retrieveRes.getStatusCode());
 
     final byte[] actual = new byte[Integer.parseInt(retrieveRes.getHeader("Content-Length").iterator().next())];
-    IOUtils.read(retrieveRes.getBody(), actual, 0, actual.length);
+    retrieveRes.getBody().readNBytes(actual, 0, actual.length);
     assertEquals(random, new String(actual));
   }
 
@@ -157,7 +157,7 @@ public class MediaEntityTestITCase extends AbstractTestITCase {
 
     // 1. update providing media content
     final ODataMediaEntityUpdateRequest<ClientEntity> updateReq = client.getCUDRequestFactory().
-        getMediaEntityUpdateRequest(uri, IOUtils.toInputStream(random, StandardCharsets.UTF_8));
+        getMediaEntityUpdateRequest(uri, new ByteArrayInputStream(random.getBytes(StandardCharsets.UTF_8)));
     updateReq.setFormat(contentType);
 
     final MediaEntityUpdateStreamManager<ClientEntity> streamManager = updateReq.payloadManager();
@@ -170,7 +170,7 @@ public class MediaEntityTestITCase extends AbstractTestITCase {
     assertEquals(200, streamRes.getStatusCode());
 
     final byte[] actual = new byte[Integer.parseInt(streamRes.getHeader("Content-Length").iterator().next())];
-    IOUtils.read(streamRes.getBody(), actual, 0, actual.length);
+    streamRes.getBody().readNBytes(actual, 0, actual.length);
     assertEquals(random, new String(actual));
   }
 

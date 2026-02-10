@@ -27,7 +27,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Future;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.client.api.ODataBatchConstants;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
@@ -109,7 +108,7 @@ public abstract class AbstractODataBasicRequest<T extends ODataResponse>
 
       final InputStream payload = getPayload();
       if (payload != null) {
-        req.rawAppend(IOUtils.toByteArray(getPayload()));
+        req.rawAppend(getPayload().readAllBytes());
       }
     } catch (IOException e) {
       throw new IllegalStateException(e);

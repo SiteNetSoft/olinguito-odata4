@@ -27,7 +27,6 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.util.EntityUtils;
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;
@@ -257,7 +256,7 @@ public class JSONTest extends AbstractTest {
   
   protected void assertSimilar(final String filename, final String actual, 
       boolean isServerMode) throws Exception {
-    final JsonNode expected = OBJECT_MAPPER.readTree(IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream(filename)), StandardCharsets.UTF_8).
+    final JsonNode expected = OBJECT_MAPPER.readTree(new String(Objects.requireNonNull(getClass().getResourceAsStream(filename)).readAllBytes(), StandardCharsets.UTF_8).
         replace(Constants.JSON_NAVIGATION_LINK, Constants.JSON_BIND_LINK_SUFFIX));
     cleanup((ObjectNode) expected, isServerMode);
     final ObjectNode actualNode = (ObjectNode) OBJECT_MAPPER.readTree(new ByteArrayInputStream(actual.getBytes()));
@@ -267,7 +266,7 @@ public class JSONTest extends AbstractTest {
   
   protected void assertSimilarWithFullMetadata(final String filename, final String actual, 
       boolean isServerMode) throws Exception {
-    String value = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream(filename)), StandardCharsets.UTF_8);
+    String value = new String(Objects.requireNonNull(getClass().getResourceAsStream(filename)).readAllBytes(), StandardCharsets.UTF_8);
     final JsonNode expected = isServerMode ? OBJECT_MAPPER.readTree(value.
         replace(Constants.JSON_MEDIA_EDIT_LINK, Constants.JSON_MEDIA_READ_LINK)) :
     OBJECT_MAPPER.readTree(value.
@@ -280,7 +279,7 @@ public class JSONTest extends AbstractTest {
   
   protected void assertSimilarWithNoMetadata(final String filename, final String actual, 
       boolean isServerMode) throws Exception {
-    final JsonNode expected = OBJECT_MAPPER.readTree(IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream(filename)), StandardCharsets.UTF_8).
+    final JsonNode expected = OBJECT_MAPPER.readTree(new String(Objects.requireNonNull(getClass().getResourceAsStream(filename)).readAllBytes(), StandardCharsets.UTF_8).
         replace(Constants.JSON_NAVIGATION_LINK, Constants.JSON_BIND_LINK_SUFFIX));
     cleanupWithNoMetadata((ObjectNode) expected, isServerMode);
     final ObjectNode actualNode = (ObjectNode) OBJECT_MAPPER.readTree(new ByteArrayInputStream(actual.getBytes()));
@@ -289,7 +288,7 @@ public class JSONTest extends AbstractTest {
   }
 
   private void assertJSONSimilar(final String filename, final String actual) throws Exception {
-    final JsonNode expected = OBJECT_MAPPER.readTree(IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream(filename)), StandardCharsets.UTF_8).
+    final JsonNode expected = OBJECT_MAPPER.readTree(new String(Objects.requireNonNull(getClass().getResourceAsStream(filename)).readAllBytes(), StandardCharsets.UTF_8).
         replace(Constants.JSON_NAVIGATION_LINK, Constants.JSON_BIND_LINK_SUFFIX));
     cleanup((ObjectNode) expected, false);
     final ObjectNode actualNode = (ObjectNode) OBJECT_MAPPER.readTree(new ByteArrayInputStream(actual.getBytes()));
@@ -647,17 +646,17 @@ public class JSONTest extends AbstractTest {
         client.getObjectFactory().newEnumValue("Microsoft.Exchange.Services.OData.Model.BodyType", "text")));
     message.getProperties().add(client.getObjectFactory().newComplexProperty("Body", body));
 
-    String actual = IOUtils.toString(client.getWriter().writeEntity(message, ContentType.JSON), StandardCharsets.UTF_8);
+    String actual = new String(client.getWriter().writeEntity(message, ContentType.JSON).readAllBytes(), StandardCharsets.UTF_8);
     JsonNode expected =
-        OBJECT_MAPPER.readTree(IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("olingo390.json")), StandardCharsets.UTF_8).
+        OBJECT_MAPPER.readTree(new String(Objects.requireNonNull(getClass().getResourceAsStream("olingo390.json")).readAllBytes(), StandardCharsets.UTF_8).
             replace(Constants.JSON_NAVIGATION_LINK, Constants.JSON_BIND_LINK_SUFFIX));
     cleanup((ObjectNode) expected, false);
     ObjectNode actualNode = (ObjectNode) OBJECT_MAPPER.readTree(new ByteArrayInputStream(actual.getBytes()));
     assertEquals(expected, actualNode);
     
-    actual = IOUtils.toString(client.getWriter().writeEntity(message, ContentType.JSON_FULL_METADATA), StandardCharsets.UTF_8);
+    actual = new String(client.getWriter().writeEntity(message, ContentType.JSON_FULL_METADATA).readAllBytes(), StandardCharsets.UTF_8);
     expected =
-        OBJECT_MAPPER.readTree(IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("olingo390.json")), StandardCharsets.UTF_8).
+        OBJECT_MAPPER.readTree(new String(Objects.requireNonNull(getClass().getResourceAsStream("olingo390.json")).readAllBytes(), StandardCharsets.UTF_8).
             replace(Constants.JSON_NAVIGATION_LINK, Constants.JSON_BIND_LINK_SUFFIX));
     actualNode = (ObjectNode) OBJECT_MAPPER.readTree(new ByteArrayInputStream(actual.getBytes()));
     assertEquals(expected, actualNode);
@@ -687,17 +686,17 @@ public class JSONTest extends AbstractTest {
     toRecipients.add(complType2);
     message.getProperties().add(client.getObjectFactory().newCollectionProperty("ToRecipients", toRecipients));
 
-	String actual = IOUtils.toString(client.getWriter().writeEntity(message, ContentType.JSON), StandardCharsets.UTF_8);
+	String actual = new String(client.getWriter().writeEntity(message, ContentType.JSON).readAllBytes(), StandardCharsets.UTF_8);
     JsonNode expected =
-        OBJECT_MAPPER.readTree(IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("olingo1073.json")), StandardCharsets.UTF_8).
+        OBJECT_MAPPER.readTree(new String(Objects.requireNonNull(getClass().getResourceAsStream("olingo1073.json")).readAllBytes(), StandardCharsets.UTF_8).
             replace(Constants.JSON_NAVIGATION_LINK, Constants.JSON_BIND_LINK_SUFFIX));
     cleanup((ObjectNode) expected, false);
     ObjectNode actualNode = (ObjectNode) OBJECT_MAPPER.readTree(new ByteArrayInputStream(actual.getBytes()));
     assertEquals(expected, actualNode);
     
-    actual = IOUtils.toString(client.getWriter().writeEntity(message, ContentType.JSON_FULL_METADATA), StandardCharsets.UTF_8);
+    actual = new String(client.getWriter().writeEntity(message, ContentType.JSON_FULL_METADATA).readAllBytes(), StandardCharsets.UTF_8);
     expected =
-        OBJECT_MAPPER.readTree(IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("olingo1073.json")), StandardCharsets.UTF_8).
+        OBJECT_MAPPER.readTree(new String(Objects.requireNonNull(getClass().getResourceAsStream("olingo1073.json")).readAllBytes(), StandardCharsets.UTF_8).
             replace(Constants.JSON_NAVIGATION_LINK, Constants.JSON_BIND_LINK_SUFFIX));
     actualNode = (ObjectNode) OBJECT_MAPPER.readTree(new ByteArrayInputStream(actual.getBytes()));
     assertEquals(expected, actualNode);
@@ -760,17 +759,17 @@ public class JSONTest extends AbstractTest {
     message.setEditLink(URI.create("http://services.odata.org/V4/(S(fe5rsnxo3fkkkk2bvmh1nl1y))/"
         + "TripPinServiceRW/People('russellwhyte')"));
 
-    String actual = IOUtils.toString(client.getWriter().writeEntity(message, ContentType.JSON), StandardCharsets.UTF_8);
+    String actual = new String(client.getWriter().writeEntity(message, ContentType.JSON).readAllBytes(), StandardCharsets.UTF_8);
     JsonNode expected =
-        OBJECT_MAPPER.readTree(IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("olingo1073_1.json")), StandardCharsets.UTF_8).
+        OBJECT_MAPPER.readTree(new String(Objects.requireNonNull(getClass().getResourceAsStream("olingo1073_1.json")).readAllBytes(), StandardCharsets.UTF_8).
             replace(Constants.JSON_NAVIGATION_LINK, Constants.JSON_BIND_LINK_SUFFIX));
     cleanup((ObjectNode) expected, false);
     ObjectNode actualNode = (ObjectNode) OBJECT_MAPPER.readTree(new ByteArrayInputStream(actual.getBytes()));
     assertEquals(expected, actualNode);
     
-    actual = IOUtils.toString(client.getWriter().writeEntity(message, ContentType.JSON_FULL_METADATA), StandardCharsets.UTF_8);
+    actual = new String(client.getWriter().writeEntity(message, ContentType.JSON_FULL_METADATA).readAllBytes(), StandardCharsets.UTF_8);
     expected =
-        OBJECT_MAPPER.readTree(IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("olingo1073_1.json")), StandardCharsets.UTF_8).
+        OBJECT_MAPPER.readTree(new String(Objects.requireNonNull(getClass().getResourceAsStream("olingo1073_1.json")).readAllBytes(), StandardCharsets.UTF_8).
             replace(Constants.JSON_NAVIGATION_LINK, Constants.JSON_BIND_LINK_SUFFIX));
     actualNode = (ObjectNode) OBJECT_MAPPER.readTree(new ByteArrayInputStream(actual.getBytes()));
     assertEquals(expected, actualNode);
@@ -967,7 +966,7 @@ public class JSONTest extends AbstractTest {
 
     final String actual = EntityUtils.toString(httpEntity);
     final JsonNode expected =
-            OBJECT_MAPPER.readTree(IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("olingo1114.json")), StandardCharsets.UTF_8).
+            OBJECT_MAPPER.readTree(new String(Objects.requireNonNull(getClass().getResourceAsStream("olingo1114.json")).readAllBytes(), StandardCharsets.UTF_8).
                     replace(Constants.JSON_NAVIGATION_LINK, Constants.JSON_BIND_LINK_SUFFIX));
     final ObjectNode actualNode = (ObjectNode) OBJECT_MAPPER.readTree(new ByteArrayInputStream(actual.getBytes()));
     assertEquals(expected, actualNode);

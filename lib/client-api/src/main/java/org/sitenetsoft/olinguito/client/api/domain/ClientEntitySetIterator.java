@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Replace commons-io with Java standard library
  */
 package org.sitenetsoft.olinguito.client.api.domain;
 
@@ -30,7 +31,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;
 import org.sitenetsoft.olinguito.client.api.serialization.ODataDeserializerException;
@@ -155,8 +155,8 @@ public class ClientEntitySetIterator<T extends ClientEntitySet, E extends Client
    * Closes the current iterator.
    */
   public void close() {
-    IOUtils.closeQuietly(stream);
-    IOUtils.closeQuietly(osEntitySet);
+    try { stream.close(); } catch (IOException ignored) { }
+    try { osEntitySet.close(); } catch (IOException ignored) { }
   }
 
   /**

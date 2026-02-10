@@ -29,7 +29,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.apache.commons.io.IOUtils;
+import java.io.IOException;
+
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;
 import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
@@ -61,7 +62,7 @@ public class ODataWriterImpl implements ODataWriter {
 
       return new ByteArrayInputStream(output.toByteArray());
     } finally {
-      IOUtils.closeQuietly(writer);
+      try { writer.close(); } catch (IOException ignored) { }
     }
   }
 
@@ -81,7 +82,7 @@ public class ODataWriterImpl implements ODataWriter {
 
       return new ByteArrayInputStream(output.toByteArray());
     } finally {
-      IOUtils.closeQuietly(writer);
+      try { writer.close(); } catch (IOException ignored) { }
     }
   }
 
@@ -94,7 +95,7 @@ public class ODataWriterImpl implements ODataWriter {
 
       return new ByteArrayInputStream(output.toByteArray());
     } finally {
-      IOUtils.closeQuietly(writer);
+      try { writer.close(); } catch (IOException ignored) { }
     }
   }
 
@@ -107,7 +108,7 @@ public class ODataWriterImpl implements ODataWriter {
 
       return new ByteArrayInputStream(output.toByteArray());
     } finally {
-      IOUtils.closeQuietly(writer);
+      try { writer.close(); } catch (IOException ignored) { }
     }
   }
 }

@@ -27,7 +27,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Future;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
@@ -161,7 +160,7 @@ public abstract class AbstractODataStreamedRequest<V extends ODataResponse, T ex
       req.rawAppend(CRLF);
 
       try {
-        req.rawAppend(IOUtils.toByteArray(input));
+        req.rawAppend(input.readAllBytes());
       } catch (Exception e) {
         LOG.debug("Invalid stream", e);
         req.rawAppend(new byte[0]);
@@ -169,7 +168,7 @@ public abstract class AbstractODataStreamedRequest<V extends ODataResponse, T ex
     } catch (IOException e) {
       throw new IllegalStateException(e);
     } finally {
-      IOUtils.closeQuietly(input);
+      try { input.close(); } catch (IOException ignored) { }
     }
   }
 }

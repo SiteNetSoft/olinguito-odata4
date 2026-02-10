@@ -29,7 +29,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
-import org.apache.commons.io.IOUtils;
+// IOUtils removed - using Java standard library
 import org.sitenetsoft.olinguito.client.api.communication.ODataClientErrorException;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataDeleteRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataPropertyUpdateRequest;
@@ -90,7 +90,7 @@ public class PrimitiveComplexITCase extends AbstractParamTecSvcITCase {
     saveCookieHeader(response);
 
     if (isJson()) {
-      String actualResult = IOUtils.toString(response.getRawResponse(), StandardCharsets.UTF_8);
+      String actualResult = new String(response.getRawResponse().readAllBytes(), StandardCharsets.UTF_8);
       assertTrue(actualResult.startsWith("{\"@odata.context\":\"../$metadata#ESTwoPrim(32766)/PropertyString\","));
       assertTrue(actualResult.endsWith("\"value\":\"Test String1\"}"));
     } else {
@@ -179,7 +179,7 @@ public class PrimitiveComplexITCase extends AbstractParamTecSvcITCase {
     saveCookieHeader(response);
 
     if (isJson()) {
-      String actualResult = IOUtils.toString(response.getRawResponse(), StandardCharsets.UTF_8);
+      String actualResult = new String(response.getRawResponse().readAllBytes(), StandardCharsets.UTF_8);
       assertTrue(actualResult.startsWith("{\"@odata.context\":\"../$metadata#ESMixPrimCollComp(7)/PropertyComp\","));
       assertTrue(actualResult.endsWith("\"PropertyInt16\":222,\"PropertyString\":\"TEST B\"}"));
     } else {
@@ -387,7 +387,7 @@ public class PrimitiveComplexITCase extends AbstractParamTecSvcITCase {
 
     final ClientPrimitiveValue value = response.getBody();
     assertNotNull(value);
-    assertEquals("Test String1", IOUtils.toString((InputStream) value.toValue(), StandardCharsets.UTF_8));
+    assertEquals("Test String1", new String(((InputStream) value.toValue()).readAllBytes(), StandardCharsets.UTF_8));
   }
 
   @Test

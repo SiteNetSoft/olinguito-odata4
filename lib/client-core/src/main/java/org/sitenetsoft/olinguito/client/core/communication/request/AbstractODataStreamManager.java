@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Fixed NPE in finalizeBody when bodyStreamWriter is null
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -26,7 +26,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.io.IOUtils;
+import java.io.IOException;
+
 import org.apache.http.HttpResponse;
 import org.sitenetsoft.olinguito.client.api.communication.request.ODataPayloadManager;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataResponse;
@@ -112,7 +113,12 @@ public abstract class AbstractODataStreamManager<T extends ODataResponse> extend
    */
   @Override
   public void finalizeBody() {
-    IOUtils.closeQuietly(getBodyStreamWriter());
+    final PipedOutputStream writer = getBodyStreamWriter();
+    if (writer != null) {
+      try {
+        writer.close();
+      } catch (IOException ignored) { }
+    }
   }
 
   /**

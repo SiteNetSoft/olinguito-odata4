@@ -18,7 +18,8 @@
   specific language governing permissions and limitations
   under the License.
 
-  Copyright 2026 SiteNetSoft - Moved Netty classes to server-adapter-netty module
+  Copyright 2026 SiteNetSoft - Moved Netty classes to server-adapter-netty module;
+  replaced Class.forName with ServiceLoader to remove OSGi DynamicImport-Package workaround
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -77,10 +78,6 @@
             <Import-Package>
               *
             </Import-Package>
-            <!-- workaround due to the current server-api server-core interdependency -->
-            <DynamicImport-Package>
-              org.sitenetsoft.olinguito.server.core
-            </DynamicImport-Package>
           </instructions>
         </configuration>
       </plugin>

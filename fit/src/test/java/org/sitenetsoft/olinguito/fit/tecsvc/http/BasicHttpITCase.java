@@ -30,7 +30,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.io.IOUtils;
+// IOUtils removed - using Java standard library
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
@@ -55,7 +55,7 @@ public class BasicHttpITCase extends AbstractBaseTestITCase {
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
     assertNull(connection.getHeaderField(HttpHeader.CONTENT_TYPE));
-    assertEquals("", IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8));
+    assertEquals("", new String(connection.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
     connection.disconnect();
   }
 
@@ -70,7 +70,7 @@ public class BasicHttpITCase extends AbstractBaseTestITCase {
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
     assertNull(connection.getHeaderField(HttpHeader.CONTENT_TYPE));
-    assertEquals("", IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8));
+    assertEquals("", new String(connection.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
     connection.disconnect();
   }
 
@@ -159,7 +159,7 @@ public class BasicHttpITCase extends AbstractBaseTestITCase {
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
     assertEquals(ContentType.create(ContentType.JSON, ContentType.PARAMETER_IEEE754_COMPATIBLE, "true"),
         ContentType.create(connection.getContentType()));
-    final String content = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
 
     assertTrue(content.contains("\"PropertyDecimal\":\"34\""));
     assertTrue(content.contains("\"PropertyInt64\":\"9223372036854775807\""));
@@ -176,7 +176,7 @@ public class BasicHttpITCase extends AbstractBaseTestITCase {
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
     assertEquals(ContentType.create(ContentType.JSON, ContentType.PARAMETER_IEEE754_COMPATIBLE, "true"),
         ContentType.create(connection.getContentType()));
-    final String content = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
 
     assertTrue(content.contains("\"PropertyDecimal\":\"34\""));
     assertTrue(content.contains("\"PropertyInt64\":\"9223372036854775807\""));
@@ -195,7 +195,7 @@ public class BasicHttpITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), connection.getResponseCode());
-    assertTrue(IOUtils.toString(connection.getErrorStream(), StandardCharsets.UTF_8).
+    assertTrue(new String(connection.getErrorStream().readAllBytes(), StandardCharsets.UTF_8).
         contains("The system query option '$top' has the not-allowed value ''."));
   }
  
@@ -208,7 +208,7 @@ public class BasicHttpITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), connection.getResponseCode());
-    assertTrue(IOUtils.toString(connection.getErrorStream(), StandardCharsets.UTF_8).
+    assertTrue(new String(connection.getErrorStream().readAllBytes(), StandardCharsets.UTF_8).
         contains("The system query option '$skip' has the not-allowed value ''."));
   }
   
@@ -222,7 +222,7 @@ public class BasicHttpITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    final String content = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
 
     assertTrue(content.contains("\"PropertyInt16\":111"));
     assertTrue(content.contains("\"PropertyString\":\"TEST A\""));
@@ -240,7 +240,7 @@ public class BasicHttpITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    final String content = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
     assertTrue(content.contains("\"TEST A 0815\""));
   }
   
@@ -254,7 +254,7 @@ public class BasicHttpITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    final String content = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
 
     assertTrue(content.contains("\"PropertyInt16\":32766"));
     assertTrue(content.contains("\"PropertyString\":\"Test String1\""));
@@ -271,7 +271,7 @@ public class BasicHttpITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), connection.getResponseCode());
-    final String content = IOUtils.toString(connection.getErrorStream(), Charset.defaultCharset());
+    final String content = new String(connection.getErrorStream().readAllBytes(), Charset.defaultCharset());
 
     assertTrue(content.contains("The type filter 'olingo.odata.test1.ETTwoPrim' is incompatible."));
   }
@@ -286,7 +286,7 @@ public class BasicHttpITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    final String content = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
 
     assertTrue(content.contains("\"PropertyInt16\":111"));
     assertTrue(content.contains("\"PropertyString\":\"TEST A\""));
@@ -305,7 +305,7 @@ public class BasicHttpITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    final String content = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
 
     assertNotNull(content);
   }
@@ -321,7 +321,7 @@ public class BasicHttpITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    final String content = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
 
     assertNotNull(content);
   }
@@ -337,7 +337,7 @@ public class BasicHttpITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    final String content = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
 
     assertNotNull(content);
   }
@@ -353,7 +353,7 @@ public class BasicHttpITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    final String content = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
 
     assertNotNull(content);
   }
@@ -406,7 +406,7 @@ public class BasicHttpITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    assertEquals("3", IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8));
+    assertEquals("3", new String(connection.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
     connection.disconnect();
   }
   
@@ -420,7 +420,7 @@ public class BasicHttpITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    String content = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
+    String content = new String(connection.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
     assertNotNull(content);
     assertTrue(content.contains("\"value\":[{\"PropertyInt16\":-32768,"
         + "\"PropertyString\":\"Second Resource - negative values\","

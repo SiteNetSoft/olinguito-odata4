@@ -56,7 +56,6 @@ import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
@@ -183,7 +182,7 @@ public class XMLUtilities extends AbstractUtilities {
     writer.add(entry.getValue().getContentReader());
     writer.add(entry.getValue().getEnd());
     writer.add(reader);
-    IOUtils.closeQuietly(is);
+    is.close();
 
     writer.flush();
     writer.close();
@@ -218,7 +217,7 @@ public class XMLUtilities extends AbstractUtilities {
       // ignore
     } finally {
       reader.close();
-      IOUtils.closeQuietly(is);
+      is.close();
     }
 
     return links;
@@ -303,7 +302,7 @@ public class XMLUtilities extends AbstractUtilities {
     // 0. Build reader and writer
     // -----------------------------------------
     final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    IOUtils.copy(is, bos);
+    is.transferTo(bos);
     is.close();
 
     final ByteArrayOutputStream tmpBos = new ByteArrayOutputStream();
@@ -346,7 +345,7 @@ public class XMLUtilities extends AbstractUtilities {
               title,
               link.getStart().getAttributeByName(new QName("type")).getValue());
 
-          addAtomElement(IOUtils.toInputStream(normalizedLink, Constants.ENCODING), writer);
+          addAtomElement(new ByteArrayInputStream(normalizedLink.getBytes(Constants.ENCODING)), writer);
         }
       }
     } catch (Exception ignore) {
@@ -439,7 +438,7 @@ public class XMLUtilities extends AbstractUtilities {
       writer.add(newLine);
     } finally {
       reader.close();
-      IOUtils.closeQuietly(content);
+      content.close();
     }
   }
 
@@ -449,8 +448,8 @@ public class XMLUtilities extends AbstractUtilities {
       throws Exception {
 
     final ByteArrayOutputStream copy = new ByteArrayOutputStream();
-    IOUtils.copy(content, copy);
-    IOUtils.closeQuietly(content);
+    content.transferTo(copy);
+    content.close();
 
     XMLEventReader reader = getEventReader(new ByteArrayInputStream(copy.toByteArray()));
 
@@ -465,7 +464,7 @@ public class XMLUtilities extends AbstractUtilities {
           Collections.<Map.Entry<String, String>> singletonList(
               new AbstractMap.SimpleEntry<String, String>("rel", "edit")), false, 0, -1, -1);
 
-      addAtomElement(IOUtils.toInputStream(editLinkElement, Constants.ENCODING), writer);
+      addAtomElement(new ByteArrayInputStream(editLinkElement.getBytes(Constants.ENCODING)), writer);
       writer.add(reader);
 
     } catch (Exception e) {
@@ -480,7 +479,7 @@ public class XMLUtilities extends AbstractUtilities {
 
       writer.add(entryElement.getStart());
 
-      addAtomElement(IOUtils.toInputStream(editLinkElement, Constants.ENCODING), writer);
+      addAtomElement(new ByteArrayInputStream(editLinkElement.getBytes(Constants.ENCODING)), writer);
 
       writer.add(entryElement.getContentReader());
       writer.add(entryElement.getEnd());
@@ -501,14 +500,14 @@ public class XMLUtilities extends AbstractUtilities {
       final String href) throws Exception {
 
     final ByteArrayOutputStream copy = new ByteArrayOutputStream();
-    IOUtils.copy(content, copy);
-    IOUtils.closeQuietly(content);
+    content.transferTo(copy);
+    content.close();
 
     final String action = String.format("<m:action metadata=\"%s%s\" title=\"%s\" target=\"%s\"/>",
         Constants.get(ConstantKey.DEFAULT_SERVICE_URL), metaAnchor, name, href);
     final String newContent = new String(copy.toByteArray(), "UTF-8").replaceAll("\\<content ", action + "\\<content ");
 
-    return IOUtils.toInputStream(newContent, "UTF-8");
+    return new ByteArrayInputStream(newContent.getBytes(StandardCharsets.UTF_8));
   }
 
   private InputStream addAtomContent(
@@ -516,9 +515,9 @@ public class XMLUtilities extends AbstractUtilities {
       throws Exception {
 
     final ByteArrayOutputStream copy = new ByteArrayOutputStream();
-    IOUtils.copy(content, copy);
+    content.transferTo(copy);
 
-    IOUtils.closeQuietly(content);
+    content.close();
 
     XMLEventReader reader = getEventReader(new ByteArrayInputStream(copy.toByteArray()));
 
@@ -548,7 +547,7 @@ public class XMLUtilities extends AbstractUtilities {
         writer.add(entryElement.getContentReader());
 
         addAtomElement(
-            IOUtils.toInputStream(String.format("<content type=\"*/*\" src=\"%s/$value\" />", href), Constants.ENCODING),
+            new ByteArrayInputStream(String.format("<content type=\"*/*\" src=\"%s/$value\" />", href).getBytes(Constants.ENCODING)),
             writer);
 
         writer.add(entryElement.getEnd());
@@ -559,7 +558,7 @@ public class XMLUtilities extends AbstractUtilities {
                   Constants.get(ConstantKey.PROPERTIES)), 0, 2, 3).getValue();
 
           addAtomElement(
-              IOUtils.toInputStream("<content type=\"application/xml\">", Constants.ENCODING),
+              new ByteArrayInputStream("<content type=\"application/xml\">".getBytes(Constants.ENCODING)),
               writer);
 
           writer.add(entryElement.getStart());
@@ -567,7 +566,7 @@ public class XMLUtilities extends AbstractUtilities {
           writer.add(entryElement.getEnd());
 
           addAtomElement(
-              IOUtils.toInputStream("</content>", Constants.ENCODING),
+              new ByteArrayInputStream("</content>".getBytes(Constants.ENCODING)),
               writer);
         } catch (Exception nf) {
           reader.close();
@@ -582,7 +581,7 @@ public class XMLUtilities extends AbstractUtilities {
           writer.add(entryElement.getContentReader());
 
           addAtomElement(
-              IOUtils.toInputStream("<content type=\"application/xml\"/>", Constants.ENCODING),
+              new ByteArrayInputStream("<content type=\"application/xml\"/>".getBytes(Constants.ENCODING)),
               writer);
 
           writer.add(entryElement.getEnd());
@@ -752,7 +751,7 @@ public class XMLUtilities extends AbstractUtilities {
           extractElement(reader, writer, Collections.singletonList("feed"), 0, 1, 1).getValue();
 
       writer.add(feedElement.getStart());
-      addAtomElement(IOUtils.toInputStream(String.format("<m:count>%d</m:count>", count), Constants.ENCODING), writer);
+      addAtomElement(new ByteArrayInputStream(String.format("<m:count>%d</m:count>", count).getBytes(Constants.ENCODING)), writer);
       writer.add(feedElement.getContentReader());
       writer.add(feedElement.getEnd());
 
@@ -764,7 +763,7 @@ public class XMLUtilities extends AbstractUtilities {
       writer.flush();
       writer.close();
       reader.close();
-      IOUtils.closeQuietly(feed);
+      feed.close();
     }
 
     return new ByteArrayInputStream(bos.toByteArray());
@@ -842,7 +841,7 @@ public class XMLUtilities extends AbstractUtilities {
     writer.flush();
     writer.close();
     reader.close();
-    IOUtils.closeQuietly(entity);
+    entity.close();
 
     // Do not raise any exception in order to support FC properties as well
     // if (!found.isEmpty()) {
@@ -896,7 +895,7 @@ public class XMLUtilities extends AbstractUtilities {
                 Collections.singletonList("entry"),
                 0, 1, 1).getValue();
 
-        IOUtils.copy(entry.toStream(), writer, encoding);
+        new InputStreamReader(entry.toStream(), encoding).transferTo(writer);
       } catch (Exception e) {
         // log and ignore link
         LOG.warn("Error parsing uri {}", link, e);
@@ -923,8 +922,8 @@ public class XMLUtilities extends AbstractUtilities {
     final Map<String, InputStream> res = new HashMap<String, InputStream>();
 
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    IOUtils.copy(src, bos);
-    IOUtils.closeQuietly(src);
+    src.transferTo(bos);
+    src.close();
 
     // retrieve properties ...
     XMLEventReader reader = getEventReader(new ByteArrayInputStream(bos.toByteArray()));
@@ -1009,7 +1008,7 @@ public class XMLUtilities extends AbstractUtilities {
       writer.close();
     } finally {
       reader.close();
-      IOUtils.closeQuietly(toBeChanged);
+      toBeChanged.close();
     }
 
     return new ByteArrayInputStream(bos.toByteArray());
@@ -1028,15 +1027,15 @@ public class XMLUtilities extends AbstractUtilities {
   public Map.Entry<String, List<String>> extractLinkURIs(final InputStream is)
       throws Exception {
     final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    IOUtils.copy(is, bos);
-    IOUtils.closeQuietly(is);
+    is.transferTo(bos);
+    is.close();
 
     XMLEventReader reader = getEventReader(new ByteArrayInputStream(bos.toByteArray()));
     final List<String> links = new ArrayList<String>();
     try {
       while (true) {
-        links.add(IOUtils.toString(extractElement(reader, null, Collections.singletonList("uri"), 0, -1, -1).
-            getValue().getContent(), StandardCharsets.UTF_8));
+        links.add(new String(extractElement(reader, null, Collections.singletonList("uri"), 0, -1, -1).
+            getValue().getContent().readAllBytes(), StandardCharsets.UTF_8));
       }
     } catch (Exception ignore) {
       // End document reached ...
@@ -1047,8 +1046,8 @@ public class XMLUtilities extends AbstractUtilities {
 
     reader = getEventReader(new ByteArrayInputStream(bos.toByteArray()));
     try {
-      next = IOUtils.toString(extractElement(reader, null, Collections.singletonList("next"), 0, -1, -1).
-          getValue().getContent(), StandardCharsets.UTF_8);
+      next = new String(extractElement(reader, null, Collections.singletonList("next"), 0, -1, -1).
+          getValue().getContent().readAllBytes(), StandardCharsets.UTF_8);
     } catch (Exception ignore) {
       // next link is not mandatory
       next = null;
@@ -1093,7 +1092,7 @@ public class XMLUtilities extends AbstractUtilities {
     }
 
     changesReader.close();
-    IOUtils.closeQuietly(replacement);
+    replacement.close();
 
     if (justValue) {
       writer.add(element.getValue().getEnd());
@@ -1102,7 +1101,7 @@ public class XMLUtilities extends AbstractUtilities {
     writer.add(reader);
 
     reader.close();
-    IOUtils.closeQuietly(src);
+    src.close();
 
     writer.flush();
     writer.close();
@@ -1118,8 +1117,8 @@ public class XMLUtilities extends AbstractUtilities {
     final XMLEventWriter writer = getEventWriter(bos);
 
     final XMLEventReader changesReader =
-        new XMLEventReaderWrapper(IOUtils.toInputStream(
-            String.format("<%s m:null=\"true\" />", path.get(path.size() - 1)), Constants.ENCODING));
+        new XMLEventReaderWrapper(new ByteArrayInputStream(
+            String.format("<%s m:null=\"true\" />", path.get(path.size() - 1)).getBytes(Constants.ENCODING)));
 
     writer.add(changesReader);
     changesReader.close();
@@ -1127,7 +1126,7 @@ public class XMLUtilities extends AbstractUtilities {
     writer.add(reader);
 
     reader.close();
-    IOUtils.closeQuietly(src);
+    src.close();
 
     writer.flush();
     writer.close();

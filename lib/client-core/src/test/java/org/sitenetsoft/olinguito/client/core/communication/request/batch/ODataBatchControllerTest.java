@@ -26,7 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-import org.apache.commons.io.LineIterator;
+import java.io.BufferedReader;
 import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchLineIterator;
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +36,7 @@ public class ODataBatchControllerTest {
   public void testController(){
     final InputStream input = getClass().getResourceAsStream("batchResponse.batch");
     Reader reader = new InputStreamReader(input);
-    ODataBatchLineIterator iterator = new ODataBatchLineIteratorImpl(new LineIterator(reader ));
+    ODataBatchLineIterator iterator = new ODataBatchLineIteratorImpl(new BufferedReader(reader));
     ODataBatchController controller = new ODataBatchController(iterator , "changeset_12ks93js84d");
     assertNotNull(controller.getBatchLineIterator());
     assertNotNull(controller.getBoundary());
@@ -53,7 +53,7 @@ public class ODataBatchControllerTest {
       assertThrows(UnsupportedOperationException.class, () -> {
           final InputStream input = getClass().getResourceAsStream("batchResponse.batch");
           Reader reader = new InputStreamReader(input);
-          ODataBatchLineIterator iterator = new ODataBatchLineIteratorImpl(new LineIterator(reader ));
+          ODataBatchLineIterator iterator = new ODataBatchLineIteratorImpl(new BufferedReader(reader));
           iterator.remove();
       });
   }

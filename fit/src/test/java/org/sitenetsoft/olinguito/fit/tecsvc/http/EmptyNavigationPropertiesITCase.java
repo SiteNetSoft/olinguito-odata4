@@ -24,7 +24,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.io.IOUtils;
+// IOUtils removed - using Java standard library
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
@@ -127,7 +127,7 @@ public class EmptyNavigationPropertiesITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    assertNotNull(IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8));
+    assertNotNull(new String(connection.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
   }
   
   @Override

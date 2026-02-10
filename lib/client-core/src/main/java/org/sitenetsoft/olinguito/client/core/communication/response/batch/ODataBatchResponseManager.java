@@ -24,7 +24,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import org.apache.commons.io.IOUtils;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+
 import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchLineIterator;
 import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchResponseItem;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataBatchResponse;
@@ -89,7 +92,7 @@ public class ODataBatchResponseManager implements Iterator<ODataBatchResponseIte
     this.continueOnError = continueOnError;
     this.expectedItemsIterator = expectedItems.iterator();
     this.batchLineIterator = new ODataBatchLineIteratorImpl(
-            IOUtils.lineIterator(res.getRawResponse(), Constants.UTF8));
+            new BufferedReader(new InputStreamReader(res.getRawResponse(), StandardCharsets.UTF_8)));
 
     // search for boundary
     batchBoundary = ODataBatchUtilities.getBoundaryFromHeader(

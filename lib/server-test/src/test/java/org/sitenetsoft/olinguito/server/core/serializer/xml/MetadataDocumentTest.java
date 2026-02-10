@@ -28,7 +28,6 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
-import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
 import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReferenceInclude;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
@@ -51,8 +50,8 @@ public class MetadataDocumentTest {
             new EdmxReference(URI.create(CORE_VOCABULARY))
                 .addInclude(new EdmxReferenceInclude("Org.OData.Core.V1", "Core"))));
 
-    final String metadata = IOUtils.toString(
-        odata.createSerializer(ContentType.APPLICATION_XML).metadataDocument(serviceMetadata).getContent(),
+    final String metadata = new String(
+        odata.createSerializer(ContentType.APPLICATION_XML).metadataDocument(serviceMetadata).getContent().readAllBytes(),
         StandardCharsets.UTF_8);
     assertNotNull(metadata);
     assertThat(metadata, containsString("<edmx:Reference Uri=\"" + CORE_VOCABULARY + "\">"

@@ -18,10 +18,10 @@
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.cud;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
@@ -79,7 +79,7 @@ public class ODataPropertyUpdateRequestImpl extends AbstractODataBasicRequest<OD
     try {
       return new ODataPropertyUpdateResponseImpl(odataClient, httpClient, doExecute());
     } finally {
-      IOUtils.closeQuietly(input);
+      try { input.close(); } catch (IOException ignored) { }
     }
   }
 

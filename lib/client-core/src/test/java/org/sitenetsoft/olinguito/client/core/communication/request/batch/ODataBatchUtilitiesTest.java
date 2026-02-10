@@ -33,7 +33,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.io.LineIterator;
+import java.io.BufferedReader;
 import org.sitenetsoft.olinguito.client.api.ODataBatchConstants;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.ODataClientBuilder;
@@ -73,7 +73,7 @@ public class ODataBatchUtilitiesTest {
     URI uri = new URI("test");
     final InputStream input = getClass().getResourceAsStream("batchResponse.batch");
     Reader reader = new InputStreamReader(input);
-    ODataBatchLineIterator iterator = new ODataBatchLineIteratorImpl(new LineIterator(reader ));
+    ODataBatchLineIterator iterator = new ODataBatchLineIteratorImpl(new BufferedReader(reader));
     ODataBatchRequest req = new ODataBatchRequestImpl(client, uri);;
     ODataChangesetResponseItem expectedResItem = new ODataChangesetResponseItem(true);
     ODataChangesetImpl change = new ODataChangesetImpl(req , expectedResItem, new ODataBatchRequestContext());

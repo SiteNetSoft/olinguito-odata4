@@ -33,8 +33,9 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.LineIterator;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.client.api.ODataBatchConstants;
 import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchLineIterator;
@@ -190,9 +191,11 @@ public class ODataBatchUtilities {
       final ByteArrayOutputStream baos = new ByteArrayOutputStream();
       readBatchPart(new ODataBatchController(iterator, null), baos, true);
 
-      final LineIterator headers = IOUtils.lineIterator(new ByteArrayInputStream(baos.toByteArray()), Constants.UTF8);
-      while (headers.hasNext()) {
-        final String line = headers.next().trim();
+      final BufferedReader headersReader = new BufferedReader(
+          new InputStreamReader(new ByteArrayInputStream(baos.toByteArray()), StandardCharsets.UTF_8));
+      String line;
+      while ((line = headersReader.readLine()) != null) {
+        line = line.trim();
         if (StringUtils.isNotBlank(line)) {
           addHeaderLine(line, target);
         }

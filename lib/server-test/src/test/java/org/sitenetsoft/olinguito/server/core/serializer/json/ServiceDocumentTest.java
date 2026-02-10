@@ -28,7 +28,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
-import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.server.api.OData;
@@ -64,7 +63,7 @@ public class ServiceDocumentTest {
 
     InputStream result = serializer.serviceDocument(metadata, serviceRoot).getContent();
     assertNotNull(result);
-    final String jsonString = IOUtils.toString(result, StandardCharsets.UTF_8);
+    final String jsonString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
 
     assertTrue(jsonString.contains(
         metadata.getServiceMetadataETagSupport().getMetadataETag().replace("\"", "\\\"")));
@@ -91,9 +90,9 @@ public class ServiceDocumentTest {
 
   @Test
   public void serviceDocumentNoMetadata() throws Exception {
-    final String result = IOUtils.toString(
+    final String result = new String(
         OData.newInstance().createSerializer(ContentType.JSON_NO_METADATA)
-            .serviceDocument(metadata, serviceRoot).getContent(), StandardCharsets.UTF_8);
+            .serviceDocument(metadata, serviceRoot).getContent().readAllBytes(), StandardCharsets.UTF_8);
     assertFalse(result.contains("odata.context"));
     assertFalse(result.contains("odata.metadata"));
     assertTrue(result.contains("ESAllPrim"));

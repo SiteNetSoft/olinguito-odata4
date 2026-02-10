@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Migrated Velocity 1.7 to 2.4.1 (CVE-2020-13936)
+ * Copyright 2026 SiteNetSoft - Replaced commons-io with Java standard library
  */
 package org.sitenetsoft.olinguito.ext.pojogen;
 
@@ -36,8 +37,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.GZIPOutputStream;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.IOUtils;
+import java.util.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
@@ -137,7 +137,9 @@ public abstract class AbstractPOJOGenMojo extends AbstractMojo {
     } catch (IOException e) {
       throw new MojoExecutionException("Error creating file '" + name + "'", e);
     } finally {
-      IOUtils.closeQuietly(writer);
+      if (writer != null) {
+        try { writer.close(); } catch (IOException ignored) { }
+      }
     }
   }
 
@@ -224,7 +226,7 @@ public abstract class AbstractPOJOGenMojo extends AbstractMojo {
         metadata = getClient().getDeserializer(ContentType.APPLICATION_XML).toMetadata(fis);
         edm = getClient().getReader().readMetadata(metadata.getSchemaByNsOrAlias());
       } finally {
-        IOUtils.closeQuietly(fis);
+        try { fis.close(); } catch (IOException ignored) { }
       }
     }
 
@@ -386,7 +388,7 @@ public abstract class AbstractPOJOGenMojo extends AbstractMojo {
       }
 
       objs.clear();
-      objs.put("metadata", new String(Base64.encodeBase64(baos.toByteArray()), "UTF-8"));
+      objs.put("metadata", Base64.getEncoder().encodeToString(baos.toByteArray()));
       objs.put("metadataETag", metadata.getMiddle());
       objs.put("entityTypes", entityTypeNames);
       objs.put("complexTypes", complexTypeNames);

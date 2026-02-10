@@ -24,7 +24,6 @@ import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -168,7 +167,7 @@ public abstract class AbstractODataInvokeRequest<T extends ClientInvokeResult>
     try {
       return new ODataInvokeResponseImpl(odataClient, httpClient, doExecute());
     } finally {
-      IOUtils.closeQuietly(input);
+      try { if (input != null) input.close(); } catch (IOException ignored) { }
     }
   }
 

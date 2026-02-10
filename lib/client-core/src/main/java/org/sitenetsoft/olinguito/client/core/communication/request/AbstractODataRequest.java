@@ -21,7 +21,6 @@
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -254,7 +253,7 @@ public abstract class AbstractODataRequest extends AbstractRequest implements OD
     } catch (IOException e) {
       throw new IllegalStateException(e);
     } finally {
-      IOUtils.closeQuietly(baos);
+      try { baos.close(); } catch (IOException ignored) { }
     }
   }
 

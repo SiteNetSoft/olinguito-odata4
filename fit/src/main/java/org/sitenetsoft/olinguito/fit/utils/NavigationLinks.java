@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.io.IOUtils;
+import java.io.IOException;
 
 public class NavigationLinks {
 
@@ -114,7 +114,7 @@ public class NavigationLinks {
   public NavigationLinks removeInlines(final String name) {
     if (inlines.containsKey(name)) {
       for (InputStream is : inlines.get(name)) {
-        IOUtils.closeQuietly(is);
+        try { is.close(); } catch (IOException ignored) { }
       }
     }
     links.remove(name);

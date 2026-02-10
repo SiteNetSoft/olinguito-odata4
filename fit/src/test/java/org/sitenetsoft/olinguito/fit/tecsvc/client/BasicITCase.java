@@ -45,7 +45,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
+import java.io.InputStreamReader;
 import org.apache.http.Header;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmExpression;
@@ -513,7 +513,7 @@ public class BasicITCase extends AbstractParamTecSvcITCase {
  
     StringWriter writer = new StringWriter();
     InputStream stream = response2.getRawResponse();
-    IOUtils.copy(stream, writer, StandardCharsets.UTF_8);
+    new InputStreamReader(stream, StandardCharsets.UTF_8).transferTo(writer);
     assertNotNull(writer.toString());  
     final ClientEntity entity = response2.getBody();
     assertNotNull(entity);

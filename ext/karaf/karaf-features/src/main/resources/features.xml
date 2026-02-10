@@ -20,7 +20,6 @@
 
   <feature name="olingo-server" version="${project.version}" resolver="(obr)" start-level="50">
     <feature>war</feature>
-    <bundle>mvn:commons-codec/commons-codec/${commons.codec.version}</bundle>
     <bundle>mvn:org.apache.commons/commons-lang3/${commons.lang3.version}</bundle>
     <bundle>mvn:org.codehaus.woodstox/stax2-api/${woodstox.stax2-api.version}</bundle>
     <bundle>mvn:io.netty/netty-common/${netty.version}</bundle>
@@ -43,8 +42,6 @@
   </feature>
 
   <feature name="olingo-client" version="${project.version}" resolver="(obr)" start-level="50">
-    <bundle>mvn:commons-codec/commons-codec/${commons.codec.version}</bundle>
-    <bundle>mvn:commons-io/commons-io/${commons.io.version}</bundle>
     <bundle>mvn:org.apache.commons/commons-lang3/${commons.lang3.version}</bundle>
     <bundle>mvn:org.codehaus.woodstox/stax2-api/${woodstox.stax2-api.version}</bundle>
     <bundle>mvn:com.fasterxml/aalto-xml/${aalto-xml.version}</bundle>

@@ -22,7 +22,8 @@ package org.sitenetsoft.olinguito.client.core.communication.request;
 
 import java.util.Collection;
 
-import org.apache.commons.io.IOUtils;
+import java.io.IOException;
+
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.header.ODataPreferences;
 import org.sitenetsoft.olinguito.client.api.communication.request.AsyncBatchRequestWrapper;
@@ -113,7 +114,7 @@ public class AsyncBatchRequestWrapperImpl extends AsyncRequestWrapperImpl<ODataB
         }
       }
 
-      IOUtils.closeQuietly(res.getRawResponse());
+      try { res.getRawResponse().close(); } catch (IOException ignored) { }
     }
   }
 }

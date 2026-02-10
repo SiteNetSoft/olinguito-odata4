@@ -20,11 +20,12 @@
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.cud;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
@@ -80,7 +81,7 @@ public class ODataValueUpdateRequestImpl extends AbstractODataBasicRequest<OData
     try {
       return new ODataValueUpdateResponseImpl(odataClient, httpClient, doExecute());
     } finally {
-      IOUtils.closeQuietly(input);
+      try { input.close(); } catch (IOException ignored) { }
     }
   }
 
@@ -89,7 +90,7 @@ public class ODataValueUpdateRequestImpl extends AbstractODataBasicRequest<OData
    */
   @Override
   public InputStream getPayload() {
-    return IOUtils.toInputStream(value.toString(), StandardCharsets.UTF_8);
+    return new ByteArrayInputStream(value.toString().getBytes(StandardCharsets.UTF_8));
   }
 
   /**

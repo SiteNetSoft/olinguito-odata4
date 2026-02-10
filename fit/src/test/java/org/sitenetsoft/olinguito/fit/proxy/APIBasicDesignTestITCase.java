@@ -35,8 +35,8 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import java.io.ByteArrayInputStream;
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
@@ -399,12 +399,12 @@ public class APIBasicDesignTestITCase extends AbstractTestITCase {
     final PersonDetail personDetail = dcontainer.getPersonDetails().getByKey(1); // NO HTTP Request
 
     // 1 HTTP Request to add an Edm.Stream property value about MediaEditLink Photo
-    personDetail.setPhoto(dcontainer.newEdmStreamValue("application/octet-stream", IOUtils.toInputStream(random, StandardCharsets.UTF_8)));
+    personDetail.setPhoto(dcontainer.newEdmStreamValue("application/octet-stream", new ByteArrayInputStream(random.getBytes(StandardCharsets.UTF_8))));
 
     dcontainer.flush();
 
     final EdmStreamValue actual = dcontainer.getPersonDetails().getByKey(1).getPhoto().load(); // 1 HTTP Request
-    assertEquals(random, IOUtils.toString(actual.getStream(), StandardCharsets.UTF_8));
+    assertEquals(random, new String(actual.getStream().readAllBytes(), StandardCharsets.UTF_8));
 
     dservice.getContext().detachAll(); // avoid influences
   }

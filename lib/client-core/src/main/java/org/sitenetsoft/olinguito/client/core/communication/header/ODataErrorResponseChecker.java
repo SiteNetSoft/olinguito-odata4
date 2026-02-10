@@ -20,7 +20,6 @@
  */
 package org.sitenetsoft.olinguito.client.core.communication.header;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.StatusLine;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.ODataClientErrorException;
@@ -63,7 +62,7 @@ public final class ODataErrorResponseChecker {
       ODataError error = new ODataError();
       if (!contentType.isCompatible(ContentType.TEXT_PLAIN)) {
         try {
-          byte[] bytes = IOUtils.toByteArray(entity);
+          byte[] bytes = entity.readAllBytes();
           entityForException = new ByteArrayInputStream(bytes);
           error = odataClient.getReader().readError(new ByteArrayInputStream(bytes), contentType);
           if (error != null) {
@@ -86,7 +85,7 @@ public final class ODataErrorResponseChecker {
         error.setCode(String.valueOf(statusLine.getStatusCode()));
         error.setTarget(statusLine.getReasonPhrase());
         try {
-          error.setMessage(IOUtils.toString(entity, StandardCharsets.UTF_8));
+          error.setMessage(new String(entity.readAllBytes(), StandardCharsets.UTF_8));
         } catch (IOException e) {
           LOG.warn("Error deserializing error response", e);
           error = getGenericError(

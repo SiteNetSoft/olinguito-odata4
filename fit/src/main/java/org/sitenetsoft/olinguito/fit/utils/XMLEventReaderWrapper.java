@@ -32,8 +32,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
-import org.apache.commons.io.IOUtils;
-
 import static javax.xml.stream.XMLInputFactory.*;
 
 public class XMLEventReaderWrapper implements XMLEventReader {
@@ -66,7 +64,7 @@ public class XMLEventReaderWrapper implements XMLEventReader {
 
     final InputStreamReader reader = new InputStreamReader(
         new ByteArrayInputStream((CONTENT_STAG
-            + IOUtils.toString(stream, ENCODING).replaceAll("^<\\?xml.*\\?>", "")
+            + new String(stream.readAllBytes(), ENCODING).replaceAll("^<\\?xml.*\\?>", "")
             + XMLEventReaderWrapper.CONTENT_ETAG).getBytes(ENCODING)),
             Constants.DECODER);
 

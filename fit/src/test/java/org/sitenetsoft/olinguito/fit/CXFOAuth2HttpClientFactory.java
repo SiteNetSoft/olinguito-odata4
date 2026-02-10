@@ -16,7 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
+ * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder;
+ * replaced commons-codec Base64 with java.util.Base64
  */
 package org.sitenetsoft.olinguito.fit;
 
@@ -25,7 +26,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import jakarta.ws.rs.core.MediaType;
 
-import org.apache.commons.codec.binary.Base64;
+import java.util.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactoryBean;
 import org.apache.cxf.jaxrs.client.WebClient;
@@ -104,7 +105,7 @@ public class CXFOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFactory 
     try {
       // 1. Need to (basic) authenticate against the OAuth2 service
       final HttpGet method = new HttpGet(authURI);
-      method.addHeader("Authorization", "Basic " + Base64.encodeBase64String("odatajclient:odatajclient".getBytes()));
+      method.addHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString("odatajclient:odatajclient".getBytes()));
       final HttpResponse response = httpClient.execute(method);
 
       // 2. Pull out OAuth2 authorization data and "authenticity" cookie (CXF specific)
@@ -130,7 +131,7 @@ public class CXFOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFactory 
           addParameter("scope", "foo bar").
           build();
       final HttpGet method = new HttpGet(location);
-      method.addHeader("Authorization", "Basic " + Base64.encodeBase64String("odatajclient:odatajclient".getBytes()));
+      method.addHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString("odatajclient:odatajclient".getBytes()));
       method.addHeader("Cookie", authenticityCookie);
 
       final HttpResponse response = httpClient.execute(method);

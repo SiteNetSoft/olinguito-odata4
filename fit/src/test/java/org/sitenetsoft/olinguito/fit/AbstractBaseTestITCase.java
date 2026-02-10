@@ -27,7 +27,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.fit.server.TestServer;
 import org.sitenetsoft.olinguito.fit.server.TestServerFactory;
@@ -123,8 +122,8 @@ public abstract class AbstractBaseTestITCase {
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
         IOException {
-      resp.getOutputStream().write(IOUtils.toByteArray(
-          Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName)));
+      resp.getOutputStream().write(
+          Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName).readAllBytes());
     }
   }
 }

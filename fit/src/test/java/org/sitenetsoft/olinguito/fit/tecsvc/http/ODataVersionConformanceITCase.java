@@ -26,7 +26,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 
-import org.apache.commons.io.IOUtils;
+// IOUtils removed - using Java standard library
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
@@ -133,7 +133,7 @@ public class ODataVersionConformanceITCase extends AbstractBaseTestITCase {
     assertEquals("application/json;odata.metadata=minimal", 
         connection.getHeaderField(HttpHeader.CONTENT_TYPE));
 
-    final String content = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
     assertNotNull(content);
   }
   
@@ -152,7 +152,7 @@ public class ODataVersionConformanceITCase extends AbstractBaseTestITCase {
     assertEquals("application/json;odata.metadata=minimal", 
         connection.getHeaderField(HttpHeader.CONTENT_TYPE));
 
-    final String content = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
     assertNotNull(content);
   }
   
@@ -181,7 +181,7 @@ public class ODataVersionConformanceITCase extends AbstractBaseTestITCase {
   private static String readBody(HttpURLConnection c) throws Exception {
     int code = c.getResponseCode();
     var is = (code >= 400) ? c.getErrorStream() : c.getInputStream();
-    return is == null ? "" : IOUtils.toString(is, Charset.defaultCharset());
+    return is == null ? "" : new String(is.readAllBytes(), Charset.defaultCharset());
   }
 
 }

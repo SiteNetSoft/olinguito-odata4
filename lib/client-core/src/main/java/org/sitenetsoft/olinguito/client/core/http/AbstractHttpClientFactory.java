@@ -21,7 +21,8 @@ package org.sitenetsoft.olinguito.client.core.http;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.apache.commons.io.IOUtils;
+import java.io.IOException;
+
 import org.sitenetsoft.olinguito.client.api.http.HttpClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +44,7 @@ public abstract class AbstractHttpClientFactory implements HttpClientFactory {
     } catch (Exception e) {
       LOG.warn("Could not get Apache Olingo version", e);
     } finally {
-      IOUtils.closeQuietly(input);
+      try { if (input != null) input.close(); } catch (IOException ignored) { }
     }
 
     USER_AGENT = userAgent.toString();
