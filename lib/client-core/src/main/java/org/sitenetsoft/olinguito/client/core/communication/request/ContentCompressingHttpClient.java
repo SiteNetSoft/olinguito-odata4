@@ -33,8 +33,6 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.RequestAcceptEncoding;
 import org.apache.http.client.protocol.ResponseContentEncoding;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
@@ -55,13 +53,15 @@ final class ContentCompressingHttpClient implements HttpClient, java.io.Closeabl
     this.delegate = delegate;
   }
 
+  @Deprecated
   @Override
-  public HttpParams getParams() {
+  public org.apache.http.params.HttpParams getParams() {
     return delegate.getParams();
   }
 
+  @Deprecated
   @Override
-  public ClientConnectionManager getConnectionManager() {
+  public org.apache.http.conn.ClientConnectionManager getConnectionManager() {
     return delegate.getConnectionManager();
   }
 

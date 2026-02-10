@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
  */
 package org.sitenetsoft.olinguito.server.example;
 
@@ -41,9 +43,9 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
-import org.apache.http.impl.conn.SchemeRegistryFactory;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.junit.jupiter.api.AfterAll;
@@ -64,17 +66,16 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 public class TripPinServiceTest {
   private static Tomcat tomcat = new Tomcat();
   private static String baseURL;
-  private static DefaultHttpClient http = new DefaultHttpClient();
+  private static HttpClient http;
   private static final int TOMCAT_PORT = 9900;
   private static final String CRLF = "\r\n";
 
   @BeforeAll
   public static void beforeTest() throws Exception {
-    PoolingClientConnectionManager conMan =
-            new PoolingClientConnectionManager(SchemeRegistryFactory.createDefault());
+    PoolingHttpClientConnectionManager conMan = new PoolingHttpClientConnectionManager();
     conMan.setMaxTotal(200);
     conMan.setDefaultMaxPerRoute(200);
-    http = new DefaultHttpClient(conMan);
+    http = HttpClientBuilder.create().setConnectionManager(conMan).build();
     tomcat.setPort(TOMCAT_PORT);
     File baseDir = new File(System.getProperty("java.io.tmpdir"));
     tomcat.setBaseDir(baseDir.getAbsolutePath());

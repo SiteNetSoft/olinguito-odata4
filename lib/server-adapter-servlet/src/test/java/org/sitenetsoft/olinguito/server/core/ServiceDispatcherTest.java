@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -36,7 +38,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.sitenetsoft.olinguito.commons.core.Encoder;
@@ -132,7 +135,7 @@ public class ServiceDispatcherTest {
   }
 
   private HttpResponse httpSend(HttpRequest request) throws Exception{
-    DefaultHttpClient http = new DefaultHttpClient();
+    HttpClient http = HttpClientBuilder.create().build();
     HttpResponse response = http.execute(getLocalhost(), request);
     return response;
   }
@@ -148,8 +151,8 @@ public class ServiceDispatcherTest {
       TestResult validator) throws Exception {
     beforeTest(handler);
 
-    DefaultHttpClient http = new DefaultHttpClient();
-    
+    HttpClient http = HttpClientBuilder.create().build();
+
     String editUrl = "http://localhost:" + TOMCAT_PORT + "/" + path;
     HttpRequest request = new HttpGet(editUrl);
     if (method.equals("POST")) {

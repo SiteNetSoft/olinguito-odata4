@@ -15,14 +15,15 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Migrate from deprecated HttpParams to RequestConfig
  */
 package org.sitenetsoft.olinguito.samples.client.core.http;
 
 import java.net.URI;
-import org.apache.http.HttpVersion;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpConnectionParams;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.sitenetsoft.olinguito.client.core.http.DefaultHttpUriRequestFactory;
 
@@ -40,12 +41,15 @@ public class ParametersHttpUriRequestFactory extends DefaultHttpUriRequestFactor
   public HttpUriRequest create(final HttpMethod method, final URI uri) {
     final HttpUriRequest request = super.create(method, uri);
 
-    request.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_0);
-    request.getParams().setParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET, "UTF-8");
-
     final int timeout = 1000;
-    HttpConnectionParams.setConnectionTimeout(request.getParams(), timeout);
-    HttpConnectionParams.setSoTimeout(request.getParams(), timeout);
+    final RequestConfig config = RequestConfig.custom()
+        .setConnectTimeout(timeout)
+        .setSocketTimeout(timeout)
+        .build();
+
+    if (request instanceof HttpRequestBase) {
+      ((HttpRequestBase) request).setConfig(config);
+    }
 
     return request;
   }
