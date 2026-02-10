@@ -54,7 +54,7 @@ import org.junit.jupiter.api.Test;
 public class UriResourceImplTest {
 
   private static final Edm edm = OData.newInstance().createServiceMetadata(
-      new EdmTechProvider(), Collections.<EdmxReference> emptyList()).getEdm();
+      new EdmTechProvider(), Collections.emptyList()).getEdm();
 
   @Test
   public void uriParameterImpl() {
@@ -178,7 +178,7 @@ public class UriResourceImplTest {
 
     // is Collection
     assertTrue(impl.isCollection());
-    impl.setKeyPredicates(Collections.<UriParameter> emptyList());
+    impl.setKeyPredicates(Collections.emptyList());
     assertFalse(impl.isCollection());
   }
 
@@ -190,7 +190,7 @@ public class UriResourceImplTest {
 
     // function
     EdmFunction function = edm.getEntityContainer().getFunctionImport("FINRTInt16")
-        .getUnboundFunction(Collections.<String> emptyList());
+        .getUnboundFunction(Collections.emptyList());
     assertNotNull(function);
     impl = new UriResourceFunctionImpl(null, function, null);
 
@@ -202,7 +202,7 @@ public class UriResourceImplTest {
     // function import
     EdmFunctionImport functionImport = edm.getEntityContainer().getFunctionImport("FINRTInt16");
     impl = new UriResourceFunctionImpl(functionImport, functionImport.getUnboundFunctions().get(0),
-        Collections.<UriParameter> emptyList());
+        Collections.emptyList());
     assertEquals(functionImport, impl.getFunctionImport());
     assertEquals("FINRTInt16", impl.toString());
 
@@ -215,7 +215,7 @@ public class UriResourceImplTest {
     assertEquals("FICRTCollESTwoKeyNavParam", impl.toString());
 
     assertTrue(impl.isCollection());
-    impl.setKeyPredicates(Collections.<UriParameter> emptyList());
+    impl.setKeyPredicates(Collections.emptyList());
     assertFalse(impl.isCollection());
 
     assertFalse(impl.getParameters().isEmpty());

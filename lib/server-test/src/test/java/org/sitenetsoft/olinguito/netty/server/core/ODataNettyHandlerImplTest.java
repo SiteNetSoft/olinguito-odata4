@@ -56,7 +56,7 @@ public class ODataNettyHandlerImplTest {
     MetadataProcessor processor = mock(MetadataProcessor.class);
     final ODataNetty odata = ODataNetty.newInstance();
     final ServiceMetadata metadata = odata.createServiceMetadata(
-        new EdmTechProvider(), Collections.<EdmxReference> emptyList());
+        new EdmTechProvider(), Collections.emptyList());
 
     ODataNettyHandler handler = odata.createNettyHandler(metadata);
 
@@ -96,7 +96,7 @@ public class ODataNettyHandlerImplTest {
     EntityProcessor processor = mock(EntityProcessor.class);
     final ODataNetty odata = ODataNetty.newInstance();
     final ServiceMetadata metadata = odata.createServiceMetadata(
-        new EdmTechProvider(), Collections.<EdmxReference> emptyList());
+        new EdmTechProvider(), Collections.emptyList());
 
     ODataNettyHandler handler = odata.createNettyHandler(metadata);
 

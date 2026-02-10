@@ -362,7 +362,7 @@ public class FunctionProvider {
           return Collections.singletonList(
           new CsdlFunction()
               .setName(functionName.getName())
-              .setParameters(Collections.<CsdlParameter> emptyList())
+              .setParameters(Collections.emptyList())
               .setComposable(true)
               .setReturnType(new CsdlReturnType()
                       .setType(PropertyProvider.nameDecimal)
@@ -374,7 +374,7 @@ public class FunctionProvider {
         return Collections.singletonList(
           new CsdlFunction()
               .setName(functionName.getName())
-              .setParameters(Collections.<CsdlParameter> emptyList())
+              .setParameters(Collections.emptyList())
               .setComposable(true)
               .setReturnType(new CsdlReturnType()
                       .setType(PropertyProvider.nameDecimal)
@@ -385,14 +385,14 @@ public class FunctionProvider {
       return Collections.singletonList(
           new CsdlFunction()
               .setName(functionName.getName())
-              .setParameters(Collections.<CsdlParameter> emptyList())
+              .setParameters(Collections.emptyList())
               .setReturnType(new CsdlReturnType().setType(PropertyProvider.nameInt16)));
 
     } else if (functionName.equals(nameUFCRTETKeyNav)) {
       return Collections.singletonList(
           new CsdlFunction()
               .setName("UFCRTETKeyNav")
-              .setParameters(Collections.<CsdlParameter> emptyList())
+              .setParameters(Collections.emptyList())
               .setComposable(true)
               .setReturnType(
                   new CsdlReturnType().setType(EntityTypeProvider.nameETKeyNav).setNullable(false)));
@@ -401,7 +401,7 @@ public class FunctionProvider {
       return Collections.singletonList(
           new CsdlFunction()
               .setName(functionName.getName())
-              .setParameters(Collections.<CsdlParameter> emptyList())
+              .setParameters(Collections.emptyList())
               .setComposable(true)
               .setReturnType(
                   new CsdlReturnType().setType(EntityTypeProvider.nameETTwoKeyNav).setNullable(false)));
@@ -486,7 +486,7 @@ public class FunctionProvider {
           new CsdlFunction()
               .setName("UFCRTString")
               .setComposable(true)
-              .setParameters(Collections.<CsdlParameter> emptyList())
+              .setParameters(Collections.emptyList())
               .setComposable(true)
               .setReturnType(
                   new CsdlReturnType().setType(PropertyProvider.nameString).setNullable(false)));
@@ -508,7 +508,7 @@ public class FunctionProvider {
       return Collections.singletonList(
           new CsdlFunction()
               .setName("UFCRTCollString")
-              .setParameters(Collections.<CsdlParameter> emptyList())
+              .setParameters(Collections.emptyList())
               .setComposable(true)
               .setReturnType(
                   new CsdlReturnType().setType(PropertyProvider.nameString).setCollection(true).setNullable(false)));
@@ -600,7 +600,7 @@ public class FunctionProvider {
       return Collections.singletonList(
           new CsdlFunction()
               .setName("UFCRTCTTwoPrim")
-              .setParameters(Collections.<CsdlParameter> emptyList())
+              .setParameters(Collections.emptyList())
               .setComposable(true)
               .setReturnType(
                   new CsdlReturnType().setType(ComplexTypeProvider.nameCTTwoPrim).setNullable(false)));
@@ -610,7 +610,7 @@ public class FunctionProvider {
           new CsdlFunction()
               .setName("UFCRTCollCTTwoPrim")
               .setComposable(true)
-              .setParameters(Collections.<CsdlParameter> emptyList())
+              .setParameters(Collections.emptyList())
               .setReturnType(
                   new CsdlReturnType().setType(ComplexTypeProvider.nameCTTwoPrim).setCollection(true)
                       .setNullable(false)));
@@ -630,7 +630,7 @@ public class FunctionProvider {
       return Collections.singletonList(
           new CsdlFunction()
               .setName(functionName.getName())
-              .setParameters(Collections.<CsdlParameter> emptyList())
+              .setParameters(Collections.emptyList())
               .setComposable(true)
               .setReturnType(
                   new CsdlReturnType().setType(EntityTypeProvider.nameETMedia).setCollection(true).setNullable(false)));

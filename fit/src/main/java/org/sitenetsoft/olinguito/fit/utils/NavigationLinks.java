@@ -37,7 +37,7 @@ public class NavigationLinks {
   private final Map<String, List<String>> links = new HashMap<>();
 
   public NavigationLinks addInlines(final String name, final InputStream inline) {
-    return addInlines(name, Collections.<InputStream> singletonList(inline));
+    return addInlines(name, Collections.singletonList(inline));
   }
 
   public NavigationLinks addInlines(final String name, final List<InputStream> inline) {

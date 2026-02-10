@@ -41,7 +41,7 @@ public class DataProviderTest {
 
   private final OData oData = OData.newInstance();
   private final Edm edm =
-      oData.createServiceMetadata(new EdmTechProvider(), Collections.<EdmxReference> emptyList())
+      oData.createServiceMetadata(new EdmTechProvider(), Collections.emptyList())
       .getEdm();
   private final EdmEntityContainer entityContainer = edm.getEntityContainer();
 

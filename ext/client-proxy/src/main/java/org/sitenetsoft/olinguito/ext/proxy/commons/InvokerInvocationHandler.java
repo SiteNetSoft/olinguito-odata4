@@ -161,7 +161,7 @@ public class InvokerInvocationHandler<T, O extends Operations> extends AbstractI
         } else if (returnType.isCollection()) {
           if (returnType.isComplexType()) {
             final Class<?> itemRef = ClassUtils.extractTypeArg(ref, ComplexCollection.class);
-            final List items = new ArrayList();
+            final List<Object> items = new ArrayList<>();
 
             for (ClientValue item : property.getValue().asCollection()) {
               items.add(ProxyUtils.getComplexProxy(
@@ -182,7 +182,7 @@ public class InvokerInvocationHandler<T, O extends Operations> extends AbstractI
                             itemRef,
                             null));
           } else {
-            final List items = new ArrayList();
+            final List<Object> items = new ArrayList<>();
 
             for (ClientValue item : property.getValue().asCollection()) {
               items.add(item.asPrimitive().toValue());

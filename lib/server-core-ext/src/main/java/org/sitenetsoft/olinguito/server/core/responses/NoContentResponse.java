@@ -29,7 +29,7 @@ import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 public class NoContentResponse extends ServiceResponse {
 
   public NoContentResponse(ServiceMetadata metadata, ODataResponse response) {
-    super(metadata, response, Collections.<String,String>emptyMap());
+    super(metadata, response, Collections.emptyMap());
   }
 
   // 200

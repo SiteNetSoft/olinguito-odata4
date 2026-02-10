@@ -758,7 +758,7 @@ public class EdmProviderImpl extends AbstractEdm {
         }
       }
       final List<String> parameterNamesCopy =
-          parameterNames == null ? Collections.<String> emptyList() : parameterNames;
+          parameterNames == null ? Collections.emptyList() : parameterNames;
       for (CsdlFunction function : functions) {
         if (function.isBound()) {
           List<CsdlParameter> providerParameters = function.getParameters();
@@ -873,7 +873,7 @@ public class EdmProviderImpl extends AbstractEdm {
       }
 
       final List<String> parameterNamesCopy =
-          parameterNames == null ? Collections.<String> emptyList() : parameterNames;
+          parameterNames == null ? Collections.emptyList() : parameterNames;
       for (CsdlFunction function : functions) {
         if (!function.isBound()) {
           List<CsdlParameter> providerParameters = function.getParameters();

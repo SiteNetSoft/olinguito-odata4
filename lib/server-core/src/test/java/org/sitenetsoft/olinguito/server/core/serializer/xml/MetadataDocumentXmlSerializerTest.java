@@ -433,7 +433,7 @@ public class MetadataDocumentXmlSerializerTest {
 
   private String localMetadata() throws SerializerException, IOException {
     CsdlEdmProvider provider = new LocalProvider();
-    ServiceMetadata serviceMetadata = new ServiceMetadataImpl(provider, Collections.<EdmxReference> emptyList(), null);
+    ServiceMetadata serviceMetadata = new ServiceMetadataImpl(provider, Collections.emptyList(), null);
     InputStream metadataStream = serializer.metadataDocument(serviceMetadata).getContent();
     String metadata = IOUtils.toString(metadataStream, StandardCharsets.UTF_8);
     assertNotNull(metadata);
@@ -622,13 +622,13 @@ public class MetadataDocumentXmlSerializerTest {
         return Collections.singletonList(
             new CsdlFunction()
             .setName("UFNRTInt16")
-            .setParameters(Collections.<CsdlParameter> emptyList())
+            .setParameters(Collections.emptyList())
             .setReturnType(new CsdlReturnType().setType(nameInt16)));
       } else if (functionName.equals(nameUFNRTETAllPrim)) {
         return Collections.singletonList(
             new CsdlFunction()
             .setName("UFNRTETAllPrim")
-            .setParameters(Collections.<CsdlParameter> emptyList())
+            .setParameters(Collections.emptyList())
             .setReturnType(new CsdlReturnType().setType(nameETAbstractBase)));
       }
       return null;

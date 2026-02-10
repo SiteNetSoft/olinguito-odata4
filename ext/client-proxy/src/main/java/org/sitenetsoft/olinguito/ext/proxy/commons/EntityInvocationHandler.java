@@ -478,7 +478,7 @@ public class EntityInvocationHandler extends AbstractStructuredInvocationHandler
   @Override
   @SuppressWarnings("unchecked")
   protected <T extends ClientProperty> List<T> getInternalProperties() {
-    return getEntity() == null ? Collections.<T> emptyList() : (List<T>) getEntity().getProperties();
+    return getEntity() == null ? Collections.emptyList() : (List<T>) getEntity().getProperties();
   }
 
   @Override

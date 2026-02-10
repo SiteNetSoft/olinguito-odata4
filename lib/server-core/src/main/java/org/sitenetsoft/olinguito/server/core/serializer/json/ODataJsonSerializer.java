@@ -1190,7 +1190,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       }
       writeOperations(property.getOperations(), json);      
       final List<Property> values =
-          property.isNull() ? Collections.<Property> emptyList() : property.asComplex().getValue();
+          property.isNull() ? Collections.emptyList() : property.asComplex().getValue();
       writeProperties(metadata, type, values, options == null ? null : options == null ? null : options.getSelect(), 
           json, 
           property.asComplex(), options == null ? null : options.getExpand());

@@ -289,7 +289,7 @@ public abstract class AbstractGeospatialType<T extends Geospatial> extends Singl
     }
 
     return new GeospatialCollection(dimension, SRID.valueOf(matcher.group(2)),
-        Collections.<Geospatial> singletonList(item));
+        Collections.singletonList(item));
   }
 
   private StringBuilder toStringBuilder(final SRID srid) {

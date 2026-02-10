@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Remove unnecessary @SuppressWarnings and raw type usage
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -62,13 +64,12 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.mockito.Mockito;
 
-@SuppressWarnings("deprecation")
 public class JsonDeltaSerializerWithNavigationsTest {
 
   EdmDeltaSerializer ser;
   private static final OData odata = OData.newInstance();
   private static final ServiceMetadata metadata = odata.createServiceMetadata(
-      new EdmTechProvider(), Collections.<EdmxReference> emptyList(), new MetadataETagSupport("W/\"metadataETag\""));
+      new EdmTechProvider(), Collections.emptyList(), new MetadataETagSupport("W/\"metadataETag\""));
   private static final EdmEntityContainer entityContainer = metadata.getEdm().getEntityContainer();
   private final DataProvider data = new DataProvider(odata, metadata.getEdm());
   private final EdmDeltaSerializer serializerFullMetadata ;

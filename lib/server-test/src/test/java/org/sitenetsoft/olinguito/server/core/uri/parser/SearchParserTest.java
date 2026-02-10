@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 public class SearchParserTest {
 
   private static final Edm edm = OData.newInstance().createServiceMetadata(
-      new EdmTechProvider(), Collections.<EdmxReference> emptyList()).getEdm();
+      new EdmTechProvider(), Collections.emptyList()).getEdm();
 
   private final TestUriValidator testUri = new TestUriValidator().setEdm(edm);
 

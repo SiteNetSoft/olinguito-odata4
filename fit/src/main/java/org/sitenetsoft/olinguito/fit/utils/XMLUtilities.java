@@ -208,7 +208,7 @@ public class XMLUtilities extends AbstractUtilities {
       while (true) {
         final Map.Entry<Integer, XMLElement> linkInfo =
             extractElement(reader, null,
-                Collections.<String> singletonList(Constants.get(ConstantKey.LINK)), startDepth, 2, 2);
+                Collections.singletonList(Constants.get(ConstantKey.LINK)), startDepth, 2, 2);
 
         startDepth = linkInfo.getKey();
 
@@ -246,7 +246,7 @@ public class XMLUtilities extends AbstractUtilities {
       while (true) {
         // a. search for link with type attribute equals to "application/atom+xml;type=entry/feed"
         final Map.Entry<Integer, XMLElement> linkInfo = extractElement(
-            reader, null, Collections.<String> singletonList(Constants.get(ConstantKey.LINK)),
+            reader, null, Collections.singletonList(Constants.get(ConstantKey.LINK)),
             filter, true, startDepth, 2, 2);
         final XMLElement link = linkInfo.getValue();
         startDepth = linkInfo.getKey();
@@ -259,14 +259,14 @@ public class XMLUtilities extends AbstractUtilities {
         try {
           final XMLElement inlineElement =
               extractElement(link.getContentReader(), null,
-                  Collections.<String> singletonList(Constants.get(ConstantKey.INLINE)), 0, -1, -1).
+                  Collections.singletonList(Constants.get(ConstantKey.INLINE)), 0, -1, -1).
                   getValue();
           final XMLEventReader inlineReader = inlineElement.getContentReader();
 
           try {
             while (true) {
               final XMLElement entry =
-                  extractElement(inlineReader, null, Collections.<String> singletonList("entry"), 0, -1, -1).
+                  extractElement(inlineReader, null, Collections.singletonList("entry"), 0, -1, -1).
                       getValue();
               links.addInlines(title, entry.toStream());
             }
@@ -328,7 +328,7 @@ public class XMLUtilities extends AbstractUtilities {
         // a. search for link with type attribute equals to "application/atom+xml;type=entry/feed"
         linkInfo = extractElement(
             reader, writer,
-            Collections.<String> singletonList(Constants.get(ConstantKey.LINK)), filter, true,
+            Collections.singletonList(Constants.get(ConstantKey.LINK)), filter, true,
             linkInfo == null ? 0 : linkInfo.getKey(), 2, 2);
         final XMLElement link = linkInfo.getValue();
 
@@ -461,7 +461,7 @@ public class XMLUtilities extends AbstractUtilities {
 
     try {
       // check edit link existence
-      extractElement(reader, writer, Collections.<String> singletonList(Constants.get(ConstantKey.LINK)),
+      extractElement(reader, writer, Collections.singletonList(Constants.get(ConstantKey.LINK)),
           Collections.<Map.Entry<String, String>> singletonList(
               new AbstractMap.SimpleEntry<String, String>("rel", "edit")), false, 0, -1, -1);
 
@@ -476,7 +476,7 @@ public class XMLUtilities extends AbstractUtilities {
       writer = getEventWriter(bos);
 
       final XMLElement entryElement =
-          extractElement(reader, writer, Collections.<String> singletonList("entry"), 0, 1, 1).getValue();
+          extractElement(reader, writer, Collections.singletonList("entry"), 0, 1, 1).getValue();
 
       writer.add(entryElement.getStart());
 
@@ -528,7 +528,7 @@ public class XMLUtilities extends AbstractUtilities {
     try {
       // check edit link existence
       XMLElement contentElement =
-          extractElement(reader, writer, Collections.<String> singletonList("content"), 0, 2, 2).getValue();
+          extractElement(reader, writer, Collections.singletonList("content"), 0, 2, 2).getValue();
       writer.add(contentElement.getStart());
       writer.add(contentElement.getContentReader());
       writer.add(contentElement.getEnd());
@@ -542,7 +542,7 @@ public class XMLUtilities extends AbstractUtilities {
 
       if (isMediaContent(title)) {
         final XMLElement entryElement =
-            extractElement(reader, writer, Collections.<String> singletonList("entry"), 0, 1, 1).getValue();
+            extractElement(reader, writer, Collections.singletonList("entry"), 0, 1, 1).getValue();
 
         writer.add(entryElement.getStart());
         writer.add(entryElement.getContentReader());
@@ -555,7 +555,7 @@ public class XMLUtilities extends AbstractUtilities {
       } else {
         try {
           final XMLElement entryElement =
-              extractElement(reader, writer, Collections.<String> singletonList(
+              extractElement(reader, writer, Collections.singletonList(
                   Constants.get(ConstantKey.PROPERTIES)), 0, 2, 3).getValue();
 
           addAtomElement(
@@ -577,7 +577,7 @@ public class XMLUtilities extends AbstractUtilities {
           writer = getEventWriter(bos);
 
           final XMLElement entryElement =
-              extractElement(reader, writer, Collections.<String> singletonList("entry"), 0, 1, 1).getValue();
+              extractElement(reader, writer, Collections.singletonList("entry"), 0, 1, 1).getValue();
           writer.add(entryElement.getStart());
           writer.add(entryElement.getContentReader());
 
@@ -665,7 +665,7 @@ public class XMLUtilities extends AbstractUtilities {
     String current = null;
 
     // set defaults
-    final List<String> pathElementNames = path == null ? Collections.<String> emptyList() : path;
+    final List<String> pathElementNames = path == null ? Collections.emptyList() : path;
     final Collection<Map.Entry<String, String>> filterAttrs =
         filter == null ? Collections.<Map.Entry<String, String>> emptySet() : filter;
 
@@ -749,7 +749,7 @@ public class XMLUtilities extends AbstractUtilities {
     try {
 
       final XMLElement feedElement =
-          extractElement(reader, writer, Collections.<String> singletonList("feed"), 0, 1, 1).getValue();
+          extractElement(reader, writer, Collections.singletonList("feed"), 0, 1, 1).getValue();
 
       writer.add(feedElement.getStart());
       addAtomElement(IOUtils.toInputStream(String.format("<m:count>%d</m:count>", count), Constants.ENCODING), writer);
@@ -893,7 +893,7 @@ public class XMLUtilities extends AbstractUtilities {
             extractElement(
                 getEventReader(readEntity(uri.getKey(), uri.getValue(), Accept.ATOM).getValue()),
                 null,
-                Collections.<String> singletonList("entry"),
+                Collections.singletonList("entry"),
                 0, 1, 1).getValue();
 
         IOUtils.copy(entry.toStream(), writer, encoding);
@@ -931,7 +931,7 @@ public class XMLUtilities extends AbstractUtilities {
 
     final Map.Entry<Integer, XMLElement> propertyElement =
         extractElement(reader, null,
-            Collections.<String> singletonList(Constants.get(ConstantKey.PROPERTIES)), 0, 2, 3);
+            Collections.singletonList(Constants.get(ConstantKey.PROPERTIES)), 0, 2, 3);
     reader.close();
 
     reader = propertyElement.getValue().getContentReader();
@@ -955,7 +955,7 @@ public class XMLUtilities extends AbstractUtilities {
       while (true) {
         final Map.Entry<Integer, XMLElement> linkElement =
             extractElement(reader, null,
-                Collections.<String> singletonList(Constants.get(ConstantKey.LINK)), pos, 2, 2);
+                Collections.singletonList(Constants.get(ConstantKey.LINK)), pos, 2, 2);
 
         res.put("[Constants.get(ConstantKey.LINK)]"
             + linkElement.getValue().getStart().getAttributeByName(new QName("title")).getValue(),
@@ -985,7 +985,7 @@ public class XMLUtilities extends AbstractUtilities {
     try {
       final XMLElement linkElement =
           extractElement(reader, writer,
-              Collections.<String> singletonList(Constants.get(ConstantKey.LINK)),
+              Collections.singletonList(Constants.get(ConstantKey.LINK)),
               Collections.<Map.Entry<String, String>> singletonList(
                   new SimpleEntry<String, String>("title", linkName)), false, 0, -1, -1).getValue();
       writer.add(linkElement.getStart());
@@ -1035,7 +1035,7 @@ public class XMLUtilities extends AbstractUtilities {
     final List<String> links = new ArrayList<String>();
     try {
       while (true) {
-        links.add(IOUtils.toString(extractElement(reader, null, Collections.<String> singletonList("uri"), 0, -1, -1).
+        links.add(IOUtils.toString(extractElement(reader, null, Collections.singletonList("uri"), 0, -1, -1).
             getValue().getContent(), StandardCharsets.UTF_8));
       }
     } catch (Exception ignore) {
@@ -1047,7 +1047,7 @@ public class XMLUtilities extends AbstractUtilities {
 
     reader = getEventReader(new ByteArrayInputStream(bos.toByteArray()));
     try {
-      next = IOUtils.toString(extractElement(reader, null, Collections.<String> singletonList("next"), 0, -1, -1).
+      next = IOUtils.toString(extractElement(reader, null, Collections.singletonList("next"), 0, -1, -1).
           getValue().getContent(), StandardCharsets.UTF_8);
     } catch (Exception ignore) {
       // next link is not mandatory

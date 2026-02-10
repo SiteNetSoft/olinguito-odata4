@@ -78,7 +78,7 @@ public class AnnotatableInvocationHandler extends AbstractInvocationHandler impl
   }
 
   private List<ClientAnnotation> internalAnnotations() {
-    List<ClientAnnotation> result = Collections.<ClientAnnotation> emptyList();
+    List<ClientAnnotation> result = Collections.emptyList();
 
     if (targetHandler.getInternal() instanceof ClientEntity) {
       result = propName == null

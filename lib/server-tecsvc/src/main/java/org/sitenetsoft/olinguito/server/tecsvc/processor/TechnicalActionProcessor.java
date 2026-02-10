@@ -491,7 +491,7 @@ public class TechnicalActionProcessor extends TechnicalProcessor
       return odata.createDeserializer(requestFormat, serviceMetadata).
           actionParameters(body, action).getActionParameters();
     }
-    return Collections.<String, Parameter> emptyMap();
+    return Collections.emptyMap();
   }
 
   private ContextURL getContextUrl(final EdmEntitySet entitySet, final EdmEntityType entityType,

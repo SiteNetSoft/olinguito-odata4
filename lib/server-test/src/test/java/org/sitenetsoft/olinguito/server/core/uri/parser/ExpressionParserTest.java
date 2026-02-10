@@ -44,7 +44,7 @@ public class ExpressionParserTest {
 
   private static final OData oData = OData.newInstance();
   private static final Edm edm = oData.createServiceMetadata(
-      new EdmTechProvider(), Collections.<EdmxReference> emptyList()).getEdm();
+      new EdmTechProvider(), Collections.emptyList()).getEdm();
 
   private final FilterValidator testFilter = new FilterValidator().setEdm(edm);
 

@@ -19,7 +19,7 @@
 package org.sitenetsoft.olinguito.server.core.deserializer.batch;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -181,6 +181,6 @@ public class HeaderTest {
   @Test
   public void testHashCode() {
     HeaderField header = new HeaderField("filed", 0);
-    assertNotNull(header.hashCode());
+    header.hashCode();
   }
 }

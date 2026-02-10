@@ -114,7 +114,7 @@ final class HttpHeaders {
    * @return all header names or an empty collection if no headers have been set
    */
   public Collection<String> getHeaderNames() {
-    return headers.isEmpty() ? Collections.<String> emptySet() : Collections.unmodifiableSet(headers.keySet());
+    return headers.isEmpty() ? Collections.emptySet() : Collections.unmodifiableSet(headers.keySet());
   }
 
   /**

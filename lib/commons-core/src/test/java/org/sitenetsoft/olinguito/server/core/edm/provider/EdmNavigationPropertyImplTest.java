@@ -54,7 +54,7 @@ public class EdmNavigationPropertyImplTest {
     EdmProviderImpl edm = new EdmProviderImpl(provider);
     final FullQualifiedName entityTypeName = new FullQualifiedName("ns", "entity");
     CsdlEntityType entityTypeProvider = new CsdlEntityType();
-    entityTypeProvider.setKey(Collections.<CsdlPropertyRef> emptyList());
+    entityTypeProvider.setKey(Collections.emptyList());
     when(provider.getEntityType(entityTypeName)).thenReturn(entityTypeProvider);
     CsdlNavigationProperty propertyProvider = new CsdlNavigationProperty();
     propertyProvider.setType(entityTypeName);
@@ -81,7 +81,7 @@ public class EdmNavigationPropertyImplTest {
     EdmProviderImpl edm = new EdmProviderImpl(provider);
     final FullQualifiedName entityTypeName = new FullQualifiedName("ns", "entity");
     CsdlEntityType entityTypeProvider = new CsdlEntityType();
-    entityTypeProvider.setKey(Collections.<CsdlPropertyRef> emptyList());
+    entityTypeProvider.setKey(Collections.emptyList());
     when(provider.getEntityType(entityTypeName)).thenReturn(entityTypeProvider);
     CsdlNavigationProperty propertyProvider = new CsdlNavigationProperty();
     propertyProvider.setType(entityTypeName);
@@ -110,7 +110,7 @@ public class EdmNavigationPropertyImplTest {
     EdmProviderImpl edm = new EdmProviderImpl(provider);
     final FullQualifiedName entityTypeName = new FullQualifiedName("ns", "entity");
     CsdlEntityType entityTypeProvider = new CsdlEntityType();
-    entityTypeProvider.setKey(Collections.<CsdlPropertyRef> emptyList());
+    entityTypeProvider.setKey(Collections.emptyList());
 
     List<CsdlNavigationProperty> navigationProperties = new ArrayList<CsdlNavigationProperty>();
     navigationProperties.add(new CsdlNavigationProperty().setName("partnerName").setType(entityTypeName));
@@ -135,7 +135,7 @@ public class EdmNavigationPropertyImplTest {
           EdmProviderImpl edm = new EdmProviderImpl(provider);
           final FullQualifiedName entityTypeName = new FullQualifiedName("ns", "entity");
           CsdlEntityType entityTypeProvider = new CsdlEntityType();
-          entityTypeProvider.setKey(Collections.<CsdlPropertyRef> emptyList());
+          entityTypeProvider.setKey(Collections.emptyList());
           List<CsdlNavigationProperty> navigationProperties = new ArrayList<CsdlNavigationProperty>();
           navigationProperties.add(new CsdlNavigationProperty().setName("partnerName").setType(entityTypeName));
           entityTypeProvider.setNavigationProperties(navigationProperties);

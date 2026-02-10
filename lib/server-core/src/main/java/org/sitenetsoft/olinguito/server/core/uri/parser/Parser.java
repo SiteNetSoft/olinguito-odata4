@@ -100,7 +100,7 @@ public class Parser {
     // This is done before parsing the resource path because the aliases have to be available there.
     // System query options that can only be parsed with context from the resource path will be post-processed later.
     final List<QueryOption> options =
-        query == null ? Collections.<QueryOption> emptyList() : UriDecoder.splitAndDecodeOptions(query);
+        query == null ? Collections.emptyList() : UriDecoder.splitAndDecodeOptions(query);
     for (final QueryOption option : options) {
       final String optionName = option.getName();
       String value = option.getText();

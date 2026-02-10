@@ -42,7 +42,7 @@ public class ServiceDocumentTest {
 
   private static final String serviceRoot = "http://localhost:8080/odata.svc";
   private static final ServiceMetadata metadata = OData.newInstance().createServiceMetadata(
-      new EdmTechProvider(), Collections.<EdmxReference> emptyList(),
+      new EdmTechProvider(), Collections.emptyList(),
       new ServiceMetadataETagSupport() {
         @Override
         public String getServiceDocumentETag() {

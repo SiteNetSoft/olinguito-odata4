@@ -369,7 +369,7 @@ public class ODataHandlerImplTest {
             throw new ODataException("msg");
           }
         },
-        Collections.<EdmxReference> emptyList());
+        Collections.emptyList());
 
     ODataRequest request = new ODataRequest();
     request.setMethod(HttpMethod.GET);
@@ -392,7 +392,7 @@ public class ODataHandlerImplTest {
             throw new ODataException("msg");
           }
         },
-        Collections.<EdmxReference> emptyList());
+        Collections.emptyList());
 
     ODataRequest request = new ODataRequest();
     request.setMethod(HttpMethod.GET);
@@ -1146,7 +1146,7 @@ public class ODataHandlerImplTest {
 
     final OData odata = OData.newInstance();
     final ServiceMetadata metadata = odata.createServiceMetadata(
-        new EdmTechProvider(), Collections.<EdmxReference> emptyList());
+        new EdmTechProvider(), Collections.emptyList());
 
     ODataHandlerImpl handler = new ODataHandlerImpl(odata, metadata, new ServerCoreDebugger(odata));
 
@@ -1173,7 +1173,7 @@ public class ODataHandlerImplTest {
 
     final OData odata = OData.newInstance();
     final ServiceMetadata metadata = odata.createServiceMetadata(
-        new EdmTechProvider(), Collections.<EdmxReference> emptyList());
+        new EdmTechProvider(), Collections.emptyList());
 
     ODataHandlerImpl handler = new ODataHandlerImpl(odata, metadata, new ServerCoreDebugger(odata));
 
@@ -1359,7 +1359,7 @@ public class ODataHandlerImplTest {
 
     final OData odata = OData.newInstance();
     final ServiceMetadata metadata = odata.createServiceMetadata(
-        new EdmTechProvider(), Collections.<EdmxReference> emptyList());
+        new EdmTechProvider(), Collections.emptyList());
 
     ODataHandlerImpl handler = new ODataHandlerImpl(odata, metadata, new ServerCoreDebugger(odata));
 
