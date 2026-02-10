@@ -103,7 +103,7 @@ public abstract class OData {
   public abstract FixedFormatDeserializer createFixedFormatDeserializer();
 
   /**
-   * Creates a new ODataHttpHandler for handling OData requests in an HTTP context.
+   * Creates a new ODataRequestHandler for handling OData requests.
    *
    * @param serviceMetadata - metadata object required to handle an OData request
    */

@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 /**
  * This class represents a standard HttpServlet implementation.
  * It is used as main entry point for the web application that carries the OData service.
- * The implementation of this HttpServlet simply delegates the user requests to the ODataHttpHandler
+ * The implementation of this HttpServlet simply delegates the user requests to the ODataRequestHandler
  */
 public class DemoServlet extends HttpServlet {
 

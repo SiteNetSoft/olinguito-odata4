@@ -85,8 +85,6 @@ public class ServiceDispatcherTest {
         throws IOException {
       OData odata = OData4Impl.newInstance();
 
-      //ODataHttpHandler handler = odata.createHandler(this.metadata);
-
       OData4HttpHandler handler = new OData4HttpHandler(odata, metadata);
 
       handler.register(this.handler);
