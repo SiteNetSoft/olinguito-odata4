@@ -444,7 +444,7 @@ public abstract class AbstractUtility {
   }
 
   public Map<String, String> getFcProperties(final EdmProperty property) {
-    return Collections.<String, String>emptyMap();
+    return Collections.emptyMap();
   }
 
   public final String getNameFromNS(final String ns) {

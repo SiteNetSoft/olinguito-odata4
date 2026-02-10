@@ -31,7 +31,7 @@ import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 public class StreamResponse extends ServiceResponse {
 
   public StreamResponse(ServiceMetadata metadata, ODataResponse response) {
-    super(metadata, response, Collections.<String,String>emptyMap());
+    super(metadata, response, Collections.emptyMap());
   }
 
   public void writeStreamResponse(InputStream streamContent, ContentType contentType) {

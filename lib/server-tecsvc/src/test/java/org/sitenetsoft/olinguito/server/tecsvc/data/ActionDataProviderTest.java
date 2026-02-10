@@ -48,7 +48,7 @@ public class ActionDataProviderTest {
 
   private final OData oData = OData.newInstance();
   private final Edm edm =
-      oData.createServiceMetadata(new EdmTechProvider(), Collections.<EdmxReference> emptyList())
+      oData.createServiceMetadata(new EdmTechProvider(), Collections.emptyList())
       .getEdm();
   private final Map<String, EntityCollection> data = new DataCreator(oData, edm).getData();
 
@@ -58,7 +58,7 @@ public class ActionDataProviderTest {
     assertNotNull(result);
     assertEquals("UARTString string value", result.asPrimitive());
 
-    result = ActionData.primitiveAction("UARTString", Collections.<String, Parameter> emptyMap());
+    result = ActionData.primitiveAction("UARTString", Collections.emptyMap());
     assertNotNull(result);
     assertEquals("UARTString string value", result.asPrimitive());
   }
@@ -98,7 +98,7 @@ public class ActionDataProviderTest {
     ComplexValue value = result.asComplex();
     assertEquals((short) 3, value.getValue().get(0).asPrimitive());
 
-    result = ActionData.complexAction("UARTCTTwoPrimParam", Collections.<String, Parameter> emptyMap());
+    result = ActionData.complexAction("UARTCTTwoPrimParam", Collections.emptyMap());
     assertNotNull(result);
     value = result.asComplex();
     assertEquals((short) 32767, value.getValue().get(0).asPrimitive());
@@ -186,7 +186,7 @@ public class ActionDataProviderTest {
   @Test
   public void actionUARTETAllPrimParamWithoutParam() throws Exception {
     final EntityActionResult result = ActionData.entityAction("UARTETAllPrimParam",
-        Collections.<String, Parameter> emptyMap(), data, oData, edm);
+        Collections.emptyMap(), data, oData, edm);
     assertNotNull(result);
     assertFalse(result.isCreated());
     assertEquals(Short.MAX_VALUE, result.getEntity().getProperty("PropertyInt16").asPrimitive());
@@ -232,7 +232,7 @@ public class ActionDataProviderTest {
   @Test
   public void actionUARTCollETAllPrimParamNoParam() throws Exception {
     final EntityCollection result = ActionData.entityCollectionAction("UARTCollETAllPrimParam",
-        Collections.<String, Parameter> emptyMap(), oData, edm);
+        Collections.emptyMap(), oData, edm);
     assertNotNull(result);
     assertEquals(0, result.getEntities().size());
   }

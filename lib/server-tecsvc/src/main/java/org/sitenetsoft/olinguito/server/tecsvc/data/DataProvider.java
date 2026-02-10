@@ -286,7 +286,7 @@ public class DataProvider {
   private void createProperties(final EdmStructuredType type, final List<Property> properties)
       throws DataProviderException {
     final List<String> keyNames = type instanceof EdmEntityType ?
-        ((EdmEntityType) type).getKeyPredicateNames() : Collections.<String> emptyList();
+        ((EdmEntityType) type).getKeyPredicateNames() : Collections.emptyList();
     for (final String propertyName : type.getPropertyNames()) {
       if (!keyNames.contains(propertyName)) {
         final EdmProperty edmProperty = type.getStructuralProperty(propertyName);

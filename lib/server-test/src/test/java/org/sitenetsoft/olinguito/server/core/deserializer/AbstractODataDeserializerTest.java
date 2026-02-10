@@ -32,10 +32,10 @@ public class AbstractODataDeserializerTest {
 
   protected static final String NAMESPACE = "Namespace1_Alias";
   protected static final Edm edm = OData.newInstance()
-      .createServiceMetadata(new EdmTechProvider(), Collections.<EdmxReference> emptyList())
+      .createServiceMetadata(new EdmTechProvider(), Collections.emptyList())
       .getEdm();
   protected static final ServiceMetadata metadata = OData.newInstance()
-      .createServiceMetadata(new EdmTechProvider(), Collections.<EdmxReference> emptyList());
+      .createServiceMetadata(new EdmTechProvider(), Collections.emptyList());
   
   protected InputStream getFileAsStream(final String filename) throws IOException {
     InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename);

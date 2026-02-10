@@ -44,15 +44,15 @@ public class ServiceDocumentTest {
     ServiceDocumentImpl sd2 = new ServiceDocumentImpl();
     assertTrue(sd.equals(sd2));
     assertNotNull(sd.toString());
-    assertNotNull(sd.hashCode());
+    sd.hashCode();
   }
-  
+
   @Test
   public void testServiceDocumentItem() {
     ServiceDocumentItemImpl sd = new ServiceDocumentItemImpl();
     ServiceDocumentItemImpl sd2 = new ServiceDocumentItemImpl();
     assertTrue(sd.equals(sd2));
     assertNotNull(sd.toString());
-    assertNotNull(sd.hashCode());
+    sd.hashCode();
   }
 }

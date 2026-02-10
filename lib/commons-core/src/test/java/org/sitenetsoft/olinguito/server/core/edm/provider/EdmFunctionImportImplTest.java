@@ -57,7 +57,7 @@ public class EdmFunctionImportImplTest {
     final FullQualifiedName functionName = new FullQualifiedName("ns", "function");
     final CsdlFunction functionProvider = new CsdlFunction()
         .setName(functionName.getName())
-        .setParameters(Collections.<CsdlParameter> emptyList())
+        .setParameters(Collections.emptyList())
         .setBound(false)
         .setComposable(false)
         .setReturnType(new CsdlReturnType().setType(EdmPrimitiveTypeKind.Boolean.getFullQualifiedName()));
@@ -82,7 +82,7 @@ public class EdmFunctionImportImplTest {
     assertEquals("title", functionImport.getTitle());
     assertEquals(new FullQualifiedName("ns", functionImportName), functionImport.getFullQualifiedName());
     assertTrue(functionImport.isIncludeInServiceDocument());
-    final EdmFunction function = functionImport.getUnboundFunction(Collections.<String> emptyList());
+    final EdmFunction function = functionImport.getUnboundFunction(Collections.emptyList());
     assertEquals(functionName.getNamespace(), function.getNamespace());
     assertEquals(functionName.getName(), function.getName());
     assertEquals(functionName, function.getFullQualifiedName());

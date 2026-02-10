@@ -81,7 +81,7 @@ public class BasicAsyncITCase extends AbstractBaseTestITCase {
 
     // get async response (still pending)
     String respondUri = headerFields.get("Location").get(0);
-    HttpURLConnection statusRequest = getRequest(new URL(respondUri), Collections.<String, String>emptyMap());
+    HttpURLConnection statusRequest = getRequest(new URL(respondUri), Collections.emptyMap());
     StringHelper.Stream statusBody = StringHelper.toStream(statusRequest.getInputStream());
     Map<String, List<String>> statusHeaderFields = statusRequest.getHeaderFields();
     assertEquals("HTTP/1.1 202", statusHeaderFields.get(null).get(0));
@@ -125,7 +125,7 @@ public class BasicAsyncITCase extends AbstractBaseTestITCase {
 
     // get async response (still pending)
     String respondUri = headerFields.get("Location").get(0);
-    HttpURLConnection statusRequest = getRequest(new URL(respondUri), Collections.<String, String>emptyMap());
+    HttpURLConnection statusRequest = getRequest(new URL(respondUri), Collections.emptyMap());
     StringHelper.Stream statusBody = StringHelper.toStream(statusRequest.getInputStream());
     Map<String, List<String>> statusHeaderFields = statusRequest.getHeaderFields();
     assertEquals("HTTP/1.1 202", statusHeaderFields.get(null).get(0));
@@ -189,7 +189,7 @@ public class BasicAsyncITCase extends AbstractBaseTestITCase {
     int waitCounter = maxWaitInSeconds * 1000;
 
     while(result == null && waitCounter > 0) {
-      HttpURLConnection statusRequest = getRequest(new URL(location), Collections.<String, String>emptyMap());
+      HttpURLConnection statusRequest = getRequest(new URL(location), Collections.emptyMap());
       Map<String, List<String>> statusHeaderFields = statusRequest.getHeaderFields();
       String statusHeader = statusHeaderFields.get(null).get(0);
       if("HTTP/1.1 202".equals(statusHeader)) {

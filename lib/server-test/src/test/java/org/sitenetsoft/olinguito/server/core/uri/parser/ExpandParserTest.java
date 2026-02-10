@@ -44,7 +44,7 @@ public class ExpandParserTest {
 
   private static final OData oData = OData.newInstance();
   private static final Edm edm = oData.createServiceMetadata(
-      new EdmTechProvider(), Collections.<EdmxReference> emptyList()).getEdm();
+      new EdmTechProvider(), Collections.emptyList()).getEdm();
 
   @Test
   public void expandStar() throws Exception {

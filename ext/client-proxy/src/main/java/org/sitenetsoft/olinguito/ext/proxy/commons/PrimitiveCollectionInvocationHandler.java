@@ -108,7 +108,7 @@ public class PrimitiveCollectionInvocationHandler<T extends Serializable>
     }
 
     return new ImmutableTriple<List<T>, URI, List<ClientAnnotation>>(
-            resItems, null, Collections.<ClientAnnotation>emptyList());
+            resItems, null, Collections.emptyList());
   }
 
   public void delete() {

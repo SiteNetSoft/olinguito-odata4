@@ -81,7 +81,7 @@ public class ApplyParserTest {
 
   private static final OData odata = OData.newInstance();
   private static final Edm edm = odata.createServiceMetadata(
-      new EdmTechProvider(), Collections.<EdmxReference> emptyList()).getEdm();
+      new EdmTechProvider(), Collections.emptyList()).getEdm();
 
   @Test
   public void basic() throws Exception {

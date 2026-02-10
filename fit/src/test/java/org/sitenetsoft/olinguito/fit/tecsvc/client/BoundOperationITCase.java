@@ -71,7 +71,7 @@ public class BoundOperationITCase extends AbstractParamTecSvcITCase {
 
     assertNull(entitySet.getCount());
     assertNull(entitySet.getNext());
-    assertEquals(Collections.<ClientAnnotation> emptyList(), entitySet.getAnnotations());
+    assertEquals(Collections.emptyList(), entitySet.getAnnotations());
     assertNull(entitySet.getDeltaLink());
 
     List<ClientOperation> ecOperations = entitySet.getOperations();

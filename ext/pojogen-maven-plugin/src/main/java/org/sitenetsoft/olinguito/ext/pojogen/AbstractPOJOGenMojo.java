@@ -157,7 +157,7 @@ public abstract class AbstractPOJOGenMojo extends AbstractMojo {
   protected void parseObj(final File base, final String pkg, final String name, final String out)
       throws MojoExecutionException {
 
-    parseObj(base, false, pkg, name, out, Collections.<String, Object> emptyMap());
+    parseObj(base, false, pkg, name, out, Collections.emptyMap());
   }
 
   protected void parseObj(

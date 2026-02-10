@@ -50,7 +50,7 @@ import org.mockito.Mockito;
 public class ContextURLHelperTest {
 
   private static final Edm edm = OData.newInstance().createServiceMetadata(
-      new EdmTechProvider(), Collections.<EdmxReference> emptyList()).getEdm();
+      new EdmTechProvider(), Collections.emptyList()).getEdm();
   private static final EdmEntityContainer entityContainer = edm.getEntityContainer();
 
   @Test

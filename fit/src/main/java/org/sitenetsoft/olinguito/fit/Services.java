@@ -562,7 +562,7 @@ public class Services {
           addItemIntro(bos, null);
 
           res = bodyPartRequest(new MimeBodyPart(obj.getDataHandler().getInputStream()),
-              Collections.<String, String> emptyMap());
+              Collections.emptyMap());
 
           if (res.getStatus() >= 400) {
             goon = continueOnError;
@@ -1194,7 +1194,7 @@ public class Services {
           null,
           acceptType);
       if (StringUtils.isNotBlank(prefer)) {
-        response.getHeaders().put("Preference-Applied", Collections.<Object> singletonList(prefer));
+        response.getHeaders().put("Preference-Applied", Collections.singletonList(prefer));
       }
       return response;
     } catch (Exception e) {
@@ -1324,7 +1324,7 @@ public class Services {
       }
 
       if (StringUtils.isNotBlank(prefer)) {
-        response.getHeaders().put("Preference-Applied", Collections.<Object> singletonList(prefer));
+        response.getHeaders().put("Preference-Applied", Collections.singletonList(prefer));
       }
 
       return response;
@@ -1975,7 +1975,7 @@ public class Services {
       }
 
       if (StringUtils.isNotBlank(prefer)) {
-        response.getHeaders().put("Preference-Applied", Collections.<Object> singletonList(prefer));
+        response.getHeaders().put("Preference-Applied", Collections.singletonList(prefer));
       }
 
       return response;
@@ -2051,7 +2051,7 @@ public class Services {
       }
 
       if (StringUtils.isNotBlank(prefer)) {
-        response.getHeaders().put("Preference-Applied", Collections.<Object> singletonList(prefer));
+        response.getHeaders().put("Preference-Applied", Collections.singletonList(prefer));
       }
 
       return response;
@@ -2177,7 +2177,7 @@ public class Services {
       }
 
       if (StringUtils.isNotBlank(prefer)) {
-        response.getHeaders().put("Preference-Applied", Collections.<Object> singletonList(prefer));
+        response.getHeaders().put("Preference-Applied", Collections.singletonList(prefer));
       }
 
       return response;
@@ -2221,7 +2221,7 @@ public class Services {
       }
 
       if (StringUtils.isNotBlank(prefer)) {
-        response.getHeaders().put("Preference-Applied", Collections.<Object> singletonList(prefer));
+        response.getHeaders().put("Preference-Applied", Collections.singletonList(prefer));
       }
 
       return response;
@@ -2315,7 +2315,7 @@ public class Services {
       }
 
       if (StringUtils.isNotBlank(prefer)) {
-        response.getHeaders().put("Preference-Applied", Collections.<Object> singletonList(prefer));
+        response.getHeaders().put("Preference-Applied", Collections.singletonList(prefer));
       }
 
       return response;
@@ -2380,7 +2380,7 @@ public class Services {
       }
 
       if (StringUtils.isNotBlank(prefer)) {
-        response.getHeaders().put("Preference-Applied", Collections.<Object> singletonList(prefer));
+        response.getHeaders().put("Preference-Applied", Collections.singletonList(prefer));
       }
 
       return response;

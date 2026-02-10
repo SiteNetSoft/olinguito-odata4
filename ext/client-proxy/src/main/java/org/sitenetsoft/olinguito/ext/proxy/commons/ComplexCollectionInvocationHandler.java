@@ -121,6 +121,6 @@ public class ComplexCollectionInvocationHandler<T extends ComplexType<?>>
     }
 
     return new ImmutableTriple<List<T>, URI, List<ClientAnnotation>>(
-        resItems, null, Collections.<ClientAnnotation> emptyList());
+        resItems, null, Collections.emptyList());
   }
 }

@@ -51,7 +51,7 @@ public class PreconditionsValidatorTest {
 
   private static final OData odata = OData.newInstance();
   private static final Edm edm = odata.createServiceMetadata(
-      new EdmTechProvider(), Collections.<EdmxReference> emptyList()).getEdm();
+      new EdmTechProvider(), Collections.emptyList()).getEdm();
 
   // -------------- POSITIVE TESTS --------------------------------------------------------------------------------
 

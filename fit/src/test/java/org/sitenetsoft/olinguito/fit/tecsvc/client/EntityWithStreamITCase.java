@@ -73,7 +73,7 @@ public class EntityWithStreamITCase extends AbstractParamTecSvcITCase {
 
     assertNull(entitySet.getCount());
     assertNull(entitySet.getNext());
-    assertEquals(Collections.<ClientAnnotation> emptyList(), entitySet.getAnnotations());
+    assertEquals(Collections.emptyList(), entitySet.getAnnotations());
     assertNull(entitySet.getDeltaLink());
 
     final List<ClientEntity> entities = entitySet.getEntities();

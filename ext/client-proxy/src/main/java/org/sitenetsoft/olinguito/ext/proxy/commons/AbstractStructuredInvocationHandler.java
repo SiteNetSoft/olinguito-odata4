@@ -326,7 +326,7 @@ public abstract class AbstractStructuredInvocationHandler extends AbstractInvoca
                       baseURI == null
                       ? null : getClient().newURIBuilder(baseURI.toASCIIString()).appendPropertySegment(name));
             } else {
-              List items = new ArrayList();
+              List<Object> items = new ArrayList<>();
 
               for (ClientValue item : property.getValue().asCollection()) {
                 items.add(getComplex(
@@ -359,7 +359,7 @@ public abstract class AbstractStructuredInvocationHandler extends AbstractInvoca
                       baseURI == null
                       ? null : getClient().newURIBuilder(baseURI.toASCIIString()).appendPropertySegment(name));
             } else {
-              List items = new ArrayList();
+              List<Object> items = new ArrayList<>();
               for (ClientValue item : property.getValue().asCollection()) {
                 items.add(item.asPrimitive().toValue());
               }

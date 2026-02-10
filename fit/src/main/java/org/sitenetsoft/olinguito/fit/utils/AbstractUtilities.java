@@ -197,7 +197,7 @@ public abstract class AbstractUtilities {
     try {
       linksToBeKept = new HashSet<>(navigationProperties.keySet());
     } catch (NullPointerException e) {
-      linksToBeKept = Collections.<String> emptySet();
+      linksToBeKept = Collections.emptySet();
     }
 
     for (String availableLink : new HashSet<>(linksToBeKept)) {

@@ -43,7 +43,7 @@ public class UriHelperTest {
 
   private static final OData odata = OData.newInstance();
   private static final Edm edm = odata.createServiceMetadata(
-      new EdmTechProvider(), Collections.<EdmxReference> emptyList()).getEdm();
+      new EdmTechProvider(), Collections.emptyList()).getEdm();
   private static final EdmEntityContainer container = edm.getEntityContainer();
   private static final UriHelper helper = odata.createUriHelper();
   private final DataProvider data = new DataProvider(odata, edm);
