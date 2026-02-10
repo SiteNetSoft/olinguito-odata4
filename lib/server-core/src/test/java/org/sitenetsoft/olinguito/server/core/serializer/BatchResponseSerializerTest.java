@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
+ * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
  */
 package org.sitenetsoft.olinguito.server.core.serializer;
 
@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.commons.api.data.ContextURL;
 import org.sitenetsoft.olinguito.commons.api.data.Entity;
 import org.sitenetsoft.olinguito.commons.api.data.EntityIterator;
@@ -66,7 +65,7 @@ public class BatchResponseSerializerTest {
     ODataResponse response = new ODataResponse();
     response.setStatusCode(HttpStatusCode.OK.getStatusCode());
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.TEXT_PLAIN.toContentTypeString());
-    response.setContent(IOUtils.toInputStream("Walter Winter" + CRLF, StandardCharsets.UTF_8));
+    response.setContent(new ByteArrayInputStream(("Walter Winter" + CRLF).getBytes(StandardCharsets.UTF_8)));
     parts.add(new ODataResponsePart(Collections.singletonList(response), false));
 
     ODataResponse changeSetResponse = new ODataResponse();
@@ -116,7 +115,7 @@ public class BatchResponseSerializerTest {
     ODataResponse response = new ODataResponse();
     response.setStatusCode(HttpStatusCode.OK.getStatusCode());
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.APPLICATION_JSON.toContentTypeString());
-    response.setContent(IOUtils.toInputStream("{\"name\":\"Wälter Winter\"}" + CRLF, StandardCharsets.UTF_8));
+    response.setContent(new ByteArrayInputStream(("{\"name\":\"Wälter Winter\"}" + CRLF).getBytes(StandardCharsets.UTF_8)));
     parts.add(new ODataResponsePart(Collections.singletonList(response), false));
 
     ODataResponse changeSetResponse = new ODataResponse();
@@ -167,7 +166,7 @@ public class BatchResponseSerializerTest {
     response.setStatusCode(HttpStatusCode.OK.getStatusCode());
     response.setHeader(HttpHeader.CONTENT_TYPE,
         ContentType.create(ContentType.TEXT_PLAIN, ContentType.PARAMETER_CHARSET, "UTF-8").toContentTypeString());
-    response.setContent(IOUtils.toInputStream("Wälter Winter" + CRLF, StandardCharsets.UTF_8));
+    response.setContent(new ByteArrayInputStream(("Wälter Winter" + CRLF).getBytes(StandardCharsets.UTF_8)));
     parts.add(new ODataResponsePart(Collections.singletonList(response), false));
 
     ODataResponse changeSetResponse = new ODataResponse();
@@ -219,7 +218,7 @@ public class BatchResponseSerializerTest {
     ODataResponse response = new ODataResponse();
     response.setStatusCode(HttpStatusCode.OK.getStatusCode());
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.APPLICATION_JSON.toContentTypeString());
-    response.setContent(IOUtils.toInputStream("{\"name\":\"Wälter Winter\"}" + CRLF, StandardCharsets.UTF_8));
+    response.setContent(new ByteArrayInputStream(("{\"name\":\"Wälter Winter\"}" + CRLF).getBytes(StandardCharsets.UTF_8)));
     parts.add(new ODataResponsePart(Collections.singletonList(response), false));
 
     ODataResponse changeSetResponse = new ODataResponse();
@@ -299,7 +298,7 @@ public class BatchResponseSerializerTest {
     ODataResponse response = new ODataResponse();
     response.setStatusCode(HttpStatusCode.OK.getStatusCode());
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.TEXT_PLAIN.toContentTypeString());
-    response.setContent(IOUtils.toInputStream("Walter Winter", StandardCharsets.UTF_8));
+    response.setContent(new ByteArrayInputStream("Walter Winter".getBytes(StandardCharsets.UTF_8)));
     parts.add(new ODataResponsePart(Collections.singletonList(response), false));
 
     ODataResponse changeSetResponse = new ODataResponse();
@@ -348,7 +347,7 @@ public class BatchResponseSerializerTest {
     ODataResponse response = new ODataResponse();
     response.setStatusCode(HttpStatusCode.OK.getStatusCode());
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.TEXT_PLAIN.toContentTypeString());
-    response.setContent(IOUtils.toInputStream("Walter Winter", StandardCharsets.UTF_8));
+    response.setContent(new ByteArrayInputStream("Walter Winter".getBytes(StandardCharsets.UTF_8)));
     parts.add(new ODataResponsePart(Collections.singletonList(response), false));
 
     final BatchResponseSerializer serializer = new BatchResponseSerializer();
@@ -381,7 +380,7 @@ public class BatchResponseSerializerTest {
     response.setStatusCode(HttpStatusCode.OK.getStatusCode());
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.TEXT_PLAIN.toContentTypeString());
     String bigData = generateData(10000);
-    response.setContent(IOUtils.toInputStream(bigData, StandardCharsets.UTF_8));
+    response.setContent(new ByteArrayInputStream(bigData.getBytes(StandardCharsets.UTF_8)));
     parts.add(new ODataResponsePart(Collections.singletonList(response), false));
 
     final BatchResponseSerializer serializer = new BatchResponseSerializer();
@@ -619,7 +618,7 @@ public class BatchResponseSerializerTest {
     response.setStatusCode(HttpStatusCode.OK.getStatusCode());
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.TEXT_PLAIN.toContentTypeString());
     String bigData = generateData(10000);
-    response.setContent(IOUtils.toInputStream(bigData, StandardCharsets.UTF_8));
+    response.setContent(new ByteArrayInputStream(bigData.getBytes(StandardCharsets.UTF_8)));
     parts.add(new ODataResponsePart(response, false));
     
     ServiceMetadata serviceMetadata = mock(ServiceMetadata.class);

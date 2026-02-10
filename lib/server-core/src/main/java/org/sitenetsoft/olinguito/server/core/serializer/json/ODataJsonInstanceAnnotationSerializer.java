@@ -15,13 +15,14 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.codec.DecoderException;
 import org.sitenetsoft.olinguito.commons.api.Constants;
 import org.sitenetsoft.olinguito.commons.api.IConstants;
 import org.sitenetsoft.olinguito.commons.api.data.Annotation;
@@ -60,10 +61,9 @@ public class ODataJsonInstanceAnnotationSerializer {
 	 * @param json JsonGenerator
 	 * @throws IOException 
 	 * @throws SerializerException
-	 * @throws DecoderException
 	 */
 	public void writeInstanceAnnotationsOnEntity(final List<Annotation> annotations, final JsonGenerator json)
-			throws IOException, SerializerException, DecoderException {
+			throws IOException, SerializerException {
 		for (Annotation annotation : annotations) {
 			if (isODataMetadataFull) {
 				json.writeStringField(constants.getType(), "#" + annotation.getType());
@@ -80,10 +80,9 @@ public class ODataJsonInstanceAnnotationSerializer {
 	 * @param json JsonGenerator
 	 * @throws IOException
 	 * @throws SerializerException
-	 * @throws DecoderException
 	 */
 	public void writeInstanceAnnotationsOnProperties(final EdmProperty edmProperty, final Property property,
-			final JsonGenerator json) throws IOException, SerializerException, DecoderException {
+			final JsonGenerator json) throws IOException, SerializerException {
 		if (property != null) {
 			for (Annotation annotation : property.getAnnotations()) {
 				json.writeFieldName(edmProperty.getName() + "@" + annotation.getTerm());
@@ -94,7 +93,7 @@ public class ODataJsonInstanceAnnotationSerializer {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void writeInstanceAnnotation(final JsonGenerator json, Valuable annotation, String name)
-			throws IOException, SerializerException, DecoderException {
+			throws IOException, SerializerException {
 		try {
 			switch (annotation.getValueType()) {
 			case PRIMITIVE:
@@ -157,7 +156,7 @@ public class ODataJsonInstanceAnnotationSerializer {
 	}
 
 	private void writeInstanceAnnotOnComplexProperty(final JsonGenerator json, Valuable annotation,
-			ComplexValue complexValue) throws IOException, SerializerException, DecoderException {
+			ComplexValue complexValue) throws IOException, SerializerException {
 		json.writeStartObject();
 		if (isODataMetadataFull) {
 			json.writeStringField(constants.getType(), "#" + complexValue.getTypeName());

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -30,7 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataErrorDetail;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.server.api.OData;
@@ -56,7 +57,7 @@ public class ServerErrorSerializerTest {
     ODataServerError error = new ODataServerError();
     error.setMessage("ErrorMessage");
     InputStream stream = ser.error(error).getContent();
-    String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
+    String jsonString = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
     assertEquals("{\"error\":{\"code\":null,\"message\":\"ErrorMessage\"}}", jsonString);
   }
 
@@ -65,7 +66,7 @@ public class ServerErrorSerializerTest {
     ODataServerError error = new ODataServerError();
     error.setCode("Code").setMessage("ErrorMessage");
     InputStream stream = ser.error(error).getContent();
-    String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
+    String jsonString = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
     assertEquals("{\"error\":{\"code\":\"Code\",\"message\":\"ErrorMessage\"}}", jsonString);
   }
 
@@ -74,7 +75,7 @@ public class ServerErrorSerializerTest {
     ODataServerError error = new ODataServerError();
     error.setCode("Code").setMessage("ErrorMessage").setTarget("Target");
     InputStream stream = ser.error(error).getContent();
-    String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
+    String jsonString = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
     assertEquals("{\"error\":{\"code\":\"Code\",\"message\":\"ErrorMessage\",\"target\":\"Target\"}}", jsonString);
   }
 
@@ -88,7 +89,7 @@ public class ServerErrorSerializerTest {
     ODataServerError error = new ODataServerError();
     error.setMessage("ErrorMessage").setDetails(new ArrayList<ODataErrorDetail>());
     InputStream stream = ser.error(error).getContent();
-    String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
+    String jsonString = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
     assertEquals("{\"error\":{\"code\":null,\"message\":\"ErrorMessage\",\"details\":[]}}", jsonString);
   }
 
@@ -96,7 +97,7 @@ public class ServerErrorSerializerTest {
   public void nothingSetAtODataErrorObject() throws Exception {
     ODataServerError error = new ODataServerError();
     InputStream stream = ser.error(error).getContent();
-    String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
+    String jsonString = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
     assertEquals("{\"error\":{\"code\":null,\"message\":null}}", jsonString);
   }
 
@@ -106,7 +107,7 @@ public class ServerErrorSerializerTest {
     details.add(new ODataErrorDetail());
     ODataServerError error = new ODataServerError().setDetails(details);
     InputStream stream = ser.error(error).getContent();
-    String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
+    String jsonString = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
     assertEquals("{\"error\":{\"code\":null,\"message\":null,\"details\":[{\"code\":null,\"message\":null}]}}",
         jsonString);
   }

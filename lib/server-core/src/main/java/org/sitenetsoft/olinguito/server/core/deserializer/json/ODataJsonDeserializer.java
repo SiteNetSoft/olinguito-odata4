@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -35,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.commons.api.Constants;
 import org.sitenetsoft.olinguito.commons.api.IConstants;
 import org.sitenetsoft.olinguito.commons.api.constants.Constantsv00;
@@ -321,7 +322,7 @@ public class ODataJsonDeserializer implements ODataDeserializer {
 	  ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 	  byte[] inputContent = null;
     try {
-    	IOUtils.copy(stream, byteArrayOutputStream);
+    	stream.transferTo(byteArrayOutputStream);
     	// copy the content of input stream to reuse it
       	  inputContent = byteArrayOutputStream.toByteArray();
       	  if (inputContent.length > 0) {

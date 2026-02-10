@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
+ * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
  */
 package org.sitenetsoft.olinguito.server.core.serializer;
 
@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.commons.api.data.EntityMediaObject;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
@@ -46,19 +45,19 @@ public class FixedFormatSerializerTest {
 
   @Test
   public void binary() throws Exception {
-    assertEquals("ABC", IOUtils.toString(serializer.binary(new byte[] { 0x41, 0x42, 0x43 }), StandardCharsets.UTF_8));
+    assertEquals("ABC", new String(serializer.binary(new byte[] { 0x41, 0x42, 0x43 }).readAllBytes(), StandardCharsets.UTF_8));
   }
 
   @Test
   public void count() throws Exception {
-    assertEquals("42", IOUtils.toString(serializer.count(42), StandardCharsets.UTF_8));
+    assertEquals("42", new String(serializer.count(42).readAllBytes(), StandardCharsets.UTF_8));
   }
 
   @Test
   public void primitiveValue() throws Exception {
     final EdmPrimitiveType type = OData.newInstance().createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Int32);
-    assertEquals("42", IOUtils.toString(serializer.primitiveValue(type, 42,
-        PrimitiveValueSerializerOptions.with().nullable(true).build()), StandardCharsets.UTF_8));
+    assertEquals("42", new String(serializer.primitiveValue(type, 42,
+        PrimitiveValueSerializerOptions.with().nullable(true).build()).readAllBytes(), StandardCharsets.UTF_8));
   }
   
   @Test

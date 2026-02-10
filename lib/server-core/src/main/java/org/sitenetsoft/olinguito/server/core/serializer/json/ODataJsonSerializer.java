@@ -15,12 +15,15 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
@@ -28,8 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Base64;
+import java.util.Base64;
 import org.sitenetsoft.olinguito.commons.api.Constants;
 import org.sitenetsoft.olinguito.commons.api.IConstants;
 import org.sitenetsoft.olinguito.commons.api.constants.Constantsv00;
@@ -233,7 +235,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
 
       json.close();
       return SerializerResultImpl.with().content(buffer.getInputStream()).build();
-    } catch (final IOException | DecoderException e) {
+    } catch (final IOException | IllegalArgumentException e) {
       cachedException =
           new SerializerException(IO_EXCEPTION_TEXT, e, SerializerException.MessageKeys.IO_EXCEPTION);
       throw cachedException;
@@ -280,7 +282,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       writeNextLink(entitySet, json, pagination);
 
       json.close();
-    } catch (final IOException | DecoderException e) {
+    } catch (final IOException | IllegalArgumentException e) {
       cachedException =
           new SerializerException(IO_EXCEPTION_TEXT, e, SerializerException.MessageKeys.IO_EXCEPTION);
       throw cachedException;
@@ -308,7 +310,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
 
       json.close();
       return SerializerResultImpl.with().content(buffer.getInputStream()).build();
-    } catch (final IOException | DecoderException e) {
+    } catch (final IOException | IllegalArgumentException e) {
       cachedException =
           new SerializerException(IO_EXCEPTION_TEXT, e, SerializerException.MessageKeys.IO_EXCEPTION);
       throw cachedException;
@@ -329,7 +331,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
   protected void writeEntitySet(final ServiceMetadata metadata, final EdmEntityType entityType,
       final AbstractEntityCollection entitySet, final ExpandOption expand, Integer toDepth, final SelectOption select,
       final boolean onlyReference, final Set<String> ancestors, String name, final JsonGenerator json)
-          throws IOException, SerializerException, DecoderException {
+          throws IOException, SerializerException, IllegalArgumentException {
     json.writeStartArray();
     for (final Entity entity : entitySet) {
       if (onlyReference) {
@@ -382,7 +384,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       final ContextURL contextURL, final ExpandOption expand, Integer toDepth, 
       final SelectOption select, final boolean onlyReference, Set<String> ancestors, 
       String name, final JsonGenerator json)
-      throws IOException, SerializerException, DecoderException {
+      throws IOException, SerializerException, IllegalArgumentException {
     boolean cycle = false;
     if (expand != null) {
       if (ancestors == null) {
@@ -511,7 +513,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
   protected void writeProperties(final ServiceMetadata metadata, final EdmStructuredType type,
       final List<Property> properties,
       final SelectOption select, final JsonGenerator json, Linked linked, ExpandOption expand)
-      throws IOException, SerializerException, DecoderException {
+      throws IOException, SerializerException, IllegalArgumentException {
     final boolean all = ExpandSelectHelper.isAll(select);
     final Set<String> selected = all ? new HashSet<>() :
         ExpandSelectHelper.getSelectedPropertyNames(select.getSelectItems());
@@ -542,7 +544,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
   protected void writeNavigationProperties(final ServiceMetadata metadata,
       final EdmStructuredType type, final Linked linked, final ExpandOption expand, final Integer toDepth,
       final Set<String> ancestors, final String name, final JsonGenerator json) 
-          throws SerializerException, IOException, DecoderException {
+          throws SerializerException, IOException, IllegalArgumentException {
     if (isODataMetadataFull) {
       for (final String propertyName : type.getNavigationPropertyNames()) {
         final Link navigationLink = linked.getNavigationLink(propertyName);
@@ -599,7 +601,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
 
   private void writeExpandedStreamProperty(ExpandOption expand, String propertyName, EdmProperty edmProperty, 
       Linked linked, ExpandItem expandAll, JsonGenerator json) throws SerializerException, 
-      DecoderException, IOException {
+      IllegalArgumentException, IOException {
     final ExpandItem innerOptions = ExpandSelectHelper.getExpandItem(expand.getExpandItems(), propertyName);
     if (innerOptions != null || expandAll != null) {
       if(constants instanceof Constantsv00){
@@ -626,8 +628,10 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       }
       Link link = (Link) property.getValue();
       Property stream = link.getInlineEntity().getProperty(propertyName);
-      Base64 decoder = new Base64(true);
-      byte[] decodedBytes = (byte[]) decoder.decode(stream.getValue());
+      Object value = stream.getValue();
+      byte[] decodedBytes = value instanceof byte[]
+          ? decodeLenientUrlSafeBase64((byte[]) value)
+          : Base64.getUrlDecoder().decode((String) value);
       json.writeStringField(propertyName, new String(decodedBytes));     
     }
   }
@@ -637,7 +641,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       final Link navigationLink, final ExpandOption innerExpand,
       Integer toDepth, final SelectOption innerSelect, final CountOption innerCount,
       final boolean writeOnlyCount, final boolean writeOnlyRef, final Set<String> ancestors,
-      String name, final JsonGenerator json) throws IOException, SerializerException, DecoderException {
+      String name, final JsonGenerator json) throws IOException, SerializerException, IllegalArgumentException {
 
     if (property.isCollection()) {
       if (writeOnlyCount) {
@@ -689,7 +693,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       final EdmProperty edmProperty, final Property property,
       final Set<List<String>> selectedPaths, final JsonGenerator json, 
       Set<List<String>> expandedPaths, Linked linked, ExpandOption expand)
-      throws IOException, SerializerException, DecoderException  {
+      throws IOException, SerializerException, IllegalArgumentException  {
 	
 	instanceAnnotSerializer.writeInstanceAnnotationsOnProperties(edmProperty, property, json);
     boolean isStreamProperty = isStreamProperty(edmProperty);
@@ -757,7 +761,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
   private void writePropertyValue(final ServiceMetadata metadata, final EdmProperty edmProperty,
       final Property property, final Set<List<String>> selectedPaths, final JsonGenerator json, 
       Set<List<String>> expandedPaths, Linked linked, ExpandOption expand)
-      throws IOException, SerializerException, DecoderException {
+      throws IOException, SerializerException, IllegalArgumentException {
     final EdmType type = edmProperty.getType();
     try {
       if (edmProperty.isPrimitive()
@@ -775,7 +779,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
             final ExpandItem expandAll = ExpandSelectHelper.getExpandAll(expand);
             try {
               writeExpandedStreamProperty(expand, property.getName(), edmProperty, linked, expandAll, json);
-            } catch (DecoderException e) {
+            } catch (IllegalArgumentException e) {
               throw new SerializerException(IO_EXCEPTION_TEXT, e, SerializerException.MessageKeys.IO_EXCEPTION);
             }
           }
@@ -802,7 +806,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
   private void writeComplex(final ServiceMetadata metadata, final EdmComplexType type,
       final Property property, final Set<List<String>> selectedPaths, final JsonGenerator json, 
       Set<List<String>> expandedPaths, Linked linked, ExpandOption expand) 
-          throws IOException, SerializerException, DecoderException{
+          throws IOException, SerializerException, IllegalArgumentException{
         json.writeStartObject();        
         String derivedName = property.getType();
         EdmComplexType resolvedType = null;
@@ -876,7 +880,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       final Property property,
       final Set<List<String>> selectedPaths, final JsonGenerator json, 
       Set<List<String>> expandedPaths, Linked linked, ExpandOption expand)
-      throws IOException, SerializerException, DecoderException {
+      throws IOException, SerializerException, IllegalArgumentException {
     json.writeStartArray();
     EdmComplexType derivedType = type;
     Set<List<String>> expandedPaths1 = expandedPaths != null && !expandedPaths.isEmpty() ? 
@@ -1077,7 +1081,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       final EdmComplexType type, final List<Property> properties,
       final Set<List<String>> selectedPaths, final JsonGenerator json, 
       Set<List<String>> expandedPaths, Linked linked, ExpandOption expand, String complexPropName)
-      throws IOException, SerializerException, DecoderException {
+      throws IOException, SerializerException, IllegalArgumentException {
 
     if (null != expandedPaths) {
       for(List<String> paths : expandedPaths) {
@@ -1097,7 +1101,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
     }
     try {
       writeNavigationProperties(metadata, type, linked, expand, null, null, complexPropName, json);
-    } catch (DecoderException e) {
+    } catch (IllegalArgumentException e) {
       throw new SerializerException(IO_EXCEPTION_TEXT, e, SerializerException.MessageKeys.IO_EXCEPTION);
     }
   }
@@ -1203,7 +1207,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       json.close();
       outputStream.close();
       return SerializerResultImpl.with().content(buffer.getInputStream()).build();
-    } catch (final IOException | DecoderException e) {
+    } catch (final IOException | IllegalArgumentException e) {
       cachedException =
           new SerializerException(IO_EXCEPTION_TEXT, e, SerializerException.MessageKeys.IO_EXCEPTION);
       throw cachedException;
@@ -1285,7 +1289,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
 
       json.close();
       return SerializerResultImpl.with().content(buffer.getInputStream()).build();
-    } catch (final IOException | DecoderException e) {
+    } catch (final IOException | IllegalArgumentException e) {
       cachedException =
           new SerializerException(IO_EXCEPTION_TEXT, e, SerializerException.MessageKeys.IO_EXCEPTION);
       throw cachedException;
@@ -1409,5 +1413,42 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
     if (entitySet.getDeltaLink() != null && !pagination) {
       json.writeStringField(constants.getDeltaLink(), entitySet.getDeltaLink().toASCIIString());
  }
+  }
+
+  /**
+   * Leniently decodes a byte array as URL-safe Base64, silently skipping invalid characters.
+   * This replicates the behavior of Apache Commons {@code new Base64(true).decode(byte[])}.
+   */
+  private static byte[] decodeLenientUrlSafeBase64(byte[] input) {
+    byte[] buf = new byte[input.length + 2];
+    int len = 0;
+    for (byte b : input) {
+      if (b == '=') {
+        break;
+      }
+      byte c = b;
+      if (b == '-') {
+        c = '+';
+      } else if (b == '_') {
+        c = '/';
+      }
+      if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
+          || (c >= '0' && c <= '9') || c == '+' || c == '/') {
+        buf[len++] = c;
+      }
+    }
+    int remainder = len % 4;
+    if (remainder == 1) {
+      len--;
+    } else if (remainder == 2) {
+      buf[len++] = '=';
+      buf[len++] = '=';
+    } else if (remainder == 3) {
+      buf[len++] = '=';
+    }
+    if (len == 0) {
+      return new byte[0];
+    }
+    return Base64.getDecoder().decode(Arrays.copyOf(buf, len));
   }
 }

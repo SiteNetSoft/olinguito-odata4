@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
  */
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
@@ -25,7 +27,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
-import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataErrorDetail;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.server.api.OData;
@@ -47,7 +48,7 @@ public class ServerErrorXmlSerializerTest {
     ODataServerError error = new ODataServerError();
     error.setCode("Code").setMessage("ErrorMessage");
     InputStream stream = ser.error(error).getContent();
-    String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
+    String jsonString = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
     assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
         + "<error xmlns=\"http://docs.oasis-open.org/odata/ns/metadata\">"
         + "<code>Code</code>"
@@ -73,7 +74,7 @@ public class ServerErrorXmlSerializerTest {
         .setMessage("detail message")));
 
     InputStream stream = ser.error(error).getContent();
-    String jsonString = IOUtils.toString(stream, StandardCharsets.UTF_8);
+    String jsonString = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
     assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
         + "<error xmlns=\"http://docs.oasis-open.org/odata/ns/metadata\">"
         + "<code>code</code>"

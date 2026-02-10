@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
+ * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
  */
 package org.sitenetsoft.olinguito.server.core.serializer;
 
@@ -26,7 +26,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
-import org.apache.commons.io.IOUtils;
+import java.io.ByteArrayInputStream;
+
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
@@ -43,11 +44,11 @@ public class AsyncResponseSerializerTest {
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.APPLICATION_JSON.toContentTypeString());
     response.setHeader(HttpHeader.CONTENT_LENGTH, String.valueOf(200));
 
-    response.setContent(IOUtils.toInputStream("Walter Winter" + CRLF, StandardCharsets.UTF_8));
+    response.setContent(new ByteArrayInputStream(("Walter Winter" + CRLF).getBytes(StandardCharsets.UTF_8)));
 
     AsyncResponseSerializer serializer = new AsyncResponseSerializer();
     InputStream in = serializer.serialize(response);
-    String result = IOUtils.toString(in, StandardCharsets.UTF_8);
+    String result = new String(in.readAllBytes(), StandardCharsets.UTF_8);
     assertEquals("HTTP/1.1 200 OK" + CRLF
         + "Content-Type: application/json" + CRLF
         + "Content-Length: 200" + CRLF + CRLF
@@ -62,11 +63,11 @@ public class AsyncResponseSerializerTest {
     response.setHeader(HttpHeader.CONTENT_LENGTH, String.valueOf(0));
 
     String testData = testData();
-    response.setContent(IOUtils.toInputStream(testData, StandardCharsets.UTF_8));
+    response.setContent(new ByteArrayInputStream(testData.getBytes(StandardCharsets.UTF_8)));
 
     AsyncResponseSerializer serializer = new AsyncResponseSerializer();
     InputStream in = serializer.serialize(response);
-    String result = IOUtils.toString(in, StandardCharsets.UTF_8);
+    String result = new String(in.readAllBytes(), StandardCharsets.UTF_8);
     assertEquals("HTTP/1.1 202 Accepted" + CRLF
         + "Content-Type: application/json" + CRLF
         + "Content-Length: 0" + CRLF + CRLF
