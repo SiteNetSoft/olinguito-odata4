@@ -19,6 +19,7 @@
   under the License.
 
   Copyright 2026 SiteNetSoft - Replaced Cobertura with JaCoCo for code coverage
+  Copyright 2026 SiteNetSoft - Migrated XMLUnit 1.6 to 2.11.0, removed junit:junit dependency
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -71,15 +72,9 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
-    <!-- junit:junit needed for XMLUnit 1.x compatibility (junit.framework.Assert) -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>xmlunit</groupId>
-      <artifactId>xmlunit</artifactId>
+      <groupId>org.xmlunit</groupId>
+      <artifactId>xmlunit-core</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Migrated XMLUnit 1.6 to 2.11.0
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.xml;
 
@@ -45,24 +47,13 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.deserializer.ODataDeserializer;
 import org.sitenetsoft.olinguito.server.core.deserializer.AbstractODataDeserializerTest;
-import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
 
   private static final EdmEntityContainer entityContainer = edm.getEntityContainer();
   private final ODataDeserializer deserializer = new ODataXmlDeserializer(metadata);
-
-  @BeforeAll
-  public static void setup() {
-    XMLUnit.setIgnoreComments(true);
-    XMLUnit.setIgnoreAttributeOrder(true);
-    XMLUnit.setIgnoreWhitespace(true);
-    XMLUnit.setNormalizeWhitespace(true);
-    XMLUnit.setCompareUnmatched(false);
-  }
 
   protected Object valueOf(final String value, final EdmPrimitiveTypeKind kind) throws EdmPrimitiveTypeException {
     final EdmPrimitiveType type = OData.newInstance().createPrimitiveTypeInstance(kind);
