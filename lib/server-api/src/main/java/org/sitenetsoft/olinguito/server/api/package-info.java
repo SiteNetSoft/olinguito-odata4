@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed servlet references from Javadoc
  */
 /**
  * Olingo Server API
@@ -23,7 +25,7 @@
  * <p>This API is intended to help implementing an OData service.
  * An OData service consists of a metadata provider implementation and an
  * OData processor implementation.</p>
- * <p>An OData service can be exposed by a web application using the standard java servlet API.
+ * <p>An OData service can be exposed by a web application using a server adapter (servlet, Quarkus, etc.).
  * For further information, see the <a href="http://olingo.apache.org/doc/odata4/">Olingo
  * tutorials</a> on how to implement an OData service.</p>
  * <p>The main entry point is the org.sitenetsoft.olinguito.server.api.OData class.

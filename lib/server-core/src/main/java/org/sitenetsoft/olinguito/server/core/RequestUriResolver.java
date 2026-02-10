@@ -29,7 +29,7 @@ public final class RequestUriResolver {
             final String requestUri,
             final String queryString,
             final String contextPath,
-            final String servletPath,
+            final String handlerPath,
             final Object requestMappingAttr,
             final int split) {
 
@@ -45,8 +45,8 @@ public final class RequestUriResolver {
             int beginIndex = rawRequestUri.indexOf(requestMapping) + requestMapping.length();
             rawODataPath = rawRequestUri.substring(beginIndex);
 
-        } else if (servletPath != null && !"".equals(servletPath)) {
-            int beginIndex = rawRequestUri.indexOf(servletPath) + servletPath.length();
+        } else if (handlerPath != null && !"".equals(handlerPath)) {
+            int beginIndex = rawRequestUri.indexOf(handlerPath) + handlerPath.length();
             rawODataPath = rawRequestUri.substring(beginIndex);
 
         } else if (contextPath != null && !"".equals(contextPath)) {
