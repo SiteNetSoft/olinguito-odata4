@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
+ * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
  */
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
@@ -28,7 +28,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
-import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
@@ -73,7 +72,7 @@ public class ServiceDocumentXmlSerializerTest {
         + "metadata:context=\"http://host/svc/$metadata\">"
         + "<app:workspace><atom:title>service.test</atom:title></app:workspace>"
         + "</app:service>",
-        IOUtils.toString(serializer.serviceDocument(metadata, "http://host/svc").getContent(), StandardCharsets.UTF_8));
+        new String(serializer.serviceDocument(metadata, "http://host/svc").getContent().readAllBytes(), StandardCharsets.UTF_8));
   }
 
   @Test
@@ -82,7 +81,7 @@ public class ServiceDocumentXmlSerializerTest {
     ServiceMetadata serviceMetadata = new ServiceMetadataImpl(provider,
         Collections.emptyList(), null);
     InputStream metadataStream = serializer.serviceDocument(serviceMetadata, "http://host/svc").getContent();
-    String metadata = IOUtils.toString(metadataStream, StandardCharsets.UTF_8);
+    String metadata = new String(metadataStream.readAllBytes(), StandardCharsets.UTF_8);
     assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
         + "<app:service xmlns:atom=\"http://www.w3.org/2005/Atom\" "
         + "xmlns:app=\"http://www.w3.org/2007/app\" "

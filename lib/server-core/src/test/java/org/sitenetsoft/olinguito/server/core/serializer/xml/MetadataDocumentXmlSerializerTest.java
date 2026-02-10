@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
+ * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
  */
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
@@ -35,7 +35,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmAnnotation;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmComplexType;
@@ -127,7 +126,7 @@ public class MetadataDocumentXmlSerializerTest {
     assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
         + "<edmx:Edmx Version=\"4.0\" xmlns:edmx=\"http://docs.oasis-open.org/odata/ns/edmx\">"
         + "<edmx:DataServices></edmx:DataServices></edmx:Edmx>",
-        IOUtils.toString(serializer.metadataDocument(metadata).getContent(), StandardCharsets.UTF_8));
+        new String(serializer.metadataDocument(metadata).getContent().readAllBytes(), StandardCharsets.UTF_8));
   }
 
   /** Writes simplest (empty) Schema. */
@@ -148,7 +147,7 @@ public class MetadataDocumentXmlSerializerTest {
         + "<Schema xmlns=\"http://docs.oasis-open.org/odata/ns/edm\" Namespace=\"MyNamespace\"></Schema>"
         + "</edmx:DataServices>"
         + "</edmx:Edmx>",
-        IOUtils.toString(metadata, StandardCharsets.UTF_8));
+        new String(metadata.readAllBytes(), StandardCharsets.UTF_8));
   }
   
   /** Test if annotations on EnumType Members are added as children of the Member element
@@ -193,7 +192,7 @@ public class MetadataDocumentXmlSerializerTest {
     
     InputStream metadata = serializer.metadataDocument(serviceMetadata).getContent();
     assertNotNull(metadata);
-    String metadataString = IOUtils.toString(metadata, StandardCharsets.UTF_8);
+    String metadataString = new String(metadata.readAllBytes(), StandardCharsets.UTF_8);
     
     
     assertTrue(metadataString.contains(
@@ -265,7 +264,7 @@ public class MetadataDocumentXmlSerializerTest {
 
     InputStream metadata = serializer.metadataDocument(serviceMetadata).getContent();
     assertNotNull(metadata);
-    final String metadataString = IOUtils.toString(metadata, StandardCharsets.UTF_8);
+    final String metadataString = new String(metadata.readAllBytes(), StandardCharsets.UTF_8);
     // edmx reference
     assertTrue(metadataString.contains(
         "<edmx:Reference Uri=\"http://example.com\"></edmx:Reference>"));
@@ -435,7 +434,7 @@ public class MetadataDocumentXmlSerializerTest {
     CsdlEdmProvider provider = new LocalProvider();
     ServiceMetadata serviceMetadata = new ServiceMetadataImpl(provider, Collections.emptyList(), null);
     InputStream metadataStream = serializer.metadataDocument(serviceMetadata).getContent();
-    String metadata = IOUtils.toString(metadataStream, StandardCharsets.UTF_8);
+    String metadata = new String(metadataStream.readAllBytes(), StandardCharsets.UTF_8);
     assertNotNull(metadata);
     return metadata;
   }
@@ -488,7 +487,7 @@ public class MetadataDocumentXmlSerializerTest {
     when(schema.getComplexTypes()).thenReturn(complexTypes);
 
     InputStream metadataStream = serializer.metadataDocument(serviceMetadata).getContent();
-    String metadata = IOUtils.toString(metadataStream, StandardCharsets.UTF_8);
+    String metadata = new String(metadataStream.readAllBytes(), StandardCharsets.UTF_8);
     assertTrue(metadata.contains("<ComplexType Name=\"ComplexType\" Abstract=\"true\" OpenType=\"true\">"
         + "<Property Name=\"prop1\" Type=\"Edm.String\"></Property>"
         + "<Property Name=\"prop2\" Type=\"Edm.String\"></Property>"

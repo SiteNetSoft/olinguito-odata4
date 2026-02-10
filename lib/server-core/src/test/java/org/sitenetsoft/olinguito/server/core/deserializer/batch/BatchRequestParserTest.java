@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
+ * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.batch;
 
@@ -27,7 +27,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.sitenetsoft.olinguito.server.api.ODataRequest;
@@ -126,14 +125,14 @@ public class BatchRequestParserTest {
         Assertions.assertEquals(SERVICE_ROOT + "/" + PROPERTY_URI, request.getRawRequestUri());
         Assertions.assertEquals("", request.getRawQueryPath()); // No query parameter
 
-        Assertions.assertEquals("{\"value\":\"€ MODIFIED\"}" + CRLF, IOUtils.toString(request.getBody(), StandardCharsets.UTF_8));
+        Assertions.assertEquals("{\"value\":\"€ MODIFIED\"}" + CRLF, new String(request.getBody().readAllBytes(), StandardCharsets.UTF_8));
       }
     }
   }
 
   @Test
   public void imageInContent() throws Exception {
-    final String content = IOUtils.toString(readFile("/batchWithContent.batch"), StandardCharsets.UTF_8);
+    final String content = new String(readFile("/batchWithContent.batch").readAllBytes(), StandardCharsets.UTF_8);
     final String batch = "--" + BOUNDARY + CRLF
         + GET_REQUEST
         + "--" + BOUNDARY + CRLF
@@ -167,7 +166,7 @@ public class BatchRequestParserTest {
         Assertions.assertEquals("100000", request.getHeader(HttpHeader.CONTENT_LENGTH));
         Assertions.assertEquals("1", request.getHeader(HttpHeader.CONTENT_ID));
         Assertions.assertEquals("image/jpeg", request.getHeader(HttpHeader.CONTENT_TYPE));
-        Assertions.assertEquals(content, IOUtils.toString(request.getBody(), StandardCharsets.UTF_8));
+        Assertions.assertEquals(content, new String(request.getBody().readAllBytes(), StandardCharsets.UTF_8));
       }
     }
   }
@@ -195,7 +194,7 @@ public class BatchRequestParserTest {
     Assertions.assertEquals(1, parts.get(0).getRequests().size());
     InputStream body = parts.get(0).getRequests().get(0).getBody();
     Assertions.assertNotNull(body);
-    Assertions.assertArrayEquals(content, IOUtils.toByteArray(body));
+    Assertions.assertArrayEquals(content, body.readAllBytes());
   }
 
   @Test
@@ -235,7 +234,7 @@ public class BatchRequestParserTest {
         + GET_REQUEST
         + "--" + boundary + "--";
     final List<BatchRequestPart> batchRequestParts = new BatchParser().parseBatchRequest(
-        IOUtils.toInputStream(batch, StandardCharsets.UTF_8),
+        new ByteArrayInputStream(batch.getBytes(StandardCharsets.UTF_8)),
         boundary,
         BatchOptions.with().isStrict(true).rawBaseUri(SERVICE_ROOT).build());
 
@@ -433,7 +432,7 @@ public class BatchRequestParserTest {
     Assertions.assertEquals(HttpMethod.POST, requests.get(0).getRequests().get(0).getMethod());
     Assertions.assertEquals("/ESAllPrim", requests.get(0).getRequests().get(0).getRawODataPath());
     Assertions.assertEquals("{ \"PropertyString\": \"Foo\" }",
-        IOUtils.toString(requests.get(0).getRequests().get(0).getBody(), StandardCharsets.UTF_8));
+        new String(requests.get(0).getRequests().get(0).getBody().readAllBytes(), StandardCharsets.UTF_8));
 
     Assertions.assertEquals(HttpMethod.DELETE, requests.get(1).getRequests().get(0).getMethod());
     Assertions.assertEquals("/ESAllPrim(32767)", requests.get(1).getRequests().get(0).getRawODataPath());
@@ -441,12 +440,12 @@ public class BatchRequestParserTest {
     Assertions.assertEquals(HttpMethod.PATCH, requests.get(2).getRequests().get(0).getMethod());
     Assertions.assertEquals("/ESAllPrim(32767)", requests.get(2).getRequests().get(0).getRawODataPath());
     Assertions.assertEquals("{ \"PropertyString\": \"Foo\" }",
-        IOUtils.toString(requests.get(2).getRequests().get(0).getBody(), StandardCharsets.UTF_8));
+        new String(requests.get(2).getRequests().get(0).getBody().readAllBytes(), StandardCharsets.UTF_8));
 
     Assertions.assertEquals(HttpMethod.PUT, requests.get(3).getRequests().get(0).getMethod());
     Assertions.assertEquals("/ESAllPrim(32767)", requests.get(3).getRequests().get(0).getRawODataPath());
     Assertions.assertEquals("{ \"PropertyString\": \"Foo\" }",
-        IOUtils.toString(requests.get(3).getRequests().get(0).getBody(), StandardCharsets.UTF_8));
+        new String(requests.get(3).getRequests().get(0).getBody().readAllBytes(), StandardCharsets.UTF_8));
 
     Assertions.assertEquals(HttpMethod.GET, requests.get(4).getRequests().get(0).getMethod());
     Assertions.assertEquals("/ESAllPrim(32767)", requests.get(4).getRequests().get(0).getRawODataPath());
@@ -733,7 +732,7 @@ public class BatchRequestParserTest {
     Assertions.assertEquals(1, part.getRequests().size());
 
     final ODataRequest request = part.getRequests().get(0);
-    Assertions.assertEquals("{\"PropertyString\":\"new\"}", IOUtils.toString(request.getBody(), StandardCharsets.UTF_8));
+    Assertions.assertEquals("{\"PropertyString\":\"new\"}", new String(request.getBody().readAllBytes(), StandardCharsets.UTF_8));
   }
 
   @Test
@@ -763,7 +762,7 @@ public class BatchRequestParserTest {
     Assertions.assertEquals(1, part.getRequests().size());
 
     final ODataRequest request = part.getRequests().get(0);
-    Assertions.assertEquals("{\"Property", IOUtils.toString(request.getBody(), StandardCharsets.UTF_8));
+    Assertions.assertEquals("{\"Property", new String(request.getBody().readAllBytes(), StandardCharsets.UTF_8));
   }
 
   @Test
@@ -812,7 +811,7 @@ public class BatchRequestParserTest {
     Assertions.assertEquals(1, part.getRequests().size());
 
     final ODataRequest changeRequest = part.getRequests().get(0);
-    Assertions.assertEquals("{\"PropertyString\":\"new\"}", IOUtils.toString(changeRequest.getBody(), StandardCharsets.UTF_8));
+    Assertions.assertEquals("{\"PropertyString\":\"new\"}", new String(changeRequest.getBody().readAllBytes(), StandardCharsets.UTF_8));
     Assertions.assertEquals(APPLICATION_JSON, changeRequest.getHeader(HttpHeader.CONTENT_TYPE));
     Assertions.assertEquals(HttpMethod.PATCH, changeRequest.getMethod());
   }
@@ -987,8 +986,8 @@ public class BatchRequestParserTest {
     Assertions.assertEquals(2, changeSetPart.getRequests().size());
     Assertions.assertEquals("iVBORw0KGgoAAAANSUhEUgAAABQAAAAMCAIAAADtbgqsAAAABmJLR0QA/wD/AP+gvaeTAAAAH0lE"
         + "QVQokWNgGHmA8S4FmpkosXngNDP+PzdANg+cZgBqiQK5mkdWWgAAAABJRU5ErkJggg==" + CRLF,
-        IOUtils.toString(changeSetPart.getRequests().get(0).getBody(), StandardCharsets.UTF_8));
-    Assertions.assertEquals("{\"value\":5}", IOUtils.toString(changeSetPart.getRequests().get(1).getBody(), StandardCharsets.UTF_8));
+        new String(changeSetPart.getRequests().get(0).getBody().readAllBytes(), StandardCharsets.UTF_8));
+    Assertions.assertEquals("{\"value\":5}", new String(changeSetPart.getRequests().get(1).getBody().readAllBytes(), StandardCharsets.UTF_8));
   }
 
   @Test
@@ -1089,9 +1088,9 @@ public class BatchRequestParserTest {
     Assertions.assertEquals(2, changeSetPart.getRequests().size());
     Assertions.assertEquals("iVBORw0KGgoAAAANSUhEUgAAABQAAAAMCAIAAADtbgqsAAAABmJLR0QA/wD/AP+gvaeTAAAAH0lE"
         + "QVQokWNgGHmA8S4FmpkosXngNDP+PzdANg+cZgBqiQK5mkdWWgAAAABJRU5ErkJggg==" + CRLF,
-        IOUtils.toString(changeSetPart.getRequests().get(0).getBody(), StandardCharsets.UTF_8));
+        new String(changeSetPart.getRequests().get(0).getBody().readAllBytes(), StandardCharsets.UTF_8));
     Assertions.assertEquals("{\"value\":5}",
-        IOUtils.toString(changeSetPart.getRequests().get(1).getBody(), StandardCharsets.UTF_8));
+        new String(changeSetPart.getRequests().get(1).getBody().readAllBytes(), StandardCharsets.UTF_8));
   }
 
   @Test
@@ -1163,12 +1162,12 @@ public class BatchRequestParserTest {
   }
 
   private List<BatchRequestPart> parse(final String batch, final boolean isStrict) throws BatchDeserializerException {
-    return parse(IOUtils.toInputStream(batch, StandardCharsets.UTF_8), isStrict);
+    return parse(new ByteArrayInputStream(batch.getBytes(StandardCharsets.UTF_8)), isStrict);
   }
 
   private void parseInvalidBatchBody(final String batch, final MessageKeys key, final boolean isStrict) {
     try {
-      new BatchParser().parseBatchRequest(IOUtils.toInputStream(batch, StandardCharsets.UTF_8), BOUNDARY,
+      new BatchParser().parseBatchRequest(new ByteArrayInputStream(batch.getBytes(StandardCharsets.UTF_8)), BOUNDARY,
           BatchOptions.with().isStrict(isStrict).rawBaseUri(SERVICE_ROOT).build());
       Assertions.fail("No exception thrown. Expected: " + key);
     } catch (BatchDeserializerException e) {

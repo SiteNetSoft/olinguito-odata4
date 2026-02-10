@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
  */
 package org.sitenetsoft.olinguito.server.core.debug;
 
@@ -22,7 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 
-import org.apache.commons.codec.binary.Base64;
+import java.util.Base64;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.sitenetsoft.olinguito.server.api.ODataResponse;
 import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
@@ -112,7 +114,7 @@ public class DebugTabBody implements DebugTab {
     try {
       final byte[] content = streamToBytes(response.getContent());
       return responseContent == ResponseContent.IMAGE ?
-          Base64.encodeBase64String(content) :
+          Base64.getEncoder().encodeToString(content) :
           new String(content, "UTF-8");
     } catch (final IOException e) {
       return "Could not parse Body for Debug Output";

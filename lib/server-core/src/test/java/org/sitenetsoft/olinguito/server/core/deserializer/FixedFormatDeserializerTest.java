@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
+ * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
  */
 package org.sitenetsoft.olinguito.server.core.deserializer;
 
@@ -25,7 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.io.IOUtils;
+import java.io.ByteArrayInputStream;
+
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
 import org.sitenetsoft.olinguito.server.api.OData;
@@ -41,18 +42,18 @@ public class FixedFormatDeserializerTest {
   @Test
   public void binary() throws Exception {
     assertArrayEquals(new byte[] { 0x41, 0x42, 0x43 },
-        deserializer.binary(IOUtils.toInputStream("ABC", StandardCharsets.UTF_8)));
+        deserializer.binary(new ByteArrayInputStream("ABC".getBytes(StandardCharsets.UTF_8))));
   }
 
   @Test
   public void binaryLong() throws Exception {
     assertEquals(4 * 3 * 26,
-        deserializer.binary(IOUtils.toInputStream(
+        deserializer.binary(new ByteArrayInputStream((
             "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"
                 + "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"
                 + "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                + "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ",
-                StandardCharsets.UTF_8)).length);
+                + "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ")
+                .getBytes(StandardCharsets.UTF_8))).length);
   }
 
   @Test
@@ -60,7 +61,7 @@ public class FixedFormatDeserializerTest {
     EdmProperty property = Mockito.mock(EdmProperty.class);
     Mockito.when(property.getType()).thenReturn(oData.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Int64));
     Mockito.when(property.isPrimitive()).thenReturn(true);
-    assertEquals(42L, deserializer.primitiveValue(IOUtils.toInputStream("42", StandardCharsets.UTF_8), property));
+    assertEquals(42L, deserializer.primitiveValue(new ByteArrayInputStream("42".getBytes(StandardCharsets.UTF_8)), property));
   }
 
   @Test
@@ -73,6 +74,6 @@ public class FixedFormatDeserializerTest {
     final String value = "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ\n"
         + "ÄÖÜ€﷼\n"
         + String.valueOf(Character.toChars(0x1F603));
-    assertEquals(value, deserializer.primitiveValue(IOUtils.toInputStream(value, StandardCharsets.UTF_8), property));
+    assertEquals(value, deserializer.primitiveValue(new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8)), property));
   }
 }
