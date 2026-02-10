@@ -15,19 +15,28 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
  */
 package org.sitenetsoft.olinguito.samples.client.core.http;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.net.URI;
 import java.security.cert.X509Certificate;
+
 import org.apache.http.client.HttpClient;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.BasicClientConnectionManager;
-import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.sitenetsoft.olinguito.client.core.http.AbstractHttpClientFactory;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
@@ -47,31 +56,39 @@ import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
 public class SocketFactoryHttpClientFactory extends AbstractHttpClientFactory {
 
   @Override
-  public DefaultHttpClient create(final HttpMethod method, final URI uri) {
-    final TrustStrategy acceptTrustStrategy = new TrustStrategy() {
-      @Override
-      public boolean isTrusted(final X509Certificate[] certificate, final String authType) {
-        return true;
-      }
-    };
-
-    final SchemeRegistry registry = new SchemeRegistry();
+  public CloseableHttpClient create(final HttpMethod method, final URI uri) {
     try {
-      final SSLSocketFactory ssf =
-              new SSLSocketFactory(acceptTrustStrategy, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-      registry.register(new Scheme(uri.getScheme(), uri.getPort(), ssf));
+      final TrustStrategy acceptTrustStrategy = (certificate, authType) -> true;
+
+      final SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(
+              new SSLContextBuilder().loadTrustMaterial(null, acceptTrustStrategy).build(),
+              NoopHostnameVerifier.INSTANCE);
+
+      final Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
+              .register("http", PlainConnectionSocketFactory.getSocketFactory())
+              .register("https", sslSocketFactory)
+              .build();
+
+      final PoolingHttpClientConnectionManager connectionManager =
+              new PoolingHttpClientConnectionManager(registry);
+
+      return HttpClientBuilder.create()
+              .setUserAgent(USER_AGENT)
+              .setConnectionManager(connectionManager)
+              .build();
     } catch (Exception e) {
       throw new ODataRuntimeException(e);
     }
-
-    final DefaultHttpClient httpClient = new DefaultHttpClient(new BasicClientConnectionManager(registry));
-    httpClient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, USER_AGENT);
-
-    return httpClient;
   }
 
   @Override
   public void close(final HttpClient httpClient) {
-    httpClient.getConnectionManager().shutdown();
+    if (httpClient instanceof Closeable closeable) {
+      try {
+        closeable.close();
+      } catch (IOException e) {
+        // silently close
+      }
+    }
   }
 }

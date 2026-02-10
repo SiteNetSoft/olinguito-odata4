@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -16,11 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
  */
 package org.sitenetsoft.olinguito.fit;
 
 import java.net.URI;
+import java.util.concurrent.atomic.AtomicReference;
 
 import jakarta.ws.rs.core.MediaType;
 
@@ -35,18 +36,22 @@ import org.apache.cxf.rs.security.oauth2.grants.refresh.RefreshTokenGrant;
 import org.apache.cxf.rs.security.oauth2.provider.OAuthServiceException;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.params.ClientPNames;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.sitenetsoft.olinguito.client.core.http.AbstractOAuth2HttpClientFactory;
 import org.sitenetsoft.olinguito.client.core.http.OAuth2Exception;
 import org.sitenetsoft.olinguito.fit.rest.OAuth2Provider;
 import org.apache.cxf.rs.security.oauth2.client.Consumer;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -87,9 +92,12 @@ public class CXFOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFactory 
         "foo bar");
 
     // Disable automatic redirects handling
-    final HttpParams params = new BasicHttpParams();
-    params.setParameter(ClientPNames.HANDLE_REDIRECTS, false);
-    final DefaultHttpClient httpClient = new DefaultHttpClient(params);
+    final RequestConfig config = RequestConfig.custom()
+            .setRedirectsEnabled(false)
+            .build();
+    final HttpClient httpClient = HttpClientBuilder.create()
+            .setDefaultRequestConfig(config)
+            .build();
 
     JsonNode oAuthAuthorizationData;
     String authenticityCookie;
@@ -154,15 +162,12 @@ public class CXFOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFactory 
   }
 
   @Override
-  protected void accessToken(final DefaultHttpClient client) throws OAuth2Exception {
-    client.addRequestInterceptor((request, context) -> {
-      request.removeHeaders(HttpHeaders.AUTHORIZATION);
-      request.addHeader(HttpHeaders.AUTHORIZATION, OAuthClientUtils.createAuthorizationHeader(accessToken));
-    });
+  protected void accessToken(final HttpClient client) throws OAuth2Exception {
+    // Token header is added via the builder interceptor — no action needed on already-built client
   }
 
   @Override
-  protected void refreshToken(final DefaultHttpClient client) throws OAuth2Exception {
+  protected void refreshToken(final HttpClient client) throws OAuth2Exception {
     final String refreshToken = accessToken.getRefreshToken();
     if (refreshToken == null) {
       throw new OAuth2Exception("No OAuth2 refresh token");
@@ -175,6 +180,46 @@ public class CXFOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFactory 
     } catch (OAuthServiceException e) {
       throw new OAuth2Exception(e);
     }
+  }
+
+  @Override
+  public HttpClient create(final HttpMethod method, final URI uri) {
+    if (!isInited()) {
+      init();
+    }
+
+    final AtomicReference<HttpClient> clientRef = new AtomicReference<>();
+
+    final HttpClientBuilder builder = createWrappedBuilder(method, uri);
+
+    // Add the OAuth2 Authorization header
+    builder.addInterceptorFirst((HttpRequestInterceptor) (request, context) -> {
+      request.removeHeaders(HttpHeaders.AUTHORIZATION);
+      request.addHeader(HttpHeaders.AUTHORIZATION, OAuthClientUtils.createAuthorizationHeader(accessToken));
+    });
+
+    // Track current request for retry
+    builder.addInterceptorLast((HttpRequestInterceptor) (request, context) -> {
+      if (request instanceof HttpUriRequest) {
+        currentRequest = (HttpUriRequest) request;
+      } else {
+        currentRequest = null;
+      }
+    });
+
+    // Handle 401 by refreshing the token
+    builder.addInterceptorLast((HttpResponseInterceptor) (response, context) -> {
+      if (response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+        refreshToken(clientRef.get());
+        if (currentRequest != null) {
+          clientRef.get().execute(currentRequest);
+        }
+      }
+    });
+
+    final HttpClient httpClient = builder.build();
+    clientRef.set(httpClient);
+    return httpClient;
   }
 
 }

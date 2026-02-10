@@ -15,12 +15,14 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
  */
 package org.sitenetsoft.olinguito.samples.client.core.http;
 
 import java.net.URI;
 import org.apache.http.client.UserTokenHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.sitenetsoft.olinguito.client.core.http.DefaultHttpClientFactory;
@@ -39,19 +41,8 @@ import org.sitenetsoft.olinguito.client.core.http.DefaultHttpClientFactory;
 public class StatefulHttpClientFactory extends DefaultHttpClientFactory {
 
   @Override
-  public DefaultHttpClient create(final HttpMethod method, final URI uri) {
-    final DefaultHttpClient httpClient = super.create(method, uri);
-
-    httpClient.setUserTokenHandler(new UserTokenHandler() {
-
-      @Override
-      public Object getUserToken(final HttpContext context) {
-        return context.getAttribute("my-token");
-      }
-
-    });
-
-    return httpClient;
+  protected HttpClientBuilder createBuilder(final HttpMethod method, final URI uri) {
+    return super.createBuilder(method, uri).setUserTokenHandler(context -> context.getAttribute("my-token"));
   }
 
 }
