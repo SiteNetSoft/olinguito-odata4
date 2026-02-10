@@ -49,6 +49,12 @@
     </dependency>
     <dependency>
       <groupId>org.sitenetsoft.olinguito</groupId>
+      <artifactId>server-adapter-netty</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-server-tecsvc</artifactId>
       <version>${project.version}</version>
       <classifier>classes</classifier>

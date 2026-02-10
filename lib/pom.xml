@@ -47,6 +47,7 @@
     <module>server-core-ext</module>
     <module>test-fixtures</module>
     <module>server-adapter-servlet</module>
+    <module>server-adapter-netty</module>
     <module>server-adapter-quarkus</module>
     <module>server-tecsvc</module>
     <module>server-tecsvc-quarkus</module>
@@ -109,6 +110,7 @@
         <module>server-core-ext</module>
         <module>test-fixtures</module>
         <module>server-adapter-servlet</module>
+        <module>server-adapter-netty</module>
         <module>server-tecsvc</module>
         <module>server-test</module>
       </modules>
