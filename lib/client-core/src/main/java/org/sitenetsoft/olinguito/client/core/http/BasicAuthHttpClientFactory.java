@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
  */
 package org.sitenetsoft.olinguito.client.core.http;
 
@@ -22,7 +24,9 @@ import java.net.URI;
 
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 /**
@@ -40,13 +44,11 @@ public class BasicAuthHttpClientFactory extends DefaultHttpClientFactory {
   }
 
   @Override
-  public DefaultHttpClient create(final HttpMethod method, final URI uri) {
-    final DefaultHttpClient httpclient = super.create(method, uri);
-
-    httpclient.getCredentialsProvider().setCredentials(
+  protected HttpClientBuilder createBuilder(final HttpMethod method, final URI uri) {
+    final CredentialsProvider provider = new BasicCredentialsProvider();
+    provider.setCredentials(
             new AuthScope(uri.getHost(), uri.getPort()),
             new UsernamePasswordCredentials(username, password));
-
-    return httpclient;
+    return super.createBuilder(method, uri).setDefaultCredentialsProvider(provider);
   }
 }

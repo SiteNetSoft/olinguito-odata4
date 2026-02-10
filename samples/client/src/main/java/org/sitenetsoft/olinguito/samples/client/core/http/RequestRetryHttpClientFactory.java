@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
  */
 package org.sitenetsoft.olinguito.samples.client.core.http;
 
@@ -27,7 +29,7 @@ import javax.net.ssl.SSLException;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
 import org.apache.http.client.HttpRequestRetryHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
@@ -42,7 +44,7 @@ import org.sitenetsoft.olinguito.client.core.http.DefaultHttpClientFactory;
 public class RequestRetryHttpClientFactory extends DefaultHttpClientFactory {
 
   @Override
-  public DefaultHttpClient create(final HttpMethod method, final URI uri) {
+  protected HttpClientBuilder createBuilder(final HttpMethod method, final URI uri) {
     final HttpRequestRetryHandler myRetryHandler = new HttpRequestRetryHandler() {
 
       @Override
@@ -70,7 +72,7 @@ public class RequestRetryHttpClientFactory extends DefaultHttpClientFactory {
         final HttpRequest request = (HttpRequest) context.getAttribute(ExecutionContext.HTTP_REQUEST);
         boolean idempotent = !(request instanceof HttpEntityEnclosingRequest);
         if (idempotent) {
-          // Retry if the request is considered idempotent 
+          // Retry if the request is considered idempotent
           return true;
         }
         return false;
@@ -78,9 +80,7 @@ public class RequestRetryHttpClientFactory extends DefaultHttpClientFactory {
 
     };
 
-    final DefaultHttpClient httpClient = super.create(method, uri);
-    httpClient.setHttpRequestRetryHandler(myRetryHandler);
-    return httpClient;
+    return super.createBuilder(method, uri).setRetryHandler(myRetryHandler);
   }
 
 }

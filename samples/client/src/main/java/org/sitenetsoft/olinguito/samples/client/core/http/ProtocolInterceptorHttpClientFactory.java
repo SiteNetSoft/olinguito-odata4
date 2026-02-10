@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
  */
 package org.sitenetsoft.olinguito.samples.client.core.http;
 
@@ -25,7 +27,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.sitenetsoft.olinguito.client.core.http.DefaultHttpClientFactory;
@@ -46,30 +48,15 @@ import org.sitenetsoft.olinguito.client.core.http.DefaultHttpClientFactory;
 public class ProtocolInterceptorHttpClientFactory extends DefaultHttpClientFactory {
 
   @Override
-  public DefaultHttpClient create(final HttpMethod method, final URI uri) {
-
-    final DefaultHttpClient httpClient = super.create(method, uri);
-
-    httpClient.addRequestInterceptor(new HttpRequestInterceptor() {
-
-      @Override
-      public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
-        request.addHeader("CUSTOM_HEADER", "CUSTOM VALUE");
-      }
-
-    });
-
-    httpClient.addResponseInterceptor(new HttpResponseInterceptor() {
-
-      @Override
-      public void process(final HttpResponse response, final HttpContext context) throws HttpException, IOException {
-        if ("ANOTHER CUSTOM VALUE".equals(response.getFirstHeader("ANOTHER_CUSTOM_HEADER"))) {
-          // do something
-        }
-      }
-    });
-
-    return httpClient;
+  protected HttpClientBuilder createBuilder(final HttpMethod method, final URI uri) {
+    return super.createBuilder(method, uri)
+        .addInterceptorFirst((HttpRequestInterceptor) (request, context) ->
+            request.addHeader("CUSTOM_HEADER", "CUSTOM VALUE"))
+        .addInterceptorLast((HttpResponseInterceptor) (response, context) -> {
+          if ("ANOTHER CUSTOM VALUE".equals(response.getFirstHeader("ANOTHER_CUSTOM_HEADER"))) {
+            // do something
+          }
+        });
   }
 
 }

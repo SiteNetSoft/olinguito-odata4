@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
  */
 package org.sitenetsoft.olinguito.samples.client.core.http;
 
@@ -22,7 +24,7 @@ import java.net.URI;
 
 import org.apache.http.client.CookieStore;
 import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.sitenetsoft.olinguito.client.core.http.DefaultHttpClientFactory;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
@@ -36,7 +38,7 @@ import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 public class CookieHttpClientFactory extends DefaultHttpClientFactory {
 
   @Override
-  public DefaultHttpClient create(final HttpMethod method, final URI uri) {
+  protected HttpClientBuilder createBuilder(final HttpMethod method, final URI uri) {
     final CookieStore cookieStore = new BasicCookieStore();
 
     // Populate cookies if needed
@@ -46,10 +48,7 @@ public class CookieHttpClientFactory extends DefaultHttpClientFactory {
     cookie.setPath("/");
     cookieStore.addCookie(cookie);
 
-    final DefaultHttpClient httpClient = super.create(method, uri);
-    httpClient.setCookieStore(cookieStore);
-
-    return httpClient;
+    return super.createBuilder(method, uri).setDefaultCookieStore(cookieStore);
   }
 
 }

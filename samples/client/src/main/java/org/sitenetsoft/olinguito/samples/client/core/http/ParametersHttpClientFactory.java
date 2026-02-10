@@ -15,15 +15,15 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
  */
 package org.sitenetsoft.olinguito.samples.client.core.http;
 
 import java.net.URI;
 
-import org.apache.http.HttpVersion;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.sitenetsoft.olinguito.client.core.http.DefaultHttpClientFactory;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
@@ -38,17 +38,14 @@ import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 public class ParametersHttpClientFactory extends DefaultHttpClientFactory {
 
   @Override
-  public DefaultHttpClient create(final HttpMethod method, final URI uri) {
-    final DefaultHttpClient httpClient = super.create(method, uri);
-
-    httpClient.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_0);
-    httpClient.getParams().setParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET, "UTF-8");
-
+  protected HttpClientBuilder createBuilder(final HttpMethod method, final URI uri) {
     final int timeout = 1000;
-    HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), timeout);
-    HttpConnectionParams.setSoTimeout(httpClient.getParams(), timeout);
+    final RequestConfig config = RequestConfig.custom()
+        .setConnectTimeout(timeout)
+        .setSocketTimeout(timeout)
+        .build();
 
-    return httpClient;
+    return super.createBuilder(method, uri).setDefaultRequestConfig(config);
   }
 
 }

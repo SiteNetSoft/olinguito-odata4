@@ -15,12 +15,13 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
  */
 package org.sitenetsoft.olinguito.samples.client.core.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
@@ -28,22 +29,20 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
-import org.apache.http.HttpException;
 import org.apache.http.HttpHeaders;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.sitenetsoft.olinguito.client.core.http.AbstractOAuth2HttpClientFactory;
 import org.sitenetsoft.olinguito.client.core.http.OAuth2Exception;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 /**
  * Shows how to work with OAuth 2.0 native applications protected by Azure Active Directory.
@@ -76,7 +75,7 @@ public class AzureADOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFact
     return token != null;
   }
 
-  private void fetchAccessToken(final DefaultHttpClient httpClient, final List<BasicNameValuePair> data) {
+  private void fetchAccessToken(final HttpClient httpClient, final List<BasicNameValuePair> data) {
     token = null;
 
     InputStream tokenResponse = null;
@@ -97,7 +96,7 @@ public class AzureADOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFact
 
   @Override
   protected void init() throws OAuth2Exception {
-    final DefaultHttpClient httpClient = wrapped.create(null, null);
+    final HttpClient httpClient = wrapped.create(null, null);
 
     // 1. access the OAuth2 grant service (with authentication)
     String code = null;
@@ -190,19 +189,12 @@ public class AzureADOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFact
   }
 
   @Override
-  protected void accessToken(final DefaultHttpClient client) throws OAuth2Exception {
-    client.addRequestInterceptor(new HttpRequestInterceptor() {
-
-      @Override
-      public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
-        request.removeHeaders(HttpHeaders.AUTHORIZATION);
-        request.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token.get("access_token").asText());
-      }
-    });
+  protected void accessToken(final HttpClient client) throws OAuth2Exception {
+    // Token header is added via the builder interceptor — no action needed on already-built client
   }
 
   @Override
-  protected void refreshToken(final DefaultHttpClient client) throws OAuth2Exception {
+  protected void refreshToken(final HttpClient client) throws OAuth2Exception {
     final List<BasicNameValuePair> data = new ArrayList<BasicNameValuePair>();
     data.add(new BasicNameValuePair("grant_type", "refresh_token"));
     data.add(new BasicNameValuePair("refresh_token", token.get("refresh_token").asText()));
@@ -212,6 +204,49 @@ public class AzureADOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFact
     if (token == null) {
       throw new OAuth2Exception("No OAuth2 refresh token");
     }
+  }
+
+  @Override
+  public HttpClient create(final HttpMethod method, final URI uri) {
+    if (!isInited()) {
+      init();
+    }
+
+    final java.util.concurrent.atomic.AtomicReference<HttpClient> clientRef =
+            new java.util.concurrent.atomic.AtomicReference<>();
+
+    final org.apache.http.impl.client.HttpClientBuilder builder = createWrappedBuilder(method, uri);
+
+    // Add the Bearer token Authorization header
+    builder.addInterceptorFirst((HttpRequestInterceptor) (request, context) -> {
+      request.removeHeaders(HttpHeaders.AUTHORIZATION);
+      if (token != null) {
+        request.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token.get("access_token").asText());
+      }
+    });
+
+    // Track current request for retry
+    builder.addInterceptorLast((HttpRequestInterceptor) (request, context) -> {
+      if (request instanceof org.apache.http.client.methods.HttpUriRequest) {
+        currentRequest = (org.apache.http.client.methods.HttpUriRequest) request;
+      } else {
+        currentRequest = null;
+      }
+    });
+
+    // Handle 401 by refreshing the token
+    builder.addInterceptorLast((org.apache.http.HttpResponseInterceptor) (response, context) -> {
+      if (response.getStatusLine().getStatusCode() == org.apache.http.HttpStatus.SC_UNAUTHORIZED) {
+        refreshToken(clientRef.get());
+        if (currentRequest != null) {
+          clientRef.get().execute(currentRequest);
+        }
+      }
+    });
+
+    final HttpClient httpClient = builder.build();
+    clientRef.set(httpClient);
+    return httpClient;
   }
 
 }

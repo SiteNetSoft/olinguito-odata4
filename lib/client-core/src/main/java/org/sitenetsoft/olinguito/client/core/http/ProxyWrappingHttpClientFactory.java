@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
  */
 package org.sitenetsoft.olinguito.client.core.http;
 
@@ -23,9 +25,10 @@ import java.net.URI;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
-import org.apache.http.conn.params.ConnRoutePNames;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.sitenetsoft.olinguito.client.api.http.HttpClientFactory;
 import org.sitenetsoft.olinguito.client.api.http.WrappingHttpClientFactory;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
@@ -72,22 +75,17 @@ public class ProxyWrappingHttpClientFactory implements WrappingHttpClientFactory
 
   @Override
   public HttpClient create(final HttpMethod method, final URI uri) {
-    // Use wrapped factory to obtain an httpclient instance for given method and uri
-    final DefaultHttpClient httpclient = wrapped.create(method, uri);
-
     final HttpHost proxyHost = new HttpHost(proxy.getHost(), proxy.getPort());
+    final HttpClientBuilder builder = wrapped.createBuilder(method, uri).setProxy(proxyHost);
 
-    // Sets usage of HTTP proxy
-    httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxyHost);
-
-    // Sets proxy authentication, if credentials were provided
     if (proxyUsername != null && proxyPassword != null) {
-      httpclient.getCredentialsProvider().setCredentials(
-              new AuthScope(proxyHost),
+      final CredentialsProvider provider = new BasicCredentialsProvider();
+      provider.setCredentials(new AuthScope(proxyHost),
               new UsernamePasswordCredentials(proxyUsername, proxyPassword));
+      builder.setDefaultCredentialsProvider(provider);
     }
 
-    return httpclient;
+    return builder.build();
   }
 
   @Override

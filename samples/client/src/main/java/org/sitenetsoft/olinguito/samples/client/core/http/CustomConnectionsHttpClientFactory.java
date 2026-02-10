@@ -15,30 +15,23 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
  */
 package org.sitenetsoft.olinguito.samples.client.core.http;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.net.URI;
 
 import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpResponseFactory;
 import org.apache.http.ParseException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.conn.ClientConnectionOperator;
-import org.apache.http.conn.OperatedClientConnection;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.BasicClientConnectionManager;
-import org.apache.http.impl.conn.DefaultClientConnection;
-import org.apache.http.impl.conn.DefaultClientConnectionOperator;
-import org.apache.http.impl.conn.DefaultHttpResponseParser;
-import org.apache.http.io.HttpMessageParser;
-import org.apache.http.io.SessionInputBuffer;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicLineParser;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpParams;
 import org.apache.http.util.CharArrayBuffer;
 import org.sitenetsoft.olinguito.client.core.http.AbstractHttpClientFactory;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
@@ -70,55 +63,24 @@ public class CustomConnectionsHttpClientFactory extends AbstractHttpClientFactor
 
   }
 
-  private static class MyClientConnection extends DefaultClientConnection {
-
-    @Override
-    protected HttpMessageParser<HttpResponse> createResponseParser(
-            final SessionInputBuffer buffer,
-            final HttpResponseFactory responseFactory,
-            final HttpParams params) {
-
-      return new DefaultHttpResponseParser(
-              buffer,
-              new MyLineParser(),
-              responseFactory,
-              params);
-    }
-
-  }
-
-  private static class MyClientConnectionOperator extends DefaultClientConnectionOperator {
-
-    public MyClientConnectionOperator(final SchemeRegistry registry) {
-      super(registry);
-    }
-
-    @Override
-    public OperatedClientConnection createConnection() {
-      return new MyClientConnection();
-    }
-
-  }
-
-  private static class MyClientConnManager extends BasicClientConnectionManager {
-
-    @Override
-    protected ClientConnectionOperator createConnectionOperator(final SchemeRegistry registry) {
-      return new MyClientConnectionOperator(registry);
-    }
-
-  }
-
   @Override
-  public DefaultHttpClient create(final HttpMethod method, final URI uri) {
-    final DefaultHttpClient httpClient = new DefaultHttpClient(new MyClientConnManager());
-    httpClient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, USER_AGENT);
+  public CloseableHttpClient create(final HttpMethod method, final URI uri) {
+    final PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
 
-    return httpClient;
+    return HttpClientBuilder.create()
+        .setUserAgent(USER_AGENT)
+        .setConnectionManager(connectionManager)
+        .build();
   }
 
   @Override
   public void close(final HttpClient httpClient) {
-    httpClient.getConnectionManager().shutdown();
+    if (httpClient instanceof Closeable closeable) {
+      try {
+        closeable.close();
+      } catch (IOException e) {
+        // silently close
+      }
+    }
   }
 }

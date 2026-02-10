@@ -15,11 +15,14 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
  */
 package org.sitenetsoft.olinguito.client.core.http;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
@@ -29,7 +32,7 @@ import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
 import org.sitenetsoft.olinguito.client.api.http.HttpClientFactory;
 import org.sitenetsoft.olinguito.client.api.http.WrappingHttpClientFactory;
@@ -64,13 +67,17 @@ public abstract class AbstractOAuth2HttpClientFactory
     return wrapped;
   }
 
+  protected HttpClientBuilder createWrappedBuilder(final HttpMethod method, final URI uri) {
+    return wrapped.createBuilder(method, uri);
+  }
+
   protected abstract boolean isInited() throws OAuth2Exception;
 
   protected abstract void init() throws OAuth2Exception;
 
-  protected abstract void accessToken(DefaultHttpClient client) throws OAuth2Exception;
+  protected abstract void accessToken(HttpClient client) throws OAuth2Exception;
 
-  protected abstract void refreshToken(DefaultHttpClient client) throws OAuth2Exception;
+  protected abstract void refreshToken(HttpClient client) throws OAuth2Exception;
 
   @Override
   public HttpClient create(final HttpMethod method, final URI uri) {
@@ -78,34 +85,28 @@ public abstract class AbstractOAuth2HttpClientFactory
       init();
     }
 
-    final DefaultHttpClient httpClient = wrapped.create(method, uri);
+    final AtomicReference<HttpClient> clientRef = new AtomicReference<>();
+
+    final HttpClientBuilder builder = wrapped.createBuilder(method, uri);
+    builder.addInterceptorLast((HttpRequestInterceptor) (request, context) -> {
+      if (request instanceof HttpUriRequest) {
+        currentRequest = (HttpUriRequest) request;
+      } else {
+        currentRequest = null;
+      }
+    });
+    builder.addInterceptorLast((HttpResponseInterceptor) (response, context) -> {
+      if (response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+        refreshToken(clientRef.get());
+        if (currentRequest != null) {
+          clientRef.get().execute(currentRequest);
+        }
+      }
+    });
+
+    final HttpClient httpClient = builder.build();
+    clientRef.set(httpClient);
     accessToken(httpClient);
-
-    httpClient.addRequestInterceptor(new HttpRequestInterceptor() {
-
-      @Override
-      public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
-        if (request instanceof HttpUriRequest) {
-          currentRequest = (HttpUriRequest) request;
-        } else {
-          currentRequest = null;
-        }
-      }
-    });
-    httpClient.addResponseInterceptor(new HttpResponseInterceptor() {
-
-      @Override
-      public void process(final HttpResponse response, final HttpContext context) throws HttpException, IOException {
-        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-          refreshToken(httpClient);
-
-          if (currentRequest != null) {
-            httpClient.execute(currentRequest);
-          }
-        }
-      }
-    });
-
     return httpClient;
   }
 

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * Copyright 2026 SiteNetSoft - Non-deprecated replacement for DecompressingHttpClient
+ * Copyright 2026 SiteNetSoft - Non-deprecated replacement for DecompressingHttpClient; added Closeable support
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -45,7 +45,7 @@ import org.apache.http.util.EntityUtils;
  * content compression and decompression via {@link RequestAcceptEncoding}
  * and {@link ResponseContentEncoding} interceptors.
  */
-final class ContentCompressingHttpClient implements HttpClient {
+final class ContentCompressingHttpClient implements HttpClient, java.io.Closeable {
 
   private final HttpClient delegate;
   private final RequestAcceptEncoding requestInterceptor = new RequestAcceptEncoding();
@@ -130,6 +130,13 @@ final class ContentCompressingHttpClient implements HttpClient {
       return handler.handleResponse(response);
     } finally {
       EntityUtils.consume(response.getEntity());
+    }
+  }
+
+  @Override
+  public void close() throws IOException {
+    if (delegate instanceof java.io.Closeable closeable) {
+      closeable.close();
     }
   }
 
