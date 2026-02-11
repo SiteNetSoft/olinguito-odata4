@@ -18,15 +18,15 @@
   specific language governing permissions and limitations
   under the License.
 
-  Copyright 2026 SiteNetSoft - Converted to JAR; servlet classes moved to server-tecsvc-servlet
+  Copyright 2026 SiteNetSoft - Servlet WAR module extracted from server-tecsvc
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>odata-server-tecsvc</artifactId>
-  <packaging>jar</packaging>
+  <artifactId>odata-server-tecsvc-servlet</artifactId>
+  <packaging>war</packaging>
   <name>${project.artifactId}</name>
 
   <parent>
@@ -44,6 +44,11 @@
 
     <resources>
       <resource>
+        <directory>src/main/version</directory>
+        <filtering>true</filtering>
+        <targetPath>../${project.build.finalName}/gen</targetPath>
+      </resource>
+      <resource>
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
       </resource>
@@ -53,6 +58,22 @@
     </resources>
 
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-classes-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <classifier>classes</classifier>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-deploy-plugin</artifactId>
@@ -80,53 +101,32 @@
 
   <dependencies>
     <dependency>
-      <groupId>jakarta.xml.bind</groupId>
-      <artifactId>jakarta.xml.bind-api</artifactId>
-      <version>${jakarta.xml.version}</version>
+      <groupId>org.sitenetsoft.olinguito</groupId>
+      <artifactId>odata-server-tecsvc</artifactId>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.sitenetsoft.olinguito</groupId>
-      <artifactId>odata-server-api</artifactId>
+      <artifactId>server-adapter-servlet</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.sitenetsoft.olinguito</groupId>
-      <artifactId>odata-server-core</artifactId>
-      <version>${project.version}</version>
-      <!-- <scope>runtime</scope> -->
     </dependency>
 
     <dependency>
-      <groupId>org.sitenetsoft.olinguito</groupId>
-      <artifactId>odata-commons-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.sitenetsoft.olinguito</groupId>
-      <artifactId>odata-commons-core</artifactId>
-      <version>${project.version}</version>
-	  <scope>runtime</scope>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>${jakarta.servlet.version}</version>
+      <scope>provided</scope>
     </dependency>
 
-	<dependency>
-     <groupId>org.slf4j</groupId>
+    <dependency>
+      <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
       <scope>runtime</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
     </dependency>
   </dependencies>
 

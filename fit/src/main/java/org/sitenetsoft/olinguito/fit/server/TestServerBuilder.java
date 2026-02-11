@@ -12,10 +12,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed servlet types from builder API
  */
 package org.sitenetsoft.olinguito.fit.server;
 
-import jakarta.servlet.http.HttpServlet;
 import java.io.IOException;
 
 /**
@@ -35,14 +36,14 @@ public interface TestServerBuilder<T extends TestServerBuilder<T>> {
     T port(int port);
 
     /**
-     * Adds a servlet to the server.
+     * Adds a servlet by class name to the server.
      *
-     * @param servletClass the servlet class
+     * @param servletClassName the fully qualified servlet class name
      * @param path the URL path mapping
      * @return this builder
      * @throws Exception if the servlet cannot be added
      */
-    T addServlet(Class<? extends HttpServlet> servletClass, String path) throws Exception;
+    T addServlet(String servletClassName, String path) throws Exception;
 
     /**
      * Adds a servlet instance to the server.
@@ -50,9 +51,9 @@ public interface TestServerBuilder<T extends TestServerBuilder<T>> {
      * @param servlet the servlet instance
      * @param path the URL path mapping
      * @return this builder
-     * @throws IOException if the servlet cannot be added
+     * @throws Exception if the servlet cannot be added
      */
-    T addServlet(HttpServlet servlet, String path) throws IOException;
+    T addServletInstance(Object servlet, String path) throws Exception;
 
     /**
      * Adds static content mapping.
@@ -63,6 +64,16 @@ public interface TestServerBuilder<T extends TestServerBuilder<T>> {
      * @throws IOException if the mapping cannot be added
      */
     T addStaticContent(String uri, String resource) throws IOException;
+
+    /**
+     * Adds classpath-based content at the given URI.
+     *
+     * @param uri the URI to map
+     * @param resourceName the classpath resource name
+     * @return this builder
+     * @throws Exception if the content cannot be added
+     */
+    T addClasspathContent(String uri, String resourceName) throws Exception;
 
     /**
      * Builds and returns the configured test server.

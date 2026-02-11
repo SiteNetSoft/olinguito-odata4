@@ -50,6 +50,7 @@
     <module>server-adapter-netty</module>
     <module>server-adapter-quarkus</module>
     <module>server-tecsvc</module>
+    <module>server-tecsvc-servlet</module>
     <module>server-tecsvc-quarkus</module>
     <module>server-test</module>
   </modules>

@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
  * Copyright 2026 SiteNetSoft - Replaced commons-io with Java standard library
+ * Copyright 2026 SiteNetSoft - Removed servlet types from builder API
  ******************************************************************************/
 package org.sitenetsoft.olinguito.fit.server;
 
@@ -221,6 +222,23 @@ public class TomcatTestServer implements TestServer {
     }
   }
 
+  public static class ClasspathContent extends HttpServlet {
+    @Serial
+    private static final long serialVersionUID = -6663569573355398997L;
+    private final String resourceName;
+
+    public ClasspathContent(final String resourceName) {
+      this.resourceName = resourceName;
+    }
+
+    @Override
+    protected void doGet(final HttpServletRequest req, final HttpServletResponse resp)
+        throws IOException {
+      resp.getOutputStream().write(
+          Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName).readAllBytes());
+    }
+  }
+
   private static TomcatTestServerBuilder builder;
 
   public static TomcatTestServerBuilder init(final int port) {
@@ -242,10 +260,10 @@ public class TomcatTestServer implements TestServer {
     private Properties properties;
 
     public TomcatTestServerBuilder addTecsvcWebApp(final boolean copy) throws IOException {
-      File tecsvcDir = new File("lib/server-tecsvc/target/odata-server-tecsvc-5.0.1-SNAPSHOT");
+      File tecsvcDir = new File("lib/server-tecsvc-servlet/target/odata-server-tecsvc-servlet-5.0.1-SNAPSHOT");
       if (!tecsvcDir.exists()) {
         throw new RuntimeException("tecsvc webapp dir not found: " + tecsvcDir.getAbsolutePath()
-                + " (build module odata-server-tecsvc first)");
+                + " (build module odata-server-tecsvc-servlet first)");
       }
 
       final File webAppDir;
@@ -379,33 +397,30 @@ public class TomcatTestServer implements TestServer {
     }
 
     @Override
-    public TomcatTestServerBuilder addServlet(final Class<? extends HttpServlet> factoryClass, final String path)
+    public TomcatTestServerBuilder addServlet(final String servletClassName, final String path)
         throws Exception {
       if (server != null) {
         return this;
       }
-      String servletClassname = factoryClass.getName();
-      HttpServlet httpServlet = (HttpServlet) Class.forName(servletClassname).getDeclaredConstructor().newInstance();
+      HttpServlet httpServlet = (HttpServlet) Class.forName(servletClassName).getDeclaredConstructor().newInstance();
       Context cxt = getContext();
       String randomServletId = UUID.randomUUID().toString();
       Tomcat.addServlet(cxt, randomServletId, httpServlet);
       cxt.addServletMappingDecoded(path, randomServletId);
-      LOG.info("Added servlet {} at context {} (mapping id={}).", servletClassname, path, randomServletId);
+      LOG.info("Added servlet {} at context {} (mapping id={}).", servletClassName, path, randomServletId);
       return this;
     }
 
-    public TomcatTestServerBuilder addAuthServlet(final Class<? extends HttpServlet> factoryClass,
+    public TomcatTestServerBuilder addAuthServlet(final String servletClassName,
             final String servletPath, final String contextPath)
-        throws InstantiationException, IllegalAccessException, ClassNotFoundException,
-            NoSuchMethodException, java.lang.reflect.InvocationTargetException {
+        throws Exception {
       if (server != null) {
         return this;
       }
       final String TOMCAT_WEB_XML = "web.xml";
       String webXMLPath = Objects.requireNonNull(
           Thread.currentThread().getContextClassLoader().getResource(TOMCAT_WEB_XML)).getPath();
-      String servletClassname = factoryClass.getName();
-      HttpServlet httpServlet = (HttpServlet) Class.forName(servletClassname).getDeclaredConstructor().newInstance();
+      HttpServlet httpServlet = (HttpServlet) Class.forName(servletClassName).getDeclaredConstructor().newInstance();
       Context cxt = tomcat.addWebapp(servletPath, baseDir.getAbsolutePath());
       cxt.setAltDDName(webXMLPath);
       String randomServletId = UUID.randomUUID().toString();
@@ -420,23 +435,29 @@ public class TomcatTestServer implements TestServer {
       String resource = new File(resourceDir, resourceName).getAbsolutePath();
       LOG.info("Added static content from '{}' at uri '{}'.", resource, uri);
       StaticContent staticContent = new StaticContent(uri, resource);
-      return addServlet(staticContent, String.valueOf(uri.hashCode()), uri);
+      return addServletInstance(staticContent, String.valueOf(uri.hashCode()), uri);
     }
 
     @Override
-    public TomcatTestServerBuilder addServlet(final HttpServlet httpServlet, final String path) {
-      String name = UUID.randomUUID().toString();
-      return addServlet(httpServlet, name, path);
+    public TomcatTestServerBuilder addClasspathContent(final String uri, final String resourceName) {
+      LOG.info("Added classpath content '{}' at uri '{}'.", resourceName, uri);
+      ClasspathContent classpathContent = new ClasspathContent(resourceName);
+      return addServletInstance(classpathContent, String.valueOf(uri.hashCode()), uri);
     }
 
-    public TomcatTestServerBuilder addServlet(final HttpServlet httpServlet, final String name, final String path) {
+    @Override
+    public TomcatTestServerBuilder addServletInstance(final Object servlet, final String path) {
+      String name = UUID.randomUUID().toString();
+      return addServletInstance(servlet, name, path);
+    }
+
+    public TomcatTestServerBuilder addServletInstance(final Object servlet, final String name, final String path) {
       if (server != null) {
         return this;
       }
       Context cxt = getContext();
-      Tomcat.addServlet(cxt, name, httpServlet);
+      Tomcat.addServlet(cxt, name, (HttpServlet) servlet);
       cxt.addServletMappingDecoded(path, name);
-      //
       LOG.info("Added servlet {} at context {}.", name, path);
       return this;
     }

@@ -12,10 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed servlet types from builder API
  */
 package org.sitenetsoft.olinguito.fit.server;
-
-import jakarta.servlet.http.HttpServlet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,15 +120,15 @@ public class QuarkusTestServer implements TestServer {
         }
 
         @Override
-        public Builder addServlet(Class<? extends HttpServlet> servletClass, String path) {
-            servletMappings.add(new ServletMapping(servletClass, path));
+        public Builder addServlet(String servletClassName, String path) {
+            servletMappings.add(new ServletMapping(servletClassName, path));
             LOG.info("Servlet mapping registered (will be ignored in Quarkus mode): {} -> {}",
-                    servletClass.getName(), path);
+                    servletClassName, path);
             return this;
         }
 
         @Override
-        public Builder addServlet(HttpServlet servlet, String path) {
+        public Builder addServletInstance(Object servlet, String path) {
             LOG.info("Servlet instance registered (will be ignored in Quarkus mode): {} -> {}",
                     servlet.getClass().getName(), path);
             return this;
@@ -138,6 +138,13 @@ public class QuarkusTestServer implements TestServer {
         public Builder addStaticContent(String uri, String resource) {
             staticContent.put(uri, resource);
             LOG.info("Static content registered (will be ignored in Quarkus mode): {} -> {}", uri, resource);
+            return this;
+        }
+
+        @Override
+        public Builder addClasspathContent(String uri, String resourceName) {
+            staticContent.put(uri, resourceName);
+            LOG.info("Classpath content registered (will be ignored in Quarkus mode): {} -> {}", uri, resourceName);
             return this;
         }
 
@@ -161,11 +168,11 @@ public class QuarkusTestServer implements TestServer {
     }
 
     private static class ServletMapping {
-        final Class<? extends HttpServlet> servletClass;
+        final String className;
         final String path;
 
-        ServletMapping(Class<? extends HttpServlet> servletClass, String path) {
-            this.servletClass = servletClass;
+        ServletMapping(String className, String path) {
+            this.className = className;
             this.path = path;
         }
     }
