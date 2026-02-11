@@ -12,11 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Named/multi-service support for Quarkus OData server extension
  */
 package org.sitenetsoft.olinguito.server.adapter.quarkus.runtime;
 
 import io.vertx.core.Handler;
-import io.vertx.ext.web.Route;
 import io.vertx.ext.web.RoutingContext;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -33,60 +34,43 @@ import static org.mockito.Mockito.mock;
 class ODataRecorderTest {
 
     private ODataRecorder recorder;
-    private ODataRuntimeConfig runtimeConfig;
+    private ODataServicesRuntimeConfig runtimeConfig;
 
     @BeforeEach
     void setUp() {
         recorder = new ODataRecorder();
-        runtimeConfig = mock(ODataRuntimeConfig.class);
+        runtimeConfig = mock(ODataServicesRuntimeConfig.class);
     }
 
     @Test
-    void testCreateRouteHandler() {
-        Consumer<Route> routeHandler = recorder.createRouteHandler("/odata", 0);
-
-        assertNotNull(routeHandler, "Route handler should not be null");
-    }
-
-    @Test
-    void testCreateVertxHandler() {
-        Handler<RoutingContext> handler = recorder.createVertxHandler("/odata", 0);
+    void testCreateVertxHandlerForDefaultService() {
+        Handler<RoutingContext> handler = recorder.createVertxHandler(
+                ODataServiceNames.DEFAULT, "/odata", runtimeConfig);
 
         assertNotNull(handler, "Vert.x handler should not be null");
     }
 
     @Test
-    void testCreateRouteFilter() {
-        Handler<RoutingContext> filter = recorder.createRouteFilter("/odata", runtimeConfig);
+    void testCreateVertxHandlerForNamedService() {
+        Handler<RoutingContext> handler = recorder.createVertxHandler(
+                "catalog", "/catalog", runtimeConfig);
 
-        assertNotNull(filter, "Route filter should not be null");
+        assertNotNull(handler, "Vert.x handler for named service should not be null");
     }
 
     @Test
-    void testCreateRouteFilterWithEmptyPath() {
-        Handler<RoutingContext> filter = recorder.createRouteFilter("", runtimeConfig);
+    void testCreateRouteHandlerForDefaultService() {
+        Consumer<io.vertx.ext.web.Route> routeHandler = recorder.createRouteHandler(
+                ODataServiceNames.DEFAULT, "/odata", runtimeConfig);
 
-        assertNotNull(filter, "Route filter with empty path should not be null");
+        assertNotNull(routeHandler, "Route handler should not be null");
     }
 
     @Test
-    void testCreateRouteFilterWithNullPath() {
-        Handler<RoutingContext> filter = recorder.createRouteFilter(null, runtimeConfig);
+    void testCreateRouteHandlerForNamedService() {
+        Consumer<io.vertx.ext.web.Route> routeHandler = recorder.createRouteHandler(
+                "catalog", "/catalog", runtimeConfig);
 
-        assertNotNull(filter, "Route filter with null path should not be null");
-    }
-
-    @Test
-    void testCreateRouteFilterWithTrailingSlash() {
-        Handler<RoutingContext> filter = recorder.createRouteFilter("/odata/", runtimeConfig);
-
-        assertNotNull(filter, "Route filter with trailing slash should not be null");
-    }
-
-    @Test
-    void testCreateRouteFilterWithoutLeadingSlash() {
-        Handler<RoutingContext> filter = recorder.createRouteFilter("odata", runtimeConfig);
-
-        assertNotNull(filter, "Route filter without leading slash should not be null");
+        assertNotNull(routeHandler, "Route handler for named service should not be null");
     }
 }
