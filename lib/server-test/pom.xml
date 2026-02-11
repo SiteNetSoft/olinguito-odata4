@@ -20,6 +20,7 @@
 
   Copyright 2026 SiteNetSoft - Replaced Cobertura with JaCoCo for code coverage
   Copyright 2026 SiteNetSoft - Migrated XMLUnit 1.6 to 2.11.0, removed junit:junit dependency
+  Copyright 2026 SiteNetSoft - Removed stale classes classifier from odata-server-tecsvc dependency
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -57,7 +58,6 @@
       <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-server-tecsvc</artifactId>
       <version>${project.version}</version>
-      <classifier>classes</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
