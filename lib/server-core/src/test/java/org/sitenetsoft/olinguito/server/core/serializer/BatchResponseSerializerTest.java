@@ -115,7 +115,8 @@ public class BatchResponseSerializerTest {
     ODataResponse response = new ODataResponse();
     response.setStatusCode(HttpStatusCode.OK.getStatusCode());
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.APPLICATION_JSON.toContentTypeString());
-    response.setContent(new ByteArrayInputStream(("{\"name\":\"Wälter Winter\"}" + CRLF).getBytes(StandardCharsets.UTF_8)));
+    response.setContent(new ByteArrayInputStream(
+        ("{\"name\":\"Wälter Winter\"}" + CRLF).getBytes(StandardCharsets.UTF_8)));
     parts.add(new ODataResponsePart(Collections.singletonList(response), false));
 
     ODataResponse changeSetResponse = new ODataResponse();
@@ -218,7 +219,8 @@ public class BatchResponseSerializerTest {
     ODataResponse response = new ODataResponse();
     response.setStatusCode(HttpStatusCode.OK.getStatusCode());
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.APPLICATION_JSON.toContentTypeString());
-    response.setContent(new ByteArrayInputStream(("{\"name\":\"Wälter Winter\"}" + CRLF).getBytes(StandardCharsets.UTF_8)));
+    response.setContent(new ByteArrayInputStream(
+        ("{\"name\":\"Wälter Winter\"}" + CRLF).getBytes(StandardCharsets.UTF_8)));
     parts.add(new ODataResponsePart(Collections.singletonList(response), false));
 
     ODataResponse changeSetResponse = new ODataResponse();

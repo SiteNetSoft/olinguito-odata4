@@ -48,7 +48,6 @@ import org.sitenetsoft.olinguito.client.core.communication.util.PipedOutputStrea
 import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataBatchController;
 import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataBatchLineIteratorImpl;
 import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataBatchUtilities;
-import org.sitenetsoft.olinguito.commons.api.Constants;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.slf4j.Logger;
@@ -290,7 +289,9 @@ public abstract class AbstractODataResponse implements ODataResponse {
           } catch (Exception e) {
             LOG.error("Error streaming batch item payload", e);
           } finally {
-            try { os.close(); } catch (IOException ignored) { }
+            try {
+              os.close();
+            } catch (IOException ignored) { }
           }
         }).start();
       } catch (Exception e) {

@@ -41,7 +41,6 @@ import java.util.UUID;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 
-import java.nio.charset.StandardCharsets;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;

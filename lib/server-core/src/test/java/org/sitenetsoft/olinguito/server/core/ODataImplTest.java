@@ -101,7 +101,8 @@ public class ODataImplTest {
   
   @Test
   public void deserializer2() throws DeserializerException {
-      assertThrows(DeserializerException.class, () -> odata.createDeserializer(null, Mockito.mock(ServiceMetadata.class)));
+      assertThrows(DeserializerException.class,
+          () -> odata.createDeserializer(null, Mockito.mock(ServiceMetadata.class)));
   }
   
   @Test

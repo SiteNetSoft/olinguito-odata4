@@ -114,7 +114,9 @@ public class NavigationLinks {
   public NavigationLinks removeInlines(final String name) {
     if (inlines.containsKey(name)) {
       for (InputStream is : inlines.get(name)) {
-        try { is.close(); } catch (IOException ignored) { }
+        try {
+          is.close();
+        } catch (IOException ignored) { }
       }
     }
     links.remove(name);

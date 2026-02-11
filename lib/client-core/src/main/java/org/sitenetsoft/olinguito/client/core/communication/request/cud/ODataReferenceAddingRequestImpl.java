@@ -84,7 +84,11 @@ public class ODataReferenceAddingRequestImpl extends AbstractODataBasicRequest<O
     try {
       return new ODataReferenceAddingResponseImpl(odataClient, httpClient, doExecute());
     } finally {
-      try { if (input != null) input.close(); } catch (IOException ignored) { }
+      try {
+        if (input != null) {
+          input.close();
+        }
+      } catch (IOException ignored) { }
     }
   }
 

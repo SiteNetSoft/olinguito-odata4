@@ -23,7 +23,6 @@ import java.util.Collections;
 
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
-import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceKind;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.BinaryOperatorKind;

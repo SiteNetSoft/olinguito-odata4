@@ -40,7 +40,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.constants.EdmTypeKind;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEdmProvider;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityType;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlNavigationProperty;
-import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlPropertyRef;
+
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlReferentialConstraint;
 import org.sitenetsoft.olinguito.commons.core.edm.EdmNavigationPropertyImpl;
 import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;

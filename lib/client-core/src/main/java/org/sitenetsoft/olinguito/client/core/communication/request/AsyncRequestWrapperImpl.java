@@ -99,7 +99,8 @@ public class AsyncRequestWrapperImpl<R extends ODataResponse> extends AbstractRe
 
     this.request = odataClient.getConfiguration().getHttpUriRequestFactory().create(method, this.uri);
 
-    if (request instanceof HttpEntityEnclosingRequestBase httpRequest && odataRequest instanceof AbstractODataBasicRequest<?> br) {
+    if (request instanceof HttpEntityEnclosingRequestBase httpRequest
+        && odataRequest instanceof AbstractODataBasicRequest<?> br) {
         httpRequest.setEntity(new InputStreamEntity(br.getPayload(), -1));
     }
   }

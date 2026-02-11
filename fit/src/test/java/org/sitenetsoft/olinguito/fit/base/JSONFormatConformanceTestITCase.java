@@ -116,7 +116,8 @@ public class JSONFormatConformanceTestITCase extends AbstractTestITCase {
         + "\"GeographyPoint\": {\"type\": \"Point\",\"coordinates\":[142.1,64.1]}"
         + "}";
 
-    final ClientEntity entity = client.getReader().readEntity(new ByteArrayInputStream(fromSection71.getBytes(StandardCharsets.UTF_8)), ContentType.JSON);
+    final ClientEntity entity = client.getReader().readEntity(
+        new ByteArrayInputStream(fromSection71.getBytes(StandardCharsets.UTF_8)), ContentType.JSON);
 
     assertTrue(entity.getProperty("NullValue").hasNullValue());
 
@@ -187,7 +188,8 @@ public class JSONFormatConformanceTestITCase extends AbstractTestITCase {
         + "}";
 
     final ResWrap<Entity> entity =
-        client.getDeserializer(ContentType.JSON).toEntity(new ByteArrayInputStream(fromSection45_1.getBytes(StandardCharsets.UTF_8)));
+        client.getDeserializer(ContentType.JSON).toEntity(
+            new ByteArrayInputStream(fromSection45_1.getBytes(StandardCharsets.UTF_8)));
 
     assertEquals("http://host/service/$metadata#Customers/$entity", entity.getContextURL().toASCIIString());
     assertEquals("W/\"A1FF3E230954908F\"", entity.getMetadataETag());
@@ -209,7 +211,8 @@ public class JSONFormatConformanceTestITCase extends AbstractTestITCase {
         + "}";
 
     final ResWrap<EntityCollection> entitySet =
-        client.getDeserializer(ContentType.JSON).toEntitySet(new ByteArrayInputStream(fromSection45_2.getBytes(StandardCharsets.UTF_8)));
+        client.getDeserializer(ContentType.JSON).toEntitySet(
+            new ByteArrayInputStream(fromSection45_2.getBytes(StandardCharsets.UTF_8)));
 
     assertEquals(5, entitySet.getPayload().getCount(), 0);
     assertEquals("Customers?$expand=Orders&$skipToken=5", entitySet.getPayload().getNext().toASCIIString());

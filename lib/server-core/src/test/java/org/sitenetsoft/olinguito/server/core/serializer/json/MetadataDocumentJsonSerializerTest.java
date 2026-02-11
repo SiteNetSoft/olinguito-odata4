@@ -576,7 +576,8 @@ public class MetadataDocumentJsonSerializerTest {
         .setFlags(true)
         .setUnderlyingType(EdmPrimitiveTypeKind.Int16.getFullQualifiedName())
         .setMembers(Collections.singletonList(
-            new CsdlEnumMember().setName("String1").setValue("1").setAnnotations(Collections.singletonList(memberAnnotation))));
+            new CsdlEnumMember().setName("String1").setValue("1")
+                .setAnnotations(Collections.singletonList(memberAnnotation))));
       }
       return null;
     }
@@ -643,7 +644,8 @@ public class MetadataDocumentJsonSerializerTest {
                                             .setTerm("Core.Description")
                                             .setQualifier("Target")
                                             .setExpression(new CsdlConstantExpression(
-                                                    ConstantExpressionType.String, "Description of Complex Type"))))))));
+                                                    ConstantExpressionType.String,
+                                                    "Description of Complex Type"))))))));
       }
       return null;
     }

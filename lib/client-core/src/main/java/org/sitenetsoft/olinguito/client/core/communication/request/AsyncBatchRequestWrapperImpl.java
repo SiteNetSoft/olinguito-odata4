@@ -114,7 +114,9 @@ public class AsyncBatchRequestWrapperImpl extends AsyncRequestWrapperImpl<ODataB
         }
       }
 
-      try { res.getRawResponse().close(); } catch (IOException ignored) { }
+      try {
+        res.getRawResponse().close();
+      } catch (IOException ignored) { }
     }
   }
 }

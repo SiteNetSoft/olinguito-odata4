@@ -20,20 +20,15 @@
  */
 package org.sitenetsoft.olinguito.client.core.http;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.http.HttpException;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.protocol.HttpContext;
 import org.sitenetsoft.olinguito.client.api.http.HttpClientFactory;
 import org.sitenetsoft.olinguito.client.api.http.WrappingHttpClientFactory;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;

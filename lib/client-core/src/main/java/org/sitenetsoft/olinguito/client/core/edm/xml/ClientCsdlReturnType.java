@@ -63,7 +63,8 @@ class ClientCsdlReturnType extends CsdlReturnType implements Serializable {
             returnType.setNullable(BooleanUtils.toBoolean(jp.nextTextValue()));
           } else if ("MaxLength".equals(jp.currentName())) {
             final String maxLenght = jp.nextTextValue();
-            returnType.setMaxLength("max".equalsIgnoreCase(maxLenght) ? Integer.MAX_VALUE : Integer.parseInt(maxLenght));
+            returnType.setMaxLength("max".equalsIgnoreCase(maxLenght)
+                ? Integer.MAX_VALUE : Integer.parseInt(maxLenght));
           } else if ("Precision".equals(jp.currentName())) {
             returnType.setPrecision(Integer.valueOf(jp.nextTextValue()));
           } else if ("Scale".equals(jp.currentName())) {

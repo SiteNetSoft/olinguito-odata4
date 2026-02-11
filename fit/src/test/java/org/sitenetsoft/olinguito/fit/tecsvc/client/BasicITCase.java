@@ -72,7 +72,6 @@ import org.sitenetsoft.olinguito.client.api.communication.response.ODataProperty
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRawResponse;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;
-import org.sitenetsoft.olinguito.client.api.domain.ClientAnnotation;
 import org.sitenetsoft.olinguito.client.api.domain.ClientComplexValue;
 import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
 import org.sitenetsoft.olinguito.client.api.domain.ClientEntitySet;

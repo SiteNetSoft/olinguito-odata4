@@ -130,12 +130,14 @@ public class ODataJsonDeserializerBasicTest {
 
   @Test
   public void referencesNoContent() throws Exception {
-      assertThrows(DeserializerException.class, () -> deserializer.entityReferences(new ByteArrayInputStream(new byte[] {})));
+      assertThrows(DeserializerException.class,
+          () -> deserializer.entityReferences(new ByteArrayInputStream(new byte[] {})));
   }
 
   @Test
   public void referencesInvalidJson() throws Exception {
-      assertThrows(DeserializerException.class, () -> deserializer.entityReferences(new ByteArrayInputStream(new byte[] { 'A' })));
+      assertThrows(DeserializerException.class,
+          () -> deserializer.entityReferences(new ByteArrayInputStream(new byte[] { 'A' })));
   }
 
   @Test

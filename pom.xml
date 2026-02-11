@@ -351,7 +351,7 @@
   </dependencyManagement>
 
   <build>
-    <finalName>${project.name}-${project.version}</finalName>
+    <finalName>${project.artifactId}-${project.version}</finalName>
 
     <pluginManagement>
       <plugins>

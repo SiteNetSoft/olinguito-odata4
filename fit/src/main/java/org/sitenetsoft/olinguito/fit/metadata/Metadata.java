@@ -80,7 +80,9 @@ public class Metadata extends AbstractMetadataElement {
         // ignore
       } finally {
         reader.close();
-        try { is.close(); } catch (IOException ignored) { }
+        try {
+          is.close();
+        } catch (IOException ignored) { }
       }
     } catch (Exception e) {
       LOG.error("Error parsing metadata", e);

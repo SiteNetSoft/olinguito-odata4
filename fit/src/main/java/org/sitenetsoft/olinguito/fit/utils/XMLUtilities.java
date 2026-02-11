@@ -547,7 +547,8 @@ public class XMLUtilities extends AbstractUtilities {
         writer.add(entryElement.getContentReader());
 
         addAtomElement(
-            new ByteArrayInputStream(String.format("<content type=\"*/*\" src=\"%s/$value\" />", href).getBytes(Constants.ENCODING)),
+            new ByteArrayInputStream(String.format("<content type=\"*/*\" src=\"%s/$value\" />", href)
+                .getBytes(Constants.ENCODING)),
             writer);
 
         writer.add(entryElement.getEnd());
@@ -751,7 +752,8 @@ public class XMLUtilities extends AbstractUtilities {
           extractElement(reader, writer, Collections.singletonList("feed"), 0, 1, 1).getValue();
 
       writer.add(feedElement.getStart());
-      addAtomElement(new ByteArrayInputStream(String.format("<m:count>%d</m:count>", count).getBytes(Constants.ENCODING)), writer);
+      addAtomElement(new ByteArrayInputStream(
+          String.format("<m:count>%d</m:count>", count).getBytes(Constants.ENCODING)), writer);
       writer.add(feedElement.getContentReader());
       writer.add(feedElement.getEnd());
 

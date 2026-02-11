@@ -154,7 +154,9 @@ public class ODataReaderImpl implements ODataReader {
       res = null;
     } finally {
       if (!ClientEntitySetIterator.class.isAssignableFrom(reference)) {
-        try { src.close(); } catch (IOException ignored) { }
+        try {
+          src.close();
+        } catch (IOException ignored) { }
       }
     }
 

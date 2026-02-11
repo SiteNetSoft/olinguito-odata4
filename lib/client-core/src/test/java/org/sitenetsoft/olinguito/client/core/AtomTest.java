@@ -186,10 +186,14 @@ public class AtomTest extends JSONTest {
     message.setEditLink(URI.create("http://services.odata.org/V4/(S(fe5rsnxo3fkkkk2bvmh1nl1y))/"
         + "TripPinServiceRW/People('russellwhyte')"));
 
-    String actual = new String(client.getWriter().writeEntity(message, ContentType.APPLICATION_ATOM_XML).readAllBytes(), StandardCharsets.UTF_8);
+    String actual = new String(
+        client.getWriter().writeEntity(message, ContentType.APPLICATION_ATOM_XML).readAllBytes(),
+        StandardCharsets.UTF_8);
     actual = actual.substring(actual.indexOf("<entry"));
     assertNotNull(actual);
-    String expected = new String(Objects.requireNonNull(getClass().getResourceAsStream("olingo1073_1.xml")).readAllBytes(), StandardCharsets.UTF_8);
+    String expected = new String(
+        Objects.requireNonNull(getClass().getResourceAsStream("olingo1073_1.xml")).readAllBytes(),
+        StandardCharsets.UTF_8);
     expected = expected.substring(expected.indexOf("<entry"));
     expected = expected.trim().replace("\n", "").replace("\r", "").replace("\t", "");
     assertEquals(expected, actual);

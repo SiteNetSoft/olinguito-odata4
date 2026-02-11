@@ -51,7 +51,8 @@ public class MetadataDocumentTest {
                 .addInclude(new EdmxReferenceInclude("Org.OData.Core.V1", "Core"))));
 
     final String metadata = new String(
-        odata.createSerializer(ContentType.APPLICATION_XML).metadataDocument(serviceMetadata).getContent().readAllBytes(),
+        odata.createSerializer(ContentType.APPLICATION_XML)
+            .metadataDocument(serviceMetadata).getContent().readAllBytes(),
         StandardCharsets.UTF_8);
     assertNotNull(metadata);
     assertThat(metadata, containsString("<edmx:Reference Uri=\"" + CORE_VOCABULARY + "\">"

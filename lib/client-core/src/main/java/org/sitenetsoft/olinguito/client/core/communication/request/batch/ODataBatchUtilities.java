@@ -39,7 +39,6 @@ import java.nio.charset.StandardCharsets;
 import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.client.api.ODataBatchConstants;
 import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchLineIterator;
-import org.sitenetsoft.olinguito.commons.api.Constants;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.slf4j.Logger;

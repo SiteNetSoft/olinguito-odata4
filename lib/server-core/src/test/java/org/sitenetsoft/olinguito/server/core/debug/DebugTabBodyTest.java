@@ -57,10 +57,13 @@ public class DebugTabBodyTest extends AbstractDebugTabTest {
   public void xml() throws Exception {
     ODataResponse response = new ODataResponse();
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.APPLICATION_XML.toContentTypeString());
-    response.setContent(new ByteArrayInputStream("<?xml version='1.1'?>\n<a xmlns=\"b\" />\n".getBytes(StandardCharsets.UTF_8)));
-    assertEquals("\"<?xml version='1.1'?>\\n<a xmlns=\\\"b\\\" />\\n\"", createJson(new DebugTabBody(response)));
+    response.setContent(new ByteArrayInputStream(
+        "<?xml version='1.1'?>\n<a xmlns=\"b\" />\n".getBytes(StandardCharsets.UTF_8)));
+    assertEquals("\"<?xml version='1.1'?>\\n<a xmlns=\\\"b\\\" />\\n\"",
+        createJson(new DebugTabBody(response)));
 
-    response.setContent(new ByteArrayInputStream("<?xml version='1.1'?>\n<c xmlns=\"d\" />\n".getBytes(StandardCharsets.UTF_8)));
+    response.setContent(new ByteArrayInputStream(
+        "<?xml version='1.1'?>\n<c xmlns=\"d\" />\n".getBytes(StandardCharsets.UTF_8)));
     assertEquals("<pre class=\"code xml\">\n&lt;?xml version='1.1'?&gt;\n&lt;c xmlns=\"d\" /&gt;\n\n</pre>\n",
         createHtml(new DebugTabBody(response)));
   }

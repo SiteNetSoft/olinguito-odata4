@@ -30,7 +30,6 @@ import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmBindingTarget;
-import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.etag.CustomETagSupport;
 import org.sitenetsoft.olinguito.server.api.etag.PreconditionException;

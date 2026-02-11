@@ -61,7 +61,8 @@ public class FixedFormatDeserializerTest {
     EdmProperty property = Mockito.mock(EdmProperty.class);
     Mockito.when(property.getType()).thenReturn(oData.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Int64));
     Mockito.when(property.isPrimitive()).thenReturn(true);
-    assertEquals(42L, deserializer.primitiveValue(new ByteArrayInputStream("42".getBytes(StandardCharsets.UTF_8)), property));
+    assertEquals(42L,
+        deserializer.primitiveValue(new ByteArrayInputStream("42".getBytes(StandardCharsets.UTF_8)), property));
   }
 
   @Test
@@ -74,6 +75,7 @@ public class FixedFormatDeserializerTest {
     final String value = "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ\n"
         + "ÄÖÜ€﷼\n"
         + String.valueOf(Character.toChars(0x1F603));
-    assertEquals(value, deserializer.primitiveValue(new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8)), property));
+    assertEquals(value,
+        deserializer.primitiveValue(new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8)), property));
   }
 }

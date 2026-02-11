@@ -152,7 +152,8 @@ public class ConditionalITCase extends AbstractParamTecSvcITCase {
   @Test
   public void updateMediaWithWrongIfMatch() throws Exception {
     ODataMediaEntityUpdateRequest<ClientEntity> request =
-            getClient().getCUDRequestFactory().getMediaEntityUpdateRequest(uriMedia, new ByteArrayInputStream("ignored".getBytes(StandardCharsets.UTF_8)));
+            getClient().getCUDRequestFactory().getMediaEntityUpdateRequest(uriMedia,
+                new ByteArrayInputStream("ignored".getBytes(StandardCharsets.UTF_8)));
     request.setIfMatch("W/\"42\"");
 
     try {

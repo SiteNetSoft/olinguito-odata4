@@ -87,7 +87,9 @@ public class ODataEntityCreateRequestImpl<E extends ClientEntity>
     try {
       return new ODataEntityCreateResponseImpl(odataClient, httpClient, doExecute());
     } finally {
-      try { input.close(); } catch (IOException ignored) { }
+      try {
+        input.close();
+      } catch (IOException ignored) { }
     }
   }
 

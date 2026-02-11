@@ -168,7 +168,9 @@ public abstract class AbstractODataStreamedRequest<V extends ODataResponse, T ex
     } catch (IOException e) {
       throw new IllegalStateException(e);
     } finally {
-      try { input.close(); } catch (IOException ignored) { }
+      try {
+        input.close();
+      } catch (IOException ignored) { }
     }
   }
 }

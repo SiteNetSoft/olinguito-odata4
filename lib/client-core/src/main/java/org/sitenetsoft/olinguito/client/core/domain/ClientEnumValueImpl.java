@@ -79,6 +79,8 @@ public class ClientEnumValueImpl extends AbstractClientValue implements ClientEn
     }
       if (value == null) {
           return other.value == null;
-    } else return value.equals(other.value);
+    } else {
+      return value.equals(other.value);
+    }
   }
 }

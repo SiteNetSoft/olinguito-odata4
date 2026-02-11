@@ -125,7 +125,8 @@ public class BatchRequestParserTest {
         Assertions.assertEquals(SERVICE_ROOT + "/" + PROPERTY_URI, request.getRawRequestUri());
         Assertions.assertEquals("", request.getRawQueryPath()); // No query parameter
 
-        Assertions.assertEquals("{\"value\":\"€ MODIFIED\"}" + CRLF, new String(request.getBody().readAllBytes(), StandardCharsets.UTF_8));
+        Assertions.assertEquals("{\"value\":\"€ MODIFIED\"}" + CRLF,
+            new String(request.getBody().readAllBytes(), StandardCharsets.UTF_8));
       }
     }
   }
@@ -732,7 +733,8 @@ public class BatchRequestParserTest {
     Assertions.assertEquals(1, part.getRequests().size());
 
     final ODataRequest request = part.getRequests().get(0);
-    Assertions.assertEquals("{\"PropertyString\":\"new\"}", new String(request.getBody().readAllBytes(), StandardCharsets.UTF_8));
+    Assertions.assertEquals("{\"PropertyString\":\"new\"}",
+        new String(request.getBody().readAllBytes(), StandardCharsets.UTF_8));
   }
 
   @Test
@@ -811,7 +813,8 @@ public class BatchRequestParserTest {
     Assertions.assertEquals(1, part.getRequests().size());
 
     final ODataRequest changeRequest = part.getRequests().get(0);
-    Assertions.assertEquals("{\"PropertyString\":\"new\"}", new String(changeRequest.getBody().readAllBytes(), StandardCharsets.UTF_8));
+    Assertions.assertEquals("{\"PropertyString\":\"new\"}",
+        new String(changeRequest.getBody().readAllBytes(), StandardCharsets.UTF_8));
     Assertions.assertEquals(APPLICATION_JSON, changeRequest.getHeader(HttpHeader.CONTENT_TYPE));
     Assertions.assertEquals(HttpMethod.PATCH, changeRequest.getMethod());
   }
@@ -987,7 +990,8 @@ public class BatchRequestParserTest {
     Assertions.assertEquals("iVBORw0KGgoAAAANSUhEUgAAABQAAAAMCAIAAADtbgqsAAAABmJLR0QA/wD/AP+gvaeTAAAAH0lE"
         + "QVQokWNgGHmA8S4FmpkosXngNDP+PzdANg+cZgBqiQK5mkdWWgAAAABJRU5ErkJggg==" + CRLF,
         new String(changeSetPart.getRequests().get(0).getBody().readAllBytes(), StandardCharsets.UTF_8));
-    Assertions.assertEquals("{\"value\":5}", new String(changeSetPart.getRequests().get(1).getBody().readAllBytes(), StandardCharsets.UTF_8));
+    Assertions.assertEquals("{\"value\":5}",
+        new String(changeSetPart.getRequests().get(1).getBody().readAllBytes(), StandardCharsets.UTF_8));
   }
 
   @Test

@@ -364,8 +364,9 @@ public class EdmAssistedJsonSerializerV401Test {
           entityCollection.getEntities().add(
           new Entity().addProperty(
           new Property(null, "PropertyDecimal", ValueType.PRIMITIVE, BigDecimal.ONE.scaleByPowerOfTen(-11))));
-          serializer.entityCollection(metadata, entityContainer.getEntitySet("ESAllPrim").getEntityType(), entityCollection,
-          null);
+          serializer.entityCollection(metadata,
+              entityContainer.getEntitySet("ESAllPrim").getEntityType(), entityCollection,
+              null);
       });
   }
 
@@ -383,8 +384,9 @@ public class EdmAssistedJsonSerializerV401Test {
           new Entity().addProperty(
           new Property(null, "CollPropertyComp", ValueType.COLLECTION_COMPLEX,
           Collections.singletonList(complexValue))));
-          serializer.entityCollection(metadata, entityContainer.getEntitySet("ESKeyNav").getEntityType(), entityCollection,
-          null);
+          serializer.entityCollection(metadata,
+              entityContainer.getEntitySet("ESKeyNav").getEntityType(), entityCollection,
+              null);
       });
   }
 

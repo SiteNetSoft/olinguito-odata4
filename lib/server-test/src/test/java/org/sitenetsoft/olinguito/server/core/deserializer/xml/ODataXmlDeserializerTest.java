@@ -391,14 +391,18 @@ public class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
 
     List<?> properties = comp.asCollection();
     Assertions.assertEquals(3, properties.size());
-    
-    Assertions.assertEquals((short) 123, getCVProperty((ComplexValue) properties.get(0), "PropertyInt16").asPrimitive());
-    Assertions.assertEquals("TEST 1", getCVProperty((ComplexValue) properties.get(0), "PropertyString").asPrimitive());
 
-    Assertions.assertEquals((short) 789, getCVProperty((ComplexValue) properties.get(2), "PropertyInt16").asPrimitive());
-    Assertions.assertEquals("TEST 3", getCVProperty((ComplexValue) properties.get(2), "PropertyString").asPrimitive());
+    Assertions.assertEquals((short) 123,
+        getCVProperty((ComplexValue) properties.get(0), "PropertyInt16").asPrimitive());
+    Assertions.assertEquals("TEST 1",
+        getCVProperty((ComplexValue) properties.get(0), "PropertyString").asPrimitive());
+
+    Assertions.assertEquals((short) 789,
+        getCVProperty((ComplexValue) properties.get(2), "PropertyInt16").asPrimitive());
+    Assertions.assertEquals("TEST 3",
+        getCVProperty((ComplexValue) properties.get(2), "PropertyString").asPrimitive());
   }
-  
+
 
   @Test
   public void derivedEntityMixPrimCollComp() throws Exception {
@@ -465,14 +469,18 @@ public class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
 
     List<?> properties = comp.asCollection();
     Assertions.assertEquals(3, properties.size());
-    
-    Assertions.assertEquals((short) 123, getCVProperty((ComplexValue) properties.get(0), "PropertyInt16").asPrimitive());
-    Assertions.assertEquals("TEST 1", getCVProperty((ComplexValue) properties.get(0), "PropertyString").asPrimitive());
+
+    Assertions.assertEquals((short) 123,
+        getCVProperty((ComplexValue) properties.get(0), "PropertyInt16").asPrimitive());
+    Assertions.assertEquals("TEST 1",
+        getCVProperty((ComplexValue) properties.get(0), "PropertyString").asPrimitive());
     Assertions.assertEquals("Additional test", getCVProperty((ComplexValue) properties.get(0), "AdditionalPropString")
         .asPrimitive());
 
-    Assertions.assertEquals((short) 789, getCVProperty((ComplexValue) properties.get(2), "PropertyInt16").asPrimitive());
-    Assertions.assertEquals("TEST 3", getCVProperty((ComplexValue) properties.get(2), "PropertyString").asPrimitive());
+    Assertions.assertEquals((short) 789,
+        getCVProperty((ComplexValue) properties.get(2), "PropertyInt16").asPrimitive());
+    Assertions.assertEquals("TEST 3",
+        getCVProperty((ComplexValue) properties.get(2), "PropertyString").asPrimitive());
   }
   
   @Test

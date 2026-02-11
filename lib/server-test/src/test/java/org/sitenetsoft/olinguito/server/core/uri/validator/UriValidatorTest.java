@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Collections;
 
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
-import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.core.uri.parser.Parser;

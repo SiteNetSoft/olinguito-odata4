@@ -87,7 +87,8 @@ public class EdmActionImportImplTest {
   public void getReturnedEntitySetNonExistingContainer() {
       assertThrows(EdmException.class, () -> {
           String target = "alias.nonexisting/Es";
-          CsdlActionImport providerActionImport = new CsdlActionImport().setName("actionImportName").setEntitySet(target);
+          CsdlActionImport providerActionImport =
+              new CsdlActionImport().setName("actionImportName").setEntitySet(target);
           EdmActionImport actionImport =
           new EdmActionImportImpl(mock(EdmProviderImpl.class), container, providerActionImport);
           actionImport.getReturnedEntitySet();
@@ -98,7 +99,8 @@ public class EdmActionImportImplTest {
   public void getReturnedEntitySetNonExistingEntitySet() {
       assertThrows(EdmException.class, () -> {
           String target = "nonExisting";
-          CsdlActionImport providerActionImport = new CsdlActionImport().setName("actionImportName").setEntitySet(target);
+          CsdlActionImport providerActionImport =
+              new CsdlActionImport().setName("actionImportName").setEntitySet(target);
           EdmProviderImpl edm = mock(EdmProviderImpl.class);
           when(edm.getEntityContainer()).thenReturn(container);
           EdmActionImport actionImport = new EdmActionImportImpl(edm, container, providerActionImport);

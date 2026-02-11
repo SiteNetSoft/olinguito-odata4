@@ -145,7 +145,8 @@ public class ClientCsdlEdmProvider extends CsdlAbstractEdmProvider {
   }
 
   @Override
-  public CsdlFunctionImport getFunctionImport(final FullQualifiedName entityContainer, final String functionImportName) {
+  public CsdlFunctionImport getFunctionImport(final FullQualifiedName entityContainer,
+      final String functionImportName) {
     CsdlSchema schema = xmlSchemas.get(entityContainer.getNamespace());
     if (schema != null) {
       return schema.getEntityContainer().getFunctionImport(functionImportName);
@@ -159,7 +160,8 @@ public class ClientCsdlEdmProvider extends CsdlAbstractEdmProvider {
       CsdlEntityContainer entityContainer = schema.getEntityContainer();
       if (entityContainer != null) {
         FullQualifiedName containerFQN;
-          containerFQN = Objects.requireNonNullElseGet(entityContainerName, () -> new FullQualifiedName(schema.getNamespace(), entityContainer.getName()));
+          containerFQN = Objects.requireNonNullElseGet(entityContainerName,
+              () -> new FullQualifiedName(schema.getNamespace(), entityContainer.getName()));
         return new CsdlEntityContainerInfo().setContainerName(containerFQN).setExtendsContainer(
             entityContainer.getExtendsContainerFQN());
       }

@@ -35,7 +35,8 @@ import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
  * External NTLM engine such as <a href="http://jcifs.samba.org/">JCIFS</a> library developed by the
  * <a href="http://www.samba.org/">Samba</a> project as a part of their Windows interoperability suite of programs.
  * <br/>
- * See also <a href="http://hc.apache.org/httpcomponents-client-ga/ntlm.html#Using_Samba_JCIFS_as_an_alternative_NTLM_engine">...</a>.
+ * See also <a href="http://hc.apache.org/httpcomponents-client-ga/ntlm.html
+ * #Using_Samba_JCIFS_as_an_alternative_NTLM_engine">...</a>.
  * @see NTCredentials
  */
 public class NTLMAuthHttpClientFactory extends DefaultHttpClientFactory {

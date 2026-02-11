@@ -138,7 +138,9 @@ public abstract class AbstractPOJOGenMojo extends AbstractMojo {
       throw new MojoExecutionException("Error creating file '" + name + "'", e);
     } finally {
       if (writer != null) {
-        try { writer.close(); } catch (IOException ignored) { }
+        try {
+          writer.close();
+        } catch (IOException ignored) { }
       }
     }
   }
@@ -226,7 +228,9 @@ public abstract class AbstractPOJOGenMojo extends AbstractMojo {
         metadata = getClient().getDeserializer(ContentType.APPLICATION_XML).toMetadata(fis);
         edm = getClient().getReader().readMetadata(metadata.getSchemaByNsOrAlias());
       } finally {
-        try { fis.close(); } catch (IOException ignored) { }
+        try {
+          fis.close();
+        } catch (IOException ignored) { }
       }
     }
 

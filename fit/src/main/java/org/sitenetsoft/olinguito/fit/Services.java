@@ -1232,7 +1232,8 @@ public class Services {
 
         entityKey = xml.getDefaultEntryKey(entitySetName, entry);
 
-        xml.addMediaEntityValue(entitySetName, entityKey, new ByteArrayInputStream(entity.getBytes(Constants.ENCODING)));
+        xml.addMediaEntityValue(entitySetName, entityKey,
+            new ByteArrayInputStream(entity.getBytes(Constants.ENCODING)));
 
         final Pair<String, EdmPrimitiveTypeKind> id = Commons.getMediaContent().get(entitySetName);
         if (id != null) {
@@ -1557,7 +1558,8 @@ public class Services {
       final InputStream entity = entityInfo.getValue();
       final ResWrap<Entity> container = atomDeserializer.toEntity(entity);
 
-      final Entity param = xml.readEntity(utils.getKey(), new ByteArrayInputStream(argument.getBytes(Constants.ENCODING)));
+      final Entity param = xml.readEntity(utils.getKey(),
+          new ByteArrayInputStream(argument.getBytes(Constants.ENCODING)));
 
       final Property property = param.getProperty("dimensions");
       container.getPayload().getProperty("Dimensions").setValue(property.getValueType(), property.getValue());
@@ -1593,7 +1595,8 @@ public class Services {
       final InputStream entity = entityInfo.getValue();
       final ResWrap<Entity> container = atomDeserializer.toEntity(entity);
 
-      final Entity param = xml.readEntity(utils.getKey(), new ByteArrayInputStream(argument.getBytes(Constants.ENCODING)));
+      final Entity param = xml.readEntity(utils.getKey(),
+          new ByteArrayInputStream(argument.getBytes(Constants.ENCODING)));
 
       Property property = param.getProperty("specifications");
       container.getPayload().getProperty("SpecificationsBag").setValue(property.getValueType(), property.getValue());
@@ -1628,7 +1631,8 @@ public class Services {
       }
 
       final Accept contentTypeValue = Accept.parse(contentType);
-      final Entity entry = xml.readEntity(contentTypeValue, new ByteArrayInputStream(param.getBytes(Constants.ENCODING)));
+      final Entity entry = xml.readEntity(contentTypeValue,
+          new ByteArrayInputStream(param.getBytes(Constants.ENCODING)));
 
       return xml.createResponse(
           null,
@@ -1709,7 +1713,8 @@ public class Services {
       }
 
       final Accept contentTypeValue = Accept.parse(contentType);
-      final Entity entry = xml.readEntity(contentTypeValue, new ByteArrayInputStream(param.getBytes(Constants.ENCODING)));
+      final Entity entry = xml.readEntity(contentTypeValue,
+          new ByteArrayInputStream(param.getBytes(Constants.ENCODING)));
 
       assert 1 == entry.getProperties().size();
       assert entry.getProperty("accessRight") != null;
@@ -1743,7 +1748,8 @@ public class Services {
 
     try {
       final Accept contentTypeValue = Accept.parse(contentType);
-      final Entity entry = xml.readEntity(contentTypeValue, new ByteArrayInputStream(param.getBytes(Constants.ENCODING)));
+      final Entity entry = xml.readEntity(contentTypeValue,
+          new ByteArrayInputStream(param.getBytes(Constants.ENCODING)));
 
       assert 2 == entry.getProperties().size();
       assert entry.getProperty("addresses") != null;
@@ -1780,7 +1786,8 @@ public class Services {
 
     try {
       final Accept contentTypeValue = Accept.parse(contentType);
-      final Entity entry = xml.readEntity(contentTypeValue, new ByteArrayInputStream(param.getBytes(Constants.ENCODING)));
+      final Entity entry = xml.readEntity(contentTypeValue,
+          new ByteArrayInputStream(param.getBytes(Constants.ENCODING)));
 
       assert 1 == entry.getProperties().size();
       assert entry.getProperty("newDate") != null;
@@ -1922,7 +1929,8 @@ public class Services {
         entryChanges = atomDeserializer.toEntity(
             new ByteArrayInputStream(changes.getBytes(Constants.ENCODING))).getPayload();
       } else {
-        final ResWrap<Entity> jcont = jsonDeserializer.toEntity(new ByteArrayInputStream(changes.getBytes(Constants.ENCODING)));
+        final ResWrap<Entity> jcont = jsonDeserializer.toEntity(
+            new ByteArrayInputStream(changes.getBytes(Constants.ENCODING)));
         entryChanges = jcont.getPayload();
       }
 
@@ -3116,7 +3124,8 @@ public class Services {
       }
 
       final Accept contentTypeValue = Accept.parse(contentType);
-      final Entity entity = xml.readEntity(contentTypeValue, new ByteArrayInputStream(param.getBytes(Constants.ENCODING)));
+      final Entity entity = xml.readEntity(contentTypeValue,
+          new ByteArrayInputStream(param.getBytes(Constants.ENCODING)));
 
       assert "Microsoft.Test.OData.Services.ODataWCFService.Address".equals(entity.getType());
       assert entity.getProperty("address").isComplex();
@@ -3154,7 +3163,8 @@ public class Services {
       }
 
       final Accept contentTypeValue = Accept.parse(contentType);
-      final Entity entry = xml.readEntity(contentTypeValue, new ByteArrayInputStream(param.getBytes(Constants.ENCODING)));
+      final Entity entry = xml.readEntity(contentTypeValue,
+          new ByteArrayInputStream(param.getBytes(Constants.ENCODING)));
 
       assert 1 == entry.getProperties().size();
       assert "Collection(Edm.String)".equals(entry.getProperty("emails").getType());
