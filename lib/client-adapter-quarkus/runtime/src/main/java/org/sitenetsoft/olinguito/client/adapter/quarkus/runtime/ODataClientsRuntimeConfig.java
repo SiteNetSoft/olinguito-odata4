@@ -12,87 +12,107 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Named/multi-client support for Quarkus OData client extension
  */
 package org.sitenetsoft.olinguito.client.adapter.quarkus.runtime;
 
+import java.util.Map;
 import java.util.Optional;
 
+import io.quarkus.runtime.annotations.ConfigDocMapKey;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
 import io.smallrye.config.ConfigMapping;
 import io.smallrye.config.WithDefault;
-import io.smallrye.config.WithName;
+import io.smallrye.config.WithParentName;
+import io.smallrye.config.WithUnnamedKey;
 
 /**
  * Runtime configuration for the OData client extension.
+ * Supports multiple named clients via map-based configuration.
  */
-@ConfigMapping(prefix = "quarkus.odata-client.runtime")
+@ConfigMapping(prefix = "quarkus.odata-client")
 @ConfigRoot(phase = ConfigPhase.RUN_TIME)
-public interface ODataClientRuntimeConfig {
+public interface ODataClientsRuntimeConfig {
 
     /**
-     * Default publication format. Supported values: JSON, JSON_NO_METADATA,
-     * JSON_FULL_METADATA, APPLICATION_XML, APPLICATION_ATOM_XML.
+     * Named OData clients. The default (unnamed) client uses the {@code <default>} key.
      */
-    @WithDefault("JSON")
-    String defaultPubFormat();
+    @WithParentName
+    @WithUnnamedKey("<default>")
+    @ConfigDocMapKey("client-name")
+    Map<String, ODataClientRuntimeConfig> clients();
 
     /**
-     * Whether to enable GZIP compression for requests.
+     * Runtime configuration for a single OData client.
      */
-    @WithDefault("false")
-    boolean gzipCompression();
+    interface ODataClientRuntimeConfig {
 
-    /**
-     * Whether to use chunked transfer encoding.
-     */
-    @WithDefault("true")
-    boolean chunked();
+        /**
+         * Default publication format. Supported values: JSON, JSON_NO_METADATA,
+         * JSON_FULL_METADATA, APPLICATION_XML, APPLICATION_ATOM_XML.
+         */
+        @WithDefault("JSON")
+        String defaultPubFormat();
 
-    /**
-     * Whether to use key-as-segment URL convention.
-     */
-    @WithDefault("false")
-    boolean keyAsSegment();
+        /**
+         * Whether to enable GZIP compression for requests.
+         */
+        @WithDefault("false")
+        boolean gzipCompression();
 
-    /**
-     * Whether to use fully qualified names for operations in URLs.
-     */
-    @WithDefault("true")
-    boolean useUrlOperationFqn();
+        /**
+         * Whether to use chunked transfer encoding.
+         */
+        @WithDefault("true")
+        boolean chunked();
 
-    /**
-     * Whether to use X-HTTP-Method header for tunneling.
-     */
-    @WithDefault("false")
-    boolean useXHttpMethod();
+        /**
+         * Whether to use key-as-segment URL convention.
+         */
+        @WithDefault("false")
+        boolean keyAsSegment();
 
-    /**
-     * Whether to continue on error in batch requests.
-     */
-    @WithDefault("false")
-    boolean continueOnError();
+        /**
+         * Whether to use fully qualified names for operations in URLs.
+         */
+        @WithDefault("true")
+        boolean useUrlOperationFqn();
 
-    /**
-     * Whether to address derived types in URLs.
-     */
-    @WithDefault("true")
-    boolean addressingDerivedTypes();
+        /**
+         * Whether to use X-HTTP-Method header for tunneling.
+         */
+        @WithDefault("false")
+        boolean useXHttpMethod();
 
-    /**
-     * Basic authentication configuration.
-     */
-    BasicAuthConfig basicAuth();
+        /**
+         * Whether to continue on error in batch requests.
+         */
+        @WithDefault("false")
+        boolean continueOnError();
 
-    /**
-     * OAuth2 configuration.
-     */
-    OAuth2Config oauth2();
+        /**
+         * Whether to address derived types in URLs.
+         */
+        @WithDefault("true")
+        boolean addressingDerivedTypes();
 
-    /**
-     * HTTP proxy configuration.
-     */
-    ProxyConfig proxy();
+        /**
+         * Basic authentication configuration.
+         */
+        BasicAuthConfig basicAuth();
+
+        /**
+         * OAuth2 configuration.
+         */
+        OAuth2Config oauth2();
+
+        /**
+         * HTTP proxy configuration.
+         */
+        ProxyConfig proxy();
+    }
 
     /**
      * Basic authentication configuration group.
