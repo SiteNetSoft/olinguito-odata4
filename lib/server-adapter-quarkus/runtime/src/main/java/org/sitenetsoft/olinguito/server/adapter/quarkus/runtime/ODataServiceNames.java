@@ -12,30 +12,29 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Named/multi-service support for Quarkus OData server extension
  */
 package org.sitenetsoft.olinguito.server.adapter.quarkus.runtime;
 
-import io.quarkus.runtime.annotations.ConfigPhase;
-import io.quarkus.runtime.annotations.ConfigRoot;
-import io.smallrye.config.ConfigMapping;
-import io.smallrye.config.WithDefault;
-
 /**
- * Build-time configuration for the OData extension.
+ * Constants for OData service naming in multi-service configurations.
  */
-@ConfigMapping(prefix = "quarkus.odata")
-@ConfigRoot(phase = ConfigPhase.BUILD_AND_RUN_TIME_FIXED)
-public interface ODataConfig {
+public final class ODataServiceNames {
 
     /**
-     * The path where OData endpoints are served.
+     * The name used for the default (unnamed) OData service.
      */
-    @WithDefault("/odata")
-    String path();
+    public static final String DEFAULT = "<default>";
+
+    private ODataServiceNames() {
+        // utility class
+    }
 
     /**
-     * Whether the OData extension is enabled.
+     * Returns {@code true} if the given name represents the default service.
      */
-    @WithDefault("true")
-    boolean enabled();
+    public static boolean isDefault(String name) {
+        return DEFAULT.equals(name);
+    }
 }

@@ -12,60 +12,84 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Named/multi-service support for Quarkus OData server extension
  */
 package org.sitenetsoft.olinguito.server.adapter.quarkus.runtime;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+
 import io.quarkus.arc.Arc;
 import io.quarkus.runtime.annotations.Recorder;
+import io.smallrye.common.annotation.Identifier;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.Route;
 import io.vertx.ext.web.RoutingContext;
 
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEdmProvider;
+import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
+import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.ODataRequestHandler;
-
-import java.util.function.Consumer;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.api.processor.Processor;
 
 /**
- * Quarkus recorder for OData extension.
- * Records runtime initialization steps for route registration.
+ * Quarkus recorder for OData server extension.
+ * Creates per-service Vert.x route handlers with lazy, qualifier-aware CDI lookups.
  */
 @Recorder
 public class ODataRecorder {
 
+    private static final Map<String, ODataRequestHandler> HANDLERS = new ConcurrentHashMap<>();
+
     /**
-     * Creates a consumer that sets up OData routes on the Vert.x router.
+     * Creates a consumer that sets up an OData route on the Vert.x router.
      *
-     * @param path  The OData base path
-     * @param split Number of leading path segments for service resolution
-     * @return Consumer to configure the router
+     * @param serviceName   the service name ({@code "<default>"} or a named key)
+     * @param basePath      the OData base path
+     * @param runtimeConfig runtime configuration for all services
+     * @return consumer to configure the route
      */
-    public Consumer<Route> createRouteHandler(String path, int split) {
-        return route -> {
-            route.handler(createVertxHandler(path, split));
-        };
+    public Consumer<Route> createRouteHandler(
+            String serviceName,
+            String basePath,
+            ODataServicesRuntimeConfig runtimeConfig) {
+        return route -> route.handler(createVertxHandler(serviceName, basePath, runtimeConfig));
     }
 
     /**
-     * Creates the route customizer for integrating with Vert.x HTTP.
+     * Creates a Vert.x route handler for the given OData service.
      *
-     * @param path  The OData base path
-     * @param split Number of leading path segments for service resolution
-     * @return Handler for RoutingContext
+     * @param serviceName   the service name ({@code "<default>"} or a named key)
+     * @param basePath      the OData base path
+     * @param runtimeConfig runtime configuration for all services
+     * @return handler for RoutingContext
      */
-    public Handler<RoutingContext> createVertxHandler(String path, int split) {
+    public Handler<RoutingContext> createVertxHandler(
+            String serviceName,
+            String basePath,
+            ODataServicesRuntimeConfig runtimeConfig) {
         return ctx -> {
             try {
-                // Lazy initialization on first request
-                ODataRequestHandler handler = getOrCreateHandler();
+                ODataRequestHandler handler = getHandler(serviceName);
                 if (handler != null) {
-                    new VertxODataHandler(handler, path, split).handle(ctx);
+                    int split = getSplit(serviceName, runtimeConfig);
+                    new VertxODataHandler(handler, basePath, split).handle(ctx);
                 } else {
                     ctx.response()
                             .setStatusCode(503)
-                            .end("OData service not configured. Please provide a CsdlEdmProvider bean.");
+                            .end("OData service not configured. "
+                                    + "Please provide a CsdlEdmProvider bean"
+                                    + (ODataServiceNames.isDefault(serviceName)
+                                            ? "."
+                                            : " qualified with @Identifier(\"" + serviceName + "\")."));
                 }
             } catch (Exception e) {
-                // Ensure we always send a response
                 if (!ctx.response().ended()) {
                     String errorMessage = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
                     ctx.response()
@@ -77,65 +101,56 @@ public class ODataRecorder {
         };
     }
 
-    /**
-     * Creates the Vert.x route filter that intercepts OData requests.
-     *
-     * @param path          The base path for OData endpoints
-     * @param runtimeConfig Runtime OData configuration
-     * @return Handler for RoutingContext
-     */
-    public Handler<RoutingContext> createRouteFilter(String path, ODataRuntimeConfig runtimeConfig) {
-        return ctx -> {
-            String requestPath = ctx.request().path();
-            String normalizedBasePath = normalizePath(path);
-
-            // Check if the request path matches the OData base path
-            boolean matchesPath = requestPath.startsWith(normalizedBasePath)
-                    || (normalizedBasePath.isEmpty() && requestPath.equals("/"));
-            if (matchesPath) {
-
-                ODataRequestHandler handler = getOrCreateHandler();
-                if (handler != null) {
-                    new VertxODataHandler(handler, normalizedBasePath, runtimeConfig.split()).handle(ctx);
-                } else {
-                    ctx.next();
-                }
-            } else {
-                ctx.next();
-            }
-        };
+    private static int getSplit(String serviceName, ODataServicesRuntimeConfig runtimeConfig) {
+        var serviceConfig = runtimeConfig.services().get(serviceName);
+        return serviceConfig != null ? serviceConfig.split() : 0;
     }
 
-    private ODataRequestHandler getOrCreateHandler() {
-        // Look up the CDI-managed OData handler
-        try {
-            var container = Arc.container();
-            if (container == null) {
-                return null;
-            }
-            var instanceHandle = container.instance(ODataHandlerHolder.class);
-            if (instanceHandle == null || !instanceHandle.isAvailable()) {
-                return null;
-            }
-            ODataHandlerHolder holder = instanceHandle.get();
-            return holder != null ? holder.getHandler() : null;
-        } catch (Exception e) {
-            // Log or handle the exception as needed
+    private static ODataRequestHandler getHandler(String serviceName) {
+        return HANDLERS.computeIfAbsent(serviceName, ODataRecorder::initializeHandler);
+    }
+
+    private static ODataRequestHandler initializeHandler(String serviceName) {
+        var container = Arc.container();
+        if (container == null) {
             return null;
         }
-    }
 
-    private String normalizePath(String path) {
-        if (path == null || path.isEmpty()) {
-            return "";
+        boolean isDefault = ODataServiceNames.isDefault(serviceName);
+
+        // Look up CsdlEdmProvider — exactly one per service
+        var edmProviderInstance = isDefault
+                ? container.select(CsdlEdmProvider.class)
+                : container.select(CsdlEdmProvider.class, Identifier.Literal.of(serviceName));
+        if (!edmProviderInstance.isResolvable()) {
+            return null;
         }
-        String normalized = path;
-        if (!normalized.startsWith("/")) {
-            normalized = "/" + normalized;
+
+        OData odata = OData.newInstance();
+
+        // Collect EdmxReference beans
+        List<EdmxReference> references = new ArrayList<>();
+        var refInstances = isDefault
+                ? container.select(EdmxReference.class)
+                : container.select(EdmxReference.class, Identifier.Literal.of(serviceName));
+        if (!refInstances.isUnsatisfied()) {
+            refInstances.forEach(references::add);
         }
-        if (normalized.endsWith("/") && normalized.length() > 1) {
-            normalized = normalized.substring(0, normalized.length() - 1);
+
+        ServiceMetadata serviceMetadata = odata.createServiceMetadata(
+                edmProviderInstance.get(),
+                references.isEmpty() ? Collections.emptyList() : references);
+
+        ODataRequestHandler requestHandler = odata.createHandler(serviceMetadata);
+
+        // Register all discovered Processor beans
+        var processorInstances = isDefault
+                ? container.select(Processor.class)
+                : container.select(Processor.class, Identifier.Literal.of(serviceName));
+        if (!processorInstances.isUnsatisfied()) {
+            processorInstances.forEach(requestHandler::register);
         }
-        return normalized;
+
+        return requestHandler;
     }
 }

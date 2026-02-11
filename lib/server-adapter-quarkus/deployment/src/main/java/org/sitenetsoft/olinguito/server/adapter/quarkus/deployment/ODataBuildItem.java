@@ -12,30 +12,34 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Named/multi-service support for Quarkus OData server extension
  */
 package org.sitenetsoft.olinguito.server.adapter.quarkus.deployment;
+
+import java.util.Map;
 
 import io.quarkus.builder.item.SimpleBuildItem;
 
 /**
- * Build item that carries OData configuration information
- * from build steps to runtime initialization.
+ * Build item that carries OData service configuration information
+ * from build steps to runtime initialization. Supports multiple named services.
  */
 public final class ODataBuildItem extends SimpleBuildItem {
 
-    private final String path;
-    private final boolean enabled;
+    private final Map<String, ServiceEntry> services;
 
-    public ODataBuildItem(String path, boolean enabled) {
-        this.path = path;
-        this.enabled = enabled;
+    public ODataBuildItem(Map<String, ServiceEntry> services) {
+        this.services = services;
     }
 
-    public String getPath() {
-        return path;
+    public Map<String, ServiceEntry> getServices() {
+        return services;
     }
 
-    public boolean isEnabled() {
-        return enabled;
+    /**
+     * Configuration entry for a single named OData service.
+     */
+    public record ServiceEntry(boolean enabled, String path) {
     }
 }
