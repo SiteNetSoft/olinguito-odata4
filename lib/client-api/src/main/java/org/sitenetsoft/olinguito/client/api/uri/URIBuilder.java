@@ -15,13 +15,14 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced commons-lang3 Pair with Map.Entry in public API
  */
 package org.sitenetsoft.olinguito.client.api.uri;
 
 import java.net.URI;
 import java.util.Map;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEnumType;
 
 public interface URIBuilder {
@@ -262,7 +263,8 @@ public interface URIBuilder {
    * @param segmentValues segment values.
    * @return current URIBuilder instance
    */
-  URIBuilder appendKeySegment(Map<String, Pair<EdmEnumType, String>> enumValues, Map<String, Object> segmentValues);
+  URIBuilder appendKeySegment(Map<String, Map.Entry<EdmEnumType, String>> enumValues,
+      Map<String, Object> segmentValues);
 
   /**
    * Appends Singleton segment to the URI.

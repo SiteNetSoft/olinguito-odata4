@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.sitenetsoft.olinguito.client.api.Configuration;
@@ -371,11 +370,11 @@ public class URIBuilderImpl implements URIBuilder {
   }
 
   @Override
-  public URIBuilder appendKeySegment(final Map<String, Pair<EdmEnumType, String>> enumValues,
+  public URIBuilder appendKeySegment(final Map<String, Map.Entry<EdmEnumType, String>> enumValues,
       final Map<String, Object> segmentValues) {
 
     final Map<String, Object> values = new LinkedHashMap<>();
-    for (Map.Entry<String, Pair<EdmEnumType, String>> entry : enumValues.entrySet()) {
+    for (Map.Entry<String, Map.Entry<EdmEnumType, String>> entry : enumValues.entrySet()) {
       values.put(entry.getKey(), entry.getValue().getKey().toUriLiteral(entry.getValue().getValue()));
     }
     values.putAll(segmentValues);
