@@ -12,6 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Named/multi-client support for Quarkus OData client extension
  */
 package org.sitenetsoft.olinguito.client.adapter.quarkus.runtime;
 
@@ -22,10 +24,10 @@ import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
- * Unit tests for {@link ODataClientProducer}.
+ * Unit tests for {@link ODataClientFactory}.
  * Verifies that the underlying ODataClientFactory works correctly.
  */
-class ODataClientProducerTest {
+class ODataClientFactoryTest {
 
     @Test
     void testODataClientFactoryCreatesClient() {
