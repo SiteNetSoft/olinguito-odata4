@@ -24,8 +24,10 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpResponse;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataValueRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
 import org.sitenetsoft.olinguito.client.api.domain.ClientPrimitiveValue;
@@ -57,7 +59,7 @@ public class ODataValueRequestImpl extends AbstractODataRetrieveRequest<ClientPr
   @Override
   public ODataRetrieveResponse<ClientPrimitiveValue> execute() {
     final HttpResponse res = doExecute();
-    return new ODataValueResponseImpl(odataClient, httpClient, res);
+    return new ODataValueResponseImpl(odataClient, httpClient, new ApacheHttpResponse(res));
   }
 
   /**
@@ -67,8 +69,8 @@ public class ODataValueRequestImpl extends AbstractODataRetrieveRequest<ClientPr
 
     private ClientPrimitiveValue value = null;
 
-    private ODataValueResponseImpl(final ODataClient odataClient, final HttpClient httpClient,
-            final HttpResponse res) {
+    private ODataValueResponseImpl(final ODataClient odataClient, final ODataHttpClient httpClient,
+            final ODataHttpResponse res) {
 
       super(odataClient, httpClient, res);
     }

@@ -26,9 +26,11 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpRequest;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpResponse;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataValueUpdateRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataValueUpdateResponse;
@@ -76,10 +78,11 @@ public class ODataValueUpdateRequestImpl extends AbstractODataBasicRequest<OData
   @Override
   public ODataValueUpdateResponse execute() {
     final InputStream input = getPayload();
-    ((HttpEntityEnclosingRequestBase) request).setEntity(URIUtils.buildInputStreamEntity(odataClient, input));
+    ((HttpEntityEnclosingRequestBase) ApacheHttpRequest.unwrap(request)).setEntity(
+        URIUtils.buildInputStreamEntity(odataClient, input));
 
     try {
-      return new ODataValueUpdateResponseImpl(odataClient, httpClient, doExecute());
+      return new ODataValueUpdateResponseImpl(odataClient, httpClient, new ApacheHttpResponse(doExecute()));
     } finally {
       try {
         input.close();
@@ -102,8 +105,8 @@ public class ODataValueUpdateRequestImpl extends AbstractODataBasicRequest<OData
 
     private ClientPrimitiveValue resValue = null;
 
-    private ODataValueUpdateResponseImpl(final ODataClient odataClient, final HttpClient httpClient,
-            final HttpResponse res) {
+    private ODataValueUpdateResponseImpl(final ODataClient odataClient, final ODataHttpClient httpClient,
+            final ODataHttpResponse res) {
 
       super(odataClient, httpClient, res);
     }

@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
+ * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
@@ -104,7 +105,7 @@ public class MediaITCase extends AbstractParamTecSvcITCase {
       mediaRequest.execute();
       fail("Expected exception not thrown!");
     } catch (final ODataClientErrorException e) {
-      assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), e.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), e.getStatusCode());
     }
   }
 

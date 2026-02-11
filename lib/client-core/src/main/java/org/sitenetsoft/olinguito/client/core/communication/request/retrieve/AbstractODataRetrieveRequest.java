@@ -21,9 +21,9 @@ package org.sitenetsoft.olinguito.client.core.communication.request.retrieve;
 import java.io.InputStream;
 import java.net.URI;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataRetrieveRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
 import org.sitenetsoft.olinguito.client.core.communication.request.AbstractODataBasicRequest;
@@ -64,8 +64,8 @@ public abstract class AbstractODataRetrieveRequest<T>
   protected abstract class AbstractODataRetrieveResponse
           extends AbstractODataResponse implements ODataRetrieveResponse<T> {
 
-    protected AbstractODataRetrieveResponse(final ODataClient odataClient, final HttpClient httpClient,
-            final HttpResponse res) {
+    protected AbstractODataRetrieveResponse(final ODataClient odataClient, final ODataHttpClient httpClient,
+            final ODataHttpResponse res) {
 
       super(odataClient, httpClient, res);
     }

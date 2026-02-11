@@ -22,9 +22,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpRequest;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpResponse;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataEntityCreateRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataEntityCreateResponse;
@@ -82,10 +84,11 @@ public class ODataEntityCreateRequestImpl<E extends ClientEntity>
   @Override
   public ODataEntityCreateResponse<E> execute() {
     final InputStream input = getPayload();
-    ((HttpPost) request).setEntity(URIUtils.buildInputStreamEntity(odataClient, input));
+    ((HttpPost) ApacheHttpRequest.unwrap(request)).setEntity(
+        URIUtils.buildInputStreamEntity(odataClient, input));
 
     try {
-      return new ODataEntityCreateResponseImpl(odataClient, httpClient, doExecute());
+      return new ODataEntityCreateResponseImpl(odataClient, httpClient, new ApacheHttpResponse(doExecute()));
     } finally {
       try {
         input.close();
@@ -100,8 +103,8 @@ public class ODataEntityCreateRequestImpl<E extends ClientEntity>
 
     private E resEntity = null;
 
-    private ODataEntityCreateResponseImpl(final ODataClient odataClient, final HttpClient httpClient,
-            final HttpResponse res) {
+    private ODataEntityCreateResponseImpl(final ODataClient odataClient, final ODataHttpClient httpClient,
+            final ODataHttpResponse res) {
 
       super(odataClient, httpClient, res);
     }

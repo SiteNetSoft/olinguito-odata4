@@ -14,22 +14,21 @@
  * limitations under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.ODataClientErrorException;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpRequest;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
 import org.sitenetsoft.olinguito.client.core.communication.header.ODataErrorResponseChecker;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 public abstract class AbstractRequest {
 
@@ -38,8 +37,8 @@ public abstract class AbstractRequest {
    */
   protected static final Logger LOG = LoggerFactory.getLogger(AbstractRequest.class);
 
-  protected void checkRequest(final ODataClient odataClient, final HttpUriRequest request) {
-    // If using and Edm enabled client, checks that the cached service root matches the request URI
+  protected void checkRequest(final ODataClient odataClient, final ODataHttpRequest request) {
+    // If using an Edm enabled client, checks that the cached service root matches the request URI
     if (odataClient instanceof EdmEnabledODataClient
             && !request.getURI().toASCIIString().startsWith(
                     ((EdmEnabledODataClient) odataClient).getServiceRoot())) {
@@ -52,35 +51,30 @@ public abstract class AbstractRequest {
   }
 
   protected void checkResponse(
-          final ODataClient odataClient, final HttpResponse response, final String accept) {
+          final ODataClient odataClient, final ODataHttpResponse response, final String accept) {
 
-    if (response.getStatusLine().getStatusCode() >= 400) {
+    if (response.getStatusCode() >= 400) {
       final ContentType contentType = determineContentType(response, accept);
-      try {
-        final ODataRuntimeException exception = ODataErrorResponseChecker.checkResponse(
-                odataClient,
-                response.getStatusLine(),
-                response.getEntity() == null ? null : response.getEntity().getContent(),
-                contentType);
-          if (exception instanceof ODataClientErrorException) {
-              ((ODataClientErrorException) exception).setHeaderInfo(response.getAllHeaders());
-          }
-          throw exception;
-      } catch (IOException e) {
-        throw new ODataRuntimeException(
-                "Received '" + response.getStatusLine() + "' but could not extract error body", e);
+      final ODataRuntimeException exception = ODataErrorResponseChecker.checkResponse(
+              odataClient,
+              response.getStatusCode(),
+              response.getReasonPhrase(),
+              response.getBody(),
+              contentType);
+      if (exception instanceof ODataClientErrorException clientError) {
+        clientError.setHeaderInfo(response.getHeaders());
       }
+      throw exception;
     }
   }
 
-  private static ContentType determineContentType(HttpResponse response, String accept) {
-    if (response.getEntity() == null
-            || response.getEntity().getContentType() == null
-            || StringUtils.isBlank(response.getEntity().getContentType().getValue())) {
+  private static ContentType determineContentType(ODataHttpResponse response, String accept) {
+    final String ct = response.getContentType();
+    if (ct == null || StringUtils.isBlank(ct)) {
       return ContentType.fromAcceptHeader(accept);
     }
     try {
-      return ContentType.create(response.getEntity().getContentType().getValue());
+      return ContentType.create(ct);
     } catch (Exception exception) {
       return ContentType.JSON;
     }

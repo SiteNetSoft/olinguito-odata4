@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed logger class, deprecated API usages, and code quality improvements
+ * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  */
 package org.sitenetsoft.olinguito.client.core.communication.response;
 
@@ -32,16 +33,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.utils.HttpClientUtils;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchLineIterator;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataResponse;
 import org.sitenetsoft.olinguito.client.api.http.NoContentException;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
 import org.sitenetsoft.olinguito.client.core.ConfigurationImpl;
 import org.sitenetsoft.olinguito.client.core.communication.util.PipedInputStream;
 import org.sitenetsoft.olinguito.client.core.communication.util.PipedOutputStream;
@@ -50,6 +47,7 @@ import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataBa
 import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataBatchUtilities;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,12 +68,12 @@ public abstract class AbstractODataResponse implements ODataResponse {
   /**
    * HTTP client.
    */
-  protected final HttpClient httpClient;
+  protected final ODataHttpClient httpClient;
 
   /**
    * HTTP response.
    */
-  protected final HttpResponse res;
+  protected final ODataHttpResponse res;
 
   /**
    * Response headers.
@@ -111,7 +109,7 @@ public abstract class AbstractODataResponse implements ODataResponse {
   private byte[] inputContent = null;
 
   public AbstractODataResponse(
-      final ODataClient odataClient, final HttpClient httpclient, final HttpResponse res) {
+      final ODataClient odataClient, final ODataHttpClient httpclient, final ODataHttpResponse res) {
 
     this.odataClient = odataClient;
     this.httpClient = httpclient;
@@ -154,29 +152,33 @@ public abstract class AbstractODataResponse implements ODataResponse {
   }
 
   @Override
-  public final ODataResponse initFromHttpResponse(final HttpResponse res) {
+  public final ODataResponse initFromHttpResponse(final ODataHttpResponse res) {
     try {
-      this.payload = res.getEntity() == null ? null : res.getEntity().getContent();
+      this.payload = res.getBody();
       this.inputContent = null;
-    } catch (final IllegalStateException | IOException e) {
-      HttpClientUtils.closeQuietly(res);
+    } catch (final IllegalStateException e) {
+      try {
+        res.close();
+      } catch (IOException ioe) {
+        LOG.warn("Error closing response", ioe);
+      }
       LOG.error("Error retrieving payload", e);
       throw new ODataRuntimeException(e);
     }
-    for (Header header : res.getAllHeaders()) {
+    final Map<String, Collection<String>> responseHeaders = res.getHeaders();
+    for (Map.Entry<String, Collection<String>> entry : responseHeaders.entrySet()) {
       final Collection<String> headerValues;
-      if (headers.containsKey(header.getName())) {
-        headerValues = headers.get(header.getName());
+      if (headers.containsKey(entry.getKey())) {
+        headerValues = headers.get(entry.getKey());
       } else {
         headerValues = new HashSet<>();
-        headers.put(header.getName(), headerValues);
+        headers.put(entry.getKey(), headerValues);
       }
-
-      headerValues.add(header.getValue());
+      headerValues.addAll(entry.getValue());
     }
 
-    statusCode = res.getStatusLine().getStatusCode();
-    statusMessage = res.getStatusLine().getReasonPhrase();
+    statusCode = res.getStatusCode();
+    statusMessage = res.getReasonPhrase();
 
     hasBeenInitialized = true;
     return this;
@@ -248,7 +250,13 @@ public abstract class AbstractODataResponse implements ODataResponse {
 
   @Override
   public void close() {
-    closeHttpResponse();
+    if (res != null) {
+      try {
+        res.close();
+      } catch (IOException e) {
+        LOG.debug("Unable to close response: {}", res, e);
+      }
+    }
     odataClient.getConfiguration().getHttpClientFactory().close(httpClient);
 
     if (batchInfo != null) {
@@ -256,22 +264,11 @@ public abstract class AbstractODataResponse implements ODataResponse {
     }
   }
 
-  protected void closeHttpResponse() {
-    if(res != null && res instanceof CloseableHttpResponse) {
-      try {
-        ((CloseableHttpResponse) res).close();
-      } catch (IOException e) {
-        LOG.debug("Unable to close response: {}", res, e);
-      }
-    }
-  }
-
   @Override
   public InputStream getRawResponse() {
 
-
     InputStream inputStream;
-    if (HttpStatus.SC_NO_CONTENT == getStatusCode()) {
+    if (HttpStatusCode.NO_CONTENT.getStatusCode() == getStatusCode()) {
       throw new NoContentException();
     }
 
@@ -308,7 +305,13 @@ public abstract class AbstractODataResponse implements ODataResponse {
         inputStream = new ByteArrayInputStream(inputContent);
         return inputStream;
       } catch (IOException e) {
-        HttpClientUtils.closeQuietly(res);
+        if (res != null) {
+          try {
+            res.close();
+          } catch (IOException ioe) {
+            LOG.warn("Error closing response", ioe);
+          }
+        }
         LOG.error("Error retrieving payload", e);
         throw new ODataRuntimeException(e);
       }

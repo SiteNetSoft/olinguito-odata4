@@ -23,8 +23,10 @@ import java.io.InputStream;
 import java.net.URI;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpResponse;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataDeltaRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;
@@ -49,15 +51,15 @@ public class ODataDeltaRequestImpl extends AbstractODataRetrieveRequest<ClientDe
   @Override
   public ODataRetrieveResponse<ClientDelta> execute() {
     final HttpResponse res = doExecute();
-    return new ODataDeltaResponseImpl(odataClient, httpClient, res);
+    return new ODataDeltaResponseImpl(odataClient, httpClient, new ApacheHttpResponse(res));
   }
 
   protected class ODataDeltaResponseImpl extends AbstractODataRetrieveResponse {
 
     private ClientDelta delta = null;
 
-    private ODataDeltaResponseImpl(final ODataClient odataClient, final HttpClient httpClient,
-        final HttpResponse res) {
+    private ODataDeltaResponseImpl(final ODataClient odataClient, final ODataHttpClient httpClient,
+        final ODataHttpResponse res) {
 
       super(odataClient, httpClient, res);
     }
@@ -70,7 +72,7 @@ public class ODataDeltaRequestImpl extends AbstractODataRetrieveRequest<ClientDe
           if(res == null){
             content = payload;
           }else{
-            content = res.getEntity().getContent();
+            content = res.getBody();
           }
           final ResWrap<Delta> resource = odataClient.getDeserializer(ContentType.parse(getContentType())).
               toDelta(content);
@@ -78,8 +80,6 @@ public class ODataDeltaRequestImpl extends AbstractODataRetrieveRequest<ClientDe
           delta = odataClient.getBinder().getODataDelta(resource);
         } catch (final ODataDeserializerException e) {
           throw new IllegalArgumentException(e);
-        } catch (IOException e) {
-          throw new HttpClientException(e);
         } finally {
           this.close();
         }

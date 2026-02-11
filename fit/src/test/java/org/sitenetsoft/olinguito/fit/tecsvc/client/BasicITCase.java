@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
+ * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
@@ -46,8 +47,8 @@ import java.util.List;
 import java.util.Map;
 
 import java.io.InputStreamReader;
-import org.apache.http.Header;
-import org.apache.http.client.methods.HttpUriRequest;
+import java.util.Collection;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpRequest;
 import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmExpression;
 import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
@@ -352,13 +353,12 @@ public class BasicITCase extends AbstractParamTecSvcITCase {
       request.execute();
       fail("Expected Exception not thrown!");
     } catch (final ODataClientErrorException e) {
-      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusCode());
       final ODataError error = e.getODataError();
       assertThat(error.getMessage(), containsString("key"));
-      for (Header header : e.getHeaderInfo()) {
-        if(header.getName().equals("Version")) {
-          assertEquals(header.getValue(), "4.0");
-        }
+      final Map<String, Collection<String>> headers = e.getHeaderInfo();
+      if (headers != null && headers.containsKey("Version")) {
+        assertThat(headers.get("Version"), hasItem("4.0"));
       }
     }    
   }
@@ -428,7 +428,7 @@ public class BasicITCase extends AbstractParamTecSvcITCase {
       entityRequest.execute();
       fail("Expected exception not thrown!");
     } catch (final ODataClientErrorException e) {
-      assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), e.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), e.getStatusCode());
     }
   }
 
@@ -503,7 +503,7 @@ public class BasicITCase extends AbstractParamTecSvcITCase {
         .build();
     final ODataEntityUpdateRequest<ClientEntity> request2 = getClient().getCUDRequestFactory().getEntityUpdateRequest(
         uri, UpdateType.REPLACE, newEntity);
-    HttpUriRequest req = request2.getHttpRequest();
+    ODataHttpRequest req = request2.getHttpRequest();
     final ODataEntityUpdateResponse<ClientEntity> response2 = request2.execute();
     assertNotNull(req);
     assertEquals(HttpStatusCode.OK.getStatusCode(), response2.getStatusCode());
@@ -534,7 +534,7 @@ public class BasicITCase extends AbstractParamTecSvcITCase {
         .build();
     final ODataEntityUpdateRequest<ClientEntity> request = getClient().getCUDRequestFactory().getEntityUpdateRequest(
         uri, UpdateType.REPLACE, newEntity);
-    HttpUriRequest req = request.getHttpRequest();
+    ODataHttpRequest req = request.getHttpRequest();
     final ODataEntityUpdateResponse<ClientEntity> response = request.execute();
     assertNotNull(req);
     assertEquals(HttpStatusCode.OK.getStatusCode(), response.getStatusCode());
@@ -932,7 +932,7 @@ public class BasicITCase extends AbstractParamTecSvcITCase {
       getEdmEnabledClient().getCUDRequestFactory().getEntityCreateRequest(targetURI, entity).execute();
       fail("Expecting bad request");
     } catch (ODataClientErrorException e) {
-      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusCode());
     }
   }
 
@@ -1352,7 +1352,7 @@ public class BasicITCase extends AbstractParamTecSvcITCase {
       requestUpdate.execute();
       fail();
     } catch (ODataClientErrorException e) {
-      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusCode());
     }
   }
 
@@ -1820,7 +1820,7 @@ public class BasicITCase extends AbstractParamTecSvcITCase {
       request.execute();
       fail("Expected Exception not thrown!");
     } catch (final ODataClientErrorException e) {
-      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusCode());
       final ODataError error = e.getODataError();
       assertThat(error.getMessage(), containsString("key"));
     }    
@@ -1839,7 +1839,7 @@ public class BasicITCase extends AbstractParamTecSvcITCase {
       request.execute();
       fail("Expected Exception not thrown!");
     } catch (final ODataClientErrorException e) {
-      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusCode());
       final ODataError error = e.getODataError();
       assertThat(error.getMessage(), containsString("key"));
     }    

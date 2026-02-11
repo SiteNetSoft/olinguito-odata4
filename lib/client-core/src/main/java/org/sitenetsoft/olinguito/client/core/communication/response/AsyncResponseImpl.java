@@ -21,9 +21,9 @@ package org.sitenetsoft.olinguito.client.core.communication.response;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
 import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchLineIterator;
 import org.sitenetsoft.olinguito.client.api.communication.response.AsyncResponse;
 import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataBatchController;
@@ -33,8 +33,8 @@ import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataBa
  */
 public class AsyncResponseImpl extends AbstractODataResponse implements AsyncResponse {
 
-  public AsyncResponseImpl(final ODataClient odataClient, final HttpClient httpClient,
-          final HttpResponse res) {
+  public AsyncResponseImpl(final ODataClient odataClient, final ODataHttpClient httpClient,
+          final ODataHttpResponse res) {
 
     super(odataClient, httpClient, res);
   }

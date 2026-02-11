@@ -15,10 +15,11 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  */
 package org.sitenetsoft.olinguito.client.core;
 
-import org.apache.http.StatusLine;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.ODataClientErrorException;
 import org.sitenetsoft.olinguito.client.api.communication.ODataServerErrorException;
@@ -38,8 +39,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class ErrorTest extends AbstractTest {
 
@@ -86,13 +85,11 @@ public class ErrorTest extends AbstractTest {
   public void test1OLINGO1102() throws Exception {
     ODataClient odataClient = ODataClientFactory.getClient();
     InputStream entity = getClass().getResourceAsStream("500error." + getSuffix(ContentType.JSON));
-    StatusLine statusLine = mock(StatusLine.class);
-    when(statusLine.getStatusCode()).thenReturn(500);
-    when(statusLine.toString()).thenReturn("Internal Server Error");
 
     ODataClientErrorException exp = (ODataClientErrorException) ODataErrorResponseChecker.
-        checkResponse(odataClient, statusLine, entity, ContentType.JSON);
-    assertTrue(exp.getMessage().contains("(500) Internal Server Error"));
+        checkResponse(odataClient, 500, "Internal Server Error", entity, ContentType.JSON);
+    assertTrue(exp.getMessage().contains("(500)"));
+    assertTrue(exp.getMessage().contains("Internal Server Error"));
     ODataError error = exp.getODataError();
     assertTrue(error.getMessage().startsWith("Internal Server Error"));
     assertEquals(500, Integer.parseInt(error.getCode()));
@@ -107,43 +104,33 @@ public class ErrorTest extends AbstractTest {
   public void test2OLINGO1102() throws Exception {
     ODataClient odataClient = ODataClientFactory.getClient();
     InputStream entity = getClass().getResourceAsStream("500error1." + getSuffix(ContentType.JSON));
-    StatusLine statusLine = mock(StatusLine.class);
-    when(statusLine.getStatusCode()).thenReturn(500);
-    when(statusLine.toString()).thenReturn("Internal Server Error");
 
     ODataServerErrorException exp = (ODataServerErrorException) ODataErrorResponseChecker.
-        checkResponse(odataClient, statusLine, entity, ContentType.JSON);
-    assertTrue(exp.getMessage().startsWith("Internal Server Error"));
+        checkResponse(odataClient, 500, "Internal Server Error", entity, ContentType.JSON);
+    assertTrue(exp.getMessage().contains("Internal Server Error"));
   }
 
   @Test
   public void testWithNull() throws Exception {
     ODataClient odataClient = ODataClientFactory.getClient();
-    StatusLine statusLine = mock(StatusLine.class);
-    when(statusLine.getStatusCode()).thenReturn(500);
-    when(statusLine.toString()).thenReturn("Internal Server Error");
 
     ODataRuntimeException exp = ODataErrorResponseChecker.
-        checkResponse(odataClient, statusLine, null, ContentType.JSON);
-    assertTrue(exp.getMessage().startsWith("Internal Server Error"));
+        checkResponse(odataClient, 500, "Internal Server Error", null, ContentType.JSON);
+    assertTrue(exp.getMessage().contains("Internal Server Error"));
   }
 
   @Test
   public void testExpTextMsg403() throws Exception {
     ODataClient odataClient = ODataClientFactory.getClient();
     InputStream entity = new ByteArrayInputStream("CSRF Validation Exception".getBytes());
-    StatusLine statusLine = mock(StatusLine.class);
-    when(statusLine.getStatusCode()).thenReturn(403);
-    when(statusLine.toString()).thenReturn("Validation Exception");
-    when(statusLine.getReasonPhrase()).thenReturn("Forbidden");
 
     ODataClientErrorException exp = (ODataClientErrorException) ODataErrorResponseChecker.
-        checkResponse(odataClient, statusLine, entity, ContentType.TEXT_PLAIN);
-    assertEquals(exp.getStatusLine().getStatusCode(), 403);
+        checkResponse(odataClient, 403, "Forbidden", entity, ContentType.TEXT_PLAIN);
+    assertEquals(403, exp.getStatusCode());
     ODataError error = exp.getODataError();
-    assertTrue(error.getMessage().equals("CSRF Validation Exception"));
-    assertEquals(error.getCode(), "403");
-    assertEquals(error.getTarget(), "Forbidden");
+    assertEquals("CSRF Validation Exception", error.getMessage());
+    assertEquals("403", error.getCode());
+    assertEquals("Forbidden", error.getTarget());
     assertNull(exp.getHeaderInfo());
   }
 }

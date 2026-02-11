@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality improvements
  * Copyright 2026 SiteNetSoft - Replaced deprecated DecompressingHttpClient
+ * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -26,7 +27,6 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.util.EntityUtils;
 import org.sitenetsoft.olinguito.client.api.communication.request.batch.BatchRequestFactory;
@@ -37,6 +37,12 @@ import org.sitenetsoft.olinguito.client.api.communication.header.ODataHeaders;
 import org.sitenetsoft.olinguito.client.api.communication.request.ODataRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataResponse;
 import org.sitenetsoft.olinguito.client.api.http.HttpClientException;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpRequest;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpClient;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpRequest;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpResponse;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
@@ -82,12 +88,12 @@ public abstract class AbstractODataRequest extends AbstractRequest implements OD
   /**
    * HTTP client.
    */
-  protected HttpClient httpClient;
+  protected ODataHttpClient httpClient;
 
   /**
    * HTTP request.
    */
-  protected HttpUriRequest request;
+  protected ODataHttpRequest request;
 
   /**
    * Constructor.
@@ -119,7 +125,7 @@ public abstract class AbstractODataRequest extends AbstractRequest implements OD
   }
 
   @Override
-  public HttpUriRequest getHttpRequest() {
+  public ODataHttpRequest getHttpRequest() {
     return request;
   }
 
@@ -261,15 +267,16 @@ public abstract class AbstractODataRequest extends AbstractRequest implements OD
 
   @Override
   public InputStream rawExecute() {
-     HttpEntity httpEntity = null;
+    final HttpUriRequest apacheRequest = ApacheHttpRequest.unwrap(request);
+    HttpEntity httpEntity = null;
     try {
-       httpEntity = doExecute().getEntity();
+      httpEntity = doExecute().getEntity();
       return httpEntity == null ? null : httpEntity.getContent();
     } catch (IOException e) {
       EntityUtils.consumeQuietly(httpEntity);
       throw new HttpClientException(e);
     } catch (RuntimeException e) {
-      this.request.abort();
+      apacheRequest.abort();
       EntityUtils.consumeQuietly(httpEntity);
       throw new HttpClientException(e);
     }
@@ -278,9 +285,12 @@ public abstract class AbstractODataRequest extends AbstractRequest implements OD
   /**
    * Builds the request and execute it.
    *
-   * @return HttpReponse object.
+   * @return Apache HttpResponse object.
    */
   protected HttpResponse doExecute() {
+    final HttpUriRequest apacheRequest = ApacheHttpRequest.unwrap(request);
+    final HttpClient apacheClient = ApacheHttpClient.unwrap(httpClient);
+
     checkRequest(odataClient, request);
 
     // Set Content-Type and Accept headers with default values, if not yet set
@@ -298,44 +308,39 @@ public abstract class AbstractODataRequest extends AbstractRequest implements OD
 
     // Add all available headers
     for (String key : getHeaderNames()) {
-      request.addHeader(key, odataHeaders.getHeader(key));
+      apacheRequest.addHeader(key, odataHeaders.getHeader(key));
     }
 
     if (LOG.isDebugEnabled()) {
-      for (Header header : request.getAllHeaders()) {
+      for (Header header : apacheRequest.getAllHeaders()) {
           LOG.debug("HTTP header being sent: {}", header);
       }
     }
 
     HttpResponse response;
     try {
-      response = httpClient.execute(request);
+      response = apacheClient.execute(apacheRequest);
     } catch (IOException e) {
-      throw new HttpClientException(request.getURI().toASCIIString(), e);
+      throw new HttpClientException(apacheRequest.getURI().toASCIIString(), e);
     } catch (RuntimeException e) {
-      request.abort();
-      throw new HttpClientException(request.getURI().toASCIIString(), e);
+      apacheRequest.abort();
+      throw new HttpClientException(apacheRequest.getURI().toASCIIString(), e);
     }
 
+    final ODataHttpResponse wrappedResponse = new ApacheHttpResponse(response);
     try {
-      checkResponse(odataClient, response, getAccept());
+      checkResponse(odataClient, wrappedResponse, getAccept());
     } catch (ODataRuntimeException e) {
-      closeHttpResponse(response);
+      try {
+        wrappedResponse.close();
+      } catch (IOException ioe) {
+        LOG.warn("Unable to close response: {}", response, ioe);
+      }
       odataClient.getConfiguration().getHttpClientFactory().close(httpClient);
       throw e;
     }
 
     return response;
-  }
-
-  private void closeHttpResponse(HttpResponse response) {
-    if (response instanceof CloseableHttpResponse) {
-      try {
-        ((CloseableHttpResponse) response).close();
-      } catch (IOException e) {
-        LOG.warn("Unable to close response: {}", response, e);
-      }
-    }
   }
 
     /**
@@ -352,7 +357,7 @@ public abstract class AbstractODataRequest extends AbstractRequest implements OD
       if (ODataResponse.class.isAssignableFrom(clazz)) {
         try {
           final Constructor<?> constructor = clazz.getDeclaredConstructor(
-              this.getClass(), ODataClient.class, HttpClient.class, HttpResponse.class);
+              this.getClass(), ODataClient.class, ODataHttpClient.class, ODataHttpResponse.class);
           constructor.setAccessible(true);
           return (V) constructor.newInstance(this, odataClient, httpClient, null);
         } catch (Exception e) {
@@ -364,10 +369,11 @@ public abstract class AbstractODataRequest extends AbstractRequest implements OD
     throw new IllegalStateException("No response class template has been found");
   }
 
-  private HttpClient getHttpClient(final HttpMethod method, final URI uri) {
-    HttpClient client = odataClient.getConfiguration().getHttpClientFactory().create(method, uri);
+  private ODataHttpClient getHttpClient(final HttpMethod method, final URI uri) {
+    ODataHttpClient client = odataClient.getConfiguration().getHttpClientFactory().create(method, uri);
     if (odataClient.getConfiguration().isGzipCompression()) {
-      client = new ContentCompressingHttpClient(client);
+      HttpClient apacheClient = ApacheHttpClient.unwrap(client);
+      return new ApacheHttpClient(new ContentCompressingHttpClient(apacheClient));
     }
     return client;
   }

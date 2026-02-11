@@ -30,7 +30,9 @@ import java.util.concurrent.Future;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.sitenetsoft.olinguito.client.api.ODataBatchConstants;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpRequest;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.request.ODataPayloadManager;
 import org.sitenetsoft.olinguito.client.api.communication.request.ODataStreamedRequest;
@@ -99,9 +101,10 @@ public abstract class AbstractODataStreamedRequest<V extends ODataResponse, T ex
   public T payloadManager() {
     payloadManager = getPayloadManager();
 
+    final HttpUriRequest apacheRequest = ApacheHttpRequest.unwrap(request);
     if (URIUtils.shouldUseRepeatableHttpBodyEntry(odataClient)) {
       futureWrapper.setWrapped(odataClient.getConfiguration().getExecutor().submit(() -> { //NOSONAR
-        ((HttpEntityEnclosingRequestBase) request).setEntity(
+        ((HttpEntityEnclosingRequestBase) apacheRequest).setEntity(
                 URIUtils.buildInputStreamEntity(odataClient, payloadManager.getBody()));
         try {
           return doExecute();
@@ -110,7 +113,7 @@ public abstract class AbstractODataStreamedRequest<V extends ODataResponse, T ex
         }
       }));
     } else {
-      ((HttpEntityEnclosingRequestBase) request).setEntity(
+      ((HttpEntityEnclosingRequestBase) apacheRequest).setEntity(
               URIUtils.buildInputStreamEntity(odataClient, payloadManager.getBody()));
 
       futureWrapper.setWrapped(odataClient.getConfiguration().getExecutor().submit(() -> { //NOSONAR

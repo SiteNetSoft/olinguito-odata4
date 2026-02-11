@@ -25,9 +25,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpRequest;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpResponse;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.request.ODataBatchableRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.invoke.ClientNoContent;
@@ -155,17 +158,18 @@ public abstract class AbstractODataInvokeRequest<T extends ClientInvokeResult>
 
     if (!this.parameters.isEmpty()) {
       if (this.method == HttpMethod.GET) {
-        ((HttpRequestBase) this.request).setURI(
+        ((HttpRequestBase) ApacheHttpRequest.unwrap(this.request)).setURI(
             URIUtils.buildFunctionInvokeURI(this.uri, parameters));
       } else if (this.method == HttpMethod.POST) {
-        ((HttpPost) request).setEntity(URIUtils.buildInputStreamEntity(odataClient, input));
+        ((HttpPost) ApacheHttpRequest.unwrap(request)).setEntity(
+            URIUtils.buildInputStreamEntity(odataClient, input));
 
         setContentType(getActualFormat(getPOSTParameterFormat()));
       }
     }
 
     try {
-      return new ODataInvokeResponseImpl(odataClient, httpClient, doExecute());
+      return new ODataInvokeResponseImpl(odataClient, httpClient, new ApacheHttpResponse(doExecute()));
     } finally {
       try {
         if (input != null) {
@@ -182,8 +186,8 @@ public abstract class AbstractODataInvokeRequest<T extends ClientInvokeResult>
 
     private T invokeResult = null;
 
-    private ODataInvokeResponseImpl(final ODataClient odataClient, final HttpClient httpClient,
-        final HttpResponse res) {
+    private ODataInvokeResponseImpl(final ODataClient odataClient, final ODataHttpClient httpClient,
+        final ODataHttpResponse res) {
 
       super(odataClient, httpClient, res);
     }
@@ -199,7 +203,7 @@ public abstract class AbstractODataInvokeRequest<T extends ClientInvokeResult>
             invokeResult = reference.cast(new ClientNoContent());
           } else {
             // avoid getContent() twice:IllegalStateException: Content has been consumed
-            final InputStream responseStream = this.payload == null ? res.getEntity().getContent() : this.payload;
+            final InputStream responseStream = this.payload == null ? res.getBody() : this.payload;
             if (ClientEntitySet.class.isAssignableFrom(reference)) {
               invokeResult = reference.cast(odataClient.getReader().readEntitySet(responseStream,
                   ContentType.parse(getContentType())));
@@ -211,8 +215,6 @@ public abstract class AbstractODataInvokeRequest<T extends ClientInvokeResult>
                   ContentType.parse(getContentType())));
             }
           }
-        } catch (IOException e) {
-          throw new HttpClientException(e);
         } catch (final ODataDeserializerException e) {
           throw new IllegalArgumentException(e);
         } finally {

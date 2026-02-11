@@ -22,9 +22,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpRequest;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpResponse;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataPropertyUpdateRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataPropertyUpdateResponse;
@@ -74,10 +76,11 @@ public class ODataPropertyUpdateRequestImpl extends AbstractODataBasicRequest<OD
   @Override
   public ODataPropertyUpdateResponse execute() {
     final InputStream input = getPayload();
-    ((HttpEntityEnclosingRequestBase) request).setEntity(URIUtils.buildInputStreamEntity(odataClient, input));
+    ((HttpEntityEnclosingRequestBase) ApacheHttpRequest.unwrap(request)).setEntity(
+        URIUtils.buildInputStreamEntity(odataClient, input));
 
     try {
-      return new ODataPropertyUpdateResponseImpl(odataClient, httpClient, doExecute());
+      return new ODataPropertyUpdateResponseImpl(odataClient, httpClient, new ApacheHttpResponse(doExecute()));
     } finally {
       try {
         input.close();
@@ -101,8 +104,8 @@ public class ODataPropertyUpdateRequestImpl extends AbstractODataBasicRequest<OD
 
     private ClientProperty resProperty = null;
 
-    private ODataPropertyUpdateResponseImpl(final ODataClient odataClient, final HttpClient httpClient,
-            final HttpResponse res) {
+    private ODataPropertyUpdateResponseImpl(final ODataClient odataClient, final ODataHttpClient httpClient,
+            final ODataHttpResponse res) {
 
       super(odataClient, httpClient, res);
     }

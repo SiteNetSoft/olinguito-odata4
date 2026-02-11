@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
+ * Copyright 2026 SiteNetSoft - Return ODataHttpClient wrapping Apache HttpClient
  */
 package org.sitenetsoft.olinguito.client.core.http;
 
@@ -26,10 +27,10 @@ import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.sitenetsoft.olinguito.client.api.http.HttpClientFactory;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.api.http.WrappingHttpClientFactory;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
@@ -74,7 +75,7 @@ public class ProxyWrappingHttpClientFactory implements WrappingHttpClientFactory
   }
 
   @Override
-  public HttpClient create(final HttpMethod method, final URI uri) {
+  public ODataHttpClient create(final HttpMethod method, final URI uri) {
     final HttpHost proxyHost = new HttpHost(proxy.getHost(), proxy.getPort());
     final HttpClientBuilder builder = wrapped.createBuilder(method, uri).setProxy(proxyHost);
 
@@ -85,11 +86,11 @@ public class ProxyWrappingHttpClientFactory implements WrappingHttpClientFactory
       builder.setDefaultCredentialsProvider(provider);
     }
 
-    return builder.build();
+    return new ApacheHttpClient(builder.build());
   }
 
   @Override
-  public void close(final HttpClient httpClient) {
+  public void close(final ODataHttpClient httpClient) {
     wrapped.close(httpClient);
   }
 

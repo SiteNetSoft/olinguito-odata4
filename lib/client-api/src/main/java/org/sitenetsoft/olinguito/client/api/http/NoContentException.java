@@ -15,10 +15,12 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Apache HttpStatus with HttpStatusCode from commons-api
  */
 package org.sitenetsoft.olinguito.client.api.http;
 
-import org.apache.http.HttpStatus;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
 
 /**
  * Exception to be thrown when trying to read content with HTTP status 204.
@@ -31,6 +33,6 @@ public class NoContentException extends HttpClientException {
    * Constructs a new client-side runtime exception, with fixed message.
    */
   public NoContentException() {
-    super("No content found when HTTP status is " + HttpStatus.SC_NO_CONTENT);
+    super("No content found when HTTP status is " + HttpStatusCode.NO_CONTENT.getStatusCode());
   }
 }

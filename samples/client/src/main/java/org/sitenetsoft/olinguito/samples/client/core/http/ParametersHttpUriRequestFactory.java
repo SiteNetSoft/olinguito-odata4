@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Migrate from deprecated HttpParams to RequestConfig
+ * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  */
 package org.sitenetsoft.olinguito.samples.client.core.http;
 
@@ -24,8 +25,10 @@ import java.net.URI;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpRequest;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpRequest;
 import org.sitenetsoft.olinguito.client.core.http.DefaultHttpUriRequestFactory;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 /**
  * Shows how to customize the runtime behavior of an HTTP request.
@@ -38,8 +41,9 @@ import org.sitenetsoft.olinguito.client.core.http.DefaultHttpUriRequestFactory;
 public class ParametersHttpUriRequestFactory extends DefaultHttpUriRequestFactory {
 
   @Override
-  public HttpUriRequest create(final HttpMethod method, final URI uri) {
-    final HttpUriRequest request = super.create(method, uri);
+  public ODataHttpRequest create(final HttpMethod method, final URI uri) {
+    final ODataHttpRequest odataRequest = super.create(method, uri);
+    final HttpUriRequest request = ApacheHttpRequest.unwrap(odataRequest);
 
     final int timeout = 1000;
     final RequestConfig config = RequestConfig.custom()
@@ -51,7 +55,7 @@ public class ParametersHttpUriRequestFactory extends DefaultHttpUriRequestFactor
       ((HttpRequestBase) request).setConfig(config);
     }
 
-    return request;
+    return odataRequest;
   }
 
 }

@@ -22,9 +22,10 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpResponse;
 import org.sitenetsoft.olinguito.client.api.communication.request.streamed.MediaEntityUpdateStreamManager;
 import org.sitenetsoft.olinguito.client.api.communication.request.streamed.ODataMediaEntityUpdateRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataMediaEntityUpdateResponse;
@@ -88,7 +89,8 @@ public class ODataMediaEntityUpdateRequestImpl<E extends ClientEntity>
     @Override
     protected ODataMediaEntityUpdateResponse<E> getResponse(final long timeout, final TimeUnit unit) {
       finalizeBody();
-      return new ODataMediaEntityUpdateResponseImpl(odataClient, httpClient, getHttpResponse(timeout, unit));
+      return new ODataMediaEntityUpdateResponseImpl(odataClient, httpClient,
+          new ApacheHttpResponse(getHttpResponse(timeout, unit)));
     }
   }
 
@@ -100,8 +102,8 @@ public class ODataMediaEntityUpdateRequestImpl<E extends ClientEntity>
 
     private E entity = null;
 
-    private ODataMediaEntityUpdateResponseImpl(final ODataClient odataClient, final HttpClient httpClient,
-            final HttpResponse res) {
+    private ODataMediaEntityUpdateResponseImpl(final ODataClient odataClient, final ODataHttpClient httpClient,
+            final ODataHttpResponse res) {
 
       super(odataClient, httpClient, res);
     }

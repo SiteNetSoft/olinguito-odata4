@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Return ODataHttpRequest wrapping Apache HttpUriRequest
  */
 package org.sitenetsoft.olinguito.client.core.http;
 
@@ -28,6 +29,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.sitenetsoft.olinguito.client.api.http.HttpUriRequestFactory;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpRequest;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 /**
@@ -36,14 +38,15 @@ import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 public class DefaultHttpUriRequestFactory implements HttpUriRequestFactory {
 
   @Override
-  public HttpUriRequest create(final HttpMethod method, final URI uri) {
-      return switch (method) {
-          case POST -> new HttpPost(uri);
-          case PUT -> new HttpPut(uri);
-          case PATCH -> new HttpPatch(uri);
-          case MERGE -> new HttpMerge(uri);
-          case DELETE -> new HttpDelete(uri);
-          default -> new HttpGet(uri);
-      };
+  public ODataHttpRequest create(final HttpMethod method, final URI uri) {
+    final HttpUriRequest request = switch (method) {
+        case POST -> new HttpPost(uri);
+        case PUT -> new HttpPut(uri);
+        case PATCH -> new HttpPatch(uri);
+        case MERGE -> new HttpMerge(uri);
+        case DELETE -> new HttpDelete(uri);
+        default -> new HttpGet(uri);
+    };
+    return new ApacheHttpRequest(request);
   }
 }

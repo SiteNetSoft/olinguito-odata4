@@ -21,8 +21,10 @@ package org.sitenetsoft.olinguito.client.core.communication.request.retrieve;
 import java.net.URI;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpResponse;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntitySetRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;
@@ -59,7 +61,7 @@ public class ODataEntitySetRequestImpl<ES extends ClientEntitySet>
   @Override
   public ODataRetrieveResponse<ES> execute() {
     final HttpResponse res = doExecute();
-    return new ODataEntitySetResponseImpl(odataClient, httpClient, res);
+    return new ODataEntitySetResponseImpl(odataClient, httpClient, new ApacheHttpResponse(res));
   }
 
   /**
@@ -67,8 +69,8 @@ public class ODataEntitySetRequestImpl<ES extends ClientEntitySet>
    */
   protected class ODataEntitySetResponseImpl extends AbstractODataRetrieveResponse {
 
-    private ODataEntitySetResponseImpl(final ODataClient odataClient, final HttpClient httpClient,
-        final HttpResponse res) {
+    private ODataEntitySetResponseImpl(final ODataClient odataClient, final ODataHttpClient httpClient,
+        final ODataHttpResponse res) {
 
       super(odataClient, httpClient, res);
     }

@@ -15,15 +15,17 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Apache StatusLine/Header with framework-agnostic types
  */
 package org.sitenetsoft.olinguito.client.api.communication;
 
-import org.apache.http.Header;
-import org.apache.http.StatusLine;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataError;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
 
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Represents a client error in OData.
@@ -34,68 +36,87 @@ public class ODataClientErrorException extends ODataRuntimeException {
 
   private static final long serialVersionUID = -2551523202755268162L;
 
-  private final StatusLine statusLine;
+  private final int statusCode;
+
+  private final String statusMessage;
 
   private final ODataError error;
 
   private final InputStream rawResponse;
 
-  private Header[] headerInfo;
+  private Map<String, Collection<String>> headerInfo;
 
   /**
    * Constructor.
    *
-   * @param statusLine request status info.
+   * @param statusCode HTTP status code.
+   * @param statusMessage HTTP reason phrase.
    */
-  public ODataClientErrorException(final StatusLine statusLine) {
-    this(statusLine, null, null);
-  }
-
-  /**
-   * Constructor
-   *
-   * @param statusLine request status info.
-   * @param rawResponse raw response of the request.
-   */
-  public ODataClientErrorException(final StatusLine statusLine, final InputStream rawResponse) {
-    this(statusLine, null, rawResponse);
-  }
-
-  /**
-   * Constructor
-   *
-   * @param statusLine request status info.
-   * @param error OData error to be wrapped.
-   */
-  public ODataClientErrorException(final StatusLine statusLine, final ODataError error) {
-    this(statusLine, error, null);
+  public ODataClientErrorException(final int statusCode, final String statusMessage) {
+    this(statusCode, statusMessage, null, null);
   }
 
   /**
    * Constructor.
    *
-   * @param statusLine request status info.
+   * @param statusCode HTTP status code.
+   * @param statusMessage HTTP reason phrase.
+   * @param rawResponse raw response of the request.
+   */
+  public ODataClientErrorException(final int statusCode, final String statusMessage,
+      final InputStream rawResponse) {
+    this(statusCode, statusMessage, null, rawResponse);
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param statusCode HTTP status code.
+   * @param statusMessage HTTP reason phrase.
+   * @param error OData error to be wrapped.
+   */
+  public ODataClientErrorException(final int statusCode, final String statusMessage,
+      final ODataError error) {
+    this(statusCode, statusMessage, error, null);
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param statusCode HTTP status code.
+   * @param statusMessage HTTP reason phrase.
    * @param error OData error to be wrapped.
    * @param rawResponse raw response of the request.
    */
-  public ODataClientErrorException(final StatusLine statusLine, final ODataError error, final InputStream rawResponse) {
-    super(error == null ?
-        statusLine.toString() :
-        (error.getCode() == null || error.getCode().isEmpty() ? "" : "(" + error.getCode() + ") ")
-            + error.getMessage() + " [" + statusLine.toString() + "]");
+  public ODataClientErrorException(final int statusCode, final String statusMessage,
+      final ODataError error, final InputStream rawResponse) {
+    super(error == null
+        ? "HTTP/" + statusCode + " " + statusMessage
+        : (error.getCode() == null || error.getCode().isEmpty() ? "" : "(" + error.getCode() + ") ")
+            + error.getMessage() + " [HTTP/" + statusCode + " " + statusMessage + "]");
 
-    this.statusLine = statusLine;
+    this.statusCode = statusCode;
+    this.statusMessage = statusMessage;
     this.error = error;
     this.rawResponse = rawResponse;
   }
 
   /**
-   * Gets request status info.
+   * Gets the HTTP status code.
    *
-   * @return request status info.
+   * @return HTTP status code.
    */
-  public StatusLine getStatusLine() {
-    return statusLine;
+  public int getStatusCode() {
+    return statusCode;
+  }
+
+  /**
+   * Gets the HTTP reason phrase.
+   *
+   * @return reason phrase.
+   */
+  public String getStatusMessage() {
+    return statusMessage;
   }
 
   /**
@@ -106,20 +127,22 @@ public class ODataClientErrorException extends ODataRuntimeException {
   public ODataError getODataError() {
     return error;
   }
-  
+
   /**
-   * Sets headers
-   * @param headerInfo
+   * Sets response headers.
+   *
+   * @param headerInfo response headers as a multi-valued map.
    */
-  public void setHeaderInfo(Header[] headerInfo) {
+  public void setHeaderInfo(final Map<String, Collection<String>> headerInfo) {
     this.headerInfo = headerInfo;
   }
-  
+
   /**
-   * Returns headers
-   * @return Header[]
+   * Returns response headers.
+   *
+   * @return response headers as a multi-valued map.
    */
-  public Header[] getHeaderInfo() {
+  public Map<String, Collection<String>> getHeaderInfo() {
     return headerInfo;
   }
 

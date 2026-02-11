@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
@@ -663,7 +665,7 @@ public class DeepInsertITCase extends AbstractParamTecSvcITCase {
       request.execute();
       fail("Expecting bad request");
     } catch (ODataClientErrorException e) {
-      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusCode());
     }
 
     // Entity must not be created
@@ -687,7 +689,7 @@ public class DeepInsertITCase extends AbstractParamTecSvcITCase {
       request.addCustomHeader(HttpHeader.COOKIE, cookie);
       request.execute();
     } catch (ODataClientErrorException e) {
-      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusCode());
     }
 
     validateSet(targetURI, cookie, (short) 1, (short) 2, (short) 3);
@@ -703,7 +705,7 @@ public class DeepInsertITCase extends AbstractParamTecSvcITCase {
       request.addCustomHeader(HttpHeader.COOKIE, cookie);
       request.execute();
     } catch (ODataClientErrorException e) {
-      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusCode());
     }
 
     validateSet(targetURI, cookie, (short) 1, (short) 2, (short) 3);
