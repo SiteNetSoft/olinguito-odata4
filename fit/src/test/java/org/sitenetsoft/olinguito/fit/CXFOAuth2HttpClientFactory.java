@@ -105,7 +105,8 @@ public class CXFOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFactory 
     try {
       // 1. Need to (basic) authenticate against the OAuth2 service
       final HttpGet method = new HttpGet(authURI);
-      method.addHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString("odatajclient:odatajclient".getBytes()));
+      method.addHeader("Authorization", "Basic "
+          + Base64.getEncoder().encodeToString("odatajclient:odatajclient".getBytes()));
       final HttpResponse response = httpClient.execute(method);
 
       // 2. Pull out OAuth2 authorization data and "authenticity" cookie (CXF specific)
@@ -131,7 +132,8 @@ public class CXFOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFactory 
           addParameter("scope", "foo bar").
           build();
       final HttpGet method = new HttpGet(location);
-      method.addHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString("odatajclient:odatajclient".getBytes()));
+      method.addHeader("Authorization", "Basic "
+          + Base64.getEncoder().encodeToString("odatajclient:odatajclient".getBytes()));
       method.addHeader("Cookie", authenticityCookie);
 
       final HttpResponse response = httpClient.execute(method);

@@ -167,7 +167,11 @@ public abstract class AbstractODataInvokeRequest<T extends ClientInvokeResult>
     try {
       return new ODataInvokeResponseImpl(odataClient, httpClient, doExecute());
     } finally {
-      try { if (input != null) input.close(); } catch (IOException ignored) { }
+      try {
+        if (input != null) {
+          input.close();
+        }
+      } catch (IOException ignored) { }
     }
   }
 

@@ -45,7 +45,8 @@ public class FixedFormatSerializerTest {
 
   @Test
   public void binary() throws Exception {
-    assertEquals("ABC", new String(serializer.binary(new byte[] { 0x41, 0x42, 0x43 }).readAllBytes(), StandardCharsets.UTF_8));
+    assertEquals("ABC",
+        new String(serializer.binary(new byte[] { 0x41, 0x42, 0x43 }).readAllBytes(), StandardCharsets.UTF_8));
   }
 
   @Test

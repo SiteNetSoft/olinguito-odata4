@@ -247,7 +247,8 @@ public class TripPinServiceTest {
   @Test
   public void testReadPrimitivePropertyValue() throws Exception {
     HttpResponse response = httpGET(baseURL + "/Airlines('AA')/Name/$value", 200);
-    assertEquals("American Airlines", new String(response.getEntity().getContent().readAllBytes(), StandardCharsets.UTF_8));
+    assertEquals("American Airlines",
+        new String(response.getEntity().getContent().readAllBytes(), StandardCharsets.UTF_8));
   }
   
   @Test

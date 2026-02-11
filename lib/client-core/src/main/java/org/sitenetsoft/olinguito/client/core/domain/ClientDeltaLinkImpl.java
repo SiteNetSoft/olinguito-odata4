@@ -118,7 +118,9 @@ public class ClientDeltaLinkImpl extends ClientItem implements ClientDeltaLink {
     }
     if (target == null) {
         return other.target == null;
-    } else return target.equals(other.target);
+    } else {
+      return target.equals(other.target);
+    }
   }
 
   @Override

@@ -34,7 +34,6 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmFunction;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
-import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.uri.UriInfoResource;
 import org.sitenetsoft.olinguito.server.api.uri.UriParameter;

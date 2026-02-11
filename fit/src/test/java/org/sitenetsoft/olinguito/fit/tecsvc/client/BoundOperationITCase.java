@@ -29,7 +29,6 @@ import java.util.List;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntitySetRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataPropertyRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
-import org.sitenetsoft.olinguito.client.api.domain.ClientAnnotation;
 import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
 import org.sitenetsoft.olinguito.client.api.domain.ClientEntitySet;
 import org.sitenetsoft.olinguito.client.api.domain.ClientOperation;

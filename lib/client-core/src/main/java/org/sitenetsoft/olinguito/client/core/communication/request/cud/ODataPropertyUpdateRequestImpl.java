@@ -79,7 +79,9 @@ public class ODataPropertyUpdateRequestImpl extends AbstractODataBasicRequest<OD
     try {
       return new ODataPropertyUpdateResponseImpl(odataClient, httpClient, doExecute());
     } finally {
-      try { input.close(); } catch (IOException ignored) { }
+      try {
+        input.close();
+      } catch (IOException ignored) { }
     }
   }
 

@@ -48,7 +48,8 @@ public class ETagHelperTest {
 
   @Test
   public void readPreconditionFail() throws Exception {
-      assertThrows(PreconditionException.class, () -> eTagHelper.checkReadPreconditions("\"ETag\"", Collections.singleton("\"ETag2\""), null));
+      assertThrows(PreconditionException.class,
+          () -> eTagHelper.checkReadPreconditions("\"ETag\"", Collections.singleton("\"ETag2\""), null));
   }
 
   @Test
@@ -65,16 +66,22 @@ public class ETagHelperTest {
 
   @Test
   public void changePreconditionFailIfMatch() throws Exception {
-      assertThrows(PreconditionException.class, () -> eTagHelper.checkChangePreconditions("\"ETag\"", Collections.singleton("\"ETag2\""), null));
+      assertThrows(PreconditionException.class,
+          () -> eTagHelper.checkChangePreconditions("\"ETag\"",
+              Collections.singleton("\"ETag2\""), null));
   }
 
   @Test
   public void changePreconditionFailIfNoneMatch() throws Exception {
-      assertThrows(PreconditionException.class, () -> eTagHelper.checkChangePreconditions("\"ETag\"", null, Collections.singleton("\"ETag\"")));
+      assertThrows(PreconditionException.class,
+          () -> eTagHelper.checkChangePreconditions("\"ETag\"",
+              null, Collections.singleton("\"ETag\"")));
   }
 
   @Test
   public void changePreconditionFailIfNoneMatchAll() throws Exception {
-      assertThrows(PreconditionException.class, () -> eTagHelper.checkChangePreconditions("\"ETag\"", null, Collections.singleton("*")));
+      assertThrows(PreconditionException.class,
+          () -> eTagHelper.checkChangePreconditions("\"ETag\"",
+              null, Collections.singleton("*")));
   }
 }

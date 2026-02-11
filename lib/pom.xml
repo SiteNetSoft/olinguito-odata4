@@ -90,30 +90,5 @@
         <exclude.regex></exclude.regex>
       </properties>
     </profile>
-    <!--
-      Profile to exclude Quarkus extension from main build.
-      The Quarkus extension has a chicken-and-egg problem where
-      the deployment module needs the runtime module installed first.
-      Build Quarkus separately: cd lib/server-adapter-quarkus && mvn install -Pbootstrap
-      Then: mvn install -rf :server-adapter-quarkus-deployment
-    -->
-    <profile>
-      <id>skip-quarkus</id>
-      <modules>
-        <module>commons-api</module>
-        <module>commons-core</module>
-        <module>client-api</module>
-        <module>client-core</module>
-        <module>odata-vocabularies</module>
-        <module>server-api</module>
-        <module>server-core</module>
-        <module>server-core-ext</module>
-        <module>test-fixtures</module>
-        <module>server-adapter-servlet</module>
-        <module>server-adapter-netty</module>
-        <module>server-tecsvc</module>
-        <module>server-test</module>
-      </modules>
-    </profile>
   </profiles>
 </project>

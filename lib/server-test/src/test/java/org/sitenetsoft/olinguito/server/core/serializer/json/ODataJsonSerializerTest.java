@@ -906,7 +906,8 @@ public class ODataJsonSerializerTest {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESTwoPrim");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     final String resultString = new String(serializerNoMetadata
-        .entity(metadata, edmEntitySet.getEntityType(), entity, null).getContent().readAllBytes(), StandardCharsets.UTF_8);
+        .entity(metadata, edmEntitySet.getEntityType(), entity, null)
+        .getContent().readAllBytes(), StandardCharsets.UTF_8);
     final String expectedResult = "{\"PropertyInt16\":32766,\"PropertyString\":\"Test String1\"}";
     Assertions.assertEquals(expectedResult, resultString);
   }
@@ -1124,7 +1125,8 @@ public class ODataJsonSerializerTest {
     final String resultString = new String(serializer.entityCollection(metadata,
         edmEntitySet.getEntityType(), entitySet,
         EntityCollectionSerializerOptions.with()
-            .contextURL(ContextURL.with().entitySet(edmEntitySet).build()).build()).getContent().readAllBytes(), StandardCharsets.UTF_8);
+            .contextURL(ContextURL.with().entitySet(edmEntitySet).build()).build())
+            .getContent().readAllBytes(), StandardCharsets.UTF_8);
     final String expectedResult = "{\"@odata.context\":\"$metadata#ESMedia\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
         + "\"value\":["
@@ -1166,7 +1168,8 @@ public class ODataJsonSerializerTest {
     final String resultString = new String(serializer.entityCollection(metadata,
         edmEntitySet.getEntityType(), entitySet,
         EntityCollectionSerializerOptions.with()
-            .contextURL(ContextURL.with().entitySet(edmEntitySet).build()).build()).getContent().readAllBytes(), StandardCharsets.UTF_8);
+            .contextURL(ContextURL.with().entitySet(edmEntitySet).build()).build())
+            .getContent().readAllBytes(), StandardCharsets.UTF_8);
 
     final String expected = "{\"@odata.context\":\"$metadata#ESAllNullable\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
@@ -1767,7 +1770,8 @@ public class ODataJsonSerializerTest {
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("PropertyString");
     final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty(edmProperty.getName());
     final String resultString = new String(serializerNoMetadata
-        .primitive(metadata, (EdmPrimitiveType) edmProperty.getType(), property, null).getContent().readAllBytes(), StandardCharsets.UTF_8);
+        .primitive(metadata, (EdmPrimitiveType) edmProperty.getType(), property, null)
+        .getContent().readAllBytes(), StandardCharsets.UTF_8);
     Assertions.assertEquals("{\"value\":\"First Resource - positive values\"}", resultString);
   }
 
@@ -1798,7 +1802,8 @@ public class ODataJsonSerializerTest {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("PropertyString");
     final Property property = new Property("Edm.String", edmProperty.getName(), ValueType.PRIMITIVE, null);
-    final String resultString = new String(serializer.primitive(metadata, (EdmPrimitiveType) edmProperty.getType(), property,
+    final String resultString = new String(
+        serializer.primitive(metadata, (EdmPrimitiveType) edmProperty.getType(), property,
         PrimitiveSerializerOptions.with()
             .contextURL(ContextURL.with()
                 .entitySet(edmEntitySet).keyPath("4242").navOrPropertyPath(edmProperty.getName())
@@ -1836,7 +1841,8 @@ public class ODataJsonSerializerTest {
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("CollPropertyString");
     final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty(edmProperty.getName());
     final String resultString = new String(serializerNoMetadata
-        .primitiveCollection(metadata, (EdmPrimitiveType) edmProperty.getType(), property, null).getContent().readAllBytes(), StandardCharsets.UTF_8);
+        .primitiveCollection(metadata, (EdmPrimitiveType) edmProperty.getType(), property, null)
+        .getContent().readAllBytes(), StandardCharsets.UTF_8);
     Assertions.assertEquals("{\"value\":[\"Employee1@company.example\","
         + "\"Employee2@company.example\",\"Employee3@company.example\"]}",
         resultString);
@@ -1887,7 +1893,8 @@ public class ODataJsonSerializerTest {
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("PropertyComp");
     final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty("PropertyComp");
     final String resultString = new String(serializerNoMetadata
-        .complex(metadata, (EdmComplexType) edmProperty.getType(), property, null).getContent().readAllBytes(), StandardCharsets.UTF_8);
+        .complex(metadata, (EdmComplexType) edmProperty.getType(), property, null)
+        .getContent().readAllBytes(), StandardCharsets.UTF_8);
     Assertions.assertEquals("{\"PropertyInt16\":111,\"PropertyString\":\"TEST A\"}", resultString);
   }
 
@@ -1939,7 +1946,8 @@ public class ODataJsonSerializerTest {
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("CollPropertyComp");
     final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty(edmProperty.getName());
     final String resultString = new String(serializerNoMetadata
-        .complexCollection(metadata, (EdmComplexType) edmProperty.getType(), property, null).getContent().readAllBytes(), StandardCharsets.UTF_8);
+        .complexCollection(metadata, (EdmComplexType) edmProperty.getType(), property, null)
+        .getContent().readAllBytes(), StandardCharsets.UTF_8);
     Assertions.assertEquals("{\"value\":[{\"PropertyInt16\":123,\"PropertyString\":\"TEST 1\"},"
         + "{\"PropertyInt16\":456,\"PropertyString\":\"TEST 2\"},"
         + "{\"PropertyInt16\":789,\"PropertyString\":\"TEST 3\",\"AdditionalPropString\":\"ADD TEST\"}]}",
@@ -1996,7 +2004,8 @@ public class ODataJsonSerializerTest {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     final String resultString = new String(
-        serializerNoMetadata.reference(metadata, edmEntitySet, entity, null).getContent().readAllBytes(), StandardCharsets.UTF_8);
+        serializerNoMetadata.reference(metadata, edmEntitySet, entity, null)
+        .getContent().readAllBytes(), StandardCharsets.UTF_8);
     Assertions.assertEquals("{\"@odata.id\":\"ESAllPrim(32767)\"}", resultString);
   }
 
@@ -2043,7 +2052,8 @@ public class ODataJsonSerializerTest {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final EntityCollection entityCollection = new EntityCollection();
     final String resultString = new String(serializerNoMetadata
-        .referenceCollection(metadata, edmEntitySet, entityCollection, null).getContent().readAllBytes(), StandardCharsets.UTF_8);
+        .referenceCollection(metadata, edmEntitySet, entityCollection, null)
+        .getContent().readAllBytes(), StandardCharsets.UTF_8);
     Assertions.assertEquals("{\"value\":[]}", resultString);
   }
 
@@ -2257,7 +2267,8 @@ public class ODataJsonSerializerTest {
             createPoint(1.5, 4.25)));
     Assertions.assertEquals("{\"" + entityType.getPropertyNames().get(0) + "\":{"
         + "\"type\":\"Point\",\"coordinates\":[1.5,4.25]}}",
-        new String(serializerNoMetadata.entity(metadata, entityType, entity, null).getContent().readAllBytes(), StandardCharsets.UTF_8));
+        new String(serializerNoMetadata.entity(metadata, entityType, entity, null)
+            .getContent().readAllBytes(), StandardCharsets.UTF_8));
 
     Point point = new Point(Dimension.GEOMETRY, null);
     point.setZ(42);
@@ -2265,7 +2276,8 @@ public class ODataJsonSerializerTest {
         point));
     Assertions.assertEquals("{\"" + entityType.getPropertyNames().get(0) + "\":{"
         + "\"type\":\"Point\",\"coordinates\":[0.0,0.0,42.0]}}",
-        new String(serializerNoMetadata.entity(metadata, entityType, entity, null).getContent().readAllBytes(), StandardCharsets.UTF_8));
+        new String(serializerNoMetadata.entity(metadata, entityType, entity, null)
+            .getContent().readAllBytes(), StandardCharsets.UTF_8));
   }
 
   @Test
@@ -2277,7 +2289,8 @@ public class ODataJsonSerializerTest {
                 createPoint(2.5, 3.125), createPoint(3.5, 4.125), createPoint(4.5, 5.125)))));
     Assertions.assertEquals("{\"" + entityType.getPropertyNames().get(0) + "\":{"
         + "\"type\":\"MultiPoint\",\"coordinates\":[[2.5,3.125],[3.5,4.125],[4.5,5.125]]}}",
-        new String(serializerNoMetadata.entity(metadata, entityType, entity, null).getContent().readAllBytes(), StandardCharsets.UTF_8));
+        new String(serializerNoMetadata.entity(metadata, entityType, entity, null)
+            .getContent().readAllBytes(), StandardCharsets.UTF_8));
   }
 
   @Test
@@ -2289,7 +2302,8 @@ public class ODataJsonSerializerTest {
                 createPoint(1, 1), createPoint(2, 2), createPoint(3, 3), createPoint(4, 4), createPoint(5, 5)))));
     Assertions.assertEquals("{\"" + entityType.getPropertyNames().get(0) + "\":{"
         + "\"type\":\"LineString\",\"coordinates\":[[1.0,1.0],[2.0,2.0],[3.0,3.0],[4.0,4.0],[5.0,5.0]]}}",
-        new String(serializerNoMetadata.entity(metadata, entityType, entity, null).getContent().readAllBytes(), StandardCharsets.UTF_8));
+        new String(serializerNoMetadata.entity(metadata, entityType, entity, null)
+            .getContent().readAllBytes(), StandardCharsets.UTF_8));
   }
 
   @Test
@@ -2306,7 +2320,8 @@ public class ODataJsonSerializerTest {
         + "\"type\":\"MultiLineString\",\"coordinates\":["
         + "[[1.0,1.0],[2.0,2.0],[3.0,3.0],[4.0,4.0],[5.0,5.0]],"
         + "[[99.5,101.5],[150.0,151.25]]]}}",
-        new String(serializerNoMetadata.entity(metadata, entityType, entity, null).getContent().readAllBytes(), StandardCharsets.UTF_8));
+        new String(serializerNoMetadata.entity(metadata, entityType, entity, null)
+            .getContent().readAllBytes(), StandardCharsets.UTF_8));
   }
 
   @Test
@@ -2316,13 +2331,16 @@ public class ODataJsonSerializerTest {
         .addProperty(new Property(null, entityType.getPropertyNames().get(0), ValueType.GEOSPATIAL,
             new Polygon(Dimension.GEOMETRY, null,
                     List.of(new LineString(Dimension.GEOMETRY, null, Arrays.asList(
-                            createPoint(1, 1), createPoint(1, 2), createPoint(2, 2), createPoint(2, 1), createPoint(1, 1)))),
+                            createPoint(1, 1), createPoint(1, 2), createPoint(2, 2),
+                            createPoint(2, 1), createPoint(1, 1)))),
                 new LineString(Dimension.GEOMETRY, null, Arrays.asList(
-                    createPoint(0, 0), createPoint(3, 0), createPoint(3, 3), createPoint(0, 3), createPoint(0, 0))))));
+                    createPoint(0, 0), createPoint(3, 0), createPoint(3, 3),
+                    createPoint(0, 3), createPoint(0, 0))))));
     Assertions.assertEquals("{\"" + entityType.getPropertyNames().get(0) + "\":{"
         + "\"type\":\"Polygon\",\"coordinates\":[[[0.0,0.0],[3.0,0.0],[3.0,3.0],[0.0,3.0],[0.0,0.0]],"
         + "[[1.0,1.0],[1.0,2.0],[2.0,2.0],[2.0,1.0],[1.0,1.0]]]}}",
-        new String(serializerNoMetadata.entity(metadata, entityType, entity, null).getContent().readAllBytes(), StandardCharsets.UTF_8));
+        new String(serializerNoMetadata.entity(metadata, entityType, entity, null)
+            .getContent().readAllBytes(), StandardCharsets.UTF_8));
 
     entity = new Entity().addProperty(new Property(null, entityType.getPropertyNames().get(0), ValueType.GEOSPATIAL,
         new Polygon(Dimension.GEOMETRY, null, null,
@@ -2331,7 +2349,8 @@ public class ODataJsonSerializerTest {
                 createPoint(10, 10))))));
     Assertions.assertEquals("{\"" + entityType.getPropertyNames().get(0) + "\":{"
         + "\"type\":\"Polygon\",\"coordinates\":[[[10.0,10.0],[30.0,10.0],[30.0,30.0],[10.0,30.0],[10.0,10.0]]]}}",
-        new String(serializerNoMetadata.entity(metadata, entityType, entity, null).getContent().readAllBytes(), StandardCharsets.UTF_8));
+        new String(serializerNoMetadata.entity(metadata, entityType, entity, null)
+            .getContent().readAllBytes(), StandardCharsets.UTF_8));
   }
 
   @Test
@@ -2342,13 +2361,15 @@ public class ODataJsonSerializerTest {
             new MultiPolygon(Dimension.GEOMETRY, null, Arrays.asList(
                 new Polygon(Dimension.GEOMETRY, null,
                         List.of(new LineString(Dimension.GEOMETRY, null, Arrays.asList(
-                                createPoint(1, 1), createPoint(1, 2), createPoint(2, 2), createPoint(2, 1), createPoint(1, 1)))),
+                                createPoint(1, 1), createPoint(1, 2), createPoint(2, 2),
+                                createPoint(2, 1), createPoint(1, 1)))),
                     new LineString(Dimension.GEOMETRY, null, Arrays.asList(
                         createPoint(0, 0), createPoint(3, 0), createPoint(3, 3), createPoint(0, 3),
                         createPoint(0, 0)))),
                 new Polygon(Dimension.GEOMETRY, null,
                         List.of(new LineString(Dimension.GEOMETRY, null, Arrays.asList(
-                                createPoint(10, 10), createPoint(10, 20), createPoint(20, 10), createPoint(10, 10)))),
+                                createPoint(10, 10), createPoint(10, 20),
+                                createPoint(20, 10), createPoint(10, 10)))),
                     new LineString(Dimension.GEOMETRY, null, Arrays.asList(
                         createPoint(0, 0), createPoint(30, 0), createPoint(0, 30), createPoint(0, 0))))))));
     Assertions.assertEquals("{\"" + entityType.getPropertyNames().get(0) + "\":{"
@@ -2357,7 +2378,8 @@ public class ODataJsonSerializerTest {
         + "[[1.0,1.0],[1.0,2.0],[2.0,2.0],[2.0,1.0],[1.0,1.0]]],"
         + "[[[0.0,0.0],[30.0,0.0],[0.0,30.0],[0.0,0.0]],"
         + "[[10.0,10.0],[10.0,20.0],[20.0,10.0],[10.0,10.0]]]]}}",
-        new String(serializerNoMetadata.entity(metadata, entityType, entity, null).getContent().readAllBytes(), StandardCharsets.UTF_8));
+        new String(serializerNoMetadata.entity(metadata, entityType, entity, null)
+            .getContent().readAllBytes(), StandardCharsets.UTF_8));
   }
 
   @Test
@@ -2372,7 +2394,8 @@ public class ODataJsonSerializerTest {
         + "\"type\":\"GeometryCollection\",\"geometries\":["
         + "{\"type\":\"Point\",\"coordinates\":[100.0,0.0]},"
         + "{\"type\":\"LineString\",\"coordinates\":[[101.0,0.0],[102.0,1.0]]}]}}",
-        new String(serializerNoMetadata.entity(metadata, entityType, entity, null).getContent().readAllBytes(), StandardCharsets.UTF_8));
+        new String(serializerNoMetadata.entity(metadata, entityType, entity, null)
+            .getContent().readAllBytes(), StandardCharsets.UTF_8));
   }
 
   private EdmEntityType mockEntityType(final EdmPrimitiveTypeKind type) {
@@ -2395,7 +2418,8 @@ public class ODataJsonSerializerTest {
             new Point(Dimension.GEOMETRY, SRID.valueOf("42"))));
     Assertions.assertEquals("{\"PropertyGeometryPoint\":{\"type\":\"Point\",\"coordinates\":[0.0,0.0],"
     		+ "\"crs\":{\"type\":\"name\",\"properties\":{\"name\":\"EPSG:42\"}}}}",
-            new String(serializerNoMetadata.entity(metadata, entityType, entity, null).getContent().readAllBytes(), StandardCharsets.UTF_8));
+            new String(serializerNoMetadata.entity(metadata, entityType, entity, null)
+                .getContent().readAllBytes(), StandardCharsets.UTF_8));
   }
 
   private Point createPoint(final double x, final double y) {

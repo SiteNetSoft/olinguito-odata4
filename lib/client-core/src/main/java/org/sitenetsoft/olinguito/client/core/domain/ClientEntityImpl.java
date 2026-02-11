@@ -396,7 +396,9 @@ public class ClientEntityImpl extends AbstractClientPayload implements ClientEnt
       }
     if (typeName == null) {
         return other.typeName == null;
-    } else return typeName.equals(other.typeName);
+    } else {
+      return typeName.equals(other.typeName);
+    }
   }
 
   @Override

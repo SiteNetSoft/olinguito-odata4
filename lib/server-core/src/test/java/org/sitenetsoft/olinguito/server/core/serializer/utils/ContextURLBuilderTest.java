@@ -188,7 +188,8 @@ public class ContextURLBuilderTest {
 
   @Test
   public void buildSuffixWithoutEntitySet() {
-      assertThrows(IllegalArgumentException.class, () -> ContextURLBuilder.create(ContextURL.with().suffix(Suffix.ENTITY).build()));
+      assertThrows(IllegalArgumentException.class,
+          () -> ContextURLBuilder.create(ContextURL.with().suffix(Suffix.ENTITY).build()));
   }
 
   @Test

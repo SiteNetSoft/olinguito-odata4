@@ -394,7 +394,8 @@ public class EdmEntityTypeImplTest {
   public void invalidBaseType() {
       assertThrows(EdmException.class, () -> {
           EdmProviderImpl edm = mock(EdmProviderImpl.class);
-          CsdlEntityType entityType = new CsdlEntityType().setName("n").setBaseType(new FullQualifiedName("wrong", "wrong"));
+          CsdlEntityType entityType = new CsdlEntityType()
+          .setName("n").setBaseType(new FullQualifiedName("wrong", "wrong"));
           EdmEntityTypeImpl instance = new EdmEntityTypeImpl(edm, new FullQualifiedName("n", "n"), entityType);
           instance.getBaseType();
       });

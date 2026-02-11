@@ -97,7 +97,9 @@ public class ODataEntityUpdateRequestImpl<E extends ClientEntity>
       }
       return response;
     } finally {
-      try { input.close(); } catch (IOException ignored) { }
+      try {
+        input.close();
+      } catch (IOException ignored) { }
     }
   }
 

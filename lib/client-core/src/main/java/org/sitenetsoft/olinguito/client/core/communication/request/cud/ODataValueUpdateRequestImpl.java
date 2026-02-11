@@ -81,7 +81,9 @@ public class ODataValueUpdateRequestImpl extends AbstractODataBasicRequest<OData
     try {
       return new ODataValueUpdateResponseImpl(odataClient, httpClient, doExecute());
     } finally {
-      try { input.close(); } catch (IOException ignored) { }
+      try {
+        input.close();
+      } catch (IOException ignored) { }
     }
   }
 

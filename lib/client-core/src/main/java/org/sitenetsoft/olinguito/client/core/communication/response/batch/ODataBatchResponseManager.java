@@ -34,7 +34,6 @@ import org.sitenetsoft.olinguito.client.api.communication.response.ODataBatchRes
 import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataBatchLineIteratorImpl;
 import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataBatchUtilities;
 import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataChangesetResponseItem;
-import org.sitenetsoft.olinguito.commons.api.Constants;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

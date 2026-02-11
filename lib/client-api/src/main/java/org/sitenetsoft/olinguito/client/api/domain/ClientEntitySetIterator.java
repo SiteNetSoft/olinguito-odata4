@@ -155,8 +155,12 @@ public class ClientEntitySetIterator<T extends ClientEntitySet, E extends Client
    * Closes the current iterator.
    */
   public void close() {
-    try { stream.close(); } catch (IOException ignored) { }
-    try { osEntitySet.close(); } catch (IOException ignored) { }
+    try {
+      stream.close();
+    } catch (IOException ignored) { }
+    try {
+      osEntitySet.close();
+    } catch (IOException ignored) { }
   }
 
   /**

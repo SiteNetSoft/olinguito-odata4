@@ -238,7 +238,8 @@ public class AtomSerializer implements ODataSerializer {
         });
         
       } else if (link.getBindingLink() != null) {
-        writeLink(writer, link, (ExtraContent) (writer2, link2) -> writer2.writeAttribute(Constants.ATTR_HREF, link2.getBindingLink()));
+        writeLink(writer, link, (ExtraContent) (writer2, link2) ->
+            writer2.writeAttribute(Constants.ATTR_HREF, link2.getBindingLink()));
       } else if (link.getBindingLinks() != null && !link.getBindingLinks().isEmpty()) {
         writeLink(writer, link, (ExtraContent) (writer3, link3) -> {
           writer3.writeStartElement(Constants.PREFIX_METADATA, Constants.ATOM_ELEM_INLINE, Constants.NS_METADATA);

@@ -728,7 +728,8 @@ public class UriTokenizerTest {
     // Place the disturbing character at every position in the value string
     // and check that this leads to a failed token recognition.
     for (int index = 0; index < value.length(); index++) {
-      assertFalse(new UriTokenizer(value.substring(0, index) + disturbCharacter + value.substring(index + 1)).next(kind),
+      assertFalse(new UriTokenizer(
+              value.substring(0, index) + disturbCharacter + value.substring(index + 1)).next(kind),
           "Error at index " + index);
     }
   }

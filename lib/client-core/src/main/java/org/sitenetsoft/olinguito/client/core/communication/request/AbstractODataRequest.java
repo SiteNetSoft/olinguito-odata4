@@ -253,7 +253,9 @@ public abstract class AbstractODataRequest extends AbstractRequest implements OD
     } catch (IOException e) {
       throw new IllegalStateException(e);
     } finally {
-      try { baos.close(); } catch (IOException ignored) { }
+      try {
+        baos.close();
+      } catch (IOException ignored) { }
     }
   }
 

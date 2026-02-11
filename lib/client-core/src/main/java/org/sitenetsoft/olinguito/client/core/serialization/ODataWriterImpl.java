@@ -62,7 +62,9 @@ public class ODataWriterImpl implements ODataWriter {
 
       return new ByteArrayInputStream(output.toByteArray());
     } finally {
-      try { writer.close(); } catch (IOException ignored) { }
+      try {
+        writer.close();
+      } catch (IOException ignored) { }
     }
   }
 
@@ -82,7 +84,9 @@ public class ODataWriterImpl implements ODataWriter {
 
       return new ByteArrayInputStream(output.toByteArray());
     } finally {
-      try { writer.close(); } catch (IOException ignored) { }
+      try {
+        writer.close();
+      } catch (IOException ignored) { }
     }
   }
 
@@ -95,7 +99,9 @@ public class ODataWriterImpl implements ODataWriter {
 
       return new ByteArrayInputStream(output.toByteArray());
     } finally {
-      try { writer.close(); } catch (IOException ignored) { }
+      try {
+        writer.close();
+      } catch (IOException ignored) { }
     }
   }
 
@@ -108,7 +114,9 @@ public class ODataWriterImpl implements ODataWriter {
 
       return new ByteArrayInputStream(output.toByteArray());
     } finally {
-      try { writer.close(); } catch (IOException ignored) { }
+      try {
+        writer.close();
+      } catch (IOException ignored) { }
     }
   }
 }

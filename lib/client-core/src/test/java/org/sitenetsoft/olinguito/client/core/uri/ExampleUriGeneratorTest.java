@@ -81,7 +81,8 @@ public class ExampleUriGeneratorTest {
         //CHECKSTYLE:OFF
         /**
          * Escapes a string literal by representing a single quote in a string literal as two consecutive single quotes,
-         * as per the <a href="https://docs.oasis-open.org/odata/odata/v4.01/os/part2-url-conventions/odata-v4.01-os-part2-url-conventions.html#sec_URLSyntax">OData 4.01 URL Conventions</a>
+         * as per the <a href="https://docs.oasis-open.org/odata/odata/v4.01/os/part2-url-conventions/
+         * odata-v4.01-os-part2-url-conventions.html#sec_URLSyntax">OData 4.01 URL Conventions</a>
          *
          * @param value the value to escape
          * @return the escaped value

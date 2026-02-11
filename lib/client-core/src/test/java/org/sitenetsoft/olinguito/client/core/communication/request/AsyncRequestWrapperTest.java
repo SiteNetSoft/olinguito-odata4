@@ -181,7 +181,8 @@ public class AsyncRequestWrapperTest {
     assertEquals("Exception", ex.getMessage());
   }
 
-  private AsyncRequestWrapperImpl<ODataResponse>.AsyncResponseWrapperImpl createAsyncRequestWrapperImplWithLocation(String target, String location)
+  private AsyncRequestWrapperImpl<ODataResponse>.AsyncResponseWrapperImpl
+      createAsyncRequestWrapperImplWithLocation(String target, String location)
       throws IOException, URISyntaxException {
 
     HttpClient httpClient = mock(HttpClient.class);
@@ -247,7 +248,8 @@ public class AsyncRequestWrapperTest {
   public void testLocationWithDifferentPaths() throws IOException, URISyntaxException {
     String target = "http://server/path";
     String location = "http://server/monitor";
-    AsyncRequestWrapperImpl<ODataResponse>.AsyncResponseWrapperImpl wrapper = createAsyncRequestWrapperImplWithLocation(target, location);
+    AsyncRequestWrapperImpl<ODataResponse>.AsyncResponseWrapperImpl wrapper =
+        createAsyncRequestWrapperImplWithLocation(target, location);
     assertEquals(new URI(location), wrapper.location);
   }
 

@@ -41,10 +41,9 @@ import org.sitenetsoft.olinguito.ext.proxy.api.EntityCollection;
 import org.sitenetsoft.olinguito.ext.proxy.api.EntityType;
 import org.sitenetsoft.olinguito.ext.proxy.utils.ClassUtils;
 
-//CHECKSTYLE:OFF
-public abstract class AbstractEntityCollectionInvocationHandler<T extends EntityType<?>, EC extends EntityCollection<T, ?, ?>>
+public abstract class AbstractEntityCollectionInvocationHandler<
+    T extends EntityType<?>, EC extends EntityCollection<T, ?, ?>>
     extends AbstractCollectionInvocationHandler<T, EC> {
-//CHECKSTYLE:ON
   protected URI targetEntitySetURI;
 
   private boolean isSingleton = false;

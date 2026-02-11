@@ -115,7 +115,9 @@ public class TomcatTestServer implements TestServer {
       }
       @Override
       public FileVisitResult postVisitDirectory(Path d, IOException exc) throws IOException {
-        if (exc != null) throw exc;
+        if (exc != null) {
+          throw exc;
+        }
         Files.delete(d);
         return FileVisitResult.CONTINUE;
       }
@@ -400,7 +402,8 @@ public class TomcatTestServer implements TestServer {
         return this;
       }
       final String TOMCAT_WEB_XML = "web.xml";
-      String webXMLPath = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(TOMCAT_WEB_XML)).getPath();
+      String webXMLPath = Objects.requireNonNull(
+          Thread.currentThread().getContextClassLoader().getResource(TOMCAT_WEB_XML)).getPath();
       String servletClassname = factoryClass.getName();
       HttpServlet httpServlet = (HttpServlet) Class.forName(servletClassname).getDeclaredConstructor().newInstance();
       Context cxt = tomcat.addWebapp(servletPath, baseDir.getAbsolutePath());
@@ -462,7 +465,8 @@ public class TomcatTestServer implements TestServer {
       tomcat.start();
 
       int actualPort = tomcat.getConnector().getPort();
-        LOG.info("Started server at endpoint {}:{} (with base dir: {}", tomcat.getServer().getAddress(), actualPort, baseDir.getAbsolutePath());
+      LOG.info("Started server at endpoint {}:{} (with base dir: {}",
+          tomcat.getServer().getAddress(), actualPort, baseDir.getAbsolutePath());
 
       server = new TomcatTestServer(tomcat, actualPort);
       return server;

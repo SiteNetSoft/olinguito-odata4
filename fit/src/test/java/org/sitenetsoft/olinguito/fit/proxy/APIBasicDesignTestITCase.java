@@ -399,7 +399,8 @@ public class APIBasicDesignTestITCase extends AbstractTestITCase {
     final PersonDetail personDetail = dcontainer.getPersonDetails().getByKey(1); // NO HTTP Request
 
     // 1 HTTP Request to add an Edm.Stream property value about MediaEditLink Photo
-    personDetail.setPhoto(dcontainer.newEdmStreamValue("application/octet-stream", new ByteArrayInputStream(random.getBytes(StandardCharsets.UTF_8))));
+    personDetail.setPhoto(dcontainer.newEdmStreamValue("application/octet-stream",
+        new ByteArrayInputStream(random.getBytes(StandardCharsets.UTF_8))));
 
     dcontainer.flush();
 

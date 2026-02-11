@@ -94,7 +94,9 @@ public final class ServiceDocumentItemImpl implements ServiceDocumentItem {
     }
     if (url == null) {
         return other.url == null;
-    } else return url.equals(other.url);
+    } else {
+      return url.equals(other.url);
+    }
   }
 
   @Override

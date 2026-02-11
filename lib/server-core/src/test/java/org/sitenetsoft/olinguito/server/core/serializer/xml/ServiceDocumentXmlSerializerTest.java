@@ -30,12 +30,8 @@ import java.util.Collections;
 
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
-import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
-import org.sitenetsoft.olinguito.commons.api.edm.EdmFunctionImport;
-import org.sitenetsoft.olinguito.commons.api.edm.EdmSingleton;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEdmProvider;
-import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
@@ -72,7 +68,8 @@ public class ServiceDocumentXmlSerializerTest {
         + "metadata:context=\"http://host/svc/$metadata\">"
         + "<app:workspace><atom:title>service.test</atom:title></app:workspace>"
         + "</app:service>",
-        new String(serializer.serviceDocument(metadata, "http://host/svc").getContent().readAllBytes(), StandardCharsets.UTF_8));
+        new String(serializer.serviceDocument(metadata, "http://host/svc")
+            .getContent().readAllBytes(), StandardCharsets.UTF_8));
   }
 
   @Test

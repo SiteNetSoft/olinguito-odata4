@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
-import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.uri.UriInfoKind;

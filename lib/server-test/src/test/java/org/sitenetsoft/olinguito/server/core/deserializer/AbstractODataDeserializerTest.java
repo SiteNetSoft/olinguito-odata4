@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.util.Collections;
 
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
-import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;

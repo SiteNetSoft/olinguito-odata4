@@ -223,7 +223,9 @@ public abstract class Commons {
       LOG.error("Error changing format", e);
       return new ByteArrayInputStream(bos.toByteArray());
     } finally {
-      try { is.close(); } catch (IOException ignored) { }
+      try {
+        is.close();
+      } catch (IOException ignored) { }
     }
   }
 

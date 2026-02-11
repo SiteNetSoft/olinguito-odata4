@@ -132,7 +132,8 @@ public class JSONUtilities extends AbstractUtilities {
 
         links.addLinks(title, hrefs);
       } else if (navigationProperties.containsKey(field.getKey())) {
-        links.addInlines(field.getKey(), new ByteArrayInputStream(field.getValue().toString().getBytes(Constants.ENCODING)));
+        links.addInlines(field.getKey(),
+            new ByteArrayInputStream(field.getValue().toString().getBytes(Constants.ENCODING)));
       }
     }
 

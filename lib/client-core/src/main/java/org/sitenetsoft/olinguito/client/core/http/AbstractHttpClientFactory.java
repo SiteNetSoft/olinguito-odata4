@@ -44,7 +44,11 @@ public abstract class AbstractHttpClientFactory implements HttpClientFactory {
     } catch (Exception e) {
       LOG.warn("Could not get Apache Olingo version", e);
     } finally {
-      try { if (input != null) input.close(); } catch (IOException ignored) { }
+      try {
+        if (input != null) {
+          input.close();
+        }
+      } catch (IOException ignored) { }
     }
 
     USER_AGENT = userAgent.toString();
