@@ -288,7 +288,9 @@ public abstract class AbstractODataResponse implements ODataResponse {
           } finally {
             try {
               os.close();
-            } catch (IOException ignored) { }
+            } catch (IOException e) {
+              LOG.debug("Failed to close resource", e);
+            }
           }
         }).start();
       } catch (Exception e) {

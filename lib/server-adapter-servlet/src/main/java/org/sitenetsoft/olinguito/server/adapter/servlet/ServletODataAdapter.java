@@ -28,6 +28,9 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.sitenetsoft.olinguito.server.api.ODataContent;
@@ -43,6 +46,8 @@ import org.sitenetsoft.olinguito.server.api.ODataResponse;
  * remains HTTP/servlet-agnostic.
  */
 public final class ServletODataAdapter implements ODataServletHandler {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ServletODataAdapter.class);
 
     /**
      * Attribute name used by Spring-based apps to store the request mapping.
@@ -149,8 +154,8 @@ public final class ServletODataAdapter implements ODataServletHandler {
             // If something goes wrong at servlet I/O level, surface as 500
             try {
                 resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            } catch (IOException ignored) {
-                // nothing else we can do here
+            } catch (IOException ex) {
+                LOG.debug("Failed to send error response", ex);
             }
         }
     }

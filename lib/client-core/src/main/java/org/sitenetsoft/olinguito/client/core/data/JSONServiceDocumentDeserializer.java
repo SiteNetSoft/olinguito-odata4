@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.client.core.data;
 
@@ -23,7 +25,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.Iterator;
 
-import org.apache.commons.lang3.StringUtils;
+
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;
 import org.sitenetsoft.olinguito.client.api.data.ServiceDocument;
 import org.sitenetsoft.olinguito.client.api.serialization.ODataDeserializerException;
@@ -81,7 +83,7 @@ public class JSONServiceDocumentDeserializer extends JsonDeserializer {
       item.setUrl(node.get("url").asText());
 
       final String kind = node.has("kind") ? node.get("kind").asText() : null;
-      if (StringUtils.isBlank(kind) || "EntitySet".equals(kind)) {
+      if ((kind == null || kind.isBlank()) || "EntitySet".equals(kind)) {
         serviceDocument.getEntitySets().add(item);
       } else if ("Singleton".equals(kind)) {
         serviceDocument.getSingletons().add(item);

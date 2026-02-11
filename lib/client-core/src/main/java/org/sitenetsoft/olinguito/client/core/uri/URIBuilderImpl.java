@@ -27,7 +27,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.sitenetsoft.olinguito.client.api.Configuration;
@@ -148,7 +147,7 @@ public class URIBuilderImpl implements URIBuilder {
   public URIBuilder appendKeySegment(final Map<String, Object> segmentValues) {
     if (!configuration.isKeyAsSegment()) {
       final String key = buildMultiKeySegment(segmentValues, true, ',');
-      if (StringUtils.isEmpty(key)) {
+      if (key == null || key.isEmpty()) {
         segments.add(new Segment(SegmentType.KEY, noKeysWrapper()));
       } else {
         segments.add(new Segment(SegmentType.KEY, key));
@@ -223,7 +222,7 @@ public class URIBuilderImpl implements URIBuilder {
 
   @Override
   public URIBuilder expand(final String... expandItems) {
-    return addQueryOption(QueryOption.EXPAND, StringUtils.join(expandItems, ","));
+    return addQueryOption(QueryOption.EXPAND, String.join(",", expandItems));
   }
 
   @Override
@@ -246,7 +245,7 @@ public class URIBuilderImpl implements URIBuilder {
 
   @Override
   public URIBuilder select(final String... selectItems) {
-    return addQueryOption(QueryOption.SELECT, StringUtils.join(selectItems, ","));
+    return addQueryOption(QueryOption.SELECT, String.join(",", selectItems));
   }
 
   @Override
@@ -350,7 +349,7 @@ public class URIBuilderImpl implements URIBuilder {
   protected String buildMultiKeySegment(final Map<String, Object> segmentValues, final boolean escape,
       final char sperator) {
     if (segmentValues == null || segmentValues.isEmpty()) {
-      return StringUtils.EMPTY;
+      return "";
     } else {
       final StringBuilder keyBuilder = new StringBuilder().append('(');
       for (Map.Entry<String, Object> entry : segmentValues.entrySet()) {
@@ -415,7 +414,7 @@ public class URIBuilderImpl implements URIBuilder {
   @Override
   public URIBuilder appendCrossjoinSegment(final String... segmentValues) {
     String segValue = SegmentType.CROSS_JOIN.getValue() +
-            '(' + StringUtils.join(segmentValues, ",") + ')';
+            '(' + String.join(",", segmentValues) + ')';
     segments.add(new Segment(SegmentType.CROSS_JOIN, segValue));
     return this;
   }
@@ -458,13 +457,13 @@ public class URIBuilderImpl implements URIBuilder {
     for (Map.Entry<QueryOption, Object> entry : options.entrySet()) {
       _options.put("$" + entry.getKey().toString(), entry.getValue());
     }
-    String path = pathRef?"/$ref":pathCount?"/$count":StringUtils.EMPTY;
+    String path = pathRef?"/$ref":pathCount?"/$count":"";
     return expand(expandItem + buildMultiKeySegment(_options, false, ';')+path);    
   }
   
   @Override
   public URIBuilder expandWithSelect(final String expandItem, final String... selectItems) {
-    return expand(expandItem + "($select=" + StringUtils.join(selectItems, ",") + ")");
+    return expand(expandItem + "($select=" + String.join(",", selectItems) + ")");
   }
 
   @Override

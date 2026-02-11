@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -22,7 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
-import org.apache.commons.lang3.StringUtils;
+import org.sitenetsoft.olinguito.client.core.StringHelper;
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;
 import org.sitenetsoft.olinguito.client.api.serialization.ODataDeserializerException;
 import org.sitenetsoft.olinguito.commons.api.Constants;
@@ -52,7 +54,7 @@ public class JsonDeltaDeserializer extends JsonDeserializer {
     final URI contextURL = tree.hasNonNull(Constants.JSON_CONTEXT) ?
         URI.create(tree.get(Constants.JSON_CONTEXT).textValue()) : null;
     if (contextURL != null) {
-      delta.setBaseURI(URI.create(StringUtils.substringBefore(contextURL.toASCIIString(), Constants.METADATA)));
+      delta.setBaseURI(URI.create(StringHelper.substringBefore(contextURL.toASCIIString(), Constants.METADATA)));
     }
 
     if (tree.hasNonNull(Constants.JSON_COUNT)) {

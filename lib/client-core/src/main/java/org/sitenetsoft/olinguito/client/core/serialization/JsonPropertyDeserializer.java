@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -25,7 +27,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
+import org.sitenetsoft.olinguito.client.core.StringHelper;
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;
 import org.sitenetsoft.olinguito.commons.api.Constants;
 import org.sitenetsoft.olinguito.commons.api.data.Annotation;
@@ -65,12 +67,12 @@ public class JsonPropertyDeserializer extends JsonDeserializer {
 
     if (tree.hasNonNull(Constants.JSON_CONTEXT)) {
       contextURL = URI.create(tree.get(Constants.JSON_CONTEXT).textValue());
-      property.setName(StringUtils.substringAfterLast(contextURL.toASCIIString(), "/"));
+      property.setName(StringHelper.substringAfterLast(contextURL.toASCIIString(), "/"));
       tree.remove(Constants.JSON_CONTEXT);
     } else if (tree.hasNonNull(Constants.JSON_METADATA)) {
       contextURL = URI.create(tree.get(Constants.JSON_METADATA).textValue());
       property.setType(new EdmTypeInfo.Builder().
-          setTypeExpression(StringUtils.substringAfterLast(contextURL.toASCIIString(), "#")).build().internal());
+          setTypeExpression(StringHelper.substringAfterLast(contextURL.toASCIIString(), "#")).build().internal());
       tree.remove(Constants.JSON_METADATA);
     } else {
       contextURL = null;

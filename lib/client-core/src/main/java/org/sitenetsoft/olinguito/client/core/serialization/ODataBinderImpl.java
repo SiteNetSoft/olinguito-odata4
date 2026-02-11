@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang3.StringUtils;
+import org.sitenetsoft.olinguito.client.core.StringHelper;
 import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;
@@ -503,7 +503,7 @@ public class ODataBinderImpl implements ODataBinder {
 
     EdmType type = null;
 
-    final String firstToken = StringUtils.substringBefore(entitySetOrSingletonOrType, "/");
+    final String firstToken = StringHelper.substringBefore(entitySetOrSingletonOrType, "/");
     EdmBindingTarget bindingTarget = container.getEntitySet(firstToken);
     if (bindingTarget == null) {
       bindingTarget = container.getSingleton(firstToken);
@@ -547,7 +547,7 @@ public class ODataBinderImpl implements ODataBinder {
 
     if (client instanceof EdmEnabledODataClient) {
       final Edm edm = ((EdmEnabledODataClient) client).getEdm(metadataETag);
-      if (StringUtils.isNotBlank(candidateTypeName)) {
+      if ((candidateTypeName != null && !candidateTypeName.isBlank())) {
         type = edm.getEntityType(new FullQualifiedName(candidateTypeName));
       }
       if (type == null && contextURL != null) {
@@ -666,7 +666,7 @@ public class ODataBinderImpl implements ODataBinder {
         : client.getObjectFactory().newEntity(typeName,
             URIUtils.getURI(base, resource.getPayload().getSelfLink().getHref()));
 
-    if (StringUtils.isNotBlank(resource.getPayload().getETag())) {
+    if ((resource.getPayload().getETag() != null && !resource.getPayload().getETag().isBlank())) {
       entity.setETag(resource.getPayload().getETag());
     }
 

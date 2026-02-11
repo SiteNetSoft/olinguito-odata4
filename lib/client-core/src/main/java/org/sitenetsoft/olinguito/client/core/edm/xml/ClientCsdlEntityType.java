@@ -24,7 +24,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityType;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -52,13 +51,13 @@ class ClientCsdlEntityType extends CsdlEntityType implements Serializable {
           if ("Name".equals(jp.currentName())) {
             entityType.setName(jp.nextTextValue());
           } else if ("Abstract".equals(jp.currentName())) {
-            entityType.setAbstract(BooleanUtils.toBoolean(jp.nextTextValue()));
+            entityType.setAbstract(Boolean.parseBoolean(jp.nextTextValue()));
           } else if ("BaseType".equals(jp.currentName())) {
             entityType.setBaseType(jp.nextTextValue());
           } else if ("OpenType".equals(jp.currentName())) {
-            entityType.setOpenType(BooleanUtils.toBoolean(jp.nextTextValue()));
+            entityType.setOpenType(Boolean.parseBoolean(jp.nextTextValue()));
           } else if ("HasStream".equals(jp.currentName())) {
-            entityType.setHasStream(BooleanUtils.toBoolean(jp.nextTextValue()));
+            entityType.setHasStream(Boolean.parseBoolean(jp.nextTextValue()));
           } else if ("Key".equals(jp.currentName())) {
             jp.nextToken();
             ClientCsdlEntityKey keyImpl = jp.readValueAs(ClientCsdlEntityKey.class);

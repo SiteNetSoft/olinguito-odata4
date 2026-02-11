@@ -116,7 +116,9 @@ public class AsyncBatchRequestWrapperImpl extends AsyncRequestWrapperImpl<ODataB
 
       try {
         res.getRawResponse().close();
-      } catch (IOException ignored) { }
+      } catch (IOException e) {
+        LOG.debug("Failed to close resource", e);
+      }
     }
   }
 }

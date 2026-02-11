@@ -27,7 +27,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Future;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -156,7 +155,7 @@ public abstract class AbstractODataStreamedRequest<V extends ODataResponse, T ex
       getPayloadManager().finalizeBody();
 
       req.rawAppend(toByteArray());
-      if (StringUtils.isNotBlank(contentId)) {
+      if (contentId != null && !contentId.isBlank()) {
         req.rawAppend((ODataBatchConstants.CHANGESET_CONTENT_ID_NAME + ": " + contentId).getBytes(DEFAULT_CHARSET));
         req.rawAppend(CRLF);
       }
@@ -173,7 +172,9 @@ public abstract class AbstractODataStreamedRequest<V extends ODataResponse, T ex
     } finally {
       try {
         input.close();
-      } catch (IOException ignored) { }
+      } catch (IOException e) {
+        LOG.debug("Failed to close resource", e);
+      }
     }
   }
 }

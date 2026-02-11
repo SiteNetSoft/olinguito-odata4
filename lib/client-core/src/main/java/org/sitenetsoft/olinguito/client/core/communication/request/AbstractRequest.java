@@ -18,7 +18,6 @@
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
-import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.ODataClientErrorException;
@@ -70,7 +69,7 @@ public abstract class AbstractRequest {
 
   private static ContentType determineContentType(ODataHttpResponse response, String accept) {
     final String ct = response.getContentType();
-    if (ct == null || StringUtils.isBlank(ct)) {
+    if (ct == null || ct.isBlank()) {
       return ContentType.fromAcceptHeader(accept);
     }
     try {

@@ -15,13 +15,15 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.retrieve;
 
 import java.net.URI;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
+import org.sitenetsoft.olinguito.client.core.StringHelper;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpRequest;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
@@ -89,7 +91,7 @@ public class XMLMetadataRequestImpl
         final CsdlSchema includedSchema = includeMetadata.getSchema(include.getNamespace());
         if (includedSchema != null) {
           response.getBody().getSchemas().add(includedSchema);
-          if (StringUtils.isNotBlank(include.getAlias())) {
+          if (include.getAlias() != null && !include.getAlias().isBlank()) {
             includedSchema.setAlias(include.getAlias());
           }
         }
@@ -107,10 +109,10 @@ public class XMLMetadataRequestImpl
           for (CsdlAnnotations annotationGroup : schema.getAnnotationGroups()) {
             // take into account only when (TargetNamespace was either not provided or matches) and
             // (Qualifier was either not provided or matches)
-            if ((StringUtils.isBlank(include.getTargetNamespace())
+            if (((include.getTargetNamespace() == null || include.getTargetNamespace().isBlank())
                 || include.getTargetNamespace().equals(
-                    StringUtils.substringBeforeLast(annotationGroup.getTarget(), ".")))
-                && (StringUtils.isBlank(include.getQualifier())
+                    StringHelper.substringBeforeLast(annotationGroup.getTarget(), ".")))
+                && ((include.getQualifier() == null || include.getQualifier().isBlank())
                     || include.getQualifier().equals(annotationGroup.getQualifier()))) {
 
               final CsdlAnnotations toBeIncluded = new CsdlAnnotations();
@@ -118,7 +120,7 @@ public class XMLMetadataRequestImpl
               toBeIncluded.setQualifier(annotationGroup.getQualifier());
               // only import annotations with terms matching the given TermNamespace
               for (CsdlAnnotation annotation : annotationGroup.getAnnotations()) {
-                if (include.getTermNamespace().equals(StringUtils.substringBeforeLast(annotation.getTerm(), "."))) {
+                if (include.getTermNamespace().equals(StringHelper.substringBeforeLast(annotation.getTerm(), "."))) {
                   toBeIncluded.getAnnotations().add(annotation);
                 }
               }

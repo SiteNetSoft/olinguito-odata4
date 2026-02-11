@@ -92,7 +92,9 @@ public class ODataEntityCreateRequestImpl<E extends ClientEntity>
     } finally {
       try {
         input.close();
-      } catch (IOException ignored) { }
+      } catch (IOException e) {
+        LOG.debug("Failed to close resource", e);
+      }
     }
   }
 

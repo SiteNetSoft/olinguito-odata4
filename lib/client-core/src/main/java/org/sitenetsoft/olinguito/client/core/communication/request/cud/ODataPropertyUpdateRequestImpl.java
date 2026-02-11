@@ -84,7 +84,9 @@ public class ODataPropertyUpdateRequestImpl extends AbstractODataBasicRequest<OD
     } finally {
       try {
         input.close();
-      } catch (IOException ignored) { }
+      } catch (IOException e) {
+        LOG.debug("Failed to close resource", e);
+      }
     }
   }
 

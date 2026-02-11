@@ -24,7 +24,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlFunctionImport;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -56,7 +55,7 @@ class ClientCsdlFunctionImport extends CsdlFunctionImport implements Serializabl
           } else if ("EntitySet".equals(jp.currentName())) {
             functImpImpl.setEntitySet(jp.nextTextValue());
           } else if ("IncludeInServiceDocument".equals(jp.currentName())) {
-            functImpImpl.setIncludeInServiceDocument(BooleanUtils.toBoolean(jp.nextTextValue()));
+            functImpImpl.setIncludeInServiceDocument(Boolean.parseBoolean(jp.nextTextValue()));
           } else if ("Annotation".equals(jp.currentName())) {
             jp.nextToken();
             functImpImpl.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));

@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 
-import org.apache.commons.lang3.StringUtils;
+import org.sitenetsoft.olinguito.client.core.StringHelper;
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;
 import org.sitenetsoft.olinguito.commons.api.Constants;
 import org.sitenetsoft.olinguito.commons.api.data.Annotation;
@@ -78,7 +78,7 @@ public class JsonEntityDeserializer extends JsonDeserializer {
       contextURL = null;
     }
     if (contextURL != null) {
-      entity.setBaseURI(URI.create(StringUtils.substringBefore(contextURL.toASCIIString(), Constants.METADATA)));
+      entity.setBaseURI(URI.create(StringHelper.substringBefore(contextURL.toASCIIString(), Constants.METADATA)));
     }
 
     final String metadataETag;

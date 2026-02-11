@@ -24,7 +24,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEnumType;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -54,7 +53,7 @@ class ClientCsdlEnumType extends CsdlEnumType implements Serializable {
           } else if ("UnderlyingType".equals(jp.currentName())) {
             enumType.setUnderlyingType(jp.nextTextValue());
           } else if ("IsFlags".equals(jp.currentName())) {
-            enumType.setFlags(BooleanUtils.toBoolean(jp.nextTextValue()));
+            enumType.setFlags(Boolean.parseBoolean(jp.nextTextValue()));
           } else if ("Member".equals(jp.currentName())) {
             jp.nextToken();
             enumType.getMembers().add(jp.readValueAs(ClientCsdlEnumMember.class));

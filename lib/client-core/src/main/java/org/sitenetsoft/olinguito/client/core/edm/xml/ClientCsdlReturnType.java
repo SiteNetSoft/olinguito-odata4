@@ -24,7 +24,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.sitenetsoft.olinguito.commons.api.edm.geo.SRID;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlReturnType;
 
@@ -60,7 +59,7 @@ class ClientCsdlReturnType extends CsdlReturnType implements Serializable {
               returnType.setCollection(false);
             }
           } else if ("Nullable".equals(jp.currentName())) {
-            returnType.setNullable(BooleanUtils.toBoolean(jp.nextTextValue()));
+            returnType.setNullable(Boolean.parseBoolean(jp.nextTextValue()));
           } else if ("MaxLength".equals(jp.currentName())) {
             final String maxLenght = jp.nextTextValue();
             returnType.setMaxLength("max".equalsIgnoreCase(maxLenght)

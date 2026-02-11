@@ -22,7 +22,6 @@
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -191,7 +190,7 @@ public abstract class AbstractODataRequest extends AbstractRequest implements OD
   @Override
   public String getAccept() {
     final String acceptHead = odataHeaders.getHeader(HttpHeader.ACCEPT);
-    return StringUtils.isBlank(acceptHead) ? getDefaultFormat().toContentTypeString() : acceptHead;
+    return (acceptHead == null || acceptHead.isBlank()) ? getDefaultFormat().toContentTypeString() : acceptHead;
   }
 
   @Override
@@ -212,7 +211,8 @@ public abstract class AbstractODataRequest extends AbstractRequest implements OD
   @Override
   public String getContentType() {
     final String contentTypeHead = odataHeaders.getHeader(HttpHeader.CONTENT_TYPE);
-    return StringUtils.isBlank(contentTypeHead) ? getDefaultFormat().toContentTypeString() : contentTypeHead;
+    return (contentTypeHead == null || contentTypeHead.isBlank())
+        ? getDefaultFormat().toContentTypeString() : contentTypeHead;
   }
 
   @Override
@@ -239,17 +239,19 @@ public abstract class AbstractODataRequest extends AbstractRequest implements OD
       baos.write(CRLF);
 
       // Set Content-Type and Accept headers with default values, if not yet set
-      if (StringUtils.isBlank(odataHeaders.getHeader(HttpHeader.CONTENT_TYPE))) {
+      String contentTypeHeader = odataHeaders.getHeader(HttpHeader.CONTENT_TYPE);
+      if (contentTypeHeader == null || contentTypeHeader.isBlank()) {
         setContentType(getContentType());
       }
-      if (StringUtils.isBlank(odataHeaders.getHeader(HttpHeader.ACCEPT))) {
+      String acceptHeader = odataHeaders.getHeader(HttpHeader.ACCEPT);
+      if (acceptHeader == null || acceptHeader.isBlank()) {
         setAccept(getAccept());
       }
 
       for (String name : getHeaderNames()) {
         final String value = getHeader(name);
 
-        if (StringUtils.isNotBlank(value)) {
+        if (value != null && !value.isBlank()) {
           baos.write((name + ": " + value).getBytes(DEFAULT_CHARSET));
           baos.write(CRLF);
         }
@@ -261,7 +263,9 @@ public abstract class AbstractODataRequest extends AbstractRequest implements OD
     } finally {
       try {
         baos.close();
-      } catch (IOException ignored) { }
+      } catch (IOException e) {
+        LOG.debug("Failed to close resource", e);
+      }
     }
   }
 
@@ -294,10 +298,12 @@ public abstract class AbstractODataRequest extends AbstractRequest implements OD
     checkRequest(odataClient, request);
 
     // Set Content-Type and Accept headers with default values, if not yet set
-    if (StringUtils.isBlank(odataHeaders.getHeader(HttpHeader.CONTENT_TYPE))) {
+    String contentTypeHeader = odataHeaders.getHeader(HttpHeader.CONTENT_TYPE);
+    if (contentTypeHeader == null || contentTypeHeader.isBlank()) {
       setContentType(getContentType());
     }
-    if (StringUtils.isBlank(odataHeaders.getHeader(HttpHeader.ACCEPT))) {
+    String acceptHeader = odataHeaders.getHeader(HttpHeader.ACCEPT);
+    if (acceptHeader == null || acceptHeader.isBlank()) {
       setAccept(getAccept());
     }
 

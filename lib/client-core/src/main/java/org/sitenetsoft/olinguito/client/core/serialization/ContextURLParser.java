@@ -24,7 +24,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import org.sitenetsoft.olinguito.client.core.StringHelper;
 import org.sitenetsoft.olinguito.commons.api.Constants;
 import org.sitenetsoft.olinguito.commons.api.data.ContextURL;
 import org.sitenetsoft.olinguito.commons.api.data.ContextURL.Suffix;
@@ -44,28 +44,28 @@ public class ContextURLParser {
     if (contextURLasString.endsWith("/$entity") || contextURLasString.endsWith("/@Element")) {
       isEntity = true;
       contextUrl.suffix(Suffix.ENTITY);
-      contextURLasString = contextURLasString.replace("/$entity", StringUtils.EMPTY).
-          replace("/@Element", StringUtils.EMPTY);
+      contextURLasString = contextURLasString.replace("/$entity", "").
+          replace("/@Element", "");
     } else if (contextURLasString.endsWith("/$ref")) {
       contextUrl.suffix(Suffix.REFERENCE);
-      contextURLasString = contextURLasString.replace("/$ref", StringUtils.EMPTY);
+      contextURLasString = contextURLasString.replace("/$ref", "");
     } else if (contextURLasString.endsWith("/$delta")) {
       contextUrl.suffix(Suffix.DELTA);
-      contextURLasString = contextURLasString.replace("/$delta", StringUtils.EMPTY);
+      contextURLasString = contextURLasString.replace("/$delta", "");
     } else if (contextURLasString.endsWith("/$deletedEntity")) {
       contextUrl.suffix(Suffix.DELTA_DELETED_ENTITY);
-      contextURLasString = contextURLasString.replace("/$deletedEntity", StringUtils.EMPTY);
+      contextURLasString = contextURLasString.replace("/$deletedEntity", "");
     } else if (contextURLasString.endsWith("/$link")) {
       contextUrl.suffix(Suffix.DELTA_LINK);
-      contextURLasString = contextURLasString.replace("/$link", StringUtils.EMPTY);
+      contextURLasString = contextURLasString.replace("/$link", "");
     } else if (contextURLasString.endsWith("/$deletedLink")) {
       contextUrl.suffix(Suffix.DELTA_DELETED_LINK);
-      contextURLasString = contextURLasString.replace("/$deletedLink", StringUtils.EMPTY);
+      contextURLasString = contextURLasString.replace("/$deletedLink", "");
     }
 
-    contextUrl.serviceRoot(URI.create(StringUtils.substringBefore(contextURLasString, Constants.METADATA)));
+    contextUrl.serviceRoot(URI.create(StringHelper.substringBefore(contextURLasString, Constants.METADATA)));
 
-    final String rest = StringUtils.substringAfter(contextURLasString, Constants.METADATA + "#");
+    final String rest = StringHelper.substringAfter(contextURLasString, Constants.METADATA + "#");
 
     String firstToken;
     String entitySetOrSingletonOrType;
@@ -75,17 +75,17 @@ public class ContextURLParser {
     } else {
       final int openParIdx = rest.indexOf('(');
       if (openParIdx == -1) {
-        firstToken = StringUtils.substringBeforeLast(rest, "/");
+        firstToken = StringHelper.substringBeforeLast(rest, "/");
 
         entitySetOrSingletonOrType = firstToken;
       } else {
-        firstToken = isEntity ? rest : StringUtils.substringBeforeLast(rest, ")") + ")";
+        firstToken = isEntity ? rest : StringHelper.substringBeforeLast(rest, ")") + ")";
 
         final List<String> parts = new ArrayList<>();
         for (String split : firstToken.split("\\)/")) {
           parts.add(split.replaceAll("\\(.*", ""));
         }
-        entitySetOrSingletonOrType = StringUtils.join(parts, '/');
+        entitySetOrSingletonOrType = String.join("/", parts);
         final int commaIdx = firstToken.indexOf(',');
         if (commaIdx != -1) {
           contextUrl.selectList(firstToken.substring(openParIdx + 1, firstToken.length() - 1));
@@ -101,7 +101,7 @@ public class ContextURLParser {
     }
 
     if (!firstToken.equals(rest)) {
-      final String[] pathElems = StringUtils.substringAfter(rest, "/").split("/");
+      final String[] pathElems = StringHelper.substringAfter(rest, "/").split("/");
       if (pathElems.length > 0 && !pathElems[0].isEmpty()) {
         if (pathElems[0].indexOf('.') == -1) {
           contextUrl.navOrPropertyPath(pathElems[0]);

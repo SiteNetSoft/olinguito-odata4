@@ -24,7 +24,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlComplexType;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -53,11 +52,11 @@ class ClientCsdlComplexType extends CsdlComplexType implements Serializable {
           if ("Name".equals(jp.currentName())) {
             complexType.setName(jp.nextTextValue());
           } else if ("Abstract".equals(jp.currentName())) {
-            complexType.setAbstract(BooleanUtils.toBoolean(jp.nextTextValue()));
+            complexType.setAbstract(Boolean.parseBoolean(jp.nextTextValue()));
           } else if ("BaseType".equals(jp.currentName())) {
             complexType.setBaseType(jp.nextTextValue());
           } else if ("OpenType".equals(jp.currentName())) {
-            complexType.setOpenType(BooleanUtils.toBoolean(jp.nextTextValue()));
+            complexType.setOpenType(Boolean.parseBoolean(jp.nextTextValue()));
           } else if ("Property".equals(jp.currentName())) {
             jp.nextToken();
             complexType.getProperties().add(jp.readValueAs(ClientCsdlProperty.class));

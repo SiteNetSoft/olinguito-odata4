@@ -15,13 +15,14 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
 import java.io.IOException;
 import java.net.URI;
 
-import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;
 import org.sitenetsoft.olinguito.commons.api.Constants;
 import org.sitenetsoft.olinguito.commons.api.data.Annotation;
@@ -57,7 +58,7 @@ public class JsonPropertySerializer extends JsonSerializer {
       jgen.writeStringField(Constants.JSON_CONTEXT, container.getContextURL().toASCIIString());
     }
 
-    if (StringUtils.isNotBlank(property.getType()) && isODataMetadataFull) {
+    if ((property.getType() != null && !property.getType().isBlank()) && isODataMetadataFull) {
       jgen.writeStringField(Constants.JSON_TYPE,
           new EdmTypeInfo.Builder().setTypeExpression(property.getType()).build().external());
     }
