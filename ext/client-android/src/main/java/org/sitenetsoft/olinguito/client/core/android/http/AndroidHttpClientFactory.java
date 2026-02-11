@@ -15,13 +15,17 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  */
 package org.sitenetsoft.olinguito.client.core.android.http;
 
 import java.net.URI;
 
 import org.apache.http.client.HttpClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.core.http.AbstractHttpClientFactory;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpClient;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 import android.net.http.AndroidHttpClient;
@@ -29,14 +33,15 @@ import android.net.http.AndroidHttpClient;
 public class AndroidHttpClientFactory extends AbstractHttpClientFactory {
 
     @Override
-    public AndroidHttpClient create(final HttpMethod method, final URI uri) {
-        return AndroidHttpClient.newInstance(USER_AGENT);
+    public ODataHttpClient create(final HttpMethod method, final URI uri) {
+        return new ApacheHttpClient(AndroidHttpClient.newInstance(USER_AGENT));
     }
 
     @Override
-    public void close(final HttpClient httpClient) {
-        if (httpClient instanceof AndroidHttpClient) {
-            ((AndroidHttpClient) httpClient).close();
+    public void close(final ODataHttpClient httpClient) {
+        final HttpClient apacheClient = ApacheHttpClient.unwrap(httpClient);
+        if (apacheClient instanceof AndroidHttpClient) {
+            ((AndroidHttpClient) apacheClient).close();
         }
     }
 

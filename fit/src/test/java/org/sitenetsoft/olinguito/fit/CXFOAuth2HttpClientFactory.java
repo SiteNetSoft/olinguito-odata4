@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder;
  * replaced commons-codec Base64 with java.util.Base64
+ * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  */
 package org.sitenetsoft.olinguito.fit;
 
@@ -48,7 +49,9 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.core.http.AbstractOAuth2HttpClientFactory;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpClient;
 import org.sitenetsoft.olinguito.client.core.http.OAuth2Exception;
 import org.sitenetsoft.olinguito.fit.rest.OAuth2Provider;
 import org.apache.cxf.rs.security.oauth2.client.Consumer;
@@ -186,7 +189,7 @@ public class CXFOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFactory 
   }
 
   @Override
-  public HttpClient create(final HttpMethod method, final URI uri) {
+  public ODataHttpClient create(final HttpMethod method, final URI uri) {
     if (!isInited()) {
       init();
     }
@@ -222,7 +225,7 @@ public class CXFOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFactory 
 
     final HttpClient httpClient = builder.build();
     clientRef.set(httpClient);
-    return httpClient;
+    return new ApacheHttpClient(httpClient);
   }
 
 }

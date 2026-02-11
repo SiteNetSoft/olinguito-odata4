@@ -17,23 +17,22 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
+ * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  */
 package org.sitenetsoft.olinguito.samples.client.core.http;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.net.URI;
 
 import org.apache.http.Header;
 import org.apache.http.ParseException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicLineParser;
 import org.apache.http.util.CharArrayBuffer;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.core.http.AbstractHttpClientFactory;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpClient;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 /**
@@ -64,23 +63,21 @@ public class CustomConnectionsHttpClientFactory extends AbstractHttpClientFactor
   }
 
   @Override
-  public CloseableHttpClient create(final HttpMethod method, final URI uri) {
+  public ODataHttpClient create(final HttpMethod method, final URI uri) {
     final PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
 
-    return HttpClientBuilder.create()
+    return new ApacheHttpClient(HttpClientBuilder.create()
         .setUserAgent(USER_AGENT)
         .setConnectionManager(connectionManager)
-        .build();
+        .build());
   }
 
   @Override
-  public void close(final HttpClient httpClient) {
-    if (httpClient instanceof Closeable closeable) {
-      try {
-        closeable.close();
-      } catch (IOException e) {
-        // silently close
-      }
+  public void close(final ODataHttpClient httpClient) {
+    try {
+      httpClient.close();
+    } catch (java.io.IOException e) {
+      // silently close
     }
   }
 }

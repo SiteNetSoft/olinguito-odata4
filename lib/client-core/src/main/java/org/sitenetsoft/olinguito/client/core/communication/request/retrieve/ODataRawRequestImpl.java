@@ -23,8 +23,10 @@ import java.io.IOException;
 import java.net.URI;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpResponse;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataRawRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRawResponse;
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;
@@ -62,15 +64,15 @@ public class ODataRawRequestImpl extends AbstractODataRequest implements ODataRa
 
   @Override
   public ODataRawResponse execute() {
-    return new ODataRawResponseImpl(odataClient, httpClient, doExecute());
+    return new ODataRawResponseImpl(odataClient, httpClient, new ApacheHttpResponse(doExecute()));
   }
 
   private class ODataRawResponseImpl extends AbstractODataResponse implements ODataRawResponse {
 
     private byte[] obj = null;
 
-    private ODataRawResponseImpl(final ODataClient odataClient, final HttpClient httpClient,
-            final HttpResponse res) {
+    private ODataRawResponseImpl(final ODataClient odataClient, final ODataHttpClient httpClient,
+            final ODataHttpResponse res) {
 
       super(odataClient, httpClient, res);
     }

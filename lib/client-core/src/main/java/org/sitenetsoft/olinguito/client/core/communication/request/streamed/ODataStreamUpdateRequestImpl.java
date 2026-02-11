@@ -23,8 +23,10 @@ import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpResponse;
 import org.sitenetsoft.olinguito.client.api.communication.request.streamed.ODataStreamUpdateRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.streamed.StreamUpdateStreamManager;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataStreamUpdateResponse;
@@ -86,7 +88,8 @@ public class ODataStreamUpdateRequestImpl
     @Override
     protected ODataStreamUpdateResponse getResponse(final long timeout, final TimeUnit unit) {
       finalizeBody();
-      return new ODataStreamUpdateResponseImpl(odataClient, httpClient, getHttpResponse(timeout, unit));
+      return new ODataStreamUpdateResponseImpl(odataClient, httpClient,
+          new ApacheHttpResponse(getHttpResponse(timeout, unit)));
     }
   }
 
@@ -97,8 +100,8 @@ public class ODataStreamUpdateRequestImpl
 
     private InputStream input = null;
 
-    private ODataStreamUpdateResponseImpl(final ODataClient odataClient, final HttpClient httpClient,
-            final HttpResponse res) {
+    private ODataStreamUpdateResponseImpl(final ODataClient odataClient, final ODataHttpClient httpClient,
+            final ODataHttpResponse res) {
 
       super(odataClient, httpClient, res);
     }

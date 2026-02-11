@@ -21,9 +21,10 @@ package org.sitenetsoft.olinguito.client.core.communication.request.cud;
 import java.io.InputStream;
 import java.net.URI;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpResponse;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataDeleteRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataDeleteResponse;
 import org.sitenetsoft.olinguito.client.core.communication.request.AbstractODataBasicRequest;
@@ -56,7 +57,7 @@ public class ODataDeleteRequestImpl extends AbstractODataBasicRequest<ODataDelet
 
   @Override
   public ODataDeleteResponse execute() {
-    return new ODataDeleteResponseImpl(odataClient, httpClient, doExecute());
+    return new ODataDeleteResponseImpl(odataClient, httpClient, new ApacheHttpResponse(doExecute()));
   }
 
   /**
@@ -64,8 +65,8 @@ public class ODataDeleteRequestImpl extends AbstractODataBasicRequest<ODataDelet
    */
   private class ODataDeleteResponseImpl extends AbstractODataResponse implements ODataDeleteResponse {
 
-    private ODataDeleteResponseImpl(final ODataClient odataClient, final HttpClient httpClient,
-            final HttpResponse res) {
+    private ODataDeleteResponseImpl(final ODataClient odataClient, final ODataHttpClient httpClient,
+            final ODataHttpResponse res) {
 
       super(odataClient, httpClient, res);
       this.close();

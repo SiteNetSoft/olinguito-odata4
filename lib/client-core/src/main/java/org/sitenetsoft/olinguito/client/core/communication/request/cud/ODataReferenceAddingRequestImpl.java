@@ -22,9 +22,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpRequest;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpResponse;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataReferenceAddingRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataReferenceAddingResponse;
@@ -79,10 +81,11 @@ public class ODataReferenceAddingRequestImpl extends AbstractODataBasicRequest<O
   @Override
   public ODataReferenceAddingResponse execute() {
     final InputStream input = getPayload();
-    ((HttpEntityEnclosingRequestBase) request).setEntity(URIUtils.buildInputStreamEntity(odataClient, input));
+    ((HttpEntityEnclosingRequestBase) ApacheHttpRequest.unwrap(request)).setEntity(
+        URIUtils.buildInputStreamEntity(odataClient, input));
 
     try {
-      return new ODataReferenceAddingResponseImpl(odataClient, httpClient, doExecute());
+      return new ODataReferenceAddingResponseImpl(odataClient, httpClient, new ApacheHttpResponse(doExecute()));
     } finally {
       try {
         if (input != null) {
@@ -98,7 +101,7 @@ public class ODataReferenceAddingRequestImpl extends AbstractODataBasicRequest<O
   private class ODataReferenceAddingResponseImpl extends AbstractODataResponse implements ODataReferenceAddingResponse {
 
     private ODataReferenceAddingResponseImpl(
-        final ODataClient odataClient, final HttpClient httpClient, final HttpResponse res) {
+        final ODataClient odataClient, final ODataHttpClient httpClient, final ODataHttpResponse res) {
 
       super(odataClient, httpClient, res);
       this.close();

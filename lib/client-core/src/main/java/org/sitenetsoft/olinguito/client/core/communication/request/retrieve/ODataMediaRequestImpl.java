@@ -22,8 +22,10 @@ import java.io.InputStream;
 import java.net.URI;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpResponse;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataMediaRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
@@ -54,7 +56,7 @@ public class ODataMediaRequestImpl extends AbstractODataRetrieveRequest<InputStr
   @Override
   public ODataRetrieveResponse<InputStream> execute() {
     final HttpResponse res = doExecute();
-    return new ODataMediaResponseImpl(odataClient, httpClient, res);
+    return new ODataMediaResponseImpl(odataClient, httpClient, new ApacheHttpResponse(res));
   }
 
   /**
@@ -64,8 +66,8 @@ public class ODataMediaRequestImpl extends AbstractODataRetrieveRequest<InputStr
 
     private InputStream input = null;
 
-    private ODataMediaResponseImpl(final ODataClient odataClient, final HttpClient httpClient,
-            final HttpResponse res) {
+    private ODataMediaResponseImpl(final ODataClient odataClient, final ODataHttpClient httpClient,
+            final ODataHttpResponse res) {
 
       super(odataClient, httpClient, res);
     }

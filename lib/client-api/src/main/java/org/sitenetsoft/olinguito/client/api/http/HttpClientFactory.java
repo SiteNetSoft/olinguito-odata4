@@ -15,20 +15,21 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Apache HttpClient with ODataHttpClient abstraction
  */
 package org.sitenetsoft.olinguito.client.api.http;
 
 import java.net.URI;
 
-import org.apache.http.client.HttpClient;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 /**
- * Interface used by ODataRequest implementations to instantiate HttpClient.
+ * Interface used by ODataRequest implementations to instantiate an HTTP client.
  */
 public interface HttpClientFactory {
 
-  HttpClient create(HttpMethod method, URI uri);
+  ODataHttpClient create(HttpMethod method, URI uri);
 
-  void close(HttpClient httpClient);
+  void close(ODataHttpClient httpClient);
 }

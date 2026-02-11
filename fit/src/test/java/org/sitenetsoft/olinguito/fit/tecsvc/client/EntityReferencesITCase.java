@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
@@ -176,7 +178,7 @@ public class EntityReferencesITCase extends AbstractParamTecSvcITCase {
             .getEntityRequest(uri)
             .execute();
     } catch (ODataClientErrorException e) {
-      assertEquals(HttpStatusCode.NO_CONTENT.getStatusCode(), e.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.NO_CONTENT.getStatusCode(), e.getStatusCode());
     }
   }
     
@@ -301,7 +303,7 @@ public class EntityReferencesITCase extends AbstractParamTecSvcITCase {
             .execute();
       fail();
     } catch (ODataClientErrorException ex) {
-      assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), ex.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), ex.getStatusCode());
     }
   }
   
@@ -321,7 +323,7 @@ public class EntityReferencesITCase extends AbstractParamTecSvcITCase {
             .execute();
       fail();
     } catch (ODataClientErrorException ex) {
-      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), ex.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), ex.getStatusCode());
     }
   }
   
@@ -342,7 +344,7 @@ public class EntityReferencesITCase extends AbstractParamTecSvcITCase {
             .execute();
       fail();
     } catch(ODataClientErrorException ex) {
-      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), ex.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), ex.getStatusCode());
     }
   }
   
@@ -431,7 +433,7 @@ public class EntityReferencesITCase extends AbstractParamTecSvcITCase {
                                    .execute();
       fail();
     } catch(ODataClientErrorException ex) {
-      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), ex.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), ex.getStatusCode());
     }
   }
   
@@ -450,7 +452,7 @@ public class EntityReferencesITCase extends AbstractParamTecSvcITCase {
                                    .execute();
       fail();
     } catch (ODataClientErrorException ex) {
-      assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), ex.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), ex.getStatusCode());
     }
   }
   
@@ -470,7 +472,7 @@ public class EntityReferencesITCase extends AbstractParamTecSvcITCase {
                                   .execute();
       fail();
     } catch (ODataClientErrorException ex) {
-      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), ex.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), ex.getStatusCode());
     }
   }
   
@@ -490,7 +492,7 @@ public class EntityReferencesITCase extends AbstractParamTecSvcITCase {
                                   .execute();
       fail();
     } catch (ODataClientErrorException ex) {
-      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), ex.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), ex.getStatusCode());
     }
   }
   
@@ -510,7 +512,7 @@ public class EntityReferencesITCase extends AbstractParamTecSvcITCase {
                                   .execute();
       fail();
     } catch (ODataClientErrorException ex) {
-      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), ex.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), ex.getStatusCode());
     }
   }
   
@@ -530,7 +532,7 @@ public class EntityReferencesITCase extends AbstractParamTecSvcITCase {
           .execute();
       fail();
     } catch (ODataClientErrorException ex) {
-      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), ex.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), ex.getStatusCode());
     }
   }
   
@@ -722,7 +724,7 @@ public class EntityReferencesITCase extends AbstractParamTecSvcITCase {
       getClient().getCUDRequestFactory().getDeleteRequest(uri).execute();
       fail();
     } catch (ODataClientErrorException ex) {
-      assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), ex.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), ex.getStatusCode());
     }
   }
   
@@ -740,7 +742,7 @@ public class EntityReferencesITCase extends AbstractParamTecSvcITCase {
       getClient().getCUDRequestFactory().getDeleteRequest(uri).execute();
       fail();
     } catch (ODataClientErrorException ex) {
-      assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), ex.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), ex.getStatusCode());
     }
   }
   
@@ -758,7 +760,7 @@ public class EntityReferencesITCase extends AbstractParamTecSvcITCase {
       getClient().getCUDRequestFactory().getDeleteRequest(uri).execute();
       fail();
     } catch (ODataClientErrorException ex) {
-      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), ex.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), ex.getStatusCode());
     }
   }
   
@@ -776,7 +778,7 @@ public class EntityReferencesITCase extends AbstractParamTecSvcITCase {
       getClient().getCUDRequestFactory().getDeleteRequest(uri).execute();
       fail();
     } catch (ODataClientErrorException ex) {
-      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), ex.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), ex.getStatusCode());
     }
   }
   
@@ -793,7 +795,7 @@ public class EntityReferencesITCase extends AbstractParamTecSvcITCase {
       getClient().getCUDRequestFactory().getDeleteRequest(uri).execute();
       fail();
     } catch (ODataClientErrorException ex) {
-      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), ex.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), ex.getStatusCode());
     }
   }
 
@@ -1002,7 +1004,7 @@ public class EntityReferencesITCase extends AbstractParamTecSvcITCase {
     try {
       client.getCUDRequestFactory().getReferenceAddingRequest(new URI(SERVICE_URI), uri, ref).execute();
     } catch (ODataClientErrorException e) {
-      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusCode());
     }
   }
   
@@ -1018,7 +1020,7 @@ public class EntityReferencesITCase extends AbstractParamTecSvcITCase {
     try {
       client.getCUDRequestFactory().getReferenceSingleChangeRequest(new URI(SERVICE_URI), uri, ref).execute();
     } catch (ODataClientErrorException e) {
-      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusCode());
     }
   }
   
@@ -1031,7 +1033,7 @@ public class EntityReferencesITCase extends AbstractParamTecSvcITCase {
     try {
       getClient().getCUDRequestFactory().getDeleteRequest(uri);
     } catch (ODataClientErrorException e) {
-      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusCode());
     }
   }
   

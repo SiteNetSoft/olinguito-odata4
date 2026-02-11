@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
+ * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
@@ -161,7 +162,7 @@ public class ConditionalITCase extends AbstractParamTecSvcITCase {
       fail("Expected Exception not thrown!");
     } catch (final HttpClientException e) {
       final ODataClientErrorException ex = (ODataClientErrorException) e.getCause().getCause();
-      assertEquals(HttpStatusCode.PRECONDITION_FAILED.getStatusCode(), ex.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.PRECONDITION_FAILED.getStatusCode(), ex.getStatusCode());
       assertThat(ex.getODataError().getMessage(), containsString("condition"));
     }
   }
@@ -295,7 +296,7 @@ public class ConditionalITCase extends AbstractParamTecSvcITCase {
       request.execute();
       fail("Expected Exception not thrown!");
     } catch (final ODataClientErrorException e) {
-      assertEquals(status.getStatusCode(), e.getStatusLine().getStatusCode());
+      assertEquals(status.getStatusCode(), e.getStatusCode());
       assertThat(e.getODataError().getMessage(), anyOf(containsString("condition"), containsString("match")));
     }
   }

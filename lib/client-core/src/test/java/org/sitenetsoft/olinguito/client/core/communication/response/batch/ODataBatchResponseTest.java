@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  */
 package org.sitenetsoft.olinguito.client.core.communication.response.batch;
 
@@ -34,7 +36,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import java.io.BufferedReader;
-import org.apache.http.HttpResponse;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
 import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchLineIterator;
 import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchResponseItem;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataBatchResponse;
@@ -123,7 +125,7 @@ public class ODataBatchResponseTest {
     }
 
     @Override
-    public ODataResponse initFromHttpResponse(HttpResponse res) {
+    public ODataResponse initFromHttpResponse(ODataHttpResponse res) {
       return null;
     }
 

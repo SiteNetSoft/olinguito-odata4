@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Apache StatusLine with framework-agnostic types
  */
 package org.sitenetsoft.olinguito.ext.proxy.commons;
 
@@ -82,7 +84,8 @@ public class TransactionalPersistenceManagerImpl extends AbstractPersistenceMana
     // This should be 202 for service version <= 3.0 and 200 for service version >= 4.0 but it seems that
     // many service implementations are not fully compliant in this respect.
     if (response.getStatusCode() != 202 && response.getStatusCode() != 200) {
-      throw new ODataServerErrorException(new ResponseStatusLine(response), response.getRawResponse());
+      throw new ODataServerErrorException(response.getStatusCode(), response.getStatusMessage(),
+              response.getRawResponse());
     }
 
     if (!items.isEmpty()) {
@@ -110,7 +113,8 @@ public class TransactionalPersistenceManagerImpl extends AbstractPersistenceMana
           ContentType contentType = ContentType.fromAcceptHeader(request.getAccept());
           errors.add(new ODataResponseError(ODataErrorResponseChecker.checkResponse(
                   service.getClient(),
-                  new ResponseStatusLine(res),
+                  res.getStatusCode(),
+                  res.getStatusMessage(),
                   res.getRawResponse(),
                   contentType), index, requests.get(index)));
           if (!service.getClient().getConfiguration().isContinueOnError()) {

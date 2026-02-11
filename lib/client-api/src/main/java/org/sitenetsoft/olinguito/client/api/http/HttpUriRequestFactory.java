@@ -15,18 +15,19 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Apache HttpUriRequest with ODataHttpRequest abstraction
  */
 package org.sitenetsoft.olinguito.client.api.http;
 
 import java.net.URI;
 
-import org.apache.http.client.methods.HttpUriRequest;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 /**
- * Interface used by ODataRequest implementations to create the HttpUriRequest.
+ * Interface used by ODataRequest implementations to create an HTTP request.
  */
 public interface HttpUriRequestFactory {
 
-  HttpUriRequest create(HttpMethod method, URI uri);
+  ODataHttpRequest create(HttpMethod method, URI uri);
 }

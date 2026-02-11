@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
  * Copyright 2026 SiteNetSoft - Replaced commons-io with Java standard library
+ * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  */
 package org.sitenetsoft.olinguito.samples.client.core.http;
 
@@ -41,7 +42,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.core.http.AbstractOAuth2HttpClientFactory;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpClient;
 import org.sitenetsoft.olinguito.client.core.http.OAuth2Exception;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
@@ -102,7 +105,7 @@ public class AzureADOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFact
 
   @Override
   protected void init() throws OAuth2Exception {
-    final HttpClient httpClient = wrapped.create(null, null);
+    final HttpClient httpClient = ApacheHttpClient.unwrap(wrapped.create(null, null));
 
     // 1. access the OAuth2 grant service (with authentication)
     String code = null;
@@ -205,7 +208,7 @@ public class AzureADOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFact
     data.add(new BasicNameValuePair("grant_type", "refresh_token"));
     data.add(new BasicNameValuePair("refresh_token", token.get("refresh_token").asText()));
 
-    fetchAccessToken(wrapped.create(null, null), data);
+    fetchAccessToken(ApacheHttpClient.unwrap(wrapped.create(null, null)), data);
 
     if (token == null) {
       throw new OAuth2Exception("No OAuth2 refresh token");
@@ -213,7 +216,7 @@ public class AzureADOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFact
   }
 
   @Override
-  public HttpClient create(final HttpMethod method, final URI uri) {
+  public ODataHttpClient create(final HttpMethod method, final URI uri) {
     if (!isInited()) {
       init();
     }
@@ -252,7 +255,7 @@ public class AzureADOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFact
 
     final HttpClient httpClient = builder.build();
     clientRef.set(httpClient);
-    return httpClient;
+    return new ApacheHttpClient(httpClient);
   }
 
 }

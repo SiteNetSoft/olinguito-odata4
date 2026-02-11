@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
+ * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -47,10 +47,13 @@ import org.sitenetsoft.olinguito.client.api.communication.response.ODataResponse
 import org.sitenetsoft.olinguito.client.api.domain.ClientInvokeResult;
 import org.sitenetsoft.olinguito.client.api.http.HttpClientFactory;
 import org.sitenetsoft.olinguito.client.api.http.HttpUriRequestFactory;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
 import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
 import org.sitenetsoft.olinguito.client.core.communication.request.AsyncRequestWrapperImpl.AsyncResponseWrapperImpl;
 import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataBatchRequestImpl;
 import org.sitenetsoft.olinguito.client.core.communication.request.invoke.ODataInvokeRequestImpl;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpClient;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpRequest;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.junit.jupiter.api.Test;
@@ -105,8 +108,8 @@ public class AsyncRequestWrapperTest {
     when(oDataClient.getConfiguration()).thenReturn(configuration);
     when(configuration.getHttpClientFactory()).thenReturn(httpClientFactory);
     when(configuration.getHttpUriRequestFactory()).thenReturn(httpUriRequestFactory);
-    when(httpClientFactory.create(any(), any())).thenReturn(httpClient);
-    when(httpUriRequestFactory.create(any(), any())).thenReturn(httpUriRequest);
+    when(httpClientFactory.create(any(), any())).thenReturn(new ApacheHttpClient(httpClient));
+    when(httpUriRequestFactory.create(any(), any())).thenReturn(new ApacheHttpRequest(httpUriRequest));
 
     HttpResponseFactory factory = new DefaultHttpResponseFactory();
     HttpResponse firstResponse = factory.newHttpResponse(
@@ -119,7 +122,7 @@ public class AsyncRequestWrapperTest {
     ODataResponse oDataResponse = mock(ODataResponse.class);
     when(oDataRequest.getResponseTemplate()).thenReturn(oDataResponse);
     when(oDataRequest.getURI()).thenReturn(new URI("http://localhost/path"));
-    when(oDataResponse.initFromHttpResponse(any(HttpResponse.class))).thenReturn(null);
+    when(oDataResponse.initFromHttpResponse(any(ODataHttpResponse.class))).thenReturn(null);
 
     return new AsyncRequestWrapperImpl<>(oDataClient, oDataRequest);
   }
@@ -195,8 +198,8 @@ public class AsyncRequestWrapperTest {
     when(oDataClient.getConfiguration()).thenReturn(configuration);
     when(configuration.getHttpClientFactory()).thenReturn(httpClientFactory);
     when(configuration.getHttpUriRequestFactory()).thenReturn(httpUriRequestFactory);
-    when(httpClientFactory.create(any(), any())).thenReturn(httpClient);
-    when(httpUriRequestFactory.create(any(), any())).thenReturn(httpUriRequest);
+    when(httpClientFactory.create(any(), any())).thenReturn(new ApacheHttpClient(httpClient));
+    when(httpUriRequestFactory.create(any(), any())).thenReturn(new ApacheHttpRequest(httpUriRequest));
 
     HttpResponseFactory factory = new DefaultHttpResponseFactory();
     HttpResponse firstResponse = factory.newHttpResponse(
@@ -205,7 +208,7 @@ public class AsyncRequestWrapperTest {
     when(httpClient.execute(any(HttpUriRequest.class))).thenReturn(firstResponse);
 
     ODataResponse oDataResponse = mock(ODataResponse.class);
-    when(oDataResponse.initFromHttpResponse(any(HttpResponse.class))).thenReturn(null);
+    when(oDataResponse.initFromHttpResponse(any(ODataHttpResponse.class))).thenReturn(null);
 
     AbstractODataRequest oDataRequest = mock(AbstractODataRequest.class);
     when(oDataRequest.getURI()).thenReturn(new URI(target));

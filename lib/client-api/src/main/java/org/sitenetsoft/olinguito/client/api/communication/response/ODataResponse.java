@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Apache HttpResponse with ODataHttpResponse abstraction
  */
 package org.sitenetsoft.olinguito.client.api.communication.response;
 
@@ -22,7 +24,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.http.HttpResponse;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
 import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchLineIterator;
 
 /**
@@ -86,7 +88,7 @@ public interface ODataResponse {
    * @param res HTTP response.
    * @return OData response;
    */
-  ODataResponse initFromHttpResponse(HttpResponse res);
+  ODataResponse initFromHttpResponse(ODataHttpResponse res);
 
   /**
    * Initializes response from batch response item.

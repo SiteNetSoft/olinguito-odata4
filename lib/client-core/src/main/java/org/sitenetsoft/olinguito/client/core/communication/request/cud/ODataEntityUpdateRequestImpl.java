@@ -24,8 +24,11 @@ import java.net.URI;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpRequest;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpResponse;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataEntityUpdateRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataEntityUpdateResponse;
@@ -86,12 +89,13 @@ public class ODataEntityUpdateRequestImpl<E extends ClientEntity>
   @Override
   public ODataEntityUpdateResponse<E> execute() {
     final InputStream input = getPayload();
-    ((HttpEntityEnclosingRequestBase) request).setEntity(URIUtils.buildInputStreamEntity(odataClient, input));
+    ((HttpEntityEnclosingRequestBase) ApacheHttpRequest.unwrap(request)).setEntity(
+        URIUtils.buildInputStreamEntity(odataClient, input));
 
     try {
       final HttpResponse httpResponse = doExecute();
       final ODataEntityUpdateResponseImpl response =
-              new ODataEntityUpdateResponseImpl(odataClient, httpClient, httpResponse);
+              new ODataEntityUpdateResponseImpl(odataClient, httpClient, new ApacheHttpResponse(httpResponse));
       if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_NO_CONTENT) {
         response.close();
       }
@@ -113,8 +117,8 @@ public class ODataEntityUpdateRequestImpl<E extends ClientEntity>
      */
     private E entity = null;
 
-    private ODataEntityUpdateResponseImpl(final ODataClient odataClient, final HttpClient httpClient,
-            final HttpResponse res) {
+    private ODataEntityUpdateResponseImpl(final ODataClient odataClient, final ODataHttpClient httpClient,
+            final ODataHttpResponse res) {
 
       super(odataClient, httpClient, res);
     }

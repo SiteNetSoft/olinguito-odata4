@@ -18,17 +18,18 @@
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements and fixed interrupt handling
  * Copyright 2026 SiteNetSoft - Replaced deprecated DecompressingHttpClient
+ * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
@@ -46,6 +47,12 @@ import org.sitenetsoft.olinguito.client.api.communication.response.AsyncResponse
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataDeleteResponse;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataResponse;
 import org.sitenetsoft.olinguito.client.api.http.HttpClientException;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpRequest;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpClient;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpRequest;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpResponse;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
@@ -65,12 +72,12 @@ public class AsyncRequestWrapperImpl<R extends ODataResponse> extends AbstractRe
   /**
    * HTTP client.
    */
-  protected final HttpClient httpClient;
+  protected final ODataHttpClient httpClient;
 
   /**
    * HTTP request.
    */
-  protected final HttpUriRequest request;
+  protected final ODataHttpRequest request;
 
   /**
    * Target URI.
@@ -91,15 +98,17 @@ public class AsyncRequestWrapperImpl<R extends ODataResponse> extends AbstractRe
     this.uri = odataRequest.getURI();
     Objects.requireNonNull(this.uri, "Target URI can't be null");
 
-    HttpClient _httpClient = odataClient.getConfiguration().getHttpClientFactory().create(method, this.uri);
+    ODataHttpClient _httpClient = odataClient.getConfiguration().getHttpClientFactory().create(method, this.uri);
     if (odataClient.getConfiguration().isGzipCompression()) {
-      _httpClient = new ContentCompressingHttpClient(_httpClient);
+      HttpClient apacheClient = ApacheHttpClient.unwrap(_httpClient);
+      _httpClient = new ApacheHttpClient(new ContentCompressingHttpClient(apacheClient));
     }
     this.httpClient = _httpClient;
 
     this.request = odataClient.getConfiguration().getHttpUriRequestFactory().create(method, this.uri);
 
-    if (request instanceof HttpEntityEnclosingRequestBase httpRequest
+    final HttpUriRequest apacheRequest = ApacheHttpRequest.unwrap(this.request);
+    if (apacheRequest instanceof HttpEntityEnclosingRequestBase httpRequest
         && odataRequest instanceof AbstractODataBasicRequest<?> br) {
         httpRequest.setEntity(new InputStreamEntity(br.getPayload(), -1));
     }
@@ -131,11 +140,13 @@ public class AsyncRequestWrapperImpl<R extends ODataResponse> extends AbstractRe
     return new AsyncResponseWrapperImpl(doExecute());
   }
 
-  protected HttpResponse doExecute() {
+  protected ODataHttpResponse doExecute() {
+    final HttpUriRequest apacheRequest = ApacheHttpRequest.unwrap(request);
+
     // Add all available headers
     for (String key : odataRequest.getHeaderNames()) {
       final String value = odataRequest.getHeader(key);
-      this.request.addHeader(key, value);
+      apacheRequest.addHeader(key, value);
       LOG.debug("HTTP header being sent {}: {}", key, value);
     }
 
@@ -176,8 +187,8 @@ public class AsyncRequestWrapperImpl<R extends ODataResponse> extends AbstractRe
      * @param res HTTP response.
      */
     @SuppressWarnings("unchecked")
-    public AsyncResponseWrapperImpl(final HttpResponse res) {
-      if (res.getStatusLine().getStatusCode() == 202) {
+    public AsyncResponseWrapperImpl(final ODataHttpResponse res) {
+      if (res.getStatusCode() == 202) {
         retrieveMonitorDetails(res);
       } else {
         response = (R) ((AbstractODataRequest) odataRequest).getResponseTemplate().initFromHttpResponse(res);
@@ -193,9 +204,9 @@ public class AsyncRequestWrapperImpl<R extends ODataResponse> extends AbstractRe
     public boolean isDone() {
       if (response == null) {
         // check to the monitor URL
-        final HttpResponse res = checkMonitor(location);
+        final ODataHttpResponse res = checkMonitor(location);
 
-        if (res.getStatusLine().getStatusCode() == 202) {
+        if (res.getStatusCode() == 202) {
           retrieveMonitorDetails(res);
         } else {
           response = instantiateResponse(res);
@@ -207,15 +218,15 @@ public class AsyncRequestWrapperImpl<R extends ODataResponse> extends AbstractRe
 
     @Override
     public R getODataResponse() {
-      HttpResponse res = null;
+      ODataHttpResponse res = null;
       for (int i = 0; response == null && i < MAX_RETRY; i++) {
         res = checkMonitor(location);
 
-        if (res.getStatusLine().getStatusCode() == HttpStatusCode.ACCEPTED.getStatusCode()) {
+        if (res.getStatusCode() == HttpStatusCode.ACCEPTED.getStatusCode()) {
 
-          final Header[] headers = res.getHeaders(HttpHeader.RETRY_AFTER);
-          if (ArrayUtils.isNotEmpty(headers)) {
-            this.retryAfter = parseReplyAfter(headers[0].getValue());
+          final Collection<String> retryHeaders = res.getHeader(HttpHeader.RETRY_AFTER);
+          if (retryHeaders != null && !retryHeaders.isEmpty()) {
+            this.retryAfter = parseReplyAfter(retryHeaders.iterator().next());
           }
 
           try {
@@ -233,7 +244,9 @@ public class AsyncRequestWrapperImpl<R extends ODataResponse> extends AbstractRe
       }
 
       if (response == null) {
-        throw new ODataClientErrorException(res.getStatusLine());
+        throw new ODataClientErrorException(
+            res != null ? res.getStatusCode() : 0,
+            res != null ? res.getReasonPhrase() : "Unknown");
       }
 
       return response;
@@ -278,74 +291,79 @@ public class AsyncRequestWrapperImpl<R extends ODataResponse> extends AbstractRe
     }
 
     @SuppressWarnings("unchecked")
-    private R instantiateResponse(final HttpResponse res) {
+    private R instantiateResponse(final ODataHttpResponse res) {
       R odataResponse;
       try {
         odataResponse = (R) ((AbstractODataRequest) odataRequest).getResponseTemplate().initFromEnclosedPart(res
-            .getEntity().getContent());
+            .getBody());
       } catch (Exception e) {
         LOG.error("Error instantiating odata response", e);
         odataResponse = null;
       } finally {
-        HttpClientUtils.closeQuietly(res);
+        try {
+          res.close();
+        } catch (IOException ioe) {
+          LOG.warn("Error closing response", ioe);
+        }
       }
       return odataResponse;
     }
 
-    private void retrieveMonitorDetails(final HttpResponse res) {
-      Header[] headers = res.getHeaders(HttpHeader.LOCATION);
-      if (ArrayUtils.isNotEmpty(headers)) {
-        this.location = createLocation(headers[0].getValue());
+    private void retrieveMonitorDetails(final ODataHttpResponse res) {
+      Collection<String> locationHeaders = res.getHeader(HttpHeader.LOCATION);
+      if (locationHeaders != null && !locationHeaders.isEmpty()) {
+        this.location = createLocation(locationHeaders.iterator().next());
       } else {
         throw new AsyncRequestException(
-            "Invalid async request response. Monitor URL '" + headers[0].getValue() + "'");
+            "Invalid async request response. Monitor URL not found in Location header");
       }
 
-      headers = res.getHeaders(HttpHeader.RETRY_AFTER);
-      if (ArrayUtils.isNotEmpty(headers)) {
-        this.retryAfter = parseReplyAfter(headers[0].getValue());
+      Collection<String> retryHeaders = res.getHeader(HttpHeader.RETRY_AFTER);
+      if (retryHeaders != null && !retryHeaders.isEmpty()) {
+        this.retryAfter = parseReplyAfter(retryHeaders.iterator().next());
       }
 
-      headers = res.getHeaders(HttpHeader.PREFERENCE_APPLIED);
-      if (ArrayUtils.isNotEmpty(headers)) {
-        for (Header header : headers) {
-          if (header.getValue().equalsIgnoreCase(new ODataPreferences().respondAsync())) {
+      Collection<String> prefHeaders = res.getHeader(HttpHeader.PREFERENCE_APPLIED);
+      if (prefHeaders != null) {
+        for (String value : prefHeaders) {
+          if (value.equalsIgnoreCase(new ODataPreferences().respondAsync())) {
             preferenceApplied = true;
           }
         }
       }
-      try {
-        EntityUtils.consume(res.getEntity());
-      } catch (IOException ex) {
-        Logger.getLogger(AsyncRequestWrapperImpl.class.getName()).log(Level.SEVERE, null, ex);
-      }
+      // Consume the entity
+      // The body was already retrieved via getBody() in getHeaders(), no additional consumption needed
     }
   }
 
-  protected final HttpResponse checkMonitor(final URI location) {
+  protected final ODataHttpResponse checkMonitor(final URI location) {
     if (location == null) {
       throw new AsyncRequestException("Invalid async request response. Missing monitor URL");
     }
 
-    final HttpUriRequest monitor = odataClient.getConfiguration().getHttpUriRequestFactory().create(HttpMethod.GET,
+    final ODataHttpRequest monitor = odataClient.getConfiguration().getHttpUriRequestFactory().create(HttpMethod.GET,
         location);
 
     return executeHttpRequest(httpClient, monitor);
   }
 
-  protected final HttpResponse executeHttpRequest(final HttpClient client, final HttpUriRequest req) {
+  protected final ODataHttpResponse executeHttpRequest(final ODataHttpClient client, final ODataHttpRequest req) {
+    final HttpClient apacheClient = ApacheHttpClient.unwrap(client);
+    final HttpUriRequest apacheRequest = ApacheHttpRequest.unwrap(req);
+
     final HttpResponse response;
     try {
-      response = client.execute(req);
+      response = apacheClient.execute(apacheRequest);
     } catch (IOException e) {
       throw new HttpClientException(e);
     } catch (RuntimeException e) {
-      req.abort();
+      apacheRequest.abort();
       throw new HttpClientException(e);
     }
 
-    checkResponse(odataClient, response, odataRequest.getAccept());
+    final ODataHttpResponse wrappedResponse = new ApacheHttpResponse(response);
+    checkResponse(odataClient, wrappedResponse, odataRequest.getAccept());
 
-    return response;
+    return wrappedResponse;
   }
 }

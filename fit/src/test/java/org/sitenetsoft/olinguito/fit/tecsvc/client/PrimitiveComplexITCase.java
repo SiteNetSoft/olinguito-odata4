@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
@@ -121,7 +123,7 @@ public class PrimitiveComplexITCase extends AbstractParamTecSvcITCase {
           .build()).execute();
       fail("Expected exception not thrown!");
     } catch (final ODataClientErrorException e) {
-      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusCode());
     }
   }
 
@@ -219,7 +221,7 @@ public class PrimitiveComplexITCase extends AbstractParamTecSvcITCase {
       request.execute();
       fail("Expected exception not thrown!");
     } catch (final ODataClientErrorException e) {
-      assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), e.getStatusLine().getStatusCode());
+      assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), e.getStatusCode());
     }
   }
 

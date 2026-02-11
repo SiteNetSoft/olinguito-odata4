@@ -17,15 +17,13 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
+ * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  */
 package org.sitenetsoft.olinguito.samples.client.core.http;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.net.URI;
 import java.security.cert.X509Certificate;
 
-import org.apache.http.client.HttpClient;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
@@ -33,13 +31,14 @@ import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContextBuilder;
-import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.core.http.AbstractHttpClientFactory;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpClient;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 /**
  * Shows how to customize the way how the underlying network socket are managed by the HTTP component; the specific
@@ -56,7 +55,7 @@ import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
 public class SocketFactoryHttpClientFactory extends AbstractHttpClientFactory {
 
   @Override
-  public CloseableHttpClient create(final HttpMethod method, final URI uri) {
+  public ODataHttpClient create(final HttpMethod method, final URI uri) {
     try {
       final TrustStrategy acceptTrustStrategy = (certificate, authType) -> true;
 
@@ -72,23 +71,21 @@ public class SocketFactoryHttpClientFactory extends AbstractHttpClientFactory {
       final PoolingHttpClientConnectionManager connectionManager =
               new PoolingHttpClientConnectionManager(registry);
 
-      return HttpClientBuilder.create()
+      return new ApacheHttpClient(HttpClientBuilder.create()
               .setUserAgent(USER_AGENT)
               .setConnectionManager(connectionManager)
-              .build();
+              .build());
     } catch (Exception e) {
       throw new ODataRuntimeException(e);
     }
   }
 
   @Override
-  public void close(final HttpClient httpClient) {
-    if (httpClient instanceof Closeable closeable) {
-      try {
-        closeable.close();
-      } catch (IOException e) {
-        // silently close
-      }
+  public void close(final ODataHttpClient httpClient) {
+    try {
+      httpClient.close();
+    } catch (java.io.IOException e) {
+      // silently close
     }
   }
 }

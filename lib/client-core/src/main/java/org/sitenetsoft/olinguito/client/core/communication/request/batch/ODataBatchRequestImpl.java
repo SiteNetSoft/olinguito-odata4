@@ -26,8 +26,10 @@ import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
+import org.sitenetsoft.olinguito.client.core.http.ApacheHttpResponse;
 import org.sitenetsoft.olinguito.client.api.communication.header.ODataPreferences;
 import org.sitenetsoft.olinguito.client.api.communication.request.ODataBatchableRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.batch.BatchManager;
@@ -87,7 +89,8 @@ public class ODataBatchRequestImpl
 
     @Override
     protected ODataBatchResponse getResponseInstance(final long timeout, final TimeUnit unit) {
-      return new ODataBatchResponseImpl(odataClient, httpClient, getHttpResponse(timeout, unit));
+      return new ODataBatchResponseImpl(odataClient, httpClient,
+          new ApacheHttpResponse(getHttpResponse(timeout, unit)));
     }
 
     @Override
@@ -104,7 +107,7 @@ public class ODataBatchRequestImpl
   protected class ODataBatchResponseImpl extends AbstractODataResponse implements ODataBatchResponse {
 
     protected ODataBatchResponseImpl(
-            final ODataClient odataClient, final HttpClient httpClient, final HttpResponse res) {
+            final ODataClient odataClient, final ODataHttpClient httpClient, final ODataHttpResponse res) {
 
       super(odataClient, httpClient, res);
     }

@@ -17,10 +17,10 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
+ * Copyright 2026 SiteNetSoft - Replaced Apache StatusLine with statusCode/reasonPhrase
  */
 package org.sitenetsoft.olinguito.client.core.communication.header;
 
-import org.apache.http.StatusLine;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.ODataClientErrorException;
 import org.sitenetsoft.olinguito.client.api.communication.ODataServerErrorException;
@@ -49,14 +49,14 @@ public final class ODataErrorResponseChecker {
   }
 
   public static ODataRuntimeException checkResponse(
-      final ODataClient odataClient, final StatusLine statusLine, final InputStream entity,
-      final ContentType contentType) {
+      final ODataClient odataClient, final int statusCode, final String reasonPhrase,
+      final InputStream entity, final ContentType contentType) {
 
     ODataRuntimeException result;
     InputStream entityForException = null;
 
     if (entity == null) {
-      result = new ODataClientErrorException(statusLine);
+      result = new ODataClientErrorException(statusCode, reasonPhrase);
     } else {
 
       ODataError error = new ODataError();
@@ -77,29 +77,25 @@ public final class ODataErrorResponseChecker {
           }
         } catch (final RuntimeException | ODataDeserializerException | IOException e) {
           LOG.warn("Error deserializing error response", e);
-          error = getGenericError(
-              statusLine.getStatusCode(),
-              statusLine.getReasonPhrase());
+          error = getGenericError(statusCode, reasonPhrase);
         }
       } else {
-        error.setCode(String.valueOf(statusLine.getStatusCode()));
-        error.setTarget(statusLine.getReasonPhrase());
+        error.setCode(String.valueOf(statusCode));
+        error.setTarget(reasonPhrase);
         try {
           error.setMessage(new String(entity.readAllBytes(), StandardCharsets.UTF_8));
         } catch (IOException e) {
           LOG.warn("Error deserializing error response", e);
-          error = getGenericError(
-              statusLine.getStatusCode(),
-              statusLine.getReasonPhrase());
+          error = getGenericError(statusCode, reasonPhrase);
         }
       }
 
-      if (statusLine.getStatusCode() >= 500 && error!= null &&
+      if (statusCode >= 500 && error != null &&
           (error.getDetails() == null || error.getDetails().isEmpty()) &&
           (error.getInnerError() == null || error.getInnerError().isEmpty())) {
-        result = new ODataServerErrorException(statusLine, entityForException);
+        result = new ODataServerErrorException(statusCode, reasonPhrase, entityForException);
       } else {
-        result = new ODataClientErrorException(statusLine, error, entityForException);
+        result = new ODataClientErrorException(statusCode, reasonPhrase, error, entityForException);
       }
     }
 

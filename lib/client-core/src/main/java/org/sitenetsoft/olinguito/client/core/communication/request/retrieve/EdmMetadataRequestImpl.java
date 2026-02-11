@@ -21,8 +21,8 @@ package org.sitenetsoft.olinguito.client.core.communication.request.retrieve;
 import java.net.URI;
 import java.util.Collection;
 
-import org.apache.http.client.HttpClient;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.EdmMetadataRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.XMLMetadataRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
@@ -83,7 +83,7 @@ class EdmMetadataRequestImpl extends AbstractMetadataRequestImpl<Edm> implements
 
     private XMLMetadata metadata = null;
 
-    private EdmMetadataResponseImpl(final ODataClient odataClient, final HttpClient httpClient,
+    private EdmMetadataResponseImpl(final ODataClient odataClient, final ODataHttpClient httpClient,
         final ODataRetrieveResponse<XMLMetadata> xmlMetadataResponse) {
 
       super(odataClient, httpClient, null);

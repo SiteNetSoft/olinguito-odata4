@@ -17,16 +17,14 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
+ * Copyright 2026 SiteNetSoft - Return ODataHttpClient wrapping Apache HttpClient
  */
 package org.sitenetsoft.olinguito.client.core.http;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.net.URI;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 /**
@@ -39,19 +37,16 @@ public class DefaultHttpClientFactory extends AbstractHttpClientFactory {
   }
 
   @Override
-  public CloseableHttpClient create(final HttpMethod method, final URI uri) {
-    return createBuilder(method, uri).build();
+  public ODataHttpClient create(final HttpMethod method, final URI uri) {
+    return new ApacheHttpClient(createBuilder(method, uri).build());
   }
 
   @Override
-  public void close(final HttpClient httpClient) {
-    if (httpClient instanceof Closeable closeable) {
-      try {
-        closeable.close();
-      } catch (IOException e) {
-        // silently close
-      }
+  public void close(final ODataHttpClient httpClient) {
+    try {
+      httpClient.close();
+    } catch (java.io.IOException e) {
+      // silently close
     }
   }
-
 }

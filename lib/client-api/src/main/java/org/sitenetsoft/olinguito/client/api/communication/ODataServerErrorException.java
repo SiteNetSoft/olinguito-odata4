@@ -15,10 +15,11 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Apache StatusLine with framework-agnostic types
  */
 package org.sitenetsoft.olinguito.client.api.communication;
 
-import org.apache.http.StatusLine;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
 
 import java.io.InputStream;
@@ -35,20 +36,23 @@ public class ODataServerErrorException extends ODataRuntimeException {
   /**
    * Constructor.
    *
-   * @param statusLine request status info.
+   * @param statusCode HTTP status code.
+   * @param statusMessage HTTP reason phrase.
    */
-  public ODataServerErrorException(final StatusLine statusLine) {
-    this(statusLine, null);
+  public ODataServerErrorException(final int statusCode, final String statusMessage) {
+    this(statusCode, statusMessage, null);
   }
 
   /**
    * Constructor.
    *
-   * @param statusLine request status info.
+   * @param statusCode HTTP status code.
+   * @param statusMessage HTTP reason phrase.
    * @param rawResponse raw response of the request.
    */
-  public ODataServerErrorException(final StatusLine statusLine, final InputStream rawResponse) {
-    super(statusLine.toString());
+  public ODataServerErrorException(final int statusCode, final String statusMessage,
+      final InputStream rawResponse) {
+    super("HTTP/" + statusCode + " " + statusMessage);
     this.rawResponse = rawResponse;
   }
 
