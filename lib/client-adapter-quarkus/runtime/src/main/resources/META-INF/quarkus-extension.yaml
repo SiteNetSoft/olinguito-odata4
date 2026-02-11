@@ -1,0 +1,15 @@
+name: "Olinguito OData Client"
+artifact: ${project.groupId}:${project.artifactId}::jar:${project.version}
+description: "Quarkus extension for Olinguito OData V4 client"
+metadata:
+  keywords:
+    - odata
+    - olinguito
+    - client
+    - rest
+  categories:
+    - "web"
+    - "data"
+  status: "preview"
+  config:
+    - "quarkus.odata-client."
