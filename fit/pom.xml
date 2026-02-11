@@ -227,8 +227,21 @@
       <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-server-tecsvc</artifactId>
       <version>${project.version}</version>
-      <classifier>classes</classifier>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-simple</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- Runtime-only: servlet classes loaded dynamically via Class.forName -->
+    <dependency>
+      <groupId>org.sitenetsoft.olinguito</groupId>
+      <artifactId>odata-server-tecsvc-servlet</artifactId>
+      <version>${project.version}</version>
+      <classifier>classes</classifier>
+      <scope>runtime</scope>
       <exclusions>
         <exclusion>
           <groupId>org.slf4j</groupId>

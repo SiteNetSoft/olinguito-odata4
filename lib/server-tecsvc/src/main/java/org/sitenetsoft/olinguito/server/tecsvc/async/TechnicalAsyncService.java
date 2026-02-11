@@ -15,24 +15,20 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed servlet-dependent methods to make engine-agnostic
  */
 package org.sitenetsoft.olinguito.server.tecsvc.async;
 
 import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
-import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.commons.api.format.PreferenceName;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
-import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
 import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
 import org.sitenetsoft.olinguito.server.api.ODataRequest;
 import org.sitenetsoft.olinguito.server.api.ODataResponse;
 import org.sitenetsoft.olinguito.server.api.processor.Processor;
-import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -114,10 +110,6 @@ public class TechnicalAsyncService {
     ASYNC_REQUEST_EXECUTOR.shutdown();
   }
 
-  public boolean isStatusMonitorResource(HttpServletRequest request) {
-    return request.getRequestURL() != null && request.getRequestURL().toString().contains(STATUS_MONITOR_TOKEN);
-  }
-
   String processAsynchronous(AsyncProcessor<?> dispatchedProcessor)
       throws ODataApplicationException, ODataLibraryException {
     // use executor thread pool
@@ -130,73 +122,16 @@ public class TechnicalAsyncService {
     return location;
   }
 
-  public void handle(HttpServletRequest request, HttpServletResponse response) throws SerializerException, IOException {
-    String location = getAsyncLocation(request);
-    AsyncRunner runner = LOCATION_2_ASYNC_RUNNER.get(location);
-
-    if (runner == null) {
-      response.setStatus(HttpStatusCode.NOT_FOUND.getStatusCode());
-    } else {
-      if (runner.isFinished()) {
-        ODataResponse wrapResult = runner.getDispatched().getProcessResponse();
-        wrapToAsyncHttpResponse(wrapResult, response);
-        LOCATION_2_ASYNC_RUNNER.remove(location);
-      } else {
-        response.setStatus(HttpStatusCode.ACCEPTED.getStatusCode());
-        response.setHeader(HttpHeader.LOCATION, location);
-      }
-    }
+  public AsyncRunner getRunner(String location) {
+    return LOCATION_2_ASYNC_RUNNER.get(location);
   }
 
-  public void listQueue(HttpServletResponse response) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<html><header/><body><h1>Queued requests</h1><ul>");
-    for (Map.Entry<String, AsyncRunner> entry : LOCATION_2_ASYNC_RUNNER.entrySet()) {
-      AsyncProcessor<?> asyncProcessor = entry.getValue().getDispatched();
-      sb.append("<li><b>ID: </b>").append(entry.getKey()).append("<br/>")
-          .append("<b>Location: </b><a href=\"")
-          .append(asyncProcessor.getLocation()).append("\">")
-          .append(asyncProcessor.getLocation()).append("</a><br/>")
-          .append("<b>Processor: </b>").append(asyncProcessor.getProcessorClass().getSimpleName()).append("<br/>")
-          .append("<b>Finished: </b>").append(entry.getValue().isFinished()).append("<br/>")
-          .append("</li>");
-    }
-    sb.append("</ul></body></html>");
-
-    writeToResponse(response, sb.toString());
+  public void removeRunner(String location) {
+    LOCATION_2_ASYNC_RUNNER.remove(location);
   }
 
-
-  private static void writeToResponse(HttpServletResponse response, InputStream input) throws IOException {
-    copy(input, response.getOutputStream());
-  }
-
-  private void writeToResponse(HttpServletResponse response, String content) {
-    writeToResponse(response, content.getBytes());
-  }
-
-  private static void writeToResponse(HttpServletResponse response, byte[] content) {
-    OutputStream output = null;
-    try {
-      output = response.getOutputStream();
-      output.write(content);
-    } catch (IOException e) {
-      throw new ODataRuntimeException(e);
-    } finally {
-      closeStream(output);
-    }
-  }
-
-  static void wrapToAsyncHttpResponse(final ODataResponse odResponse, final HttpServletResponse response)
-      throws SerializerException, IOException {
-    OData odata = OData.newInstance();
-    InputStream odResponseStream = odata.createFixedFormatSerializer().asyncResponse(odResponse);
-
-    response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.APPLICATION_HTTP.toContentTypeString());
-    response.setHeader(HttpHeader.CONTENT_ENCODING, "binary");
-    response.setStatus(HttpStatusCode.OK.getStatusCode());
-
-    writeToResponse(response, odResponseStream);
+  public Map<String, AsyncRunner> getRunners() {
+    return Collections.unmodifiableMap(LOCATION_2_ASYNC_RUNNER);
   }
 
   static void copy(final InputStream input, final OutputStream output) {
@@ -236,14 +171,10 @@ public class TechnicalAsyncService {
     return request.getRawBaseUri().substring(0, pos) + STATUS_MONITOR_TOKEN + "/" + ID_GENERATOR.incrementAndGet();
   }
 
-  private String getAsyncLocation(HttpServletRequest request) {
-    return request.getRequestURL().toString();
-  }
-
   /**
    * Runnable for the AsyncProcessor.
    */
-  static class AsyncRunner implements Runnable {
+  public static class AsyncRunner implements Runnable {
     private static final Pattern PATTERN = Pattern.compile("(" + TEC_ASYNC_SLEEP + "=)(\\d*)");
     private final AsyncProcessor<? extends Processor> dispatched;
     private int defaultSleepTimeInSeconds = 0;

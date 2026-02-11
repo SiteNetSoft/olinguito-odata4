@@ -72,12 +72,7 @@
             <groupId>org.sitenetsoft.olinguito</groupId>
             <artifactId>odata-server-tecsvc</artifactId>
             <version>${project.version}</version>
-            <classifier>classes</classifier>
             <exclusions>
-                <exclusion>
-                    <groupId>org.sitenetsoft.olinguito</groupId>
-                    <artifactId>server-adapter-servlet</artifactId>
-                </exclusion>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-simple</artifactId>
@@ -109,13 +104,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-        </dependency>
-
-        <!-- Servlet API - required for native image analysis
-             (server-tecsvc has servlet deps for async support that aren't used in Quarkus at runtime) -->
-        <dependency>
-            <groupId>jakarta.servlet</groupId>
-            <artifactId>jakarta.servlet-api</artifactId>
         </dependency>
 
         <!-- Native image dependencies - required for Netty compression support -->
