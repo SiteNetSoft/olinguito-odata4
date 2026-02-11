@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.fit.utils;
 
@@ -36,7 +37,6 @@ import java.util.Set;
 
 import jakarta.ws.rs.NotFoundException;
 
-import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.fit.metadata.Metadata;
 import org.sitenetsoft.olinguito.fit.metadata.NavigationProperty;
 
@@ -287,7 +287,7 @@ public class JSONUtilities extends AbstractUtilities {
     node.set(Constants.get(ConstantKey.JSON_VALUE_NAME),
         mapper.readTree(new ByteArrayInputStream(bos.toByteArray())));
 
-    if (StringUtils.isNotBlank(next)) {
+    if (next != null && !next.isBlank()) {
       node.set(Constants.get(ConstantKey.JSON_NEXTLINK_NAME), new TextNode(next));
     }
 

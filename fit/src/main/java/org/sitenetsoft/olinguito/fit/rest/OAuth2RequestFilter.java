@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced commons-lang3 StringUtils with StringHelper
  */
 package org.sitenetsoft.olinguito.fit.rest;
 
@@ -22,7 +24,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.ext.Provider;
 
-import org.apache.commons.lang3.StringUtils;
+import org.sitenetsoft.olinguito.fit.utils.StringHelper;
 import org.apache.cxf.jaxrs.ext.MessageContext;
 import org.apache.cxf.rs.security.jose.jwt.JoseJwtConsumer;
 import org.apache.cxf.rs.security.oauth2.filters.OAuthRequestFilter;
@@ -41,7 +43,7 @@ public class OAuth2RequestFilter extends OAuthRequestFilter {
   @Override
   public void filter(final ContainerRequestContext context) {
     final String svcName =
-        StringUtils.substringBefore(StringUtils.substringAfter(context.getUriInfo().getPath(), "/"), "/");
+        StringHelper.substringBefore(StringHelper.substringAfter(context.getUriInfo().getPath(), "/"), "/");
     if ("OAuth2.svc".equals(svcName)) {
       super.filter(context);
     }

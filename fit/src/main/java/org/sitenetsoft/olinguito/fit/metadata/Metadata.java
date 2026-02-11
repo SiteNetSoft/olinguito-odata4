@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.fit.metadata;
 
@@ -35,10 +36,9 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 import java.io.IOException;
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.fit.utils.ConstantKey;
 import org.sitenetsoft.olinguito.fit.utils.Constants;
+import org.sitenetsoft.olinguito.fit.utils.StringHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,7 +102,7 @@ public class Metadata extends AbstractMetadataElement {
           while (!found && iter.hasNext()) {
             final EntitySet entitySet = iter.next();
             final String target = entitySet.getTarget(property.getName());
-            if (StringUtils.isNotBlank(target)) {
+            if (target != null && !target.isBlank()) {
               property.setTarget(entitySet.getTarget(property.getName()));
               found = true;
             }
@@ -128,14 +128,14 @@ public class Metadata extends AbstractMetadataElement {
   public EntityType getEntityOrComplexType(final String fqn) {
     EntityType result = null;
 
-    final String ns = StringUtils.substringBeforeLast(fqn, ".");
+    final String ns = StringHelper.substringBeforeLast(fqn, ".");
     if (getSchema(ns) != null) {
-      final String name = StringUtils.substringAfterLast(fqn, ".");
+      final String name = StringHelper.substringAfterLast(fqn, ".");
       result = getSchema(ns).getEntityType(name);
       if (result != null && result.getBaseType() != null) {
-        final String baseNS = StringUtils.substringBeforeLast(result.getBaseType(), ".");
+        final String baseNS = StringHelper.substringBeforeLast(result.getBaseType(), ".");
         if (getSchema(baseNS) != null) {
-          final String baseName = StringUtils.substringAfterLast(result.getBaseType(), ".");
+          final String baseName = StringHelper.substringAfterLast(result.getBaseType(), ".");
           final EntityType baseType = getSchema(baseNS).getEntityType(baseName);
           if (baseType != null) {
             for (Map.Entry<String, Property> entry : baseType.getPropertyMap().entrySet()) {
@@ -240,7 +240,7 @@ public class Metadata extends AbstractMetadataElement {
     }
     final Attribute openType = start.getAttributeByName(new QName("OpenType"));
     if (openType != null) {
-      entityType.setOpenType(BooleanUtils.toBoolean(openType.getValue()));
+      entityType.setOpenType(Boolean.parseBoolean(openType.getValue()));
     }
 
     boolean completed = false;

@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.fit.utils;
 
@@ -56,7 +57,6 @@ import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.sitenetsoft.olinguito.fit.metadata.Metadata;
@@ -276,7 +276,7 @@ public class XMLUtilities extends AbstractUtilities {
           inlineReader.close();
         } catch (Exception ignore) {
           // inline element not found (inlines are not mondatory).
-          if (StringUtils.isNotBlank(href) && ENTITY_URI_PATTERN.matcher(href).matches()) {
+          if (href != null && !href.isBlank() && ENTITY_URI_PATTERN.matcher(href).matches()) {
             links.addLinks(title, href.substring(href.lastIndexOf('/') + 1));
           }
         }
@@ -821,7 +821,7 @@ public class XMLUtilities extends AbstractUtilities {
           }
 
         } else if (event.getEventType() == XMLStreamConstants.END_ELEMENT
-            && StringUtils.isNotBlank(currentName)
+            && currentName != null && !currentName.isBlank()
             && (Constants.get(ConstantKey.ATOM_PROPERTY_PREFIX) + currentName.trim()).equals(
                 event.asEndElement().getName().getLocalPart())) {
           writeNext = false;
@@ -906,7 +906,7 @@ public class XMLUtilities extends AbstractUtilities {
 
     if (forceFeed || links.size() > 1) {
 
-      if (StringUtils.isNotBlank(next)) {
+      if (next != null && !next.isBlank()) {
         writer.write(String.format("<link rel=\"next\" href=\"%s\" />", next).toCharArray());
       }
 

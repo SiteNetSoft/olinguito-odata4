@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.fit.base;
 
@@ -33,7 +34,7 @@ import java.util.Collection;
 import java.util.UUID;
 
 import java.io.ByteArrayInputStream;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.sitenetsoft.olinguito.fit.utils.TestUtils;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataEntityUpdateRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.UpdateType;
@@ -100,7 +101,7 @@ public class MediaEntityTestITCase extends AbstractTestITCase {
   }
 
   private void create(final ContentType contentType) throws IOException {
-    final String random = RandomStringUtils.secure().next(110);
+    final String random = TestUtils.randomAlphanumeric(110);
     final InputStream input = new ByteArrayInputStream(random.getBytes(StandardCharsets.UTF_8));
 
     final URI uri = client.newURIBuilder(testDemoServiceRootURL).appendEntitySetSegment("Advertisements").build();
@@ -153,7 +154,7 @@ public class MediaEntityTestITCase extends AbstractTestITCase {
         appendEntitySetSegment("Advertisements").
         appendKeySegment(UUID.fromString("f89dee73-af9f-4cd4-b330-db93c25ff3c7")).build();
 
-    final String random = RandomStringUtils.secure().next(124);
+    final String random = TestUtils.randomAlphanumeric(124);
 
     // 1. update providing media content
     final ODataMediaEntityUpdateRequest<ClientEntity> updateReq = client.getCUDRequestFactory().

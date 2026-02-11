@@ -15,12 +15,13 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.ext.proxy.commons;
 
 import java.net.URI;
 
-import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
 import org.sitenetsoft.olinguito.client.api.uri.URIBuilder;
 import org.sitenetsoft.olinguito.client.api.uri.URISearch;
@@ -80,7 +81,7 @@ public class SearchImpl<T extends EntityType<?>, EC extends EntityCollection<T, 
             appendDerivedEntityTypeSegment(new FullQualifiedName(
             ClassUtils.getNamespace(typeRef), ClassUtils.getEntityTypeName(typeRef)).toString());
 
-    if (StringUtils.isNotBlank(search)) {
+    if (search != null && !search.isBlank()) {
       uriBuilder.search(search);
     }
 

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.ext.proxy.commons;
 
@@ -26,10 +28,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.apache.commons.lang3.tuple.Triple;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataPropertyRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
 import org.sitenetsoft.olinguito.client.api.uri.URIBuilder;
@@ -82,7 +80,7 @@ public class ComplexCollectionInvocationHandler<T extends ComplexType<?>>
       return proxy;
     } else if (isSelfMethod(method)) {
       return invokeSelfMethod(method, args);
-    } else if ("operations".equals(method.getName()) && ArrayUtils.isEmpty(args)) {
+    } else if ("operations".equals(method.getName()) && (args == null || args.length == 0)) {
       final Class<?> returnType = method.getReturnType();
 
       return Proxy.newProxyInstance(
@@ -109,7 +107,7 @@ public class ComplexCollectionInvocationHandler<T extends ComplexType<?>>
     if (property != null && property.hasCollectionValue()) {
       for (ClientValue item : (ClientCollectionValue<ClientValue>) property.getValue()) {
         Class<?> actualRef = null;
-        if (StringUtils.isNotBlank(item.getTypeName())) {
+        if (item.getTypeName() != null && !item.getTypeName().isBlank()) {
           actualRef = service.getComplexTypeClass(item.getTypeName());
         }
         if (actualRef == null) {
@@ -120,7 +118,7 @@ public class ComplexCollectionInvocationHandler<T extends ComplexType<?>>
       }
     }
 
-    return new ImmutableTriple<List<T>, URI, List<ClientAnnotation>>(
+    return new Triple<>(
         resItems, null, Collections.emptyList());
   }
 }

@@ -15,20 +15,20 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.ext.proxy.context;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.ClassUtils;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+import org.sitenetsoft.olinguito.ext.proxy.api.EntityType;
+import org.sitenetsoft.olinguito.ext.proxy.commons.ReflectionHelper;
 
 import java.io.Serializable;
 import java.net.URI;
-
-import org.sitenetsoft.olinguito.ext.proxy.api.EntityType;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class EntityUUID implements Serializable {
 
@@ -59,8 +59,8 @@ public class EntityUUID implements Serializable {
       throw new IllegalArgumentException("Invalid Entity type class: " + type);
     }
     if (this.type == null) {
-      for (Class<?> clazz : ClassUtils.hierarchy(type, ClassUtils.Interfaces.INCLUDE)) {
-        if (ArrayUtils.contains(clazz.getInterfaces(), EntityType.class)) {
+      for (Class<?> clazz : hierarchy(type)) {
+        if (Arrays.asList(clazz.getInterfaces()).contains(EntityType.class)) {
           this.type = clazz;
         }
       }
@@ -82,19 +82,28 @@ public class EntityUUID implements Serializable {
   @Override
   public boolean equals(final Object obj) {
     return key == null
-            ? EqualsBuilder.reflectionEquals(this, obj)
-            : EqualsBuilder.reflectionEquals(this, obj, "tempKey");
+            ? ReflectionHelper.reflectionEquals(this, obj)
+            : ReflectionHelper.reflectionEquals(this, obj, "tempKey");
   }
 
   @Override
   public int hashCode() {
     return key == null
-            ? HashCodeBuilder.reflectionHashCode(this)
-            : HashCodeBuilder.reflectionHashCode(this, "tempKey");
+            ? ReflectionHelper.reflectionHashCode(this)
+            : ReflectionHelper.reflectionHashCode(this, "tempKey");
   }
 
   @Override
   public String toString() {
-    return ToStringBuilder.reflectionToString(this, ToStringStyle.SIMPLE_STYLE);
+    return ReflectionHelper.reflectionToString(this);
+  }
+
+  private static Iterable<Class<?>> hierarchy(Class<?> type) {
+    List<Class<?>> classes = new ArrayList<>();
+    for (Class<?> c = type; c != null; c = c.getSuperclass()) {
+      classes.add(c);
+      Collections.addAll(classes, c.getInterfaces());
+    }
+    return classes;
   }
 }

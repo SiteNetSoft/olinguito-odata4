@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.ext.proxy.commons;
 
@@ -29,7 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntityRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataMediaRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
@@ -332,7 +333,7 @@ public class EntityInvocationHandler extends AbstractStructuredInvocationHandler
       final ODataMediaRequest retrieveReq =
           getClient().getRetrieveRequestFactory().getMediaEntityRequest(contentSource);
 
-      if (StringUtils.isNotBlank(getEntity().getMediaContentType())) {
+      if (getEntity().getMediaContentType() != null && !getEntity().getMediaContentType().isBlank()) {
         retrieveReq.setFormat(ContentType.parse(getEntity().getMediaContentType()));
       }
 

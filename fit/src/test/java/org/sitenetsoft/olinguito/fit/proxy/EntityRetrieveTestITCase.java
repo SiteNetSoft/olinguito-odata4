@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.fit.proxy;
 
@@ -29,7 +31,6 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.ext.proxy.commons.EntityInvocationHandler;
 import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.InMemoryEntities;
 import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.AccessLevel;
@@ -158,7 +159,8 @@ public class EntityRetrieveTestITCase extends AbstractTestITCase {
   @Test
   public void checkForETag() {
     final Order order = getContainer().getOrders().getByKey(8).load();
-    assertTrue(StringUtils.isNotBlank(((EntityInvocationHandler) Proxy.getInvocationHandler(order)).getETag()));
+    final String etag = ((EntityInvocationHandler) Proxy.getInvocationHandler(order)).getETag();
+    assertTrue(etag != null && !etag.isBlank());
   }
 
   @Test

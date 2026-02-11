@@ -15,15 +15,34 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.fit.metadata;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.StringJoiner;
 
 public class AbstractMetadataElement {
 
   @Override
   public String toString() {
-    return ReflectionToStringBuilder.toString(this);
+    final StringJoiner joiner = new StringJoiner(", ",
+        getClass().getSimpleName() + "[", "]");
+    for (Class<?> c = getClass(); c != null && c != Object.class; c = c.getSuperclass()) {
+      for (Field field : c.getDeclaredFields()) {
+        if (Modifier.isStatic(field.getModifiers()) || Modifier.isTransient(field.getModifiers())) {
+          continue;
+        }
+        field.setAccessible(true);
+        try {
+          joiner.add(field.getName() + "=" + field.get(this));
+        } catch (IllegalAccessException e) {
+          joiner.add(field.getName() + "=<inaccessible>");
+        }
+      }
+    }
+    return joiner.toString();
   }
 }

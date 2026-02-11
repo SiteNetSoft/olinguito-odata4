@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.ext.proxy.commons;
 
@@ -22,9 +24,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataPropertyRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
 import org.sitenetsoft.olinguito.client.api.domain.ClientComplexValue;
@@ -39,7 +40,7 @@ import org.sitenetsoft.olinguito.ext.proxy.utils.ClassUtils;
 
 public class ComplexInvocationHandler extends AbstractStructuredInvocationHandler {
 
-  private static Pair<ClientComplexValue, Class<?>> init(
+  private static Map.Entry<ClientComplexValue, Class<?>> init(
           final Class<?> typeRef,
           final AbstractService<?> service) {
 
@@ -60,12 +61,12 @@ public class ComplexInvocationHandler extends AbstractStructuredInvocationHandle
     final ClientComplexValue complex =
             service.getClient().getObjectFactory().newComplexValue(typeName.toString());
 
-    return new ImmutablePair<ClientComplexValue, Class<?>>(complex, complexTypeRef);
+    return Map.entry(complex, complexTypeRef);
   }
 
   public static ComplexInvocationHandler getInstance(final EntityInvocationHandler handler, final Class<?> typeRef) {
-    final Pair<ClientComplexValue, Class<?>> init = init(typeRef, handler.service);
-    return new ComplexInvocationHandler(init.getLeft(), init.getRight(), handler);
+    final Map.Entry<ClientComplexValue, Class<?>> init = init(typeRef, handler.service);
+    return new ComplexInvocationHandler(init.getKey(), init.getValue(), handler);
   }
 
   public static ComplexInvocationHandler getInstance(
@@ -80,17 +81,17 @@ public class ComplexInvocationHandler extends AbstractStructuredInvocationHandle
           final Class<?> typeRef,
           final AbstractService<?> service) {
       
-    final Pair<ClientComplexValue, Class<?>> init = init(typeRef, service);
-    return new ComplexInvocationHandler(init.getLeft(), init.getRight(), service);
+    final Map.Entry<ClientComplexValue, Class<?>> init = init(typeRef, service);
+    return new ComplexInvocationHandler(init.getKey(), init.getValue(), service);
   }
 
   public static ComplexInvocationHandler getInstance(
           final Class<?> typeRef,
           final AbstractService<?> service,
           final URIBuilder uri) {
-      
-    final Pair<ClientComplexValue, Class<?>> init = init(typeRef, service);
-    return new ComplexInvocationHandler(init.getLeft(), init.getRight(), service, uri);
+
+    final Map.Entry<ClientComplexValue, Class<?>> init = init(typeRef, service);
+    return new ComplexInvocationHandler(init.getKey(), init.getValue(), service, uri);
   }
 
   public static ComplexInvocationHandler getInstance(

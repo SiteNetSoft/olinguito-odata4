@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.ext.proxy.commons;
 
@@ -23,7 +25,6 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.Map;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmOperation;
 import org.sitenetsoft.olinguito.commons.core.edm.EdmTypeInfo;
@@ -73,7 +74,7 @@ public class StructuredComposableInvokerInvocationHandler<T, O extends Operation
             || "select".equals(method.getName())) {
 
       return super.invoke(proxy, method, args);
-    } else if ("operations".equals(method.getName()) && ArrayUtils.isEmpty(args)) {
+    } else if ("operations".equals(method.getName()) && (args == null || args.length == 0)) {
       return super.invoke(proxy, method, args);
     } else if (isSelfMethod(method)) {
       return invokeSelfMethod(method, args);

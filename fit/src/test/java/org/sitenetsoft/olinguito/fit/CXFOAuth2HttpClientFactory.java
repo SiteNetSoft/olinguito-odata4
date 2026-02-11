@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder;
  * replaced commons-codec Base64 with java.util.Base64
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.fit;
 
@@ -28,7 +29,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import jakarta.ws.rs.core.MediaType;
 
 import java.util.Base64;
-import org.apache.commons.lang3.StringUtils;
+import org.sitenetsoft.olinguito.fit.utils.StringHelper;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactoryBean;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.rs.security.oauth2.client.OAuthClientUtils;
@@ -147,7 +148,7 @@ public class CXFOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFactory 
       }
 
       // 4. Get the authorization code value out of this last redirect
-      code = StringUtils.substringAfterLast(locationHeader.getValue(), "=");
+      code = StringHelper.substringAfterLast(locationHeader.getValue(), "=");
 
       EntityUtils.consumeQuietly(response.getEntity());
     } catch (Exception e) {

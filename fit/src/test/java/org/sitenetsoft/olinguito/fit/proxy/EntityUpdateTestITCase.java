@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.fit.proxy;
 
@@ -30,7 +32,6 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
-import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
 import org.sitenetsoft.olinguito.ext.proxy.AbstractService;
 import org.sitenetsoft.olinguito.ext.proxy.commons.EntityInvocationHandler;
@@ -166,7 +167,7 @@ public class EntityUpdateTestITCase extends AbstractTestITCase {
   public void concurrentModification() {
     Order order = getContainer().getOrders().getByKey(8).load();
     final String etag = ((EntityInvocationHandler) Proxy.getInvocationHandler(order)).getETag();
-    assertTrue(StringUtils.isNotBlank(etag));
+    assertTrue(etag != null && !etag.isBlank());
 
     order.setShelfLife(BigDecimal.TEN);
 

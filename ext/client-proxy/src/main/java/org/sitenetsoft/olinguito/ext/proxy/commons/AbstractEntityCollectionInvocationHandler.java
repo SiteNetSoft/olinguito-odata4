@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.ext.proxy.commons;
 
@@ -24,8 +26,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.apache.commons.lang3.tuple.Triple;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntitySetRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
@@ -149,6 +149,6 @@ public abstract class AbstractEntityCollectionInvocationHandler<
           handlerInTheContext == null ? handler : handlerInTheContext));
     }
 
-    return new ImmutableTriple<List<T>, URI, List<ClientAnnotation>>(res, next, anns);
+    return new Triple<>(res, next, anns);
   }
 }

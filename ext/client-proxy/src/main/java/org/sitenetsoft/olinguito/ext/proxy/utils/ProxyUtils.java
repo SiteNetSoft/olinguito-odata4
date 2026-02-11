@@ -12,6 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.ext.proxy.utils;
 
@@ -20,7 +22,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
 import org.sitenetsoft.olinguito.client.api.domain.ClientEntitySet;
 import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
@@ -106,7 +107,7 @@ public class ProxyUtils {
 
     EntityInvocationHandler handler = EntityInvocationHandler.getInstance(entity, entitySetURI, type, service);
 
-    if (StringUtils.isNotBlank(eTag)) {
+    if (eTag != null && !eTag.isBlank()) {
       // override ETag into the wrapped object.
       handler.setETag(eTag);
     }

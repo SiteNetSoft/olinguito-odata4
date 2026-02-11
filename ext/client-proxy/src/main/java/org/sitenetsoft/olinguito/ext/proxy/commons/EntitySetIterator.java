@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.ext.proxy.commons;
 
@@ -25,7 +27,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.apache.commons.lang3.tuple.Triple;
 import org.sitenetsoft.olinguito.client.api.domain.ClientAnnotation;
 import org.sitenetsoft.olinguito.ext.proxy.api.EntityCollection;
 import org.sitenetsoft.olinguito.ext.proxy.api.EntityType;

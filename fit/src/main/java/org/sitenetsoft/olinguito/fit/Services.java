@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and removed commons-lang3
  */
 package org.sitenetsoft.olinguito.fit;
 
@@ -68,9 +68,7 @@ import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.core.UriInfo;
 
 import java.util.Base64;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.commons.lang3.tuple.Pair;
+import org.sitenetsoft.olinguito.fit.utils.StringHelper;
 import org.apache.cxf.interceptor.InInterceptors;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
@@ -158,6 +156,18 @@ public class Services {
     json = new JSONUtilities(metadata);
   }
 
+  private static boolean isNumeric(final String str) {
+    if (str == null || str.isEmpty()) {
+      return false;
+    }
+    try {
+      Double.parseDouble(str);
+      return true;
+    } catch (NumberFormatException e) {
+      return false;
+    }
+  }
+
   /**
    * Provide sample services.
    *
@@ -165,7 +175,7 @@ public class Services {
    * @return OData services.
    */
   @GET
-  public Response getServices(@HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept) {
+  public Response getServices(@HeaderParam("Accept") @DefaultValue("") final String accept) {
     try {
       final Accept acceptType = Accept.parse(accept);
 
@@ -264,8 +274,8 @@ public class Services {
   @PUT
   @Path("/People(1)/Parent")
   public Response changeSingleValuedNavigationPropertyReference(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @HeaderParam("Content-Type") @DefaultValue(StringUtils.EMPTY) final String contentType,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @HeaderParam("Content-Type") @DefaultValue("") final String contentType,
       final String content) {
 
     try {
@@ -286,7 +296,7 @@ public class Services {
   @Consumes(MULTIPART_MIXED)
   @Produces(APPLICATION_OCTET_STREAM + ";boundary=" + BOUNDARY)
   public Response batch(
-      @HeaderParam("Prefer") @DefaultValue(StringUtils.EMPTY) final String prefer,
+      @HeaderParam("Prefer") @DefaultValue("") final String prefer,
       final @Multipart MultipartBody attachment) {
     try {
       final boolean continueOnError = prefer.contains("odata.continue-on-error");
@@ -389,7 +399,7 @@ public class Services {
   @Path("/async/{name}")
   public Response async(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
       @PathParam("name") final String name) {
 
     try {
@@ -437,7 +447,7 @@ public class Services {
 
     Header header = en.nextElement();
     final String request =
-        header.getName() + (StringUtils.isNotBlank(header.getValue()) ? ":" + header.getValue() : "");
+        header.getName() + (header.getValue() != null && !header.getValue().isBlank() ? ":" + header.getValue() : "");
 
     final Matcher matcher = REQUEST_PATTERN.matcher(request);
     final Matcher matcherRef = BATCH_REQUEST_REF_PATTERN.matcher(request);
@@ -590,7 +600,7 @@ public class Services {
     bos.write("Content-Transfer-Encoding: binary".getBytes());
     bos.write(Constants.CRLF);
 
-    if (StringUtils.isNotBlank(contentId)) {
+    if (contentId != null && !contentId.isBlank()) {
       bos.write(("Content-ID: " + contentId).getBytes());
       bos.write(Constants.CRLF);
     }
@@ -633,7 +643,7 @@ public class Services {
       bos.write(Constants.CRLF);
     }
 
-    if (StringUtils.isNotBlank(contentId)) {
+    if (contentId != null && !contentId.isBlank()) {
       bos.write(("Content-ID: " + contentId).getBytes());
       bos.write(Constants.CRLF);
     }
@@ -670,7 +680,7 @@ public class Services {
   @GET
   @Path("/{name}/{type:[a-zA-Z].*}")
   public Response getEntitySet(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
       @PathParam("name") final String name,
       @PathParam("type") final String type) {
 
@@ -699,20 +709,20 @@ public class Services {
   @GET
   @Path("/{name}/{type:[a-zA-Z].*}")
   public Response getEntitySet(@Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
       @PathParam("name") final String name,
-      @QueryParam("$top") @DefaultValue(StringUtils.EMPTY) final String top,
-      @QueryParam("$skip") @DefaultValue(StringUtils.EMPTY) final String skip,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format,
-      @QueryParam("$count") @DefaultValue(StringUtils.EMPTY) final String count,
-      @QueryParam("$filter") @DefaultValue(StringUtils.EMPTY) final String filter,
-      @QueryParam("$orderby") @DefaultValue(StringUtils.EMPTY) final String orderby,
-      @QueryParam("$skiptoken") @DefaultValue(StringUtils.EMPTY) final String skiptoken,
+      @QueryParam("$top") @DefaultValue("") final String top,
+      @QueryParam("$skip") @DefaultValue("") final String skip,
+      @QueryParam("$format") @DefaultValue("") final String format,
+      @QueryParam("$count") @DefaultValue("") final String count,
+      @QueryParam("$filter") @DefaultValue("") final String filter,
+      @QueryParam("$orderby") @DefaultValue("") final String orderby,
+      @QueryParam("$skiptoken") @DefaultValue("") final String skiptoken,
       @PathParam("type") final String type) {
 
     try {
       final Accept acceptType;
-      if (StringUtils.isNotBlank(format)) {
+      if (format != null && !format.isBlank()) {
         acceptType = Accept.valueOf(format.toUpperCase());
       } else {
         acceptType = Accept.parse(accept);
@@ -738,15 +748,15 @@ public class Services {
           builder.append(type).append(File.separatorChar);
         }
 
-        if (StringUtils.isNotBlank(orderby)) {
+        if (orderby != null && !orderby.isBlank()) {
           builder.append(Constants.get(ConstantKey.ORDERBY)).append(File.separatorChar).
           append(orderby).append(File.separatorChar);
         }
 
-        if (StringUtils.isNotBlank(filter)) {
+        if (filter != null && !filter.isBlank()) {
           builder.append(Constants.get(ConstantKey.FILTER)).append(File.separatorChar).
           append(filter.replaceAll("/", "."));
-        } else if (StringUtils.isNotBlank(skiptoken)) {
+        } else if (skiptoken != null && !skiptoken.isBlank()) {
           builder.append(Constants.get(ConstantKey.SKIP_TOKEN)).append(File.separatorChar).
           append(skiptoken);
         } else {
@@ -769,11 +779,11 @@ public class Services {
         // -----------------------------------------------
         List<Entity> entries = new ArrayList<Entity>(container.getPayload().getEntities());
 
-        if (StringUtils.isNotBlank(skip)) {
+        if (skip != null && !skip.isBlank()) {
           entries = entries.subList(Integer.valueOf(skip), entries.size());
         }
 
-        if (StringUtils.isNotBlank(top)) {
+        if (top != null && !top.isBlank()) {
           entries = entries.subList(0, Integer.valueOf(top));
         }
 
@@ -813,15 +823,15 @@ public class Services {
   @Path("/{name}")
   public Response getEntitySet(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
       @PathParam("name") final String name,
-      @QueryParam("$top") @DefaultValue(StringUtils.EMPTY) final String top,
-      @QueryParam("$skip") @DefaultValue(StringUtils.EMPTY) final String skip,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format,
-      @QueryParam("$count") @DefaultValue(StringUtils.EMPTY) final String count,
-      @QueryParam("$filter") @DefaultValue(StringUtils.EMPTY) final String filter,
-      @QueryParam("$orderby") @DefaultValue(StringUtils.EMPTY) final String orderby,
-      @QueryParam("$skiptoken") @DefaultValue(StringUtils.EMPTY) final String skiptoken) {
+      @QueryParam("$top") @DefaultValue("") final String top,
+      @QueryParam("$skip") @DefaultValue("") final String skip,
+      @QueryParam("$format") @DefaultValue("") final String format,
+      @QueryParam("$count") @DefaultValue("") final String count,
+      @QueryParam("$filter") @DefaultValue("") final String filter,
+      @QueryParam("$orderby") @DefaultValue("") final String orderby,
+      @QueryParam("$skiptoken") @DefaultValue("") final String skiptoken) {
 
     return getEntitySet(uriInfo, accept, name, top, skip, format, count, filter, orderby, skiptoken, null);
   }
@@ -830,9 +840,9 @@ public class Services {
   @Path("/Person({entityId})")
   public Response getPerson(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
       @PathParam("entityId") final String entityId,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format) {
+      @QueryParam("$format") @DefaultValue("") final String format) {
 
     final Map.Entry<Accept, AbstractUtilities> utils = getUtilities(accept, format);
 
@@ -865,9 +875,9 @@ public class Services {
   @Path("/Product({entityId})")
   public Response getProduct(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
       @PathParam("entityId") final String entityId,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format) {
+      @QueryParam("$format") @DefaultValue("") final String format) {
 
     final Map.Entry<Accept, AbstractUtilities> utils = getUtilities(accept, format);
 
@@ -900,9 +910,9 @@ public class Services {
   @Path("/ComputerDetail({entityId})")
   public Response getComputerDetail(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
       @PathParam("entityId") final String entityId,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format) {
+      @QueryParam("$format") @DefaultValue("") final String format) {
 
     final Map.Entry<Accept, AbstractUtilities> utils = getUtilities(accept, format);
 
@@ -946,12 +956,12 @@ public class Services {
   @Path("/{entitySetName}({entityId})")
   public Response getEntity(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
       @PathParam("entitySetName") final String entitySetName,
       @PathParam("entityId") final String entityId,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format,
-      @QueryParam("$expand") @DefaultValue(StringUtils.EMPTY) final String expand,
-      @QueryParam("$select") @DefaultValue(StringUtils.EMPTY) final String select) {
+      @QueryParam("$format") @DefaultValue("") final String format,
+      @QueryParam("$expand") @DefaultValue("") final String expand,
+      @QueryParam("$select") @DefaultValue("") final String select) {
 
     return getEntityInternal(
         uriInfo.getRequestUri().toASCIIString(), accept, entitySetName, entityId, format, expand, select);
@@ -995,7 +1005,7 @@ public class Services {
         entry.setEditLink(editLink);
       }
 
-      if (StringUtils.isNotBlank(select)) {
+      if (select != null && !select.isBlank()) {
         final List<String> properties = Arrays.asList(select.split(","));
         final Set<Property> toBeRemoved = new HashSet<Property>();
 
@@ -1019,8 +1029,8 @@ public class Services {
       }
 
       String tempExpand = expand;
-      if (StringUtils.isNotBlank(tempExpand)) {
-        tempExpand = StringUtils.substringBefore(tempExpand, "(");
+      if (tempExpand != null && !tempExpand.isBlank()) {
+        tempExpand = StringHelper.substringBefore(tempExpand, "(");
         final List<String> links = Arrays.asList(tempExpand.split(","));
 
         final Map<Link, Link> replace = new HashMap<Link, Link>();
@@ -1069,7 +1079,7 @@ public class Services {
   @Path("/{entitySetName}({entityId})/$value")
   public Response getMediaEntity(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
       @PathParam("entitySetName") final String entitySetName,
       @PathParam("entityId") final String entityId) {
 
@@ -1096,19 +1106,19 @@ public class Services {
   @Path("/People/{type:.*}")
   public Response getPeople(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
       @PathParam("type") final String type,
-      @QueryParam("$top") @DefaultValue(StringUtils.EMPTY) final String top,
-      @QueryParam("$skip") @DefaultValue(StringUtils.EMPTY) final String skip,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format,
-      @QueryParam("$count") @DefaultValue(StringUtils.EMPTY) final String count,
-      @QueryParam("$filter") @DefaultValue(StringUtils.EMPTY) final String filter,
-      @QueryParam("$search") @DefaultValue(StringUtils.EMPTY) final String search,
-      @QueryParam("$orderby") @DefaultValue(StringUtils.EMPTY) final String orderby,
-      @QueryParam("$skiptoken") @DefaultValue(StringUtils.EMPTY) final String skiptoken) {
+      @QueryParam("$top") @DefaultValue("") final String top,
+      @QueryParam("$skip") @DefaultValue("") final String skip,
+      @QueryParam("$format") @DefaultValue("") final String format,
+      @QueryParam("$count") @DefaultValue("") final String count,
+      @QueryParam("$filter") @DefaultValue("") final String filter,
+      @QueryParam("$search") @DefaultValue("") final String search,
+      @QueryParam("$orderby") @DefaultValue("") final String orderby,
+      @QueryParam("$skiptoken") @DefaultValue("") final String skiptoken) {
 
-    return StringUtils.isBlank(filter) && StringUtils.isBlank(search) ?
-        NumberUtils.isCreatable(type) ?
+    return (filter == null || filter.isBlank()) && (search == null || search.isBlank()) ?
+        isNumeric(type) ?
             getEntityInternal(uriInfo.getRequestUri().toASCIIString(), accept, "People", type, format, null, null) :
             getEntitySet(accept, "People", type) :
         getEntitySet(uriInfo, accept, "People", top, skip, format, count, filter, orderby, skiptoken, type);
@@ -1118,22 +1128,22 @@ public class Services {
   @Path("/Boss")
   public Response getSingletonBoss(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format) {
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @QueryParam("$format") @DefaultValue("") final String format) {
 
     return getEntityInternal(
-        uriInfo.getRequestUri().toASCIIString(), accept, "Boss", StringUtils.EMPTY, format, null, null);
+        uriInfo.getRequestUri().toASCIIString(), accept, "Boss", "", format, null, null);
   }
 
   @GET
   @Path("/Company")
   public Response getSingletonCompany(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format) {
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @QueryParam("$format") @DefaultValue("") final String format) {
 
     return getEntityInternal(
-        uriInfo.getRequestUri().toASCIIString(), accept, "Company", StringUtils.EMPTY, format, null, null);
+        uriInfo.getRequestUri().toASCIIString(), accept, "Company", "", format, null, null);
   }
 
   @PATCH
@@ -1142,34 +1152,34 @@ public class Services {
   @Consumes({ MediaType.APPLICATION_ATOM_XML, MediaType.APPLICATION_JSON })
   public Response patchSingletonCompany(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @HeaderParam("Content-Type") @DefaultValue(StringUtils.EMPTY) final String contentType,
-      @HeaderParam("Prefer") @DefaultValue(StringUtils.EMPTY) final String prefer,
-      @HeaderParam("If-Match") @DefaultValue(StringUtils.EMPTY) final String ifMatch,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @HeaderParam("Content-Type") @DefaultValue("") final String contentType,
+      @HeaderParam("Prefer") @DefaultValue("") final String prefer,
+      @HeaderParam("If-Match") @DefaultValue("") final String ifMatch,
       final String changes) {
 
-    return patchEntityInternal(uriInfo, accept, contentType, prefer, ifMatch, "Company", StringUtils.EMPTY, changes);
+    return patchEntityInternal(uriInfo, accept, contentType, prefer, ifMatch, "Company", "", changes);
   }
 
   @GET
   @Path("/Customers")
   public Response getCustomers(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format,
-      @HeaderParam("Prefer") @DefaultValue(StringUtils.EMPTY) final String prefer,
-      @QueryParam("$deltatoken") @DefaultValue(StringUtils.EMPTY) final String deltatoken) {
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @QueryParam("$format") @DefaultValue("") final String format,
+      @HeaderParam("Prefer") @DefaultValue("") final String prefer,
+      @QueryParam("$deltatoken") @DefaultValue("") final String deltatoken) {
 
     try {
       final Accept acceptType;
-      if (StringUtils.isNotBlank(format)) {
+      if (format != null && !format.isBlank()) {
         acceptType = Accept.valueOf(format.toUpperCase());
       } else {
         acceptType = Accept.parse(accept);
       }
 
       final InputStream output;
-      if (StringUtils.isBlank(deltatoken)) {
+      if ((deltatoken == null || deltatoken.isBlank())) {
         final InputStream input = (InputStream) getEntitySet(
             uriInfo, accept, "Customers", null, null, format, null, null, null, null).getEntity();
         final EntityCollection entitySet = xml.readEntitySet(acceptType, input);
@@ -1192,7 +1202,7 @@ public class Services {
           output,
           null,
           acceptType);
-      if (StringUtils.isNotBlank(prefer)) {
+      if (prefer != null && !prefer.isBlank()) {
         response.getHeaders().put("Preference-Applied", Collections.singletonList(prefer));
       }
       return response;
@@ -1207,9 +1217,9 @@ public class Services {
   @Consumes({ MediaType.APPLICATION_ATOM_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM })
   public Response postNewEntity(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @HeaderParam("Content-Type") @DefaultValue(StringUtils.EMPTY) final String contentType,
-      @HeaderParam("Prefer") @DefaultValue(StringUtils.EMPTY) final String prefer,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @HeaderParam("Content-Type") @DefaultValue("") final String contentType,
+      @HeaderParam("Prefer") @DefaultValue("") final String prefer,
       @PathParam("entitySetName") final String entitySetName,
       final String entity) {
 
@@ -1235,7 +1245,7 @@ public class Services {
         xml.addMediaEntityValue(entitySetName, entityKey,
             new ByteArrayInputStream(entity.getBytes(Constants.ENCODING)));
 
-        final Pair<String, EdmPrimitiveTypeKind> id = Commons.getMediaContent().get(entitySetName);
+        final Map.Entry<String, EdmPrimitiveTypeKind> id = Commons.getMediaContent().get(entitySetName);
         if (id != null) {
           final Property prop = new Property();
           prop.setName(id.getKey());
@@ -1323,7 +1333,7 @@ public class Services {
             Response.Status.CREATED);
       }
 
-      if (StringUtils.isNotBlank(prefer)) {
+      if (prefer != null && !prefer.isBlank()) {
         response.getHeaders().put("Preference-Applied", Collections.singletonList(prefer));
       }
 
@@ -1420,12 +1430,12 @@ public class Services {
   @GET
   @Path("/Company/Microsoft.Test.OData.Services.ODataWCFService.GetEmployeesCount{paren:[\\(\\)]*}")
   public Response functionGetEmployeesCount(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format) {
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @QueryParam("$format") @DefaultValue("") final String format) {
 
     try {
       final Accept acceptType;
-      if (StringUtils.isNotBlank(format)) {
+      if (format != null && !format.isBlank()) {
         acceptType = Accept.valueOf(format.toUpperCase());
       } else {
         acceptType = Accept.parse(accept);
@@ -1451,9 +1461,9 @@ public class Services {
   @POST
   @Path("/Person({entityId})/{type:.*}/Sack")
   public Response actionSack(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
       @PathParam("entityId") final String entityId,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format) {
+      @QueryParam("$format") @DefaultValue("") final String format) {
 
     final Map.Entry<Accept, AbstractUtilities> utils = getUtilities(accept, format);
 
@@ -1484,7 +1494,7 @@ public class Services {
   @POST
   @Path("/Person/{type:.*}/IncreaseSalaries")
   public Response actionIncreaseSalaries(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
       @PathParam("type") final String type,
       final String body) {
 
@@ -1541,9 +1551,9 @@ public class Services {
   @POST
   @Path("/Product({entityId})/ChangeProductDimensions")
   public Response actionChangeProductDimensions(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
       @PathParam("entityId") final String entityId,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format,
+      @QueryParam("$format") @DefaultValue("") final String format,
       final String argument) {
 
     final Map.Entry<Accept, AbstractUtilities> utils = getUtilities(accept, format);
@@ -1578,9 +1588,9 @@ public class Services {
   @POST
   @Path("/ComputerDetail({entityId})/ResetComputerDetailsSpecifications")
   public Response actionResetComputerDetailsSpecifications(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
       @PathParam("entityId") final String entityId,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format,
+      @QueryParam("$format") @DefaultValue("") final String format,
       final String argument) {
 
     final Map.Entry<Accept, AbstractUtilities> utils = getUtilities(accept, format);
@@ -1617,14 +1627,14 @@ public class Services {
   @POST
   @Path("/Company/Microsoft.Test.OData.Services.ODataWCFService.IncreaseRevenue{paren:[\\(\\)]*}")
   public Response actionIncreaseRevenue(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @HeaderParam("Content-Type") @DefaultValue(StringUtils.EMPTY) final String contentType,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @HeaderParam("Content-Type") @DefaultValue("") final String contentType,
+      @QueryParam("$format") @DefaultValue("") final String format,
       final String param) {
 
     try {
       final Accept acceptType;
-      if (StringUtils.isNotBlank(format)) {
+      if (format != null && !format.isBlank()) {
         acceptType = Accept.valueOf(format.toUpperCase());
       } else {
         acceptType = Accept.parse(accept);
@@ -1647,13 +1657,13 @@ public class Services {
   @GET
   @Path("/Products({entityId})/Microsoft.Test.OData.Services.ODataWCFService.GetProductDetails({param:.*})")
   public Response functionGetProductDetails(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
       @PathParam("entityId") final String entityId,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format) {
+      @QueryParam("$format") @DefaultValue("") final String format) {
 
     try {
       final Accept acceptType;
-      if (StringUtils.isNotBlank(format)) {
+      if (format != null && !format.isBlank()) {
         acceptType = Accept.valueOf(format.toUpperCase());
       } else {
         acceptType = Accept.parse(accept);
@@ -1699,14 +1709,14 @@ public class Services {
   @POST
   @Path("/Products({entityId})/Microsoft.Test.OData.Services.ODataWCFService.AddAccessRight{paren:[\\(\\)]*}")
   public Response actionAddAccessRight(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @HeaderParam("Content-Type") @DefaultValue(StringUtils.EMPTY) final String contentType,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @HeaderParam("Content-Type") @DefaultValue("") final String contentType,
+      @QueryParam("$format") @DefaultValue("") final String format,
       final String param) {
 
     try {
       final Accept acceptType;
-      if (StringUtils.isNotBlank(format)) {
+      if (format != null && !format.isBlank()) {
         acceptType = Accept.valueOf(format.toUpperCase());
       } else {
         acceptType = Accept.parse(accept);
@@ -1740,10 +1750,10 @@ public class Services {
   @Path("/Customers({personId})/Microsoft.Test.OData.Services.ODataWCFService.ResetAddress{paren:[\\(\\)]*}")
   public Response actionResetAddress(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
       @PathParam("personId") final String personId,
-      @HeaderParam("Content-Type") @DefaultValue(StringUtils.EMPTY) final String contentType,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format,
+      @HeaderParam("Content-Type") @DefaultValue("") final String contentType,
+      @QueryParam("$format") @DefaultValue("") final String format,
       final String param) {
 
     try {
@@ -1767,9 +1777,9 @@ public class Services {
       + "/Microsoft.Test.OData.Services.ODataWCFService.GetRelatedProduct{paren:[\\(\\)]*}")
   public Response functionGetRelatedProduct(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
       @PathParam("productId") final String productId,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format) {
+      @QueryParam("$format") @DefaultValue("") final String format) {
 
     return getEntityInternal(
         uriInfo.getRequestUri().toASCIIString(), accept, "Products", productId, format, null, null);
@@ -1778,10 +1788,10 @@ public class Services {
   @POST
   @Path("/Accounts({entityId})/Microsoft.Test.OData.Services.ODataWCFService.RefreshDefaultPI{paren:[\\(\\)]*}")
   public Response actionRefreshDefaultPI(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @HeaderParam("Content-Type") @DefaultValue(StringUtils.EMPTY) final String contentType,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @HeaderParam("Content-Type") @DefaultValue("") final String contentType,
       @PathParam("entityId") final String entityId,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format,
+      @QueryParam("$format") @DefaultValue("") final String format,
       final String param) {
 
     try {
@@ -1801,9 +1811,9 @@ public class Services {
   @GET
   @Path("/Accounts({entityId})/Microsoft.Test.OData.Services.ODataWCFService.GetDefaultPI{paren:[\\(\\)]*}")
   public Response functionGetDefaultPI(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
       @PathParam("entityId") final String entityId,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format) {
+      @QueryParam("$format") @DefaultValue("") final String format) {
 
     return getContainedEntity(accept, entityId, "MyPaymentInstruments", entityId + "901", format);
   }
@@ -1811,9 +1821,9 @@ public class Services {
   @GET
   @Path("/Accounts({entityId})/Microsoft.Test.OData.Services.ODataWCFService.GetAccountInfo{paren:[\\(\\)]*}")
   public Response functionGetAccountInfo(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
       @PathParam("entityId") final String entityId,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format) {
+      @QueryParam("$format") @DefaultValue("") final String format) {
 
     return getPath(accept, "Accounts", entityId, "AccountInfo", format);
   }
@@ -1821,12 +1831,12 @@ public class Services {
   @GET
   @Path("/Accounts({entityId})/MyGiftCard/Microsoft.Test.OData.Services.ODataWCFService.GetActualAmount({param:.*})")
   public Response functionGetActualAmount(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format) {
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @QueryParam("$format") @DefaultValue("") final String format) {
 
     try {
       final Accept acceptType;
-      if (StringUtils.isNotBlank(format)) {
+      if (format != null && !format.isBlank()) {
         acceptType = Accept.valueOf(format.toUpperCase());
       } else {
         acceptType = Accept.parse(accept);
@@ -1859,9 +1869,9 @@ public class Services {
   @GET
   @Path("/{path:.*}/$ref")
   public Response getEntityReference(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
       @PathParam("path") final String path,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format) {
+      @QueryParam("$format") @DefaultValue("") final String format) {
 
     try {
       final Map.Entry<Accept, AbstractUtilities> utils = getUtilities(accept, format);
@@ -1889,9 +1899,9 @@ public class Services {
   @Consumes({ MediaType.APPLICATION_ATOM_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM })
   public Response postPeople(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @HeaderParam("Content-Type") @DefaultValue(StringUtils.EMPTY) final String contentType,
-      @HeaderParam("Prefer") @DefaultValue(StringUtils.EMPTY) final String prefer,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @HeaderParam("Content-Type") @DefaultValue("") final String contentType,
+      @HeaderParam("Prefer") @DefaultValue("") final String prefer,
       final String entity) {
 
     if ("{\"@odata.type\":\"#Microsoft.Test.OData.Services.ODataWCFService.Person\"}".equals(entity)) {
@@ -1915,7 +1925,7 @@ public class Services {
       final Map.Entry<String, InputStream> entityInfo = xml.readEntity(entitySetName, entityId, Accept.ATOM);
 
       final String etag = Commons.getETag(entityInfo.getKey());
-      if (StringUtils.isNotBlank(ifMatch) && !ifMatch.equals(etag)) {
+      if (ifMatch != null && !ifMatch.isBlank() && !ifMatch.equals(etag)) {
         throw new ConcurrentModificationException("Concurrent modification");
       }
 
@@ -1981,7 +1991,7 @@ public class Services {
             acceptType, Response.Status.NO_CONTENT);
       }
 
-      if (StringUtils.isNotBlank(prefer)) {
+      if (prefer != null && !prefer.isBlank()) {
         response.getHeaders().put("Preference-Applied", Collections.singletonList(prefer));
       }
 
@@ -1997,17 +2007,17 @@ public class Services {
   @Consumes({ MediaType.APPLICATION_ATOM_XML, MediaType.APPLICATION_JSON })
   public Response patchEntity(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @HeaderParam("Content-Type") @DefaultValue(StringUtils.EMPTY) final String contentType,
-      @HeaderParam("Prefer") @DefaultValue(StringUtils.EMPTY) final String prefer,
-      @HeaderParam("If-Match") @DefaultValue(StringUtils.EMPTY) final String ifMatch,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @HeaderParam("Content-Type") @DefaultValue("") final String contentType,
+      @HeaderParam("Prefer") @DefaultValue("") final String prefer,
+      @HeaderParam("If-Match") @DefaultValue("") final String ifMatch,
       @PathParam("entitySetName") final String entitySetName,
       @PathParam("entityId") final String entityId,
       final String changes) {
 
     final Response response =
         getEntityInternal(uriInfo.getRequestUri().toASCIIString(),
-            accept, entitySetName, entityId, accept, StringUtils.EMPTY, StringUtils.EMPTY);
+            accept, entitySetName, entityId, accept, "", "");
     return response.getStatus() >= 400 ?
         postNewEntity(uriInfo, accept, contentType, prefer, entitySetName, changes) :
         patchEntityInternal(uriInfo, accept, contentType, prefer, ifMatch, entitySetName, entityId, changes);
@@ -2057,7 +2067,7 @@ public class Services {
             Response.Status.NO_CONTENT);
       }
 
-      if (StringUtils.isNotBlank(prefer)) {
+      if (prefer != null && !prefer.isBlank()) {
         response.getHeaders().put("Preference-Applied", Collections.singletonList(prefer));
       }
 
@@ -2073,16 +2083,16 @@ public class Services {
   @Consumes({ MediaType.APPLICATION_ATOM_XML, MediaType.APPLICATION_JSON })
   public Response replaceEntity(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @HeaderParam("Content-Type") @DefaultValue(StringUtils.EMPTY) final String contentType,
-      @HeaderParam("Prefer") @DefaultValue(StringUtils.EMPTY) final String prefer,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @HeaderParam("Content-Type") @DefaultValue("") final String contentType,
+      @HeaderParam("Prefer") @DefaultValue("") final String prefer,
       @PathParam("entitySetName") final String entitySetName,
       @PathParam("entityId") final String entityId,
       final String entity) {
 
     try {
       getEntityInternal(uriInfo.getRequestUri().toASCIIString(),
-          accept, entitySetName, entityId, accept, StringUtils.EMPTY, StringUtils.EMPTY);
+          accept, entitySetName, entityId, accept, "", "");
       return replaceEntity(uriInfo, accept, prefer, entitySetName, entityId, entity);
     } catch (NotFoundException e) {
       return postNewEntity(uriInfo, accept, contentType, prefer, entitySetName, entityId);
@@ -2174,16 +2184,16 @@ public class Services {
         response = getEntityInternal(location, accept, entitySetName, entityId, format, null, null);
       } else {
         Accept acceptType = null;
-        if (StringUtils.isNotBlank(format)) {
+        if (format != null && !format.isBlank()) {
           acceptType = Accept.valueOf(format.toUpperCase());
-        } else if (StringUtils.isNotBlank(accept)) {
+        } else if (accept != null && !accept.isBlank()) {
           acceptType = Accept.parse(accept, null);
         }
 
         response = xml.createResponse(null, null, null, acceptType, Response.Status.NO_CONTENT);
       }
 
-      if (StringUtils.isNotBlank(prefer)) {
+      if (prefer != null && !prefer.isBlank()) {
         response.getHeaders().put("Preference-Applied", Collections.singletonList(prefer));
       }
 
@@ -2202,9 +2212,9 @@ public class Services {
       final String format) {
     try {
       Accept acceptType = null;
-      if (StringUtils.isNotBlank(format)) {
+      if (format != null && !format.isBlank()) {
         acceptType = Accept.valueOf(format.toUpperCase());
-      } else if (StringUtils.isNotBlank(accept)) {
+      } else if (accept != null && !accept.isBlank()) {
         acceptType = Accept.parse(accept, null);
       }
 
@@ -2227,7 +2237,7 @@ public class Services {
         response = xml.createResponse(null, null, null, acceptType, Response.Status.NO_CONTENT);
       }
 
-      if (StringUtils.isNotBlank(prefer)) {
+      if (prefer != null && !prefer.isBlank()) {
         response.getHeaders().put("Preference-Applied", Collections.singletonList(prefer));
       }
 
@@ -2253,13 +2263,13 @@ public class Services {
   @Path("/{entitySetName}({entityId})/{path:.*}/$value")
   public Response replacePropertyValue(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @HeaderParam("Content-Type") @DefaultValue(StringUtils.EMPTY) final String contentType,
-      @HeaderParam("Prefer") @DefaultValue(StringUtils.EMPTY) final String prefer,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @HeaderParam("Content-Type") @DefaultValue("") final String contentType,
+      @HeaderParam("Prefer") @DefaultValue("") final String prefer,
       @PathParam("entitySetName") final String entitySetName,
       @PathParam("entityId") final String entityId,
       @PathParam("path") final String path,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format,
+      @QueryParam("$format") @DefaultValue("") final String format,
       final String changes) {
 
     return replaceProperty(uriInfo.getRequestUri().toASCIIString(),
@@ -2281,13 +2291,13 @@ public class Services {
   @Path("/{entitySetName}({entityId})/{path:.*}")
   public Response patchProperty(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @HeaderParam("Content-Type") @DefaultValue(StringUtils.EMPTY) final String contentType,
-      @HeaderParam("Prefer") @DefaultValue(StringUtils.EMPTY) final String prefer,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @HeaderParam("Content-Type") @DefaultValue("") final String contentType,
+      @HeaderParam("Prefer") @DefaultValue("") final String prefer,
       @PathParam("entitySetName") final String entitySetName,
       @PathParam("entityId") final String entityId,
       @PathParam("path") final String path,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format,
+      @QueryParam("$format") @DefaultValue("") final String format,
       final String changes) {
 
     return replaceProperty(uriInfo.getRequestUri().toASCIIString(),
@@ -2300,7 +2310,7 @@ public class Services {
   @Path("/{entitySetName}({entityId})/$value")
   public Response replaceMediaEntity(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Prefer") @DefaultValue(StringUtils.EMPTY) final String prefer,
+      @HeaderParam("Prefer") @DefaultValue("") final String prefer,
       @PathParam("entitySetName") final String entitySetName,
       @PathParam("entityId") final String entityId,
       final String value) {
@@ -2321,7 +2331,7 @@ public class Services {
         response = xml.createResponse(location, null, null, null, Response.Status.NO_CONTENT);
       }
 
-      if (StringUtils.isNotBlank(prefer)) {
+      if (prefer != null && !prefer.isBlank()) {
         response.getHeaders().put("Preference-Applied", Collections.singletonList(prefer));
       }
 
@@ -2348,13 +2358,13 @@ public class Services {
   @Path("/{entitySetName}({entityId})/{path:.*}")
   public Response replaceProperty(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @HeaderParam("Content-Type") @DefaultValue(StringUtils.EMPTY) final String contentType,
-      @HeaderParam("Prefer") @DefaultValue(StringUtils.EMPTY) final String prefer,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @HeaderParam("Content-Type") @DefaultValue("") final String contentType,
+      @HeaderParam("Prefer") @DefaultValue("") final String prefer,
       @PathParam("entitySetName") final String entitySetName,
       @PathParam("entityId") final String entityId,
       @PathParam("path") final String path,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format,
+      @QueryParam("$format") @DefaultValue("") final String format,
       final String changes) {
 
     if (xml.isMediaContent(entitySetName + "/" + path)) {
@@ -2386,7 +2396,7 @@ public class Services {
         response = xml.createResponse(null, null, null, null, Response.Status.NO_CONTENT);
       }
 
-      if (StringUtils.isNotBlank(prefer)) {
+      if (prefer != null && !prefer.isBlank()) {
         response.getHeaders().put("Preference-Applied", Collections.singletonList(prefer));
       }
 
@@ -2410,12 +2420,12 @@ public class Services {
   @DELETE
   @Path("/{entitySetName}({entityId})/{path:.*}/$value")
   public Response deleteProperty(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @HeaderParam("Prefer") @DefaultValue(StringUtils.EMPTY) final String prefer,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @HeaderParam("Prefer") @DefaultValue("") final String prefer,
       @PathParam("entitySetName") final String entitySetName,
       @PathParam("entityId") final String entityId,
       @PathParam("path") final String path,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format) {
+      @QueryParam("$format") @DefaultValue("") final String format) {
     return deletePropertyValue(accept, prefer, entitySetName, entityId, path, format);
   }
 
@@ -2432,17 +2442,17 @@ public class Services {
   @GET
   @Path("/{entitySetName}({entityId})/{path:.*}/$value")
   public Response getPathValue(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
       @PathParam("entitySetName") final String entitySetName,
       @PathParam("entityId") final String entityId,
       @PathParam("path") final String path,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format) {
+      @QueryParam("$format") @DefaultValue("") final String format) {
 
     try {
       Accept acceptType = null;
-      if (StringUtils.isNotBlank(format)) {
+      if (format != null && !format.isBlank()) {
         acceptType = Accept.valueOf(format.toUpperCase());
-      } else if (StringUtils.isNotBlank(accept)) {
+      } else if (accept != null && !accept.isBlank()) {
         acceptType = Accept.parse(accept, null);
       }
 
@@ -2465,11 +2475,11 @@ public class Services {
   @GET
   @Path("/{entitySetName}({entityId})/{path:.*}")
   public Response getPath(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
       @PathParam("entitySetName") final String entitySetName,
       @PathParam("entityId") final String entityId,
       @PathParam("path") final String path,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format) {
+      @QueryParam("$format") @DefaultValue("") final String format) {
 
     // default utilities
     final AbstractUtilities utils = xml;
@@ -2479,9 +2489,9 @@ public class Services {
         return navigateStreamedEntity(entitySetName, entityId, path);
       } else {
         Accept acceptType = null;
-        if (StringUtils.isNotBlank(format)) {
+        if (format != null && !format.isBlank()) {
           acceptType = Accept.valueOf(format.toUpperCase());
-        } else if (StringUtils.isNotBlank(accept)) {
+        } else if (accept != null && !accept.isBlank()) {
           acceptType = Accept.parse(accept, null);
         }
 
@@ -2550,7 +2560,7 @@ public class Services {
 
     final ResWrap<Entity> entryContainer = atomDeserializer.toEntity(entity);
 
-    final String[] pathElems = StringUtils.split(path, "/");
+    final String[] pathElems = path.split("/");
     Property property = entryContainer.getPayload().getProperty(pathElems[0]);
     if (pathElems.length > 1 && property.isComplex()) {
       for (Property sub : property.asComplex().getValue()) {
@@ -2574,7 +2584,7 @@ public class Services {
 
     return xml.createResponse(null,
         searchForValue ? new ByteArrayInputStream(
-            (container.getPayload().isNull() ? StringUtils.EMPTY : stringValue(container.getPayload()))
+            (container.getPayload().isNull() ? "" : stringValue(container.getPayload()))
                 .getBytes(Constants.ENCODING)) : utils.writeProperty(acceptType, container),
                 Commons.getETag(Commons.getEntityBasePath(entitySetName, entityId)),
                 acceptType);
@@ -2602,7 +2612,7 @@ public class Services {
   @GET
   @Path("/{entitySetName}/$count")
   public Response count(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
       @PathParam("entitySetName") final String entitySetName) {
     try {
       final Accept acceptType = Accept.parse(accept, Accept.TEXT);
@@ -2625,15 +2635,15 @@ public class Services {
   @GET
   @Path("/Accounts({entityId})/{containedEntitySetName}({containedEntityId})")
   public Response getContainedEntity(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
       @PathParam("entityId") final String entityId,
       @PathParam("containedEntitySetName") final String containedEntitySetName,
       @PathParam("containedEntityId") final String containedEntityId,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format) {
+      @QueryParam("$format") @DefaultValue("") final String format) {
 
     try {
       final Accept acceptType;
-      if (StringUtils.isNotBlank(format)) {
+      if (format != null && !format.isBlank()) {
         acceptType = Accept.valueOf(format.toUpperCase());
       } else {
         acceptType = Accept.parse(accept);
@@ -2643,7 +2653,7 @@ public class Services {
       }
 
       final StringBuilder containedPath = containedPath(entityId, containedEntitySetName);
-      if (StringUtils.isNotBlank(containedEntityId)) {
+      if (containedEntityId != null && !containedEntityId.isBlank()) {
         containedPath.append('(').append(containedEntityId).append(')');
       }
       final InputStream entry = FSManager.instance().readFile(containedPath.toString(), Accept.ATOM);
@@ -2664,8 +2674,8 @@ public class Services {
   @Path("/Accounts({entityId})/{containedEntitySetName:.*}")
   public Response postContainedEntity(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @HeaderParam("Content-Type") @DefaultValue(StringUtils.EMPTY) final String contentType,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @HeaderParam("Content-Type") @DefaultValue("") final String contentType,
       @PathParam("entityId") final String entityId,
       @PathParam("containedEntitySetName") final String containedEntitySetName,
       final String entity) {
@@ -2740,18 +2750,18 @@ public class Services {
   @PATCH
   @Path("/{entitySetName}({entityId})/{containedEntitySetName}({containedEntityId})")
   public Response patchContainedEntity(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @HeaderParam("Content-Type") @DefaultValue(StringUtils.EMPTY) final String contentType,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @HeaderParam("Content-Type") @DefaultValue("") final String contentType,
       @PathParam("entitySetName") final String entitySetName,
       @PathParam("entityId") final String entityId,
       @PathParam("containedEntitySetName") final String containedEntitySetName,
       @PathParam("containedEntityId") final String containedEntityId,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format,
+      @QueryParam("$format") @DefaultValue("") final String format,
       final String changes) {
 
     try {
       final Accept acceptType;
-      if (StringUtils.isNotBlank(format)) {
+      if (format != null && !format.isBlank()) {
         acceptType = Accept.valueOf(format.toUpperCase());
       } else {
         acceptType = Accept.parse(accept);
@@ -2761,7 +2771,7 @@ public class Services {
       }
 
       final Accept contentTypeValue;
-      if (StringUtils.isBlank(contentType)) {
+      if ((contentType == null || contentType.isBlank())) {
         throw new IllegalArgumentException();
       }
       contentTypeValue = Accept.parse(contentType);
@@ -2849,10 +2859,10 @@ public class Services {
   @GET
   @Path("/Accounts({entityId})/{containedEntitySetName:.*}")
   public Response getContainedEntitySet(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
       @PathParam("entityId") final String entityId,
       @PathParam("containedEntitySetName") final String containedEntitySetName,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format) {
+      @QueryParam("$format") @DefaultValue("") final String format) {
 
     String tempContainedESName = containedEntitySetName;
     if ("MyGiftCard".equals(tempContainedESName)) {
@@ -2861,7 +2871,7 @@ public class Services {
 
     try {
       final Accept acceptType;
-      if (StringUtils.isNotBlank(format)) {
+      if (format != null && !format.isBlank()) {
         acceptType = Accept.valueOf(format.toUpperCase());
       } else {
         acceptType = Accept.parse(accept);
@@ -2905,12 +2915,12 @@ public class Services {
   @GET
   @Path("/GetDefaultColor()")
   public Response functionGetDefaultColor(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format) {
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @QueryParam("$format") @DefaultValue("") final String format) {
 
     try {
       final Accept acceptType;
-      if (StringUtils.isNotBlank(format)) {
+      if (format != null && !format.isBlank()) {
         acceptType = Accept.valueOf(format.toUpperCase());
       } else {
         acceptType = Accept.parse(accept);
@@ -2937,8 +2947,8 @@ public class Services {
   @Path("/GetPerson2({param:.*})")
   public Response functionGetPerson2(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format) {
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @QueryParam("$format") @DefaultValue("") final String format) {
 
     return getEntityInternal(
         uriInfo.getRequestUri().toASCIIString(), accept, "Customers", "1", format, null, null);
@@ -2947,8 +2957,8 @@ public class Services {
   @GET
   @Path("/GetPerson2({param:.*})/Emails")
   public Response functionGetPerson2Emails(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format) {
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @QueryParam("$format") @DefaultValue("") final String format) {
 
     return getPath(accept, "Customers", "1", "Emails", format);
   }
@@ -2956,8 +2966,8 @@ public class Services {
   @GET
   @Path("/GetPerson2({param:.*})/HomeAddress")
   public Response functionGetPerson2HomeAddress(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format) {
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @QueryParam("$format") @DefaultValue("") final String format) {
 
     return getPath(accept, "Customers", "1", "HomeAddress", format);
   }
@@ -2966,8 +2976,8 @@ public class Services {
   @Path("/GetPerson2({param:.*})/Parent")
   public Response functionGetPerson2Parent(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format) {
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @QueryParam("$format") @DefaultValue("") final String format) {
 
     return getEntityInternal(
         uriInfo.getRequestUri().toASCIIString(), accept, "Customers", "2", format, null, null);
@@ -2977,8 +2987,8 @@ public class Services {
   @Path("/GetPerson({param:.*})")
   public Response functionGetPerson(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format) {
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @QueryParam("$format") @DefaultValue("") final String format) {
 
     return getEntityInternal(
         uriInfo.getRequestUri().toASCIIString(), accept, "Customers", "1", format, null, null);
@@ -2988,8 +2998,8 @@ public class Services {
   @Path("/GetAllProducts()")
   public Response functionGetAllProducts(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format) {
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @QueryParam("$format") @DefaultValue("") final String format) {
 
     return getEntitySet(uriInfo, accept, "Products", null, null, format, null, null, null, null);
   }
@@ -2997,12 +3007,12 @@ public class Services {
   @GET
   @Path("/GetProductsByAccessLevel({param:.*})")
   public Response functionGetProductsByAccessLevel(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format) {
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @QueryParam("$format") @DefaultValue("") final String format) {
 
     try {
       final Accept acceptType;
-      if (StringUtils.isNotBlank(format)) {
+      if (format != null && !format.isBlank()) {
         acceptType = Accept.valueOf(format.toUpperCase());
       } else {
         acceptType = Accept.parse(accept);
@@ -3029,12 +3039,12 @@ public class Services {
   @GET
   @Path("/GetBossEmails({param:.*})")
   public Response functionGetBossEmails(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format) {
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @QueryParam("$format") @DefaultValue("") final String format) {
 
     try {
       final Accept acceptType;
-      if (StringUtils.isNotBlank(format)) {
+      if (format != null && !format.isBlank()) {
         acceptType = Accept.valueOf(format.toUpperCase());
       } else {
         acceptType = Accept.parse(accept);
@@ -3057,14 +3067,14 @@ public class Services {
   @POST
   @Path("/Discount()")
   public Response actionDiscount(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @HeaderParam("Content-Type") @DefaultValue(StringUtils.EMPTY) final String contentType,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @HeaderParam("Content-Type") @DefaultValue("") final String contentType,
+      @QueryParam("$format") @DefaultValue("") final String format,
       final String param) {
 
     try {
       final Accept acceptType;
-      if (StringUtils.isNotBlank(format)) {
+      if (format != null && !format.isBlank()) {
         acceptType = Accept.valueOf(format.toUpperCase());
       } else {
         acceptType = Accept.parse(accept);
@@ -3110,14 +3120,14 @@ public class Services {
   @POST
   @Path("/ResetBossAddress()")
   public Response actionResetBossAddress(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @HeaderParam("Content-Type") @DefaultValue(StringUtils.EMPTY) final String contentType,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @HeaderParam("Content-Type") @DefaultValue("") final String contentType,
+      @QueryParam("$format") @DefaultValue("") final String format,
       final String param) {
 
     try {
       final Accept acceptType;
-      if (StringUtils.isNotBlank(format)) {
+      if (format != null && !format.isBlank()) {
         acceptType = Accept.valueOf(format.toUpperCase());
       } else {
         acceptType = Accept.parse(accept);
@@ -3149,14 +3159,14 @@ public class Services {
   @POST
   @Path("/ResetBossEmail()")
   public Response actionResetBossEmail(
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @HeaderParam("Content-Type") @DefaultValue(StringUtils.EMPTY) final String contentType,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @HeaderParam("Content-Type") @DefaultValue("") final String contentType,
+      @QueryParam("$format") @DefaultValue("") final String format,
       final String param) {
 
     try {
       final Accept acceptType;
-      if (StringUtils.isNotBlank(format)) {
+      if (format != null && !format.isBlank()) {
         acceptType = Accept.valueOf(format.toUpperCase());
       } else {
         acceptType = Accept.parse(accept);
@@ -3202,10 +3212,10 @@ public class Services {
   @Path("/Company/VipCustomer")
   public Response getVipCustomer(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format,
-      @QueryParam("$expand") @DefaultValue(StringUtils.EMPTY) final String expand,
-      @QueryParam("$select") @DefaultValue(StringUtils.EMPTY) final String select) {
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @QueryParam("$format") @DefaultValue("") final String format,
+      @QueryParam("$expand") @DefaultValue("") final String expand,
+      @QueryParam("$select") @DefaultValue("") final String select) {
 
     return getEntityInternal(
         uriInfo.getRequestUri().toASCIIString(), accept, "VipCustomer", "1", format, expand, select);
@@ -3213,7 +3223,7 @@ public class Services {
 
   protected Map.Entry<Accept, AbstractUtilities> getUtilities(final String accept, final String format) {
     Accept acceptType;
-    if (StringUtils.isNotBlank(format)) {
+    if (format != null && !format.isBlank()) {
       try {
         acceptType = Accept.valueOf(format.toUpperCase());
       } catch (Exception e) {
