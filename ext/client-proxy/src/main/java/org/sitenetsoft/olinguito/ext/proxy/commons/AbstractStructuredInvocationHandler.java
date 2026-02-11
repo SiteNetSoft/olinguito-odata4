@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * Copyright 2026 SiteNetSoft - Replaced commons-io with Java standard library
+ * Copyright 2026 SiteNetSoft - Replaced commons-io and commons-lang3 with Java standard library
  */
 package org.sitenetsoft.olinguito.ext.proxy.commons;
 
@@ -38,8 +38,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
 import org.sitenetsoft.olinguito.client.api.domain.ClientInlineEntity;
 import org.sitenetsoft.olinguito.client.api.domain.ClientInlineEntitySet;
@@ -192,7 +190,7 @@ public abstract class AbstractStructuredInvocationHandler extends AbstractInvoca
           throw new UnsupportedOperationException("Unsupported method " + method.getName());
         } else {
           // if the getter refers to a navigation property ... 
-          if (ArrayUtils.isEmpty(args) || args.length != 1) {
+          if ((args == null || args.length == 0) || args.length != 1) {
             throw new IllegalArgumentException("Invalid argument");
           }
 
@@ -210,10 +208,10 @@ public abstract class AbstractStructuredInvocationHandler extends AbstractInvoca
       return proxy;
     } else if (isSelfMethod(method)) {
       return invokeSelfMethod(method, args);
-    } else if ("load".equals(method.getName()) && ArrayUtils.isEmpty(args)) {
+    } else if ("load".equals(method.getName()) && (args == null || args.length == 0)) {
       load();
       return proxy;
-    } else if ("loadAsync".equals(method.getName()) && ArrayUtils.isEmpty(args)) {
+    } else if ("loadAsync".equals(method.getName()) && (args == null || args.length == 0)) {
       return service.getClient().getConfiguration().getExecutor().submit(new Callable<Object>() {
         @Override
         public Object call() throws Exception {
@@ -221,14 +219,14 @@ public abstract class AbstractStructuredInvocationHandler extends AbstractInvoca
           return proxy;
         }
       });
-    } else if ("operations".equals(method.getName()) && ArrayUtils.isEmpty(args)) {
+    } else if ("operations".equals(method.getName()) && (args == null || args.length == 0)) {
       final Class<?> returnType = method.getReturnType();
 
       return Proxy.newProxyInstance(
               Thread.currentThread().getContextClassLoader(),
               new Class<?>[] {returnType},
               OperationInvocationHandler.getInstance(getEntityHandler()));
-    } else if ("annotations".equals(method.getName()) && ArrayUtils.isEmpty(args)) {
+    } else if ("annotations".equals(method.getName()) && (args == null || args.length == 0)) {
       final Class<?> returnType = method.getReturnType();
 
       return Proxy.newProxyInstance(
@@ -687,11 +685,11 @@ public abstract class AbstractStructuredInvocationHandler extends AbstractInvoca
   }
 
   public void expand(final String... expand) {
-    this.uri.replaceQueryOption(QueryOption.EXPAND, StringUtils.join(expand, ","));
+    this.uri.replaceQueryOption(QueryOption.EXPAND, String.join(",", expand));
   }
 
   public void select(final String... select) {
-    this.uri.replaceQueryOption(QueryOption.SELECT, StringUtils.join(select, ","));
+    this.uri.replaceQueryOption(QueryOption.SELECT, String.join(",", select));
   }
 
   public void refs() {

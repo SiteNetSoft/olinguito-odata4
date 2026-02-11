@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.ext.proxy.commons;
 
@@ -30,8 +32,6 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Triple;
 import org.sitenetsoft.olinguito.client.api.uri.QueryOption;
 import org.sitenetsoft.olinguito.client.api.uri.URIBuilder;
 import org.sitenetsoft.olinguito.client.api.uri.URIFilter;
@@ -301,13 +301,13 @@ public abstract class AbstractCollectionInvocationHandler<T extends Serializable
 
   public void expand(final String... expand) {
     if (this.uri != null) {
-      this.uri.replaceQueryOption(QueryOption.EXPAND, StringUtils.join(expand, ","));
+      this.uri.replaceQueryOption(QueryOption.EXPAND, String.join(",", expand));
     }
   }
 
   public void select(final String... select) {
     if (this.uri != null) {
-      this.uri.replaceQueryOption(QueryOption.SELECT, StringUtils.join(select, ","));
+      this.uri.replaceQueryOption(QueryOption.SELECT, String.join(",", select));
     }
   }
 

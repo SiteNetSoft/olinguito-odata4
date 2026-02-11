@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.fit.base;
 
@@ -24,7 +26,6 @@ import static org.junit.Assert.fail;
 
 import java.net.URI;
 
-import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntityRequest;
@@ -89,7 +90,7 @@ public class OAuth2TestITCase extends AbstractTestITCase {
     assertEquals(200, res.getStatusCode());
 
     final String etag = res.getETag();
-    assertTrue(StringUtils.isNotBlank(etag));
+    assertTrue(etag != null && !etag.isBlank());
 
     final ClientEntity order = res.getBody();
     assertEquals(etag, order.getETag());

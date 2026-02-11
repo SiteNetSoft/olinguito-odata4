@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.ext.proxy.commons;
 
@@ -27,10 +29,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URI;
 import java.util.Arrays;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityType;
 import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
 import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
@@ -217,16 +215,16 @@ abstract class AbstractInvocationHandler implements InvocationHandler {
 
   @Override
   public boolean equals(final Object obj) {
-    return EqualsBuilder.reflectionEquals(this, obj);
+    return ReflectionHelper.reflectionEquals(this, obj);
   }
 
   @Override
   public int hashCode() {
-    return HashCodeBuilder.reflectionHashCode(this);
+    return ReflectionHelper.reflectionHashCode(this);
   }
 
   @Override
   public String toString() {
-    return ReflectionToStringBuilder.toString(this, ToStringStyle.MULTI_LINE_STYLE);
+    return ReflectionHelper.reflectionToString(this);
   }
 }

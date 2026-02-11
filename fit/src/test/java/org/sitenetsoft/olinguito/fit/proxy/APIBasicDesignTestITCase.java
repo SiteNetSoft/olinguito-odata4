@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.fit.proxy;
 
@@ -37,7 +38,7 @@ import java.util.TimeZone;
 
 import java.io.ByteArrayInputStream;
 // CHECKSTYLE:OFF (Maven checkstyle)
-import org.apache.commons.lang3.RandomStringUtils;
+import org.sitenetsoft.olinguito.fit.utils.TestUtils;
 import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.ext.proxy.AbstractService;
@@ -394,7 +395,7 @@ public class APIBasicDesignTestITCase extends AbstractTestITCase {
     assertNotNull(dcontainer);
     dservice.getContext().detachAll();
     // ---------------------------------------
-    final String random = RandomStringUtils.secure().next(124, "abcdefghijklmnopqrstuvwxyz");
+    final String random = TestUtils.randomString(124, "abcdefghijklmnopqrstuvwxyz");
 
     final PersonDetail personDetail = dcontainer.getPersonDetails().getByKey(1); // NO HTTP Request
 

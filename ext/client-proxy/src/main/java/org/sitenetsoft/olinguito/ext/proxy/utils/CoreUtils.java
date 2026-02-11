@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.ext.proxy.utils;
 
@@ -36,7 +38,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
 import org.sitenetsoft.olinguito.client.api.uri.URIBuilder;
 import org.sitenetsoft.olinguito.client.core.uri.URIUtils;
@@ -365,7 +366,8 @@ public final class CoreUtils {
   private static Class<?> getPropertyClass(final Class<?> entityClass, final String propertyName) {
     Class<?> propertyClass = null;
     try {
-      final Method getter = entityClass.getMethod("get" + StringUtils.capitalize(propertyName));
+      final Method getter = entityClass.getMethod(
+          "get" + Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1));
       if (getter != null) {
         propertyClass = getter.getReturnType();
       }
@@ -384,7 +386,7 @@ public final class CoreUtils {
       return null;
     }
 
-    final URIBuilder uriBuilder = StringUtils.isNotBlank(entitySetURI)
+    final URIBuilder uriBuilder = entitySetURI != null && !entitySetURI.isBlank()
         ? client.newURIBuilder(entitySetURI)
         : client.newURIBuilder();
 

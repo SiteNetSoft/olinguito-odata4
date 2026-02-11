@@ -15,14 +15,13 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.ext.proxy.context;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.sitenetsoft.olinguito.client.api.domain.ClientLinkType;
+import org.sitenetsoft.olinguito.ext.proxy.commons.ReflectionHelper;
 import org.sitenetsoft.olinguito.ext.proxy.commons.EntityInvocationHandler;
 
 import java.io.Serializable;
@@ -103,7 +102,7 @@ public class EntityLinkDesc implements Serializable {
    */
   @Override
   public boolean equals(Object obj) {
-    return EqualsBuilder.reflectionEquals(this, obj);
+    return ReflectionHelper.reflectionEquals(this, obj);
   }
 
   /**
@@ -111,7 +110,7 @@ public class EntityLinkDesc implements Serializable {
    */
   @Override
   public int hashCode() {
-    return HashCodeBuilder.reflectionHashCode(this);
+    return ReflectionHelper.reflectionHashCode(this);
   }
 
   /**
@@ -119,6 +118,6 @@ public class EntityLinkDesc implements Serializable {
    */
   @Override
   public String toString() {
-    return ReflectionToStringBuilder.toString(this, ToStringStyle.MULTI_LINE_STYLE);
+    return ReflectionHelper.reflectionToString(this);
   }
 }

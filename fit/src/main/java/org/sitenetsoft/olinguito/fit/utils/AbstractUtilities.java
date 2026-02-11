@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
  * Copyright 2026 SiteNetSoft - Fixed VFS stream lifecycle for commons-vfs2 2.10.0 upgrade
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.fit.utils;
 
@@ -41,7 +42,6 @@ import java.util.UUID;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;
 import org.sitenetsoft.olinguito.client.api.serialization.ODataDeserializer;
@@ -409,7 +409,7 @@ public abstract class AbstractUtilities {
       final Response.Status status) {
 
     final Response.ResponseBuilder builder = Response.ok();
-    if (StringUtils.isNotBlank(etag)) {
+    if (etag != null && !etag.isBlank()) {
       builder.header("ETag", etag);
     }
 
@@ -419,7 +419,7 @@ public abstract class AbstractUtilities {
 
     int contentLength = 0;
 
-    String contentTypeEncoding = StringUtils.EMPTY;
+    String contentTypeEncoding = "";
 
     if (entity != null) {
       try {
@@ -447,7 +447,7 @@ public abstract class AbstractUtilities {
     builder.header("Content-Length", contentLength);
     builder.header("Content-Type", (accept == null ? "*/*" : accept.toString()) + contentTypeEncoding);
 
-    if (StringUtils.isNotBlank(location)) {
+    if (location != null && !location.isBlank()) {
       builder.header("Location", location);
     }
 

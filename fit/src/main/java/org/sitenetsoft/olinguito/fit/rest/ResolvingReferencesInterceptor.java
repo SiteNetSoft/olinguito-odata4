@@ -15,12 +15,13 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced commons-lang3 StringUtils with Java standard library
  */
 package org.sitenetsoft.olinguito.fit.rest;
 
 import java.net.URI;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
@@ -38,7 +39,7 @@ public class ResolvingReferencesInterceptor extends AbstractPhaseInterceptor<Mes
     final String path = (String) message.get(Message.PATH_INFO);
     final String query = (String) message.get(Message.QUERY_STRING);
 
-    if (path.endsWith("$entity") && StringUtils.isNotBlank(query)
+    if (path.endsWith("$entity") && query != null && !query.isBlank()
         && Decoder.decode(query).contains("$id=")) {
 
       final String id = Decoder.decode(query);

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.ext.proxy.commons;
 
@@ -31,7 +33,6 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
-import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.UpdateType;
 import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.header.ODataPreferences;
@@ -308,7 +309,7 @@ abstract class AbstractPersistenceManager implements PersistenceManager {
       final PersistenceChanges changeset) {
     int posNumber = pos;
     for (EntityLinkDesc delayedUpdate : delayedUpdates) {
-      if (StringUtils.isBlank(delayedUpdate.getReference())) {
+      if (delayedUpdate.getReference() == null || delayedUpdate.getReference().isBlank()) {
 
         posNumber++;
         items.put(delayedUpdate.getSource(), posNumber);
@@ -411,11 +412,11 @@ abstract class AbstractPersistenceManager implements PersistenceManager {
     final ODataMediaEntityUpdateRequest<?> req =
         service.getClient().getCUDRequestFactory().getMediaEntityUpdateRequest(uri, input.getStream());
 
-    if (StringUtils.isNotBlank(input.getContentType())) {
+    if (input.getContentType() != null && !input.getContentType().isBlank()) {
       req.setContentType(input.getContentType());
     }
 
-    if (StringUtils.isNotBlank(handler.getETag())) {
+    if (handler.getETag() != null && !handler.getETag().isBlank()) {
       req.setIfMatch(handler.getETag());
     }
 
@@ -433,11 +434,11 @@ abstract class AbstractPersistenceManager implements PersistenceManager {
     final ODataStreamUpdateRequest req =
         service.getClient().getCUDRequestFactory().getStreamUpdateRequest(uri, input.getStream());
 
-    if (StringUtils.isNotBlank(input.getContentType())) {
+    if (input.getContentType() != null && !input.getContentType().isBlank()) {
       req.setContentType(input.getContentType());
     }
 
-    if (StringUtils.isNotBlank(handler.getETag())) {
+    if (handler.getETag() != null && !handler.getETag().isBlank()) {
       req.setIfMatch(handler.getETag());
     }
 
@@ -458,7 +459,7 @@ abstract class AbstractPersistenceManager implements PersistenceManager {
 
     req.setPrefer(new ODataPreferences().returnContent());
 
-    if (StringUtils.isNotBlank(handler.getETag())) {
+    if (handler.getETag() != null && !handler.getETag().isBlank()) {
       req.setIfMatch(handler.getETag());
     }
 
@@ -480,7 +481,7 @@ abstract class AbstractPersistenceManager implements PersistenceManager {
 
     req.setPrefer(new ODataPreferences().returnContent());
 
-    if (StringUtils.isNotBlank(handler.getETag())) {
+    if (handler.getETag() != null && !handler.getETag().isBlank()) {
       req.setIfMatch(handler.getETag());
     }
 
@@ -503,7 +504,7 @@ abstract class AbstractPersistenceManager implements PersistenceManager {
 
     req.setPrefer(new ODataPreferences().returnContent());
 
-    if (StringUtils.isNotBlank(handler.getETag())) {
+    if (handler.getETag() != null && !handler.getETag().isBlank()) {
       req.setIfMatch(handler.getETag());
     }
 
@@ -531,7 +532,7 @@ abstract class AbstractPersistenceManager implements PersistenceManager {
 
     final ODataDeleteRequest req = service.getClient().getCUDRequestFactory().getDeleteRequest(deleteURI);
 
-    if (StringUtils.isNotBlank(etag)) {
+    if (etag != null && !etag.isBlank()) {
       req.setIfMatch(etag);
     }
 

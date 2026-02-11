@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated Jackson API and code quality warnings
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.fit.utils;
 
@@ -36,8 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.sitenetsoft.olinguito.commons.api.edm.constants.ODataServiceVersion;
 import org.sitenetsoft.olinguito.fit.metadata.Metadata;
@@ -63,7 +62,7 @@ public abstract class Commons {
 
   protected static final Map<String, Integer> SEQUENCE = new HashMap<>();
 
-  protected static final Map<String, Pair<String, EdmPrimitiveTypeKind>> MEDIA_CONTENT =
+  protected static final Map<String, Map.Entry<String, EdmPrimitiveTypeKind>> MEDIA_CONTENT =
           new HashMap<>();
 
   static {
@@ -87,13 +86,13 @@ public abstract class Commons {
     SEQUENCE.put("People", 1000);
 
     MEDIA_CONTENT.put("CustomerInfo",
-            new ImmutablePair<>("CustomerInfoId", EdmPrimitiveTypeKind.Int32));
+            Map.entry("CustomerInfoId", EdmPrimitiveTypeKind.Int32));
     MEDIA_CONTENT.put("Car",
-            new ImmutablePair<>("VIN", EdmPrimitiveTypeKind.Int32));
+            Map.entry("VIN", EdmPrimitiveTypeKind.Int32));
     MEDIA_CONTENT.put("Car/Photo", null);
     MEDIA_CONTENT.put("PersonDetails/Photo", null);
     MEDIA_CONTENT.put("Advertisements",
-            new ImmutablePair<>("ID", EdmPrimitiveTypeKind.Guid));
+            Map.entry("ID", EdmPrimitiveTypeKind.Guid));
   }
 
   private static final Metadata METADATA =
@@ -103,7 +102,7 @@ public abstract class Commons {
     return METADATA;
   }
 
-  public static Map<String, Pair<String, EdmPrimitiveTypeKind>> getMediaContent() {
+  public static Map<String, Map.Entry<String, EdmPrimitiveTypeKind>> getMediaContent() {
     return MEDIA_CONTENT;
   }
 

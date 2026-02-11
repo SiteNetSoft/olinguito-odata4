@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.ext.proxy.commons;
 
@@ -25,7 +27,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URI;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.sitenetsoft.olinguito.ext.proxy.api.annotations.EntityType;
 import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
@@ -82,12 +83,12 @@ public final class EntityContainerInvocationHandler extends AbstractInvocationHa
   public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
     if (isSelfMethod(method)) {
       return invokeSelfMethod(method, args);
-    } else if ("flush".equals(method.getName()) && ArrayUtils.isEmpty(args)) {
+    } else if ("flush".equals(method.getName()) && (args == null || args.length == 0)) {
       service.getPersistenceManager().flush();
       return ClassUtils.returnVoid();
-    } else if ("flushAsync".equals(method.getName()) && ArrayUtils.isEmpty(args)) {
+    } else if ("flushAsync".equals(method.getName()) && (args == null || args.length == 0)) {
       return service.getPersistenceManager().flushAsync();
-    } else if ("operations".equals(method.getName()) && ArrayUtils.isEmpty(args)) {
+    } else if ("operations".equals(method.getName()) && (args == null || args.length == 0)) {
       final Class<?> returnType = method.getReturnType();
 
       return Proxy.newProxyInstance(

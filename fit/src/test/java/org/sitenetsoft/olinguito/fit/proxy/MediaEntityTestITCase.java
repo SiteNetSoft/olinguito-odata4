@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.fit.proxy;
 
@@ -32,7 +33,7 @@ import java.util.Calendar;
 import java.util.UUID;
 
 import java.io.ByteArrayInputStream;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.sitenetsoft.olinguito.fit.utils.TestUtils;
 import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.ext.proxy.api.EdmStreamValue;
@@ -88,7 +89,7 @@ public class MediaEntityTestITCase extends AbstractTestITCase {
   public void update() throws IOException {
     final UUID uuid = UUID.fromString("f89dee73-af9f-4cd4-b330-db93c25ff3c7");
     final Advertisement adv = getContainer().getAdvertisements().getByKey(uuid);
-    final String random = RandomStringUtils.secure().next(124, "abcdefghijklmnopqrstuvwxyz");
+    final String random = TestUtils.randomString(124, "abcdefghijklmnopqrstuvwxyz");
     adv.uploadStream(getContainer().newEdmStreamValue("application/octet-stream",
         new ByteArrayInputStream(random.getBytes(StandardCharsets.UTF_8))));
     getContainer().flush();
@@ -100,7 +101,7 @@ public class MediaEntityTestITCase extends AbstractTestITCase {
 
   @Test
   public void create() throws IOException {
-    final String random = RandomStringUtils.secure().next(124, "abcdefghijklmnopqrstuvwxyz");
+    final String random = TestUtils.randomString(124, "abcdefghijklmnopqrstuvwxyz");
 
     final Advertisement adv = getContainer().newEntityInstance(Advertisement.class);
     adv.uploadStream(getContainer().newEdmStreamValue("application/octet-stream",

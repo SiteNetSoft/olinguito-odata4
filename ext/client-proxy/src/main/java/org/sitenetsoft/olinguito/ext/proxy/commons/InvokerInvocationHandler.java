@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Code quality improvements, removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.ext.proxy.commons;
 
@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.client.api.communication.request.invoke.ClientNoContent;
 import org.sitenetsoft.olinguito.client.api.uri.URIBuilder;
 import org.sitenetsoft.olinguito.client.api.uri.URIFilter;
@@ -123,7 +121,7 @@ public class InvokerInvocationHandler<T, O extends Operations> extends AbstractI
               execute().getBody();
 
       // 3. process invoke result
-      if (StringUtils.isBlank(operation.returnType())) {
+      if (operation.returnType() == null || operation.returnType().isBlank()) {
         return (T) ClassUtils.returnVoid();
       }
 
@@ -242,7 +240,7 @@ public class InvokerInvocationHandler<T, O extends Operations> extends AbstractI
             || "select".equals(method.getName())) {
       invokeSelfMethod(method, args);
       return proxy;
-    } else if ("operations".equals(method.getName()) && ArrayUtils.isEmpty(args)) {
+    } else if ("operations".equals(method.getName()) && (args == null || args.length == 0)) {
       final EdmTypeInfo returnType = new EdmTypeInfo.Builder().
               setEdm(service.getClient().getCachedEdm()).setTypeExpression(operation.returnType()).build();
 

@@ -15,13 +15,12 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.ext.proxy.api;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+import org.sitenetsoft.olinguito.ext.proxy.commons.ReflectionHelper;
 
 import java.io.Serializable;
 
@@ -34,7 +33,7 @@ public abstract class AbstractEntityKey implements Serializable {
    */
   @Override
   public boolean equals(final Object obj) {
-    return EqualsBuilder.reflectionEquals(this, obj);
+    return ReflectionHelper.reflectionEquals(this, obj);
   }
 
   /**
@@ -42,7 +41,7 @@ public abstract class AbstractEntityKey implements Serializable {
    */
   @Override
   public int hashCode() {
-    return HashCodeBuilder.reflectionHashCode(this);
+    return ReflectionHelper.reflectionHashCode(this);
   }
 
   /**
@@ -50,6 +49,6 @@ public abstract class AbstractEntityKey implements Serializable {
    */
   @Override
   public String toString() {
-    return ReflectionToStringBuilder.toString(this, ToStringStyle.MULTI_LINE_STYLE);
+    return ReflectionHelper.reflectionToString(this);
   }
 }

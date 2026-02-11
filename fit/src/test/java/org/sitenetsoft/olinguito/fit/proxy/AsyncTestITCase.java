@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.fit.proxy;
 
@@ -27,7 +28,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import org.apache.commons.lang3.RandomStringUtils;
+import org.sitenetsoft.olinguito.fit.utils.TestUtils;
 import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Customer;
 import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.CustomerCollection;
 import org.sitenetsoft.olinguito.fit.proxy.staticservice.odatawcfservice.types.Person;
@@ -58,7 +59,7 @@ public class AsyncTestITCase extends AbstractTestITCase {
 
   @Test
   public void updateEntity() throws Exception {
-    final String randomFirstName = RandomStringUtils.secure().next(10, "abcedfghijklmnopqrstuvwxyz");
+    final String randomFirstName = TestUtils.randomString(10, "abcedfghijklmnopqrstuvwxyz");
 
     final Person person = container.getPeople().getByKey(1);
     person.setFirstName(randomFirstName);

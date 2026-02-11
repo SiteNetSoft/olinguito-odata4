@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * Copyright 2026 SiteNetSoft - Replaced commons-io IOUtils with Java standard library
+ * Copyright 2026 SiteNetSoft - Replaced commons-lang3 StringUtils with Java standard library
  */
 package org.sitenetsoft.olinguito.fit;
 
@@ -41,7 +41,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 
-import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.fit.methods.PATCH;
 import org.sitenetsoft.olinguito.fit.utils.Constants;
 import org.springframework.stereotype.Service;
@@ -84,12 +83,12 @@ public class KeyAsSegment extends Services {
   @Override
   public Response getEntity(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
       @PathParam("entitySetName") final String entitySetName,
       @PathParam("entityId") final String entityId,
-      @QueryParam("$format") @DefaultValue(StringUtils.EMPTY) final String format,
-      @QueryParam("$expand") @DefaultValue(StringUtils.EMPTY) final String expand,
-      @QueryParam("$select") @DefaultValue(StringUtils.EMPTY) final String select) {
+      @QueryParam("$format") @DefaultValue("") final String format,
+      @QueryParam("$expand") @DefaultValue("") final String expand,
+      @QueryParam("$select") @DefaultValue("") final String select) {
 
     return replaceServiceName(super.getEntityInternal(uriInfo.getRequestUri().toASCIIString(),
         accept, entitySetName, entityId, format, expand, select));
@@ -112,10 +111,10 @@ public class KeyAsSegment extends Services {
   @Override
   public Response patchEntity(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @HeaderParam("Content-Type") @DefaultValue(StringUtils.EMPTY) final String contentType,
-      @HeaderParam("Prefer") @DefaultValue(StringUtils.EMPTY) final String prefer,
-      @HeaderParam("If-Match") @DefaultValue(StringUtils.EMPTY) final String ifMatch,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @HeaderParam("Content-Type") @DefaultValue("") final String contentType,
+      @HeaderParam("Prefer") @DefaultValue("") final String prefer,
+      @HeaderParam("If-Match") @DefaultValue("") final String ifMatch,
       @PathParam("entitySetName") final String entitySetName,
       @PathParam("entityId") final String entityId,
       final String changes) {
@@ -130,9 +129,9 @@ public class KeyAsSegment extends Services {
   @Consumes({ MediaType.APPLICATION_ATOM_XML, MediaType.APPLICATION_JSON })
   public Response putNewEntity(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @HeaderParam("Content-Type") @DefaultValue(StringUtils.EMPTY) final String contentType,
-      @HeaderParam("Prefer") @DefaultValue(StringUtils.EMPTY) final String prefer,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @HeaderParam("Content-Type") @DefaultValue("") final String contentType,
+      @HeaderParam("Prefer") @DefaultValue("") final String prefer,
       @PathParam("entitySetName") final String entitySetName,
       @PathParam("entityId") final String entityId,
       final String entity) {
@@ -148,9 +147,9 @@ public class KeyAsSegment extends Services {
   @Override
   public Response postNewEntity(
       @Context final UriInfo uriInfo,
-      @HeaderParam("Accept") @DefaultValue(StringUtils.EMPTY) final String accept,
-      @HeaderParam("Content-Type") @DefaultValue(StringUtils.EMPTY) final String contentType,
-      @HeaderParam("Prefer") @DefaultValue(StringUtils.EMPTY) final String prefer,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @HeaderParam("Content-Type") @DefaultValue("") final String contentType,
+      @HeaderParam("Prefer") @DefaultValue("") final String prefer,
       @PathParam("entitySetName") final String entitySetName,
       final String entity) {
 

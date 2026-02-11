@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * Copyright 2026 SiteNetSoft - Replaced commons-io IOUtils with Java standard library
+ * Copyright 2026 SiteNetSoft - Replaced commons-lang3 StringUtils with StringHelper
  */
 package org.sitenetsoft.olinguito.fit.rest;
 
@@ -30,7 +30,7 @@ import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.ext.Provider;
 
-import org.apache.commons.lang3.StringUtils;
+import org.sitenetsoft.olinguito.fit.utils.StringHelper;
 import org.sitenetsoft.olinguito.fit.utils.Constants;
 
 @Provider
@@ -41,7 +41,7 @@ public class ServiceNameResponseFilter implements ContainerResponseFilter {
       throws IOException {
 
     final String svcName =
-        StringUtils.substringBefore(StringUtils.substringAfter(requestContext.getUriInfo().getPath(), "/"), "/");
+        StringHelper.substringBefore(StringHelper.substringAfter(requestContext.getUriInfo().getPath(), "/"), "/");
 
     if ("OAuth2.svc".equals(svcName) && responseContext.getEntity() != null) {
       final String content = new String(((InputStream) responseContext.getEntity()).readAllBytes(), Constants.ENCODING).
