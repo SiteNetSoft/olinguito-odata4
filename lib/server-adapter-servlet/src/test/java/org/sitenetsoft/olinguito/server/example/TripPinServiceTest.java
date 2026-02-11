@@ -140,7 +140,6 @@ public class TripPinServiceTest {
         +  "</m:properties>"  
         + "</a:content>"  
         +"</a:entry>";
-    System.out.println(actual);
     assertTrue(actual.endsWith(expected));
   }
 

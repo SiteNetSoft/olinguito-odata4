@@ -48,7 +48,9 @@ public abstract class AbstractHttpClientFactory implements HttpClientFactory {
         if (input != null) {
           input.close();
         }
-      } catch (IOException ignored) { }
+      } catch (IOException e) {
+        LOG.debug("Failed to close resource", e);
+      }
     }
 
     USER_AGENT = userAgent.toString();

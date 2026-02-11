@@ -31,6 +31,9 @@ import java.util.Collections;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;
 import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
@@ -42,6 +45,8 @@ import org.sitenetsoft.olinguito.client.api.serialization.ODataWriter;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 
 public class ODataWriterImpl implements ODataWriter {
+
+  private static final Logger LOG = LoggerFactory.getLogger(ODataWriterImpl.class);
 
   protected final ODataClient client;
 
@@ -64,7 +69,9 @@ public class ODataWriterImpl implements ODataWriter {
     } finally {
       try {
         writer.close();
-      } catch (IOException ignored) { }
+      } catch (IOException e) {
+        LOG.debug("Failed to close writer", e);
+      }
     }
   }
 
@@ -86,7 +93,9 @@ public class ODataWriterImpl implements ODataWriter {
     } finally {
       try {
         writer.close();
-      } catch (IOException ignored) { }
+      } catch (IOException e) {
+        LOG.debug("Failed to close writer", e);
+      }
     }
   }
 
@@ -101,7 +110,9 @@ public class ODataWriterImpl implements ODataWriter {
     } finally {
       try {
         writer.close();
-      } catch (IOException ignored) { }
+      } catch (IOException e) {
+        LOG.debug("Failed to close writer", e);
+      }
     }
   }
 
@@ -116,7 +127,9 @@ public class ODataWriterImpl implements ODataWriter {
     } finally {
       try {
         writer.close();
-      } catch (IOException ignored) { }
+      } catch (IOException e) {
+        LOG.debug("Failed to close writer", e);
+      }
     }
   }
 }

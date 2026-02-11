@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
+
 import org.sitenetsoft.olinguito.client.api.edm.xml.Edmx;
 import org.sitenetsoft.olinguito.client.api.edm.xml.Reference;
 import org.sitenetsoft.olinguito.client.api.edm.xml.XMLMetadata;
@@ -80,7 +80,7 @@ public class ClientCsdlXMLMetadata extends CsdlAbstractEdmItem implements Serial
     final Map<String, CsdlSchema> schemaByNsOrAlias = new HashMap<>();
     for (CsdlSchema schema : getSchemas()) {
       schemaByNsOrAlias.put(schema.getNamespace(), schema);
-      if (StringUtils.isNotBlank(schema.getAlias())) {
+      if (schema.getAlias() != null && !schema.getAlias().isBlank()) {
         schemaByNsOrAlias.put(schema.getAlias(), schema);
       }
     }

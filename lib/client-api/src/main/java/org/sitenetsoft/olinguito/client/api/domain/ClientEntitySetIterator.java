@@ -157,10 +157,14 @@ public class ClientEntitySetIterator<T extends ClientEntitySet, E extends Client
   public void close() {
     try {
       stream.close();
-    } catch (IOException ignored) { }
+    } catch (IOException e) {
+      LOG.debug("Failed to close resource", e);
+    }
     try {
       osEntitySet.close();
-    } catch (IOException ignored) { }
+    } catch (IOException e) {
+      LOG.debug("Failed to close resource", e);
+    }
   }
 
   /**

@@ -24,7 +24,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+
 import org.sitenetsoft.olinguito.client.api.domain.AbstractClientPayload;
 import org.sitenetsoft.olinguito.client.api.domain.ClientAnnotation;
 import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
@@ -135,7 +135,7 @@ public class ClientEntityImpl extends AbstractClientPayload implements ClientEnt
   public ClientProperty getProperty(final String name) {
     ClientProperty result = null;
 
-    if (StringUtils.isNotBlank(name)) {
+    if (name != null && !name.isBlank()) {
       for (ClientProperty property : getProperties()) {
         if (name.equals(property.getName())) {
           result = property;

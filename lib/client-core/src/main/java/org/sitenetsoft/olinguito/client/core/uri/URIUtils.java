@@ -38,8 +38,7 @@ import javax.xml.datatype.Duration;
 
 import java.util.HexFormat;
 import org.sitenetsoft.olinguito.commons.core.Encoder;
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.sitenetsoft.olinguito.client.core.StringHelper;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.AbstractHttpEntity;
@@ -224,7 +223,7 @@ public final class URIUtils {
             (obj instanceof ParameterAlias)
                 ? "@" + ((ParameterAlias) obj).getAlias()
                 : (obj instanceof Boolean)
-                    ? BooleanUtils.toStringTrueFalse((Boolean) obj)
+                    ? Boolean.toString((Boolean) obj)
                     : (obj instanceof UUID)
                         ? obj.toString()
 
@@ -329,11 +328,11 @@ public final class URIUtils {
           (rawQuery == null ? uri.toASCIIString().length() : uri.toASCIIString().indexOf(rawQuery) - 1));
     }
     if (rawQuery != null) {
-      baseURI = StringUtils.substringBefore(uri.toASCIIString(), uriOption + "?" + rawQuery);
+      baseURI = StringHelper.substringBefore(uri.toASCIIString(), uriOption + "?" + rawQuery);
     } else if (!uriOption.isEmpty()) {
-      baseURI = StringUtils.substringBefore(uri.toASCIIString(), uriOption);
+      baseURI = StringHelper.substringBefore(uri.toASCIIString(), uriOption);
     } else {
-      baseURI = StringUtils.substringBefore(uri.toASCIIString(), null);
+      baseURI = uri.toASCIIString();
     }
     if (baseURI.endsWith("()")) {
       baseURI = baseURI.substring(0, baseURI.length() - 2);
@@ -371,8 +370,8 @@ public final class URIUtils {
     }
 
     return URI.create(baseURI + "(" + Encoder.encode(inlineParams.toString()) + ")"
-        + (pathSegments == null ? StringUtils.EMPTY : pathSegments)
-        + (!uriOption.equals(StringUtils.EMPTY) ? "/" + Encoder.encode(uriOption.substring(1)) : StringUtils.EMPTY)
-        + (StringUtils.isNotBlank(rawQuery) ? "?" + rawQuery : StringUtils.EMPTY));
+        + (pathSegments == null ? "" : pathSegments)
+        + (!uriOption.isEmpty() ? "/" + Encoder.encode(uriOption.substring(1)) : "")
+        + (rawQuery != null && !rawQuery.isBlank() ? "?" + rawQuery : ""));
   }
 }

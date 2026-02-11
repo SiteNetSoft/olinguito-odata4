@@ -27,7 +27,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Future;
 
-import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.client.api.ODataBatchConstants;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.request.ODataBasicRequest;
@@ -100,7 +99,7 @@ public abstract class AbstractODataBasicRequest<T extends ODataResponse>
   public void batch(final ODataBatchRequest req, final String contentId) {
     try {
       req.rawAppend(toByteArray());
-      if (StringUtils.isNotBlank(contentId)) {
+      if (contentId != null && !contentId.isBlank()) {
         req.rawAppend((ODataBatchConstants.CHANGESET_CONTENT_ID_NAME + ": " + contentId).getBytes(DEFAULT_CHARSET));
         req.rawAppend(CRLF);
       }

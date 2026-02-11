@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.client.core.edm.xml;
 
@@ -22,8 +24,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
+
 import org.sitenetsoft.olinguito.commons.api.edm.geo.SRID;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlTerm;
 
@@ -58,7 +59,7 @@ class ClientCsdlTerm extends CsdlTerm implements Serializable {
           } else if ("DefaultValue".equals(jp.currentName())) {
             term.setDefaultValue(jp.nextTextValue());
           } else if ("Nullable".equals(jp.currentName())) {
-            term.setNullable(BooleanUtils.toBoolean(jp.nextTextValue()));
+            term.setNullable(Boolean.parseBoolean(jp.nextTextValue()));
           } else if ("MaxLength".equals(jp.currentName())) {
             final String maxLength = jp.nextTextValue();
             term.setMaxLength("max".equalsIgnoreCase(maxLength) ? Integer.MAX_VALUE : Integer.parseInt(maxLength));
@@ -74,7 +75,9 @@ class ClientCsdlTerm extends CsdlTerm implements Serializable {
               term.setSrid(SRID.valueOf(srid));
             }
           } else if ("AppliesTo".equals(jp.currentName())) {
-            term.getAppliesTo().addAll(Arrays.asList(StringUtils.split(jp.nextTextValue())));
+            String text = jp.nextTextValue();
+            term.getAppliesTo().addAll(Arrays.asList(
+                text != null ? text.trim().split("\\s+") : new String[0]));
           } else if ("Annotation".equals(jp.currentName())) {
             jp.nextToken();
             term.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));

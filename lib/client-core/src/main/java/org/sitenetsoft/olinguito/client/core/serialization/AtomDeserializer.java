@@ -37,7 +37,7 @@ import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import org.apache.commons.lang3.StringUtils;
+import org.sitenetsoft.olinguito.client.core.StringHelper;
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;
 import org.sitenetsoft.olinguito.client.api.serialization.ODataDeserializer;
 import org.sitenetsoft.olinguito.client.api.serialization.ODataDeserializerException;
@@ -239,7 +239,7 @@ public class AtomDeserializer implements ODataDeserializer {
           valueType = ValueType.COLLECTION_COMPLEX;
           final Attribute typeAttr = event.asStartElement().getAttributeByName(typeQName);
           final String typeAttrValue = typeAttr == null ? null : typeAttr.getValue();
-          final EdmTypeInfo typeInfoEle = StringUtils.isBlank(typeAttrValue) ? null :
+          final EdmTypeInfo typeInfoEle = (typeAttrValue == null || typeAttrValue.isBlank()) ? null :
             new EdmTypeInfo.Builder().setTypeExpression(typeAttrValue).build();
           if (typeInfoEle != null) {
             ((ComplexValue)complexValue).setTypeName(typeInfoEle.external());
@@ -317,7 +317,7 @@ public class AtomDeserializer implements ODataDeserializer {
       // retrieve name from context
       final Attribute context = start.getAttributeByName(contextQName);
       if (context != null) {
-        property.setName(StringUtils.substringAfterLast(context.getValue(), "/"));
+        property.setName(StringHelper.substringAfterLast(context.getValue(), "/"));
       }
     } else {
       property.setName(start.getName().getLocalPart());
@@ -335,7 +335,7 @@ public class AtomDeserializer implements ODataDeserializer {
     final Attribute typeAttr = start.getAttributeByName(typeQName);
     final String typeAttrValue = typeAttr == null ? null : typeAttr.getValue();
 
-    final EdmTypeInfo typeInfo = StringUtils.isBlank(typeAttrValue) ? null :
+    final EdmTypeInfo typeInfo = (typeAttrValue == null || typeAttrValue.isBlank()) ? null :
       new EdmTypeInfo.Builder().setTypeExpression(typeAttrValue).build();
 
     if (typeInfo != null) {
@@ -373,7 +373,7 @@ public class AtomDeserializer implements ODataDeserializer {
 
       case EMPTY:
       default:
-        valuable.setValue(ValueType.PRIMITIVE, StringUtils.EMPTY);
+        valuable.setValue(ValueType.PRIMITIVE, "");
       }
     } else {
       valuable.setValue(propType == PropertyType.PRIMITIVE ? ValueType.PRIMITIVE :

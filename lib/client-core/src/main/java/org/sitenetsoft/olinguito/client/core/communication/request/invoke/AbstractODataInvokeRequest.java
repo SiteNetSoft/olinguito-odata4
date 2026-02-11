@@ -175,7 +175,9 @@ public abstract class AbstractODataInvokeRequest<T extends ClientInvokeResult>
         if (input != null) {
           input.close();
         }
-      } catch (IOException ignored) { }
+      } catch (IOException e) {
+        LOG.debug("Failed to close resource", e);
+      }
     }
   }
 

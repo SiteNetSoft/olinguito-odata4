@@ -156,7 +156,9 @@ public class ODataReaderImpl implements ODataReader {
       if (!ClientEntitySetIterator.class.isAssignableFrom(reference)) {
         try {
           src.close();
-        } catch (IOException ignored) { }
+        } catch (IOException e) {
+          LOG.debug("Failed to close resource", e);
+        }
       }
     }
 

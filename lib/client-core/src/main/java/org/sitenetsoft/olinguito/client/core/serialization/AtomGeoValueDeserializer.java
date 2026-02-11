@@ -30,7 +30,7 @@ import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import org.apache.commons.lang3.StringUtils;
+import org.sitenetsoft.olinguito.client.core.StringHelper;
 import org.sitenetsoft.olinguito.commons.api.Constants;
 import org.sitenetsoft.olinguito.commons.api.data.GeoUtils;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
@@ -222,7 +222,7 @@ class AtomGeoValueDeserializer {
     SRID srid = null;
     final Attribute srsName = start.getAttributeByName(Constants.QNAME_ATTR_SRSNAME);
     if (srsName != null) {
-      srid = SRID.valueOf(StringUtils.substringAfterLast(srsName.getValue(), "/"));
+      srid = SRID.valueOf(StringHelper.substringAfterLast(srsName.getValue(), "/"));
     }
 
       return switch (type) {

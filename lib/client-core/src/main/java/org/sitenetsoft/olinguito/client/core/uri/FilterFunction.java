@@ -20,7 +20,6 @@
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
-import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.client.api.uri.FilterArg;
 
 public class FilterFunction implements FilterArg {
@@ -45,7 +44,7 @@ public class FilterFunction implements FilterArg {
     
     return function +
             '(' +
-            (strParams.length == 0 ? StringUtils.EMPTY : StringUtils.join(strParams, ',')) +
+            (strParams.length == 0 ? "" : String.join(",", strParams)) +
             ')';
   }
 }

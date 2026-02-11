@@ -32,7 +32,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;
 import org.sitenetsoft.olinguito.client.api.serialization.ODataDeserializer;
 import org.sitenetsoft.olinguito.client.api.serialization.ODataDeserializerException;
@@ -361,7 +360,7 @@ public class JsonDeserializer implements ODataDeserializer {
   protected void value(final Valuable valuable, final JsonNode node, final ObjectCodec codec)
       throws IOException, EdmPrimitiveTypeException {
 
-    EdmTypeInfo typeInfo = StringUtils.isBlank(valuable.getType()) ? null
+    EdmTypeInfo typeInfo = (valuable.getType() == null || valuable.getType().isBlank()) ? null
         : new EdmTypeInfo.Builder().setTypeExpression(valuable.getType()).build();
 
     final Map.Entry<PropertyType, EdmTypeInfo> guessed = guessPropertyType(node);
@@ -408,7 +407,7 @@ public class JsonDeserializer implements ODataDeserializer {
 
     case EMPTY:
     default:
-      valuable.setValue(ValueType.PRIMITIVE, StringUtils.EMPTY);
+      valuable.setValue(ValueType.PRIMITIVE, "");
     }
   }
 

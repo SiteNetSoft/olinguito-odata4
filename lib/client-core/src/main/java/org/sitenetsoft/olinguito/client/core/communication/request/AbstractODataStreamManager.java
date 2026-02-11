@@ -117,7 +117,9 @@ public abstract class AbstractODataStreamManager<T extends ODataResponse> extend
     if (writer != null) {
       try {
         writer.close();
-      } catch (IOException ignored) { }
+      } catch (IOException e) {
+        LOG.debug("Failed to close resource", e);
+      }
     }
   }
 

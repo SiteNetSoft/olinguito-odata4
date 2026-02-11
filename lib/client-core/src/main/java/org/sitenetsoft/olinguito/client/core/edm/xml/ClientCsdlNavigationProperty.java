@@ -24,7 +24,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlNavigationProperty;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -63,11 +62,11 @@ class ClientCsdlNavigationProperty extends CsdlNavigationProperty implements Ser
               property.setCollection(false);
             }
           } else if ("Nullable".equals(jp.currentName())) {
-            property.setNullable(BooleanUtils.toBoolean(jp.nextTextValue()));
+            property.setNullable(Boolean.parseBoolean(jp.nextTextValue()));
           } else if ("Partner".equals(jp.currentName())) {
             property.setPartner(jp.nextTextValue());
           } else if ("ContainsTarget".equals(jp.currentName())) {
-            property.setContainsTarget(BooleanUtils.toBoolean(jp.nextTextValue()));
+            property.setContainsTarget(Boolean.parseBoolean(jp.nextTextValue()));
           } else if ("ReferentialConstraint".equals(jp.currentName())) {
             jp.nextToken();
             property.getReferentialConstraints().add(jp.readValueAs(ClientCsdlReferentialConstraint.class));

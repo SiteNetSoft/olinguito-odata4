@@ -24,7 +24,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.sitenetsoft.olinguito.commons.api.edm.geo.SRID;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlTypeDefinition;
 
@@ -56,7 +55,7 @@ class ClientCsdlTypeDefinition extends CsdlTypeDefinition implements Serializabl
           } else if ("MaxLength".equals(jp.currentName())) {
             typeDefinition.setMaxLength(jp.nextIntValue(0));
           } else if ("Unicode".equals(jp.currentName())) {
-            typeDefinition.setUnicode(BooleanUtils.toBoolean(jp.nextTextValue()));
+            typeDefinition.setUnicode(Boolean.parseBoolean(jp.nextTextValue()));
           } else if ("Precision".equals(jp.currentName())) {
             typeDefinition.setPrecision(jp.nextIntValue(0));
           } else if ("Scale".equals(jp.currentName())) {

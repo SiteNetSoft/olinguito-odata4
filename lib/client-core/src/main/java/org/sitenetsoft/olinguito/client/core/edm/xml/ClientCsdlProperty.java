@@ -24,7 +24,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.sitenetsoft.olinguito.commons.api.edm.geo.SRID;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlProperty;
 
@@ -63,7 +62,7 @@ class ClientCsdlProperty extends CsdlProperty implements Serializable {
               property.setCollection(false);
             }
           } else if ("Nullable".equals(jp.currentName())) {
-            property.setNullable(BooleanUtils.toBoolean(jp.nextTextValue()));
+            property.setNullable(Boolean.parseBoolean(jp.nextTextValue()));
           } else if ("DefaultValue".equals(jp.currentName())) {
             property.setDefaultValue(jp.nextTextValue());
           } else if ("MaxLength".equals(jp.currentName())) {
@@ -77,7 +76,7 @@ class ClientCsdlProperty extends CsdlProperty implements Serializable {
                 0 : Integer.parseInt(scale));
             property.setScaleAsString(scale);
           } else if ("Unicode".equals(jp.currentName())) {
-            property.setUnicode(BooleanUtils.toBoolean(jp.nextTextValue()));
+            property.setUnicode(Boolean.parseBoolean(jp.nextTextValue()));
           } else if ("SRID".equals(jp.currentName())) {
             final String srid = jp.nextTextValue();
             if (srid != null) {

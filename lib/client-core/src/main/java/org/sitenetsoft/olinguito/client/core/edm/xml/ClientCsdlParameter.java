@@ -24,7 +24,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.sitenetsoft.olinguito.commons.api.edm.geo.SRID;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlParameter;
 
@@ -63,7 +62,7 @@ class ClientCsdlParameter extends CsdlParameter implements Serializable {
               parameter.setCollection(false);
             }
           } else if ("Nullable".equals(jp.currentName())) {
-            parameter.setNullable(BooleanUtils.toBoolean(jp.nextTextValue()));
+            parameter.setNullable(Boolean.parseBoolean(jp.nextTextValue()));
           } else if ("MaxLength".equals(jp.currentName())) {
             final String maxLenght = jp.nextTextValue();
             parameter.setMaxLength("max".equalsIgnoreCase(maxLenght) ? Integer.MAX_VALUE : Integer.parseInt(maxLenght));

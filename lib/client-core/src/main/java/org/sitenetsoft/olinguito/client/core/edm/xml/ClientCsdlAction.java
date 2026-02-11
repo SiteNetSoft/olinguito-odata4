@@ -24,7 +24,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAction;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -53,7 +52,7 @@ class ClientCsdlAction extends CsdlAction implements Serializable {
           if ("Name".equals(jp.currentName())) {
             action.setName(jp.nextTextValue());
           } else if ("IsBound".equals(jp.currentName())) {
-            action.setBound(BooleanUtils.toBoolean(jp.nextTextValue()));
+            action.setBound(Boolean.parseBoolean(jp.nextTextValue()));
           } else if ("EntitySetPath".equals(jp.currentName())) {
             action.setEntitySetPath(jp.nextTextValue());
           } else if ("Parameter".equals(jp.currentName())) {

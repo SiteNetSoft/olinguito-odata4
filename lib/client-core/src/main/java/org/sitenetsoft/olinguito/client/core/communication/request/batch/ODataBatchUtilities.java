@@ -36,7 +36,6 @@ import java.util.regex.Pattern;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.client.api.ODataBatchConstants;
 import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchLineIterator;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
@@ -195,7 +194,7 @@ public class ODataBatchUtilities {
       String line;
       while ((line = headersReader.readLine()) != null) {
         line = line.trim();
-        if (StringUtils.isNotBlank(line)) {
+        if (line != null && !line.isBlank()) {
           addHeaderLine(line, target);
         }
       }
@@ -309,7 +308,7 @@ public class ODataBatchUtilities {
 
     final String contentType = headers.containsKey(HttpHeader.CONTENT_TYPE) ?
         headers.get(HttpHeader.CONTENT_TYPE).toString() :
-        StringUtils.EMPTY;
+        "";
 
     if (contentType.contains(ContentType.MULTIPART_MIXED.toContentTypeString())) {
       nextItemType = BatchItemType.CHANGESET;
@@ -332,7 +331,8 @@ public class ODataBatchUtilities {
    */
   private static boolean isNotEndLine(final ODataBatchController controller, final String line) {
     return line == null
-            || (StringUtils.isBlank(controller.getBoundary()) && StringUtils.isNotBlank(line))
-            || (StringUtils.isNotBlank(controller.getBoundary()) && !line.startsWith(controller.getBoundary()));
+            || ((controller.getBoundary() == null || controller.getBoundary().isBlank()) && !line.isBlank())
+            || (controller.getBoundary() != null && !controller.getBoundary().isBlank()
+                && !line.startsWith(controller.getBoundary()));
   }
 }
