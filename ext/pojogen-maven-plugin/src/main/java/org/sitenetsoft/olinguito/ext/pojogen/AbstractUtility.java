@@ -17,10 +17,10 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Migrated Velocity 1.7 to 2.4.1 (CVE-2020-13936)
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.ext.pojogen;
 
-import org.apache.commons.lang3.StringUtils;
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmAction;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
@@ -41,6 +41,7 @@ import org.sitenetsoft.olinguito.commons.core.edm.EdmTypeInfo;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,6 +49,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 
@@ -184,7 +186,7 @@ public abstract class AbstractUtility {
   }
 
   public String getContainedEntitySet(final EdmNavigationProperty navProp) {
-    return (StringUtils.isBlank(basePackage)
+    return (basePackage == null || basePackage.isBlank()
             ? new StringBuilder() : new StringBuilder().append(basePackage).append('.')).
             append(navProp.getType().getFullQualifiedName().getNamespace().toLowerCase()). // namespace
             append('.').append(capitalize(navProp.getName())).toString();
@@ -278,7 +280,7 @@ public abstract class AbstractUtility {
   private void collectEntityTypes() {
     for (EdmSchema _schema : getMetadata().getSchemas()) {
       allEntityTypes.put(_schema.getNamespace(), new ArrayList<EdmEntityType>(_schema.getEntityTypes()));
-      if (StringUtils.isNotBlank(_schema.getAlias())) {
+      if (_schema.getAlias() != null && !_schema.getAlias().isBlank()) {
         allEntityTypes.put(_schema.getAlias(), new ArrayList<EdmEntityType>(_schema.getEntityTypes()));
       }
     }
@@ -309,7 +311,7 @@ public abstract class AbstractUtility {
 
     final EdmTypeInfo edmType = getEdmTypeInfo(typeExpression);
 
-    final String basepkg = StringUtils.isBlank(basePackage) ? "" : basePackage + ".";
+    final String basepkg = basePackage == null || basePackage.isBlank() ? "" : basePackage + ".";
 
     if ("Edm.Stream".equals(typeExpression)) {
       res.append(InputStream.class.getName());
@@ -383,13 +385,13 @@ public abstract class AbstractUtility {
 
     final Set<String> types = new HashSet<String>(2);
 
-    types.add((collection ? "Collection(" : StringUtils.EMPTY)
+    types.add((collection ? "Collection(" : "")
             + getNameInNamespace(entityTypeExpression)
-            + (collection ? ")" : StringUtils.EMPTY));
-    if (StringUtils.isNotBlank(getSchema().getAlias())) {
-      types.add((collection ? "Collection(" : StringUtils.EMPTY)
+            + (collection ? ")" : ""));
+    if (getSchema().getAlias() != null && !getSchema().getAlias().isBlank()) {
+      types.add((collection ? "Collection(" : "")
               + getSchema().getAlias() + "." + entityTypeExpression
-              + (collection ? ")" : StringUtils.EMPTY));
+              + (collection ? ")" : ""));
     }
 
     return types.contains(fullTypeExpression);
@@ -432,15 +434,15 @@ public abstract class AbstractUtility {
   }
 
   public String capitalize(final String str) {
-    return StringUtils.capitalize(str);
+    return str == null || str.isEmpty() ? str : Character.toUpperCase(str.charAt(0)) + str.substring(1);
   }
 
   public String uncapitalize(final String str) {
-    return StringUtils.uncapitalize(str);
+    return str == null || str.isEmpty() ? str : Character.toLowerCase(str.charAt(0)) + str.substring(1);
   }
 
   public String join(final Object[] array, String sep) {
-    return StringUtils.join(array, sep);
+    return Arrays.stream(array).map(String::valueOf).collect(Collectors.joining(sep));
   }
 
   public Map<String, String> getFcProperties(final EdmProperty property) {
@@ -454,7 +456,7 @@ public abstract class AbstractUtility {
   public final String getNameFromNS(final String ns, final boolean toLowerCase) {
     String res = null;
 
-    if (StringUtils.isNotBlank(ns)) {
+    if (ns != null && !ns.isBlank()) {
       final int lastpt = ns.lastIndexOf('.');
       res = ns.substring(lastpt < 0 ? 0 : lastpt + 1);
       res = toLowerCase ? res.toLowerCase() : res;
