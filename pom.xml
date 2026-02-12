@@ -89,7 +89,6 @@
   <properties>
     <commons.io.version>2.18.0</commons.io.version>
     <commons.lang3.version>3.18.0</commons.lang3.version>
-
     <commons.logging.version>1.3.4</commons.logging.version>
     <commons.vfs.version>2.10.0</commons.vfs.version>
     <esigate.version>4.4</esigate.version>
@@ -163,6 +162,7 @@
         <artifactId>commons-io</artifactId>
         <version>${commons.io.version}</version>
       </dependency>
+      <!-- Managed version for transitive dependency (used by commons-vfs2 and esigate) -->
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
