@@ -21,33 +21,31 @@ package org.sitenetsoft.olinguito.fit.rproxy;
 import java.util.Properties;
 
 import org.esigate.Driver;
-import org.esigate.DriverConfiguration;
 import org.esigate.events.Event;
 import org.esigate.events.EventDefinition;
 import org.esigate.events.EventManager;
 import org.esigate.events.IEventListener;
 import org.esigate.events.impl.RenderEvent;
 import org.esigate.extension.Extension;
-import org.esigate.util.HttpRequestHelper;
+import org.esigate.impl.DriverRequest;
 
 public class LinkRewrite implements Extension, IEventListener {
 
-  private DriverConfiguration config;
-
   @Override
   public void init(final Driver driver, final Properties properties) {
-    config = driver.getConfiguration();
     driver.getEventManager().register(EventManager.EVENT_RENDER_PRE, this);
   }
 
   @Override
   public boolean event(final EventDefinition eventDef, final Event event) {
     final RenderEvent renderEvent = (RenderEvent) event;
-    final String baseUrl = HttpRequestHelper.getBaseUrl(renderEvent.originalRequest).toString();
-    final LinkRewriteRenderer fixup = new LinkRewriteRenderer(baseUrl, config.getVisibleBaseURL(baseUrl));
+    final DriverRequest request = renderEvent.getOriginalRequest();
+    final String baseUrl = request.getBaseUrl().toString();
+    final String visibleBaseUrl = request.getVisibleBaseUrl();
+    final LinkRewriteRenderer fixup = new LinkRewriteRenderer(baseUrl, visibleBaseUrl);
 
     // Add fixup renderer as first renderer.
-    renderEvent.renderers.add(0, fixup);
+    renderEvent.getRenderers().add(0, fixup);
 
     // Continue processing
     return true;

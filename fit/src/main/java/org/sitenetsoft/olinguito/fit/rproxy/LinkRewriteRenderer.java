@@ -23,8 +23,8 @@ package org.sitenetsoft.olinguito.fit.rproxy;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.apache.http.HttpEntityEnclosingRequest;
 import org.esigate.Renderer;
+import org.esigate.impl.DriverRequest;
 
 public class LinkRewriteRenderer implements Renderer {
 
@@ -51,7 +51,7 @@ public class LinkRewriteRenderer implements Renderer {
   }
 
   @Override
-  public void render(final HttpEntityEnclosingRequest httpRequest, final String src, final Writer out)
+  public void render(final DriverRequest request, final String src, final Writer out)
       throws IOException {
 
     out.write(src.replaceAll(baseUrl, replacementUrl));

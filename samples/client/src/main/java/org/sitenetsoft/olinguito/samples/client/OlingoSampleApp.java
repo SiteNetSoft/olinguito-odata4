@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replace System.out.println with SLF4J logging
  ******************************************************************************/
 package org.sitenetsoft.olinguito.samples.client;
 
@@ -29,6 +31,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataDeleteRequest;
@@ -65,6 +70,8 @@ import org.sitenetsoft.olinguito.commons.api.format.ContentType;
  *
  */
 public class OlingoSampleApp {
+  private static final Logger LOG = LoggerFactory.getLogger(OlingoSampleApp.class);
+
   private ODataClient client;
   
   public OlingoSampleApp() {
@@ -153,15 +160,14 @@ public class OlingoSampleApp {
   }
 
   private static void print(String content) {
-    System.out.println(content);
+    LOG.info(content);
   }
 
   private static void print(String content, List<?> list) {
-    System.out.println(content);
+    LOG.info(content);
     for (Object o : list) {
-        System.out.println("    " + o);
+      LOG.info("    {}", o);
     }
-      System.out.println();
   }
 
   private static String prettyPrint(Map<String, Object> properties, int level) {
@@ -234,7 +240,7 @@ public class OlingoSampleApp {
   }
 
   private ClientEntitySetIterator<ClientEntitySet, ClientEntity> readEntities(Edm edm, URI absoluteUri) {
-    System.out.println("URI = " + absoluteUri);
+    LOG.info("URI = {}", absoluteUri);
     ODataEntitySetIteratorRequest<ClientEntitySet, ClientEntity> request = 
       client.getRetrieveRequestFactory().getEntitySetIteratorRequest(absoluteUri);
     // odata4 sample/server limitation not handling metadata=full
