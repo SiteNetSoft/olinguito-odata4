@@ -20,16 +20,19 @@ olinguito-odata4/
 │   ├── commons-core/             # Shared implementations
 │   ├── client-api/               # Client API interfaces
 │   ├── client-core/              # Client implementation
+│   ├── client-adapter-quarkus/   # Quarkus client CDI extension
+│   ├── odata-vocabularies/       # OData vocabulary support
 │   ├── server-api/               # Server API interfaces
 │   ├── server-core/              # Server core (engine-agnostic)
 │   ├── server-core-ext/          # Server extensions
 │   ├── server-adapter-servlet/   # Jakarta Servlet adapter
-│   ├── server-adapter-quarkus/   # Quarkus extension
-│   ├── server-tecsvc/            # Technical test service
-│   ├── server-tecsvc-quarkus/    # Quarkus test service
+│   ├── server-adapter-netty/     # Netty async streaming adapter
+│   ├── server-adapter-quarkus/   # Quarkus server extension
+│   ├── server-tecsvc/            # Technical test service (core)
+│   ├── server-tecsvc-servlet/    # TecSvc servlet integration
+│   ├── server-tecsvc-quarkus/    # TecSvc Quarkus integration
 │   ├── server-test/              # Test utilities
-│   ├── test-fixtures/            # Shared test fixtures
-│   └── odata-vocabularies/       # OData vocabulary support
+│   └── test-fixtures/            # Shared test fixtures
 ├── ext/                          # Extensions
 │   ├── pojogen-maven-plugin/     # POJO generator
 │   ├── client-proxy/             # Client proxy generator
@@ -58,8 +61,11 @@ The modules follow a layered architecture with clear dependency boundaries:
 │  ┌───────────────────┐  │                     │  (odata-client-core)    │
 │  │ servlet-adapter   │  │                     └─────────────────────────┘
 │  └───────────────────┘  │                                 │
-│  ┌───────────────────┐  │                                 │
-│  │ quarkus-adapter   │  │                                 │
+│  ┌───────────────────┐  │                     ┌─────────────────────────┐
+│  │ quarkus-adapter   │  │                     │   Client Quarkus        │
+│  └───────────────────┘  │                     │ (client-adapter-quarkus)│
+│  ┌───────────────────┐  │                     └─────────────────────────┘
+│  │ netty-adapter     │  │                                 │
 │  └───────────────────┘  │                                 │
 └─────────────────────────┘                                 │
             │                                               │
@@ -185,6 +191,13 @@ Native Quarkus extension with build-time optimization:
 ** `VertxODataHandler` - Vert.x integration
 ** `ODataRecorder` - Runtime initialization
 
+==== Netty Adapter (`server-adapter-netty`)
+
+Async streaming support via Netty:
+
+* Decoupled from `server-api` and `server-core` to keep the core runtime-agnostic
+* Provides non-blocking I/O for high-throughput scenarios
+
 === Client API (`odata-client-api`)
 
 Client-side interfaces:
@@ -203,6 +216,13 @@ Client implementation:
 * *Request Building* - Fluent URI builder
 * *Response Parsing* - JSON/XML deserialization
 * *Batch Support* - Batch request handling
+
+=== Client Quarkus Adapter (`client-adapter-quarkus`)
+
+Quarkus CDI extension for the OData client:
+
+* Named/multi-client support via CDI qualifiers
+* Build-time optimization for native image compilation
 
 == Key Design Patterns
 
@@ -346,25 +366,28 @@ ClientEntity/ClientEntitySet
 |Vert.x / Quarkus
 
 |HTTP Client
-|Apache HttpComponents 5.x
+|Apache HttpComponents
 
 |JSON Processing
-|Jackson 2.14.x
+|Jackson 2.18.x
 
 |XML Processing
 |Aalto XML / StAX
 
 |Async Streaming
-|Netty
+|Netty 4.1.x
 
 |Build System
 |Maven 3.9+
 
 |Testing
-|JUnit 4.13 / Mockito 5.x
+|JUnit 5.11.x (Jupiter) / Mockito 5.14.x
 
 |Integration Testing
-|Embedded Tomcat 10.x
+|Embedded Tomcat 10.1.x (JUnit 4 via vintage engine)
+
+|Code Coverage
+|JaCoCo
 |===
 
 == Package Namespace

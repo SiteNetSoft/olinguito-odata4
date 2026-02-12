@@ -44,12 +44,16 @@ lib/                    # Core libraries
   commons-core/         # Common implementation
   client-api/           # OData Client API
   client-core/          # OData Client implementation
+  client-adapter-quarkus/  # Quarkus client CDI extension
   server-api/           # OData Server API
   server-core/          # OData Server core (engine-agnostic)
   server-core-ext/      # Server extensions
   server-adapter-servlet/  # Jakarta Servlet adapter
-  server-adapter-quarkus/  # Quarkus adapter
-  server-tecsvc/        # Test Entity Container service
+  server-adapter-netty/ # Netty async streaming adapter
+  server-adapter-quarkus/  # Quarkus server extension
+  server-tecsvc/        # Test Entity Container service (core)
+  server-tecsvc-servlet/  # TecSvc servlet integration
+  server-tecsvc-quarkus/  # TecSvc Quarkus integration
   server-test/          # Server test utilities
   test-fixtures/        # Test fixtures
   odata-vocabularies/   # OData vocabulary support
@@ -70,11 +74,11 @@ samples/                # Example applications and tutorials (p0-p12)
 ```
 commons-api/commons-core
     ↓
-client-api/client-core    server-api/server-core
-                              ↓
-                          server-core-ext
-                              ↓
-              server-adapter-servlet / server-adapter-quarkus
+client-api/client-core          server-api/server-core
+    ↓                               ↓
+client-adapter-quarkus          server-core-ext
+                                    ↓
+              server-adapter-servlet / server-adapter-quarkus / server-adapter-netty
 ```
 
 **Key technologies:**
@@ -84,17 +88,24 @@ client-api/client-core    server-api/server-core
 - Aalto/STAX for XML processing
 - Netty for async streaming support
 - Apache HttpComponents for HTTP client
-- Embedded Tomcat 10.0.27 for integration tests (port 9080)
+- Embedded Tomcat 10.1.52 for integration tests (port 9080)
 
 **Package namespace:** `org.sitenetsoft.olinguito.*`
 
 ## Testing
 
-- Unit tests: JUnit 4.13.2 + Mockito 5.3.1
-- Integration tests: Located in `fit/` module, run with `mvn verify`
+- Unit tests: JUnit 5 (Jupiter 5.11.4) + Mockito 5.14.2
+- Integration tests (`fit/`): JUnit 4 with vintage engine, run with `mvn verify`
 - Integration test naming convention: `*ITCase.java`
 - Test server runs on port 9080 (configurable via `tomcat.servlet.port`)
+- Code coverage: JaCoCo (profile `build.quality`)
 
 ## Current Development
 
-The `feature/without-servlet-continue` branch is refactoring servlet-specific code into the separate `server-adapter-servlet` module to decouple the core server from servlet dependencies.
+The `feature/without-servlet-continue` branch has completed the decoupling of servlet-specific code into separate adapter modules. Key changes:
+
+- **Servlet decoupling**: `server-core` and `server-api` are now runtime-agnostic; servlet code lives in `server-adapter-servlet`
+- **Netty decoupling**: Async streaming extracted to `server-adapter-netty`
+- **Quarkus extensions**: Native Quarkus support for both client (`client-adapter-quarkus`) and server (`server-adapter-quarkus`)
+- **Dependency cleanup**: Removed `commons-lang3`, `commons-codec`, and `commons-io` from core modules
+- **Testing modernization**: Migrated to JUnit 5, JaCoCo, XMLUnit 2.x

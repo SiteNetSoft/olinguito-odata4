@@ -77,10 +77,18 @@
       <id>test-quarkus</id>
       <properties>
         <test.server.type>quarkus</test.server.type>
-        <quarkus.version>3.24.5</quarkus.version>
+        <quarkus.version>3.30.6</quarkus.version>
       </properties>
       <dependencyManagement>
         <dependencies>
+          <!-- Vert.x BOM before Quarkus BOM to override CVE-2026-1002 fix -->
+          <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-stack-depchain</artifactId>
+            <version>${vertx.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+          </dependency>
           <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-bom</artifactId>
