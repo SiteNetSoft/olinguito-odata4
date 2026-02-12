@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
  * Copyright 2026 SiteNetSoft - Replaced commons-io with Java standard library
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.samples.client.core.http;
 
@@ -29,7 +30,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequestInterceptor;
@@ -119,14 +119,14 @@ public class AzureADOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFact
 
       final String loginPage = EntityUtils.toString(response.getEntity());
 
-      String postURL = StringUtils.substringBefore(
-              StringUtils.substringAfter(loginPage, "<form id=\"credentials\" method=\"post\" action=\""),
+      String postURL = substringBefore(
+              substringAfter(loginPage, "<form id=\"credentials\" method=\"post\" action=\""),
               "\">");
-      final String ppsx = StringUtils.substringBefore(
-              StringUtils.substringAfter(loginPage, "<input type=\"hidden\" id=\"PPSX\" name=\"PPSX\" value=\""),
+      final String ppsx = substringBefore(
+              substringAfter(loginPage, "<input type=\"hidden\" id=\"PPSX\" name=\"PPSX\" value=\""),
               "\"/>");
-      final String ppft = StringUtils.substringBefore(
-              StringUtils.substringAfter(loginPage, "<input type=\"hidden\" name=\"PPFT\" id=\"i0327\" value=\""),
+      final String ppft = substringBefore(
+              substringAfter(loginPage, "<input type=\"hidden\" name=\"PPFT\" id=\"i0327\" value=\""),
               "\"/>");
 
       List<BasicNameValuePair> data = new ArrayList<BasicNameValuePair>();
@@ -142,16 +142,16 @@ public class AzureADOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFact
 
       final String samlPage = EntityUtils.toString(response.getEntity());
 
-      postURL = StringUtils.substringBefore(
-              StringUtils.substringAfter(samlPage, "<form name=\"fmHF\" id=\"fmHF\" action=\""),
+      postURL = substringBefore(
+              substringAfter(samlPage, "<form name=\"fmHF\" id=\"fmHF\" action=\""),
               "\" method=\"post\" target=\"_top\">");
-      final String wctx = StringUtils.substringBefore(
-              StringUtils.substringAfter(samlPage, "<input type=\"hidden\" name=\"wctx\" id=\"wctx\" value=\""),
+      final String wctx = substringBefore(
+              substringAfter(samlPage, "<input type=\"hidden\" name=\"wctx\" id=\"wctx\" value=\""),
               "\">");
-      final String wresult = StringUtils.substringBefore(StringUtils.substringAfter(samlPage,
+      final String wresult = substringBefore(substringAfter(samlPage,
               "<input type=\"hidden\" name=\"wresult\" id=\"wresult\" value=\""), "\">");
-      final String wa = StringUtils.substringBefore(
-              StringUtils.substringAfter(samlPage, "<input type=\"hidden\" name=\"wa\" id=\"wa\" value=\""),
+      final String wa = substringBefore(
+              substringAfter(samlPage, "<input type=\"hidden\" name=\"wa\" id=\"wa\" value=\""),
               "\">");
 
       data = new ArrayList<BasicNameValuePair>();
@@ -169,9 +169,8 @@ public class AzureADOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFact
         throw new OAuth2Exception("Unexpected response from server");
       }
 
-      final String[] oauth2Info = StringUtils.split(
-              StringUtils.substringAfter(locationHeader.getValue(), "?"), '&');
-      code = StringUtils.substringAfter(oauth2Info[0], "=");
+      final String[] oauth2Info = substringAfter(locationHeader.getValue(), "?").split("&");
+      code = substringAfter(oauth2Info[0], "=");
 
       EntityUtils.consume(response.getEntity());
     } catch (Exception e) {
@@ -256,6 +255,16 @@ public class AzureADOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFact
     final HttpClient httpClient = builder.build();
     clientRef.set(httpClient);
     return new ApacheHttpClient(httpClient);
+  }
+
+  private static String substringBefore(final String str, final String separator) {
+    final int idx = str.indexOf(separator);
+    return idx < 0 ? str : str.substring(0, idx);
+  }
+
+  private static String substringAfter(final String str, final String separator) {
+    final int idx = str.indexOf(separator);
+    return idx < 0 ? "" : str.substring(idx + separator.length());
   }
 
 }

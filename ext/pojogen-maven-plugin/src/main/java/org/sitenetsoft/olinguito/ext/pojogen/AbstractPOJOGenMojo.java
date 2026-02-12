@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Migrated Velocity 1.7 to 2.4.1 (CVE-2020-13936)
  * Copyright 2026 SiteNetSoft - Replaced commons-io with Java standard library
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  */
 package org.sitenetsoft.olinguito.ext.pojogen;
 
@@ -38,9 +39,6 @@ import java.util.Set;
 import java.util.zip.GZIPOutputStream;
 
 import java.util.Base64;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.apache.commons.lang3.tuple.Triple;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -64,6 +62,8 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 
 public abstract class AbstractPOJOGenMojo extends AbstractMojo {
+
+  private record MetadataResult(XMLMetadata metadata, String metadataETag, Edm edm) { }
 
   /**
    * Generated files base root.
@@ -114,7 +114,7 @@ public abstract class AbstractPOJOGenMojo extends AbstractMojo {
   }
 
   protected File mkPkgDir(final String path) {
-    return StringUtils.isBlank(basePackage)
+    return basePackage == null || basePackage.isBlank()
         ? mkdir(path)
         : mkdir(basePackage.replace('.', File.separatorChar) + File.separator + path);
   }
@@ -189,7 +189,7 @@ public abstract class AbstractPOJOGenMojo extends AbstractMojo {
 
     if (objs != null) {
       for (Map.Entry<String, Object> obj : objs.entrySet()) {
-        if (StringUtils.isNotBlank(obj.getKey()) && obj.getValue() != null) {
+        if (obj.getKey() != null && !obj.getKey().isBlank() && obj.getValue() != null) {
           ctx.put(obj.getKey(), obj.getValue());
         }
       }
@@ -205,24 +205,24 @@ public abstract class AbstractPOJOGenMojo extends AbstractMojo {
 
   protected abstract ODataClient getClient();
 
-  private Triple<XMLMetadata, String, Edm> getMetadata() throws FileNotFoundException {
-    if (StringUtils.isEmpty(serviceRootURL) && StringUtils.isEmpty(localEdm)) {
+  private MetadataResult getMetadata() throws FileNotFoundException {
+    if ((serviceRootURL == null || serviceRootURL.isEmpty()) && (localEdm == null || localEdm.isEmpty())) {
       throw new IllegalArgumentException("Must provide either serviceRootURL or localEdm");
     }
-    if (StringUtils.isNotEmpty(serviceRootURL) && StringUtils.isNotEmpty(localEdm)) {
+    if (serviceRootURL != null && !serviceRootURL.isEmpty() && localEdm != null && !localEdm.isEmpty()) {
       throw new IllegalArgumentException("Must provide either serviceRootURL or localEdm, not both");
     }
 
     XMLMetadata metadata = null;
     String metadataETag = null;
     Edm edm = null;
-    if (StringUtils.isNotEmpty(serviceRootURL)) {
+    if (serviceRootURL != null && !serviceRootURL.isEmpty()) {
       final EdmMetadataRequest req = getClient().getRetrieveRequestFactory().getMetadataRequest(serviceRootURL);
       metadata = req.getXMLMetadata();
       final ODataRetrieveResponse<Edm> res = req.execute();
       metadataETag = res.getETag();
       edm = res.getBody();
-    } else if (StringUtils.isNotEmpty(localEdm)) {
+    } else if (localEdm != null && !localEdm.isEmpty()) {
       final FileInputStream fis = new FileInputStream(new File(localEdm));
       try {
         metadata = getClient().getDeserializer(ContentType.APPLICATION_XML).toMetadata(fis);
@@ -237,7 +237,7 @@ public abstract class AbstractPOJOGenMojo extends AbstractMojo {
     if (metadata == null || edm == null) {
       throw new IllegalStateException("Metadata not found");
     }
-    return new ImmutableTriple<XMLMetadata, String, Edm>(metadata, metadataETag, edm);
+    return new MetadataResult(metadata, metadataETag, edm);
   }
 
   @Override
@@ -253,9 +253,9 @@ public abstract class AbstractPOJOGenMojo extends AbstractMojo {
     engine.init();
 
     try {
-      final Triple<XMLMetadata, String, Edm> metadata = getMetadata();
+      final MetadataResult metadata = getMetadata();
 
-      for (EdmSchema schema : metadata.getRight().getSchemas()) {
+      for (EdmSchema schema : metadata.edm().getSchemas()) {
         namespaces.add(schema.getNamespace().toLowerCase());
       }
 
@@ -266,13 +266,13 @@ public abstract class AbstractPOJOGenMojo extends AbstractMojo {
 
       final Map<String, Object> objs = new HashMap<String, Object>();
 
-      for (EdmSchema schema : metadata.getRight().getSchemas()) {
-        createUtility(metadata.getRight(), schema, basePackage);
+      for (EdmSchema schema : metadata.edm().getSchemas()) {
+        createUtility(metadata.edm(), schema, basePackage);
 
         // write package-info for the base package
         final String schemaPath = utility.getNamespace().toLowerCase().replace('.', File.separatorChar);
         final File base = mkPkgDir(schemaPath);
-        final String pkg = StringUtils.isBlank(basePackage)
+        final String pkg = basePackage == null || basePackage.isBlank()
                 ? utility.getNamespace().toLowerCase()
                 : basePackage + "." + utility.getNamespace().toLowerCase();
         parseObj(base, pkg, "package-info", "package-info.java");
@@ -384,7 +384,7 @@ public abstract class AbstractPOJOGenMojo extends AbstractMojo {
       final GZIPOutputStream gzos = new GZIPOutputStream(baos);
       final ObjectOutputStream oos = new ObjectOutputStream(gzos);
       try {
-        oos.writeObject(metadata.getLeft());
+        oos.writeObject(metadata.metadata());
       } finally {
         oos.close();
         gzos.close();
@@ -393,13 +393,13 @@ public abstract class AbstractPOJOGenMojo extends AbstractMojo {
 
       objs.clear();
       objs.put("metadata", Base64.getEncoder().encodeToString(baos.toByteArray()));
-      objs.put("metadataETag", metadata.getMiddle());
+      objs.put("metadataETag", metadata.metadataETag());
       objs.put("entityTypes", entityTypeNames);
       objs.put("complexTypes", complexTypeNames);
       objs.put("enumTypes", enumTypeNames);
       objs.put("terms", termNames);
-      final String actualBP = StringUtils.isBlank(basePackage)
-              ? StringUtils.EMPTY
+      final String actualBP = basePackage == null || basePackage.isBlank()
+              ? ""
               : basePackage;
       parseObj(mkdir(actualBP.replace('.', File.separatorChar)), actualBP, "service", "Service.java", objs);
     } catch (Exception t) {
