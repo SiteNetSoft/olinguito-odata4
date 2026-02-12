@@ -44,6 +44,7 @@ lib/                    # Core libraries
   commons-core/         # Common implementation
   client-api/           # OData Client API
   client-core/          # OData Client implementation
+  client-adapter-okhttp/  # OkHttp HTTP client adapter
   client-adapter-quarkus/  # Quarkus client CDI extension
   server-api/           # OData Server API
   server-core/          # OData Server core (engine-agnostic)
@@ -76,7 +77,8 @@ commons-api/commons-core
     ↓
 client-api/client-core          server-api/server-core
     ↓                               ↓
-client-adapter-quarkus          server-core-ext
+client-adapter-okhttp           server-core-ext
+client-adapter-quarkus
                                     ↓
               server-adapter-servlet / server-adapter-quarkus / server-adapter-netty
 ```
@@ -87,7 +89,8 @@ client-adapter-quarkus          server-core-ext
 - Jackson for JSON serialization
 - Aalto/STAX for XML processing
 - Netty for async streaming support
-- Apache HttpComponents for HTTP client
+- Apache HttpComponents for HTTP client (default adapter)
+- OkHttp 5.x for HTTP client (alternative adapter, used by Android module)
 - Embedded Tomcat 10.1.52 for integration tests (port 9080)
 
 **Package namespace:** `org.sitenetsoft.olinguito.*`
@@ -109,3 +112,5 @@ The `feature/without-servlet-continue` branch has completed the decoupling of se
 - **Quarkus extensions**: Native Quarkus support for both client (`client-adapter-quarkus`) and server (`server-adapter-quarkus`)
 - **Dependency cleanup**: Removed `commons-lang3`, `commons-codec`, and `commons-io` from core modules
 - **Testing modernization**: Migrated to JUnit 5, JaCoCo, XMLUnit 2.x
+- **HTTP client abstraction**: Transport-agnostic `ODataHttpClient`/`ODataHttpRequest`/`ODataHttpResponse` interfaces in `client-api`; Apache HttpComponents adapter in `client-core`, OkHttp adapter in `client-adapter-okhttp`
+- **Android modernization**: Replaced deprecated `AndroidHttpClient` with OkHttp adapter

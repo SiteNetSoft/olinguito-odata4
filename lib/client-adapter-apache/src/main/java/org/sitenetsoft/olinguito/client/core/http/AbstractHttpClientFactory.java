@@ -15,13 +15,14 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality: try-with-resources, narrowed exception catch
  */
 package org.sitenetsoft.olinguito.client.core.http;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-
-import java.io.IOException;
 
 import org.sitenetsoft.olinguito.client.api.http.HttpClientFactory;
 import org.slf4j.Logger;
@@ -36,21 +37,15 @@ public abstract class AbstractHttpClientFactory implements HttpClientFactory {
   static {
     final StringBuilder userAgent = new StringBuilder("Apache-Olingo");
 
-    final InputStream input = AbstractHttpClientFactory.class.getResourceAsStream("/client.properties");
-    try {
-      final Properties prop = new Properties();
-      prop.load(input);
-      userAgent.append('/').append(prop.getProperty("version"));
-    } catch (Exception e) {
-      LOG.warn("Could not get Apache Olingo version", e);
-    } finally {
-      try {
-        if (input != null) {
-          input.close();
-        }
-      } catch (IOException e) {
-        LOG.debug("Failed to close resource", e);
+    try (InputStream input =
+             AbstractHttpClientFactory.class.getResourceAsStream("/client.properties")) {
+      if (input != null) {
+        final Properties prop = new Properties();
+        prop.load(input);
+        userAgent.append('/').append(prop.getProperty("version"));
       }
+    } catch (IOException e) {
+      LOG.warn("Could not get Apache Olingo version", e);
     }
 
     USER_AGENT = userAgent.toString();

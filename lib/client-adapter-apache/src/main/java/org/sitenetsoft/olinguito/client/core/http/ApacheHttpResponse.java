@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Bridge from ODataHttpResponse to Apache HttpResponse
+ * Copyright 2026 SiteNetSoft - Deprecated unwrap() methods in favor of transport-agnostic interface
  */
 package org.sitenetsoft.olinguito.client.core.http;
 
@@ -96,7 +97,9 @@ public class ApacheHttpResponse implements ODataHttpResponse {
    * Returns the underlying Apache {@link HttpResponse}.
    *
    * @return the wrapped HttpResponse instance
+   * @deprecated Use the transport-agnostic {@link ODataHttpResponse} interface methods instead.
    */
+  @Deprecated
   public HttpResponse unwrap() {
     return delegate;
   }
@@ -107,7 +110,9 @@ public class ApacheHttpResponse implements ODataHttpResponse {
    * @param response the ODataHttpResponse (must be an ApacheHttpResponse)
    * @return the underlying HttpResponse
    * @throws IllegalArgumentException if response is not an ApacheHttpResponse
+   * @deprecated Use the transport-agnostic {@link ODataHttpResponse} interface methods instead.
    */
+  @Deprecated
   public static HttpResponse unwrap(final ODataHttpResponse response) {
     if (response instanceof ApacheHttpResponse apacheResponse) {
       return apacheResponse.delegate;

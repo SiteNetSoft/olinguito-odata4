@@ -25,11 +25,9 @@ import java.net.URI;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.http.HttpResponse;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
-import org.sitenetsoft.olinguito.client.core.http.ApacheHttpResponse;
 import org.sitenetsoft.olinguito.client.api.communication.header.ODataPreferences;
 import org.sitenetsoft.olinguito.client.api.communication.request.ODataBatchableRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.batch.BatchManager;
@@ -69,7 +67,7 @@ public class ODataBatchRequestImpl
   }
 
   @Override
-  protected HttpResponse doExecute() {
+  protected ODataHttpResponse doExecute() {
     if (odataClient.getConfiguration().isContinueOnError()) {
       setPrefer(new ODataPreferences().continueOnError());
     }
@@ -90,7 +88,7 @@ public class ODataBatchRequestImpl
     @Override
     protected ODataBatchResponse getResponseInstance(final long timeout, final TimeUnit unit) {
       return new ODataBatchResponseImpl(odataClient, httpClient,
-          new ApacheHttpResponse(getHttpResponse(timeout, unit)));
+          getHttpResponse(timeout, unit));
     }
 
     @Override

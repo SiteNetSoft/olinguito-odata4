@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Refactored to use transport-agnostic HTTP interfaces
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.streamed;
 
@@ -27,19 +28,15 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Future;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.sitenetsoft.olinguito.client.api.ODataBatchConstants;
-import org.sitenetsoft.olinguito.client.core.http.ApacheHttpRequest;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.request.ODataPayloadManager;
 import org.sitenetsoft.olinguito.client.api.communication.request.ODataStreamedRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataResponse;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
 import org.sitenetsoft.olinguito.client.core.communication.request.AbstractODataRequest;
 import org.sitenetsoft.olinguito.client.core.communication.request.Wrapper;
-import org.sitenetsoft.olinguito.client.core.uri.URIUtils;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
@@ -63,7 +60,7 @@ public abstract class AbstractODataStreamedRequest<V extends ODataResponse, T ex
    * Wrapper for actual streamed request's future. This holds information about the HTTP request / response currently
    * open.
    */
-  protected final Wrapper<Future<HttpResponse>> futureWrapper = new Wrapper<>();
+  protected final Wrapper<Future<ODataHttpResponse>> futureWrapper = new Wrapper<>();
 
   /**
    * Constructor.
@@ -100,11 +97,9 @@ public abstract class AbstractODataStreamedRequest<V extends ODataResponse, T ex
   public T payloadManager() {
     payloadManager = getPayloadManager();
 
-    final HttpUriRequest apacheRequest = ApacheHttpRequest.unwrap(request);
-    if (URIUtils.shouldUseRepeatableHttpBodyEntry(odataClient)) {
+    if (org.sitenetsoft.olinguito.client.core.uri.URIUtils.shouldUseRepeatableHttpBodyEntry(odataClient)) {
       futureWrapper.setWrapped(odataClient.getConfiguration().getExecutor().submit(() -> { //NOSONAR
-        ((HttpEntityEnclosingRequestBase) apacheRequest).setEntity(
-                URIUtils.buildInputStreamEntity(odataClient, payloadManager.getBody()));
+        setRequestEntity(payloadManager.getBody());
         try {
           return doExecute();
         } finally {
@@ -112,8 +107,7 @@ public abstract class AbstractODataStreamedRequest<V extends ODataResponse, T ex
         }
       }));
     } else {
-      ((HttpEntityEnclosingRequestBase) apacheRequest).setEntity(
-              URIUtils.buildInputStreamEntity(odataClient, payloadManager.getBody()));
+      setRequestEntity(payloadManager.getBody());
 
       futureWrapper.setWrapped(odataClient.getConfiguration().getExecutor().submit(() -> { //NOSONAR
         try {

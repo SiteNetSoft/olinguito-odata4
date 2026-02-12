@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Support http.client.adapter system property for adapter selection
  */
 package org.sitenetsoft.olinguito.fit.base;
 
@@ -51,7 +53,32 @@ import org.junit.BeforeClass;
 
 public abstract class AbstractTestITCase extends AbstractBaseTestITCase {
 
-  protected static final ODataClient client = ODataClientFactory.getClient();
+  protected static final ODataClient client = createClient();
+
+  private static ODataClient createClient() {
+    final String adapter = System.getProperty("http.client.adapter", "apache");
+    if ("okhttp".equalsIgnoreCase(adapter)) {
+      final ODataClient okHttpClient = ODataClientFactory.builder()
+          .withOkHttp()
+          .build();
+      // Disable connection pooling to avoid stale connection reuse
+      // in integration tests with the embedded stub server.
+      disableConnectionPooling(okHttpClient);
+      return okHttpClient;
+    }
+    return ODataClientFactory.getClient();
+  }
+
+  private static void disableConnectionPooling(final ODataClient odataClient) {
+    try {
+      final Object factory = odataClient.getConfiguration().getHttpClientFactory();
+      final java.lang.reflect.Method setPool = factory.getClass()
+          .getMethod("setConnectionPool", int.class, int.class);
+      setPool.invoke(factory, 0, 1);
+    } catch (ReflectiveOperationException e) {
+      // OkHttp adapter doesn't support setConnectionPool; ignore
+    }
+  }
 
   protected static EdmEnabledODataClient edmClient;
 
@@ -86,7 +113,16 @@ public abstract class AbstractTestITCase extends AbstractBaseTestITCase {
     testAuthServiceRootURL = baseUrl + "/stub/DefaultService.svc/V40/Static.svc";
     testOAuth2ServiceRootURL = baseUrl + "/stub/StaticService/V40/OAuth2.svc";
 
-    edmClient = ODataClientFactory.getEdmEnabledClient(testStaticServiceRootURL, ContentType.JSON);
+    final String adapter = System.getProperty("http.client.adapter", "apache");
+    if ("okhttp".equalsIgnoreCase(adapter)) {
+      edmClient = ODataClientFactory.builder()
+          .withOkHttp()
+          .defaultPubFormat(ContentType.JSON)
+          .buildEdmEnabled(testStaticServiceRootURL);
+      disableConnectionPooling(edmClient);
+    } else {
+      edmClient = ODataClientFactory.getEdmEnabledClient(testStaticServiceRootURL, ContentType.JSON);
+    }
 
     edmClient.getConfiguration().setDefaultBatchAcceptFormat(ContentType.APPLICATION_OCTET_STREAM);
     client.getConfiguration().setDefaultBatchAcceptFormat(ContentType.APPLICATION_OCTET_STREAM);

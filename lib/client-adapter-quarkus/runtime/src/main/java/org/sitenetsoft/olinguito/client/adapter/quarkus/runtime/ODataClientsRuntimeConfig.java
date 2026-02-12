@@ -50,6 +50,14 @@ public interface ODataClientsRuntimeConfig {
     interface ODataClientRuntimeConfig {
 
         /**
+         * HTTP adapter to use. Supported values: {@code apache} (default, uses
+         * Apache HttpComponents) and {@code okhttp} (uses OkHttp, requires
+         * {@code odata-client-adapter-okhttp} on the classpath).
+         */
+        @WithDefault("apache")
+        String httpAdapter();
+
+        /**
          * Default publication format. Supported values: JSON, JSON_NO_METADATA,
          * JSON_FULL_METADATA, APPLICATION_XML, APPLICATION_ATOM_XML.
          */

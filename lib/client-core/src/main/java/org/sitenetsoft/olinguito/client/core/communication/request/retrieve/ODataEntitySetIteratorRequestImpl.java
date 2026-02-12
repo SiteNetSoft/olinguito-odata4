@@ -23,11 +23,9 @@ package org.sitenetsoft.olinguito.client.core.communication.request.retrieve;
 import java.net.URI;
 import java.util.Objects;
 
-import org.apache.http.HttpResponse;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
-import org.sitenetsoft.olinguito.client.core.http.ApacheHttpResponse;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntitySetIteratorRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
 import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
@@ -61,8 +59,7 @@ public class ODataEntitySetIteratorRequestImpl<ES extends ClientEntitySet, E ext
 
   @Override
   public ODataRetrieveResponse<ClientEntitySetIterator<ES, E>> execute() {
-    final HttpResponse res = doExecute();
-    return new ODataEntitySetIteratorResponseImpl(odataClient, httpClient, new ApacheHttpResponse(res));
+    return new ODataEntitySetIteratorResponseImpl(odataClient, httpClient, doExecute());
   }
 
   /**

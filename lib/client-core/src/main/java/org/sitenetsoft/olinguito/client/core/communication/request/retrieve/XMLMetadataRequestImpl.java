@@ -22,12 +22,10 @@ package org.sitenetsoft.olinguito.client.core.communication.request.retrieve;
 
 import java.net.URI;
 
-import org.apache.http.HttpResponse;
 import org.sitenetsoft.olinguito.client.core.StringHelper;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpRequest;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
-import org.sitenetsoft.olinguito.client.core.http.ApacheHttpResponse;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.XMLMetadataRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
@@ -73,7 +71,7 @@ public class XMLMetadataRequestImpl
     }
     final XMLMetadataResponseImpl response =
         new XMLMetadataResponseImpl(odataClient, httpClient,
-            new ApacheHttpResponse(rootReq.getHttpResponse()), rootRes.getBody());
+            rootReq.getHttpResponse(), rootRes.getBody());
 
     // process external references
     for (Reference reference : rootRes.getBody().getReferences()) {
@@ -140,13 +138,13 @@ public class XMLMetadataRequestImpl
 
   private class SingleXMLMetadatRequestImpl extends AbstractMetadataRequestImpl<XMLMetadata> {
 
-    private HttpResponse httpResponse;
+    private ODataHttpResponse httpResponse;
 
     public SingleXMLMetadatRequestImpl(final ODataClient odataClient, final URI uri) {
       super(odataClient, uri);
     }
 
-    public HttpResponse getHttpResponse() {
+    public ODataHttpResponse getHttpResponse() {
       return httpResponse;
     }
 
@@ -158,7 +156,7 @@ public class XMLMetadataRequestImpl
     @Override
     public ODataRetrieveResponse<XMLMetadata> execute() {
       httpResponse = doExecute();
-      return new AbstractODataRetrieveResponse(odataClient, httpClient, new ApacheHttpResponse(httpResponse)) {
+      return new AbstractODataRetrieveResponse(odataClient, httpClient, httpResponse) {
 
         private XMLMetadata metadata = null;
 

@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Code quality improvements and fixed interrupt handling
  * Copyright 2026 SiteNetSoft - Replaced deprecated DecompressingHttpClient
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
+ * Copyright 2026 SiteNetSoft - Refactored to use transport-agnostic HTTP interfaces
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -26,16 +27,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.utils.HttpClientUtils;
-import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.util.EntityUtils;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.ODataClientErrorException;
 import org.sitenetsoft.olinguito.client.api.communication.header.ODataPreferences;
@@ -49,9 +41,7 @@ import org.sitenetsoft.olinguito.client.api.http.HttpClientException;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpRequest;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
-import org.sitenetsoft.olinguito.client.core.http.ApacheHttpClient;
-import org.sitenetsoft.olinguito.client.core.http.ApacheHttpRequest;
-import org.sitenetsoft.olinguito.client.core.http.ApacheHttpResponse;
+import org.sitenetsoft.olinguito.client.core.http.CompressingODataHttpClient;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
@@ -99,17 +89,14 @@ public class AsyncRequestWrapperImpl<R extends ODataResponse> extends AbstractRe
 
     ODataHttpClient _httpClient = odataClient.getConfiguration().getHttpClientFactory().create(method, this.uri);
     if (odataClient.getConfiguration().isGzipCompression()) {
-      HttpClient apacheClient = ApacheHttpClient.unwrap(_httpClient);
-      _httpClient = new ApacheHttpClient(new ContentCompressingHttpClient(apacheClient));
+      _httpClient = new CompressingODataHttpClient(_httpClient);
     }
     this.httpClient = _httpClient;
 
     this.request = odataClient.getConfiguration().getHttpUriRequestFactory().create(method, this.uri);
 
-    final HttpUriRequest apacheRequest = ApacheHttpRequest.unwrap(this.request);
-    if (apacheRequest instanceof HttpEntityEnclosingRequestBase httpRequest
-        && odataRequest instanceof AbstractODataBasicRequest<?> br) {
-        httpRequest.setEntity(new InputStreamEntity(br.getPayload(), -1));
+    if (this.request.supportsEntity() && odataRequest instanceof AbstractODataBasicRequest<?> br) {
+      this.request.setEntity(br.getPayload(), -1, true);
     }
   }
 
@@ -140,12 +127,10 @@ public class AsyncRequestWrapperImpl<R extends ODataResponse> extends AbstractRe
   }
 
   protected ODataHttpResponse doExecute() {
-    final HttpUriRequest apacheRequest = ApacheHttpRequest.unwrap(request);
-
     // Add all available headers
     for (String key : odataRequest.getHeaderNames()) {
       final String value = odataRequest.getHeader(key);
-      apacheRequest.addHeader(key, value);
+      request.addHeader(key, value);
       LOG.debug("HTTP header being sent {}: {}", key, value);
     }
 
@@ -347,22 +332,16 @@ public class AsyncRequestWrapperImpl<R extends ODataResponse> extends AbstractRe
   }
 
   protected final ODataHttpResponse executeHttpRequest(final ODataHttpClient client, final ODataHttpRequest req) {
-    final HttpClient apacheClient = ApacheHttpClient.unwrap(client);
-    final HttpUriRequest apacheRequest = ApacheHttpRequest.unwrap(req);
-
-    final HttpResponse response;
+    ODataHttpResponse response;
     try {
-      response = apacheClient.execute(apacheRequest);
-    } catch (IOException e) {
-      throw new HttpClientException(e);
+      response = client.execute(req);
     } catch (RuntimeException e) {
-      apacheRequest.abort();
+      req.abort();
       throw new HttpClientException(e);
     }
 
-    final ODataHttpResponse wrappedResponse = new ApacheHttpResponse(response);
-    checkResponse(odataClient, wrappedResponse, odataRequest.getAccept());
+    checkResponse(odataClient, response, odataRequest.getAccept());
 
-    return wrappedResponse;
+    return response;
   }
 }

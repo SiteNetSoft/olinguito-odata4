@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed NPE in finalizeBody when bodyStreamWriter is null
+ * Copyright 2026 SiteNetSoft - Replaced Apache HttpResponse with ODataHttpResponse
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -28,10 +29,10 @@ import java.util.concurrent.TimeoutException;
 
 import java.io.IOException;
 
-import org.apache.http.HttpResponse;
 import org.sitenetsoft.olinguito.client.api.communication.request.ODataPayloadManager;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataResponse;
 import org.sitenetsoft.olinguito.client.api.http.HttpClientException;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
 import org.sitenetsoft.olinguito.client.core.ConfigurationImpl;
 import org.sitenetsoft.olinguito.client.core.communication.util.PipedInputStream;
 import org.sitenetsoft.olinguito.client.core.communication.util.PipedOutputStream;
@@ -57,24 +58,25 @@ public abstract class AbstractODataStreamManager<T extends ODataResponse> extend
   /**
    * Wrapper for actual streamed request's future.
    */
-  private final Wrapper<Future<HttpResponse>> futureWrap;
+  private final Wrapper<Future<ODataHttpResponse>> futureWrap;
 
   /**
    * Constructor.
    *
-   * @param futureWrap wrapper of the Future object of the HttpResponse.
+   * @param futureWrap wrapper of the Future object of the ODataHttpResponse.
    */
-  public AbstractODataStreamManager(final Wrapper<Future<HttpResponse>> futureWrap) {
+  public AbstractODataStreamManager(final Wrapper<Future<ODataHttpResponse>> futureWrap) {
     this(futureWrap, new PipedOutputStream(null, ConfigurationImpl.DEFAULT_BUFFER_SIZE));
   }
 
   /**
    * Constructor.
    *
-   * @param futureWrap wrapper of the Future object of the HttpResponse.
+   * @param futureWrap wrapper of the Future object of the ODataHttpResponse.
    * @param output stream to be piped to retrieve the payload.
    */
-  public AbstractODataStreamManager(final Wrapper<Future<HttpResponse>> futureWrap, final PipedOutputStream output) {
+  public AbstractODataStreamManager(
+      final Wrapper<Future<ODataHttpResponse>> futureWrap, final PipedOutputStream output) {
     super(output);
 
     this.futureWrap = futureWrap;
@@ -89,10 +91,10 @@ public abstract class AbstractODataStreamManager<T extends ODataResponse> extend
   /**
    * Constructor.
    *
-   * @param futureWrap wrapper of the Future object of the HttpResponse.
+   * @param futureWrap wrapper of the Future object of the ODataHttpResponse.
    * @param input stream to be used to retrieve the content.
    */
-  public AbstractODataStreamManager(final Wrapper<Future<HttpResponse>> futureWrap, final InputStream input) {
+  public AbstractODataStreamManager(final Wrapper<Future<ODataHttpResponse>> futureWrap, final InputStream input) {
     super(null);
 
     this.futureWrap = futureWrap;
@@ -124,13 +126,13 @@ public abstract class AbstractODataStreamManager<T extends ODataResponse> extend
   }
 
   /**
-   * Gets HttpResponse.
+   * Gets the HTTP response.
    *
    * @param timeout maximum delay after which the request must be aborted.
    * @param unit time unit.
-   * @return HttpResponse.
+   * @return ODataHttpResponse.
    */
-  protected HttpResponse getHttpResponse(final long timeout, final TimeUnit unit) {
+  protected ODataHttpResponse getHttpResponse(final long timeout, final TimeUnit unit) {
     try {
       return futureWrap.getWrapped().get(timeout, unit);
     } catch (Exception e) {

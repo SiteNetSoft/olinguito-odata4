@@ -19,15 +19,10 @@
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality improvements
  * Copyright 2026 SiteNetSoft - Replaced deprecated DecompressingHttpClient
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
+ * Copyright 2026 SiteNetSoft - Refactored doExecute() to use transport-agnostic interfaces
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.util.EntityUtils;
 import org.sitenetsoft.olinguito.client.api.communication.request.batch.BatchRequestFactory;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.CUDRequestFactory;
 import org.sitenetsoft.olinguito.client.api.communication.request.invoke.InvokeRequestFactory;
@@ -39,9 +34,8 @@ import org.sitenetsoft.olinguito.client.api.http.HttpClientException;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpRequest;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
-import org.sitenetsoft.olinguito.client.core.http.ApacheHttpClient;
-import org.sitenetsoft.olinguito.client.core.http.ApacheHttpRequest;
-import org.sitenetsoft.olinguito.client.core.http.ApacheHttpResponse;
+import org.sitenetsoft.olinguito.client.core.http.CompressingODataHttpClient;
+import org.sitenetsoft.olinguito.client.core.uri.URIUtils;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
@@ -55,6 +49,7 @@ import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Abstract representation of an OData request. Get instance by using factories.
@@ -271,30 +266,21 @@ public abstract class AbstractODataRequest extends AbstractRequest implements OD
 
   @Override
   public InputStream rawExecute() {
-    final HttpUriRequest apacheRequest = ApacheHttpRequest.unwrap(request);
-    HttpEntity httpEntity = null;
     try {
-      httpEntity = doExecute().getEntity();
-      return httpEntity == null ? null : httpEntity.getContent();
-    } catch (IOException e) {
-      EntityUtils.consumeQuietly(httpEntity);
-      throw new HttpClientException(e);
+      final ODataHttpResponse response = doExecute();
+      return response.getBody();
     } catch (RuntimeException e) {
-      apacheRequest.abort();
-      EntityUtils.consumeQuietly(httpEntity);
+      request.abort();
       throw new HttpClientException(e);
     }
   }
 
   /**
-   * Builds the request and execute it.
+   * Builds the request and executes it.
    *
-   * @return Apache HttpResponse object.
+   * @return transport-agnostic HTTP response.
    */
-  protected HttpResponse doExecute() {
-    final HttpUriRequest apacheRequest = ApacheHttpRequest.unwrap(request);
-    final HttpClient apacheClient = ApacheHttpClient.unwrap(httpClient);
-
+  protected ODataHttpResponse doExecute() {
     checkRequest(odataClient, request);
 
     // Set Content-Type and Accept headers with default values, if not yet set
@@ -314,31 +300,28 @@ public abstract class AbstractODataRequest extends AbstractRequest implements OD
 
     // Add all available headers
     for (String key : getHeaderNames()) {
-      apacheRequest.addHeader(key, odataHeaders.getHeader(key));
+      request.addHeader(key, odataHeaders.getHeader(key));
     }
 
     if (LOG.isDebugEnabled()) {
-      for (Header header : apacheRequest.getAllHeaders()) {
-          LOG.debug("HTTP header being sent: {}", header);
+      for (Map.Entry<String, String> header : request.getAllHeaders().entrySet()) {
+        LOG.debug("HTTP header being sent: {}: {}", header.getKey(), header.getValue());
       }
     }
 
-    HttpResponse response;
+    ODataHttpResponse response;
     try {
-      response = apacheClient.execute(apacheRequest);
-    } catch (IOException e) {
-      throw new HttpClientException(apacheRequest.getURI().toASCIIString(), e);
+      response = httpClient.execute(request);
     } catch (RuntimeException e) {
-      apacheRequest.abort();
-      throw new HttpClientException(apacheRequest.getURI().toASCIIString(), e);
+      request.abort();
+      throw new HttpClientException(request.getURI().toASCIIString(), e);
     }
 
-    final ODataHttpResponse wrappedResponse = new ApacheHttpResponse(response);
     try {
-      checkResponse(odataClient, wrappedResponse, getAccept());
+      checkResponse(odataClient, response, getAccept());
     } catch (ODataRuntimeException e) {
       try {
-        wrappedResponse.close();
+        response.close();
       } catch (IOException ioe) {
         LOG.warn("Unable to close response: {}", response, ioe);
       }
@@ -375,11 +358,34 @@ public abstract class AbstractODataRequest extends AbstractRequest implements OD
     throw new IllegalStateException("No response class template has been found");
   }
 
+  /**
+   * Sets the entity (body) on the current request, handling buffering vs. streaming
+   * based on client configuration.
+   *
+   * @param input the payload input stream
+   */
+  protected void setRequestEntity(final InputStream input) {
+    final boolean useChunked = odataClient.getConfiguration().isUseChuncked();
+    if (URIUtils.shouldUseRepeatableHttpBodyEntry(odataClient) || !useChunked) {
+      // Buffer the entire payload for repeatable/non-chunked requests
+      final byte[] bytes;
+      try {
+        bytes = input.readAllBytes();
+      } catch (IOException e) {
+        throw new org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException(
+            "While reading input for not chunked encoding", e);
+      }
+      request.setEntity(bytes, useChunked && bytes.length >= 0);
+    } else {
+      // Stream the payload with chunked transfer encoding
+      request.setEntity(input, -1, true);
+    }
+  }
+
   private ODataHttpClient getHttpClient(final HttpMethod method, final URI uri) {
     ODataHttpClient client = odataClient.getConfiguration().getHttpClientFactory().create(method, uri);
     if (odataClient.getConfiguration().isGzipCompression()) {
-      HttpClient apacheClient = ApacheHttpClient.unwrap(client);
-      return new ApacheHttpClient(new ContentCompressingHttpClient(apacheClient));
+      return new CompressingODataHttpClient(client);
     }
     return client;
   }

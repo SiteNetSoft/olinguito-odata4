@@ -24,19 +24,13 @@ import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
-import org.sitenetsoft.olinguito.client.core.http.ApacheHttpRequest;
-import org.sitenetsoft.olinguito.client.core.http.ApacheHttpResponse;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.request.ODataBatchableRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.invoke.ClientNoContent;
 import org.sitenetsoft.olinguito.client.api.communication.request.invoke.ODataInvokeRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataInvokeResponse;
-import org.sitenetsoft.olinguito.client.api.http.HttpClientException;
 import org.sitenetsoft.olinguito.client.api.serialization.ODataDeserializerException;
 import org.sitenetsoft.olinguito.client.api.serialization.ODataSerializerException;
 import org.sitenetsoft.olinguito.client.core.communication.request.AbstractODataBasicRequest;
@@ -158,18 +152,15 @@ public abstract class AbstractODataInvokeRequest<T extends ClientInvokeResult>
 
     if (!this.parameters.isEmpty()) {
       if (this.method == HttpMethod.GET) {
-        ((HttpRequestBase) ApacheHttpRequest.unwrap(this.request)).setURI(
-            URIUtils.buildFunctionInvokeURI(this.uri, parameters));
+        this.request.setURI(URIUtils.buildFunctionInvokeURI(this.uri, parameters));
       } else if (this.method == HttpMethod.POST) {
-        ((HttpPost) ApacheHttpRequest.unwrap(request)).setEntity(
-            URIUtils.buildInputStreamEntity(odataClient, input));
-
+        setRequestEntity(input);
         setContentType(getActualFormat(getPOSTParameterFormat()));
       }
     }
 
     try {
-      return new ODataInvokeResponseImpl(odataClient, httpClient, new ApacheHttpResponse(doExecute()));
+      return new ODataInvokeResponseImpl(odataClient, httpClient, doExecute());
     } finally {
       try {
         if (input != null) {

@@ -18,20 +18,16 @@
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.retrieve;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
-import org.apache.http.HttpResponse;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
-import org.sitenetsoft.olinguito.client.core.http.ApacheHttpResponse;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataDeltaRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;
 import org.sitenetsoft.olinguito.client.api.domain.ClientDelta;
-import org.sitenetsoft.olinguito.client.api.http.HttpClientException;
 import org.sitenetsoft.olinguito.client.api.serialization.ODataDeserializerException;
 import org.sitenetsoft.olinguito.commons.api.data.Delta;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
@@ -50,8 +46,7 @@ public class ODataDeltaRequestImpl extends AbstractODataRetrieveRequest<ClientDe
 
   @Override
   public ODataRetrieveResponse<ClientDelta> execute() {
-    final HttpResponse res = doExecute();
-    return new ODataDeltaResponseImpl(odataClient, httpClient, new ApacheHttpResponse(res));
+    return new ODataDeltaResponseImpl(odataClient, httpClient, doExecute());
   }
 
   protected class ODataDeltaResponseImpl extends AbstractODataRetrieveResponse {

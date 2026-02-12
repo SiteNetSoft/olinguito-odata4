@@ -20,6 +20,8 @@ olinguito-odata4/
 │   ├── commons-core/             # Shared implementations
 │   ├── client-api/               # Client API interfaces
 │   ├── client-core/              # Client implementation
+│   ├── client-adapter-apache/    # Apache HttpComponents adapter
+│   ├── client-adapter-okhttp/    # OkHttp adapter
 │   ├── client-adapter-quarkus/   # Quarkus client CDI extension
 │   ├── odata-vocabularies/       # OData vocabulary support
 │   ├── server-api/               # Server API interfaces
@@ -62,12 +64,14 @@ The modules follow a layered architecture with clear dependency boundaries:
 │  │ servlet-adapter   │  │                     └─────────────────────────┘
 │  └───────────────────┘  │                                 │
 │  ┌───────────────────┐  │                     ┌─────────────────────────┐
-│  │ quarkus-adapter   │  │                     │   Client Quarkus        │
-│  └───────────────────┘  │                     │ (client-adapter-quarkus)│
-│  ┌───────────────────┐  │                     └─────────────────────────┘
-│  │ netty-adapter     │  │                                 │
-│  └───────────────────┘  │                                 │
-└─────────────────────────┘                                 │
+│  │ quarkus-adapter   │  │                     │   HTTP Adapters         │
+│  └───────────────────┘  │                     │  ┌───────────────────┐  │
+│  ┌───────────────────┐  │                     │  │ adapter-apache    │  │
+│  │ netty-adapter     │  │                     │  └───────────────────┘  │
+│  └───────────────────┘  │                     │  ┌───────────────────┐  │
+└─────────────────────────┘                     │  │ adapter-okhttp    │  │
+            │                                   │  └───────────────────┘  │
+            │                                   └─────────────────────────┘
             │                                               │
             ▼                                               ▼
 ┌─────────────────────────┐                     ┌─────────────────────────┐
@@ -204,6 +208,12 @@ Client-side interfaces:
 
 * *ODataClient* - Main client interface
 * *Request Factories* - Create typed requests
+* *HTTP Abstraction* - Transport-agnostic HTTP interfaces
+** `ODataHttpClient` - HTTP client handle (execute requests)
+** `ODataHttpRequest` - HTTP request manipulation (headers, body, URI)
+** `ODataHttpResponse` - HTTP response access (status, headers, body)
+** `HttpClientFactory` - Creates `ODataHttpClient` instances
+** `HttpUriRequestFactory` - Creates `ODataHttpRequest` instances
 * *Domain Objects* - Client-side entities
 ** `ClientEntity`, `ClientEntitySet`
 ** `ClientProperty`, `ClientValue`
@@ -212,10 +222,41 @@ Client-side interfaces:
 
 Client implementation:
 
-* *HTTP Communication* - Apache HttpComponents
+* *ODataClientFactory* - Factory with fluent `Builder` for adapter selection
+** `ODataClientFactory.builder().withApache().build()` (default)
+** `ODataClientFactory.builder().withOkHttp().build()` (requires adapter on classpath)
 * *Request Building* - Fluent URI builder
 * *Response Parsing* - JSON/XML deserialization
 * *Batch Support* - Batch request handling
+
+=== Client HTTP Adapters
+
+==== Apache HttpComponents Adapter (`client-adapter-apache`)
+
+Default HTTP transport, backed by Apache HttpComponents 4.x:
+
+* `ApacheHttpClient` - Wraps Apache `HttpClient` as `ODataHttpClient`
+* `ApacheHttpRequest` - Wraps Apache `HttpUriRequest` as `ODataHttpRequest`
+* `ApacheHttpResponse` - Wraps Apache `HttpResponse` as `ODataHttpResponse`
+* `DefaultHttpClientFactory` - Creates Apache-backed clients
+* `BasicAuthHttpClientFactory` - Preemptive HTTP basic auth
+* `ProxyWrappingHttpClientFactory` - HTTP proxy support
+* `ContentCompressingHttpClient` - GZIP/deflate compression decorator
+
+==== OkHttp Adapter (`client-adapter-okhttp`)
+
+Alternative HTTP transport backed by OkHttp 5.x:
+
+* `OkHttpClientWrapper` - Wraps `OkHttpClient` as `ODataHttpClient`
+* `OkHttpRequestWrapper` - Builds OkHttp `Request` from interface calls
+* `OkHttpResponseWrapper` - Wraps OkHttp `Response` as `ODataHttpResponse`
+* `OkHttpClientFactory` - Shared client with configurable:
+** Connection pooling, timeouts (connect/read/write/call)
+** HTTP/2 negotiation, retry on connection failure
+** Certificate pinning, event listener metrics
+** Async execution via `CompletableFuture`
+* `OkHttpBasicAuthClientFactory` - HTTP basic auth via interceptor
+* `OkHttpNTLMAuthClientFactory` - NTLM auth via authenticator
 
 === Client Quarkus Adapter (`client-adapter-quarkus`)
 
@@ -337,12 +378,21 @@ Application Code
      │
      ▼
 ┌─────────────────────┐
-│  HTTP Layer         │
-│  - Send request     │
-│  - Handle auth      │
+│  HTTP Abstraction   │  (ODataHttpClient / ODataHttpRequest)
+│  - Transport-agnostic│
+│  - Pluggable adapter│
 └─────────────────────┘
      │
-     ▼
+     ├──────────────────────┐
+     ▼                      ▼
+┌──────────────┐    ┌──────────────┐
+│ Apache HTTP  │    │  OkHttp      │
+│ Components   │    │  (HTTP/2,    │
+│              │    │   async)     │
+└──────────────┘    └──────────────┘
+     │                      │
+     └──────────┬───────────┘
+                ▼
 ┌─────────────────────┐
 │  Response Parser    │
 │  - Parse JSON/XML   │
@@ -365,8 +415,11 @@ ClientEntity/ClientEntitySet
 |HTTP Server (Quarkus)
 |Vert.x / Quarkus
 
-|HTTP Client
-|Apache HttpComponents
+|HTTP Client (default)
+|Apache HttpComponents 4.x
+
+|HTTP Client (alternative)
+|OkHttp 5.x (HTTP/2, connection pooling, async)
 
 |JSON Processing
 |Jackson 2.18.x

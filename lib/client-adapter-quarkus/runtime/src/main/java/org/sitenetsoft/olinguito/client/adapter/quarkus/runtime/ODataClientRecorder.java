@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  * Copyright 2026 SiteNetSoft - Named/multi-client support for Quarkus OData client extension
+ * Copyright 2026 SiteNetSoft - Pluggable HTTP adapter support (apache/okhttp)
  */
 package org.sitenetsoft.olinguito.client.adapter.quarkus.runtime;
 
@@ -30,9 +31,6 @@ import org.sitenetsoft.olinguito.client.api.EdmEnabledODataClient;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.http.HttpClientFactory;
 import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
-import org.sitenetsoft.olinguito.client.core.http.BasicAuthHttpClientFactory;
-import org.sitenetsoft.olinguito.client.core.http.DefaultHttpClientFactory;
-import org.sitenetsoft.olinguito.client.core.http.ProxyWrappingHttpClientFactory;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 
 /**
@@ -41,6 +39,13 @@ import org.sitenetsoft.olinguito.commons.api.format.ContentType;
  */
 @Recorder
 public class ODataClientRecorder {
+
+    private static final String BASIC_AUTH_APACHE =
+            "org.sitenetsoft.olinguito.client.core.http.BasicAuthHttpClientFactory";
+    private static final String BASIC_AUTH_OKHTTP =
+            "org.sitenetsoft.olinguito.client.adapter.okhttp.OkHttpBasicAuthClientFactory";
+    private static final String PROXY_FACTORY =
+            "org.sitenetsoft.olinguito.client.core.http.ProxyWrappingHttpClientFactory";
 
     /**
      * Creates a configured {@link ODataClient} for the given client name.
@@ -53,9 +58,13 @@ public class ODataClientRecorder {
             String clientName,
             ODataClientsRuntimeConfig runtimeConfig) {
 
-        ODataClient client = ODataClientFactory.getClient();
         ODataClientsRuntimeConfig.ODataClientRuntimeConfig clientConfig =
                 runtimeConfig.clients().get(clientName);
+
+        ODataClientFactory.Builder builder = ODataClientFactory.builder();
+        selectAdapter(builder, clientConfig);
+
+        ODataClient client = builder.build();
         if (clientConfig != null) {
             applyConfiguration(client.getConfiguration(), clientConfig);
         }
@@ -75,20 +84,37 @@ public class ODataClientRecorder {
             String serviceRoot,
             ODataClientsRuntimeConfig runtimeConfig) {
 
-        EdmEnabledODataClient client = ODataClientFactory.getEdmEnabledClient(serviceRoot);
         ODataClientsRuntimeConfig.ODataClientRuntimeConfig clientConfig =
                 runtimeConfig.clients().get(clientName);
+
+        ODataClientFactory.Builder builder = ODataClientFactory.builder();
+        selectAdapter(builder, clientConfig);
+
+        EdmEnabledODataClient client = builder.buildEdmEnabled(serviceRoot);
         if (clientConfig != null) {
             applyConfiguration(client.getConfiguration(), clientConfig);
         }
         return new RuntimeValue<>(client);
     }
 
+    private void selectAdapter(ODataClientFactory.Builder builder,
+                               ODataClientsRuntimeConfig.ODataClientRuntimeConfig clientConfig) {
+        String adapter = clientConfig != null ? clientConfig.httpAdapter() : "apache";
+        if ("okhttp".equalsIgnoreCase(adapter)) {
+            builder.withOkHttp();
+        } else {
+            builder.withApache();
+        }
+    }
+
     private void applyConfiguration(
             Configuration config,
             ODataClientsRuntimeConfig.ODataClientRuntimeConfig clientConfig) {
 
-        config.setHttpClientFactory(resolveHttpClientFactory(clientConfig));
+        HttpClientFactory factory = resolveHttpClientFactory(clientConfig);
+        if (factory != null) {
+            config.setHttpClientFactory(factory);
+        }
         config.setDefaultPubFormat(resolveContentType(clientConfig.defaultPubFormat()));
         config.setGzipCompression(clientConfig.gzipCompression());
         config.setUseChuncked(clientConfig.chunked());
@@ -109,19 +135,13 @@ public class ODataClientRecorder {
         }
 
         // Priority 2: Basic auth from config
-        DefaultHttpClientFactory baseFactory = resolveBaseFactory(clientConfig);
+        HttpClientFactory baseFactory = resolveBasicAuthFactory(clientConfig);
 
-        // Priority 3: Proxy wrapping
-        if (clientConfig.proxy().enabled() && clientConfig.proxy().uri().isPresent()) {
-            URI proxyUri = URI.create(clientConfig.proxy().uri().get());
-            if (clientConfig.proxy().username().isPresent() && clientConfig.proxy().password().isPresent()) {
-                return new ProxyWrappingHttpClientFactory(
-                        proxyUri,
-                        clientConfig.proxy().username().get(),
-                        clientConfig.proxy().password().get(),
-                        baseFactory);
-            }
-            return new ProxyWrappingHttpClientFactory(proxyUri, baseFactory);
+        // Priority 3: Proxy wrapping (Apache-only, requires ProxyWrappingHttpClientFactory)
+        if (baseFactory != null
+                && clientConfig.proxy().enabled()
+                && clientConfig.proxy().uri().isPresent()) {
+            return wrapWithProxy(baseFactory, clientConfig);
         }
 
         return baseFactory;
@@ -138,14 +158,60 @@ public class ODataClientRecorder {
         return null;
     }
 
-    private DefaultHttpClientFactory resolveBaseFactory(
+    private HttpClientFactory resolveBasicAuthFactory(
             ODataClientsRuntimeConfig.ODataClientRuntimeConfig clientConfig) {
 
         ODataClientsRuntimeConfig.BasicAuthConfig basicAuth = clientConfig.basicAuth();
-        if (basicAuth.enabled() && basicAuth.username().isPresent() && basicAuth.password().isPresent()) {
-            return new BasicAuthHttpClientFactory(basicAuth.username().get(), basicAuth.password().get());
+        if (!basicAuth.enabled() || basicAuth.username().isEmpty() || basicAuth.password().isEmpty()) {
+            return null;
         }
-        return new DefaultHttpClientFactory();
+
+        String username = basicAuth.username().get();
+        String password = basicAuth.password().get();
+
+        // Select the auth factory class based on the configured adapter
+        String factoryClass = "okhttp".equalsIgnoreCase(clientConfig.httpAdapter())
+                ? BASIC_AUTH_OKHTTP
+                : BASIC_AUTH_APACHE;
+
+        try {
+            return (HttpClientFactory) Class.forName(factoryClass)
+                    .getDeclaredConstructor(String.class, String.class)
+                    .newInstance(username, password);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException(
+                    "Failed to create basic auth factory: " + factoryClass, e);
+        }
+    }
+
+    private HttpClientFactory wrapWithProxy(
+            HttpClientFactory baseFactory,
+            ODataClientsRuntimeConfig.ODataClientRuntimeConfig clientConfig) {
+
+        // ProxyWrappingHttpClientFactory accepts DefaultHttpClientFactory (Apache-specific).
+        // Proxy wrapping is only supported with the Apache adapter.
+        try {
+            URI proxyUri = URI.create(clientConfig.proxy().uri().get());
+            Class<?> proxyClass = Class.forName(PROXY_FACTORY);
+            Class<?> baseClass = baseFactory.getClass();
+
+            if (clientConfig.proxy().username().isPresent()
+                    && clientConfig.proxy().password().isPresent()) {
+                return (HttpClientFactory) proxyClass
+                        .getDeclaredConstructor(URI.class, String.class, String.class, baseClass)
+                        .newInstance(proxyUri,
+                                clientConfig.proxy().username().get(),
+                                clientConfig.proxy().password().get(),
+                                baseFactory);
+            }
+            return (HttpClientFactory) proxyClass
+                    .getDeclaredConstructor(URI.class, baseClass)
+                    .newInstance(proxyUri, baseFactory);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException(
+                    "Failed to create proxy factory. "
+                    + "Proxy wrapping is only supported with the Apache HTTP adapter.", e);
+        }
     }
 
     static ContentType resolveContentType(String format) {
