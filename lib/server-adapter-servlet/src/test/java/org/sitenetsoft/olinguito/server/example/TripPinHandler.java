@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced printStackTrace with SLF4J logging
  */
 package org.sitenetsoft.olinguito.server.example;
 
@@ -68,7 +70,11 @@ import org.sitenetsoft.olinguito.server.core.responses.ServiceResponse;
 import org.sitenetsoft.olinguito.server.core.responses.ServiceResponseVisior;
 import org.sitenetsoft.olinguito.server.core.responses.StreamResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class TripPinHandler implements ServiceHandler {
+  private static final Logger LOG = LoggerFactory.getLogger(TripPinHandler.class);
   private OData odata;
   private ServiceMetadata serviceMetadata;
   private final TripPinDataModel dataModel;
@@ -591,7 +597,7 @@ public class TripPinHandler implements ServiceHandler {
   
   @Override
   public void processError(ODataServerError error, ErrorResponse response) {
-    error.getException().printStackTrace();
+    LOG.error("OData server error", error.getException());
     response.writeError(error);
   }
 }

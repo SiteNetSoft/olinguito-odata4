@@ -81,7 +81,6 @@ public class MetadataDocumentTest {
             + "<Property Name=\"AdditionalPropertyString_5\" Type=\"Edm.String\"></Property>"
             + "</EntityType>"));
 
-      System.out.println(metadata);
       assertThat(metadata, containsString("<EntitySet Name=\"ESAllPrim\" EntityType=\"Namespace1_Alias.ETAllPrim\">"
         + "<NavigationPropertyBinding Path=\"NavPropertyETTwoPrimOne\" Target=\"ESTwoPrim\"/>"
         + "<NavigationPropertyBinding Path=\"NavPropertyETTwoPrimMany\" Target=\"ESTwoPrim\"/>"

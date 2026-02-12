@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced System.out.println with SLF4J logging
  */
 package org.sitenetsoft.olinguito.fit.metadata;
 
@@ -24,11 +26,15 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Simple HTTP server.
  */
 public class TestHttpServer implements HttpHandler, AutoCloseable {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TestHttpServer.class);
 
     private final String content;
     private final HttpServer server;
@@ -52,7 +58,7 @@ public class TestHttpServer implements HttpHandler, AutoCloseable {
 
     @Override
     public void handle(HttpExchange t) throws IOException {
-        System.out.println("server: accepted a request");
+        LOG.debug("server: accepted a request");
         synchronized (this) {
             accepted = true;
         }

@@ -87,7 +87,6 @@ public class SelectOnComplexPropertiesITCase extends AbstractBaseTestITCase {
     assertEquals(ContentType.JSON, ContentType.create(connection.getHeaderField(HttpHeader.CONTENT_TYPE)));
 
     final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
-    System.out.println("Content is::"+ content);
     assertTrue(content.contains("\"value\":[{\"PropertyComp\":{"
         + "\"PropertyString\":\"First Resource - positive values\","
         + "\"PropertyBinary\":\"ASNFZ4mrze8=\",\"PropertyBoolean\":true,"

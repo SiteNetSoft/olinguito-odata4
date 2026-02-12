@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced printStackTrace with SLF4J logging
  */
 package org.sitenetsoft.olinguito.server.example;
 
@@ -52,9 +54,13 @@ import org.sitenetsoft.olinguito.server.api.uri.UriResourceNavigation;
 import org.sitenetsoft.olinguito.server.core.deserializer.json.ODataJsonDeserializer;
 import org.sitenetsoft.olinguito.server.core.responses.EntityResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TripPinDataModel {
+  private static final Logger LOG = LoggerFactory.getLogger(TripPinDataModel.class);
   private final ServiceMetadata metadata;
   private HashMap<String, EntityCollection> entitySetMap = new HashMap<String, EntityCollection>();
   private Map<Integer, Map<String,Object>> tripLinks = new HashMap<Integer, Map<String,Object>>();
@@ -140,15 +146,15 @@ public class TripPinDataModel {
       return set;
     } catch (FileNotFoundException e) {
       // keep going
-      e.printStackTrace();
+      LOG.debug("Error loading entity set", e);
     } catch (DeserializerException e) {
       // keep going
-      e.printStackTrace();
+      LOG.debug("Error loading entity set", e);
     } catch (URISyntaxException e) {
       // keep going
-      e.printStackTrace();
+      LOG.debug("Error loading entity set", e);
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.debug("Error loading entity set", e);
     }
     return null;
   }

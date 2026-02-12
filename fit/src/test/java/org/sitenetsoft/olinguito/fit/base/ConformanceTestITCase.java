@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced printStackTrace with SLF4J logging
  */
 package org.sitenetsoft.olinguito.fit.base;
 
@@ -45,6 +47,8 @@ import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 13.2 Interoperable OData Clients
@@ -52,6 +56,8 @@ import org.junit.Test;
  * http://docs.oasis-open.org/odata/odata/v4.0/os/part1-protocol/odata-v4.0-os-part1-protocol.html#_Toc372793762
  */
 public class ConformanceTestITCase extends AbstractTestITCase {
+
+  private static final Logger LOG = LoggerFactory.getLogger(ConformanceTestITCase.class);
 
   /**
    * 4. MUST follow redirects (section 9.1.5).
@@ -195,8 +201,8 @@ public class ConformanceTestITCase extends AbstractTestITCase {
             try {
                 Thread.sleep(waitInSec);
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOG.debug("Interrupted while waiting for async response", e);
+                Thread.currentThread().interrupt();
             }
         }
     }
