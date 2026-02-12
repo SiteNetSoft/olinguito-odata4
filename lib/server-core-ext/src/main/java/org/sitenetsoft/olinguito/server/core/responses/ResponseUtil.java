@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed heap pollution warning with @SafeVarargs
  */
 package org.sitenetsoft.olinguito.server.core.responses;
 
@@ -47,6 +49,7 @@ public class ResponseUtil {
     return new Property(type, name, ValueType.COMPLEX, complexValue);
   }
 
+  @SafeVarargs
   public static Property createComplexCollection(final String name, final String type,
       final List<Property>... propertiesList) {
     List<ComplexValue> complexCollection = new ArrayList<ComplexValue>();

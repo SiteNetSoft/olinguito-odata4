@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed heap pollution warning with @SafeVarargs
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -2142,6 +2144,7 @@ public class DataCreator {
     }
   }  
 
+  @SafeVarargs
   protected static Property createComplexCollection(final String name,
       String type, final List<Property>... propertiesList) {
     List<ComplexValue> complexCollection = new ArrayList<ComplexValue>();

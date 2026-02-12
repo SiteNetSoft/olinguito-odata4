@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed unchecked cast warnings
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operand;
 
@@ -197,6 +199,7 @@ public class TypedOperand extends VisitorOperand {
     return clazz.cast(value);
   }
   
+  @SuppressWarnings("unchecked")
   public <T> List<T> getTypedValueList(final Class<T> clazz) {
     List<Object> list = (List<Object>) value;
     List<Object> newList = new ArrayList<Object>();

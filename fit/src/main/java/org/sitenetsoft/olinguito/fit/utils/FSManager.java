@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Fixed logger class, constants, and code quality warnings
  * Copyright 2026 SiteNetSoft - Added reset() for VFS test isolation (CVE-2024-1938, CVE-2024-1939)
+ * Copyright 2026 SiteNetSoft - Suppressed deprecated traverseDescendents warning
  */
 package org.sitenetsoft.olinguito.fit.utils;
 
@@ -202,6 +203,7 @@ public class FSManager {
             return true;
           }
 
+          @SuppressWarnings("deprecation")
           @Override
           public boolean traverseDescendents(final FileSelectInfo fileInfo) {
             return true;
@@ -230,6 +232,7 @@ public class FSManager {
         return ext == null || fileInfo.getFile().getName().getExtension().equals(ext);
       }
 
+      @SuppressWarnings("deprecation")
       @Override
       public boolean traverseDescendents(final FileSelectInfo fileInfo) {
         return true;

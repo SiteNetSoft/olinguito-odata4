@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
+ * Copyright 2026 SiteNetSoft - Fixed type erasure override warning
  */
 package org.sitenetsoft.olinguito.ext.proxy.commons;
 
@@ -165,14 +166,15 @@ public class ComplexInvocationHandler extends AbstractStructuredInvocationHandle
   }
 
   @Override
-  protected List<ClientProperty> getInternalProperties() {
+  @SuppressWarnings("unchecked")
+  protected <T extends ClientProperty> List<T> getInternalProperties() {
     final List<ClientProperty> res = new ArrayList<ClientProperty>();
     if (getComplex() != null) {
       for (ClientProperty property : getComplex()) {
         res.add(property);
       }
     }
-    return res;
+    return (List<T>) res;
   }
 
   @Override
