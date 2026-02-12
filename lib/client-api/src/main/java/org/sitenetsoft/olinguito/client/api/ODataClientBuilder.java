@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated Class.newInstance() usage
  */
 package org.sitenetsoft.olinguito.client.api;
 
@@ -161,7 +163,7 @@ public final class ODataClientBuilder {
     try {
       Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(className);
       if (ctorParameters == null || ctorParameterClasses == null) {
-        return typeOfClass.cast(clazz.newInstance());
+        return typeOfClass.cast(clazz.getDeclaredConstructor().newInstance());
       }
       Constructor<?> ctor = clazz.getConstructor(ctorParameterClasses);
       return typeOfClass.cast(ctor.newInstance(ctorParameters));

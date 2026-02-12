@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
+ * Copyright 2026 SiteNetSoft - Fixed deprecated Class.newInstance() usage
  */
 package org.sitenetsoft.olinguito.ext.proxy.utils;
 
@@ -443,7 +444,7 @@ public final class CoreUtils {
         }
       } else {
         try {
-          res = keyRef.newInstance();
+          res = keyRef.getDeclaredConstructor().newInstance();
           populate(client, typeHandler, res, CompoundKeyElement.class, entity.getProperties().iterator());
         } catch (Exception e) {
           LOG.error("Error population compound key {}", keyRef.getSimpleName(), e);
