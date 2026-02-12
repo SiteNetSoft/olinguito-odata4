@@ -18,11 +18,9 @@
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.invoke;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
-import org.apache.http.HttpResponse;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
@@ -32,7 +30,6 @@ import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
 import org.sitenetsoft.olinguito.client.api.domain.ClientEntitySet;
 import org.sitenetsoft.olinguito.client.api.domain.ClientInvokeResult;
 import org.sitenetsoft.olinguito.client.api.domain.ClientProperty;
-import org.sitenetsoft.olinguito.client.api.http.HttpClientException;
 import org.sitenetsoft.olinguito.client.api.serialization.ODataDeserializerException;
 import org.sitenetsoft.olinguito.client.core.communication.response.AbstractODataResponse;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;

@@ -43,13 +43,13 @@ import org.apache.http.util.EntityUtils;
  * content compression and decompression via {@link RequestAcceptEncoding}
  * and {@link ResponseContentEncoding} interceptors.
  */
-final class ContentCompressingHttpClient implements HttpClient, java.io.Closeable {
+public final class ContentCompressingHttpClient implements HttpClient, java.io.Closeable {
 
   private final HttpClient delegate;
   private final RequestAcceptEncoding requestInterceptor = new RequestAcceptEncoding();
   private final ResponseContentEncoding responseInterceptor = new ResponseContentEncoding();
 
-  ContentCompressingHttpClient(final HttpClient delegate) {
+  public ContentCompressingHttpClient(final HttpClient delegate) {
     this.delegate = delegate;
   }
 

@@ -22,11 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
-import org.sitenetsoft.olinguito.client.core.http.ApacheHttpRequest;
-import org.sitenetsoft.olinguito.client.core.http.ApacheHttpResponse;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataReferenceAddingRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataReferenceAddingResponse;
@@ -35,7 +32,6 @@ import org.sitenetsoft.olinguito.client.api.serialization.ODataSerializerExcepti
 import org.sitenetsoft.olinguito.client.api.serialization.ODataWriter;
 import org.sitenetsoft.olinguito.client.core.communication.request.AbstractODataBasicRequest;
 import org.sitenetsoft.olinguito.client.core.communication.response.AbstractODataResponse;
-import org.sitenetsoft.olinguito.client.core.uri.URIUtils;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
@@ -81,11 +77,12 @@ public class ODataReferenceAddingRequestImpl extends AbstractODataBasicRequest<O
   @Override
   public ODataReferenceAddingResponse execute() {
     final InputStream input = getPayload();
-    ((HttpEntityEnclosingRequestBase) ApacheHttpRequest.unwrap(request)).setEntity(
-        URIUtils.buildInputStreamEntity(odataClient, input));
+    if (input != null) {
+      setRequestEntity(input);
+    }
 
     try {
-      return new ODataReferenceAddingResponseImpl(odataClient, httpClient, new ApacheHttpResponse(doExecute()));
+      return new ODataReferenceAddingResponseImpl(odataClient, httpClient, doExecute());
     } finally {
       try {
         if (input != null) {

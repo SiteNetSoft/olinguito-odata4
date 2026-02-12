@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
+ * Copyright 2026 SiteNetSoft - Save/restore HttpClientFactory for adapter-agnostic tests
  */
 package org.sitenetsoft.olinguito.fit.base;
 
@@ -31,9 +32,9 @@ import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntityRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
 import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.http.HttpClientFactory;
 import org.sitenetsoft.olinguito.client.api.uri.URIBuilder;
 import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
-import org.sitenetsoft.olinguito.client.core.http.DefaultHttpClientFactory;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.fit.CXFOAuth2HttpClientFactory;
 import org.junit.AfterClass;
@@ -48,17 +49,20 @@ public class OAuth2TestITCase extends AbstractTestITCase {
   private static final URI OAUTH2_TOKEN_SERVICE_URI =
       URI.create("http://localhost:9080/stub/StaticService/oauth2/token");
 
+  private static HttpClientFactory originalClientFactory;
+
   private EdmEnabledODataClient _edmClient;
 
   @BeforeClass
   public static void enableOAuth2() {
+    originalClientFactory = client.getConfiguration().getHttpClientFactory();
     client.getConfiguration().setHttpClientFactory(
         new CXFOAuth2HttpClientFactory(OAUTH2_GRANT_SERVICE_URI, OAUTH2_TOKEN_SERVICE_URI));
   }
 
   @AfterClass
   public static void disableOAuth2() {
-    client.getConfiguration().setHttpClientFactory(new DefaultHttpClientFactory());
+    client.getConfiguration().setHttpClientFactory(originalClientFactory);
   }
 
   protected ODataClient getLocalClient() {

@@ -17,14 +17,21 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Bridge from ODataHttpClient to Apache HttpClient
+ * Copyright 2026 SiteNetSoft - Implement transport-agnostic execute() method
+ * Copyright 2026 SiteNetSoft - Deprecated unwrap() methods in favor of transport-agnostic interface
  */
 package org.sitenetsoft.olinguito.client.core.http;
 
 import java.io.Closeable;
 import java.io.IOException;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.sitenetsoft.olinguito.client.api.http.HttpClientException;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpRequest;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
 
 /**
  * Bridge implementation that wraps an Apache {@link HttpClient} as an {@link ODataHttpClient}.
@@ -37,11 +44,24 @@ public class ApacheHttpClient implements ODataHttpClient {
     this.delegate = delegate;
   }
 
+  @Override
+  public ODataHttpResponse execute(final ODataHttpRequest request) {
+    final HttpUriRequest apacheRequest = ApacheHttpRequest.unwrap(request);
+    try {
+      final HttpResponse response = delegate.execute(apacheRequest);
+      return new ApacheHttpResponse(response);
+    } catch (IOException e) {
+      throw new HttpClientException(request.getURI().toASCIIString(), e);
+    }
+  }
+
   /**
    * Returns the underlying Apache {@link HttpClient}.
    *
    * @return the wrapped HttpClient instance
+   * @deprecated Use the transport-agnostic {@link ODataHttpClient#execute(ODataHttpRequest)} method instead.
    */
+  @Deprecated
   public HttpClient unwrap() {
     return delegate;
   }
@@ -52,7 +72,9 @@ public class ApacheHttpClient implements ODataHttpClient {
    * @param client the ODataHttpClient (must be an ApacheHttpClient)
    * @return the underlying HttpClient
    * @throws IllegalArgumentException if client is not an ApacheHttpClient
+   * @deprecated Use the transport-agnostic {@link ODataHttpClient#execute(ODataHttpRequest)} method instead.
    */
+  @Deprecated
   public static HttpClient unwrap(final ODataHttpClient client) {
     if (client instanceof ApacheHttpClient apacheClient) {
       return apacheClient.delegate;

@@ -25,7 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.http.HttpResponse;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
 import org.sitenetsoft.olinguito.client.api.communication.request.ODataBatchableRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchRequestItem;
@@ -55,7 +55,7 @@ public abstract class AbstractBatchManager extends AbstractODataStreamManager<OD
   protected final ODataBatchRequest req;
 
   protected AbstractBatchManager(final ODataBatchRequest req,
-      final Wrapper<Future<HttpResponse>> futureWrap, final boolean continueOnError) {
+      final Wrapper<Future<ODataHttpResponse>> futureWrap, final boolean continueOnError) {
 
     super(futureWrap);
     this.req = req;

@@ -41,6 +41,8 @@
     <module>commons-core</module>
     <module>client-api</module>
     <module>client-core</module>
+    <module>client-adapter-apache</module>
+    <module>client-adapter-okhttp</module>
     <module>client-adapter-quarkus</module>
     <module>odata-vocabularies</module>
     <module>server-api</module>

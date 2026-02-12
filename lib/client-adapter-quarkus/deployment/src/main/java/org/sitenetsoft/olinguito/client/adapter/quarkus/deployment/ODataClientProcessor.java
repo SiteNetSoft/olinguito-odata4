@@ -162,11 +162,17 @@ public class ODataClientProcessor {
                 "org.sitenetsoft.olinguito.client.core.ODataClientFactory",
                 "org.sitenetsoft.olinguito.client.core.ConfigurationImpl",
 
-                // HTTP factories
+                // HTTP factories (Apache adapter)
                 "org.sitenetsoft.olinguito.client.core.http.DefaultHttpClientFactory",
                 "org.sitenetsoft.olinguito.client.core.http.BasicAuthHttpClientFactory",
                 "org.sitenetsoft.olinguito.client.core.http.ProxyWrappingHttpClientFactory",
                 "org.sitenetsoft.olinguito.client.core.http.AbstractHttpClientFactory",
+                "org.sitenetsoft.olinguito.client.core.http.DefaultHttpUriRequestFactory",
+
+                // HTTP factories (OkHttp adapter — optional, may not be on classpath)
+                "org.sitenetsoft.olinguito.client.adapter.okhttp.OkHttpClientFactory",
+                "org.sitenetsoft.olinguito.client.adapter.okhttp.OkHttpUriRequestFactory",
+                "org.sitenetsoft.olinguito.client.adapter.okhttp.OkHttpBasicAuthClientFactory",
 
                 // Serialization
                 "org.sitenetsoft.olinguito.client.core.serialization.ODataDeserializerImpl",

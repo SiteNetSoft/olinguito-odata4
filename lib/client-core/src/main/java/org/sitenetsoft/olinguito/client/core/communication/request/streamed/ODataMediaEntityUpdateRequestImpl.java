@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
-import org.sitenetsoft.olinguito.client.core.http.ApacheHttpResponse;
 import org.sitenetsoft.olinguito.client.api.communication.request.streamed.MediaEntityUpdateStreamManager;
 import org.sitenetsoft.olinguito.client.api.communication.request.streamed.ODataMediaEntityUpdateRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataMediaEntityUpdateResponse;
@@ -90,7 +89,7 @@ public class ODataMediaEntityUpdateRequestImpl<E extends ClientEntity>
     protected ODataMediaEntityUpdateResponse<E> getResponse(final long timeout, final TimeUnit unit) {
       finalizeBody();
       return new ODataMediaEntityUpdateResponseImpl(odataClient, httpClient,
-          new ApacheHttpResponse(getHttpResponse(timeout, unit)));
+          getHttpResponse(timeout, unit));
     }
   }
 

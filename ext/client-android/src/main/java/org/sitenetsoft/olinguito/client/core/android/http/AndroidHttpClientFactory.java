@@ -17,32 +17,40 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
+ * Copyright 2026 SiteNetSoft - Replaced deprecated AndroidHttpClient with OkHttp adapter
  */
 package org.sitenetsoft.olinguito.client.core.android.http;
 
-import java.net.URI;
+import java.util.concurrent.TimeUnit;
 
-import org.apache.http.client.HttpClient;
-import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
-import org.sitenetsoft.olinguito.client.core.http.AbstractHttpClientFactory;
-import org.sitenetsoft.olinguito.client.core.http.ApacheHttpClient;
-import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.client.adapter.okhttp.OkHttpClientFactory;
 
-import android.net.http.AndroidHttpClient;
+import okhttp3.ConnectionPool;
+import okhttp3.OkHttpClient;
 
-public class AndroidHttpClientFactory extends AbstractHttpClientFactory {
+/**
+ * Android-optimized {@link OkHttpClientFactory} with settings tuned for mobile devices.
+ * <p>
+ * Replaces the deprecated {@code android.net.http.AndroidHttpClient} with OkHttp,
+ * the de-facto standard HTTP library on Android. Configures connection pooling
+ * and timeouts appropriate for mobile network conditions.
+ */
+public class AndroidHttpClientFactory extends OkHttpClientFactory {
 
-    @Override
-    public ODataHttpClient create(final HttpMethod method, final URI uri) {
-        return new ApacheHttpClient(AndroidHttpClient.newInstance(USER_AGENT));
-    }
+  private static final int MAX_IDLE_CONNECTIONS = 5;
+  private static final int KEEP_ALIVE_DURATION_SECONDS = 30;
 
-    @Override
-    public void close(final ODataHttpClient httpClient) {
-        final HttpClient apacheClient = ApacheHttpClient.unwrap(httpClient);
-        if (apacheClient instanceof AndroidHttpClient) {
-            ((AndroidHttpClient) apacheClient).close();
-        }
-    }
+  public AndroidHttpClientFactory() {
+    setConnectTimeout(15);
+    setReadTimeout(20);
+    setWriteTimeout(20);
+    setRetryOnConnectionFailure(true);
+  }
 
+  @Override
+  protected void configureBuilder(final OkHttpClient.Builder builder) {
+    super.configureBuilder(builder);
+    builder.connectionPool(
+        new ConnectionPool(MAX_IDLE_CONNECTIONS, KEEP_ALIVE_DURATION_SECONDS, TimeUnit.SECONDS));
+  }
 }

@@ -65,6 +65,13 @@
             <artifactId>odata-commons-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- Optional: OkHttp adapter for users who set http-adapter=okhttp -->
+        <dependency>
+            <groupId>org.sitenetsoft.olinguito</groupId>
+            <artifactId>odata-client-adapter-okhttp</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
 
         <!-- Test dependencies -->
         <dependency>

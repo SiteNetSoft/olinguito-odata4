@@ -43,6 +43,8 @@
     <project-resource-dir>${project.build.outputDirectory}</project-resource-dir>
     <!-- Default test server type -->
     <test.server.type>tomcat</test.server.type>
+    <!-- Default HTTP client adapter (apache or okhttp) -->
+    <http.client.adapter>apache</http.client.adapter>
   </properties>
 
   <profiles>
@@ -120,6 +122,21 @@
           <groupId>org.junit.vintage</groupId>
           <artifactId>junit-vintage-engine</artifactId>
           <version>5.10.1</version>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+    <!-- OkHttp adapter profile: runs integration tests using OkHttp instead of Apache HttpClient -->
+    <profile>
+      <id>test-okhttp</id>
+      <properties>
+        <http.client.adapter>okhttp</http.client.adapter>
+      </properties>
+      <dependencies>
+        <dependency>
+          <groupId>org.sitenetsoft.olinguito</groupId>
+          <artifactId>odata-client-adapter-okhttp</artifactId>
+          <version>${project.version}</version>
           <scope>test</scope>
         </dependency>
       </dependencies>
@@ -317,6 +334,7 @@
             <buildDirectory>${project.build.directory}</buildDirectory>
             <finalName>${project.build.finalName}</finalName>
             <test.server.type>${test.server.type}</test.server.type>
+            <http.client.adapter>${http.client.adapter}</http.client.adapter>
             <java.util.logging.config.file>${project.basedir}/src/test/resources/logging.properties</java.util.logging.config.file>
           </systemPropertyVariables>
           <includes>

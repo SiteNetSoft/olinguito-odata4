@@ -29,7 +29,7 @@ import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
 import org.sitenetsoft.olinguito.client.api.domain.ClientEntitySet;
 import org.sitenetsoft.olinguito.client.api.uri.URIBuilder;
 import org.sitenetsoft.olinguito.client.core.http.BasicAuthHttpClientFactory;
-import org.sitenetsoft.olinguito.client.core.http.DefaultHttpClientFactory;
+import org.sitenetsoft.olinguito.client.api.http.HttpClientFactory;
 import org.sitenetsoft.olinguito.client.core.uri.URIUtils;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
@@ -187,6 +187,7 @@ public class ConformanceITCase extends AbstractParamTecSvcITCase {
   @Test
   public void basicHttpsAuthentication() {
     final ODataClient client = getClient();
+    final HttpClientFactory originalFactory = client.getConfiguration().getHttpClientFactory();
     client.getConfiguration()
             .setHttpClientFactory(new BasicAuthHttpClientFactory("odatajclient", "odatajclient"));
 
@@ -197,10 +198,10 @@ public class ConformanceITCase extends AbstractParamTecSvcITCase {
 
     final ODataEntityRequest<ClientEntity> req =
         client.getRetrieveRequestFactory().getEntityRequest(uriBuilder.build());
- 
+
     assertNotNull(req.execute().getBody());
 
-    client.getConfiguration().setHttpClientFactory(new DefaultHttpClientFactory());
+    client.getConfiguration().setHttpClientFactory(originalFactory);
   }
   
    /**

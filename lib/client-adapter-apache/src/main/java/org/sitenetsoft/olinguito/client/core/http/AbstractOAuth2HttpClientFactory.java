@@ -86,8 +86,8 @@ public abstract class AbstractOAuth2HttpClientFactory
 
     final HttpClientBuilder builder = wrapped.createBuilder(method, uri);
     builder.addInterceptorLast((HttpRequestInterceptor) (request, context) -> {
-      if (request instanceof HttpUriRequest) {
-        currentRequest = (HttpUriRequest) request;
+      if (request instanceof HttpUriRequest uriRequest) {
+        currentRequest = uriRequest;
       } else {
         currentRequest = null;
       }
