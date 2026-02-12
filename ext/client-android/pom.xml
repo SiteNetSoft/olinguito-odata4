@@ -73,7 +73,6 @@
               <include>org.sitenetsoft.olinguito:odata-client-api</include>
               <include>org.sitenetsoft.olinguito:odata-commons-core</include>
               <include>org.sitenetsoft.olinguito:odata-commons-api</include>
-              <include>org.apache.commons:commons-lang3</include>
               <include>org.slf4j:slf4j-api</include>
               <include>com.fasterxml.jackson.core:jackson-core</include>
               <include>com.fasterxml.jackson.core:jackson-databind</include>
