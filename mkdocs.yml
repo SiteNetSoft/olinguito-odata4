@@ -1,0 +1,103 @@
+site_name: Olinguito OData V4
+site_description: Java library for building and consuming OData V4.0 services
+site_url: https://sitenetsoft.github.io/olinguito-odata4/
+repo_url: https://github.com/sitenetsoft/olinguito-odata4
+repo_name: sitenetsoft/olinguito-odata4
+
+docs_dir: docs/site
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: amber
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+  icon:
+    repo: fontawesome/brands/github
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.snippets
+  - toc:
+      permalink: true
+  - tables
+  - attr_list
+  - md_in_html
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Guides:
+      - Architecture: guides/architecture.md
+      - OData V4 Overview: guides/overview.md
+      - Server Guide: guides/server-guide.md
+      - Client Guide: guides/client-guide.md
+      - Servlet Guide: guides/servlet-guide.md
+      - Quarkus Guide: guides/quarkus-guide.md
+  - Tutorials:
+      - Overview: tutorials/index.md
+      - Quick Start: tutorials/quick-start.md
+      - Prerequisites: tutorials/prerequisites.md
+      - Server Tutorials:
+          - "Part 1: Read": tutorials/server/read.md
+          - "Part 1b: Read (Maven)": tutorials/server/read-mvn.md
+          - "Part 2: Read Entity": tutorials/server/readep.md
+          - "Part 3: Write": tutorials/server/write.md
+          - "Part 4: Navigation": tutorials/server/navigation.md
+          - "Part 5: Query Options - Top, Count, Skip": tutorials/server/sqo-tcs.md
+          - "Part 6: Query Options - Expand, Select": tutorials/server/sqo-es.md
+          - "Part 7: Query Options - OrderBy": tutorials/server/sqo-o.md
+          - "Part 8: Query Options - Filter": tutorials/server/sqo-f.md
+          - "Part 9: Action": tutorials/server/action.md
+          - "Part 9b: Bound Action": tutorials/server/bound-action.md
+          - "Part 10: Media": tutorials/server/media.md
+          - "Part 11: Batch": tutorials/server/batch.md
+          - "Part 12: Deep Insert": tutorials/server/deep-insert.md
+          - Streaming: tutorials/server/streaming.md
+      - Client Tutorials:
+          - Read: tutorials/client/read.md
+          - Batch: tutorials/client/batch.md
+      - Legacy Tutorials:
+          - Basic Read: tutorials/legacy/basic-read.md
+          - Basic Write: tutorials/legacy/basic-write.md
+  - Reference:
+      - Dependencies: reference/dependencies.md
+      - Maven: reference/maven.md
+      - Project Setup: reference/project-setup.md
+      - Eclipse Setup: reference/eclipse.md
+      - Tomcat Setup: reference/tomcat.md
+      - Sample Setup: reference/sample-setup.md
+      - Downloads: reference/download.md
+      - Release: reference/release.md
+      - Verification: reference/verification.md
+  - Community:
+      - Contribute: community/contribute.md
+      - Support: community/support.md
