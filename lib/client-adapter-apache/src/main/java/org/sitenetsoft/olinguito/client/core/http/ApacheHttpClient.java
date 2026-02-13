@@ -46,7 +46,11 @@ public class ApacheHttpClient implements ODataHttpClient {
 
   @Override
   public ODataHttpResponse execute(final ODataHttpRequest request) {
-    final HttpUriRequest apacheRequest = ApacheHttpRequest.unwrap(request);
+    if (!(request instanceof ApacheHttpRequest apacheReq)) {
+      throw new IllegalArgumentException(
+          "Expected ApacheHttpRequest but got " + (request == null ? "null" : request.getClass().getName()));
+    }
+    final HttpUriRequest apacheRequest = apacheReq.delegate;
     try {
       final HttpResponse response = delegate.execute(apacheRequest);
       return new ApacheHttpResponse(response);
