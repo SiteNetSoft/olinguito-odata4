@@ -16,3 +16,5 @@ maven-eclipse.xml
 dependency-reduced-pom.xml
 
 .idea/
+/site/
+.venv/
