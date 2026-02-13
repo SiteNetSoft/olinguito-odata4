@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Code quality improvements
  * Copyright 2026 SiteNetSoft - Replaced commons-io with Java standard library
  * Copyright 2026 SiteNetSoft - Removed servlet types from builder API
+ * Copyright 2026 SiteNetSoft - Disabled leak detection for embedded test server
  ******************************************************************************/
 package org.sitenetsoft.olinguito.fit.server;
 
@@ -48,6 +49,7 @@ import jakarta.servlet.http.HttpSessionListener;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleState;
+import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.loader.WebappClassLoader;
 import org.apache.catalina.loader.WebappClassLoaderBase;
 import org.apache.catalina.loader.WebappLoader;
@@ -239,6 +241,19 @@ public class TomcatTestServer implements TestServer {
     }
   }
 
+  /**
+   * Disable Tomcat's memory leak detection features on the given context.
+   * These features use reflection into JDK internals that requires --add-opens
+   * flags on Java 17+. For an embedded test server they serve no purpose.
+   */
+  private static void disableLeakDetection(Context ctx) {
+    if (ctx instanceof StandardContext sc) {
+      sc.setClearReferencesObjectStreamClassCaches(false);
+      sc.setClearReferencesThreadLocals(false);
+      sc.setClearReferencesRmiTargets(false);
+    }
+  }
+
   private static TomcatTestServerBuilder builder;
 
   public static TomcatTestServerBuilder init(final int port) {
@@ -277,6 +292,7 @@ public class TomcatTestServer implements TestServer {
 
       String contextPath = "/odata-server-tecsvc";
       Context ctx = tomcat.addWebapp(tomcat.getHost(), contextPath, webAppDir.getAbsolutePath());
+      disableLeakDetection(ctx);
       LOG.info("Tecsvc webapp {} at context {}.", webAppDir.getName(), contextPath);
       return this;
     }
@@ -370,6 +386,7 @@ public class TomcatTestServer implements TestServer {
       String contextPath = "/stub";
 
       Context context = tomcat.addWebapp(tomcat.getHost(), contextPath, webAppDir.getAbsolutePath());
+      disableLeakDetection(context);
       WebappLoader webappLoader = new WebappLoader();
       WebappClassLoaderBase webappClassLoaderBase =
               new WebappClassLoader(Thread.currentThread().getContextClassLoader());
@@ -422,6 +439,7 @@ public class TomcatTestServer implements TestServer {
           Thread.currentThread().getContextClassLoader().getResource(TOMCAT_WEB_XML)).getPath();
       HttpServlet httpServlet = (HttpServlet) Class.forName(servletClassName).getDeclaredConstructor().newInstance();
       Context cxt = tomcat.addWebapp(servletPath, baseDir.getAbsolutePath());
+      disableLeakDetection(cxt);
       cxt.setAltDDName(webXMLPath);
       String randomServletId = UUID.randomUUID().toString();
       Tomcat.addServlet(cxt, randomServletId, httpServlet);
@@ -467,6 +485,7 @@ public class TomcatTestServer implements TestServer {
     private Context getContext() {
       if (baseContext == null) {
         baseContext = tomcat.addContext("", baseDir.getAbsolutePath());
+        disableLeakDetection(baseContext);
       }
       return baseContext;
     }

@@ -24,6 +24,7 @@
   Copyright 2026 SiteNetSoft - Migrated XMLUnit 1.6 to 2.11.0
   Copyright 2026 SiteNetSoft - Upgrade Netty 4.1.129 to 4.1.131 and Tomcat 10.1.40 to 10.1.52
   Copyright 2026 SiteNetSoft - Removed direct commons-io usage (replaced with Java standard library)
+  Copyright 2026 SiteNetSoft - Eliminated commons-logging classpath conflict with spring-jcl
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -90,7 +91,6 @@
     <commons.codec.version>1.17.1</commons.codec.version>
     <commons.io.version>2.18.0</commons.io.version>
     <commons.lang3.version>3.18.0</commons.lang3.version>
-    <commons.logging.version>1.3.4</commons.logging.version>
     <commons.vfs.version>2.10.0</commons.vfs.version>
     <esigate.version>5.3</esigate.version>
     <servlet.version>3.1.0</servlet.version>
@@ -182,10 +182,10 @@
         <version>${commons.lang3.version}</version>
       </dependency>
       <dependency>
-        <groupId>commons-logging</groupId>
-        <artifactId>commons-logging</artifactId>
-        <version>${commons.logging.version}</version>
-        <scope>provided</scope>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <version>${sl4j.version}</version>
+        <scope>test</scope>
       </dependency>
 
       <dependency>
@@ -197,6 +197,12 @@
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
         <version>${hc.client.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.squareup.okhttp3</groupId>
@@ -276,11 +282,27 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-vfs2</artifactId>
         <version>${commons.vfs.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.esigate</groupId>
         <artifactId>esigate-core</artifactId>
         <version>${esigate.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>jakarta.servlet</groupId>

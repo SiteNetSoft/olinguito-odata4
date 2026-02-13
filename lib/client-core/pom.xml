@@ -93,6 +93,11 @@
 
     <!-- Test dependencies -->
     <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-client-adapter-okhttp</artifactId>
       <version>${project.version}</version>

@@ -215,9 +215,9 @@ So the code for delete of an entry the  DELETE request URI is an Entity for whic
           <version>${project.version}</version>
         </dependency>
         <dependency>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-          <version>${commons.logging.version}</version>
+          <groupId>org.slf4j</groupId>
+          <artifactId>jcl-over-slf4j</artifactId>
+          <version>${sl4j.version}</version>
           <scope>runtime</scope>
         </dependency>
         <dependency>
