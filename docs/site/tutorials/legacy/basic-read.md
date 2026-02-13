@@ -17,7 +17,7 @@ Each of them is split into an implementation and an API project.
 
 The „pom.xml“ defines to include the following dependencies to the project:
 
-* The Servlet API (javax.servlet.servlet-api)
+* The Servlet API (jakarta.servlet-api)
 * Olinguito library
 * A logging facade used by the tomcat server(slf4j)
 
@@ -37,44 +37,45 @@ Replace the pom.xml by the following listing.
       <name>${project.artifactId}</name>
 
         <properties>
-            <odata.version>4.0.0-beta-02</odata.version>
+            <olinguito.version>5.0.1</olinguito.version>
+            <slf4j.version>2.0.16</slf4j.version>
         </properties>
 
     <dependencies>
       <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>servlet-api</artifactId>
-        <version>2.5</version>
+        <groupId>jakarta.servlet</groupId>
+        <artifactId>jakarta.servlet-api</artifactId>
+        <version>6.1.0</version>
         <scope>provided</scope>
       </dependency>
 
       <dependency>
         <groupId>org.sitenetsoft.olinguito</groupId>
         <artifactId>odata-server-api</artifactId>
-        <version>${odata.version}</version>
+        <version>${olinguito.version}</version>
       </dependency>
       <dependency>
         <groupId>org.sitenetsoft.olinguito</groupId>
         <artifactId>odata-server-core</artifactId>
-        <version>${odata.version}</version>
+        <version>${olinguito.version}</version>
         <scope>runtime</scope>
       </dependency>
 
       <dependency>
         <groupId>org.sitenetsoft.olinguito</groupId>
         <artifactId>odata-commons-api</artifactId>
-        <version>${odata.version}</version>
+        <version>${olinguito.version}</version>
       </dependency>
       <dependency>
         <groupId>org.sitenetsoft.olinguito</groupId>
         <artifactId>odata-commons-core</artifactId>
-        <version>${odata.version}</version>
+        <version>${olinguito.version}</version>
       </dependency>
 
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-simple</artifactId>
-        <version>1.7.7</version>
+        <version>${slf4j.version}</version>
         <scope>runtime</scope>
       </dependency>
     </dependencies>
@@ -785,33 +786,33 @@ We will add the dependencies to the OData client library. To do so, replace the 
       <name>${project.artifactId}</name>
 
         <properties>
-            <odata.version>4.0.0-beta-02</odata.version>
+            <olinguito.version>5.0.1</olinguito.version>
         </properties>
 
       <dependencies>
         <dependency>
           <groupId>org.sitenetsoft.olinguito</groupId>
           <artifactId>odata-client-api</artifactId>
-          <version>${odata.version}</version>
+          <version>${olinguito.version}</version>
         </dependency>
 
         <dependency>
           <groupId>org.sitenetsoft.olinguito</groupId>
           <artifactId>odata-client-core</artifactId>
-          <version>${odata.version}</version>
+          <version>${olinguito.version}</version>
           <scope>runtime</scope>
         </dependency>
 
         <dependency>
           <groupId>org.sitenetsoft.olinguito</groupId>
           <artifactId>odata-commons-api</artifactId>
-          <version>${odata.version}</version>
+          <version>${olinguito.version}</version>
         </dependency>
 
         <dependency>
           <groupId>org.sitenetsoft.olinguito</groupId>
           <artifactId>odata-commons-core</artifactId>
-          <version>${odata.version}</version>
+          <version>${olinguito.version}</version>
         </dependency>
       </dependencies>
     </project>
