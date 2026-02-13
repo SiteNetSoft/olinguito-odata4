@@ -36,7 +36,6 @@ import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
 import org.sitenetsoft.olinguito.server.adapter.quarkus.runtime.ODataRecorder;
 import org.sitenetsoft.olinguito.server.adapter.quarkus.runtime.ODataServiceNames;
 import org.sitenetsoft.olinguito.server.adapter.quarkus.runtime.ODataServicesBuildTimeConfig;
-import org.sitenetsoft.olinguito.server.adapter.quarkus.runtime.ODataServicesRuntimeConfig;
 import org.sitenetsoft.olinguito.server.api.processor.Processor;
 
 /**
@@ -169,7 +168,6 @@ public class ODataProcessor {
     @Record(ExecutionTime.RUNTIME_INIT)
     void registerRoutes(
             ODataBuildItem odataBuildItem,
-            ODataServicesRuntimeConfig runtimeConfig,
             ODataRecorder recorder,
             BuildProducer<RouteBuildItem> routes) {
 
@@ -191,14 +189,14 @@ public class ODataProcessor {
             routes.produce(RouteBuildItem.builder()
                     .route(basePath + "/*")
                     .blockingRoute()
-                    .handler(recorder.createVertxHandler(serviceName, basePath, runtimeConfig))
+                    .handler(recorder.createVertxHandler(serviceName, basePath))
                     .build());
 
             // Exact path route for service document (e.g., /odata)
             routes.produce(RouteBuildItem.builder()
                     .route(basePath)
                     .blockingRoute()
-                    .handler(recorder.createVertxHandler(serviceName, basePath, runtimeConfig))
+                    .handler(recorder.createVertxHandler(serviceName, basePath))
                     .build());
         }
     }
