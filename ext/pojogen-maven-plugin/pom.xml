@@ -47,6 +47,26 @@
       <artifactId>odata-client-proxy</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.sitenetsoft.olinguito</groupId>
+      <artifactId>odata-client-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.sitenetsoft.olinguito</groupId>
+      <artifactId>odata-client-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.sitenetsoft.olinguito</groupId>
+      <artifactId>odata-commons-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.sitenetsoft.olinguito</groupId>
+      <artifactId>odata-commons-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>org.apache.velocity</groupId>
