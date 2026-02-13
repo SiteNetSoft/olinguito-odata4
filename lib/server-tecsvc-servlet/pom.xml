@@ -19,6 +19,7 @@
   under the License.
 
   Copyright 2026 SiteNetSoft - Servlet WAR module extracted from server-tecsvc
+  Copyright 2026 SiteNetSoft - Marked SLF4J as provided scope to avoid classloader conflicts
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -122,11 +123,12 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <scope>runtime</scope>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
