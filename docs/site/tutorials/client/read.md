@@ -184,7 +184,7 @@ So the code for delete of an entry the  DELETE request URI is an Entity for whic
       <parent>
         <groupId>org.sitenetsoft.olinguito</groupId>
         <artifactId>odata-samples</artifactId>
-        <version>4.5.0-sap-05-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
         <relativePath>..</relativePath>
       </parent>
     

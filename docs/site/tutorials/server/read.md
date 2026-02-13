@@ -156,49 +156,48 @@ In our example, the pom.xml file looks as follows:
 ```xml
     <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-      <modelVersion>4.6.0</modelVersion>
+      <modelVersion>4.0.0</modelVersion>
       <groupId>my.group.id</groupId>
       <artifactId>DemoService</artifactId>
       <packaging>war</packaging>
-      <version>4.6.0</version>
+      <version>1.0-SNAPSHOT</version>
 
       <name>DemoService Maven Webapp</name>
 
       <properties>
-        <javax.version>2.5</javax.version>
-        <odata.version>4.6.0</odata.version>
-        <slf4j.version>1.7.7</slf4j.version>
+        <olinguito.version>5.0.1</olinguito.version>
+        <slf4j.version>2.0.16</slf4j.version>
       </properties>
 
       <dependencies>
         <dependency>
-          <groupId>javax.servlet</groupId>
-          <artifactId>servlet-api</artifactId>
-          <version>${javax.version}</version>
+          <groupId>jakarta.servlet</groupId>
+          <artifactId>jakarta.servlet-api</artifactId>
+          <version>6.1.0</version>
           <scope>provided</scope>
         </dependency>
 
         <dependency>
           <groupId>org.sitenetsoft.olinguito</groupId>
           <artifactId>odata-server-api</artifactId>
-          <version>${odata.version}</version>
+          <version>${olinguito.version}</version>
         </dependency>
         <dependency>
           <groupId>org.sitenetsoft.olinguito</groupId>
           <artifactId>odata-server-core</artifactId>
-          <version>${odata.version}</version>
+          <version>${olinguito.version}</version>
           <scope>runtime</scope>
         </dependency>
 
         <dependency>
           <groupId>org.sitenetsoft.olinguito</groupId>
           <artifactId>odata-commons-api</artifactId>
-          <version>${odata.version}</version>
+          <version>${olinguito.version}</version>
         </dependency>
         <dependency>
           <groupId>org.sitenetsoft.olinguito</groupId>
           <artifactId>odata-commons-core</artifactId>
-          <version>${odata.version}</version>
+          <version>${olinguito.version}</version>
         </dependency>
 
         <dependency>
@@ -208,11 +207,10 @@ In our example, the pom.xml file looks as follows:
           <scope>runtime</scope>
         </dependency>
         <dependency>
-	  <groupId>org.slf4j</groupId>
-	  <artifactId>slf4j-api</artifactId>
-	  <version>1.7.11</version>
-	  <scope>compile</scope>
-	</dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+          <version>${slf4j.version}</version>
+        </dependency>
       </dependencies>
     </project>
 ```
