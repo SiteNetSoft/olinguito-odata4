@@ -41,7 +41,7 @@ import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
  */
 public class ApacheHttpRequest implements ODataHttpRequest {
 
-  private final HttpUriRequest delegate;
+  final HttpUriRequest delegate;
 
   public ApacheHttpRequest(final HttpUriRequest delegate) {
     this.delegate = delegate;
