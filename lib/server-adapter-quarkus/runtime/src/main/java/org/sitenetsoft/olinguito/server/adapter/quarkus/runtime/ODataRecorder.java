@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import io.quarkus.arc.Arc;
+import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.annotations.Recorder;
 import io.smallrye.common.annotation.Identifier;
 import io.vertx.core.Handler;
@@ -47,19 +48,28 @@ public class ODataRecorder {
 
     private static final Map<String, ODataRequestHandler> HANDLERS = new ConcurrentHashMap<>();
 
+    private final RuntimeValue<ODataServicesRuntimeConfig> runtimeConfig;
+
+    /**
+     * Constructs the recorder with runtime configuration injected by Quarkus.
+     *
+     * @param runtimeConfig runtime configuration for all services
+     */
+    public ODataRecorder(RuntimeValue<ODataServicesRuntimeConfig> runtimeConfig) {
+        this.runtimeConfig = runtimeConfig;
+    }
+
     /**
      * Creates a consumer that sets up an OData route on the Vert.x router.
      *
      * @param serviceName   the service name ({@code "<default>"} or a named key)
      * @param basePath      the OData base path
-     * @param runtimeConfig runtime configuration for all services
      * @return consumer to configure the route
      */
     public Consumer<Route> createRouteHandler(
             String serviceName,
-            String basePath,
-            ODataServicesRuntimeConfig runtimeConfig) {
-        return route -> route.handler(createVertxHandler(serviceName, basePath, runtimeConfig));
+            String basePath) {
+        return route -> route.handler(createVertxHandler(serviceName, basePath));
     }
 
     /**
@@ -67,18 +77,16 @@ public class ODataRecorder {
      *
      * @param serviceName   the service name ({@code "<default>"} or a named key)
      * @param basePath      the OData base path
-     * @param runtimeConfig runtime configuration for all services
      * @return handler for RoutingContext
      */
     public Handler<RoutingContext> createVertxHandler(
             String serviceName,
-            String basePath,
-            ODataServicesRuntimeConfig runtimeConfig) {
+            String basePath) {
         return ctx -> {
             try {
                 ODataRequestHandler handler = getHandler(serviceName);
                 if (handler != null) {
-                    int split = getSplit(serviceName, runtimeConfig);
+                    int split = getSplit(serviceName);
                     new VertxODataHandler(handler, basePath, split).handle(ctx);
                 } else {
                     ctx.response()
@@ -101,8 +109,8 @@ public class ODataRecorder {
         };
     }
 
-    private static int getSplit(String serviceName, ODataServicesRuntimeConfig runtimeConfig) {
-        var serviceConfig = runtimeConfig.services().get(serviceName);
+    private int getSplit(String serviceName) {
+        var serviceConfig = runtimeConfig.getValue().services().get(serviceName);
         return serviceConfig != null ? serviceConfig.split() : 0;
     }
 

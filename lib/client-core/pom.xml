@@ -154,13 +154,20 @@
           <instructions>
             <Export-Package>
               org.sitenetsoft.olinguito.client.core,
-              org.sitenetsoft.olinguito.client.core.http,
+              org.sitenetsoft.olinguito.client.core.http;-split-package:=merge-first,
               org.sitenetsoft.olinguito.client.core.uri.URIUtils,
-              org.sitenetsoft.olinguito.client.core.communication.request*
+              org.sitenetsoft.olinguito.client.core.communication.request*;-split-package:=merge-first
             </Export-Package>
+            <Private-Package>
+              org.sitenetsoft.olinguito.client.core.*
+            </Private-Package>
             <Import-Package>
               *;version=!
             </Import-Package>
+            <_fixupmessages>
+              "Split package";restrict:=warning;is:=ignore,
+              "private references";restrict:=warning;is:=ignore
+            </_fixupmessages>
           </instructions>
         </configuration>
       </plugin>

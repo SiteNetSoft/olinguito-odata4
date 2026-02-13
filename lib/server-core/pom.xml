@@ -95,9 +95,15 @@
             <Export-Package>
               org.sitenetsoft.olinguito.server.core
             </Export-Package>
+            <Private-Package>
+              org.sitenetsoft.olinguito.server.core.*
+            </Private-Package>
             <Import-Package>
               *
             </Import-Package>
+            <_fixupmessages>
+              "private references";restrict:=warning;is:=ignore
+            </_fixupmessages>
           </instructions>
         </configuration>
       </plugin>

@@ -17,6 +17,7 @@
  */
 package org.sitenetsoft.olinguito.server.adapter.quarkus.runtime;
 
+import io.quarkus.runtime.RuntimeValue;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
 
@@ -38,14 +39,14 @@ class ODataRecorderTest {
 
     @BeforeEach
     void setUp() {
-        recorder = new ODataRecorder();
         runtimeConfig = mock(ODataServicesRuntimeConfig.class);
+        recorder = new ODataRecorder(new RuntimeValue<>(runtimeConfig));
     }
 
     @Test
     void testCreateVertxHandlerForDefaultService() {
         Handler<RoutingContext> handler = recorder.createVertxHandler(
-                ODataServiceNames.DEFAULT, "/odata", runtimeConfig);
+                ODataServiceNames.DEFAULT, "/odata");
 
         assertNotNull(handler, "Vert.x handler should not be null");
     }
@@ -53,7 +54,7 @@ class ODataRecorderTest {
     @Test
     void testCreateVertxHandlerForNamedService() {
         Handler<RoutingContext> handler = recorder.createVertxHandler(
-                "catalog", "/catalog", runtimeConfig);
+                "catalog", "/catalog");
 
         assertNotNull(handler, "Vert.x handler for named service should not be null");
     }
@@ -61,7 +62,7 @@ class ODataRecorderTest {
     @Test
     void testCreateRouteHandlerForDefaultService() {
         Consumer<io.vertx.ext.web.Route> routeHandler = recorder.createRouteHandler(
-                ODataServiceNames.DEFAULT, "/odata", runtimeConfig);
+                ODataServiceNames.DEFAULT, "/odata");
 
         assertNotNull(routeHandler, "Route handler should not be null");
     }
@@ -69,7 +70,7 @@ class ODataRecorderTest {
     @Test
     void testCreateRouteHandlerForNamedService() {
         Consumer<io.vertx.ext.web.Route> routeHandler = recorder.createRouteHandler(
-                "catalog", "/catalog", runtimeConfig);
+                "catalog", "/catalog");
 
         assertNotNull(routeHandler, "Route handler for named service should not be null");
     }
