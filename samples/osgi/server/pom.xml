@@ -18,6 +18,8 @@ KIND, either express or implied. See the License for the
 specific language governing permissions and limitations
 under the License.
 
+Copyright 2026 SiteNetSoft - Migrated to Jakarta Servlet, added server-adapter-servlet, fixed plugin version
+
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -36,9 +38,10 @@ under the License.
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.geronimo.specs</groupId>
-      <artifactId>geronimo-servlet_3.0_spec</artifactId>
-      <version>1.0</version>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>${jakarta.servlet.version}</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -64,9 +67,14 @@ under the License.
     </dependency>
 
     <dependency>
+      <groupId>org.sitenetsoft.olinguito</groupId>
+      <artifactId>server-adapter-servlet</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.7.7</version>
     </dependency>
   </dependencies>
 
@@ -75,6 +83,7 @@ under the License.
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.6.0</version>
         <executions>
           <execution>
             <id>add-source</id>

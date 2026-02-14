@@ -18,6 +18,8 @@
   specific language governing permissions and limitations
   under the License.
 
+  Copyright 2026 SiteNetSoft - Updated SLF4J version and web.xml namespace
+
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -35,7 +37,7 @@
 	</parent>
 
 	<properties>
-		<version.slf4j>1.7.7</version.slf4j>
+		<version.slf4j>2.0.17</version.slf4j>
 	</properties>
 
 	<build>
