@@ -21,6 +21,7 @@
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
+ * Copyright 2026 SiteNetSoft - Fixed deprecated HC 5.x execute() calls
  */
 package org.sitenetsoft.olinguito.fit;
 
@@ -110,16 +111,16 @@ public class CXFOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFactory 
       final HttpGet method = new HttpGet(authURI);
       method.addHeader("Authorization", "Basic "
           + Base64.getEncoder().encodeToString("odatajclient:odatajclient".getBytes()));
-      final ClassicHttpResponse response = httpClient.execute(method);
+      try (ClassicHttpResponse response = httpClient.executeOpen(null, method, null)) {
+        // 2. Pull out OAuth2 authorization data and "authenticity" cookie (CXF specific)
+        oAuthAuthorizationData = new XmlMapper().readTree(EntityUtils.toString(response.getEntity()));
 
-      // 2. Pull out OAuth2 authorization data and "authenticity" cookie (CXF specific)
-      oAuthAuthorizationData = new XmlMapper().readTree(EntityUtils.toString(response.getEntity()));
-
-      final Header setCookieHeader = response.getFirstHeader("Set-Cookie");
-      if (setCookieHeader == null) {
-        throw new IllegalStateException("OAuth flow is broken");
+        final Header setCookieHeader = response.getFirstHeader("Set-Cookie");
+        if (setCookieHeader == null) {
+          throw new IllegalStateException("OAuth flow is broken");
+        }
+        authenticityCookie = setCookieHeader.getValue();
       }
-      authenticityCookie = setCookieHeader.getValue();
     } catch (Exception e) {
       throw new OAuth2Exception(e);
     }
@@ -139,17 +140,15 @@ public class CXFOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFactory 
           + Base64.getEncoder().encodeToString("odatajclient:odatajclient".getBytes()));
       method.addHeader("Cookie", authenticityCookie);
 
-      final ClassicHttpResponse response = httpClient.execute(method);
+      try (ClassicHttpResponse response = httpClient.executeOpen(null, method, null)) {
+        final Header locationHeader = response.getFirstHeader("Location");
+        if (response.getCode() != 303 || locationHeader == null) {
+          throw new IllegalStateException("OAuth flow is broken");
+        }
 
-      final Header locationHeader = response.getFirstHeader("Location");
-      if (response.getCode() != 303 || locationHeader == null) {
-        throw new IllegalStateException("OAuth flow is broken");
+        // 4. Get the authorization code value out of this last redirect
+        code = StringHelper.substringAfterLast(locationHeader.getValue(), "=");
       }
-
-      // 4. Get the authorization code value out of this last redirect
-      code = StringHelper.substringAfterLast(locationHeader.getValue(), "=");
-
-      EntityUtils.consume(response.getEntity());
     } catch (Exception e) {
       throw new OAuth2Exception(e);
     }
@@ -218,7 +217,7 @@ public class CXFOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFactory 
       if (response.getCode() == HttpStatus.SC_UNAUTHORIZED) {
         refreshToken(clientRef.get());
         if (currentRequest != null) {
-          clientRef.get().execute(currentRequest);
+          clientRef.get().execute(currentRequest, r -> null);
         }
       }
     });

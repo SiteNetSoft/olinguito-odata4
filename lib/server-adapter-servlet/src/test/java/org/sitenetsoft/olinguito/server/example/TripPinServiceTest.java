@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
  * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
+ * Copyright 2026 SiteNetSoft - Fixed deprecated HC 5.x execute() calls
  */
 package org.sitenetsoft.olinguito.server.example;
 
@@ -105,7 +106,7 @@ public class TripPinServiceTest {
   }
 
   private ClassicHttpResponse httpSend(ClassicHttpRequest request, int expectedStatus) throws Exception{
-    ClassicHttpResponse response = http.execute(getLocalhost(), request);
+    ClassicHttpResponse response = http.executeOpen(getLocalhost(), request, null);
     assertEquals(expectedStatus, response.getCode());
     return response;
   }
