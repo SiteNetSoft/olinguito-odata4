@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
  * Copyright 2026 SiteNetSoft - Return ODataHttpClient wrapping Apache HttpClient
  * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
+ * Copyright 2026 SiteNetSoft - Fixed deprecated HC 5.x execute() calls
  */
 package org.sitenetsoft.olinguito.client.core.http;
 
@@ -99,7 +100,7 @@ public abstract class AbstractOAuth2HttpClientFactory
       if (response.getCode() == HttpStatus.SC_UNAUTHORIZED) {
         refreshToken(clientRef.get());
         if (currentRequest != null) {
-          clientRef.get().execute(currentRequest);
+          clientRef.get().execute(currentRequest, r -> null);
         }
       }
     });

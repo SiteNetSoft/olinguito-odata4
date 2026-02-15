@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
  * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
+ * Copyright 2026 SiteNetSoft - Fixed deprecated HC 5.x execute() calls
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -134,7 +135,7 @@ public class ServiceDispatcherTest {
 
   private ClassicHttpResponse httpSend(ClassicHttpRequest request) throws Exception{
     var http = HttpClientBuilder.create().build();
-    return http.execute(getLocalhost(), request);
+    return http.executeOpen(getLocalhost(), request, null);
   }
 
   private void helpGETTest(ServiceHandler handler, String path, TestResult validator)
@@ -165,7 +166,7 @@ public class ServiceDispatcherTest {
       request = delete;
     }
     request.setHeader("Content-Type", "application/json;odata.metadata=minimal");
-    http.execute(getLocalhost(), request);
+    http.executeOpen(getLocalhost(), request, null).close();
 
     validator.validate();
   }

@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
  * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
+ * Copyright 2026 SiteNetSoft - Suppressed deprecated NTCredentials warning (no HC 5.x replacement)
  */
 package org.sitenetsoft.olinguito.client.core.http;
 
@@ -58,6 +59,7 @@ public class NTLMAuthHttpClientFactory extends DefaultHttpClientFactory {
     this.domain = domain;
   }
 
+  @SuppressWarnings("deprecation") // NTCredentials deprecated in HC 5.x; no replacement for NTLM auth
   @Override
   protected HttpClientBuilder createBuilder(final HttpMethod method, final URI uri) {
     final BasicCredentialsProvider provider = new BasicCredentialsProvider();

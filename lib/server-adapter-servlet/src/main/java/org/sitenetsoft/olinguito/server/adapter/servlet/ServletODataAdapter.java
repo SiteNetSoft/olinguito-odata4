@@ -216,7 +216,6 @@ public final class ServletODataAdapter implements ODataServletHandler {
 
         while (headerNames.hasMoreElements()) {
             final String headerName = headerNames.nextElement();
-            @SuppressWarnings("unchecked")
             final List<String> headerValues = Collections.list(req.getHeaders(headerName));
             odRequest.addHeader(headerName, headerValues);
         }
