@@ -18,12 +18,13 @@
  *
  * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
  * Copyright 2026 SiteNetSoft - Return ODataHttpClient wrapping Apache HttpClient
+ * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  */
 package org.sitenetsoft.olinguito.client.core.http;
 
 import java.net.URI;
 
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 

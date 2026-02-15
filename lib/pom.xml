@@ -90,6 +90,7 @@
       <id>build.quality</id>
       <properties>
         <jacoco.skip>false</jacoco.skip>
+        <dependency.check.skip>false</dependency.check.skip>
         <!-- nothing excluded -->
         <exclude.regex></exclude.regex>
       </properties>

@@ -17,6 +17,7 @@
       limitations under the License.
 
       Copyright 2026 SiteNetSoft - Updated for module restructuring (servlet adapter, HTTP client adapter)
+      Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
 -->
 <features xmlns="http://karaf.apache.org/xmlns/features/v1.0.0" name="olinguito-${project.version}">
 
@@ -41,8 +42,8 @@
     <bundle>mvn:org.slf4j/slf4j-api/${sl4j.version}</bundle>
     <bundle>mvn:org.codehaus.woodstox/stax2-api/${woodstox.stax2-api.version}</bundle>
     <bundle>mvn:com.fasterxml/aalto-xml/${aalto-xml.version}</bundle>
-    <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${hc.core.version}</bundle>
-    <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${hc.client.version}</bundle>
+    <bundle>mvn:org.apache.httpcomponents.core5/httpcore5/${hc.core5.version}</bundle>
+    <bundle>mvn:org.apache.httpcomponents.client5/httpclient5/${hc.client5.version}</bundle>
 
     <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${jackson.version}</bundle>
     <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson.version}</bundle>

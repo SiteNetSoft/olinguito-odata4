@@ -17,16 +17,18 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
+ * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  */
 package org.sitenetsoft.olinguito.client.core.http;
 
 import java.net.URI;
 
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.auth.CredentialsProvider;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.http.HttpHost;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 /**
@@ -45,10 +47,10 @@ public class BasicAuthHttpClientFactory extends DefaultHttpClientFactory {
 
   @Override
   protected HttpClientBuilder createBuilder(final HttpMethod method, final URI uri) {
-    final CredentialsProvider provider = new BasicCredentialsProvider();
+    final BasicCredentialsProvider provider = new BasicCredentialsProvider();
     provider.setCredentials(
-            new AuthScope(uri.getHost(), uri.getPort()),
-            new UsernamePasswordCredentials(username, password));
+            new AuthScope(new HttpHost(uri.getScheme(), uri.getHost(), uri.getPort())),
+            new UsernamePasswordCredentials(username, password.toCharArray()));
     return super.createBuilder(method, uri).setDefaultCredentialsProvider(provider);
   }
 }

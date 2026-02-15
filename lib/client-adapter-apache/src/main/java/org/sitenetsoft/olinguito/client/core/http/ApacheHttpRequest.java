@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Bridge from ODataHttpRequest to Apache HttpUriRequest
  * Copyright 2026 SiteNetSoft - Implement transport-agnostic request manipulation methods
  * Copyright 2026 SiteNetSoft - Deprecated unwrap() methods in favor of transport-agnostic interface
+ * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  */
 package org.sitenetsoft.olinguito.client.core.http;
 
@@ -26,39 +27,46 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
-import org.apache.http.Header;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.InputStreamEntity;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
+import org.apache.hc.core5.http.io.entity.InputStreamEntity;
+import org.apache.hc.core5.http.ContentType;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpRequest;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 /**
- * Bridge implementation that wraps an Apache {@link HttpUriRequest} as an {@link ODataHttpRequest}.
+ * Bridge implementation that wraps an Apache {@link HttpUriRequestBase} as an {@link ODataHttpRequest}.
+ *
+ * <p>In HC 5.x, all standard methods (GET, POST, PUT, DELETE, PATCH) extend
+ * {@link HttpUriRequestBase}, which always supports an entity body. The
+ * {@link #supportsEntity()} method uses method semantics (POST, PUT, PATCH, MERGE)
+ * to determine whether setting an entity is appropriate.</p>
  */
 public class ApacheHttpRequest implements ODataHttpRequest {
 
-  final HttpUriRequest delegate;
+  private static final Set<String> ENTITY_METHODS = Set.of("POST", "PUT", "PATCH", "MERGE");
 
-  public ApacheHttpRequest(final HttpUriRequest delegate) {
+  final HttpUriRequestBase delegate;
+
+  public ApacheHttpRequest(final HttpUriRequestBase delegate) {
     this.delegate = delegate;
   }
 
   @Override
   public URI getURI() {
-    return delegate.getURI();
+    try {
+      return delegate.getUri();
+    } catch (java.net.URISyntaxException e) {
+      throw new IllegalStateException("Invalid URI in request", e);
+    }
   }
 
   @Override
   public void setURI(final URI uri) {
-    if (delegate instanceof HttpRequestBase requestBase) {
-      requestBase.setURI(uri);
-    } else {
-      throw new UnsupportedOperationException("Cannot set URI on " + delegate.getClass().getName());
-    }
+    delegate.setUri(uri);
   }
 
   @Override
@@ -74,7 +82,7 @@ public class ApacheHttpRequest implements ODataHttpRequest {
   @Override
   public Map<String, String> getAllHeaders() {
     final Map<String, String> result = new LinkedHashMap<>();
-    for (Header header : delegate.getAllHeaders()) {
+    for (Header header : delegate.getHeaders()) {
       result.put(header.getName(), header.getValue());
     }
     return result;
@@ -82,29 +90,25 @@ public class ApacheHttpRequest implements ODataHttpRequest {
 
   @Override
   public boolean supportsEntity() {
-    return delegate instanceof HttpEntityEnclosingRequestBase;
+    return ENTITY_METHODS.contains(delegate.getMethod());
   }
 
   @Override
   public void setEntity(final byte[] body, final boolean chunked) {
-    if (delegate instanceof HttpEntityEnclosingRequestBase entityReq) {
-      final ByteArrayEntity entity = new ByteArrayEntity(body);
-      entity.setChunked(chunked);
-      entityReq.setEntity(entity);
-    } else {
+    if (!supportsEntity()) {
       throw new IllegalStateException("HTTP method " + delegate.getMethod() + " does not support a request body");
     }
+    final ByteArrayEntity entity = new ByteArrayEntity(body, ContentType.DEFAULT_BINARY, chunked);
+    delegate.setEntity(entity);
   }
 
   @Override
   public void setEntity(final InputStream body, final long contentLength, final boolean chunked) {
-    if (delegate instanceof HttpEntityEnclosingRequestBase entityReq) {
-      final InputStreamEntity entity = new InputStreamEntity(body, contentLength);
-      entity.setChunked(chunked);
-      entityReq.setEntity(entity);
-    } else {
+    if (!supportsEntity()) {
       throw new IllegalStateException("HTTP method " + delegate.getMethod() + " does not support a request body");
     }
+    final InputStreamEntity entity = new InputStreamEntity(body, contentLength, ContentType.DEFAULT_BINARY);
+    delegate.setEntity(entity);
   }
 
   @Override
@@ -113,26 +117,26 @@ public class ApacheHttpRequest implements ODataHttpRequest {
   }
 
   /**
-   * Returns the underlying Apache {@link HttpUriRequest}.
+   * Returns the underlying Apache {@link HttpUriRequestBase}.
    *
-   * @return the wrapped HttpUriRequest instance
+   * @return the wrapped HttpUriRequestBase instance
    * @deprecated Use the transport-agnostic {@link ODataHttpRequest} interface methods instead.
    */
   @Deprecated
-  public HttpUriRequest unwrap() {
+  public HttpUriRequestBase unwrap() {
     return delegate;
   }
 
   /**
-   * Extracts the Apache {@link HttpUriRequest} from an {@link ODataHttpRequest}.
+   * Extracts the Apache {@link HttpUriRequestBase} from an {@link ODataHttpRequest}.
    *
    * @param request the ODataHttpRequest (must be an ApacheHttpRequest)
-   * @return the underlying HttpUriRequest
+   * @return the underlying HttpUriRequestBase
    * @throws IllegalArgumentException if request is not an ApacheHttpRequest
    * @deprecated Use the transport-agnostic {@link ODataHttpRequest} interface methods instead.
    */
   @Deprecated
-  public static HttpUriRequest unwrap(final ODataHttpRequest request) {
+  public static HttpUriRequestBase unwrap(final ODataHttpRequest request) {
     if (request instanceof ApacheHttpRequest apacheRequest) {
       return apacheRequest.delegate;
     }

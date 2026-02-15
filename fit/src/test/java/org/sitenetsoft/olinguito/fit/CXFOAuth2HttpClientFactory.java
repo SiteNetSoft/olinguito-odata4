@@ -20,6 +20,7 @@
  * replaced commons-codec Base64 with java.util.Base64
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
+ * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  */
 package org.sitenetsoft.olinguito.fit;
 
@@ -37,19 +38,17 @@ import org.apache.cxf.rs.security.oauth2.common.ClientAccessToken;
 import org.apache.cxf.rs.security.oauth2.grants.code.AuthorizationCodeGrant;
 import org.apache.cxf.rs.security.oauth2.grants.refresh.RefreshTokenGrant;
 import org.apache.cxf.rs.security.oauth2.provider.OAuthServiceException;
-import org.apache.http.Header;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.HttpResponseInterceptor;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpHeaders;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.net.URIBuilder;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.core.http.AbstractOAuth2HttpClientFactory;
 import org.sitenetsoft.olinguito.client.core.http.ApacheHttpClient;
@@ -100,7 +99,7 @@ public class CXFOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFactory 
     final RequestConfig config = RequestConfig.custom()
             .setRedirectsEnabled(false)
             .build();
-    final HttpClient httpClient = HttpClientBuilder.create()
+    final var httpClient = HttpClientBuilder.create()
             .setDefaultRequestConfig(config)
             .build();
 
@@ -111,7 +110,7 @@ public class CXFOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFactory 
       final HttpGet method = new HttpGet(authURI);
       method.addHeader("Authorization", "Basic "
           + Base64.getEncoder().encodeToString("odatajclient:odatajclient".getBytes()));
-      final HttpResponse response = httpClient.execute(method);
+      final ClassicHttpResponse response = httpClient.execute(method);
 
       // 2. Pull out OAuth2 authorization data and "authenticity" cookie (CXF specific)
       oAuthAuthorizationData = new XmlMapper().readTree(EntityUtils.toString(response.getEntity()));
@@ -140,17 +139,17 @@ public class CXFOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFactory 
           + Base64.getEncoder().encodeToString("odatajclient:odatajclient".getBytes()));
       method.addHeader("Cookie", authenticityCookie);
 
-      final HttpResponse response = httpClient.execute(method);
+      final ClassicHttpResponse response = httpClient.execute(method);
 
       final Header locationHeader = response.getFirstHeader("Location");
-      if (response.getStatusLine().getStatusCode() != 303 || locationHeader == null) {
+      if (response.getCode() != 303 || locationHeader == null) {
         throw new IllegalStateException("OAuth flow is broken");
       }
 
       // 4. Get the authorization code value out of this last redirect
       code = StringHelper.substringAfterLast(locationHeader.getValue(), "=");
 
-      EntityUtils.consumeQuietly(response.getEntity());
+      EntityUtils.consume(response.getEntity());
     } catch (Exception e) {
       throw new OAuth2Exception(e);
     }
@@ -200,23 +199,23 @@ public class CXFOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFactory 
     final HttpClientBuilder builder = createWrappedBuilder(method, uri);
 
     // Add the OAuth2 Authorization header
-    builder.addInterceptorFirst((HttpRequestInterceptor) (request, context) -> {
+    builder.addRequestInterceptorFirst((request, entity, context) -> {
       request.removeHeaders(HttpHeaders.AUTHORIZATION);
       request.addHeader(HttpHeaders.AUTHORIZATION, OAuthClientUtils.createAuthorizationHeader(accessToken));
     });
 
     // Track current request for retry
-    builder.addInterceptorLast((HttpRequestInterceptor) (request, context) -> {
-      if (request instanceof HttpUriRequest) {
-        currentRequest = (HttpUriRequest) request;
+    builder.addRequestInterceptorLast((request, entity, context) -> {
+      if (request instanceof HttpUriRequestBase) {
+        currentRequest = (HttpUriRequestBase) request;
       } else {
         currentRequest = null;
       }
     });
 
     // Handle 401 by refreshing the token
-    builder.addInterceptorLast((HttpResponseInterceptor) (response, context) -> {
-      if (response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+    builder.addResponseInterceptorLast((response, entity, context) -> {
+      if (response.getCode() == HttpStatus.SC_UNAUTHORIZED) {
         refreshToken(clientRef.get());
         if (currentRequest != null) {
           clientRef.get().execute(currentRequest);

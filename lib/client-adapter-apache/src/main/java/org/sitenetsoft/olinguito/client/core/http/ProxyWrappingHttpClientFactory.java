@@ -18,17 +18,17 @@
  *
  * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
  * Copyright 2026 SiteNetSoft - Return ODataHttpClient wrapping Apache HttpClient
+ * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  */
 package org.sitenetsoft.olinguito.client.core.http;
 
 import java.net.URI;
 
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.http.HttpHost;
 import org.sitenetsoft.olinguito.client.api.http.HttpClientFactory;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.api.http.WrappingHttpClientFactory;
@@ -76,13 +76,13 @@ public class ProxyWrappingHttpClientFactory implements WrappingHttpClientFactory
 
   @Override
   public ODataHttpClient create(final HttpMethod method, final URI uri) {
-    final HttpHost proxyHost = new HttpHost(proxy.getHost(), proxy.getPort());
+    final HttpHost proxyHost = new HttpHost(proxy.getScheme(), proxy.getHost(), proxy.getPort());
     final HttpClientBuilder builder = wrapped.createBuilder(method, uri).setProxy(proxyHost);
 
     if (proxyUsername != null && proxyPassword != null) {
-      final CredentialsProvider provider = new BasicCredentialsProvider();
+      final BasicCredentialsProvider provider = new BasicCredentialsProvider();
       provider.setCredentials(new AuthScope(proxyHost),
-              new UsernamePasswordCredentials(proxyUsername, proxyPassword));
+              new UsernamePasswordCredentials(proxyUsername, proxyPassword.toCharArray()));
       builder.setDefaultCredentialsProvider(provider);
     }
 

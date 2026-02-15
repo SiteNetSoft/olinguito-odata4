@@ -17,16 +17,16 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
+ * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  */
 package org.sitenetsoft.olinguito.client.core.http;
 
 import java.net.URI;
 
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.NTCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.NTCredentials;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 /**
@@ -60,9 +60,9 @@ public class NTLMAuthHttpClientFactory extends DefaultHttpClientFactory {
 
   @Override
   protected HttpClientBuilder createBuilder(final HttpMethod method, final URI uri) {
-    final CredentialsProvider provider = new BasicCredentialsProvider();
-    provider.setCredentials(AuthScope.ANY,
-            new NTCredentials(username, password, workstation, domain));
+    final BasicCredentialsProvider provider = new BasicCredentialsProvider();
+    provider.setCredentials(new AuthScope(null, -1),
+            new NTCredentials(username, password.toCharArray(), workstation, domain));
     return super.createBuilder(method, uri).setDefaultCredentialsProvider(provider);
   }
 }

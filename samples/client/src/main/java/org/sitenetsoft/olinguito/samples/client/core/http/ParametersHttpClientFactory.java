@@ -17,13 +17,15 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
+ * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  */
 package org.sitenetsoft.olinguito.samples.client.core.http;
 
 import java.net.URI;
 
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.util.Timeout;
 import org.sitenetsoft.olinguito.client.core.http.DefaultHttpClientFactory;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
@@ -41,8 +43,8 @@ public class ParametersHttpClientFactory extends DefaultHttpClientFactory {
   protected HttpClientBuilder createBuilder(final HttpMethod method, final URI uri) {
     final int timeout = 1000;
     final RequestConfig config = RequestConfig.custom()
-        .setConnectTimeout(timeout)
-        .setSocketTimeout(timeout)
+        .setConnectTimeout(Timeout.ofMilliseconds(timeout))
+        .setResponseTimeout(Timeout.ofMilliseconds(timeout))
         .build();
 
     return super.createBuilder(method, uri).setDefaultRequestConfig(config);

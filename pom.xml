@@ -25,6 +25,7 @@
   Copyright 2026 SiteNetSoft - Upgrade Netty 4.1.129 to 4.1.131 and Tomcat 10.1.40 to 10.1.52
   Copyright 2026 SiteNetSoft - Removed direct commons-io usage (replaced with Java standard library)
   Copyright 2026 SiteNetSoft - Eliminated commons-logging classpath conflict with spring-jcl
+  Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x; replaced javax.activation with jakarta.activation; added OWASP dependency-check plugin
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -101,8 +102,8 @@
     <maven.plugin.api.version>3.9.9</maven.plugin.api.version>
     <maven.plugin.tools.version>3.13.1</maven.plugin.tools.version>
     <maven.bundle.plugin.version>5.1.9</maven.bundle.plugin.version>
-    <hc.client.version>4.5.14</hc.client.version>
-    <hc.core.version>4.4.16</hc.core.version>
+    <hc.client5.version>5.4.2</hc.client5.version>
+    <hc.core5.version>5.3.3</hc.core5.version>
     <okhttp.version>5.0.0-alpha.14</okhttp.version>
     <jackson.version>2.18.5</jackson.version>
     <jackson-databind.version>2.18.5</jackson-databind.version>
@@ -125,7 +126,6 @@
     <jakarta.xml.bind.version>4.0.0</jakarta.xml.bind.version>
 
     <spring.version>6.2.15</spring.version>
-    <javax.activation.version>1.1</javax.activation.version>
     <geronimo.version>1.0.1</geronimo.version>
 
     <tomcat.servlet.port>9080</tomcat.servlet.port>
@@ -148,6 +148,8 @@
 
     <!-- JaCoCo coverage is off by default; enable with -Pbuild.quality -->
     <jacoco.skip>true</jacoco.skip>
+    <!-- OWASP dependency-check is off by default; enable with -Pbuild.quality -->
+    <dependency.check.skip>true</dependency.check.skip>
     <!-- Default empty argLine so @{argLine} resolves when JaCoCo is skipped -->
     <argLine/>
   </properties>
@@ -194,9 +196,9 @@
         <version>${maven.bundle.plugin.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>httpclient</artifactId>
-        <version>${hc.client.version}</version>
+        <groupId>org.apache.httpcomponents.client5</groupId>
+        <artifactId>httpclient5</artifactId>
+        <version>${hc.client5.version}</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -205,9 +207,9 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>httpcore</artifactId>
-        <version>${hc.core.version}</version>
+        <groupId>org.apache.httpcomponents.core5</groupId>
+        <artifactId>httpcore5</artifactId>
+        <version>${hc.core5.version}</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.woodstox</groupId>
@@ -225,7 +227,7 @@
         <version>${okhttp.version}</version>
         <scope>test</scope>
       </dependency>
-      <!-- Managed version for transitive dependency (used by httpclient and android) -->
+      <!-- Managed version for transitive dependency (used by android) -->
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
@@ -439,6 +441,11 @@
           <artifactId>jacoco-maven-plugin</artifactId>
           <version>0.8.12</version>
         </plugin>
+        <plugin>
+          <groupId>org.owasp</groupId>
+          <artifactId>dependency-check-maven</artifactId>
+          <version>12.1.1</version>
+        </plugin>
       </plugins>
     </pluginManagement>
 
@@ -619,6 +626,20 @@
                 <exclude>org/sitenetsoft/olinguito/**/testutil/**/*</exclude>
               </excludes>
             </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.owasp</groupId>
+        <artifactId>dependency-check-maven</artifactId>
+        <configuration>
+          <skip>${dependency.check.skip}</skip>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>

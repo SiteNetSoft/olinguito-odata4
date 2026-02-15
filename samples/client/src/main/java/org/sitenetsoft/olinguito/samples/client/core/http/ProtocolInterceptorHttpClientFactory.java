@@ -17,18 +17,12 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
+ * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  */
 package org.sitenetsoft.olinguito.samples.client.core.http;
 
-import java.io.IOException;
 import java.net.URI;
-import org.apache.http.HttpException;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpResponseInterceptor;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.protocol.HttpContext;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.sitenetsoft.olinguito.client.core.http.DefaultHttpClientFactory;
 
@@ -50,9 +44,9 @@ public class ProtocolInterceptorHttpClientFactory extends DefaultHttpClientFacto
   @Override
   protected HttpClientBuilder createBuilder(final HttpMethod method, final URI uri) {
     return super.createBuilder(method, uri)
-        .addInterceptorFirst((HttpRequestInterceptor) (request, context) ->
+        .addRequestInterceptorFirst((request, entity, context) ->
             request.addHeader("CUSTOM_HEADER", "CUSTOM VALUE"))
-        .addInterceptorLast((HttpResponseInterceptor) (response, context) -> {
+        .addResponseInterceptorLast((response, entity, context) -> {
           if ("ANOTHER CUSTOM VALUE".equals(response.getFirstHeader("ANOTHER_CUSTOM_HEADER"))) {
             // do something
           }

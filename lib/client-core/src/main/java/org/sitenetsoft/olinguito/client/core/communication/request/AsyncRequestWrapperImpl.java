@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Replaced deprecated DecompressingHttpClient
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  * Copyright 2026 SiteNetSoft - Refactored to use transport-agnostic HTTP interfaces
+ * Copyright 2026 SiteNetSoft - Fixed connection leak: close async monitor responses to release HC 5.x connections
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -213,6 +214,13 @@ public class AsyncRequestWrapperImpl<R extends ODataResponse> extends AbstractRe
             this.retryAfter = parseReplyAfter(retryHeaders.iterator().next());
           }
 
+          // Close the 202 response to release the connection back to the pool
+          try {
+            res.close();
+          } catch (IOException ioe) {
+            LOG.warn("Error closing async monitor response", ioe);
+          }
+
           try {
             // wait for retry-after
             Thread.sleep((long) retryAfter * 1000);
@@ -315,8 +323,12 @@ public class AsyncRequestWrapperImpl<R extends ODataResponse> extends AbstractRe
           }
         }
       }
-      // Consume the entity
-      // The body was already retrieved via getBody() in getHeaders(), no additional consumption needed
+      // Close the response to release the underlying connection back to the pool
+      try {
+        res.close();
+      } catch (IOException ioe) {
+        LOG.warn("Error closing async monitor response", ioe);
+      }
     }
   }
 

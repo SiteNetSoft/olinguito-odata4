@@ -15,26 +15,28 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  */
 package org.sitenetsoft.olinguito.client.core.http;
 
 import java.net.URI;
 
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
 
 /**
  * Class identifying MERGE HTTP method.
  * @NotThreadSafe
  */
-public class HttpMerge extends HttpEntityEnclosingRequestBase {
+public class HttpMerge extends HttpUriRequestBase {
 
-  public final static String METHOD_NAME = "MERGE";
+  public static final String METHOD_NAME = "MERGE";
 
   /**
    * Constructor.
    */
   public HttpMerge() {
-    super();
+    super(METHOD_NAME, null);
   }
 
   /**
@@ -43,8 +45,7 @@ public class HttpMerge extends HttpEntityEnclosingRequestBase {
    * @param uri request URI.
    */
   public HttpMerge(final URI uri) {
-    super();
-    setURI(uri);
+    super(METHOD_NAME, uri);
   }
 
   /**
@@ -54,8 +55,7 @@ public class HttpMerge extends HttpEntityEnclosingRequestBase {
    * @throws IllegalArgumentException if the uri is invalid.
    */
   public HttpMerge(final String uri) {
-    super();
-    setURI(URI.create(uri));
+    super(METHOD_NAME, URI.create(uri));
   }
 
   /**
