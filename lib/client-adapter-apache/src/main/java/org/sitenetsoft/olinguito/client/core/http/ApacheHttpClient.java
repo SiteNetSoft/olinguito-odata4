@@ -19,15 +19,17 @@
  * Copyright 2026 SiteNetSoft - Bridge from ODataHttpClient to Apache HttpClient
  * Copyright 2026 SiteNetSoft - Implement transport-agnostic execute() method
  * Copyright 2026 SiteNetSoft - Deprecated unwrap() methods in favor of transport-agnostic interface
+ * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  */
 package org.sitenetsoft.olinguito.client.core.http;
 
 import java.io.Closeable;
 import java.io.IOException;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.sitenetsoft.olinguito.client.api.http.HttpClientException;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpRequest;
@@ -50,9 +52,9 @@ public class ApacheHttpClient implements ODataHttpClient {
       throw new IllegalArgumentException(
           "Expected ApacheHttpRequest but got " + (request == null ? "null" : request.getClass().getName()));
     }
-    final HttpUriRequest apacheRequest = apacheReq.delegate;
+    final HttpUriRequestBase apacheRequest = apacheReq.delegate;
     try {
-      final HttpResponse response = delegate.execute(apacheRequest);
+      final ClassicHttpResponse response = delegate.executeOpen(null, apacheRequest, null);
       return new ApacheHttpResponse(response);
     } catch (IOException e) {
       throw new HttpClientException(request.getURI().toASCIIString(), e);

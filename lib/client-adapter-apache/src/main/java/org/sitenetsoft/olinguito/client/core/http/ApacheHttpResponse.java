@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Bridge from ODataHttpResponse to Apache HttpResponse
  * Copyright 2026 SiteNetSoft - Deprecated unwrap() methods in favor of transport-agnostic interface
+ * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  */
 package org.sitenetsoft.olinguito.client.core.http;
 
@@ -28,9 +29,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpResponse;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
 
 /**
@@ -38,26 +39,26 @@ import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
  */
 public class ApacheHttpResponse implements ODataHttpResponse {
 
-  private final HttpResponse delegate;
+  private final ClassicHttpResponse delegate;
 
-  public ApacheHttpResponse(final HttpResponse delegate) {
+  public ApacheHttpResponse(final ClassicHttpResponse delegate) {
     this.delegate = delegate;
   }
 
   @Override
   public int getStatusCode() {
-    return delegate.getStatusLine().getStatusCode();
+    return delegate.getCode();
   }
 
   @Override
   public String getReasonPhrase() {
-    return delegate.getStatusLine().getReasonPhrase();
+    return delegate.getReasonPhrase();
   }
 
   @Override
   public Map<String, Collection<String>> getHeaders() {
     final Map<String, Collection<String>> headers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-    for (Header header : delegate.getAllHeaders()) {
+    for (Header header : delegate.getHeaders()) {
       headers.computeIfAbsent(header.getName(), k -> new HashSet<>()).add(header.getValue());
     }
     return headers;
@@ -90,30 +91,30 @@ public class ApacheHttpResponse implements ODataHttpResponse {
     if (delegate.getEntity() == null || delegate.getEntity().getContentType() == null) {
       return null;
     }
-    return delegate.getEntity().getContentType().getValue();
+    return delegate.getEntity().getContentType();
   }
 
   /**
-   * Returns the underlying Apache {@link HttpResponse}.
+   * Returns the underlying Apache {@link ClassicHttpResponse}.
    *
-   * @return the wrapped HttpResponse instance
+   * @return the wrapped ClassicHttpResponse instance
    * @deprecated Use the transport-agnostic {@link ODataHttpResponse} interface methods instead.
    */
   @Deprecated
-  public HttpResponse unwrap() {
+  public ClassicHttpResponse unwrap() {
     return delegate;
   }
 
   /**
-   * Extracts the Apache {@link HttpResponse} from an {@link ODataHttpResponse}.
+   * Extracts the Apache {@link ClassicHttpResponse} from an {@link ODataHttpResponse}.
    *
    * @param response the ODataHttpResponse (must be an ApacheHttpResponse)
-   * @return the underlying HttpResponse
+   * @return the underlying ClassicHttpResponse
    * @throws IllegalArgumentException if response is not an ApacheHttpResponse
    * @deprecated Use the transport-agnostic {@link ODataHttpResponse} interface methods instead.
    */
   @Deprecated
-  public static HttpResponse unwrap(final ODataHttpResponse response) {
+  public static ClassicHttpResponse unwrap(final ODataHttpResponse response) {
     if (response instanceof ApacheHttpResponse apacheResponse) {
       return apacheResponse.delegate;
     }
@@ -123,8 +124,6 @@ public class ApacheHttpResponse implements ODataHttpResponse {
 
   @Override
   public void close() throws IOException {
-    if (delegate instanceof CloseableHttpResponse closeable) {
-      closeable.close();
-    }
+    delegate.close();
   }
 }

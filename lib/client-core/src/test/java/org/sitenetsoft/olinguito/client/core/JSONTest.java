@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
+ * Copyright 2026 SiteNetSoft - Use direct stream read instead of URIUtils.readInputStreamBytes
  */
 package org.sitenetsoft.olinguito.client.core;
 
@@ -27,8 +28,6 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.util.EntityUtils;
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;
 import org.sitenetsoft.olinguito.client.api.domain.ClientAnnotation;
 import org.sitenetsoft.olinguito.client.api.domain.ClientCollectionValue;
@@ -43,7 +42,6 @@ import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
 import org.sitenetsoft.olinguito.client.core.domain.ClientAnnotationImpl;
 import org.sitenetsoft.olinguito.client.core.serialization.JsonDeserializer;
 import org.sitenetsoft.olinguito.client.core.serialization.JsonSerializer;
-import org.sitenetsoft.olinguito.client.core.uri.URIUtils;
 import org.sitenetsoft.olinguito.commons.api.Constants;
 import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
 import org.sitenetsoft.olinguito.commons.api.data.Delta;
@@ -1003,9 +1001,9 @@ public class JSONTest extends AbstractTest {
     properties.add(testInt16);
 
     InputStream inputStream = client.getWriter().writeEntity(entityIncNullValue, ContentType.JSON_FULL_METADATA);
-    HttpEntity httpEntity = URIUtils.buildInputStreamEntity(client, inputStream);
+    byte[] bytes = inputStream.readAllBytes();
 
-    final String actual = EntityUtils.toString(httpEntity);
+    final String actual = new String(bytes, StandardCharsets.UTF_8);
     final JsonNode expected =
         OBJECT_MAPPER.readTree(new String(
             Objects.requireNonNull(getClass().getResourceAsStream("olingo1114.json"))

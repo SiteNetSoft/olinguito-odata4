@@ -22,6 +22,7 @@
     removed commons-codec dependency (replaced with java.util.HexFormat);
     removed commons-lang3 dependency (replaced with Java 17+ equivalents)
     Copyright 2026 SiteNetSoft - Removed unused jackson-annotations and odata-vocabularies dependencies
+    Copyright 2026 SiteNetSoft - Removed direct HttpComponents dependency (now in client-adapter-apache)
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -91,15 +92,6 @@
       <groupId>org.codehaus.woodstox</groupId>
       <artifactId>stax2-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpcore</artifactId>
-    </dependency>
-
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.slf4j</groupId>

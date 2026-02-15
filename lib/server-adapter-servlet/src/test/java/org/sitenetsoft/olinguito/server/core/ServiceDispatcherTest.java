@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
+ * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -30,16 +31,15 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.startup.Tomcat;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.classic.methods.HttpDelete;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpPut;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.junit.jupiter.api.Assertions;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.sitenetsoft.olinguito.commons.core.Encoder;
@@ -91,7 +91,7 @@ public class ServiceDispatcherTest {
       handler.process(request, response);
     }
   }
-  
+
   public void beforeTest(ServiceHandler serviceHandler) throws Exception {
     MetadataParser parser = new MetadataParser();
     parser.parseAnnotations(true);
@@ -126,18 +126,17 @@ public class ServiceDispatcherTest {
   private HttpHost getLocalhost() {
     return new HttpHost(tomcat.getHost().getName(), 9900);
   }
-  
-  private HttpResponse httpGET(String url) throws Exception{
-    HttpRequest request = new HttpGet(url);
+
+  private ClassicHttpResponse httpGET(String url) throws Exception{
+    ClassicHttpRequest request = new HttpGet(url);
     return httpSend(request);
   }
 
-  private HttpResponse httpSend(HttpRequest request) throws Exception{
-    HttpClient http = HttpClientBuilder.create().build();
-    HttpResponse response = http.execute(getLocalhost(), request);
-    return response;
+  private ClassicHttpResponse httpSend(ClassicHttpRequest request) throws Exception{
+    var http = HttpClientBuilder.create().build();
+    return http.execute(getLocalhost(), request);
   }
-  
+
   private void helpGETTest(ServiceHandler handler, String path, TestResult validator)
       throws Exception {
     beforeTest(handler);
@@ -149,10 +148,10 @@ public class ServiceDispatcherTest {
       TestResult validator) throws Exception {
     beforeTest(handler);
 
-    HttpClient http = HttpClientBuilder.create().build();
+    var http = HttpClientBuilder.create().build();
 
     String editUrl = "http://localhost:" + TOMCAT_PORT + "/" + path;
-    HttpRequest request = new HttpGet(editUrl);
+    ClassicHttpRequest request = new HttpGet(editUrl);
     if (method.equals("POST")) {
       HttpPost post = new HttpPost(editUrl);
       post.setEntity(new StringEntity(payload));
@@ -450,7 +449,7 @@ public class ServiceDispatcherTest {
           }
         });
   }
-  
+
   @Test
   public void test$id() throws Exception {
     final ServiceHandler handler = Mockito.mock(ServiceHandler.class);
@@ -467,5 +466,5 @@ public class ServiceDispatcherTest {
             .toContentTypeString());
       }
     });
-  }  
+  }
 }

@@ -17,13 +17,12 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
+ * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  */
 package org.sitenetsoft.olinguito.samples.client.core.http;
 
 import java.net.URI;
-import org.apache.http.client.UserTokenHandler;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.protocol.HttpContext;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.sitenetsoft.olinguito.client.core.http.DefaultHttpClientFactory;
 
@@ -42,7 +41,7 @@ public class StatefulHttpClientFactory extends DefaultHttpClientFactory {
 
   @Override
   protected HttpClientBuilder createBuilder(final HttpMethod method, final URI uri) {
-    return super.createBuilder(method, uri).setUserTokenHandler(context -> context.getAttribute("my-token"));
+    return super.createBuilder(method, uri).setUserTokenHandler((route, context) -> context.getAttribute("my-token"));
   }
 
 }

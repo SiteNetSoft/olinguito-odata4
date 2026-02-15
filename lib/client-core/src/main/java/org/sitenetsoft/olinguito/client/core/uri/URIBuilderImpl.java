@@ -17,18 +17,18 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Removed HttpComponents dependency (replaced NameValuePair with Map.Entry)
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
 import java.net.URI;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.sitenetsoft.olinguito.client.api.Configuration;
 import org.sitenetsoft.olinguito.client.api.uri.QueryOption;
 import org.sitenetsoft.olinguito.client.api.uri.SegmentType;
@@ -301,15 +301,15 @@ public class URIBuilderImpl implements URIBuilder {
     try {
       if ((customQueryOptions.size() + queryOptions.size() + parameters.size()) > 0) {
         segmentsBuilder.append("?");
-        List<NameValuePair> list1 = new LinkedList<>();
+        List<Map.Entry<String, String>> list1 = new LinkedList<>();
         for (Map.Entry<String, String> option : queryOptions.entrySet()) {
-          list1.add(new BasicNameValuePair("$" + option.getKey(), option.getValue()));
+          list1.add(new AbstractMap.SimpleEntry<>("$" + option.getKey(), option.getValue()));
         }
         for (Map.Entry<String, String> parameter : parameters.entrySet()) {
-          list1.add(new BasicNameValuePair("@" + parameter.getKey(), parameter.getValue()));
+          list1.add(new AbstractMap.SimpleEntry<>("@" + parameter.getKey(), parameter.getValue()));
         }
         for (Map.Entry<String, String> customOption : customQueryOptions.entrySet()) {
-          list1.add(new BasicNameValuePair(customOption.getKey(), customOption.getValue()));
+          list1.add(new AbstractMap.SimpleEntry<>(customOption.getKey(), customOption.getValue()));
         }
         // don't use UriBuilder.build():
         // it will try to call URLEncodedUtils.format(Iterable<>,Charset) method,
@@ -325,15 +325,15 @@ public class URIBuilderImpl implements URIBuilder {
     }
   }
 
-  private String encodeQueryParameter(List<NameValuePair> list) {
+  private String encodeQueryParameter(List<Map.Entry<String, String>> list) {
     final StringBuilder builder = new StringBuilder();
 
-    for (NameValuePair pair : list) {
+    for (Map.Entry<String, String> pair : list) {
       if (!builder.isEmpty()) {
         builder.append("&");
       }
 
-      builder.append(Encoder.encode(pair.getName()));
+      builder.append(Encoder.encode(pair.getKey()));
       builder.append("=");
       builder.append(Encoder.encode(pair.getValue()));
     }

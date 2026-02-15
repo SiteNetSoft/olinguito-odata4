@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Unit tests for Apache HttpComponents adapter
+ * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  */
 package org.sitenetsoft.olinguito.client.core.http;
 
@@ -32,19 +33,17 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.message.BasicStatusLine;
-import org.apache.http.ProtocolVersion;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpPut;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.message.BasicHeader;
+import org.apache.hc.core5.http.protocol.HttpContext;
 import org.junit.jupiter.api.Test;
 import org.sitenetsoft.olinguito.client.api.http.HttpClientException;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
@@ -55,15 +54,14 @@ import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 class ApacheAdapterTest {
 
   private static final URI TEST_URI = URI.create("http://localhost:9080/odata");
-  private static final ProtocolVersion HTTP_11 = new ProtocolVersion("HTTP", 1, 1);
 
   // --- ApacheHttpClient tests ---
 
   @Test
   void testExecuteGetRequest() throws Exception {
     final HttpClient httpClient = mock(HttpClient.class);
-    final HttpResponse httpResponse = mockResponse(200, "OK", "application/json", "{\"value\":42}");
-    when(httpClient.execute(any(HttpUriRequest.class))).thenReturn(httpResponse);
+    final ClassicHttpResponse httpResponse = mockResponse(200, "OK", "application/json", "{\"value\":42}");
+    when(httpClient.executeOpen(any(), any(HttpUriRequestBase.class), any())).thenReturn(httpResponse);
 
     try (ODataHttpClient client = new ApacheHttpClient(httpClient)) {
       final ODataHttpRequest request = new ApacheHttpRequest(new HttpGet(TEST_URI));
@@ -78,8 +76,8 @@ class ApacheAdapterTest {
   @Test
   void testExecutePostRequest() throws Exception {
     final HttpClient httpClient = mock(HttpClient.class);
-    final HttpResponse httpResponse = mockResponse(201, "Created", null, null);
-    when(httpClient.execute(any(HttpUriRequest.class))).thenReturn(httpResponse);
+    final ClassicHttpResponse httpResponse = mockResponse(201, "Created", null, null);
+    when(httpClient.executeOpen(any(), any(HttpUriRequestBase.class), any())).thenReturn(httpResponse);
 
     try (ODataHttpClient client = new ApacheHttpClient(httpClient)) {
       final ODataHttpRequest request = new ApacheHttpRequest(new HttpPost(TEST_URI));
@@ -93,7 +91,8 @@ class ApacheAdapterTest {
   @Test
   void testExecuteIOExceptionThrowsHttpClientException() throws Exception {
     final HttpClient httpClient = mock(HttpClient.class);
-    when(httpClient.execute(any(HttpUriRequest.class))).thenThrow(new IOException("Connection refused"));
+    when(httpClient.executeOpen(any(), any(HttpUriRequestBase.class), any()))
+        .thenThrow(new IOException("Connection refused"));
 
     try (ODataHttpClient client = new ApacheHttpClient(httpClient)) {
       final ODataHttpRequest request = new ApacheHttpRequest(new HttpGet(TEST_URI));
@@ -118,7 +117,6 @@ class ApacheAdapterTest {
 
   @Test
   void testCloseWithCloseableHttpClient() throws Exception {
-    final CloseableHttpResponse mockResponse = mock(CloseableHttpResponse.class);
     final java.io.Closeable closeable = mock(java.io.Closeable.class, withSettings()
         .extraInterfaces(HttpClient.class));
     final HttpClient httpClient = (HttpClient) closeable;
@@ -239,7 +237,7 @@ class ApacheAdapterTest {
     final HttpGet get = new HttpGet(TEST_URI);
     final ODataHttpRequest request = new ApacheHttpRequest(get);
     request.abort();
-    assertTrue(get.isAborted());
+    assertTrue(get.isCancelled());
   }
 
   @Test
@@ -254,23 +252,24 @@ class ApacheAdapterTest {
 
   @Test
   void testResponseStatusCode() {
-    final HttpResponse httpResponse = mockResponse(200, "OK", null, null);
+    final ClassicHttpResponse httpResponse = mockResponse(200, "OK", null, null);
     final ODataHttpResponse response = new ApacheHttpResponse(httpResponse);
     assertEquals(200, response.getStatusCode());
   }
 
   @Test
   void testResponseReasonPhrase() {
-    final HttpResponse httpResponse = mockResponse(404, "Not Found", null, null);
+    final ClassicHttpResponse httpResponse = mockResponse(404, "Not Found", null, null);
     final ODataHttpResponse response = new ApacheHttpResponse(httpResponse);
     assertEquals("Not Found", response.getReasonPhrase());
   }
 
   @Test
   void testResponseHeaders() {
-    final HttpResponse httpResponse = mock(HttpResponse.class);
-    when(httpResponse.getStatusLine()).thenReturn(new BasicStatusLine(HTTP_11, 200, "OK"));
-    when(httpResponse.getAllHeaders()).thenReturn(new Header[]{
+    final ClassicHttpResponse httpResponse = mock(ClassicHttpResponse.class);
+    when(httpResponse.getCode()).thenReturn(200);
+    when(httpResponse.getReasonPhrase()).thenReturn("OK");
+    when(httpResponse.getHeaders()).thenReturn(new Header[]{
         new BasicHeader("Content-Type", "application/json"),
         new BasicHeader("ETag", "W/\"abc\""),
         new BasicHeader("X-Multi", "val1"),
@@ -287,7 +286,7 @@ class ApacheAdapterTest {
 
   @Test
   void testResponseGetHeader() {
-    final HttpResponse httpResponse = mock(HttpResponse.class);
+    final ClassicHttpResponse httpResponse = mock(ClassicHttpResponse.class);
     when(httpResponse.getHeaders("ETag")).thenReturn(new Header[]{
         new BasicHeader("ETag", "W/\"abc\"")
     });
@@ -301,7 +300,7 @@ class ApacheAdapterTest {
 
   @Test
   void testResponseGetHeaderMissing() {
-    final HttpResponse httpResponse = mock(HttpResponse.class);
+    final ClassicHttpResponse httpResponse = mock(ClassicHttpResponse.class);
     when(httpResponse.getHeaders("X-Missing")).thenReturn(new Header[0]);
 
     final ODataHttpResponse response = new ApacheHttpResponse(httpResponse);
@@ -311,7 +310,7 @@ class ApacheAdapterTest {
   @Test
   void testResponseBody() throws Exception {
     final byte[] content = "{\"value\":42}".getBytes(StandardCharsets.UTF_8);
-    final HttpResponse httpResponse = mockResponse(200, "OK", "application/json",
+    final ClassicHttpResponse httpResponse = mockResponse(200, "OK", "application/json",
         new String(content, StandardCharsets.UTF_8));
 
     final ODataHttpResponse response = new ApacheHttpResponse(httpResponse);
@@ -323,8 +322,9 @@ class ApacheAdapterTest {
 
   @Test
   void testResponseBodyNull() {
-    final HttpResponse httpResponse = mock(HttpResponse.class);
-    when(httpResponse.getStatusLine()).thenReturn(new BasicStatusLine(HTTP_11, 204, "No Content"));
+    final ClassicHttpResponse httpResponse = mock(ClassicHttpResponse.class);
+    when(httpResponse.getCode()).thenReturn(204);
+    when(httpResponse.getReasonPhrase()).thenReturn("No Content");
     when(httpResponse.getEntity()).thenReturn(null);
 
     final ODataHttpResponse response = new ApacheHttpResponse(httpResponse);
@@ -333,15 +333,16 @@ class ApacheAdapterTest {
 
   @Test
   void testResponseContentType() {
-    final HttpResponse httpResponse = mockResponse(200, "OK", "application/json;odata.metadata=minimal", "{}");
+    final ClassicHttpResponse httpResponse = mockResponse(200, "OK", "application/json;odata.metadata=minimal", "{}");
     final ODataHttpResponse response = new ApacheHttpResponse(httpResponse);
     assertEquals("application/json;odata.metadata=minimal", response.getContentType());
   }
 
   @Test
   void testResponseContentTypeNull() {
-    final HttpResponse httpResponse = mock(HttpResponse.class);
-    when(httpResponse.getStatusLine()).thenReturn(new BasicStatusLine(HTTP_11, 204, "No Content"));
+    final ClassicHttpResponse httpResponse = mock(ClassicHttpResponse.class);
+    when(httpResponse.getCode()).thenReturn(204);
+    when(httpResponse.getReasonPhrase()).thenReturn("No Content");
     when(httpResponse.getEntity()).thenReturn(null);
 
     final ODataHttpResponse response = new ApacheHttpResponse(httpResponse);
@@ -350,8 +351,8 @@ class ApacheAdapterTest {
 
   @Test
   void testResponseCloseWithCloseable() throws Exception {
-    final CloseableHttpResponse httpResponse = mock(CloseableHttpResponse.class);
-    when(httpResponse.getStatusLine()).thenReturn(new BasicStatusLine(HTTP_11, 200, "OK"));
+    final ClassicHttpResponse httpResponse = mock(ClassicHttpResponse.class);
+    when(httpResponse.getCode()).thenReturn(200);
 
     final ODataHttpResponse response = new ApacheHttpResponse(httpResponse);
     response.close();
@@ -362,7 +363,7 @@ class ApacheAdapterTest {
   @Test
   @SuppressWarnings("deprecation")
   void testResponseUnwrap() {
-    final HttpResponse httpResponse = mockResponse(200, "OK", null, null);
+    final ClassicHttpResponse httpResponse = mockResponse(200, "OK", null, null);
     final ApacheHttpResponse response = new ApacheHttpResponse(httpResponse);
     assertSame(httpResponse, response.unwrap());
   }
@@ -444,9 +445,10 @@ class ApacheAdapterTest {
 
   // --- Helper methods ---
 
-  private HttpResponse mockResponse(int statusCode, String reason, String contentType, String body) {
-    final HttpResponse response = mock(HttpResponse.class);
-    when(response.getStatusLine()).thenReturn(new BasicStatusLine(HTTP_11, statusCode, reason));
+  private ClassicHttpResponse mockResponse(int statusCode, String reason, String contentType, String body) {
+    final ClassicHttpResponse response = mock(ClassicHttpResponse.class);
+    when(response.getCode()).thenReturn(statusCode);
+    when(response.getReasonPhrase()).thenReturn(reason);
 
     if (body != null) {
       final HttpEntity entity = mock(HttpEntity.class);
@@ -457,12 +459,12 @@ class ApacheAdapterTest {
         throw new RuntimeException(e);
       }
       if (contentType != null) {
-        when(entity.getContentType()).thenReturn(new BasicHeader("Content-Type", contentType));
+        when(entity.getContentType()).thenReturn(contentType);
       }
       when(response.getEntity()).thenReturn(entity);
     }
 
-    when(response.getAllHeaders()).thenReturn(new Header[0]);
+    when(response.getHeaders()).thenReturn(new Header[0]);
     return response;
   }
 }

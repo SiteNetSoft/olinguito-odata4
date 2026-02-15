@@ -18,18 +18,21 @@
  *
  * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
  * Copyright 2026 SiteNetSoft - Return ODataHttpClient wrapping Apache HttpClient
+ * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  */
 package org.sitenetsoft.olinguito.client.core.http;
 
 import java.net.URI;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.HttpResponseInterceptor;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.http.EntityDetails;
+import org.apache.hc.core5.http.HttpRequest;
+import org.apache.hc.core5.http.HttpResponse;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.protocol.HttpContext;
 import org.sitenetsoft.olinguito.client.api.http.HttpClientFactory;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.api.http.WrappingHttpClientFactory;
@@ -44,7 +47,7 @@ public abstract class AbstractOAuth2HttpClientFactory
 
   protected final URI oauth2TokenServiceURI;
 
-  protected HttpUriRequest currentRequest;
+  protected HttpUriRequestBase currentRequest;
 
   public AbstractOAuth2HttpClientFactory(final URI oauth2GrantServiceURI, final URI oauth2TokenServiceURI) {
     this(new DefaultHttpClientFactory(), oauth2GrantServiceURI, oauth2TokenServiceURI);
@@ -85,15 +88,15 @@ public abstract class AbstractOAuth2HttpClientFactory
     final AtomicReference<HttpClient> clientRef = new AtomicReference<>();
 
     final HttpClientBuilder builder = wrapped.createBuilder(method, uri);
-    builder.addInterceptorLast((HttpRequestInterceptor) (request, context) -> {
-      if (request instanceof HttpUriRequest uriRequest) {
+    builder.addRequestInterceptorLast((HttpRequest request, EntityDetails entity, HttpContext context) -> {
+      if (request instanceof HttpUriRequestBase uriRequest) {
         currentRequest = uriRequest;
       } else {
         currentRequest = null;
       }
     });
-    builder.addInterceptorLast((HttpResponseInterceptor) (response, context) -> {
-      if (response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+    builder.addResponseInterceptorLast((HttpResponse response, EntityDetails entity, HttpContext context) -> {
+      if (response.getCode() == HttpStatus.SC_UNAUTHORIZED) {
         refreshToken(clientRef.get());
         if (currentRequest != null) {
           clientRef.get().execute(currentRequest);

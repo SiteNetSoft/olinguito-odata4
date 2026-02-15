@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
+ * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -32,13 +33,11 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpResponseFactory;
-import org.apache.http.HttpVersion;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.DefaultHttpResponseFactory;
-import org.apache.http.message.BasicStatusLine;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.message.BasicClassicHttpResponse;
 import org.sitenetsoft.olinguito.client.api.Configuration;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.request.ODataBatchableRequest;
@@ -103,7 +102,8 @@ public class AsyncRequestWrapperTest {
     Configuration configuration = mock(Configuration.class);
     HttpClientFactory httpClientFactory = mock(HttpClientFactory.class);
     HttpUriRequestFactory httpUriRequestFactory = mock(HttpUriRequestFactory.class);
-    HttpUriRequest httpUriRequest = mock(HttpUriRequest.class);
+    HttpUriRequestBase httpUriRequest = mock(HttpUriRequestBase.class);
+    when(httpUriRequest.getMethod()).thenReturn("GET");
 
     when(oDataClient.getConfiguration()).thenReturn(configuration);
     when(configuration.getHttpClientFactory()).thenReturn(httpClientFactory);
@@ -111,12 +111,10 @@ public class AsyncRequestWrapperTest {
     when(httpClientFactory.create(any(), any())).thenReturn(new ApacheHttpClient(httpClient));
     when(httpUriRequestFactory.create(any(), any())).thenReturn(new ApacheHttpRequest(httpUriRequest));
 
-    HttpResponseFactory factory = new DefaultHttpResponseFactory();
-    HttpResponse firstResponse = factory.newHttpResponse(
-        new BasicStatusLine(HttpVersion.HTTP_1_1, 202, null), null);
+    ClassicHttpResponse firstResponse = new BasicClassicHttpResponse(202);
     firstResponse.addHeader(HttpHeader.LOCATION, "http://localhost/monitor");
     firstResponse.addHeader(HttpHeader.RETRY_AFTER, String.valueOf(retryAfter));
-    when(httpClient.execute(any(HttpUriRequest.class))).thenReturn(firstResponse);
+    when(httpClient.executeOpen(any(), any(ClassicHttpRequest.class), any())).thenReturn(firstResponse);
 
     AbstractODataRequest oDataRequest = mock(AbstractODataRequest.class);
     ODataResponse oDataResponse = mock(ODataResponse.class);
@@ -193,7 +191,8 @@ public class AsyncRequestWrapperTest {
     Configuration configuration = mock(Configuration.class);
     HttpClientFactory httpClientFactory = mock(HttpClientFactory.class);
     HttpUriRequestFactory httpUriRequestFactory = mock(HttpUriRequestFactory.class);
-    HttpUriRequest httpUriRequest = mock(HttpUriRequest.class);
+    HttpUriRequestBase httpUriRequest = mock(HttpUriRequestBase.class);
+    when(httpUriRequest.getMethod()).thenReturn("GET");
 
     when(oDataClient.getConfiguration()).thenReturn(configuration);
     when(configuration.getHttpClientFactory()).thenReturn(httpClientFactory);
@@ -201,11 +200,9 @@ public class AsyncRequestWrapperTest {
     when(httpClientFactory.create(any(), any())).thenReturn(new ApacheHttpClient(httpClient));
     when(httpUriRequestFactory.create(any(), any())).thenReturn(new ApacheHttpRequest(httpUriRequest));
 
-    HttpResponseFactory factory = new DefaultHttpResponseFactory();
-    HttpResponse firstResponse = factory.newHttpResponse(
-        new BasicStatusLine(HttpVersion.HTTP_1_1, 202, null), null);
+    ClassicHttpResponse firstResponse = new BasicClassicHttpResponse(202);
     firstResponse.addHeader(HttpHeader.LOCATION, location);
-    when(httpClient.execute(any(HttpUriRequest.class))).thenReturn(firstResponse);
+    when(httpClient.executeOpen(any(), any(ClassicHttpRequest.class), any())).thenReturn(firstResponse);
 
     ODataResponse oDataResponse = mock(ODataResponse.class);
     when(oDataResponse.initFromHttpResponse(any(ODataHttpResponse.class))).thenReturn(null);

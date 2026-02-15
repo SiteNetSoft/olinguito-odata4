@@ -17,15 +17,16 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
+ * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  */
 package org.sitenetsoft.olinguito.samples.client.core.http;
 
 import java.net.URI;
 
-import org.apache.http.client.CookieStore;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.hc.client5.http.cookie.BasicCookieStore;
+import org.apache.hc.client5.http.cookie.CookieStore;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.cookie.BasicClientCookie;
 import org.sitenetsoft.olinguito.client.core.http.DefaultHttpClientFactory;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
@@ -43,7 +44,6 @@ public class CookieHttpClientFactory extends DefaultHttpClientFactory {
 
     // Populate cookies if needed
     final BasicClientCookie cookie = new BasicClientCookie("name", "value");
-    cookie.setVersion(0);
     cookie.setDomain(".mycompany.com");
     cookie.setPath("/");
     cookieStore.addCookie(cookie);

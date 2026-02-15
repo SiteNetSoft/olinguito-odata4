@@ -15,10 +15,14 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced System.out.printStackTrace with SLF4J logging
  */
 package org.sitenetsoft.olinguito.fit.metadata;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -26,6 +30,8 @@ import java.io.IOException;
 import static org.junit.Assert.fail;
 
 public class MetadataTest {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MetadataTest.class);
 
     @Test
     public void testExternalEntity() throws IOException {
@@ -41,7 +47,7 @@ public class MetadataTest {
 
             new Metadata(new ByteArrayInputStream(xml.getBytes()));
         } catch (Exception e) {
-            e.printStackTrace(System.out);
+            LOG.debug("Expected exception during XXE test", e);
         } finally {
             server.close();
         }
@@ -57,13 +63,13 @@ public class MetadataTest {
         try {
             String xml = String.format(
                     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                            + "<!DOCTYPE oops SYSTEM “%s”>\n"
+                            + "<!DOCTYPE oops SYSTEM \"%s\">\n"
                             + "<oops>&foo;</oops>",
                     server.url());
 
             new Metadata(new ByteArrayInputStream(xml.getBytes()));
         } catch (Exception e) {
-            e.printStackTrace(System.out);
+            LOG.debug("Expected exception during external schema test", e);
         } finally {
             server.close();
         }
@@ -88,7 +94,7 @@ public class MetadataTest {
 
             new Metadata(new ByteArrayInputStream(xml.getBytes()));
         } catch (Exception e) {
-            e.printStackTrace(System.out);
+            LOG.debug("Expected exception during external entity parameter test", e);
         } finally {
             server.close();
         }
@@ -132,7 +138,7 @@ public class MetadataTest {
 
             new Metadata(new ByteArrayInputStream(xml.getBytes()));
         } catch (Exception e) {
-            e.printStackTrace(System.out);
+            LOG.debug("Expected exception during XInclude test", e);
         } finally {
             server.close();
         }
@@ -155,7 +161,7 @@ public class MetadataTest {
 
             new Metadata(new ByteArrayInputStream(xml.getBytes()));
         } catch (Exception e) {
-            e.printStackTrace(System.out);
+            LOG.debug("Expected exception during external schema location test", e);
         } finally {
             server.close();
         }

@@ -18,16 +18,18 @@
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
  * Copyright 2026 SiteNetSoft - Return ODataHttpRequest wrapping Apache HttpUriRequest
+ * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  */
 package org.sitenetsoft.olinguito.client.core.http;
 
 import java.net.URI;
 
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.hc.client5.http.classic.methods.HttpDelete;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPatch;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpPut;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
 import org.sitenetsoft.olinguito.client.api.http.HttpUriRequestFactory;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpRequest;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
@@ -39,7 +41,7 @@ public class DefaultHttpUriRequestFactory implements HttpUriRequestFactory {
 
   @Override
   public ODataHttpRequest create(final HttpMethod method, final URI uri) {
-    final HttpUriRequest request = switch (method) {
+    final HttpUriRequestBase request = switch (method) {
         case POST -> new HttpPost(uri);
         case PUT -> new HttpPut(uri);
         case PATCH -> new HttpPatch(uri);

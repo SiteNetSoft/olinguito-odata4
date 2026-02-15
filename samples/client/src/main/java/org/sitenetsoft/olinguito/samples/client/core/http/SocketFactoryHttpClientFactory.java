@@ -18,22 +18,19 @@
  *
  * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
+ * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  */
 package org.sitenetsoft.olinguito.samples.client.core.http;
 
 import java.net.URI;
-import java.security.cert.X509Certificate;
 
-import org.apache.http.config.Registry;
-import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.socket.ConnectionSocketFactory;
-import org.apache.http.conn.socket.PlainConnectionSocketFactory;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustStrategy;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.io.HttpClientConnectionManager;
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.core5.ssl.SSLContextBuilder;
+import org.apache.hc.core5.ssl.TrustStrategy;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.core.http.AbstractHttpClientFactory;
 import org.sitenetsoft.olinguito.client.core.http.ApacheHttpClient;
@@ -63,13 +60,10 @@ public class SocketFactoryHttpClientFactory extends AbstractHttpClientFactory {
               new SSLContextBuilder().loadTrustMaterial(null, acceptTrustStrategy).build(),
               NoopHostnameVerifier.INSTANCE);
 
-      final Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
-              .register("http", PlainConnectionSocketFactory.getSocketFactory())
-              .register("https", sslSocketFactory)
-              .build();
-
-      final PoolingHttpClientConnectionManager connectionManager =
-              new PoolingHttpClientConnectionManager(registry);
+      final HttpClientConnectionManager connectionManager =
+              PoolingHttpClientConnectionManagerBuilder.create()
+                      .setSSLSocketFactory(sslSocketFactory)
+                      .build();
 
       return new ApacheHttpClient(HttpClientBuilder.create()
               .setUserAgent(USER_AGENT)

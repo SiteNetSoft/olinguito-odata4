@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements; replaced commons-codec Hex with HexFormat
+ * Copyright 2026 SiteNetSoft - Removed HttpComponents dependency; pure Java URI construction
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
@@ -25,7 +26,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collection;
@@ -39,11 +39,6 @@ import javax.xml.datatype.Duration;
 import java.util.HexFormat;
 import org.sitenetsoft.olinguito.commons.core.Encoder;
 import org.sitenetsoft.olinguito.client.core.StringHelper;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.AbstractHttpEntity;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.InputStreamEntity;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
 import org.sitenetsoft.olinguito.client.api.http.HttpClientFactory;
@@ -276,45 +271,38 @@ public final class URIUtils {
     return false;
   }
 
-  public static HttpEntity buildInputStreamEntity(final ODataClient client, final InputStream input) {
-    AbstractHttpEntity entity;
+  /**
+   * Reads an input stream into a byte array, respecting the client's chunked encoding settings.
+   *
+   * @param client the OData client providing configuration
+   * @param input the input stream to read
+   * @return the input stream content as a byte array, or {@code null} if chunked encoding is used
+   *         and the body should be streamed rather than buffered
+   */
+  public static byte[] readInputStreamBytes(final ODataClient client, final InputStream input) {
     boolean useChunked = client.getConfiguration().isUseChuncked();
 
     if (shouldUseRepeatableHttpBodyEntry(client) || !useChunked) {
-      byte[] bytes;
       try {
-        bytes = input.readAllBytes();
+        return input.readAllBytes();
       } catch (IOException e) {
         throw new ODataRuntimeException("While reading input for not chunked encoding", e);
       }
-
-      entity = new ByteArrayEntity(bytes);
-    } else {
-      entity = new InputStreamEntity(input, -1);
     }
-
-    if (!useChunked && entity.getContentLength() < 0) {
-      useChunked = true;
-    }
-    // both entities can be sent in chunked way or not
-    entity.setChunked(useChunked);
-
-    return entity;
+    return null;
   }
 
   public static URI addValueSegment(final URI uri) {
-    final URI res;
     if (uri.getPath().endsWith(SegmentType.VALUE.getValue())) {
-      res = uri;
-    } else {
-      try {
-        res = new URIBuilder(uri).setPath(uri.getPath() + "/" + SegmentType.VALUE.getValue()).build();
-      } catch (URISyntaxException e) {
-        throw new IllegalArgumentException(e);
-      }
+      return uri;
     }
-
-    return res;
+    final String newPath = uri.getPath() + "/" + SegmentType.VALUE.getValue();
+    try {
+      return new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(),
+          newPath, uri.getQuery(), uri.getFragment());
+    } catch (java.net.URISyntaxException e) {
+      throw new IllegalArgumentException(e);
+    }
   }
 
   public static URI buildFunctionInvokeURI(final URI uri, final Map<String, ClientValue> parameters) {
@@ -324,7 +312,7 @@ public final class URIUtils {
     String pathSegments = null;
     // Check if Query contains /$ and extract options like /$count, /$value and /$ref
     if (uri.toASCIIString().contains(URI_OPTIONS)) {
-      uriOption = uri.toASCIIString().substring(uri.toASCIIString().indexOf(URI_OPTIONS), 
+      uriOption = uri.toASCIIString().substring(uri.toASCIIString().indexOf(URI_OPTIONS),
           (rawQuery == null ? uri.toASCIIString().length() : uri.toASCIIString().indexOf(rawQuery) - 1));
     }
     if (rawQuery != null) {

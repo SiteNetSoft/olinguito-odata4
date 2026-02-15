@@ -18,13 +18,14 @@
  *
  * Copyright 2026 SiteNetSoft - Migrate from deprecated HttpParams to RequestConfig
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
+ * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  */
 package org.sitenetsoft.olinguito.samples.client.core.http;
 
 import java.net.URI;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.core5.util.Timeout;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpRequest;
 import org.sitenetsoft.olinguito.client.core.http.ApacheHttpRequest;
 import org.sitenetsoft.olinguito.client.core.http.DefaultHttpUriRequestFactory;
@@ -43,17 +44,15 @@ public class ParametersHttpUriRequestFactory extends DefaultHttpUriRequestFactor
   @Override
   public ODataHttpRequest create(final HttpMethod method, final URI uri) {
     final ODataHttpRequest odataRequest = super.create(method, uri);
-    final HttpUriRequest request = ApacheHttpRequest.unwrap(odataRequest);
+    final HttpUriRequestBase request = ApacheHttpRequest.unwrap(odataRequest);
 
     final int timeout = 1000;
     final RequestConfig config = RequestConfig.custom()
-        .setConnectTimeout(timeout)
-        .setSocketTimeout(timeout)
+        .setConnectTimeout(Timeout.ofMilliseconds(timeout))
+        .setResponseTimeout(Timeout.ofMilliseconds(timeout))
         .build();
 
-    if (request instanceof HttpRequestBase) {
-      ((HttpRequestBase) request).setConfig(config);
-    }
+    request.setConfig(config);
 
     return odataRequest;
   }

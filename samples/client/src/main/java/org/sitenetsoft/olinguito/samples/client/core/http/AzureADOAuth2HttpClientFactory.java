@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Replaced commons-io with Java standard library
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
+ * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  */
 package org.sitenetsoft.olinguito.samples.client.core.http;
 
@@ -28,20 +29,24 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.http.Header;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.HttpResponse;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
+import java.util.concurrent.atomic.AtomicReference;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpHeaders;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
+import org.apache.hc.core5.net.URIBuilder;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.core.http.AbstractOAuth2HttpClientFactory;
 import org.sitenetsoft.olinguito.client.core.http.ApacheHttpClient;
@@ -85,9 +90,9 @@ public class AzureADOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFact
     InputStream tokenResponse = null;
     try {
       final HttpPost post = new HttpPost(oauth2TokenServiceURI);
-      post.setEntity(new UrlEncodedFormEntity(data, "UTF-8"));
+      post.setEntity(new UrlEncodedFormEntity(data, StandardCharsets.UTF_8));
 
-      final HttpResponse response = httpClient.execute(post);
+      final ClassicHttpResponse response = (ClassicHttpResponse) httpClient.execute(post);
 
       tokenResponse = response.getEntity().getContent();
       token = (ObjectNode) new ObjectMapper().readTree(tokenResponse);
@@ -115,7 +120,7 @@ public class AzureADOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFact
               addParameter("client_id", clientId).
               addParameter("redirect_uri", redirectURI);
 
-      HttpResponse response = httpClient.execute(new HttpGet(builder.build()));
+      ClassicHttpResponse response = (ClassicHttpResponse) httpClient.execute(new HttpGet(builder.build()));
 
       final String loginPage = EntityUtils.toString(response.getEntity());
 
@@ -129,16 +134,16 @@ public class AzureADOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFact
               substringAfter(loginPage, "<input type=\"hidden\" name=\"PPFT\" id=\"i0327\" value=\""),
               "\"/>");
 
-      List<BasicNameValuePair> data = new ArrayList<BasicNameValuePair>();
+      List<BasicNameValuePair> data = new ArrayList<>();
       data.add(new BasicNameValuePair("login", creds.getUserName()));
-      data.add(new BasicNameValuePair("passwd", creds.getPassword()));
+      data.add(new BasicNameValuePair("passwd", new String(creds.getUserPassword())));
       data.add(new BasicNameValuePair("PPSX", ppsx));
       data.add(new BasicNameValuePair("PPFT", ppft));
 
       HttpPost post = new HttpPost(postURL);
-      post.setEntity(new UrlEncodedFormEntity(data, "UTF-8"));
+      post.setEntity(new UrlEncodedFormEntity(data, StandardCharsets.UTF_8));
 
-      response = httpClient.execute(post);
+      response = (ClassicHttpResponse) httpClient.execute(post);
 
       final String samlPage = EntityUtils.toString(response.getEntity());
 
@@ -154,18 +159,18 @@ public class AzureADOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFact
               substringAfter(samlPage, "<input type=\"hidden\" name=\"wa\" id=\"wa\" value=\""),
               "\">");
 
-      data = new ArrayList<BasicNameValuePair>();
+      data = new ArrayList<>();
       data.add(new BasicNameValuePair("wctx", wctx));
       data.add(new BasicNameValuePair("wresult", wresult.replace("&quot;", "\"")));
       data.add(new BasicNameValuePair("wa", wa));
 
       post = new HttpPost(postURL);
-      post.setEntity(new UrlEncodedFormEntity(data, "UTF-8"));
+      post.setEntity(new UrlEncodedFormEntity(data, StandardCharsets.UTF_8));
 
-      response = httpClient.execute(post);
+      response = (ClassicHttpResponse) httpClient.execute(post);
 
       final Header locationHeader = response.getFirstHeader("Location");
-      if (response.getStatusLine().getStatusCode() != 302 || locationHeader == null) {
+      if (response.getCode() != 302 || locationHeader == null) {
         throw new OAuth2Exception("Unexpected response from server");
       }
 
@@ -182,7 +187,7 @@ public class AzureADOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFact
     }
 
     // 2. ask the OAuth2 token service
-    final List<BasicNameValuePair> data = new ArrayList<BasicNameValuePair>();
+    final List<BasicNameValuePair> data = new ArrayList<>();
     data.add(new BasicNameValuePair("grant_type", "authorization_code"));
     data.add(new BasicNameValuePair("code", code));
     data.add(new BasicNameValuePair("client_id", clientId));
@@ -203,7 +208,7 @@ public class AzureADOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFact
 
   @Override
   protected void refreshToken(final HttpClient client) throws OAuth2Exception {
-    final List<BasicNameValuePair> data = new ArrayList<BasicNameValuePair>();
+    final List<BasicNameValuePair> data = new ArrayList<>();
     data.add(new BasicNameValuePair("grant_type", "refresh_token"));
     data.add(new BasicNameValuePair("refresh_token", token.get("refresh_token").asText()));
 
@@ -220,13 +225,12 @@ public class AzureADOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFact
       init();
     }
 
-    final java.util.concurrent.atomic.AtomicReference<HttpClient> clientRef =
-            new java.util.concurrent.atomic.AtomicReference<>();
+    final AtomicReference<HttpClient> clientRef = new AtomicReference<>();
 
-    final org.apache.http.impl.client.HttpClientBuilder builder = createWrappedBuilder(method, uri);
+    final HttpClientBuilder builder = createWrappedBuilder(method, uri);
 
     // Add the Bearer token Authorization header
-    builder.addInterceptorFirst((HttpRequestInterceptor) (request, context) -> {
+    builder.addRequestInterceptorFirst((request, entity, context) -> {
       request.removeHeaders(HttpHeaders.AUTHORIZATION);
       if (token != null) {
         request.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token.get("access_token").asText());
@@ -234,17 +238,17 @@ public class AzureADOAuth2HttpClientFactory extends AbstractOAuth2HttpClientFact
     });
 
     // Track current request for retry
-    builder.addInterceptorLast((HttpRequestInterceptor) (request, context) -> {
-      if (request instanceof org.apache.http.client.methods.HttpUriRequest) {
-        currentRequest = (org.apache.http.client.methods.HttpUriRequest) request;
+    builder.addRequestInterceptorLast((request, entity, context) -> {
+      if (request instanceof HttpUriRequestBase uriRequest) {
+        currentRequest = uriRequest;
       } else {
         currentRequest = null;
       }
     });
 
     // Handle 401 by refreshing the token
-    builder.addInterceptorLast((org.apache.http.HttpResponseInterceptor) (response, context) -> {
-      if (response.getStatusLine().getStatusCode() == org.apache.http.HttpStatus.SC_UNAUTHORIZED) {
+    builder.addResponseInterceptorLast((response, entity, context) -> {
+      if (response.getCode() == HttpStatus.SC_UNAUTHORIZED) {
         refreshToken(clientRef.get());
         if (currentRequest != null) {
           clientRef.get().execute(currentRequest);
