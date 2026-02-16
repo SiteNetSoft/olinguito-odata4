@@ -6,23 +6,25 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Thread-safe EDM caches using ConcurrentHashMap
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmAction;
@@ -41,65 +43,69 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
 
 public abstract class AbstractEdm implements Edm {
 
-  protected Map<String, EdmSchema> schemas;
-  protected List<EdmSchema> schemaList;
-  private boolean isEntityDerivedFromES;
-  private boolean isComplexDerivedFromES;
-  private boolean isPreviousES;
+  /** Sentinel key used in place of null for ConcurrentHashMap (which forbids null keys). */
+  private static final FullQualifiedName NULL_CONTAINER_KEY =
+      new FullQualifiedName("org.sitenetsoft.olinguito.internal", "__NULL_CONTAINER__");
+
+  protected volatile Map<String, EdmSchema> schemas;
+  protected volatile List<EdmSchema> schemaList;
+  private volatile boolean isEntityDerivedFromES;
+  private volatile boolean isComplexDerivedFromES;
+  private volatile boolean isPreviousES;
 
   private final Map<FullQualifiedName, EdmEntityContainer> entityContainers =
-      Collections.synchronizedMap(new HashMap<FullQualifiedName, EdmEntityContainer>());
+      new ConcurrentHashMap<>();
 
   private final Map<FullQualifiedName, EdmEnumType> enumTypes =
-      Collections.synchronizedMap(new HashMap<FullQualifiedName, EdmEnumType>());
+      new ConcurrentHashMap<>();
 
   private final Map<FullQualifiedName, EdmTypeDefinition> typeDefinitions =
-      Collections.synchronizedMap(new HashMap<FullQualifiedName, EdmTypeDefinition>());
+      new ConcurrentHashMap<>();
 
   private final Map<FullQualifiedName, EdmEntityType> entityTypes =
-      Collections.synchronizedMap(new HashMap<FullQualifiedName, EdmEntityType>());
+      new ConcurrentHashMap<>();
 
   private final Map<FullQualifiedName, EdmComplexType> complexTypes =
-      Collections.synchronizedMap(new HashMap<FullQualifiedName, EdmComplexType>());
+      new ConcurrentHashMap<>();
 
   private final Map<FullQualifiedName, EdmAction> unboundActions =
-      Collections.synchronizedMap(new HashMap<FullQualifiedName, EdmAction>());
+      new ConcurrentHashMap<>();
 
   private final Map<FullQualifiedName, List<EdmFunction>> unboundFunctionsByName =
-      Collections.synchronizedMap(new HashMap<FullQualifiedName, List<EdmFunction>>());
+      new ConcurrentHashMap<>();
 
   private final Map<FunctionMapKey, EdmFunction> unboundFunctionsByKey =
-      Collections.synchronizedMap(new HashMap<FunctionMapKey, EdmFunction>());
+      new ConcurrentHashMap<>();
 
   private final Map<ActionMapKey, EdmAction> boundActions =
-      Collections.synchronizedMap(new HashMap<ActionMapKey, EdmAction>());
+      new ConcurrentHashMap<>();
 
   private final Map<FunctionMapKey, EdmFunction> boundFunctions =
-      Collections.synchronizedMap(new HashMap<FunctionMapKey, EdmFunction>());
+      new ConcurrentHashMap<>();
 
   private final Map<FullQualifiedName, EdmTerm> terms =
-      Collections.synchronizedMap(new HashMap<FullQualifiedName, EdmTerm>());
+      new ConcurrentHashMap<>();
 
   private final Map<TargetQualifierMapKey, EdmAnnotations> annotationGroups =
-      Collections.synchronizedMap(new HashMap<TargetQualifierMapKey, EdmAnnotations>());
+      new ConcurrentHashMap<>();
 
-  private Map<String, String> aliasToNamespaceInfo = null;
-  
+  private volatile Map<String, String> aliasToNamespaceInfo = null;
+
   private final Map<FullQualifiedName, EdmEntityType> entityTypesWithAnnotations =
-      Collections.synchronizedMap(new HashMap<FullQualifiedName, EdmEntityType>());
-  
-  private final Map<FullQualifiedName, EdmEntityType> entityTypesDerivedFromES =
-      Collections.synchronizedMap(new HashMap<FullQualifiedName, EdmEntityType>());
-  
-  private final Map<FullQualifiedName, EdmComplexType> complexTypesWithAnnotations =
-      Collections.synchronizedMap(new HashMap<FullQualifiedName, EdmComplexType>());
-  
-  private final Map<FullQualifiedName, EdmComplexType> complexTypesDerivedFromES =
-      Collections.synchronizedMap(new HashMap<FullQualifiedName, EdmComplexType>());
+      new ConcurrentHashMap<>();
 
-  private Map<String, List<CsdlAnnotation>> annotationMap = 
-      new HashMap<String, List<CsdlAnnotation>>();
-  
+  private final Map<FullQualifiedName, EdmEntityType> entityTypesDerivedFromES =
+      new ConcurrentHashMap<>();
+
+  private final Map<FullQualifiedName, EdmComplexType> complexTypesWithAnnotations =
+      new ConcurrentHashMap<>();
+
+  private final Map<FullQualifiedName, EdmComplexType> complexTypesDerivedFromES =
+      new ConcurrentHashMap<>();
+
+  private final Map<String, List<CsdlAnnotation>> annotationMap =
+      new ConcurrentHashMap<>();
+
   @Override
   public List<EdmSchema> getSchemas() {
     if (schemaList == null) {
@@ -124,14 +130,23 @@ public abstract class AbstractEdm implements Edm {
   private void initSchemas() {
     loadAliasToNamespaceInfo();
     Map<String, EdmSchema> localSchemas = createSchemas();
-    schemas = Collections.synchronizedMap(localSchemas);
-
-    schemaList = Collections.unmodifiableList(new ArrayList<EdmSchema>(schemas.values()));
+    // Build the list from the original ordered map before copying to ConcurrentHashMap
+    // (ConcurrentHashMap does not preserve insertion order)
+    List<EdmSchema> orderedValues = new ArrayList<>();
+    ConcurrentHashMap<String, EdmSchema> safeSchemas = new ConcurrentHashMap<>();
+    for (Map.Entry<String, EdmSchema> entry : localSchemas.entrySet()) {
+      if (entry.getKey() != null && entry.getValue() != null) {
+        safeSchemas.put(entry.getKey(), entry.getValue());
+        orderedValues.add(entry.getValue());
+      }
+    }
+    schemas = safeSchemas;
+    schemaList = Collections.unmodifiableList(orderedValues);
   }
 
   private void loadAliasToNamespaceInfo() {
     Map<String, String> localAliasToNamespaceInfo = createAliasToNamespaceInfo();
-    aliasToNamespaceInfo = Collections.synchronizedMap(localAliasToNamespaceInfo);
+    aliasToNamespaceInfo = new ConcurrentHashMap<>(localAliasToNamespaceInfo);
   }
 
   @Override
@@ -142,13 +157,16 @@ public abstract class AbstractEdm implements Edm {
   @Override
   public EdmEntityContainer getEntityContainer(final FullQualifiedName namespaceOrAliasFQN) {
     final FullQualifiedName fqn = resolvePossibleAlias(namespaceOrAliasFQN);
-    EdmEntityContainer container = entityContainers.get(fqn);
+    final FullQualifiedName key = fqn != null ? fqn : NULL_CONTAINER_KEY;
+    EdmEntityContainer container = entityContainers.get(key);
     if (container == null) {
       container = createEntityContainer(fqn);
       if (container != null) {
-        entityContainers.put(fqn, container);
-        if (fqn == null) {
-          entityContainers.put(new FullQualifiedName(container.getNamespace(), container.getName()), container);
+        EdmEntityContainer existing = entityContainers.putIfAbsent(key, container);
+        if (existing != null) {
+          container = existing;
+        } else if (fqn == null) {
+          entityContainers.putIfAbsent(new FullQualifiedName(container.getNamespace(), container.getName()), container);
         }
       }
     }
@@ -158,11 +176,17 @@ public abstract class AbstractEdm implements Edm {
   @Override
   public EdmEnumType getEnumType(final FullQualifiedName namespaceOrAliasFQN) {
     final FullQualifiedName fqn = resolvePossibleAlias(namespaceOrAliasFQN);
+    if (fqn == null) {
+      return null;
+    }
     EdmEnumType enumType = enumTypes.get(fqn);
     if (enumType == null) {
       enumType = createEnumType(fqn);
       if (enumType != null) {
-        enumTypes.put(fqn, enumType);
+        EdmEnumType existing = enumTypes.putIfAbsent(fqn, enumType);
+        if (existing != null) {
+          enumType = existing;
+        }
       }
     }
     return enumType;
@@ -171,11 +195,17 @@ public abstract class AbstractEdm implements Edm {
   @Override
   public EdmTypeDefinition getTypeDefinition(final FullQualifiedName namespaceOrAliasFQN) {
     final FullQualifiedName fqn = resolvePossibleAlias(namespaceOrAliasFQN);
+    if (fqn == null) {
+      return null;
+    }
     EdmTypeDefinition typeDefinition = typeDefinitions.get(fqn);
     if (typeDefinition == null) {
       typeDefinition = createTypeDefinition(fqn);
       if (typeDefinition != null) {
-        typeDefinitions.put(fqn, typeDefinition);
+        EdmTypeDefinition existing = typeDefinitions.putIfAbsent(fqn, typeDefinition);
+        if (existing != null) {
+          typeDefinition = existing;
+        }
       }
     }
     return typeDefinition;
@@ -184,11 +214,17 @@ public abstract class AbstractEdm implements Edm {
   @Override
   public EdmEntityType getEntityType(final FullQualifiedName namespaceOrAliasFQN) {
     final FullQualifiedName fqn = resolvePossibleAlias(namespaceOrAliasFQN);
+    if (fqn == null) {
+      return null;
+    }
     EdmEntityType entityType = entityTypes.get(fqn);
     if (entityType == null) {
       entityType = createEntityType(fqn);
       if (entityType != null) {
-        entityTypes.put(fqn, entityType);
+        EdmEntityType existing = entityTypes.putIfAbsent(fqn, entityType);
+        if (existing != null) {
+          entityType = existing;
+        }
       }
     }
     return entityType;
@@ -197,21 +233,32 @@ public abstract class AbstractEdm implements Edm {
   @Override
   public EdmEntityType getEntityTypeWithAnnotations(final FullQualifiedName namespaceOrAliasFQN) {
     final FullQualifiedName fqn = resolvePossibleAlias(namespaceOrAliasFQN);
+    if (fqn == null) {
+      setIsPreviousES(false);
+      return null;
+    }
     EdmEntityType entityType = entityTypesWithAnnotations.get(fqn);
     if (entityType == null) {
       entityType = createEntityType(fqn);
       if (entityType != null) {
-          entityTypesWithAnnotations.put(fqn, entityType);
+        EdmEntityType existing = entityTypesWithAnnotations.putIfAbsent(fqn, entityType);
+        if (existing != null) {
+          entityType = existing;
+        }
       }
     }
     setIsPreviousES(false);
     return entityType;
   }
-  
-  protected EdmEntityType getEntityTypeWithAnnotations(final FullQualifiedName namespaceOrAliasFQN, 
+
+  protected EdmEntityType getEntityTypeWithAnnotations(final FullQualifiedName namespaceOrAliasFQN,
       boolean isEntityDerivedFromES) {
     this.isEntityDerivedFromES = isEntityDerivedFromES;
     final FullQualifiedName fqn = resolvePossibleAlias(namespaceOrAliasFQN);
+    if (fqn == null) {
+      this.isEntityDerivedFromES = false;
+      return null;
+    }
     if (!isPreviousES() && getEntityContainer() != null) {
        getEntityContainer().getEntitySetsWithAnnotations();
     }
@@ -219,17 +266,24 @@ public abstract class AbstractEdm implements Edm {
     if (entityType == null) {
       entityType = createEntityType(fqn);
       if (entityType != null) {
-          entityTypesDerivedFromES.put(fqn, entityType);
+        EdmEntityType existing = entityTypesDerivedFromES.putIfAbsent(fqn, entityType);
+        if (existing != null) {
+          entityType = existing;
+        }
       }
     }
     this.isEntityDerivedFromES = false;
     return entityType;
   }
-  
-  protected EdmComplexType getComplexTypeWithAnnotations(final FullQualifiedName namespaceOrAliasFQN, 
+
+  protected EdmComplexType getComplexTypeWithAnnotations(final FullQualifiedName namespaceOrAliasFQN,
       boolean isComplexDerivedFromES) {
     this.isComplexDerivedFromES = isComplexDerivedFromES;
     final FullQualifiedName fqn = resolvePossibleAlias(namespaceOrAliasFQN);
+    if (fqn == null) {
+      this.isComplexDerivedFromES = false;
+      return null;
+    }
     if (!isPreviousES() && getEntityContainer() != null) {
        getEntityContainer().getEntitySetsWithAnnotations();
     }
@@ -237,21 +291,30 @@ public abstract class AbstractEdm implements Edm {
     if (complexType == null) {
       complexType = createComplexType(fqn);
       if (complexType != null) {
-          complexTypesDerivedFromES.put(fqn, complexType);
+        EdmComplexType existing = complexTypesDerivedFromES.putIfAbsent(fqn, complexType);
+        if (existing != null) {
+          complexType = existing;
+        }
       }
     }
     this.isComplexDerivedFromES = false;
     return complexType;
   }
-  
+
   @Override
   public EdmComplexType getComplexType(final FullQualifiedName namespaceOrAliasFQN) {
     final FullQualifiedName fqn = resolvePossibleAlias(namespaceOrAliasFQN);
+    if (fqn == null) {
+      return null;
+    }
     EdmComplexType complexType = complexTypes.get(fqn);
     if (complexType == null) {
       complexType = createComplexType(fqn);
       if (complexType != null) {
-        complexTypes.put(fqn, complexType);
+        EdmComplexType existing = complexTypes.putIfAbsent(fqn, complexType);
+        if (existing != null) {
+          complexType = existing;
+        }
       }
     }
     return complexType;
@@ -260,25 +323,38 @@ public abstract class AbstractEdm implements Edm {
   @Override
   public EdmComplexType getComplexTypeWithAnnotations(final FullQualifiedName namespaceOrAliasFQN) {
     final FullQualifiedName fqn = resolvePossibleAlias(namespaceOrAliasFQN);
+    if (fqn == null) {
+      setIsPreviousES(false);
+      return null;
+    }
     EdmComplexType complexType = complexTypesWithAnnotations.get(fqn);
     if (complexType == null) {
       complexType = createComplexType(fqn);
       if (complexType != null) {
-          complexTypesWithAnnotations.put(fqn, complexType);
+        EdmComplexType existing = complexTypesWithAnnotations.putIfAbsent(fqn, complexType);
+        if (existing != null) {
+          complexType = existing;
+        }
       }
     }
     setIsPreviousES(false);
     return complexType;
   }
-  
+
   @Override
   public EdmAction getUnboundAction(final FullQualifiedName actionName) {
     final FullQualifiedName fqn = resolvePossibleAlias(actionName);
+    if (fqn == null) {
+      return null;
+    }
     EdmAction action = unboundActions.get(fqn);
     if (action == null) {
       action = createUnboundAction(fqn);
       if (action != null) {
-        unboundActions.put(actionName, action);
+        EdmAction existing = unboundActions.putIfAbsent(actionName, action);
+        if (existing != null) {
+          action = existing;
+        }
       }
     }
 
@@ -296,7 +372,10 @@ public abstract class AbstractEdm implements Edm {
     if (action == null) {
       action = createBoundAction(actionFqn, bindingParameterTypeFqn, isBindingParameterCollection);
       if (action != null) {
-        boundActions.put(key, action);
+        EdmAction existing = boundActions.putIfAbsent(key, action);
+        if (existing != null) {
+          action = existing;
+        }
       }
     }
 
@@ -306,20 +385,26 @@ public abstract class AbstractEdm implements Edm {
   @Override
   public List<EdmFunction> getUnboundFunctions(final FullQualifiedName functionName) {
     final FullQualifiedName functionFqn = resolvePossibleAlias(functionName);
+    if (functionFqn == null) {
+      return null;
+    }
 
     List<EdmFunction> functions = unboundFunctionsByName.get(functionFqn);
     if (functions == null) {
       functions = createUnboundFunctions(functionFqn);
       if (functions != null) {
-        unboundFunctionsByName.put(functionFqn, functions);
-
-        for (EdmFunction unbound : functions) {
-          final FunctionMapKey key = new FunctionMapKey(
-              new FullQualifiedName(unbound.getNamespace(), unbound.getName()),
-              unbound.getBindingParameterTypeFqn(),
-              unbound.isBindingParameterTypeCollection(),
-              unbound.getParameterNames());
-          unboundFunctionsByKey.put(key, unbound);
+        List<EdmFunction> existing = unboundFunctionsByName.putIfAbsent(functionFqn, functions);
+        if (existing != null) {
+          functions = existing;
+        } else {
+          for (EdmFunction unbound : functions) {
+            final FunctionMapKey key = new FunctionMapKey(
+                new FullQualifiedName(unbound.getNamespace(), unbound.getName()),
+                unbound.getBindingParameterTypeFqn(),
+                unbound.isBindingParameterTypeCollection(),
+                unbound.getParameterNames());
+            unboundFunctionsByKey.putIfAbsent(key, unbound);
+          }
         }
       }
     }
@@ -336,7 +421,10 @@ public abstract class AbstractEdm implements Edm {
     if (function == null) {
       function = createUnboundFunction(functionFqn, parameterNames);
       if (function != null) {
-        unboundFunctionsByKey.put(key, function);
+        EdmFunction existing = unboundFunctionsByKey.putIfAbsent(key, function);
+        if (existing != null) {
+          function = existing;
+        }
       }
     }
 
@@ -357,7 +445,10 @@ public abstract class AbstractEdm implements Edm {
       function = createBoundFunction(functionFqn, bindingParameterTypeFqn, isBindingParameterCollection,
           parameterNames);
       if (function != null) {
-        boundFunctions.put(key, function);
+        EdmFunction existing = boundFunctions.putIfAbsent(key, function);
+        if (existing != null) {
+          function = existing;
+        }
       }
     }
 
@@ -367,11 +458,17 @@ public abstract class AbstractEdm implements Edm {
   @Override
   public EdmTerm getTerm(final FullQualifiedName termName) {
     final FullQualifiedName fqn = resolvePossibleAlias(termName);
+    if (fqn == null) {
+      return null;
+    }
     EdmTerm term = terms.get(fqn);
     if (term == null) {
       term = createTerm(fqn);
       if (term != null) {
-        terms.put(fqn, term);
+        EdmTerm existing = terms.putIfAbsent(fqn, term);
+        if (existing != null) {
+          term = existing;
+        }
       }
     }
     return term;
@@ -385,7 +482,10 @@ public abstract class AbstractEdm implements Edm {
     if (_annotations == null) {
       _annotations = createAnnotationGroup(fqn, qualifier);
       if (_annotations != null) {
-        annotationGroups.put(key, _annotations);
+        EdmAnnotations existing = annotationGroups.putIfAbsent(key, _annotations);
+        if (existing != null) {
+          _annotations = existing;
+        }
       }
     }
     return _annotations;
@@ -419,7 +519,8 @@ public abstract class AbstractEdm implements Edm {
   protected abstract EdmEntityContainer createEntityContainer(FullQualifiedName containerName);
 
   public void cacheEntityContainer(final FullQualifiedName containerFQN, final EdmEntityContainer container) {
-    entityContainers.put(containerFQN, container);
+    final FullQualifiedName key = containerFQN != null ? containerFQN : NULL_CONTAINER_KEY;
+    entityContainers.put(key, container);
   }
 
   protected abstract EdmEnumType createEnumType(FullQualifiedName enumName);
@@ -466,14 +567,10 @@ public abstract class AbstractEdm implements Edm {
         function.getParameterNames());
 
     if (function.isBound()) {
-      boundFunctions.put(key, function);
+      boundFunctions.putIfAbsent(key, function);
     } else {
-      if (!unboundFunctionsByName.containsKey(functionName)) {
-        unboundFunctionsByName.put(functionName, new ArrayList<EdmFunction>());
-      }
-      unboundFunctionsByName.get(functionName).add(function);
-
-      unboundFunctionsByKey.put(key, function);
+      unboundFunctionsByName.computeIfAbsent(functionName, k -> new ArrayList<>()).add(function);
+      unboundFunctionsByKey.putIfAbsent(key, function);
     }
   }
 
@@ -500,7 +597,7 @@ public abstract class AbstractEdm implements Edm {
     TargetQualifierMapKey key = new TargetQualifierMapKey(targetName, annotationsGroup.getQualifier());
     annotationGroups.put(key, annotationsGroup);
   }
-  
+
   @Override
   public EdmAction getBoundActionWithBindingType(FullQualifiedName bindingParameterTypeName,
       Boolean isBindingParameterCollection) {
@@ -510,14 +607,14 @@ public abstract class AbstractEdm implements Edm {
           EdmParameter bindingParameter = action.getParameter(action.getParameterNames().get(0));
           if (bindingParameter.getType().getFullQualifiedName().equals(bindingParameterTypeName)
               && bindingParameter.isCollection() == isBindingParameterCollection) {
-            return action;  
-          }          
+            return action;
+          }
         }
       }
     }
     return null;
   }
-  
+
   @Override
   public List<EdmFunction> getBoundFunctionsWithBindingType(FullQualifiedName bindingParameterTypeName,
       Boolean isBindingParameterCollection){
@@ -535,23 +632,23 @@ public abstract class AbstractEdm implements Edm {
     }
     return functions;
   }
-  
+
   protected boolean isEntityDerivedFromES() {
     return isEntityDerivedFromES;
   }
-  
+
   protected boolean isComplexDerivedFromES() {
     return isComplexDerivedFromES;
   }
-  
+
   protected void setIsPreviousES(boolean isPreviousES) {
     this.isPreviousES = isPreviousES;
   }
-  
+
   protected boolean isPreviousES() {
     return isPreviousES;
   }
-  
+
   protected Map<String, List<CsdlAnnotation>> getAnnotationsMap() {
     return annotationMap;
   }

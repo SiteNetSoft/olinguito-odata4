@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Thread-safe EDM caches using ConcurrentHashMap
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
@@ -24,6 +26,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.sitenetsoft.olinguito.commons.api.edm.EdmAction;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmAnnotations;
@@ -63,9 +66,9 @@ public class EdmProviderImpl extends AbstractEdm {
 
   private final CsdlEdmProvider provider;
   private final Map<FullQualifiedName, List<CsdlAction>> actionsMap =
-      Collections.synchronizedMap(new HashMap<FullQualifiedName, List<CsdlAction>>());
+      new ConcurrentHashMap<>();
   private final Map<FullQualifiedName, List<CsdlFunction>> functionsMap =
-      Collections.synchronizedMap(new HashMap<FullQualifiedName, List<CsdlFunction>>());
+      new ConcurrentHashMap<>();
   private List<CsdlSchema> termSchemaDefinition = new ArrayList<CsdlSchema>();
 
   private final String SLASH = "/";
@@ -620,8 +623,10 @@ public class EdmProviderImpl extends AbstractEdm {
         actions = provider.getActions(actionName);
         if (actions == null) {
           return null;
-        } else {
-          actionsMap.put(actionName, actions);
+        }
+        List<CsdlAction> existing = actionsMap.putIfAbsent(actionName, actions);
+        if (existing != null) {
+          actions = existing;
         }
       }
       // Search for bound action where binding parameter matches
@@ -753,8 +758,10 @@ public class EdmProviderImpl extends AbstractEdm {
         functions = provider.getFunctions(functionName);
         if (functions == null) {
           return null;
-        } else {
-          functionsMap.put(functionName, functions);
+        }
+        List<CsdlFunction> existing = functionsMap.putIfAbsent(functionName, functions);
+        if (existing != null) {
+          functions = existing;
         }
       }
       final List<String> parameterNamesCopy =
@@ -815,8 +822,10 @@ public class EdmProviderImpl extends AbstractEdm {
         actions = provider.getActions(actionName);
         if (actions == null) {
           return null;
-        } else {
-          actionsMap.put(actionName, actions);
+        }
+        List<CsdlAction> existing = actionsMap.putIfAbsent(actionName, actions);
+        if (existing != null) {
+          actions = existing;
         }
       }
       // Search for first unbound action
@@ -841,7 +850,10 @@ public class EdmProviderImpl extends AbstractEdm {
       if (functions == null) {
         functions = provider.getFunctions(functionName);
         if (functions != null) {
-          functionsMap.put(functionName, functions);
+          List<CsdlFunction> existing = functionsMap.putIfAbsent(functionName, functions);
+          if (existing != null) {
+            functions = existing;
+          }
         }
       }
       if (functions != null) {
@@ -867,8 +879,10 @@ public class EdmProviderImpl extends AbstractEdm {
         functions = provider.getFunctions(functionName);
         if (functions == null) {
           return null;
-        } else {
-          functionsMap.put(functionName, functions);
+        }
+        List<CsdlFunction> existing = functionsMap.putIfAbsent(functionName, functions);
+        if (existing != null) {
+          functions = existing;
         }
       }
 
