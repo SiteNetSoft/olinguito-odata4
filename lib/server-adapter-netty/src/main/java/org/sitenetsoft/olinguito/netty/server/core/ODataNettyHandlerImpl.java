@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * Copyright 2026 SiteNetSoft - Moved to server-adapter-netty module
+ * Copyright 2026 SiteNetSoft - Moved to server-adapter-netty module; removed stale @SuppressWarnings
  */
 package org.sitenetsoft.olinguito.netty.server.core;
 
@@ -298,7 +298,6 @@ public class ODataNettyHandlerImpl implements ODataNettyHandler {
 	  }
   }
 
-@SuppressWarnings("unused")
 @Override
 public void processNettyRequest(HttpRequest request, HttpResponse response,
 		Map<String, String> requestParameters) {

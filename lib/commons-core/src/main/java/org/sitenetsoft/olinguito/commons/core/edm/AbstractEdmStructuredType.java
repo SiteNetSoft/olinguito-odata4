@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Thread-safe lazy fields with volatile
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
@@ -44,10 +46,10 @@ public abstract class AbstractEdmStructuredType extends EdmTypeImpl implements E
 
   private final CsdlStructuralType providerStructuredType;
 
-  private List<String> propertyNames;
-  private Map<String, EdmProperty> properties;
-  private List<String> navigationPropertyNames;
-  private Map<String, EdmNavigationProperty> navigationProperties;
+  private volatile List<String> propertyNames;
+  private volatile Map<String, EdmProperty> properties;
+  private volatile List<String> navigationPropertyNames;
+  private volatile Map<String, EdmNavigationProperty> navigationProperties;
 
   public AbstractEdmStructuredType(
       final Edm edm,

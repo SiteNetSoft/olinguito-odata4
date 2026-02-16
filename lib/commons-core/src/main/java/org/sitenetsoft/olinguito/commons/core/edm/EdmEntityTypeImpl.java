@@ -15,14 +15,17 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Thread-safe EDM caches using ConcurrentHashMap
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
@@ -40,10 +43,10 @@ public class EdmEntityTypeImpl extends AbstractEdmStructuredType implements EdmE
   private boolean baseTypeChecked = false;
   private final boolean hasStream;
   protected EdmEntityType entityBaseType;
-  private final List<String> keyPredicateNames = Collections.synchronizedList(new ArrayList<String>());
+  private final List<String> keyPredicateNames = new CopyOnWriteArrayList<>();
   private final Map<String, EdmKeyPropertyRef> keyPropertyRefs =
-      Collections.synchronizedMap(new LinkedHashMap<String, EdmKeyPropertyRef>());
-  private List<EdmKeyPropertyRef> keyPropertyRefsList;
+      new ConcurrentHashMap<>();
+  private volatile List<EdmKeyPropertyRef> keyPropertyRefsList;
 
   public EdmEntityTypeImpl(final Edm edm, final FullQualifiedName name, final CsdlEntityType entityType) {
     super(edm, name, EdmTypeKind.ENTITY, entityType);
