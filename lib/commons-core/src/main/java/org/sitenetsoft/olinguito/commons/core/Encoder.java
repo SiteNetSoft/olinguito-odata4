@@ -15,10 +15,12 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced deprecated String charset with StandardCharsets.UTF_8
  */
 package org.sitenetsoft.olinguito.commons.core;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Encodes a Java String (in its internal UTF-16 encoding) into its
@@ -97,22 +99,18 @@ public class Encoder {
   private String encodeInternal(final String input) {
     StringBuilder resultStr = new StringBuilder();
 
-    try {
-      for (byte utf8Byte : input.getBytes("UTF-8")) {
-        final char character = (char) utf8Byte;
-        if (isUnreserved(character)) {
-          resultStr.append(character);
-        } else if (isUnencoded(character)) {
-          resultStr.append(character);
-        } else if (utf8Byte >= 0) {
-          resultStr.append(hex[utf8Byte]);
-        } else {
-          // case UTF-8 continuation byte
-          resultStr.append(hex[256 + utf8Byte]); // index adjusted for the usage of signed bytes
-        }
+    for (byte utf8Byte : input.getBytes(StandardCharsets.UTF_8)) {
+      final char character = (char) utf8Byte;
+      if (isUnreserved(character)) {
+        resultStr.append(character);
+      } else if (isUnencoded(character)) {
+        resultStr.append(character);
+      } else if (utf8Byte >= 0) {
+        resultStr.append(hex[utf8Byte]);
+      } else {
+        // case UTF-8 continuation byte
+        resultStr.append(hex[256 + utf8Byte]); // index adjusted for the usage of signed bytes
       }
-    } catch (final UnsupportedEncodingException e) { // should never happen; UTF-8 is always there
-      return null;
     }
     return resultStr.toString();
   }

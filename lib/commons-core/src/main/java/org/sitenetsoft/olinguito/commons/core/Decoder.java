@@ -15,10 +15,12 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced deprecated String charset with StandardCharsets.UTF_8
  */
 package org.sitenetsoft.olinguito.commons.core;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Decodes a Java String containing a percent-encoded UTF-8 String value
@@ -81,10 +83,6 @@ public class Decoder {
       throw new IllegalArgumentException();
     }
 
-    try {
-      return new String(result, 0, position, "UTF-8");
-    } catch (UnsupportedEncodingException e) {
-      throw new IllegalArgumentException(e);
-    }
+    return new String(result, 0, position, StandardCharsets.UTF_8);
   }
 }

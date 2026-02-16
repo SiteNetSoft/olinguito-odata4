@@ -12,6 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Added logging for suppressed close exceptions
  */
 package org.sitenetsoft.olinguito.server.adapter.servlet;
 
@@ -29,9 +31,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
 import org.sitenetsoft.olinguito.server.api.ODataContent;
 import org.sitenetsoft.olinguito.server.api.ODataResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class ServletResponseWriter {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ServletResponseWriter.class);
     private static final int COPY_BUFFER_SIZE = 8192;
 
     private ServletResponseWriter() {}
@@ -85,7 +90,7 @@ public final class ServletResponseWriter {
             try {
                 closeable.close();
             } catch (IOException e) {
-                // ignore
+                LOG.debug("Error closing stream", e);
             }
         }
     }
