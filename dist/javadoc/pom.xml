@@ -37,15 +37,6 @@
 
   <build>
     <finalName>${project.name}-${project.version}</finalName>
-    <resources>
-      <resource>
-        <directory>target/maven-shared-archive-resources</directory>
-        <includes>
-          <include>META-INF/*</include>
-        </includes>
-      </resource>
-    </resources>
-
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

@@ -47,9 +47,6 @@
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
       </resource>
-      <resource>
-        <directory>target/maven-shared-archive-resources</directory>
-      </resource>
     </resources>
 
     <plugins>
@@ -94,7 +91,6 @@
       <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-server-core</artifactId>
       <version>${project.version}</version>
-      <!-- <scope>runtime</scope> -->
     </dependency>
 
     <dependency>
