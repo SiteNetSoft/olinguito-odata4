@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
  * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  * Copyright 2026 SiteNetSoft - Fixed deprecated HC 5.x execute() calls
+ * Copyright 2026 SiteNetSoft - Fixed HC 5.x resource leaks: shared HttpClient, close responses
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -36,6 +37,7 @@ import org.apache.hc.client5.http.classic.methods.HttpDelete;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.classic.methods.HttpPut;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.core5.http.ClassicHttpRequest;
 import org.apache.hc.core5.http.ClassicHttpResponse;
@@ -70,6 +72,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ServiceDispatcherTest {
   private static final int TOMCAT_PORT = 9900;
   private Tomcat tomcat = new Tomcat();
+  private CloseableHttpClient http;
 
   public class SampleODataServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -112,10 +115,14 @@ public class ServiceDispatcherTest {
     tomcat.setPort(TOMCAT_PORT);
     tomcat.getConnector().setSecure(false);
     tomcat.start();
+    http = HttpClientBuilder.create().build();
   }
 
   @AfterEach
   public void afterTest() throws Exception {
+    if (http != null) {
+      http.close();
+    }
     tomcat.stop();
     tomcat.destroy();
   }
@@ -134,22 +141,20 @@ public class ServiceDispatcherTest {
   }
 
   private ClassicHttpResponse httpSend(ClassicHttpRequest request) throws Exception{
-    var http = HttpClientBuilder.create().build();
     return http.executeOpen(getLocalhost(), request, null);
   }
 
   private void helpGETTest(ServiceHandler handler, String path, TestResult validator)
       throws Exception {
     beforeTest(handler);
-    httpGET("http://localhost:" + TOMCAT_PORT + "/" + path);
-    validator.validate();
+    try (ClassicHttpResponse response = httpGET("http://localhost:" + TOMCAT_PORT + "/" + path)) {
+      validator.validate();
+    }
   }
 
   private void helpTest(ServiceHandler handler, String path, String method, String payload,
       TestResult validator) throws Exception {
     beforeTest(handler);
-
-    var http = HttpClientBuilder.create().build();
 
     String editUrl = "http://localhost:" + TOMCAT_PORT + "/" + path;
     ClassicHttpRequest request = new HttpGet(editUrl);
@@ -166,7 +171,9 @@ public class ServiceDispatcherTest {
       request = delete;
     }
     request.setHeader("Content-Type", "application/json;odata.metadata=minimal");
-    http.executeOpen(getLocalhost(), request, null).close();
+    try (ClassicHttpResponse response = http.executeOpen(getLocalhost(), request, null)) {
+      // response consumed and closed
+    }
 
     validator.validate();
   }
