@@ -111,20 +111,6 @@
               </excludes>
             </filter>
           </filters>
-          <transformers>
-            <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-              <resource>META-INF/DEPENDENCIES</resource>
-              <file>target/maven-shared-archive-resources/META-INF/DEPENDENCIES</file>
-            </transformer>
-            <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-              <resource>META-INF/NOTICE</resource>
-              <file>target/maven-shared-archive-resources/META-INF/NOTICE</file>
-            </transformer>
-            <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-              <resource>META-INF/LICENSE</resource>
-              <file>target/maven-shared-archive-resources/META-INF/LICENSE</file>
-            </transformer>
-          </transformers>
         </configuration>
       </plugin>
     </plugins>
@@ -132,9 +118,6 @@
       <resource>
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
-      </resource>
-      <resource>
-        <directory>target/maven-shared-archive-resources</directory>
       </resource>
     </resources>
   </build>
