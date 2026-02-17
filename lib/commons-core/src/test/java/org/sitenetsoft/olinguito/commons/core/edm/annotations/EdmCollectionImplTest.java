@@ -65,7 +65,7 @@ public class EdmCollectionImplTest extends AbstractAnnotationTest {
   @Test
   public void collectionWithThreeItems() {
     CsdlCollection csdlCollection = new CsdlCollection();
-    List<CsdlExpression> items = new ArrayList<CsdlExpression>();
+    List<CsdlExpression> items = new ArrayList<>();
     items.add(new CsdlConstantExpression(ConstantExpressionType.String));
     items.add(new CsdlLogicalOrComparisonExpression(LogicalOrComparisonExpressionType.And));
     items.add(new CsdlConstantExpression(ConstantExpressionType.Bool));

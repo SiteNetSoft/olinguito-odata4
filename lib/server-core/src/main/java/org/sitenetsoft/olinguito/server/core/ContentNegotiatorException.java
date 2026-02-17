@@ -18,9 +18,11 @@
  */
 package org.sitenetsoft.olinguito.server.core;
 
+import java.io.Serial;
 import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
 
 public class ContentNegotiatorException extends ODataLibraryException {
+  @Serial
   private static final long serialVersionUID = -8112658467394158700L;
 
   public static enum MessageKeys implements MessageKey {

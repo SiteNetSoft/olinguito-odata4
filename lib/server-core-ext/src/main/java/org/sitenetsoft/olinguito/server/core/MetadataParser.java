@@ -406,13 +406,13 @@ public class MetadataParser {
       void build(XMLEventReader reader, StartElement element, SchemaBasedEdmProvider provider, String name)
           throws XMLStreamException {
         CsdlSchema schema = new CsdlSchema();
-        schema.setComplexTypes(new ArrayList<CsdlComplexType>());
-        schema.setActions(new ArrayList<CsdlAction>());
-        schema.setEntityTypes(new ArrayList<CsdlEntityType>());
-        schema.setEnumTypes(new ArrayList<CsdlEnumType>());
-        schema.setFunctions(new ArrayList<CsdlFunction>());
-        schema.setTerms(new ArrayList<CsdlTerm>());
-        schema.setTypeDefinitions(new ArrayList<CsdlTypeDefinition>());        
+        schema.setComplexTypes(new ArrayList<>());
+        schema.setActions(new ArrayList<>());
+        schema.setEntityTypes(new ArrayList<>());
+        schema.setEnumTypes(new ArrayList<>());
+        schema.setFunctions(new ArrayList<>());
+        schema.setTerms(new ArrayList<>());
+        schema.setTypeDefinitions(new ArrayList<>());        
         schema.setNamespace(attr(element, "Namespace"));
         schema.setAlias(attr(element, "Alias"));
         readSchemaContents(reader, schema);
@@ -456,7 +456,7 @@ public class MetadataParser {
       throws XMLStreamException {
 
     CsdlAction action = new CsdlAction();
-    action.setParameters(new ArrayList<CsdlParameter>());
+    action.setParameters(new ArrayList<>());
     action.setName(attr(element, "Name"));
     action.setBound(Boolean.parseBoolean(attr(element, "IsBound")));
     String entitySetPath = attr(element, "EntitySetPath");
@@ -848,7 +848,7 @@ public class MetadataParser {
   private void readFunction(XMLEventReader reader, StartElement element, CsdlSchema schema)
       throws XMLStreamException {
     CsdlFunction function = new CsdlFunction();
-    function.setParameters(new ArrayList<CsdlParameter>());
+    function.setParameters(new ArrayList<>());
     function.setName(attr(element, "Name"));
     function.setBound(Boolean.parseBoolean(attr(element, "IsBound")));
     function.setComposable(Boolean.parseBoolean(attr(element, "IsComposable")));
@@ -882,7 +882,7 @@ public class MetadataParser {
   private void readEnumType(XMLEventReader reader, StartElement element, CsdlSchema schema)
       throws XMLStreamException {
     CsdlEnumType type = new CsdlEnumType();
-    type.setMembers(new ArrayList<CsdlEnumMember>());
+    type.setMembers(new ArrayList<>());
     type.setName(attr(element, "Name"));
     if (attr(element, "UnderlyingType") != null) {
       type.setUnderlyingType(new FullQualifiedName(attr(element, "UnderlyingType")));
@@ -916,9 +916,9 @@ public class MetadataParser {
   private void readEntityType(XMLEventReader reader, StartElement element, CsdlSchema schema)
       throws XMLStreamException {
     CsdlEntityType entityType = new CsdlEntityType();
-    entityType.setProperties(new ArrayList<CsdlProperty>());
-    entityType.setNavigationProperties(new ArrayList<CsdlNavigationProperty>());
-    entityType.setKey(new ArrayList<CsdlPropertyRef>());
+    entityType.setProperties(new ArrayList<>());
+    entityType.setNavigationProperties(new ArrayList<>());
+    entityType.setKey(new ArrayList<>());
     entityType.setName(attr(element, "Name"));
     if (attr(element, "BaseType") != null) {
       entityType.setBaseType(new FullQualifiedName(attr(element, "BaseType")));
@@ -966,7 +966,7 @@ public class MetadataParser {
   private CsdlNavigationProperty readNavigationProperty(XMLEventReader reader, StartElement element)
       throws XMLStreamException {
     CsdlNavigationProperty property = new CsdlNavigationProperty();
-    property.setReferentialConstraints(new ArrayList<CsdlReferentialConstraint>());
+    property.setReferentialConstraints(new ArrayList<>());
 
     property.setName(attr(element, "Name"));
     property.setType(readType(element));
@@ -1057,10 +1057,10 @@ public class MetadataParser {
     if (attr(element, "Extends") != null) {
       container.setExtendsContainer(attr(element, "Extends"));
     }
-    container.setActionImports(new ArrayList<CsdlActionImport>());
-    container.setFunctionImports(new ArrayList<CsdlFunctionImport>());
-    container.setEntitySets(new ArrayList<CsdlEntitySet>());
-    container.setSingletons(new ArrayList<CsdlSingleton>());
+    container.setActionImports(new ArrayList<>());
+    container.setFunctionImports(new ArrayList<>());
+    container.setEntitySets(new ArrayList<>());
+    container.setSingletons(new ArrayList<>());
 
     new ElementReader<CsdlSchema>() {
       @Override
@@ -1114,10 +1114,10 @@ public class MetadataParser {
       private void readSingleton(XMLEventReader reader, StartElement element,
           CsdlEntityContainer container) throws XMLStreamException {
         CsdlSingleton singleton = new CsdlSingleton();
-        singleton.setNavigationPropertyBindings(new ArrayList<CsdlNavigationPropertyBinding>());
+        singleton.setNavigationPropertyBindings(new ArrayList<>());
         singleton.setName(attr(element, "Name"));
         singleton.setType(new FullQualifiedName(attr(element, "Type")));
-        singleton.setNavigationPropertyBindings(new ArrayList<CsdlNavigationPropertyBinding>());
+        singleton.setNavigationPropertyBindings(new ArrayList<>());
         readNavigationPropertyBindings(reader, element, singleton);
         container.getSingletons().add(singleton);
       }
@@ -1129,7 +1129,7 @@ public class MetadataParser {
         entitySet.setType(new FullQualifiedName(attr(element, "EntityType")));
         entitySet.setIncludeInServiceDocument(Boolean.parseBoolean(attr(element,
             "IncludeInServiceDocument")));
-        entitySet.setNavigationPropertyBindings(new ArrayList<CsdlNavigationPropertyBinding>());
+        entitySet.setNavigationPropertyBindings(new ArrayList<>());
         readNavigationPropertyBindings(reader, element, entitySet);
         container.getEntitySets().add(entitySet);
       }
@@ -1159,8 +1159,8 @@ public class MetadataParser {
   private void readComplexType(XMLEventReader reader, StartElement element, CsdlSchema schema)
       throws XMLStreamException {
     CsdlComplexType complexType = new CsdlComplexType();
-    complexType.setProperties(new ArrayList<CsdlProperty>());
-    complexType.setNavigationProperties(new ArrayList<CsdlNavigationProperty>());
+    complexType.setProperties(new ArrayList<>());
+    complexType.setNavigationProperties(new ArrayList<>());
     complexType.setName(attr(element, "Name"));
     if (attr(element, "BaseType") != null) {
       complexType.setBaseType(new FullQualifiedName(attr(element, "BaseType")));

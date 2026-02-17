@@ -30,7 +30,7 @@ public class CsdlReferentialConstraint extends CsdlAbstractEdmItem implements Cs
 
   private String referencedProperty;
 
-  private List<CsdlAnnotation> annotations = new ArrayList<CsdlAnnotation>();
+  private List<CsdlAnnotation> annotations = new ArrayList<>();
 
   /**
    * Gets property.

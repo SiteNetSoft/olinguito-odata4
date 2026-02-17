@@ -23,11 +23,14 @@ package org.sitenetsoft.olinguito.client.api.communication;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
 
 import java.io.InputStream;
+import java.io.Serial;
 
 /**
  * Represents a server error in OData.
  */
 public class ODataServerErrorException extends ODataRuntimeException {
+
+  @Serial
 
   private static final long serialVersionUID = -6423014532618680135L;
 

@@ -55,7 +55,7 @@ public class SchemaProvider {
         prov.getTypeDefinition(TypeDefinitionProvider.nameTDString)));
 
     // EntityTypes
-    List<CsdlEntityType> entityTypes = new ArrayList<CsdlEntityType>();
+    List<CsdlEntityType> entityTypes = new ArrayList<>();
     schema.setEntityTypes(entityTypes);
     entityTypes.add(prov.getEntityType(EntityTypeProvider.nameETDeriveCollComp));
     entityTypes.add(prov.getEntityType(EntityTypeProvider.nameETAllPrim));
@@ -93,7 +93,7 @@ public class SchemaProvider {
     entityTypes.add(prov.getEntityType(EntityTypeProvider.nameETStreamOnComplexProp)); 
     
     // ComplexTypes
-    List<CsdlComplexType> complexTypes = new ArrayList<CsdlComplexType>();
+    List<CsdlComplexType> complexTypes = new ArrayList<>();
     schema.setComplexTypes(complexTypes);
     complexTypes.add(prov.getComplexType(ComplexTypeProvider.nameCTPrim));
     complexTypes.add(prov.getComplexType(ComplexTypeProvider.nameCTAllPrim));
@@ -117,7 +117,7 @@ public class SchemaProvider {
     complexTypes.add(prov.getComplexType(ComplexTypeProvider.nameCTWithStreamProp));
     
     // Actions
-    List<CsdlAction> actions = new ArrayList<CsdlAction>();
+    List<CsdlAction> actions = new ArrayList<>();
     schema.setActions(actions);
     actions.addAll(prov.getActions(ActionProvider.nameBA_RTETTwoKeyNav));
     actions.addAll(prov.getActions(ActionProvider.nameBAESAllPrimRTETAllPrim));
@@ -154,7 +154,7 @@ public class SchemaProvider {
     actions.addAll(prov.getActions(ActionProvider.name_A_RTTimeOfDay_));
     
     // Functions
-    List<CsdlFunction> functions = new ArrayList<CsdlFunction>();
+    List<CsdlFunction> functions = new ArrayList<>();
     schema.setFunctions(functions);
     
     functions.addAll(prov.getFunctions(FunctionProvider.name_FC_RTTimeOfDay_));

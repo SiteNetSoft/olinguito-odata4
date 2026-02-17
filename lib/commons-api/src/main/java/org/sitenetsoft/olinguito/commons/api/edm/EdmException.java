@@ -18,7 +18,11 @@
  */
 package org.sitenetsoft.olinguito.commons.api.edm;
 
+import java.io.Serial;
+
 public class EdmException extends RuntimeException {
+
+  @Serial
 
   private static final long serialVersionUID = 1L;
 

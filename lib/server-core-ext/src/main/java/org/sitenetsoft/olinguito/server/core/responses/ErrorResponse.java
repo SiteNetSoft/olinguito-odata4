@@ -36,7 +36,7 @@ public class ErrorResponse extends ServiceResponse {
   
   public ErrorResponse(ServiceMetadata metadata, ODataSerializer serializer,
       ContentType contentType, ODataResponse response) {
-    super(metadata, response, new HashMap<String, String>());
+    super(metadata, response, new HashMap<>());
     this.contentType = contentType;
     this.serializer = serializer;
   }

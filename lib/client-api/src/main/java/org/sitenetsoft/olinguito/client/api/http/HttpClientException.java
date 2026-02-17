@@ -18,6 +18,8 @@
  */
 package org.sitenetsoft.olinguito.client.api.http;
 
+import java.io.Serial;
+
 /**
  * A client-side processing runtime exception.
  *
@@ -26,6 +28,8 @@ package org.sitenetsoft.olinguito.client.api.http;
  * reason of the processing failure.
  */
 public class HttpClientException extends RuntimeException {
+
+  @Serial
 
   private static final long serialVersionUID = -4232431597816056514L;
 

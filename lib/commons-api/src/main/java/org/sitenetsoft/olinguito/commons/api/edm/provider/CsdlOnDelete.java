@@ -28,7 +28,7 @@ public class CsdlOnDelete extends CsdlAbstractEdmItem implements CsdlAnnotatable
 
   private CsdlOnDeleteAction action = CsdlOnDeleteAction.None;
   
-  private List<CsdlAnnotation> annotations = new ArrayList<CsdlAnnotation>();
+  private List<CsdlAnnotation> annotations = new ArrayList<>();
   /**
    * Gets action.
    *

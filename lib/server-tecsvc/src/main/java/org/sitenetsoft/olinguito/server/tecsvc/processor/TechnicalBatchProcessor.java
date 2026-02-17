@@ -73,7 +73,7 @@ public class TechnicalBatchProcessor extends TechnicalProcessor implements Batch
         .rawServiceResolutionUri(request.getRawServiceResolutionUri()).build();
     final List<BatchRequestPart> parts = odata.createFixedFormatDeserializer().parseBatchRequest(request.getBody(),
         boundary, options);
-    final List<ODataResponsePart> responseParts = new ArrayList<ODataResponsePart>();
+    final List<ODataResponsePart> responseParts = new ArrayList<>();
 
     for (BatchRequestPart part : parts) {
       final ODataResponsePart responsePart = facade.handleBatchRequest(part);
@@ -104,7 +104,7 @@ public class TechnicalBatchProcessor extends TechnicalProcessor implements Batch
   @Override
   public ODataResponsePart processChangeSet(final BatchFacade facade, final List<ODataRequest> requests)
       throws ODataApplicationException, ODataLibraryException {
-    List<ODataResponse> responses = new ArrayList<ODataResponse>();
+    List<ODataResponse> responses = new ArrayList<>();
 
     for (ODataRequest request : requests) {
       final ODataResponse oDataResponse = facade.handleODataRequest(request);

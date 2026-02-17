@@ -18,10 +18,14 @@
  */
 package org.sitenetsoft.olinguito.commons.api.ex;
 
+import java.io.Serial;
+
 /**
  * Core runtime exception for OData.
  */
 public class ODataNotSupportedException extends ODataRuntimeException {
+
+  @Serial
 
   private static final long serialVersionUID = 42L;
 

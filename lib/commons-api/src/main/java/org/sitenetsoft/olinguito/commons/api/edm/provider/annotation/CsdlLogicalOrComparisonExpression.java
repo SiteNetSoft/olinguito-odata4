@@ -29,7 +29,7 @@ public class CsdlLogicalOrComparisonExpression extends CsdlDynamicExpression imp
   private final LogicalOrComparisonExpressionType type;
   private CsdlExpression left;
   private CsdlExpression right;
-  private List<CsdlAnnotation> annotations = new ArrayList<CsdlAnnotation>();
+  private List<CsdlAnnotation> annotations = new ArrayList<>();
 
   public CsdlLogicalOrComparisonExpression(LogicalOrComparisonExpressionType type) {
     this.type = type;

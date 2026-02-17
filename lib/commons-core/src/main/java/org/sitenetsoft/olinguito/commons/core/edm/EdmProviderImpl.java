@@ -69,7 +69,7 @@ public class EdmProviderImpl extends AbstractEdm {
       new ConcurrentHashMap<>();
   private final Map<FullQualifiedName, List<CsdlFunction>> functionsMap =
       new ConcurrentHashMap<>();
-  private List<CsdlSchema> termSchemaDefinition = new ArrayList<CsdlSchema>();
+  private List<CsdlSchema> termSchemaDefinition = new ArrayList<>();
 
   private final String SLASH = "/";
   private final String DOT = ".";
@@ -262,7 +262,7 @@ public class EdmProviderImpl extends AbstractEdm {
         getAnnotationsMap().put(annotationGrp.getTarget(), annotationGrp.getAnnotations());
       } else {
         List<CsdlAnnotation> annotations = getAnnotationsMap().get(annotationGrp.getTarget());
-        List<CsdlAnnotation> newAnnotations = new ArrayList<CsdlAnnotation>();
+        List<CsdlAnnotation> newAnnotations = new ArrayList<>();
         for (CsdlAnnotation annotation : annotationGrp.getAnnotations()) {
           if (!compareAnnotations(annotations, annotation)) {
             newAnnotations.add(annotation);
@@ -322,7 +322,7 @@ public class EdmProviderImpl extends AbstractEdm {
     String schemaName = null;
     String entitySetName = null;
     List<CsdlEntitySet> entitySets = csdlEntityContainer != null ? 
-        csdlEntityContainer.getEntitySets() : new ArrayList<CsdlEntitySet>();
+        csdlEntityContainer.getEntitySets() : new ArrayList<>();
     if (structuralType instanceof CsdlComplexType) {
       removeAnnotationsAddedToCTNavPropFromES(structuralType, typeName, csdlEntityContainer, navProperties, entitySets);
     } else {
@@ -780,7 +780,7 @@ public class EdmProviderImpl extends AbstractEdm {
               && isBindingParameterCollection.booleanValue() == bindingParameter.isCollection()
               && parameterNamesCopy.size() == providerParameters.size() - 1) {
 
-            final List<String> providerParameterNames = new ArrayList<String>();
+            final List<String> providerParameterNames = new ArrayList<>();
             for (int i = 1; i < providerParameters.size(); i++) {
               providerParameterNames.add(providerParameters.get(i).getName());
             }

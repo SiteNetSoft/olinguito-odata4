@@ -512,7 +512,7 @@ public class MockedBatchHandlerTest {
           + "--changeset_12345--" + CRLF
           + CRLF
           + "--batch_12345--";
-          final Map<String, List<String>> header = new HashMap<String, List<String>>();
+          final Map<String, List<String>> header = new HashMap<>();
           header.put(HttpHeader.CONTENT_TYPE, Arrays.asList(new String[] { "application/http" }));
           final ODataResponse response = new ODataResponse();
           final ODataRequest request = buildODataRequest(content, header);
@@ -577,7 +577,7 @@ public class MockedBatchHandlerTest {
 
     @Override
     public ODataResponsePart processChangeSet(final BatchFacade facade, final List<ODataRequest> requests) {
-      List<ODataResponse> responses = new ArrayList<ODataResponse>();
+      List<ODataResponse> responses = new ArrayList<>();
 
       for (ODataRequest request : requests) {
         try {
@@ -597,7 +597,7 @@ public class MockedBatchHandlerTest {
       final BatchOptions options = BatchOptions.with().isStrict(true).rawBaseUri(BASE_URI).build();
       final List<BatchRequestPart> parts =
               odata.createFixedFormatDeserializer().parseBatchRequest(request.getBody(), boundary, options);
-      final List<ODataResponsePart> responseParts = new ArrayList<ODataResponsePart>();
+      final List<ODataResponsePart> responseParts = new ArrayList<>();
 
       for (BatchRequestPart part : parts) {
         for (final ODataRequest oDataRequest : part.getRequests()) {

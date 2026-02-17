@@ -20,6 +20,7 @@
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
+import java.io.Serial;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -58,7 +59,7 @@ public class URIBuilderTest extends AbstractTest {
 
     assertEquals(new org.apache.hc.core5.net.URIBuilder(SERVICE_ROOT + "/AnEntitySet(11)").build(), uri);
 
-    final Map<String, Object> multiKey = new LinkedHashMap<String, Object>();
+    final Map<String, Object> multiKey = new LinkedHashMap<>();
     multiKey.put("OrderId", -10);
     multiKey.put("ProductId", -10);
     URIBuilder uriBuilder = client.newURIBuilder(SERVICE_ROOT).
@@ -84,7 +85,8 @@ public class URIBuilderTest extends AbstractTest {
   @Test
   public void expandWithOptions() throws URISyntaxException {
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("Products").appendKeySegment(5).
-        expandWithOptions("ProductDetails", new LinkedHashMap<QueryOption, Object>() {
+        expandWithOptions("ProductDetails", new LinkedHashMap<>() {
+          @Serial
           private static final long serialVersionUID = 3109256773218160485L;
 
           {
@@ -100,7 +102,8 @@ public class URIBuilderTest extends AbstractTest {
   @Test
   public void expandWithOptionsCount() throws URISyntaxException {
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("Products").appendKeySegment(5).
-        expandWithOptions("ProductDetails", false, true, new LinkedHashMap<QueryOption, Object>() {
+        expandWithOptions("ProductDetails", false, true, new LinkedHashMap<>() {
+          @Serial
           private static final long serialVersionUID = 3109256773218160485L;
           {
             put(QueryOption.EXPAND, "ProductInfo");
@@ -275,7 +278,7 @@ public class URIBuilderTest extends AbstractTest {
     final ODataClient client = ODataClientFactory.getClient();
     final URI uri = client.newURIBuilder(SERVICE_ROOT).
         appendOperationCallSegment("functionName").count().build();
-    final Map<String, ClientValue> parameters = new HashMap<String, ClientValue>();
+    final Map<String, ClientValue> parameters = new HashMap<>();
     final ClientPrimitiveValue value = client.getObjectFactory().
         newPrimitiveValueBuilder().buildString("parameterValue");
     parameters.put("parameterName", value);
@@ -290,7 +293,7 @@ public class URIBuilderTest extends AbstractTest {
     final ODataClient client = ODataClientFactory.getClient();
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendOperationCallSegment("functionName").
         filter("paramName eq 1").format("json").count().build();
-    final Map<String, ClientValue> parameters = new HashMap<String, ClientValue>();
+    final Map<String, ClientValue> parameters = new HashMap<>();
     final ClientPrimitiveValue value = client.getObjectFactory().
         newPrimitiveValueBuilder().buildString("parameterValue");
     parameters.put("parameterName", value);
@@ -305,7 +308,7 @@ public class URIBuilderTest extends AbstractTest {
     final ODataClient client = ODataClientFactory.getClient();
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendOperationCallSegment("functionName").
         filter("paramName eq 1").format("json").build();
-    final Map<String, ClientValue> parameters = new HashMap<String, ClientValue>();
+    final Map<String, ClientValue> parameters = new HashMap<>();
     final ClientPrimitiveValue value = client.getObjectFactory().
         newPrimitiveValueBuilder().buildString("parameterValue");
     parameters.put("parameterName", value);
@@ -320,7 +323,7 @@ public class URIBuilderTest extends AbstractTest {
     final ODataClient client = ODataClientFactory.getClient();
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("EntitySet").
         appendOperationCallSegment("functionName").count().build();
-    final Map<String, ClientValue> parameters = new HashMap<String, ClientValue>();
+    final Map<String, ClientValue> parameters = new HashMap<>();
     final ClientPrimitiveValue value = client.getObjectFactory().
         newPrimitiveValueBuilder().buildString("parameterValue");
     parameters.put("parameterName", value);
@@ -335,7 +338,7 @@ public class URIBuilderTest extends AbstractTest {
     final ODataClient client = ODataClientFactory.getClient();
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("EntitySet").
         appendOperationCallSegment("functionName").count().filter("PropertyString eq '1'").build();
-    final Map<String, ClientValue> parameters = new HashMap<String, ClientValue>();
+    final Map<String, ClientValue> parameters = new HashMap<>();
     final ClientPrimitiveValue value = client.getObjectFactory().
         newPrimitiveValueBuilder().buildString("parameterValue");
     parameters.put("parameterName", value);
@@ -350,7 +353,7 @@ public class URIBuilderTest extends AbstractTest {
     final ODataClient client = ODataClientFactory.getClient();
     final URI uri = client.newURIBuilder(SERVICE_ROOT).
         appendOperationCallSegment("functionName").count().filter("PropertyString eq '1'").build();
-    final Map<String, ClientValue> parameters = new HashMap<String, ClientValue>();
+    final Map<String, ClientValue> parameters = new HashMap<>();
     URI newUri = URIUtils.buildFunctionInvokeURI(uri, parameters);
     assertNotNull(newUri);
     assertEquals("http://host/service/functionName()"
@@ -363,7 +366,7 @@ public class URIBuilderTest extends AbstractTest {
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("EntitySet").
         appendOperationCallSegment("functionName").filter("PropertyString eq '1'").
         appendNavigationSegment("NavSeg").count().build();
-    final Map<String, ClientValue> parameters = new HashMap<String, ClientValue>();
+    final Map<String, ClientValue> parameters = new HashMap<>();
     final ClientPrimitiveValue value = client.getObjectFactory().
         newPrimitiveValueBuilder().buildString("parameterValue");
     parameters.put("parameterName", value);
@@ -379,7 +382,7 @@ public class URIBuilderTest extends AbstractTest {
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("EntitySet").
         appendOperationCallSegment("functionName").filter("PropertyString eq '1'").
         appendNavigationSegment("NavSeg").appendActionCallSegment("ActionName").count().build();
-    final Map<String, ClientValue> parameters = new HashMap<String, ClientValue>();
+    final Map<String, ClientValue> parameters = new HashMap<>();
     final ClientPrimitiveValue value = client.getObjectFactory().
         newPrimitiveValueBuilder().buildString("parameterValue");
     parameters.put("parameterName", value);
@@ -395,7 +398,7 @@ public class URIBuilderTest extends AbstractTest {
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("EntitySet").
         appendOperationCallSegment("functionName").
         appendNavigationSegment("NavSeg").appendActionCallSegment("ActionName").appendValueSegment().build();
-    final Map<String, ClientValue> parameters = new HashMap<String, ClientValue>();
+    final Map<String, ClientValue> parameters = new HashMap<>();
     final ClientPrimitiveValue value = client.getObjectFactory().
         newPrimitiveValueBuilder().buildString("parameterValue");
     parameters.put("parameterName", value);
@@ -411,7 +414,7 @@ public class URIBuilderTest extends AbstractTest {
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("EntitySet").
         appendOperationCallSegment("functionName").
         appendNavigationSegment("NavSeg").appendRefSegment().build();
-    final Map<String, ClientValue> parameters = new HashMap<String, ClientValue>();
+    final Map<String, ClientValue> parameters = new HashMap<>();
     final ClientPrimitiveValue value = client.getObjectFactory().
         newPrimitiveValueBuilder().buildString("parameterValue");
     parameters.put("parameterName", value);
@@ -427,7 +430,7 @@ public class URIBuilderTest extends AbstractTest {
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("EntitySet").
         appendOperationCallSegment("functionName").
         appendNavigationSegment("NavSeg").count().addParameterAlias("first", "'1'").build();
-    final Map<String, ClientValue> parameters = new HashMap<String, ClientValue>();
+    final Map<String, ClientValue> parameters = new HashMap<>();
     final ClientPrimitiveValue value = client.getObjectFactory().
         newPrimitiveValueBuilder().setValue(new ParameterAlias("first")).build();
     parameters.put("parameterName", value);
@@ -470,7 +473,7 @@ public class URIBuilderTest extends AbstractTest {
     final URI uri = client.newURIBuilder(SERVICE_ROOT).
         appendOperationCallSegment("functionName").count().filter("PropertyString eq '1'").
         addCustomQueryOption("x", "y").build();
-    final Map<String, ClientValue> parameters = new HashMap<String, ClientValue>();
+    final Map<String, ClientValue> parameters = new HashMap<>();
     URI newUri = URIUtils.buildFunctionInvokeURI(uri, parameters);
     assertNotNull(newUri);
     assertEquals("http://host/service/functionName()"
@@ -483,7 +486,7 @@ public class URIBuilderTest extends AbstractTest {
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("EntitySet").
         appendOperationCallSegment("functionName").
         appendNavigationSegment("NavSeg").appendRefSegment().addCustomQueryOption("x", "y").build();
-    final Map<String, ClientValue> parameters = new HashMap<String, ClientValue>();
+    final Map<String, ClientValue> parameters = new HashMap<>();
     final ClientPrimitiveValue value = client.getObjectFactory().
         newPrimitiveValueBuilder().buildString("parameterValue");
     parameters.put("parameterName", value);

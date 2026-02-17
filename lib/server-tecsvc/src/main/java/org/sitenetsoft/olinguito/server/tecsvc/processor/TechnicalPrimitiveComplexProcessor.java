@@ -443,7 +443,7 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
   }
 
   private List<String> getPropertyPath(final List<UriResource> path, final int trailing) {
-    List<String> result = new LinkedList<String>();
+    List<String> result = new LinkedList<>();
     int index = path.size() - trailing - 1;
     while (path.get(index) instanceof UriResourceProperty) {
       result.add(0, ((UriResourceProperty) path.get(index)).getProperty().getName());

@@ -267,7 +267,7 @@ public class BatchParserCommonTest {
   }
 
   private List<Line> toLineList(final String... messageRaw) {
-    final List<Line> lineList = new ArrayList<Line>();
+    final List<Line> lineList = new ArrayList<>();
     int counter = 1;
 
     for (final String currentLine : messageRaw) {

@@ -90,7 +90,7 @@ public class QueryOptionTest {
     option.setSystemQueryOption(new IdOptionImpl());
 
     option = new ExpandItemImpl();
-    List<SystemQueryOption> list = new ArrayList<SystemQueryOption>();
+    List<SystemQueryOption> list = new ArrayList<>();
     list.add(expand);
     list.add(filter);
     option.setSystemQueryOptions(list);

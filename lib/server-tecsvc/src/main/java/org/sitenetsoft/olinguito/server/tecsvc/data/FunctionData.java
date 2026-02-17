@@ -158,7 +158,7 @@ public class FunctionData {
             Arrays.asList(DataCreator.createPrimitive("PropertyInt16", 2),
                 DataCreator.createPrimitive("PropertyString", name + "string value: null")));
       } else {
-        List<ComplexValue> complexValues = new ArrayList<ComplexValue>();
+        List<ComplexValue> complexValues = new ArrayList<>();
         short counter = 1;
         for (short i = parameterInt16; 0 < i; i--) {
           ComplexValue complexValue = new ComplexValue();

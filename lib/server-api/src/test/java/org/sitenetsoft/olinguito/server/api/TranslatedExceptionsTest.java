@@ -18,6 +18,7 @@
  */
 package org.sitenetsoft.olinguito.server.api;
 
+import java.io.Serial;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -33,6 +34,7 @@ public class TranslatedExceptionsTest {
   private static final String DEV = "devMessage";
 
   private static class TestException extends ODataLibraryException {
+    @Serial
     private static final long serialVersionUID = -7199975861656921724L;
 
     public static enum Keys implements MessageKey {

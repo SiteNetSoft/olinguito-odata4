@@ -261,22 +261,22 @@ public class EdmEntityContainerImplTest {
     @Override
     public CsdlEntityContainer getEntityContainer() throws ODataException {
       CsdlEntityContainer container = new CsdlEntityContainer();
-      List<CsdlEntitySet> entitySets = new ArrayList<CsdlEntitySet>();
+      List<CsdlEntitySet> entitySets = new ArrayList<>();
       entitySets.add(new CsdlEntitySet().setName("entitySetName"));
       entitySets.add(new CsdlEntitySet().setName("entitySetName2"));
       container.setEntitySets(entitySets);
 
-      List<CsdlSingleton> singletons = new ArrayList<CsdlSingleton>();
+      List<CsdlSingleton> singletons = new ArrayList<>();
       singletons.add(new CsdlSingleton().setName("singletonName"));
       singletons.add(new CsdlSingleton().setName("singletonName2"));
       container.setSingletons(singletons);
 
-      List<CsdlActionImport> actionImports = new ArrayList<CsdlActionImport>();
+      List<CsdlActionImport> actionImports = new ArrayList<>();
       actionImports.add(new CsdlActionImport().setName("actionImportName"));
       actionImports.add(new CsdlActionImport().setName("actionImportName2"));
       container.setActionImports(actionImports);
 
-      List<CsdlFunctionImport> functionImports = new ArrayList<CsdlFunctionImport>();
+      List<CsdlFunctionImport> functionImports = new ArrayList<>();
       functionImports.add(new CsdlFunctionImport().setName("functionImportName"));
       functionImports.add(new CsdlFunctionImport().setName("functionImportName2"));
       container.setFunctionImports(functionImports);

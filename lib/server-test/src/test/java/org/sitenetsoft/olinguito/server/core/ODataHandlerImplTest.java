@@ -33,6 +33,7 @@ import static org.mockito.Mockito.verifyNoInteractions;;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.Serial;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
@@ -324,6 +325,7 @@ public class ODataHandlerImplTest {
 
     ODataApplicationException oDataApplicationException =
         new ODataApplicationException(ORIGINAL_MESSAGE, 425, Locale.ENGLISH, ODATA_ERRORCODE) {
+          @Serial
           private static final long serialVersionUID = 1L;
 
           @Override
@@ -1204,7 +1206,7 @@ public class ODataHandlerImplTest {
     final String uri = "ESAllPrim(0)";
     final EntityProcessor processor = mock(EntityProcessor.class);
 
-    final Map<String, String> header = new HashMap<String, String>();
+    final Map<String, String> header = new HashMap<>();
     header.put(HttpHeader.ODATA_VERSION, "3.0");
     final ODataResponse response = dispatchToValidateHeaders
         (HttpMethod.GET, uri, null, header, processor);
@@ -1220,7 +1222,7 @@ public class ODataHandlerImplTest {
     final String uri = "ESAllPrim(0)";
     final EntityProcessor processor = mock(EntityProcessor.class);
 
-    final Map<String, String> header = new HashMap<String, String>();
+    final Map<String, String> header = new HashMap<>();
     header.put(HttpHeader.ODATA_VERSION, "5.0");
     
     final ODataResponse response = dispatchToValidateHeaders
@@ -1237,7 +1239,7 @@ public class ODataHandlerImplTest {
     final String uri = "ESAllPrim(0)";
     final EntityProcessor processor = mock(EntityProcessor.class);
 
-    final Map<String, String> header = new HashMap<String, String>();
+    final Map<String, String> header = new HashMap<>();
     header.put(HttpHeader.ODATA_MAX_VERSION, "3.0");
     
     final ODataResponse response = dispatchToValidateHeaders
@@ -1254,7 +1256,7 @@ public class ODataHandlerImplTest {
     final String uri = "ESAllPrim(0)";
     final EntityProcessor processor = mock(EntityProcessor.class);
 
-    final Map<String, String> header = new HashMap<String, String>();
+    final Map<String, String> header = new HashMap<>();
     header.put(HttpHeader.ODATA_MAX_VERSION, "5.0");
     
     final ODataResponse response = dispatchToValidateHeaders
@@ -1267,7 +1269,7 @@ public class ODataHandlerImplTest {
     final String uri = "ESAllPrim(0)";
     final EntityProcessor processor = mock(EntityProcessor.class);
 
-    final Map<String, String> headers = new HashMap<String, String>();
+    final Map<String, String> headers = new HashMap<>();
     headers.put(HttpHeader.ODATA_VERSION, "4.0");
     headers.put(HttpHeader.ODATA_MAX_VERSION, "5.0");
     
@@ -1281,7 +1283,7 @@ public class ODataHandlerImplTest {
     final String uri = "ESAllPrim(0)";
     final EntityProcessor processor = mock(EntityProcessor.class);
 
-    final Map<String, String> headers = new HashMap<String, String>();
+    final Map<String, String> headers = new HashMap<>();
     headers.put(HttpHeader.ODATA_VERSION, "3.0");
     headers.put(HttpHeader.ODATA_MAX_VERSION, "4.0");
     
@@ -1299,7 +1301,7 @@ public class ODataHandlerImplTest {
     final String uri = "ESAllPrim(0)";
     final EntityProcessor processor = mock(EntityProcessor.class);
 
-    final Map<String, String> headers = new HashMap<String, String>();
+    final Map<String, String> headers = new HashMap<>();
     headers.put(HttpHeader.ODATA_VERSION, "5.0");
     headers.put(HttpHeader.ODATA_MAX_VERSION, "5.0");
     
@@ -1317,7 +1319,7 @@ public class ODataHandlerImplTest {
     final String uri = "ESAllPrim(0)";
     final EntityProcessor processor = mock(EntityProcessor.class);
 
-    final Map<String, String> headers = new HashMap<String, String>();
+    final Map<String, String> headers = new HashMap<>();
     headers.put(HttpHeader.ODATA_VERSION, "4.0");
     headers.put(HttpHeader.ODATA_MAX_VERSION, "4.01");
     
@@ -1331,7 +1333,7 @@ public class ODataHandlerImplTest {
     final String uri = "ESAllPrim(0)";
     final EntityProcessor processor = mock(EntityProcessor.class);
 
-    final Map<String, String> headers = new HashMap<String, String>();
+    final Map<String, String> headers = new HashMap<>();
     headers.put(HttpHeader.ODATA_VERSION, "4.0");
     headers.put(HttpHeader.ODATA_MAX_VERSION, "4.0");
     

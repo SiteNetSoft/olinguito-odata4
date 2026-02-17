@@ -73,10 +73,10 @@ public class EdmRecordImplTest extends AbstractAnnotationTest {
     csdlRecord.setType("ns.et");
     Edm mock = mock(Edm.class);
     when(mock.getEntityType(new FullQualifiedName("ns", "et"))).thenReturn(mock(EdmEntityType.class));
-    List<CsdlPropertyValue> propertyValues = new ArrayList<CsdlPropertyValue>();
+    List<CsdlPropertyValue> propertyValues = new ArrayList<>();
     propertyValues.add(new CsdlPropertyValue());
     csdlRecord.setPropertyValues(propertyValues);
-    List<CsdlAnnotation> csdlAnnotations = new ArrayList<CsdlAnnotation>();
+    List<CsdlAnnotation> csdlAnnotations = new ArrayList<>();
     csdlAnnotations.add(new CsdlAnnotation().setTerm("ns.term"));
     csdlRecord.setAnnotations(csdlAnnotations);
     EdmExpression record = AbstractEdmExpression.getExpression(mock, csdlRecord);

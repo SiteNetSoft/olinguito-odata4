@@ -27,7 +27,7 @@ import java.util.List;
 public class Property extends Valuable {
 
   private String name;
-  private final List<Operation> operations = new ArrayList<Operation>();
+  private final List<Operation> operations = new ArrayList<>();
   
   /**
    * Creates a new property

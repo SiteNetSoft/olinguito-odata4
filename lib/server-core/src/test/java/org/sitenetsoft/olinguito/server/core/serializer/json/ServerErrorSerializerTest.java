@@ -87,7 +87,7 @@ public class ServerErrorSerializerTest {
   @Test
   public void emptyDetailsList() throws Exception {
     ODataServerError error = new ODataServerError();
-    error.setMessage("ErrorMessage").setDetails(new ArrayList<ODataErrorDetail>());
+    error.setMessage("ErrorMessage").setDetails(new ArrayList<>());
     InputStream stream = ser.error(error).getContent();
     String jsonString = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
     assertEquals("{\"error\":{\"code\":null,\"message\":\"ErrorMessage\",\"details\":[]}}", jsonString);
@@ -103,7 +103,7 @@ public class ServerErrorSerializerTest {
 
   @Test
   public void singleDetailNothingSet() throws Exception {
-    List<ODataErrorDetail> details = new ArrayList<ODataErrorDetail>();
+    List<ODataErrorDetail> details = new ArrayList<>();
     details.add(new ODataErrorDetail());
     ODataServerError error = new ODataServerError().setDetails(details);
     InputStream stream = ser.error(error).getContent();

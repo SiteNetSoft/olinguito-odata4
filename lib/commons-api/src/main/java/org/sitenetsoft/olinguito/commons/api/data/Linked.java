@@ -26,9 +26,9 @@ import java.util.List;
  */
 public abstract class Linked extends AbstractODataObject {
 
-  private final List<Link> associationLinks = new ArrayList<Link>();
-  private final List<Link> navigationLinks = new ArrayList<Link>();
-  private final List<Link> bindingLinks = new ArrayList<Link>();
+  private final List<Link> associationLinks = new ArrayList<>();
+  private final List<Link> navigationLinks = new ArrayList<>();
+  private final List<Link> bindingLinks = new ArrayList<>();
 
   protected Link getOneByTitle(final String name, final List<Link> links) {
     Link result = null;

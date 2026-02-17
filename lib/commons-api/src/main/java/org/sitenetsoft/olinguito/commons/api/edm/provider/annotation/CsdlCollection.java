@@ -28,7 +28,7 @@ import java.util.List;
  */
 public class CsdlCollection extends CsdlDynamicExpression {
 
-  private List<CsdlExpression> items = new ArrayList<CsdlExpression>();
+  private List<CsdlExpression> items = new ArrayList<>();
 
   /**
    * Returns a list of child expression

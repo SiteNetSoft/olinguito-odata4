@@ -77,7 +77,7 @@ public class TypedOperand extends VisitorOperand {
     } else if (isNull()) {
       return new TypedOperand(null, asType);
     } 
-    List<Object> newValue = new ArrayList<Object>();
+    List<Object> newValue = new ArrayList<>();
     List<Object> list = (List<Object>) value;
     for (Object val : list) {
    // Use BigInteger for arbitrarily large whole numbers.
@@ -202,7 +202,7 @@ public class TypedOperand extends VisitorOperand {
   @SuppressWarnings("unchecked")
   public <T> List<T> getTypedValueList(final Class<T> clazz) {
     List<Object> list = (List<Object>) value;
-    List<Object> newList = new ArrayList<Object>();
+    List<Object> newList = new ArrayList<>();
     for (Object obj : list) {
       newList.add(clazz.cast(obj));
     }

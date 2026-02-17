@@ -76,7 +76,7 @@ public class ContainerProvider {
     container.setName(ContainerProvider.nameContainer.getName());
 
     // EntitySets
-    List<CsdlEntitySet> entitySets = new ArrayList<CsdlEntitySet>();
+    List<CsdlEntitySet> entitySets = new ArrayList<>();
     container.setEntitySets(entitySets);
     entitySets.add(prov.getEntitySet(ContainerProvider.nameContainer, "ESAllPrim"));
     entitySets.add(prov.getEntitySet(ContainerProvider.nameContainer, "ESAllPrimDefaultValues"));
@@ -116,14 +116,14 @@ public class ContainerProvider {
     entitySets.add(prov.getEntitySet(ContainerProvider.nameContainer, "ESStreamOnComplexProp"));
 
     // Singletons
-    List<CsdlSingleton> singletons = new ArrayList<CsdlSingleton>();
+    List<CsdlSingleton> singletons = new ArrayList<>();
     container.setSingletons(singletons);
     singletons.add(prov.getSingleton(ContainerProvider.nameContainer, "SI"));
     singletons.add(prov.getSingleton(ContainerProvider.nameContainer, "SINav"));
     singletons.add(prov.getSingleton(ContainerProvider.nameContainer, "SIMedia"));
 
     // ActionImports
-    List<CsdlActionImport> actionImports = new ArrayList<CsdlActionImport>();
+    List<CsdlActionImport> actionImports = new ArrayList<>();
     container.setActionImports(actionImports);
     actionImports.add(prov.getActionImport(ContainerProvider.nameContainer, AIRT_STRING));
     actionImports.add(prov.getActionImport(ContainerProvider.nameContainer, AIRT_COLL_STRING_TWO_PARAM));
@@ -140,7 +140,7 @@ public class ContainerProvider {
     actionImports.add(prov.getActionImport(ContainerProvider.nameContainer, AI_RT_TIME_OF_DAY));
     
     // FunctionImports
-    List<CsdlFunctionImport> functionImports = new ArrayList<CsdlFunctionImport>();
+    List<CsdlFunctionImport> functionImports = new ArrayList<>();
     container.setFunctionImports(functionImports);
     functionImports.add(prov.getFunctionImport(ContainerProvider.nameContainer, "FINRTInt16"));
     functionImports.add(prov.getFunctionImport(ContainerProvider.nameContainer, "FINInvisibleRTInt16"));
@@ -167,7 +167,7 @@ public class ContainerProvider {
     functionImports.add(prov.getFunctionImport(ContainerProvider.nameContainer, "FINRTByteNineParam"));
     functionImports.add(prov.getFunctionImport(ContainerProvider.nameContainer, "FIC_RTTimeOfDay_"));
 
-    List<CsdlAnnotation> annotations = new ArrayList<CsdlAnnotation>();
+    List<CsdlAnnotation> annotations = new ArrayList<>();
     annotations.add(new CsdlAnnotation().setTerm(TermProvider.TERM_DESCRIPTION.getFullQualifiedNameAsString())
         .setExpression(
             new CsdlConstantExpression(ConstantExpressionType.String,

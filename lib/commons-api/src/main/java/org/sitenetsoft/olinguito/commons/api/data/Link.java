@@ -34,7 +34,7 @@ public class Link extends Annotatable {
   private Entity entity;
   private EntityCollection entitySet;
   private String bindingLink;
-  private List<String> bindingLinks = new ArrayList<String>();
+  private List<String> bindingLinks = new ArrayList<>();
 
   /**
    * Gets title.

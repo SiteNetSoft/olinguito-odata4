@@ -18,10 +18,13 @@
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.options;
 
+import java.io.Serial;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
 
 public class SystemQueryOptionsRuntimeException extends ODataRuntimeException {
+
+  @Serial
 
   private static final long serialVersionUID = 1L;
 

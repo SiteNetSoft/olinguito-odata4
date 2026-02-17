@@ -130,7 +130,7 @@ public class ActionProvider {
         nameBAETTwoPrimRTCollCTAllPrim, nameBAETCompAllPrimRTETCompAllPrim, nameBAETTwoKeyNavRTETTwoKeyNavParam, 
         nameBAETBaseETTwoBaseRTETTwoBase, nameBAETMixPrimCollCompRTCTTwoPrim, name_A_RTTimeOfDay_ };
     
-    List<CsdlAction> actions = new ArrayList<CsdlAction>();
+    List<CsdlAction> actions = new ArrayList<>();
     for (FullQualifiedName fqn:actionNames) {
       List<CsdlAction> entityActions = getActions(fqn);
       for (CsdlAction action:entityActions) {

@@ -18,9 +18,12 @@
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
+import java.io.Serial;
 import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
 
 abstract public class UriParserException extends ODataLibraryException {
+
+  @Serial
 
   private static final long serialVersionUID = -6438700016830955949L;
 

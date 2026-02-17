@@ -1132,7 +1132,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   public void mappingTest() throws Exception {
     EdmEntityType entityType = mock(EdmEntityType.class);
     when(entityType.getFullQualifiedName()).thenReturn(new FullQualifiedName("namespace", "name"));
-    List<String> propertyNames = new ArrayList<String>();
+    List<String> propertyNames = new ArrayList<>();
     propertyNames.add("PropertyDate");
     propertyNames.add("PropertyDateTimeOffset");
     when(entityType.getPropertyNames()).thenReturn(propertyNames);
@@ -1895,7 +1895,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
 
   public static DeserializerResult deserializeWithResultv401(InputStream stream, EdmEntityType entityType,
       ContentType contentType) throws DeserializerException {
-    List<String> version = new ArrayList<String>();
+    List<String> version = new ArrayList<>();
     version.add("4.01");
     return odata.createDeserializer(contentType, metadata, version).entity(stream, entityType);
   }

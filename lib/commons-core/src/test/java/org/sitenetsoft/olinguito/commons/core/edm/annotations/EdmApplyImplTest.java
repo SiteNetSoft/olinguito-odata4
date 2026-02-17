@@ -91,12 +91,12 @@ public class EdmApplyImplTest extends AbstractAnnotationTest {
     CsdlApply csdlApply = new CsdlApply();
     csdlApply.setFunction("Function");
 
-    List<CsdlExpression> parameters = new ArrayList<CsdlExpression>();
+    List<CsdlExpression> parameters = new ArrayList<>();
     parameters.add(new CsdlConstantExpression(ConstantExpressionType.String));
     parameters.add(new CsdlLogicalOrComparisonExpression(LogicalOrComparisonExpressionType.And));
     csdlApply.setParameters(parameters);
 
-    List<CsdlAnnotation> csdlAnnotations = new ArrayList<CsdlAnnotation>();
+    List<CsdlAnnotation> csdlAnnotations = new ArrayList<>();
     csdlAnnotations.add(new CsdlAnnotation().setTerm("ns.term"));
     csdlApply.setAnnotations(csdlAnnotations);
 

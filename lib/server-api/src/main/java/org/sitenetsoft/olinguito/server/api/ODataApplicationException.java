@@ -18,6 +18,7 @@
  */
 package org.sitenetsoft.olinguito.server.api;
 
+import java.io.Serial;
 import java.util.Locale;
 
 import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
@@ -28,6 +29,8 @@ import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
  * @see ODataException
  */
 public class ODataApplicationException extends ODataException {
+
+  @Serial
 
   private static final long serialVersionUID = 5358683245923127425L;
   private int statusCode = HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode();

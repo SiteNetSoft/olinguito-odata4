@@ -87,7 +87,7 @@ public class EdmIfImplTest extends AbstractAnnotationTest {
     csdlIf.setGuard(new CsdlConstantExpression(ConstantExpressionType.Bool));
     csdlIf.setThen(new CsdlConstantExpression(ConstantExpressionType.String));
     csdlIf.setElse(new CsdlLogicalOrComparisonExpression(LogicalOrComparisonExpressionType.And));
-    List<CsdlAnnotation> csdlAnnotations = new ArrayList<CsdlAnnotation>();
+    List<CsdlAnnotation> csdlAnnotations = new ArrayList<>();
     csdlAnnotations.add(new CsdlAnnotation().setTerm("ns.term"));
     csdlIf.setAnnotations(csdlAnnotations);
     EdmExpression exp = AbstractEdmExpression.getExpression(mock(Edm.class), csdlIf);

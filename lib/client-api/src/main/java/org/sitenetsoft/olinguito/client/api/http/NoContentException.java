@@ -20,12 +20,15 @@
  */
 package org.sitenetsoft.olinguito.client.api.http;
 
+import java.io.Serial;
 import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
 
 /**
  * Exception to be thrown when trying to read content with HTTP status 204.
  */
 public class NoContentException extends HttpClientException {
+
+  @Serial
 
   private static final long serialVersionUID = 7947066635285809192L;
 

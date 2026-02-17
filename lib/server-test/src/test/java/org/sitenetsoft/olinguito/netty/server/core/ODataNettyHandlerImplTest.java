@@ -70,7 +70,7 @@ public class ODataNettyHandlerImplTest {
     when(nettyRequest.uri()).thenReturn("/odata.svc/$metadata");
     HttpHeaders headers = mock(HttpHeaders.class);
     headers.add("Accept", "application/atom+xml");
-    Set<String> set = new HashSet<String>();
+    Set<String> set = new HashSet<>();
     set.add("Accept");
     when(headers.names()).thenReturn(set);
     when(nettyRequest.headers()).thenReturn(headers);
@@ -82,7 +82,7 @@ public class ODataNettyHandlerImplTest {
     
     when(nettyResponse.content()).thenReturn(Unpooled.buffer());
 
-    Map<String, String> requestParams = new HashMap<String, String>();
+    Map<String, String> requestParams = new HashMap<>();
     requestParams.put("contextPath", "/odata.svc");
     handler.processNettyRequest(nettyRequest, nettyResponse, requestParams);
     
@@ -110,10 +110,10 @@ public class ODataNettyHandlerImplTest {
     when(nettyRequest.uri()).thenReturn("/odata.svc/ESAllPrim");
     HttpHeaders headers = mock(HttpHeaders.class);
     headers.set("Content-Type", "application/json");
-    Set<String> set = new HashSet<String>();
+    Set<String> set = new HashSet<>();
     set.add("Content-Type");
     when(headers.names()).thenReturn(set);
-    List<String> headerValues = new ArrayList<String>();
+    List<String> headerValues = new ArrayList<>();
     headerValues.add("application/json");
     when(headers.getAll("Content-Type")).thenReturn(headerValues);
     when(nettyRequest.headers()).thenReturn(headers);
@@ -145,7 +145,7 @@ public class ODataNettyHandlerImplTest {
     
     when(((DefaultFullHttpResponse) nettyResponse).content()).thenReturn(Unpooled.buffer());
 
-    Map<String, String> requestParams = new HashMap<String, String>();
+    Map<String, String> requestParams = new HashMap<>();
     requestParams.put("contextPath", "/odata.svc");
     handler.processNettyRequest(nettyRequest, nettyResponse, requestParams);
     

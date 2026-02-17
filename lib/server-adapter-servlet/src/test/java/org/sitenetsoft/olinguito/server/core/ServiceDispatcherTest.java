@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serial;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
@@ -79,6 +80,7 @@ public class ServiceDispatcherTest {
   private CloseableHttpClient http;
 
   public class SampleODataServlet extends HttpServlet {
+    @Serial
     private static final long serialVersionUID = 1L;
     private final ServiceHandler handler; // must be stateless
     private final ServiceMetadata metadata; // must be stateless

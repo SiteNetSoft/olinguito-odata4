@@ -51,7 +51,7 @@ public class AbstractAnnotationTest {
   }
   
   protected void assertSingleKindDynamicExpression(EdmDynamicExpression dynExpr){
-    List<Boolean> allIsMethodValues = new ArrayList<Boolean>();
+    List<Boolean> allIsMethodValues = new ArrayList<>();
     //Logical Operators
     allIsMethodValues.add(dynExpr.isAnd());
     allIsMethodValues.add(dynExpr.isOr());
@@ -89,7 +89,7 @@ public class AbstractAnnotationTest {
     
     
     
-    List<Object> allAsMethodValues = new ArrayList<Object>();
+    List<Object> allAsMethodValues = new ArrayList<>();
     //Logical Operators
     allAsMethodValues.add(dynExpr.asAnd());
     allAsMethodValues.add(dynExpr.asOr());

@@ -51,7 +51,7 @@ public abstract class AbstractEdmBindingTarget extends AbstractEdmNamed implemen
     if (navigationPropertyBindings == null) {
       List<CsdlNavigationPropertyBinding> providerBindings = target.getNavigationPropertyBindings();
       final List<EdmNavigationPropertyBinding> navigationPropertyBindingsLocal =
-          new ArrayList<EdmNavigationPropertyBinding>();
+          new ArrayList<>();
       if (providerBindings != null) {
         for (CsdlNavigationPropertyBinding binding : providerBindings) {
           navigationPropertyBindingsLocal.add(new EdmNavigationPropertyBindingImpl(binding.getPath(),

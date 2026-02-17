@@ -64,7 +64,7 @@ public enum EdmPrimitiveTypeKind {
   private static Map<String, EdmPrimitiveTypeKind> VALUES_BY_NAME;
 
   static {
-    Map<String, EdmPrimitiveTypeKind> valuesByName = new HashMap<java.lang.String, EdmPrimitiveTypeKind>();
+    Map<String, EdmPrimitiveTypeKind> valuesByName = new HashMap<>();
     for (EdmPrimitiveTypeKind value : values()) {
       valuesByName.put(value.name(), value);
     }

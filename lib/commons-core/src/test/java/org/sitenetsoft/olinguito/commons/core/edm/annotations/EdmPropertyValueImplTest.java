@@ -64,7 +64,7 @@ public class EdmPropertyValueImplTest extends AbstractAnnotationTest {
     CsdlPropertyValue csdlPropertyValue = new CsdlPropertyValue();
     csdlPropertyValue.setProperty("property");
     csdlPropertyValue.setValue(new CsdlConstantExpression(ConstantExpressionType.String));
-    List<CsdlAnnotation> csdlAnnotations = new ArrayList<CsdlAnnotation>();
+    List<CsdlAnnotation> csdlAnnotations = new ArrayList<>();
     csdlAnnotations.add(new CsdlAnnotation().setTerm("ns.term"));
     csdlPropertyValue.setAnnotations(csdlAnnotations);
     EdmPropertyValue asPropValue = new EdmPropertyValueImpl(mock(Edm.class), csdlPropertyValue);

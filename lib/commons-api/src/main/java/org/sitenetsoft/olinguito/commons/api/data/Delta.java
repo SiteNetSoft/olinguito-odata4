@@ -26,9 +26,9 @@ import java.util.List;
  */
 public class Delta extends EntityCollection {
 
-  private final List<DeletedEntity> deletedEntities = new ArrayList<DeletedEntity>();
-  private final List<DeltaLink> addedLinks = new ArrayList<DeltaLink>();
-  private final List<DeltaLink> deletedLinks = new ArrayList<DeltaLink>();
+  private final List<DeletedEntity> deletedEntities = new ArrayList<>();
+  private final List<DeltaLink> addedLinks = new ArrayList<>();
+  private final List<DeltaLink> deletedLinks = new ArrayList<>();
 
   /**
    * Get list of deleted entities (must not be NULL).

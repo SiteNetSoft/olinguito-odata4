@@ -44,7 +44,7 @@ public class CsdlTypeDefinition extends CsdlAbstractEdmItem implements CsdlNamed
 
   private SRID srid;
 
-  private List<CsdlAnnotation> annotations = new ArrayList<CsdlAnnotation>();
+  private List<CsdlAnnotation> annotations = new ArrayList<>();
 
   @Override
   public String getName() {

@@ -238,7 +238,7 @@ public class SearchParserTest extends SearchParser {
   }
 
   public List<SearchQueryToken> prepareTokens(final Token... tokenArray) {
-    ArrayList<SearchQueryToken> tokenList = new ArrayList<SearchQueryToken>();
+    ArrayList<SearchQueryToken> tokenList = new ArrayList<>();
     int wordNumber = 1;
     int phraseNumber = 1;
     for (Token aToken : tokenArray) {

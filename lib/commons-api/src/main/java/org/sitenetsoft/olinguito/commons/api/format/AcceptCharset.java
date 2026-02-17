@@ -84,8 +84,8 @@ public class AcceptCharset {
     if (acceptCharsets == null) {
       throw new IllegalArgumentException("Type parameter MUST NOT be null.");
     }
-    List<AcceptCharset> result = new ArrayList<AcceptCharset>();
-    List<Exception> exceptionList = new ArrayList<Exception>();
+    List<AcceptCharset> result = new ArrayList<>();
+    List<Exception> exceptionList = new ArrayList<>();
 
     String[] values = acceptCharsets.split(",");
     if (values.length == 0) {

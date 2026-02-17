@@ -18,8 +18,12 @@
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
+import java.io.Serial;
+
 /** Exception thrown during URI parsing in cases where an URI part is invalid according to the Entity Data Model. */
 public class UriParserSemanticException extends UriParserException {
+
+  @Serial
 
   private static final long serialVersionUID = 3850285860949809622L;
 

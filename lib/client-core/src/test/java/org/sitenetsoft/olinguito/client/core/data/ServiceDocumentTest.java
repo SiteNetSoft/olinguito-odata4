@@ -36,7 +36,7 @@ public class ServiceDocumentTest {
     ServiceDocumentImpl sd = new ServiceDocumentImpl();
     assertNull(sd.getTitle());
     assertEquals(0,sd.getEntitySets().size());
-    List<ServiceDocumentItem> list = new ArrayList<ServiceDocumentItem>();
+    List<ServiceDocumentItem> list = new ArrayList<>();
     assertNull(sd.getByName(list , "test"));
     assertNull(sd.getEntitySetByName("test"));
     assertNull(sd.getFunctionImportByName("test"));

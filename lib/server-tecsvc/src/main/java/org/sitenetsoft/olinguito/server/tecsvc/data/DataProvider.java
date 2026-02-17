@@ -18,6 +18,7 @@
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
+import java.io.Serial;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -221,7 +222,7 @@ public class DataProvider {
   private Map<String, Object> findFreeComposedKey(final List<Entity> entities, final EdmEntityType entityType)
       throws DataProviderException {
     // Weak key construction
-    final HashMap<String, Object> keys = new HashMap<String, Object>();
+    final HashMap<String, Object> keys = new HashMap<>();
     List<String> keyPredicateNames = entityType.getKeyPredicateNames();
     for (final String keyName : keyPredicateNames) {
       EdmType type = entityType.getProperty(keyName).getType();
@@ -439,7 +440,7 @@ public class DataProvider {
 
   private List<Entity> createInlineEntities(final String rawBaseUri, final EdmEntitySet targetEntitySet,
       final EntityCollection changedEntitySet) throws DataProviderException {
-    List<Entity> entities = new ArrayList<Entity>();
+    List<Entity> entities = new ArrayList<>();
 
     for (final Entity newEntity : changedEntitySet.getEntities()) {
       entities.add(createInlineEntity(rawBaseUri, targetEntitySet, newEntity));
@@ -576,7 +577,7 @@ public class DataProvider {
   
   public List<DeletedEntity> readDeletedEntities(final EdmEntitySet edmEntitySet) throws DataProviderException {
     EntityCollection entityCollection = data.get(edmEntitySet.getName());
-    List<DeletedEntity> listOfDeletedEntities = new ArrayList<DeletedEntity>();
+    List<DeletedEntity> listOfDeletedEntities = new ArrayList<>();
     DeletedEntity entitySetDeleted = new DeletedEntity();
     if (entityCollection.getEntities().size() > 1) {
       entitySetDeleted.setId(entityCollection.getEntities().get(0).getId());
@@ -592,7 +593,7 @@ public class DataProvider {
   
   public List<DeltaLink> readAddedLinks(final EdmEntitySet edmEntitySet) throws DataProviderException {
     EntityCollection entityCollection = data.get(edmEntitySet.getName());
-    List<DeltaLink> listOfAddedLinks = new ArrayList<DeltaLink>();
+    List<DeltaLink> listOfAddedLinks = new ArrayList<>();
     DeltaLink link = new DeltaLink();
     if (entityCollection.getEntities().size() > 0) {
       link.setSource(entityCollection.getEntities().get(0).getId());
@@ -605,7 +606,7 @@ public class DataProvider {
   
   public List<DeltaLink> readDeletedLinks(final EdmEntitySet edmEntitySet) throws DataProviderException {
     EntityCollection entityCollection = data.get(edmEntitySet.getName());
-    List<DeltaLink> listOfDeletedLinks = new ArrayList<DeltaLink>();
+    List<DeltaLink> listOfDeletedLinks = new ArrayList<>();
     if (entityCollection.getEntities().size() > 1) {
       DeltaLink link = new DeltaLink();
       link.setSource(entityCollection.getEntities().get(0).getId());
@@ -644,7 +645,7 @@ public class DataProvider {
 
   private Map<String, Parameter> getFunctionParameters(final EdmFunction function,
       final List<UriParameter> parameters, final UriInfoResource uriInfo) throws DataProviderException {
-    Map<String, Parameter> values = new HashMap<String, Parameter>();
+    Map<String, Parameter> values = new HashMap<>();
     for (final UriParameter parameter : parameters) {
       if (parameter.getExpression() != null && !(parameter.getExpression() instanceof Literal)) {
         throw new DataProviderException("Expression in function-parameter value is not supported yet!",
@@ -812,6 +813,7 @@ public class DataProvider {
   }
 
   public static class DataProviderException extends ODataApplicationException {
+    @Serial
     private static final long serialVersionUID = 5098059649321796156L;
 
     public DataProviderException(final String message, final HttpStatusCode statusCode) {
@@ -826,7 +828,7 @@ public class DataProvider {
   public List<Entity> readNavigationEntities(EdmEntitySet entitySet) {
     
     EntityCollection entityCollection = data.get(entitySet.getName());
-    List<Entity> entities = new ArrayList<Entity>();
+    List<Entity> entities = new ArrayList<>();
     Entity otherEntity = entitySet.getName() == "ESAllPrim" ? data.get("ESDelta").getEntities().get(0) :
       data.get("ESAllPrim").getEntities().get(0);
     EntityCollection ec1=new EntityCollection();

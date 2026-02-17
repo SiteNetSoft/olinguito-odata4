@@ -60,7 +60,7 @@ public class UntypedOperand extends VisitorOperand {
   @SuppressWarnings( "unchecked")
   @Override
   public TypedOperand asTypedOperandForCollection(EdmPrimitiveType type) throws ODataApplicationException {
-    List<Object> newValue = new ArrayList<Object>();
+    List<Object> newValue = new ArrayList<>();
     List<Object> list = (List<Object>) value;
     for (Object val : list) {
       final String literal = (String) val;

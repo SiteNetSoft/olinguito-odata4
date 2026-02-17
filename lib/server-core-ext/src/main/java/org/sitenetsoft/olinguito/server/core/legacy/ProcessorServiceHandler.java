@@ -71,7 +71,7 @@ import org.sitenetsoft.olinguito.server.core.responses.ServiceResponseVisior;
 import org.sitenetsoft.olinguito.server.core.responses.StreamResponse;
 
 public class ProcessorServiceHandler implements ServiceHandler {
-  private final List<Processor> processors = new LinkedList<Processor>();
+  private final List<Processor> processors = new LinkedList<>();
   private OData odata;
   private ServiceMetadata serviceMetadata;
 

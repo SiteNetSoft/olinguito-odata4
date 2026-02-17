@@ -49,7 +49,7 @@ public final class ExpandSelectMock {
 
   private static UriInfoResource mockResource(final EdmEntitySet edmEntitySet, final String... names) {
     EdmStructuredType type = edmEntitySet.getEntityType();
-    List<UriResource> elements = new ArrayList<UriResource>();
+    List<UriResource> elements = new ArrayList<>();
     for (final String name : Arrays.asList(names)) {
       final EdmElement edmElement = type.getProperty(name);
       if (edmElement.getType().getKind() == EdmTypeKind.ENTITY) {
@@ -76,7 +76,7 @@ public final class ExpandSelectMock {
   private static UriInfoResource mockResourceOnDerivedComplexTypes(final EdmEntitySet edmEntitySet,
       final String name, final EdmType derivedType, final String pathSegmentAfterCast) {
     EdmStructuredType type = edmEntitySet.getEntityType();
-    List<UriResource> elements = new ArrayList<UriResource>();
+    List<UriResource> elements = new ArrayList<>();
     mockComplexPropertyWithTypeFilter(name, derivedType, type, elements);
     
     mockPropertyOnDerivedType(derivedType, pathSegmentAfterCast, elements);
@@ -89,7 +89,7 @@ public final class ExpandSelectMock {
   private static UriInfoResource mockResourceOnComplexTypesWithNav(final EdmEntitySet edmEntitySet,
       final String name, final String navProperty) {
     EdmStructuredType type = edmEntitySet.getEntityType();
-    List<UriResource> elements = new ArrayList<UriResource>();
+    List<UriResource> elements = new ArrayList<>();
     final EdmElement edmElement = type.getProperty(name);
     final EdmProperty property = (EdmProperty) edmElement;
     UriResourceComplexProperty element = Mockito.mock(UriResourceComplexProperty.class);
@@ -123,7 +123,7 @@ public final class ExpandSelectMock {
   
   private static UriInfoResource mockResourceOnAction(
       EdmEntitySet edmEntitySet, EdmAction action) {
-    List<UriResource> elements = new ArrayList<UriResource>();
+    List<UriResource> elements = new ArrayList<>();
     UriResourceAction element = Mockito.mock(UriResourceAction.class);
     Mockito.when(element.getAction()).thenReturn(action);
     elements.add(element);
@@ -136,7 +136,7 @@ public final class ExpandSelectMock {
   private static UriInfoResource mockResourceOnFunction(EdmEntitySet edmEntitySet, EdmFunction function) {
     UriResourceFunction element = Mockito.mock(UriResourceFunction.class);
     Mockito.when(element.getFunction()).thenReturn(function);
-    List<UriResource> elements = new ArrayList<UriResource>();
+    List<UriResource> elements = new ArrayList<>();
     elements.add(element);
     
     UriInfoResource resource = Mockito.mock(UriInfoResource.class);
@@ -160,7 +160,7 @@ public final class ExpandSelectMock {
   private static UriInfoResource mockResourceOnDerivedEntityTypes(
       final String name, final EdmType derivedType) {
     EdmStructuredType type = (EdmStructuredType) derivedType;
-    List<UriResource> elements = new ArrayList<UriResource>();
+    List<UriResource> elements = new ArrayList<>();
     final EdmElement edmElement = type.getProperty(name);
     if (edmElement.getType().getKind() == EdmTypeKind.ENTITY) {
       UriResourceNavigation element = Mockito.mock(UriResourceNavigation.class);
@@ -181,7 +181,7 @@ public final class ExpandSelectMock {
       final String name, final EdmType derivedEntityType, final EdmType derivedComplexType, 
       final String pathSegment) {
     EdmStructuredType type = (EdmStructuredType) derivedEntityType;
-    List<UriResource> elements = new ArrayList<UriResource>();
+    List<UriResource> elements = new ArrayList<>();
     mockComplexPropertyWithTypeFilter(name, derivedComplexType, type, elements);
     
     final EdmElement edmElement1 = ((EdmStructuredType) derivedComplexType).getProperty(pathSegment);
@@ -214,7 +214,7 @@ public final class ExpandSelectMock {
       final String pathSegmentBeforeCast,
       final String name, final EdmType derivedType, final String pathSegmentAfterCast) {
     EdmStructuredType type = edmEntitySet.getEntityType();
-    List<UriResource> elements = new ArrayList<UriResource>();
+    List<UriResource> elements = new ArrayList<>();
     final EdmElement edmElement = type.getProperty(name);
     final EdmProperty property = (EdmProperty) edmElement;
     UriResourceComplexProperty element = Mockito.mock(UriResourceComplexProperty.class);
@@ -335,7 +335,7 @@ public final class ExpandSelectMock {
    */
   public static UriInfoResource mockComplexTypeResource(final EdmProperty propertyWithinCT) {
     final UriInfoResource resource = Mockito.mock(UriInfoResource.class);
-    final List<UriResource> elements = new ArrayList<UriResource>();
+    final List<UriResource> elements = new ArrayList<>();
     final UriResourceProperty element = Mockito.mock(UriResourceProperty.class);
     Mockito.when(element.getProperty()).thenReturn(propertyWithinCT);
     elements.add(element);

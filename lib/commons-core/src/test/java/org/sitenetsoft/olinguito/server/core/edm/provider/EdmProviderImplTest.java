@@ -74,13 +74,13 @@ public class EdmProviderImplTest {
         new CsdlTypeDefinition().setName(FQN.getName()).setUnderlyingType(new FullQualifiedName("Edm", "String"));
     when(provider.getTypeDefinition(FQN)).thenReturn(typeDefinition);
 
-    CsdlEntityType entityType = new CsdlEntityType().setName(FQN.getName()).setKey(new ArrayList<CsdlPropertyRef>());
+    CsdlEntityType entityType = new CsdlEntityType().setName(FQN.getName()).setKey(new ArrayList<>());
     when(provider.getEntityType(FQN)).thenReturn(entityType);
 
     CsdlComplexType complexType = new CsdlComplexType().setName(FQN.getName());
     when(provider.getComplexType(FQN)).thenReturn(complexType);
 
-    List<CsdlAliasInfo> aliasInfos = new ArrayList<CsdlAliasInfo>();
+    List<CsdlAliasInfo> aliasInfos = new ArrayList<>();
     aliasInfos.add(new CsdlAliasInfo().setAlias("alias").setNamespace("namespace"));
     when(provider.getAliasInfos()).thenReturn(aliasInfos);
 

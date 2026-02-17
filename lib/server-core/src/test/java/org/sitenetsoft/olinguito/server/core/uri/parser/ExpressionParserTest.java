@@ -298,7 +298,7 @@ public class ExpressionParserTest {
     expressionString += ')';
     expressionString += "&@word1=" + parameters[0];
 
-    Map<String, AliasQueryOption> alias = new HashMap<String, AliasQueryOption>();
+    Map<String, AliasQueryOption> alias = new HashMap<>();
     AliasQueryOptionImpl aliasQueryOption = new AliasQueryOptionImpl();
     aliasQueryOption.setName("@word");
     aliasQueryOption.setText("\'a\'");
@@ -323,7 +323,7 @@ public class ExpressionParserTest {
     expressionString += ')';
     expressionString += "&@word=" + parameters[0];
 
-    Map<String, AliasQueryOption> alias = new HashMap<String, AliasQueryOption>();
+    Map<String, AliasQueryOption> alias = new HashMap<>();
     AliasQueryOptionImpl aliasQueryOption = new AliasQueryOptionImpl();
     aliasQueryOption.setName("@word");
     aliasQueryOption.setText("\'a\'");

@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class CsdlAnnotations extends CsdlAbstractEdmItem implements CsdlAnnotatable {
 
-  private List<CsdlAnnotation> annotations = new ArrayList<CsdlAnnotation>();
+  private List<CsdlAnnotation> annotations = new ArrayList<>();
 
   private String target;
 

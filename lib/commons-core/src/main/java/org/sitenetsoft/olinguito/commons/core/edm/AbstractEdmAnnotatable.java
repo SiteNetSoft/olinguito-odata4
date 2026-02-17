@@ -61,7 +61,7 @@ public abstract class AbstractEdmAnnotatable implements EdmAnnotatable {
   @Override
   public List<EdmAnnotation> getAnnotations() {
     if (annotations == null) {
-      final List<EdmAnnotation> annotationsLocal = new ArrayList<EdmAnnotation>();
+      final List<EdmAnnotation> annotationsLocal = new ArrayList<>();
       if (annotatable != null) {
         for (CsdlAnnotation annotation : annotatable.getAnnotations()) {
           annotationsLocal.add(new EdmAnnotationImpl(edm, annotation));

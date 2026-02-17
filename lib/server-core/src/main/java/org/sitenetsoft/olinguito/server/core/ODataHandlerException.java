@@ -18,10 +18,12 @@
  */
 package org.sitenetsoft.olinguito.server.core;
 
+import java.io.Serial;
 import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
 
 /** Exception thrown during basic request handling. */
 public class ODataHandlerException extends ODataLibraryException {
+  @Serial
   private static final long serialVersionUID = -907752788975531134L;
 
   public static enum MessageKeys implements MessageKey {

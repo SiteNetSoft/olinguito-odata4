@@ -186,7 +186,7 @@ public class ComplexTypeProvider {
     } else if (complexTypeName.equals(nameCTNavCont)) {
       return new CsdlComplexType()
           .setName("CTNavCont")
-          .setProperties(new ArrayList<CsdlProperty>())
+          .setProperties(new ArrayList<>())
           .setNavigationProperties(Arrays.asList(
               PropertyProvider.navPropertyETKeyNavOne_CT_ETeyNav,
               PropertyProvider.collectionNavPropertyETKeyNavMany_CT_ETKeyNav,

@@ -18,9 +18,12 @@
  */
 package org.sitenetsoft.olinguito.server.core.uri.validator;
 
+import java.io.Serial;
 import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
 
 public class UriValidationException extends ODataLibraryException {
+
+  @Serial
 
   private static final long serialVersionUID = -3179078078053564742L;
 

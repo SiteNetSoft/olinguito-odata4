@@ -87,7 +87,7 @@ public class EdmNavigationPropertyImplTest {
     propertyProvider.setType(entityTypeName);
     propertyProvider.setNullable(false);
     propertyProvider.setContainsTarget(true);
-    List<CsdlReferentialConstraint> referentialConstraints = new ArrayList<CsdlReferentialConstraint>();
+    List<CsdlReferentialConstraint> referentialConstraints = new ArrayList<>();
     referentialConstraints.add(new CsdlReferentialConstraint().setProperty("property").setReferencedProperty(
         "referencedProperty"));
     propertyProvider.setReferentialConstraints(referentialConstraints);
@@ -112,7 +112,7 @@ public class EdmNavigationPropertyImplTest {
     CsdlEntityType entityTypeProvider = new CsdlEntityType();
     entityTypeProvider.setKey(Collections.emptyList());
 
-    List<CsdlNavigationProperty> navigationProperties = new ArrayList<CsdlNavigationProperty>();
+    List<CsdlNavigationProperty> navigationProperties = new ArrayList<>();
     navigationProperties.add(new CsdlNavigationProperty().setName("partnerName").setType(entityTypeName));
     entityTypeProvider.setNavigationProperties(navigationProperties);
     when(provider.getEntityType(entityTypeName)).thenReturn(entityTypeProvider);
@@ -136,7 +136,7 @@ public class EdmNavigationPropertyImplTest {
           final FullQualifiedName entityTypeName = new FullQualifiedName("ns", "entity");
           CsdlEntityType entityTypeProvider = new CsdlEntityType();
           entityTypeProvider.setKey(Collections.emptyList());
-          List<CsdlNavigationProperty> navigationProperties = new ArrayList<CsdlNavigationProperty>();
+          List<CsdlNavigationProperty> navigationProperties = new ArrayList<>();
           navigationProperties.add(new CsdlNavigationProperty().setName("partnerName").setType(entityTypeName));
           entityTypeProvider.setNavigationProperties(navigationProperties);
           when(provider.getEntityType(entityTypeName)).thenReturn(entityTypeProvider);

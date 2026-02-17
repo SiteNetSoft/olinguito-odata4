@@ -81,8 +81,8 @@ public class ActionData {
   protected static Property primitiveBoundAction(final String name, final Map<String, Parameter> parameters, 
       final Map<String, EntityCollection> data, final EdmEntitySet edmEntitySet, final List<UriParameter> keyList)
       throws DataProviderException {
-    List<Object> keyPropertyValues = new ArrayList<Object>();
-    List<String> keyPropertyNames = new ArrayList<String>();
+    List<Object> keyPropertyValues = new ArrayList<>();
+    List<String> keyPropertyNames = new ArrayList<>();
     if ("BAETTwoPrimRTString".equals(name)) {
       if (!keyList.isEmpty()) {
         setBindingPropertyKeyNameAndValue(keyList, edmEntitySet, keyPropertyValues, keyPropertyNames);
@@ -117,7 +117,7 @@ public class ActionData {
       BigDecimal duration = (BigDecimal) paramDuration.asPrimitive();
       EdmPrimitiveType primDuration = oData.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Duration);
       BigDecimal addValue = new BigDecimal(1);
-      List<Object> collectionValues = new ArrayList<Object>();
+      List<Object> collectionValues = new ArrayList<>();
       for (int i = 0; i < loopCount; i++) {
         try {
           String value = primDuration.valueToString(duration, false, null, null, null, null);
@@ -136,7 +136,7 @@ public class ActionData {
   protected static Property primitiveCollectionBoundAction(final String name, final Map<String, Parameter> parameters,
       final Map<String, EntityCollection> data, 
       EdmEntitySet edmEntitySet, List<UriParameter> keyList, final OData oData) throws DataProviderException {
-    List<Object> collectionValues = new ArrayList<Object>();
+    List<Object> collectionValues = new ArrayList<>();
     if ("BAETTwoPrimRTCollString".equals(name)) {
       EdmPrimitiveType strType = oData.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.String);
       try {
@@ -199,7 +199,7 @@ public class ActionData {
   protected static Property complexCollectionAction(final String name, final Map<String, Parameter> parameters)
       throws DataProviderException {
     if ("UARTCollCTTwoPrimParam".equals(name)) {
-      List<ComplexValue> complexCollection = new ArrayList<ComplexValue>();
+      List<ComplexValue> complexCollection = new ArrayList<>();
       final Parameter paramInt16 = parameters.get("ParameterInt16");
       final Short number = paramInt16 == null || paramInt16.isNull() ? 0 : (Short) paramInt16.asPrimitive();
       if (number >= 1) {
@@ -222,8 +222,8 @@ public class ActionData {
       final Map<String, Parameter> parameters, final Map<String, EntityCollection> data, 
       EdmEntitySet edmEntitySet, List<UriParameter> keyList) 
           throws DataProviderException {
-    List<Object> keyPropertyValues = new ArrayList<Object>();
-    List<String> keyPropertyNames = new ArrayList<String>();
+    List<Object> keyPropertyValues = new ArrayList<>();
+    List<String> keyPropertyNames = new ArrayList<>();
     if ("BAETMixPrimCollCompRTCTTwoPrim".equals(name)) {
       if (!keyList.isEmpty()) {
         setBindingPropertyKeyNameAndValue(keyList, edmEntitySet, keyPropertyValues, keyPropertyNames);
@@ -245,7 +245,7 @@ public class ActionData {
             entity.getProperty("CollPropertyComp").getValueType(), complexProperties);
       }
     } else if ("BAETMixPrimCollCompCTTWOPrimCompRTCollCTTwoPrim".equals(name)) {
-      List<ComplexValue> complexCollection = new ArrayList<ComplexValue>();
+      List<ComplexValue> complexCollection = new ArrayList<>();
       if (!keyList.isEmpty()) {
         setBindingPropertyKeyNameAndValue(keyList, edmEntitySet, keyPropertyValues, keyPropertyNames);
         EntityCollection entityCollection = data.get(edmEntitySet.getName());
@@ -315,8 +315,8 @@ public class ActionData {
   protected static EntityActionResult entityBoundAction(final String name, final Map<String, Parameter> parameters,
       final Map<String, EntityCollection> data, final OData oData, final Edm edm, 
       List<UriParameter> keyList, EdmEntitySet edmEntitySet) throws DataProviderException {
-    List<Object> keyPropertyValues = new ArrayList<Object>();
-    List<String> keyPropertyNames = new ArrayList<String>();
+    List<Object> keyPropertyValues = new ArrayList<>();
+    List<String> keyPropertyNames = new ArrayList<>();
     if ("BA_RTETTwoKeyNav".equals(name)) {
       if (!keyList.isEmpty()) {
         setBindingPropertyKeyNameAndValue(keyList, edmEntitySet, keyPropertyValues, keyPropertyNames);
@@ -381,8 +381,8 @@ public class ActionData {
       final Map<String, EntityCollection> data, List<UriParameter> keyList, 
       EdmEntitySet edmEntitySet, EdmNavigationProperty navProperty) 
           throws DataProviderException {
-    List<Object> keyPropertyValues = new ArrayList<Object>();
-    List<String> keyPropertyNames = new ArrayList<String>();
+    List<Object> keyPropertyValues = new ArrayList<>();
+    List<String> keyPropertyNames = new ArrayList<>();
     if ("BAETTwoKeyNavRTETTwoKeyNavParam".equals(name)) {
       if (!keyList.isEmpty()) {
         setBindingPropertyKeyNameAndValue(keyList, edmEntitySet, keyPropertyValues, keyPropertyNames);

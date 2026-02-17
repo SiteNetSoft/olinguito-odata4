@@ -33,10 +33,10 @@ public class Entity extends Linked {
   private Link readLink;
   private Link editLink;
 
-  private final List<Link> mediaEditLinks = new ArrayList<Link>();
-  private final List<Operation> operations = new ArrayList<Operation>();
+  private final List<Link> mediaEditLinks = new ArrayList<>();
+  private final List<Operation> operations = new ArrayList<>();
 
-  private final List<Property> properties = new ArrayList<Property>();
+  private final List<Property> properties = new ArrayList<>();
 
   private URI mediaContentSource;
   private String mediaContentType;

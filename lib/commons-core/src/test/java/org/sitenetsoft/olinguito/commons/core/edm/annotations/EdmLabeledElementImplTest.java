@@ -79,7 +79,7 @@ public class EdmLabeledElementImplTest extends AbstractAnnotationTest {
     CsdlLabeledElement csdlLabeledElement = new CsdlLabeledElement();
     csdlLabeledElement.setName("name");
     csdlLabeledElement.setValue(new CsdlConstantExpression(ConstantExpressionType.String));
-    List<CsdlAnnotation> csdlAnnotations = new ArrayList<CsdlAnnotation>();
+    List<CsdlAnnotation> csdlAnnotations = new ArrayList<>();
     csdlAnnotations.add(new CsdlAnnotation().setTerm("ns.term"));
     csdlLabeledElement.setAnnotations(csdlAnnotations);
     EdmExpression exp = AbstractEdmExpression.getExpression(mock(Edm.class), csdlLabeledElement);

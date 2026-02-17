@@ -107,7 +107,7 @@ public class DebugTabRequestTest extends AbstractDebugTabTest {
     oDataRequest.setMethod(HttpMethod.GET);
     oDataRequest.setRawRequestUri("def&");
     oDataRequest.setProtocol("def&");
-    List<String> headerValues = new ArrayList<String>();
+    List<String> headerValues = new ArrayList<>();
     headerValues.add("Value1");
     oDataRequest.addHeader("HeaderName", headerValues);
 
@@ -141,7 +141,7 @@ public class DebugTabRequestTest extends AbstractDebugTabTest {
     oDataRequest.setMethod(HttpMethod.GET);
     oDataRequest.setRawRequestUri("def&");
     oDataRequest.setProtocol("def&");
-    List<String> headerValues = new ArrayList<String>();
+    List<String> headerValues = new ArrayList<>();
     headerValues.add("Value1");
     headerValues.add("Value2");
     oDataRequest.addHeader("HeaderName", headerValues);

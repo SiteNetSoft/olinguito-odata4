@@ -47,7 +47,7 @@ public abstract class CsdlAbstractEdmItem {
    * @return the all by name
    */
   protected <T extends CsdlNamed> List<T> getAllByName(final String name, final Collection<T> items) {
-    final List<T> result = new ArrayList<T>();
+    final List<T> result = new ArrayList<>();
     for (T type : items) {
       if (name.equals(type.getName())) {
         result.add(type);

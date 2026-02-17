@@ -32,7 +32,7 @@ public class CsdlIf extends CsdlDynamicExpression implements CsdlAnnotatable {
   private CsdlExpression guard;
   private CsdlExpression _then;
   private CsdlExpression _else;
-  private List<CsdlAnnotation> annotations = new ArrayList<CsdlAnnotation>();
+  private List<CsdlAnnotation> annotations = new ArrayList<>();
 
   @Override
   public List<CsdlAnnotation> getAnnotations() {
