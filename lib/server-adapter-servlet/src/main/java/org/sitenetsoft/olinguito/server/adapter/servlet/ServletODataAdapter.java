@@ -54,6 +54,7 @@ public final class ServletODataAdapter implements ODataServletHandler {
      * Mirrors the old ODataHttpHandlerImpl behavior for compatibility.
      */
     private static final String REQUEST_MAPPING_ATTR = "requestMapping";
+    private static final int COPY_BUFFER_SIZE = 8192;
 
     private final ODataRequestHandler core;
 
@@ -138,7 +139,7 @@ public final class ServletODataAdapter implements ODataServletHandler {
                 try (InputStream in = content;
                      OutputStream out = resp.getOutputStream()) {
 
-                    byte[] buffer = new byte[8192];
+                    byte[] buffer = new byte[COPY_BUFFER_SIZE];
                     int len;
                     while ((len = in.read(buffer)) != -1) {
                         out.write(buffer, 0, len);
@@ -293,8 +294,9 @@ public final class ServletODataAdapter implements ODataServletHandler {
      */
     private static void writeODataContent(ODataContent content, HttpServletResponse resp) throws IOException {
         OutputStream outputStream = resp.getOutputStream();
-        WritableByteChannel channel = Channels.newChannel(outputStream);
-        content.write(channel);
+        try (WritableByteChannel channel = Channels.newChannel(outputStream)) {
+            content.write(channel);
+        }
         outputStream.flush();
     }
 }

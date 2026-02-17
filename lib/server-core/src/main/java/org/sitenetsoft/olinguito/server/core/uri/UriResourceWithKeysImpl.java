@@ -74,14 +74,14 @@ public abstract class UriResourceWithKeysImpl extends UriResourceImpl implements
       }
 
       if (entryTypeFilter != null) {
-        if (tmp.length() == 0) {
+        if (tmp.isEmpty()) {
           tmp.append(getFQN(entryTypeFilter));
         } else {
           tmp.append("/()").append(getFQN(entryTypeFilter));
         }
       }
 
-      if (tmp.length() != 0) {
+      if (!tmp.isEmpty()) {
         return getSegmentValue() + "/" + tmp.toString();
       }
     }

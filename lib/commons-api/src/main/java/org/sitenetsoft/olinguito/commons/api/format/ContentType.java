@@ -232,7 +232,7 @@ public final class ContentType {
 
     try {
       return create(cleanedAcceptType);
-    } catch (Exception exception) {
+    } catch (IllegalArgumentException exception) {
       return accept.contains("xml") ? APPLICATION_ATOM_XML : JSON;
     }
   }

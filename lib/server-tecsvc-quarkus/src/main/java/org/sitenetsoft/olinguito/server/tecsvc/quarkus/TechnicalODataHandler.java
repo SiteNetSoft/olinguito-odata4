@@ -60,6 +60,7 @@ import java.util.UUID;
 public class TechnicalODataHandler implements Handler<RoutingContext> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TechnicalODataHandler.class);
+    private static final int COPY_BUFFER_SIZE = 8192;
 
     private static final String METADATA_ETAG = "W/\"" + UUID.randomUUID() + "\"";
 
@@ -328,7 +329,7 @@ public class TechnicalODataHandler implements Handler<RoutingContext> {
 
     private void writeInputStream(HttpServerResponse response, InputStream inputStream) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        byte[] buffer = new byte[8192];
+        byte[] buffer = new byte[COPY_BUFFER_SIZE];
         int bytesRead;
         while ((bytesRead = inputStream.read(buffer)) != -1) {
             baos.write(buffer, 0, bytesRead);

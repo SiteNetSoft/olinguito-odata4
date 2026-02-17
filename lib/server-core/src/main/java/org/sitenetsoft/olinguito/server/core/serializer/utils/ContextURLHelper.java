@@ -70,7 +70,7 @@ public final class ContextURLHelper {
     }else if(expand != null && null != ExpandSelectHelper.getExpandAll(expand)){
       handleExpandAll(type, expand, result);
     }
-    return result.length() == 0 ? null : result.toString();
+    return result.isEmpty() ? null : result.toString();
   }
 
   private static void handleSelect(EdmStructuredType type, final SelectOption select,
@@ -331,9 +331,9 @@ public final class ContextURLHelper {
   private static String buildPropertyPath(final List<String> path) {
     StringBuilder result = new StringBuilder();
     for (final String segment : path) {
-      result.append(result.length() == 0 ? "" : '/').append(Encoder.encode(segment)); //$NON-NLS-1$
+      result.append(result.isEmpty() ? "" : '/').append(Encoder.encode(segment)); //$NON-NLS-1$
     }
-    return result.length() == 0 ? null : result.toString();
+    return result.isEmpty() ? null : result.toString();
   }
 
   private static List<List<String>> getComplexSelectedPaths(final EdmProperty edmProperty,

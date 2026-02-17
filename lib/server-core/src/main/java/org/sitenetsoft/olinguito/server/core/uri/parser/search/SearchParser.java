@@ -148,7 +148,7 @@ public class SearchParser {
     final String tokenName = getTokenAsString();
     throw new SearchParserException("Expected PHRASE||WORD found: " + tokenName,
         SearchParserException.MessageKeys.EXPECTED_DIFFERENT_TOKEN,
-        Token.PHRASE.name() + "" + Token.WORD.name(), tokenName);
+        Token.PHRASE.name() + Token.WORD.name(), tokenName);
   }
 
   private SearchTerm processWord() {

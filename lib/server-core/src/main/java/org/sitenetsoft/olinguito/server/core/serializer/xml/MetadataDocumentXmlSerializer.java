@@ -261,7 +261,7 @@ public class MetadataDocumentXmlSerializer {
 
       // Facets
       if (!term.isNullable()) {
-        writer.writeAttribute(XML_NULLABLE, "" + term.isNullable());
+        writer.writeAttribute(XML_NULLABLE, String.valueOf(term.isNullable()));
       }
 
       if (term.getDefaultValue() != null) {
@@ -269,15 +269,15 @@ public class MetadataDocumentXmlSerializer {
       }
 
       if (term.getMaxLength() != null) {
-        writer.writeAttribute(XML_MAX_LENGTH, "" + term.getMaxLength());
+        writer.writeAttribute(XML_MAX_LENGTH, String.valueOf(term.getMaxLength()));
       }
 
       if (term.getPrecision() != null) {
-        writer.writeAttribute(XML_PRECISION, "" + term.getPrecision());
+        writer.writeAttribute(XML_PRECISION, String.valueOf(term.getPrecision()));
       }
 
       if (term.getScale() != null) {
-        writer.writeAttribute(XML_SCALE, "" + term.getScale());
+        writer.writeAttribute(XML_SCALE, String.valueOf(term.getScale()));
       }
 
       appendAnnotations(writer, term);
@@ -386,15 +386,15 @@ public class MetadataDocumentXmlSerializer {
       writer.writeAttribute(XML_TYPE, getAliasedFullQualifiedName(asCast.getType(), false));
 
       if (asCast.getMaxLength() != null) {
-        writer.writeAttribute(XML_MAX_LENGTH, "" + asCast.getMaxLength());
+        writer.writeAttribute(XML_MAX_LENGTH, String.valueOf(asCast.getMaxLength()));
       }
 
       if (asCast.getPrecision() != null) {
-        writer.writeAttribute(XML_PRECISION, "" + asCast.getPrecision());
+        writer.writeAttribute(XML_PRECISION, String.valueOf(asCast.getPrecision()));
       }
 
       if (asCast.getScale() != null) {
-        writer.writeAttribute(XML_SCALE, "" + asCast.getScale());
+        writer.writeAttribute(XML_SCALE, String.valueOf(asCast.getScale()));
       }
       appendExpression(writer, asCast.getValue());
       appendAnnotations(writer, asCast);
@@ -416,15 +416,15 @@ public class MetadataDocumentXmlSerializer {
       writer.writeAttribute(XML_TYPE, getAliasedFullQualifiedName(asIsOf.getType(), false));
 
       if (asIsOf.getMaxLength() != null) {
-        writer.writeAttribute(XML_MAX_LENGTH, "" + asIsOf.getMaxLength());
+        writer.writeAttribute(XML_MAX_LENGTH, String.valueOf(asIsOf.getMaxLength()));
       }
 
       if (asIsOf.getPrecision() != null) {
-        writer.writeAttribute(XML_PRECISION, "" + asIsOf.getPrecision());
+        writer.writeAttribute(XML_PRECISION, String.valueOf(asIsOf.getPrecision()));
       }
 
       if (asIsOf.getScale() != null) {
-        writer.writeAttribute(XML_SCALE, "" + asIsOf.getScale());
+        writer.writeAttribute(XML_SCALE, String.valueOf(asIsOf.getScale()));
       }
       appendExpression(writer, asIsOf.getValue());
       appendAnnotations(writer, asIsOf);
@@ -518,15 +518,15 @@ public class MetadataDocumentXmlSerializer {
 
       // Facets
       if (definition.getMaxLength() != null) {
-        writer.writeAttribute(XML_MAX_LENGTH, "" + definition.getMaxLength());
+        writer.writeAttribute(XML_MAX_LENGTH, String.valueOf(definition.getMaxLength()));
       }
 
       if (definition.getPrecision() != null) {
-        writer.writeAttribute(XML_PRECISION, "" + definition.getPrecision());
+        writer.writeAttribute(XML_PRECISION, String.valueOf(definition.getPrecision()));
       }
 
       if (definition.getScale() != null) {
-        writer.writeAttribute(XML_SCALE, "" + definition.getScale());
+        writer.writeAttribute(XML_SCALE, String.valueOf(definition.getScale()));
       }
 
       appendAnnotations(writer, definition);

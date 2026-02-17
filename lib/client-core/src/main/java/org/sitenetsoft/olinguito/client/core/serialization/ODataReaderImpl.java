@@ -149,7 +149,8 @@ public class ODataReaderImpl implements ODataReader {
       } else {
         throw new IllegalArgumentException("Invalid reference type " + reference);
       }
-    } catch (Exception e) {
+    } catch (ClassCastException | IllegalArgumentException | IOException
+        | ODataDeserializerException e) {
       LOG.warn("Cast error", e);
       res = null;
     } finally {

@@ -239,13 +239,13 @@ public class MetadataParser {
       loadCoreVocabulary(provider, "Org.OData.Measures.V1");
     }
 
-    if (namespace != null && !namespace.equals("") && !globalReferenceMap.containsKey(namespace)) {
+    if (namespace != null && !namespace.isEmpty() && !globalReferenceMap.containsKey(namespace)) {
       globalReferenceMap.put(namespace, provider);
     }
 
     // load all the reference schemas
     if (resolver != null && loadReferenceSchemas) {
-      loadReferencesSchemas(provider, xmlBase.length() == 0 ? null
+      loadReferencesSchemas(provider, xmlBase.isEmpty() ? null
           : fixXmlBase(xmlBase.toString()), resolver, loadCore, useLocal);
     }
     return provider;

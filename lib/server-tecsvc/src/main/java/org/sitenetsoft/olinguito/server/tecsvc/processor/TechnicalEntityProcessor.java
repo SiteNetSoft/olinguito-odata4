@@ -19,9 +19,9 @@
 package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
 import java.net.URI;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -731,10 +731,8 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
   }
 
   private String generateDeltaToken() {
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.000");
-
-    Date date = new Date(System.currentTimeMillis());
-    return dateFormat.format(date);
+    return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.000")
+        .format(LocalDateTime.now());
   } 
   
   private SerializerResult serializeDeltaPayloads(final ODataRequest request, final Delta delta, 

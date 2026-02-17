@@ -46,6 +46,7 @@ import java.util.Map;
  * Delegates to {@link TechnicalAsyncService#getInstance()} for async runner access.
  */
 public class TechnicalAsyncServletService {
+  private static final int COPY_BUFFER_SIZE = 8192;
 
   private final TechnicalAsyncService asyncService;
 
@@ -131,10 +132,9 @@ public class TechnicalAsyncServletService {
       return;
     }
 
-    try {
-      ByteBuffer inBuffer = ByteBuffer.allocate(8192);
-      ReadableByteChannel ic = Channels.newChannel(input);
-      WritableByteChannel oc = Channels.newChannel(output);
+    try (ReadableByteChannel ic = Channels.newChannel(input);
+         WritableByteChannel oc = Channels.newChannel(output)) {
+      ByteBuffer inBuffer = ByteBuffer.allocate(COPY_BUFFER_SIZE);
       while (ic.read(inBuffer) > 0) {
         inBuffer.flip();
         oc.write(inBuffer);
@@ -142,9 +142,6 @@ public class TechnicalAsyncServletService {
       }
     } catch (IOException e) {
       throw new ODataRuntimeException("Error on reading request content");
-    } finally {
-      closeStream(input);
-      closeStream(output);
     }
   }
 
