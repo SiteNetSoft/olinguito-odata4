@@ -18,6 +18,7 @@
  */
 package org.sitenetsoft.olinguito.server.api;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Formatter;
 import java.util.Locale;
@@ -31,6 +32,8 @@ import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
  * Abstract superclass of all translatable server exceptions.
  */
 public abstract class ODataLibraryException extends ODataException {
+
+  @Serial
 
   private static final long serialVersionUID = -1210541002198287561L;
   private static final Locale DEFAULT_LOCALE = Locale.ENGLISH;

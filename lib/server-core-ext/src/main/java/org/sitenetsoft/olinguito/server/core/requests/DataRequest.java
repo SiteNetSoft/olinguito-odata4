@@ -93,7 +93,7 @@ public class DataRequest extends ServiceRequest {
   private boolean countRequest;
   private UriResourceProperty uriResourceProperty;
   private boolean valueRequest;
-  private final LinkedList<UriResourceNavigation> uriNavigations = new LinkedList<UriResourceNavigation>();
+  private final LinkedList<UriResourceNavigation> uriNavigations = new LinkedList<>();
   private boolean references;
 
   private RequestType type;
@@ -898,7 +898,7 @@ public class DataRequest extends ServiceRequest {
   }
 
   private static List<String> getPropertyPath(final List<UriResource> path) {
-    List<String> result = new LinkedList<String>();
+    List<String> result = new LinkedList<>();
     int index = 1;
     while (index < path.size() && path.get(index) instanceof UriResourceProperty) {
       result.add(((UriResourceProperty) path.get(index)).getProperty().getName());

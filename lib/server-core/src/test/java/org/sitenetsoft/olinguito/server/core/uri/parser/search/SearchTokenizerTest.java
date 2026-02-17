@@ -330,7 +330,7 @@ public class SearchTokenizerTest {
   }
 
   private static class Validator {
-    private List<Tuple> validations = new ArrayList<Tuple>();
+    private List<Tuple> validations = new ArrayList<>();
     private final String searchQuery;
 
     public void resultsIn(final SearchQueryToken.Token... tokens) throws SearchTokenizerException {

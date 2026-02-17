@@ -74,7 +74,7 @@ public class BatchRequest extends ServiceRequest {
         .parseBatchRequest(request.getBody(), boundary, options);
 
     ODataResponsePart partResponse = null;
-    final List<ODataResponsePart> responseParts = new ArrayList<ODataResponsePart>();
+    final List<ODataResponsePart> responseParts = new ArrayList<>();
 
     for (BatchRequestPart part : parts) {
       if (part.isChangeSet()) {
@@ -130,7 +130,7 @@ public class BatchRequest extends ServiceRequest {
 
   ODataResponsePart processChangeSet(BatchRequestPart partRequest, ServiceHandler serviceHandler)
       throws BatchDeserializerException {
-    List<ODataResponse> changeSetResponses = new ArrayList<ODataResponse>();
+    List<ODataResponse> changeSetResponses = new ArrayList<>();
     // change set need to be a in a atomic operation
     for (ODataRequest changeSetPartRequest : partRequest.getRequests()) {
 

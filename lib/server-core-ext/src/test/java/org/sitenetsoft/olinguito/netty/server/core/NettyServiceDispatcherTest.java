@@ -237,7 +237,7 @@ public class NettyServiceDispatcherTest {
   
   @Test
   public void testCreatePreferences() {
-    List<String> preferHeaders = new ArrayList<String>();
+    List<String> preferHeaders = new ArrayList<>();
     preferHeaders.add("return=representation");
     preferHeaders.add("odata.track-changes");
     assertNotNull(odata.createPreferences(preferHeaders));
@@ -250,7 +250,7 @@ public class NettyServiceDispatcherTest {
   
   @Test
   public void testCreateEdmDeltaSerializer() throws SerializerException {
-    List<String> versions = new ArrayList<String>();
+    List<String> versions = new ArrayList<>();
     versions.add("4.01");
     assertNotNull(odata.createEdmDeltaSerializer(ContentType.APPLICATION_JSON, versions));
   }
@@ -274,7 +274,7 @@ public class NettyServiceDispatcherTest {
     when(nettyResponse.headers()).thenReturn(headers);
     when(nettyResponse.content()).thenReturn(Unpooled.buffer());    
     
-    Map<String, String> requestParams = new HashMap<String, String>();
+    Map<String, String> requestParams = new HashMap<>();
     requestParams.put("contextPath", "/trippin");
     ODataNettyHandler handler = odata.createNettyHandler(metadata);
     handler.processNettyRequest(nettyRequest, nettyResponse, requestParams);

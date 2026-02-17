@@ -435,7 +435,7 @@ public class MetadataTest extends AbstractTest {
   
   @Test
   public void readPropertyAnnotations() {
-    List<InputStream> streams = new ArrayList<InputStream>();
+    List<InputStream> streams = new ArrayList<>();
     streams.add(getClass().getResourceAsStream("VOC_Core.xml"));
     final Edm edm = client.getReader().readMetadata(getClass().getResourceAsStream("edmxWithCoreAnnotation.xml"),
         streams);
@@ -514,7 +514,7 @@ public class MetadataTest extends AbstractTest {
   
   @Test
   public void readPropertyAnnotationsTest() {
-    List<InputStream> streams = new ArrayList<InputStream>();
+    List<InputStream> streams = new ArrayList<>();
     streams.add(getClass().getResourceAsStream("VOC_Core.xml"));
     final Edm edm = client.getReader().readMetadata(getClass().getResourceAsStream("edmxWithCsdlAnnotationPath.xml"),
         streams);
@@ -642,7 +642,7 @@ public class MetadataTest extends AbstractTest {
  public void readAnnotationOnBoundFunction() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);
-   List<String> parameterNames = new ArrayList<String>();
+   List<String> parameterNames = new ArrayList<>();
    EdmFunction function = edm.getBoundFunction(new FullQualifiedName("SEPMRA_SO_MAN2", "_FC_RTTimeOfDay_"),
        new FullQualifiedName("Edm", "TimeOfDay"), false, parameterNames);
    assertEquals(2, function.getAnnotations().size());
@@ -1160,7 +1160,7 @@ public class MetadataTest extends AbstractTest {
  public void readAnnotationOnFunctionWithParameters() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);
-   List<String> paramNames = new ArrayList<String>();
+   List<String> paramNames = new ArrayList<>();
    paramNames.add("ParameterString");
    paramNames.add("ParameterInt16");
    EdmFunction function = edm.getUnboundFunction(

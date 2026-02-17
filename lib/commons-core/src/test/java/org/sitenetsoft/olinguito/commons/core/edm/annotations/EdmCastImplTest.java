@@ -86,7 +86,7 @@ public class EdmCastImplTest extends AbstractAnnotationTest{
     csdlExp.setScale(Integer.valueOf(3));
     csdlExp.setType("Edm.String");
     csdlExp.setValue(new CsdlConstantExpression(ConstantExpressionType.String));
-    List<CsdlAnnotation> csdlAnnotations = new ArrayList<CsdlAnnotation>();
+    List<CsdlAnnotation> csdlAnnotations = new ArrayList<>();
     csdlAnnotations.add(new CsdlAnnotation().setTerm("ns.term"));
     csdlExp.setAnnotations(csdlAnnotations);
     EdmExpression isOf = AbstractEdmExpression.getExpression(mock(Edm.class), csdlExp);

@@ -37,7 +37,7 @@ public abstract class CsdlOperationImport extends CsdlAbstractEdmItem implements
   /**
    * The Annotations.
    */
-  protected List<CsdlAnnotation> annotations = new ArrayList<CsdlAnnotation>();
+  protected List<CsdlAnnotation> annotations = new ArrayList<>();
 
   @Override
   public String getName() {

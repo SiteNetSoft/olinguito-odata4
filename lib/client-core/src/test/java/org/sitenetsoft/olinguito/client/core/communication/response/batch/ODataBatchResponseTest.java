@@ -52,7 +52,7 @@ public class ODataBatchResponseTest {
   public void testBatchResponse() throws URISyntaxException {
 
     ODataChangesetResponseItem expectedResItem = new ODataChangesetResponseItem(true);
-    List<ODataBatchResponseItem> resList = new ArrayList<ODataBatchResponseItem>();
+    List<ODataBatchResponseItem> resList = new ArrayList<>();
     resList.add(expectedResItem);
     ODataBatchResponseManager manager = new ODataBatchResponseManager(new BatchResponse(), resList );
     assertNotNull(manager);
@@ -62,8 +62,8 @@ public class ODataBatchResponseTest {
   
   @Test
   public void testErrorBatchResponse() throws URISyntaxException {
-    Map<String, Collection<String>> header = new HashMap<String, Collection<String>>();
-    List<String> list = new ArrayList<String>();
+    Map<String, Collection<String>> header = new HashMap<>();
+    List<String> list = new ArrayList<>();
     list.add("multipart/mixed;boundary=changeset_12ks93js84d");
     header.put("content-type", list);
     final InputStream input = getClass().getResourceAsStream("batchResponse.batch");
@@ -94,7 +94,7 @@ public class ODataBatchResponseTest {
 
     @Override
     public Collection<String> getHeader(String name) {
-      List<String> list = new ArrayList<String>();
+      List<String> list = new ArrayList<>();
       list.add("multipart/mixed;boundary=changeset_12ks93js84d");
       return list;
     }

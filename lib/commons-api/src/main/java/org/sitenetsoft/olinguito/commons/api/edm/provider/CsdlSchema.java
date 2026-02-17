@@ -30,25 +30,25 @@ public class CsdlSchema extends CsdlAbstractEdmItem implements CsdlAnnotatable {
 
   private String alias;
 
-  private List<CsdlEnumType> enumTypes = new ArrayList<CsdlEnumType>();
+  private List<CsdlEnumType> enumTypes = new ArrayList<>();
 
-  private List<CsdlTypeDefinition> typeDefinitions = new ArrayList<CsdlTypeDefinition>();
+  private List<CsdlTypeDefinition> typeDefinitions = new ArrayList<>();
 
-  private List<CsdlEntityType> entityTypes = new ArrayList<CsdlEntityType>();
+  private List<CsdlEntityType> entityTypes = new ArrayList<>();
 
-  private List<CsdlComplexType> complexTypes = new ArrayList<CsdlComplexType>();
+  private List<CsdlComplexType> complexTypes = new ArrayList<>();
 
-  private List<CsdlAction> actions = new ArrayList<CsdlAction>();
+  private List<CsdlAction> actions = new ArrayList<>();
 
-  private List<CsdlFunction> functions = new ArrayList<CsdlFunction>();
+  private List<CsdlFunction> functions = new ArrayList<>();
 
   private CsdlEntityContainer entityContainer;
 
-  private List<CsdlTerm> terms = new ArrayList<CsdlTerm>();
+  private List<CsdlTerm> terms = new ArrayList<>();
 
-  private List<CsdlAnnotations> annotationGroups = new ArrayList<CsdlAnnotations>();
+  private List<CsdlAnnotations> annotationGroups = new ArrayList<>();
 
-  private List<CsdlAnnotation> annotations = new ArrayList<CsdlAnnotation>();
+  private List<CsdlAnnotation> annotations = new ArrayList<>();
 
   /**
    * Gets namespace.

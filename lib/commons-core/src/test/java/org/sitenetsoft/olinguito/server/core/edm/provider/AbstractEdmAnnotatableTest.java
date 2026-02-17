@@ -72,7 +72,7 @@ public class AbstractEdmAnnotatableTest {
     CsdlEntityContainer annotatable = new CsdlEntityContainer();
     CsdlAnnotation annotation = new CsdlAnnotation();
     annotation.setTerm("namespace.name");
-    List<CsdlAnnotation> annotations = new ArrayList<CsdlAnnotation>();
+    List<CsdlAnnotation> annotations = new ArrayList<>();
     annotations.add(annotation);
     annotatable.setAnnotations(annotations);
     EdmAnnotatable anno = new EdmAnnotatableTester(edm, annotatable);

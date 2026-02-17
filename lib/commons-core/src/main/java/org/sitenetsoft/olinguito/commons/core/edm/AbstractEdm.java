@@ -618,7 +618,7 @@ public abstract class AbstractEdm implements Edm {
   @Override
   public List<EdmFunction> getBoundFunctionsWithBindingType(FullQualifiedName bindingParameterTypeName,
       Boolean isBindingParameterCollection){
-    List<EdmFunction> functions = new ArrayList<EdmFunction>();
+    List<EdmFunction> functions = new ArrayList<>();
     for (EdmSchema schema:getSchemas()) {
       for (EdmFunction function: schema.getFunctions()) {
         if (function.isBound()) {

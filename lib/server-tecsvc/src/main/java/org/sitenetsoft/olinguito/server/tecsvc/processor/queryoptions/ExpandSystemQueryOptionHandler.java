@@ -85,7 +85,7 @@ public class ExpandSystemQueryOptionHandler {
             HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), Locale.ROOT);
       }
       
-      List<EdmNavigationProperty> navigationProperties = new ArrayList<EdmNavigationProperty>();
+      List<EdmNavigationProperty> navigationProperties = new ArrayList<>();
       if(item.isStar()) {
         List<EdmNavigationPropertyBinding> bindings = edmBindingTarget.getNavigationPropertyBindings();
         for (EdmNavigationPropertyBinding binding : bindings) {
@@ -245,7 +245,7 @@ public class ExpandSystemQueryOptionHandler {
   }
 
   private Set<String> getExpandedPropertyNames(final List<ExpandItem> expandItems) throws ODataApplicationException {
-    Set<String> expanded = new HashSet<String>();
+    Set<String> expanded = new HashSet<>();
     for (final ExpandItem item : expandItems) {
       final List<UriResource> resourceParts = item.getResourcePath().getUriResourceParts();
       final UriResource resource = resourceParts.get(0);

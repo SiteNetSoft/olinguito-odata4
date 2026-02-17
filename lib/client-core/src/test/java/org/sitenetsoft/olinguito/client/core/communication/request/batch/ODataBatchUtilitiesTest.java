@@ -50,7 +50,7 @@ public class ODataBatchUtilitiesTest {
   @Test
   public void testBatchRequest(){
     ODataBatchUtilities util = new ODataBatchUtilities();
-    Map<String, Collection<String>> value = new HashMap<String, Collection<String>>();
+    Map<String, Collection<String>> value = new HashMap<>();
     util.addHeaderLine("header:name", value );
     value.put("header:name", null);
     util.addHeaderLine("header:name", value );

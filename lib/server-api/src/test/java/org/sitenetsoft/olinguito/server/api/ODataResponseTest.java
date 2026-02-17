@@ -35,7 +35,7 @@ public class ODataResponseTest {
     ODataResponse  r = new ODataResponse ();
     assertNotNull(r);
     r.addHeader("header", "value");
-    List<String> list = new ArrayList<String>();
+    List<String> list = new ArrayList<>();
     r.addHeader("headerList", list );
     assertNotNull(r.getAllHeaders());
   }
@@ -45,7 +45,7 @@ public class ODataResponseTest {
     ODataServerError  r = new ODataServerError ();
     assertNotNull(r);
     assertNull(r.getLocale());
-    Map<String, String> map = new HashMap<String, String>();
+    Map<String, String> map = new HashMap<>();
     r.setInnerError(map);
     assertNotNull(r.getInnerError());
   }

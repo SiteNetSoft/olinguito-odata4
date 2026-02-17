@@ -51,17 +51,17 @@ public abstract class CsdlStructuralType extends CsdlAbstractEdmItem implements 
   /**
    * The Properties.
    */
-  protected List<CsdlProperty> properties = new ArrayList<CsdlProperty>();
+  protected List<CsdlProperty> properties = new ArrayList<>();
 
   /**
    * The Navigation properties.
    */
-  protected List<CsdlNavigationProperty> navigationProperties = new ArrayList<CsdlNavigationProperty>();
+  protected List<CsdlNavigationProperty> navigationProperties = new ArrayList<>();
 
   /**
    * The Annotations.
    */
-  protected List<CsdlAnnotation> annotations = new ArrayList<CsdlAnnotation>();
+  protected List<CsdlAnnotation> annotations = new ArrayList<>();
 
   @Override
   public String getName() {

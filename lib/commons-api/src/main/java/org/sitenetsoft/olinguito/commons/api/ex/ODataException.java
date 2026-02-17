@@ -18,7 +18,11 @@
  */
 package org.sitenetsoft.olinguito.commons.api.ex;
 
+import java.io.Serial;
+
 public class ODataException extends Exception {
+
+  @Serial
 
   private static final long serialVersionUID = 3057981437954048107L;
 

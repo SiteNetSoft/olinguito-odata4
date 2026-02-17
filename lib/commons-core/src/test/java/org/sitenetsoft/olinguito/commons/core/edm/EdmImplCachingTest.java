@@ -18,6 +18,7 @@
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
+import java.io.Serial;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
@@ -208,16 +209,16 @@ public class EdmImplCachingTest {
 
   @Test
   public void cacheBoundFunction() {
-    EdmFunction function = edm.getBoundFunction(NAME1, NAME2, true, new ArrayList<String>());
+    EdmFunction function = edm.getBoundFunction(NAME1, NAME2, true, new ArrayList<>());
     assertNotNull(function);
 
-    EdmFunction cachedfunction = edm.getBoundFunction(NAME1, NAME2, true, new ArrayList<String>());
+    EdmFunction cachedfunction = edm.getBoundFunction(NAME1, NAME2, true, new ArrayList<>());
     assertNotNull(cachedfunction);
 
     assertTrue(function == cachedfunction);
     assertEquals(function, cachedfunction);
 
-    EdmFunction function2 = edm.getBoundFunction(NAME2, NAME2, true, new ArrayList<String>());
+    EdmFunction function2 = edm.getBoundFunction(NAME2, NAME2, true, new ArrayList<>());
     assertNotNull(function2);
 
     assertNotSame(function, function2);
@@ -225,13 +226,13 @@ public class EdmImplCachingTest {
 
   @Test
   public void cacheUnboundFunctionWithParameters() {
-    ArrayList<String> parameters1 = new ArrayList<String>();
+    ArrayList<String> parameters1 = new ArrayList<>();
     parameters1.add("A");
     parameters1.add("B");
     EdmFunction function = edm.getBoundFunction(NAME1, NAME2, true, parameters1);
     assertNotNull(function);
 
-    ArrayList<String> parameters2 = new ArrayList<String>();
+    ArrayList<String> parameters2 = new ArrayList<>();
     parameters2.add("B");
     parameters2.add("A");
     EdmFunction cachedfunction = edm.getBoundFunction(NAME1, NAME2, true, parameters2);
@@ -240,7 +241,7 @@ public class EdmImplCachingTest {
     assertTrue(function == cachedfunction);
     assertEquals(function, cachedfunction);
 
-    EdmFunction function2 = edm.getBoundFunction(NAME2, NAME2, true, new ArrayList<String>());
+    EdmFunction function2 = edm.getBoundFunction(NAME2, NAME2, true, new ArrayList<>());
     assertNotNull(function2);
 
     assertNotSame(function, function2);
@@ -384,7 +385,7 @@ public class EdmImplCachingTest {
 
     @Override
     protected Map<String, String> createAliasToNamespaceInfo() {
-      return new HashMap<String, String>();
+      return new HashMap<>();
     }
 
     @Override
@@ -439,7 +440,8 @@ public class EdmImplCachingTest {
     protected Map<String, EdmSchema> createSchemas() {
       final EdmSchema schema = mock(EdmSchema.class);
       when(schema.getNamespace()).thenReturn(NAME1.getNamespace());
-      return new HashMap<String, EdmSchema>() {
+      return new HashMap<>() {
+        @Serial
         private static final long serialVersionUID = 3109256773218160485L;
 
         {

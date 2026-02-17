@@ -19,11 +19,14 @@
 package org.sitenetsoft.olinguito.commons.api.edm;
 
 import java.io.Serializable;
+import java.io.Serial;
 
 /**
  * A full qualified name of any element in the EDM consists of a name and a namespace.
  */
 public final class FullQualifiedName implements Serializable {
+
+  @Serial
 
   private static final long serialVersionUID = -4063629050858999076L;
 

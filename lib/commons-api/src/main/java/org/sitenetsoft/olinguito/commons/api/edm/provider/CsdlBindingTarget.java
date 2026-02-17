@@ -47,14 +47,14 @@ public abstract class CsdlBindingTarget extends CsdlAbstractEdmItem implements C
    * The Navigation property bindings.
    */
   protected List<CsdlNavigationPropertyBinding> navigationPropertyBindings =
-      new ArrayList<CsdlNavigationPropertyBinding>();
+      new ArrayList<>();
 
   /**
    * Mapping for server use cases
    */
   protected CsdlMapping mapping;
 
-  private List<CsdlAnnotation> annotations = new ArrayList<CsdlAnnotation>();
+  private List<CsdlAnnotation> annotations = new ArrayList<>();
 
   @Override
   public String getName() {

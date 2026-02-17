@@ -34,7 +34,7 @@ public class CsdlTerm extends CsdlAbstractEdmItem implements CsdlNamed, CsdlAnno
 
   private String baseTerm;
 
-  private List<String> appliesTo = new ArrayList<String>();
+  private List<String> appliesTo = new ArrayList<>();
 
   // Facets
   private String defaultValue;
@@ -49,7 +49,7 @@ public class CsdlTerm extends CsdlAbstractEdmItem implements CsdlNamed, CsdlAnno
 
   private SRID srid;
 
-  private List<CsdlAnnotation> annotations = new ArrayList<CsdlAnnotation>();
+  private List<CsdlAnnotation> annotations = new ArrayList<>();
 
   @Override
   public String getName() {

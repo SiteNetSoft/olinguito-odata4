@@ -19,6 +19,7 @@
 package org.sitenetsoft.olinguito.commons.api.edm.geo;
 
 import java.io.Serializable;
+import java.io.Serial;
 
 import org.sitenetsoft.olinguito.commons.api.edm.geo.Geospatial.Dimension;
 
@@ -35,6 +36,8 @@ import org.sitenetsoft.olinguito.commons.api.edm.geo.Geospatial.Dimension;
  * European Petroleum Survey Group [EPSG].
  */
 public final class SRID implements Serializable {
+
+  @Serial
 
   private static final long serialVersionUID = 8412685060902464629L;
   private static final String VARIABLE = "variable";

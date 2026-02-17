@@ -209,7 +209,7 @@ public class MetadataDocumentXmlSerializerTest {
 
   @Test
   public void writeEdmxWithLocalTestEdm() throws Exception {
-    List<EdmxReference> edmxReferences = new ArrayList<EdmxReference>();
+    List<EdmxReference> edmxReferences = new ArrayList<>();
     EdmxReference reference = new EdmxReference(URI.create("http://example.com"));
     edmxReferences.add(reference);
 
@@ -447,7 +447,7 @@ public class MetadataDocumentXmlSerializerTest {
     when(edm.getSchemas()).thenReturn(List.of(schema));
     ServiceMetadata serviceMetadata = mock(ServiceMetadata.class);
     when(serviceMetadata.getEdm()).thenReturn(edm);
-    List<EdmComplexType> complexTypes = new ArrayList<EdmComplexType>();
+    List<EdmComplexType> complexTypes = new ArrayList<>();
 
     FullQualifiedName name = new FullQualifiedName("namespace", "ComplexType");
     EdmComplexType complexType = mock(EdmComplexType.class);
@@ -712,7 +712,7 @@ public class MetadataDocumentXmlSerializerTest {
 
     @Override
     public List<CsdlSchema> getSchemas() throws ODataException {
-      List<CsdlSchema> schemas = new ArrayList<CsdlSchema>();
+      List<CsdlSchema> schemas = new ArrayList<>();
       CsdlSchema schema = new CsdlSchema();
       schema.setNamespace(nameSpace);
       schema.setAlias("Alias");
@@ -859,7 +859,7 @@ public class MetadataDocumentXmlSerializerTest {
         List<CsdlAnnotation> innerAnnotations = Collections.singletonList(
             new CsdlAnnotation().setTerm("ns.term"));
 
-        List<CsdlAnnotation> annotationsList = new ArrayList<CsdlAnnotation>();
+        List<CsdlAnnotation> annotationsList = new ArrayList<>();
         annoGroup.setAnnotations(annotationsList);
         // Constant Annotations
         annotationsList.add(new CsdlAnnotation().setTerm("ns.term")
@@ -940,7 +940,7 @@ public class MetadataDocumentXmlSerializerTest {
         annotationsList.add(new CsdlAnnotation().setTerm("ns.term")
             .setExpression(new CsdlAnnotationPath().setValue("AnnoPathValue")));
 
-        List<CsdlExpression> parameters = new ArrayList<CsdlExpression>();
+        List<CsdlExpression> parameters = new ArrayList<>();
         parameters.add(new CsdlConstantExpression(ConstantExpressionType.Bool, "true"));
         annotationsList.add(new CsdlAnnotation().setTerm("ns.term")
             .setExpression(new CsdlApply().setFunction("odata.concat")
@@ -956,7 +956,7 @@ public class MetadataDocumentXmlSerializerTest {
             .setType("Edm.String")
             .setAnnotations(innerAnnotations)));
 
-        List<CsdlExpression> items = new ArrayList<CsdlExpression>();
+        List<CsdlExpression> items = new ArrayList<>();
         items.add(new CsdlConstantExpression(ConstantExpressionType.Bool, "true"));
         items.add(new CsdlConstantExpression(ConstantExpressionType.Bool, "false"));
         items.add(new CsdlConstantExpression(ConstantExpressionType.String, "String"));

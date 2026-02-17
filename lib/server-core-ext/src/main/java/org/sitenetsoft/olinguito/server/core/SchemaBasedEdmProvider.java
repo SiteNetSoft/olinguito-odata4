@@ -91,7 +91,7 @@ public class SchemaBasedEdmProvider implements CsdlEdmProvider {
   
   CsdlSchema getSchema(String ns, boolean checkReferences) {
     if (checkReferences) {
-      return getSchemaRecursively(ns, new HashSet<String>());
+      return getSchemaRecursively(ns, new HashSet<>());
     } else {
       return getSchemaDirectly(ns);
     }

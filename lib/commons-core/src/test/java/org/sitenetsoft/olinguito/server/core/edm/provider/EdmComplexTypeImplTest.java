@@ -57,10 +57,10 @@ public class EdmComplexTypeImplTest {
 
     FullQualifiedName baseName = new FullQualifiedName("namespace", "BaseTypeName");
     CsdlComplexType baseComplexType = new CsdlComplexType();
-    List<CsdlProperty> baseProperties = new ArrayList<CsdlProperty>();
+    List<CsdlProperty> baseProperties = new ArrayList<>();
     baseProperties.add(new CsdlProperty().setName("prop1").setType(
         EdmPrimitiveTypeKind.String.getFullQualifiedName()));
-    List<CsdlNavigationProperty> baseNavigationProperties = new ArrayList<CsdlNavigationProperty>();
+    List<CsdlNavigationProperty> baseNavigationProperties = new ArrayList<>();
     baseNavigationProperties.add(new CsdlNavigationProperty().setName("nav1"));
     baseComplexType.setName("BaseTypeName").setAbstract(false).setOpenType(false).setProperties(baseProperties)
         .setNavigationProperties(baseNavigationProperties);
@@ -70,9 +70,9 @@ public class EdmComplexTypeImplTest {
 
     FullQualifiedName name = new FullQualifiedName("namespace", "typeName");
     CsdlComplexType complexType = new CsdlComplexType().setBaseType(baseName);
-    List<CsdlProperty> properties = new ArrayList<CsdlProperty>();
+    List<CsdlProperty> properties = new ArrayList<>();
     properties.add(new CsdlProperty().setName("prop2").setType(EdmPrimitiveTypeKind.String.getFullQualifiedName()));
-    List<CsdlNavigationProperty> navigationProperties = new ArrayList<CsdlNavigationProperty>();
+    List<CsdlNavigationProperty> navigationProperties = new ArrayList<>();
     navigationProperties.add(new CsdlNavigationProperty().setName("nav2"));
     complexType.setName("BaseTypeName").setAbstract(false).setOpenType(false).setProperties(properties)
         .setNavigationProperties(navigationProperties);

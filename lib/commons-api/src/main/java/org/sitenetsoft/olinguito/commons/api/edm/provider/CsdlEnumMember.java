@@ -30,7 +30,7 @@ public class CsdlEnumMember extends CsdlAbstractEdmItem implements CsdlNamed, Cs
 
   private String value;
 
-  private List<CsdlAnnotation> annotations = new ArrayList<CsdlAnnotation>();
+  private List<CsdlAnnotation> annotations = new ArrayList<>();
 
   @Override
   public String getName() {

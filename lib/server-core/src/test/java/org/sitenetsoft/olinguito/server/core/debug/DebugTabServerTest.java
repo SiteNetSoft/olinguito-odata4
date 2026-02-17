@@ -51,7 +51,7 @@ public class DebugTabServerTest extends AbstractDebugTabTest {
 
   @Test
   public void twoParametersNoNull() throws Exception {
-    Map<String, String> env = new LinkedHashMap<String, String>();
+    Map<String, String> env = new LinkedHashMap<>();
     env.put("key1", "value1");
     env.put("key2", "value2");
     DebugTabServer serverTab = new DebugTabServer(env);
@@ -67,7 +67,7 @@ public class DebugTabServerTest extends AbstractDebugTabTest {
 
   @Test
   public void twoParametersWithNull() throws Exception {
-    Map<String, String> env = new LinkedHashMap<String, String>();
+    Map<String, String> env = new LinkedHashMap<>();
     env.put("key1", null);
     env.put("key2", null);
     DebugTabServer serverTab = new DebugTabServer(env);

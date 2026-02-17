@@ -21,6 +21,7 @@ package org.sitenetsoft.olinguito.server.example;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serial;
 import java.nio.charset.StandardCharsets;
 
 import jakarta.servlet.ServletConfig;
@@ -39,6 +40,7 @@ import org.sitenetsoft.olinguito.server.core.OData4Impl;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class TripPinServlet extends HttpServlet {
+  @Serial
   private static final long serialVersionUID = 2663595419366214401L;
   private TripPinDataModel dataModel;
 

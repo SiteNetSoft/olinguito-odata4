@@ -101,7 +101,7 @@ public class BinaryOperator {
 
   public BinaryOperator(final VisitorOperand leftOperand, final List<VisitorOperand> rightOperand)
       throws ODataApplicationException {
-    rightValues = new ArrayList<TypedOperand>();
+    rightValues = new ArrayList<>();
     left = leftOperand.asTypedOperand();
     for (VisitorOperand right : rightOperand) {
       rightValues.add(right.asTypedOperand());

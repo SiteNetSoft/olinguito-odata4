@@ -18,8 +18,12 @@
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
+import java.io.Serial;
+
 /** Exception thrown during URI parsing in cases where the URI violates the URI construction rules. */
 public class UriParserSyntaxException extends UriParserException {
+
+  @Serial
 
   private static final long serialVersionUID = 5887744747812478226L;
 

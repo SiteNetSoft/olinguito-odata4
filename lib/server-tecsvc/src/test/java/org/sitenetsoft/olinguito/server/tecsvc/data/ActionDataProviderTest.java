@@ -70,7 +70,7 @@ public class ActionDataProviderTest {
 
   @Test
   public void actionUARTCollStringTwoParam() throws Exception {
-    Map<String, Parameter> parameters = new HashMap<String, Parameter>();
+    Map<String, Parameter> parameters = new HashMap<>();
     Parameter paramInt16 = new Parameter();
     paramInt16.setName("ParameterInt16");
     paramInt16.setValue(ValueType.PRIMITIVE, Short.valueOf((short) 3));

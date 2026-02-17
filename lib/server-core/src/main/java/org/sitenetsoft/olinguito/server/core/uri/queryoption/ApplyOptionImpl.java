@@ -29,7 +29,7 @@ import org.sitenetsoft.olinguito.server.api.uri.queryoption.SystemQueryOptionKin
 
 public class ApplyOptionImpl extends SystemQueryOptionImpl implements ApplyOption {
 
-  private List<ApplyItem> transformations = new ArrayList<ApplyItem>();
+  private List<ApplyItem> transformations = new ArrayList<>();
   private EdmStructuredType edmStructuredType;
 
   public ApplyOptionImpl() {

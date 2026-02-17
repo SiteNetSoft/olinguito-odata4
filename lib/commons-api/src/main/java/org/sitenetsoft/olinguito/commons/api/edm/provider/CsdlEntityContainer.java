@@ -32,15 +32,15 @@ public class CsdlEntityContainer extends CsdlAbstractEdmItem implements CsdlName
 
   private FullQualifiedName extendsContainer;
 
-  private List<CsdlEntitySet> entitySets = new ArrayList<CsdlEntitySet>();
+  private List<CsdlEntitySet> entitySets = new ArrayList<>();
 
-  private List<CsdlActionImport> actionImports = new ArrayList<CsdlActionImport>();
+  private List<CsdlActionImport> actionImports = new ArrayList<>();
 
-  private List<CsdlFunctionImport> functionImports = new ArrayList<CsdlFunctionImport>();
+  private List<CsdlFunctionImport> functionImports = new ArrayList<>();
 
-  private List<CsdlSingleton> singletons = new ArrayList<CsdlSingleton>();
+  private List<CsdlSingleton> singletons = new ArrayList<>();
 
-  private List<CsdlAnnotation> annotations = new ArrayList<CsdlAnnotation>();
+  private List<CsdlAnnotation> annotations = new ArrayList<>();
 
   // Annotations
   @Override

@@ -74,7 +74,7 @@ public class DataCreator {
   private final Map<String, EntityCollection> data;
 
   public DataCreator(final OData odata, final Edm edm) {
-    data = new HashMap<String, EntityCollection>();
+    data = new HashMap<>();
     data.put("ESTwoPrim", createESTwoPrim(edm, odata));
     data.put("ESAllPrim", createESAllPrim(edm, odata));
     data.put("ESCompAllPrim", createESCompAllPrim(edm, odata));
@@ -444,7 +444,7 @@ public class DataCreator {
 
   private Property createComplexDerievedCollection(final String name,
       String type, final List<ComplexValue> list) {
-    List<ComplexValue> complexCollection = new ArrayList<ComplexValue>(); 
+    List<ComplexValue> complexCollection = new ArrayList<>(); 
     complexCollection.addAll(list);
     Property property =  new Property(type, name, ValueType.COLLECTION_COMPLEX, complexCollection);
     createOperations(name, type, property);
@@ -2101,7 +2101,7 @@ public class DataCreator {
   }
 
   protected static Property createPrimitiveCollection(final String name, final Object... values) {
-    List<Object> propertyValues = new ArrayList<Object>();
+    List<Object> propertyValues = new ArrayList<>();
     for (final Object value : values) {
       propertyValues.add(value);
     }
@@ -2148,7 +2148,7 @@ public class DataCreator {
   @SafeVarargs
   protected static Property createComplexCollection(final String name,
       String type, final List<Property>... propertiesList) {
-    List<ComplexValue> complexCollection = new ArrayList<ComplexValue>();
+    List<ComplexValue> complexCollection = new ArrayList<>();
     for (final List<Property> properties : propertiesList) {
       ComplexValue complexValue = new ComplexValue();
       complexValue.getValue().addAll(properties);

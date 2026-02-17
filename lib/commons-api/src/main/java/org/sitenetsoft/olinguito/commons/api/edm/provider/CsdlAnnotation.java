@@ -32,7 +32,7 @@ public class CsdlAnnotation extends CsdlAbstractEdmItem implements CsdlAnnotatab
 
   private String qualifier;
 
-  private List<CsdlAnnotation> annotations = new ArrayList<CsdlAnnotation>();
+  private List<CsdlAnnotation> annotations = new ArrayList<>();
 
   private CsdlExpression annotationExpression;
 

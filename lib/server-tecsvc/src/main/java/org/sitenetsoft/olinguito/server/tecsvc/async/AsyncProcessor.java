@@ -109,7 +109,7 @@ public class AsyncProcessor<T extends Processor> {
         return;
       }
 
-      List<Object> copy = new ArrayList<Object>();
+      List<Object> copy = new ArrayList<>();
       for (Object parameter : invokeParameters) {
         if (replacement.getClass() == parameter.getClass()) {
           copy.add(replacement);

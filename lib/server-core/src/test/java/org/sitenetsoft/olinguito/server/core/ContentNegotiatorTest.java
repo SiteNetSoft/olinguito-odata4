@@ -296,7 +296,7 @@ public class ContentNegotiatorTest {
   private CustomContentTypeSupport createCustomContentTypeSupport(final String contentTypeString) {
     final String[] contentTypes = contentTypeString.split(",");
 
-    List<ContentType> types = new ArrayList<ContentType>();
+    List<ContentType> types = new ArrayList<>();
     for (String contentType : contentTypes) {
       types.add(ContentType.create(contentType));
     }

@@ -65,7 +65,7 @@ public class EdmEntityTypeImpl extends AbstractEdmStructuredType implements EdmE
           || (baseType.isAbstract() && ((EdmEntityType) baseType).getKeyPropertyRefs().isEmpty())) {
         final List<CsdlPropertyRef> key = entityType.getKey();
         if (key != null) {
-          final List<EdmKeyPropertyRef> edmKey = new ArrayList<EdmKeyPropertyRef>();
+          final List<EdmKeyPropertyRef> edmKey = new ArrayList<>();
           for (CsdlPropertyRef ref : key) {
             edmKey.add(new EdmKeyPropertyRefImpl(this, ref));
           }

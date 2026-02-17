@@ -18,12 +18,14 @@
  */
 package org.sitenetsoft.olinguito.server.api.etag;
 
+import java.io.Serial;
 import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
 
 /**
  * This exception is thrown for invalid precondition error cases.
  */
 public class PreconditionException extends ODataLibraryException {
+  @Serial
   private static final long serialVersionUID = -8112658467394158700L;
 
   public static enum MessageKeys implements MessageKey {

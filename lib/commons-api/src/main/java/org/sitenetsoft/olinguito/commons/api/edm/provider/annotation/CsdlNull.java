@@ -29,7 +29,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
  */
 public class CsdlNull extends CsdlDynamicExpression implements CsdlAnnotatable {
 
-  private List<CsdlAnnotation> annotations = new ArrayList<CsdlAnnotation>();
+  private List<CsdlAnnotation> annotations = new ArrayList<>();
 
   @Override
   public List<CsdlAnnotation> getAnnotations() {

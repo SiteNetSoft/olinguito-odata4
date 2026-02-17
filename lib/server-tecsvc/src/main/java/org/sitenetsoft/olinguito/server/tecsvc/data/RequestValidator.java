@@ -56,7 +56,7 @@ public class RequestValidator {
 
   public void validate(final EdmBindingTarget edmBindingTarget, final Entity entity)
       throws DataProviderException {
-    final List<String> path = new ArrayList<String>();
+    final List<String> path = new ArrayList<>();
 
     validateEntitySetProperties(entity.getProperties(), edmBindingTarget, edmBindingTarget.getEntityType(), path);
     validateNavigationProperties(entity, edmBindingTarget, edmBindingTarget.getEntityType(), path);
@@ -218,7 +218,7 @@ public class RequestValidator {
   private void validateComplexValue(final ComplexValue value, final EdmBindingTarget edmBindingTarget,
       final EdmComplexType edmType, final List<String> path) throws DataProviderException {
     // The whole complex property can be nullable but nested primitive, navigation properties can be not nullable
-    final List<Property> properties = (value == null) ? new ArrayList<Property>() : value.getValue();
+    final List<Property> properties = (value == null) ? new ArrayList<>() : value.getValue();
 
     validateProperties(properties, edmBindingTarget, edmType, new ArrayList<String>(0), path);
     validateNavigationProperties(value, edmBindingTarget, edmType, path);

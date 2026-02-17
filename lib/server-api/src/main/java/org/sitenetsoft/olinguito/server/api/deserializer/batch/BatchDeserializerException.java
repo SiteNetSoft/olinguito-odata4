@@ -18,6 +18,7 @@
  */
 package org.sitenetsoft.olinguito.server.api.deserializer.batch;
 
+import java.io.Serial;
 import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
 
 public class BatchDeserializerException extends DeserializerException {
@@ -70,6 +71,8 @@ public class BatchDeserializerException extends DeserializerException {
       return name();
     }
   }
+
+  @Serial
 
   private static final long serialVersionUID = -907752788975531134L;
 

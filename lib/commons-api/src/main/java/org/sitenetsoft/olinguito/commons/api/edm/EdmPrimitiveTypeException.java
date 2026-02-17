@@ -18,9 +18,12 @@
  */
 package org.sitenetsoft.olinguito.commons.api.edm;
 
+import java.io.Serial;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
 
 public class EdmPrimitiveTypeException extends ODataException {
+
+  @Serial
 
   private static final long serialVersionUID = -93578822384514620L;
 

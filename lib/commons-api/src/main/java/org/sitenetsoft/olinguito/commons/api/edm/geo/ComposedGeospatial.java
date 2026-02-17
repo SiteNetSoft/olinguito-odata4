@@ -35,7 +35,7 @@ public abstract class ComposedGeospatial<T extends Geospatial> extends Geospatia
       final List<T> geospatials) {
 
     super(dimension, type, srid);
-    this.geospatials = new ArrayList<T>();
+    this.geospatials = new ArrayList<>();
     if (geospatials != null) {
       this.geospatials.addAll(geospatials);
     }

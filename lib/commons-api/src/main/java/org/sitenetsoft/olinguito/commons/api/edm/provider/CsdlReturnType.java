@@ -44,7 +44,7 @@ public class CsdlReturnType extends CsdlAbstractEdmItem implements CsdlAnnotatab
 
   private SRID srid;
   
-  private List<CsdlAnnotation> annotations = new ArrayList<CsdlAnnotation>();
+  private List<CsdlAnnotation> annotations = new ArrayList<>();
 
   /**
    * Gets type.

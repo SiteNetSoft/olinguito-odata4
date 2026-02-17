@@ -139,7 +139,7 @@ public class EdmImplCallCreateTest {
     assertEquals(FQN.getNamespace(), function.getNamespace());
     assertEquals(FQN.getName(), function.getName());
 
-    EdmFunction function2 = edm.getBoundFunction(FQN, FQN, true, new ArrayList<String>());
+    EdmFunction function2 = edm.getBoundFunction(FQN, FQN, true, new ArrayList<>());
     assertNotNull(function2);
     assertEquals(FQN.getNamespace(), function2.getNamespace());
     assertEquals(FQN.getName(), function2.getName());
@@ -258,7 +258,7 @@ public class EdmImplCallCreateTest {
 
     @Override
     protected Map<String, String> createAliasToNamespaceInfo() {
-      return new HashMap<String, String>();
+      return new HashMap<>();
     }
 
     @Override

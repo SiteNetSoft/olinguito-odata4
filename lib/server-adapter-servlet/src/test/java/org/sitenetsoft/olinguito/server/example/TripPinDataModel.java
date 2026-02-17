@@ -62,10 +62,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class TripPinDataModel {
   private static final Logger LOG = LoggerFactory.getLogger(TripPinDataModel.class);
   private final ServiceMetadata metadata;
-  private HashMap<String, EntityCollection> entitySetMap = new HashMap<String, EntityCollection>();
-  private Map<Integer, Map<String,Object>> tripLinks = new HashMap<Integer, Map<String,Object>>();
-  private Map<String, Map<String,Object>> peopleLinks = new HashMap<String, Map<String,Object>>();
-  private Map<Integer, Map<String, Object>> flightLinks = new HashMap<Integer, Map<String, Object>>();
+  private HashMap<String, EntityCollection> entitySetMap = new HashMap<>();
+  private Map<Integer, Map<String,Object>> tripLinks = new HashMap<>();
+  private Map<String, Map<String,Object>> peopleLinks = new HashMap<>();
+  private Map<Integer, Map<String, Object>> flightLinks = new HashMap<>();
   private static final String BASE = "trippin/";
 
   public TripPinDataModel(ServiceMetadata metadata) throws Exception {
@@ -188,7 +188,7 @@ public class TripPinDataModel {
 
   private List<Entity> getMatch(UriParameter param, List<Entity> es)
       throws ODataApplicationException {
-    ArrayList<Entity> list = new ArrayList<Entity>();
+    ArrayList<Entity> list = new ArrayList<>();
     for (Entity entity : es) {
 
       EdmEntityType entityType = this.metadata.getEdm().getEntityType(
@@ -477,13 +477,13 @@ public class TripPinDataModel {
     if (type.getName().equals("Person") && navigation.equals("Friends")) {
       Map<String, Object> map = this.peopleLinks.get(parentEntity.getProperty(key).getValue());
       if (map == null) {
-        map = new HashMap<String, Object>();
+        map = new HashMap<>();
         this.peopleLinks.put((String) parentEntity.getProperty(key).getValue(), map);
       }
 
       ArrayList<String> friends = (ArrayList<String>) map.get("Friends");
       if (friends == null) {
-        friends = new ArrayList<String>();
+        friends = new ArrayList<>();
         map.put("Friends", friends);
       }
       friends.add((String) childEntity.getProperty(key).getValue());
@@ -491,13 +491,13 @@ public class TripPinDataModel {
     } else if (type.getName().equals("Person") && navigation.equals("Trips")) {
       Map<String, Object> map = this.peopleLinks.get(parentEntity.getProperty(key).getValue());
       if (map == null) {
-        map = new HashMap<String, Object>();
+        map = new HashMap<>();
         this.peopleLinks.put((String) parentEntity.getProperty(key).getValue(), map);
       }
 
       ArrayList<Integer> trips = (ArrayList<Integer>) map.get("Trips");
       if (trips == null) {
-        trips = new ArrayList<Integer>();
+        trips = new ArrayList<>();
         map.put("Trips", trips);
       }
       trips.add((Integer) childEntity.getProperty(key).getValue());
@@ -505,7 +505,7 @@ public class TripPinDataModel {
     } else if (type.getName().equals("Person") && navigation.equals("Photo")) {
       Map<String, Object> map = this.peopleLinks.get(parentEntity.getProperty(key).getValue());
       if (map == null) {
-        map = new HashMap<String, Object>();
+        map = new HashMap<>();
         this.peopleLinks.put((String) parentEntity.getProperty(key).getValue(), map);
       }
       map.put("Photo", ((Long)childEntity.getProperty("Id").getValue()).intValue());
@@ -513,20 +513,20 @@ public class TripPinDataModel {
     } else if (type.getName().equals("Trip") && navigation.equals("PlanItems")) {
       Map<String, Object> map = this.tripLinks.get(parentEntity.getProperty(key).getValue());
       if (map == null) {
-        map = new HashMap<String, Object>();
+        map = new HashMap<>();
         this.tripLinks.put((Integer) parentEntity.getProperty(key).getValue(), map);
       }
       if (childEntity.getType().equals("Flight")) {
         ArrayList<Integer> flights = (ArrayList<Integer>) map.get("Flights");
         if (flights == null) {
-          flights = new ArrayList<Integer>();
+          flights = new ArrayList<>();
           map.put("Flights", flights);
         }
         flights.add((Integer) childEntity.getProperty(key).getValue());
       } else {
         ArrayList<Integer> events = (ArrayList<Integer>) map.get("Events");
         if (events == null) {
-          events = new ArrayList<Integer>();
+          events = new ArrayList<>();
           map.put("Events", events);
         }
         events.add((Integer) childEntity.getProperty(key).getValue());
@@ -535,12 +535,12 @@ public class TripPinDataModel {
     } else if (type.getName().equals("Trip") && navigation.equals("Photo")) {
       Map<String, Object> map = this.tripLinks.get(parentEntity.getProperty(key).getValue());
       if (map == null) {
-        map = new HashMap<String, Object>();
+        map = new HashMap<>();
         this.tripLinks.put((Integer) parentEntity.getProperty(key).getValue(), map);
       }
       ArrayList<Integer> photos = (ArrayList<Integer>) map.get("Photos");
       if (photos == null) {
-        photos = new ArrayList<Integer>();
+        photos = new ArrayList<>();
         map.put("Photos", photos);
       }
       photos.add((Integer) childEntity.getProperty(key).getValue());
@@ -548,7 +548,7 @@ public class TripPinDataModel {
     } else if (type.getName().equals("Flight") && navigation.equals("From")) {
       Map<String, Object> map = this.flightLinks.get(parentEntity.getProperty(key).getValue());
       if (map == null) {
-        map = new HashMap<String, Object>();
+        map = new HashMap<>();
         this.flightLinks.put((Integer) parentEntity.getProperty(key).getValue(), map);
       }
       map.put("From", childEntity.getProperty(key).getValue());
@@ -556,7 +556,7 @@ public class TripPinDataModel {
     } else if (type.getName().equals("Flight") && navigation.equals("To")) {
       Map<String, Object> map = this.flightLinks.get(parentEntity.getProperty(key).getValue());
       if (map == null) {
-        map = new HashMap<String, Object>();
+        map = new HashMap<>();
         this.flightLinks.put((Integer) parentEntity.getProperty(key).getValue(), map);
       }
       map.put("To", childEntity.getProperty(key).getValue());
@@ -564,7 +564,7 @@ public class TripPinDataModel {
     } else if (type.getName().equals("Flight") && navigation.equals("Airline")) {
       Map<String, Object> map = this.flightLinks.get(parentEntity.getProperty(key).getValue());
       if (map == null) {
-        map = new HashMap<String, Object>();
+        map = new HashMap<>();
         this.flightLinks.put((Integer) parentEntity.getProperty(key).getValue(), map);
       }
       map.put("Airline", childEntity.getProperty(key).getValue());

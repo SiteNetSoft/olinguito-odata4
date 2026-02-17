@@ -56,7 +56,7 @@ public class ClientEntitySetIteratorTest {
             new ClientEntitySetIterator<ClientEntitySet, ClientEntity>(
             oDataClient, stream, ContentType.parse(ContentType.JSON.toString()));
 
-        ArrayList<ClientEntity> entities = new ArrayList<ClientEntity>();
+        ArrayList<ClientEntity> entities = new ArrayList<>();
         while (entitySetIterator.hasNext()) {
             ClientEntity next = entitySetIterator.next();
             entities.add(next);
@@ -89,7 +89,7 @@ public class ClientEntitySetIteratorTest {
             new ClientEntitySetIterator<ClientEntitySet, ClientEntity>(
             oDataClient, stream, ContentType.parse(ContentType.JSON.toString()));
 
-        ArrayList<ClientEntity> entities = new ArrayList<ClientEntity>();
+        ArrayList<ClientEntity> entities = new ArrayList<>();
         while (entitySetIterator.hasNext()) {
             ClientEntity next = entitySetIterator.next();
             entities.add(next);
@@ -115,7 +115,7 @@ public class ClientEntitySetIteratorTest {
             new ClientEntitySetIterator<ClientEntitySet, ClientEntity>(
             oDataClient, stream, ContentType.parse(ContentType.JSON.toString()));
 
-        ArrayList<ClientEntity> entities = new ArrayList<ClientEntity>();
+        ArrayList<ClientEntity> entities = new ArrayList<>();
         while (entitySetIterator.hasNext()) {
             ClientEntity next = entitySetIterator.next();
             entities.add(next);
@@ -138,7 +138,7 @@ public class ClientEntitySetIteratorTest {
             new ClientEntitySetIterator<ClientEntitySet, ClientEntity>(
             oDataClient, stream, ContentType.parse(ContentType.JSON.toString()));
 
-        ArrayList<ClientEntity> entities = new ArrayList<ClientEntity>();
+        ArrayList<ClientEntity> entities = new ArrayList<>();
         while (entitySetIterator.hasNext()) {
             ClientEntity next = entitySetIterator.next();
             entities.add(next);
@@ -193,7 +193,7 @@ public class ClientEntitySetIteratorTest {
             new ClientEntitySetIterator<ClientEntitySet, ClientEntity>(
             oDataClient, stream, ContentType.parse(ContentType.JSON.toString()));
         
-        ArrayList<ClientEntity> entities = new ArrayList<ClientEntity>();
+        ArrayList<ClientEntity> entities = new ArrayList<>();
         while (entitySetIterator.hasNext()) {
             ClientEntity next = entitySetIterator.next();
             entities.add(next);

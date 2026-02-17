@@ -52,7 +52,7 @@ public class ResponseUtil {
   @SafeVarargs
   public static Property createComplexCollection(final String name, final String type,
       final List<Property>... propertiesList) {
-    List<ComplexValue> complexCollection = new ArrayList<ComplexValue>();
+    List<ComplexValue> complexCollection = new ArrayList<>();
     for (final List<Property> properties : propertiesList) {
       ComplexValue complexValue = new ComplexValue();
       complexValue.getValue().addAll(properties);

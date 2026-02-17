@@ -18,10 +18,13 @@
  */
 package org.sitenetsoft.olinguito.server.api.serializer;
 
+import java.io.Serial;
 import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
 
 /** Exception thrown by the {@link ODataSerializer}. */
 public class SerializerException extends ODataLibraryException {
+
+  @Serial
 
   private static final long serialVersionUID = 5358683245923127425L;
 

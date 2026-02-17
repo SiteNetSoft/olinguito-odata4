@@ -65,14 +65,14 @@ public class EdmEntityTypeImplTest {
     FullQualifiedName baseName = new FullQualifiedName("namespace", "BaseTypeName");
     CsdlEntityType baseType = new CsdlEntityType();
     baseType.setName(baseName.getName());
-    List<CsdlProperty> properties = new ArrayList<CsdlProperty>();
+    List<CsdlProperty> properties = new ArrayList<>();
     properties.add(new CsdlProperty().setName("Id").setType(EdmPrimitiveTypeKind.String.getFullQualifiedName()));
     properties.add(new CsdlProperty().setName("Name").setType(EdmPrimitiveTypeKind.String.getFullQualifiedName()));
     baseType.setProperties(properties);
-    List<CsdlPropertyRef> key = new ArrayList<CsdlPropertyRef>();
+    List<CsdlPropertyRef> key = new ArrayList<>();
     key.add(new CsdlPropertyRef().setName("Id"));
     baseType.setKey(key);
-    List<CsdlNavigationProperty> navigationProperties = new ArrayList<CsdlNavigationProperty>();
+    List<CsdlNavigationProperty> navigationProperties = new ArrayList<>();
     navigationProperties.add(new CsdlNavigationProperty().setName("nav1"));
     baseType.setNavigationProperties(navigationProperties);
     when(provider.getEntityType(baseName)).thenReturn(baseType);
@@ -83,13 +83,13 @@ public class EdmEntityTypeImplTest {
     CsdlEntityType type = new CsdlEntityType();
     type.setName(typeName.getName());
     type.setBaseType(baseName);
-    List<CsdlProperty> typeProperties = new ArrayList<CsdlProperty>();
+    List<CsdlProperty> typeProperties = new ArrayList<>();
     typeProperties.add(new CsdlProperty().setName("address").setType(
         EdmPrimitiveTypeKind.String.getFullQualifiedName()));
     typeProperties.add(new CsdlProperty().setName("email").setType(
         EdmPrimitiveTypeKind.String.getFullQualifiedName()));
     type.setProperties(typeProperties);
-    List<CsdlNavigationProperty> typeNavigationProperties = new ArrayList<CsdlNavigationProperty>();
+    List<CsdlNavigationProperty> typeNavigationProperties = new ArrayList<>();
     typeNavigationProperties.add(new CsdlNavigationProperty().setName("nav2"));
     type.setNavigationProperties(typeNavigationProperties);
     when(provider.getEntityType(typeName)).thenReturn(type);
@@ -99,11 +99,11 @@ public class EdmEntityTypeImplTest {
     FullQualifiedName typeWithComplexKeyName = new FullQualifiedName("namespace", "typeName");
     CsdlEntityType typeWithComplexKeyProvider = new CsdlEntityType();
     typeWithComplexKeyProvider.setName(typeWithComplexKeyName.getName());
-    List<CsdlProperty> typeWithComplexKeyProperties = new ArrayList<CsdlProperty>();
+    List<CsdlProperty> typeWithComplexKeyProperties = new ArrayList<>();
     typeWithComplexKeyProperties.add(new CsdlProperty().setName("Id").setType(
         EdmPrimitiveTypeKind.String.getFullQualifiedName()));
 
-    List<CsdlProperty> complexTypeProperties = new ArrayList<CsdlProperty>();
+    List<CsdlProperty> complexTypeProperties = new ArrayList<>();
     complexTypeProperties.add(new CsdlProperty().setName("ComplexPropName").setType(
         EdmPrimitiveTypeKind.String.getFullQualifiedName()));
     FullQualifiedName complexTypeName = new FullQualifiedName("namespace", "complexTypeName");
@@ -112,7 +112,7 @@ public class EdmEntityTypeImplTest {
 
     typeWithComplexKeyProperties.add(new CsdlProperty().setName("Comp").setType(complexTypeName));
     typeWithComplexKeyProvider.setProperties(typeWithComplexKeyProperties);
-    List<CsdlPropertyRef> keyForTypeWithComplexKey = new ArrayList<CsdlPropertyRef>();
+    List<CsdlPropertyRef> keyForTypeWithComplexKey = new ArrayList<>();
     keyForTypeWithComplexKey.add(new CsdlPropertyRef().setName("Id"));
     keyForTypeWithComplexKey.add(new CsdlPropertyRef().setName("Comp/ComplexPropName").setAlias("alias"));
     typeWithComplexKeyProvider.setKey(keyForTypeWithComplexKey);
@@ -129,11 +129,11 @@ public class EdmEntityTypeImplTest {
     FullQualifiedName baseName = new FullQualifiedName("namespace", "BaseTypeName");
     CsdlEntityType baseType = new CsdlEntityType();
     baseType.setName(baseName.getName());
-    List<CsdlProperty> properties = new ArrayList<CsdlProperty>();
+    List<CsdlProperty> properties = new ArrayList<>();
     properties.add(new CsdlProperty().setName("Id").setType(EdmPrimitiveTypeKind.String.getFullQualifiedName()));
     properties.add(new CsdlProperty().setName("Name").setType(EdmPrimitiveTypeKind.String.getFullQualifiedName()));
     baseType.setProperties(properties);
-    List<CsdlNavigationProperty> navigationProperties = new ArrayList<CsdlNavigationProperty>();
+    List<CsdlNavigationProperty> navigationProperties = new ArrayList<>();
     navigationProperties.add(new CsdlNavigationProperty().setName("nav1"));
     baseType.setNavigationProperties(navigationProperties);
     when(provider.getEntityType(baseName)).thenReturn(baseType);
@@ -148,16 +148,16 @@ public class EdmEntityTypeImplTest {
     CsdlEntityType type = new CsdlEntityType();
     type.setName(typeName.getName());
     type.setBaseType(baseName);
-    List<CsdlProperty> typeProperties = new ArrayList<CsdlProperty>();
+    List<CsdlProperty> typeProperties = new ArrayList<>();
     typeProperties.add(new CsdlProperty().setName("address").setType(
         EdmPrimitiveTypeKind.String.getFullQualifiedName()));
     typeProperties.add(new CsdlProperty().setName("email").setType(
         EdmPrimitiveTypeKind.String.getFullQualifiedName()));
     type.setProperties(typeProperties);
-    List<CsdlPropertyRef> key = new ArrayList<CsdlPropertyRef>();
+    List<CsdlPropertyRef> key = new ArrayList<>();
     key.add(new CsdlPropertyRef().setName("email"));
     type.setKey(key);
-    List<CsdlNavigationProperty> typeNavigationProperties = new ArrayList<CsdlNavigationProperty>();
+    List<CsdlNavigationProperty> typeNavigationProperties = new ArrayList<>();
     typeNavigationProperties.add(new CsdlNavigationProperty().setName("nav2"));
     type.setNavigationProperties(typeNavigationProperties);
     when(provider.getEntityType(typeName)).thenReturn(type);
@@ -189,14 +189,14 @@ public class EdmEntityTypeImplTest {
     FullQualifiedName baseName = new FullQualifiedName("namespace", "BaseTypeName");
     CsdlEntityType baseType = new CsdlEntityType();
     baseType.setName(baseName.getName());
-    List<CsdlProperty> properties = new ArrayList<CsdlProperty>();
+    List<CsdlProperty> properties = new ArrayList<>();
     properties.add(new CsdlProperty().setName("Id").setType(EdmPrimitiveTypeKind.String.getFullQualifiedName()));
     properties.add(new CsdlProperty().setName("Name").setType(EdmPrimitiveTypeKind.String.getFullQualifiedName()));
     baseType.setProperties(properties);
-    List<CsdlPropertyRef> key = new ArrayList<CsdlPropertyRef>();
+    List<CsdlPropertyRef> key = new ArrayList<>();
     key.add(new CsdlPropertyRef().setName("Id"));
     baseType.setKey(key);
-    List<CsdlNavigationProperty> navigationProperties = new ArrayList<CsdlNavigationProperty>();
+    List<CsdlNavigationProperty> navigationProperties = new ArrayList<>();
     navigationProperties.add(new CsdlNavigationProperty().setName("nav1"));
     baseType.setNavigationProperties(navigationProperties);
     when(provider.getEntityType(baseName)).thenReturn(baseType);
@@ -207,13 +207,13 @@ public class EdmEntityTypeImplTest {
     CsdlEntityType type = new CsdlEntityType();
     type.setName(typeName.getName());
     type.setBaseType(baseName);
-    List<CsdlProperty> typeProperties = new ArrayList<CsdlProperty>();
+    List<CsdlProperty> typeProperties = new ArrayList<>();
     typeProperties.add(new CsdlProperty().setName("address").setType(
         EdmPrimitiveTypeKind.String.getFullQualifiedName()));
     typeProperties.add(new CsdlProperty().setName("email").setType(
         EdmPrimitiveTypeKind.String.getFullQualifiedName()));
     type.setProperties(typeProperties);
-    List<CsdlNavigationProperty> typeNavigationProperties = new ArrayList<CsdlNavigationProperty>();
+    List<CsdlNavigationProperty> typeNavigationProperties = new ArrayList<>();
     typeNavigationProperties.add(new CsdlNavigationProperty().setName("nav2"));
     type.setNavigationProperties(typeNavigationProperties);
     when(provider.getEntityType(typeName)).thenReturn(type);

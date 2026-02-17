@@ -63,7 +63,7 @@ public final class AcceptType {
   }
 
   private AcceptType(final String type) {
-    List<String> typeSubtype = new ArrayList<String>();
+    List<String> typeSubtype = new ArrayList<>();
     parameters = TypeUtil.createParameterMap();
 
     parse(type, typeSubtype, parameters);
@@ -120,8 +120,8 @@ public final class AcceptType {
     if (acceptTypes == null) {
       throw new IllegalArgumentException("Type parameter MUST NOT be null.");
     }
-    List<AcceptType> result = new ArrayList<AcceptType>();
-    List<IllegalArgumentException> exceptionList = new ArrayList<IllegalArgumentException>();
+    List<AcceptType> result = new ArrayList<>();
+    List<IllegalArgumentException> exceptionList = new ArrayList<>();
 
     String[] values = acceptTypes.split(",");
     for (String value : values) {

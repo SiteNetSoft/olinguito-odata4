@@ -38,14 +38,14 @@ public class CsdlNavigationProperty extends CsdlAbstractEdmItem implements CsdlN
 
   private boolean containsTarget = false;
 
-  private List<CsdlReferentialConstraint> referentialConstraints = new ArrayList<CsdlReferentialConstraint>();
+  private List<CsdlReferentialConstraint> referentialConstraints = new ArrayList<>();
 
   // Facets
   private boolean nullable = true;
 
   private CsdlOnDelete onDelete;
 
-  private List<CsdlAnnotation> annotations = new ArrayList<CsdlAnnotation>();
+  private List<CsdlAnnotation> annotations = new ArrayList<>();
 
   // Default for EntitySets is false
   private boolean keyAsSegmentAllowed = false;

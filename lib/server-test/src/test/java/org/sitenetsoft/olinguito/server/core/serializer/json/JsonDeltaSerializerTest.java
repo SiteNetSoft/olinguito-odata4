@@ -65,7 +65,7 @@ public class JsonDeltaSerializerTest {
   
 
   public JsonDeltaSerializerTest() throws SerializerException {
-    List<String> versions = new ArrayList<String>();
+    List<String> versions = new ArrayList<>();
     versions.add("4.0");
     ser = OData.newInstance().createEdmDeltaSerializer(ContentType.JSON, versions);
   }
@@ -74,7 +74,7 @@ public class JsonDeltaSerializerTest {
   public void addedDeltaLink() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
-    List<DeltaLink> addedLinks = new ArrayList<DeltaLink>();
+    List<DeltaLink> addedLinks = new ArrayList<>();
     DeltaLink link1 = new DeltaLink();
     link1.setRelationship("NavPropertyETAllPrimOne");
     link1.setSource(new URI("ESDelta(100)"));
@@ -100,7 +100,7 @@ public class JsonDeltaSerializerTest {
   public void deletedDeltaLink() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
-    List<DeltaLink> deletedLinks = new ArrayList<DeltaLink>();
+    List<DeltaLink> deletedLinks = new ArrayList<>();
     DeltaLink link1 = new DeltaLink();
     link1.setRelationship("NavPropertyETAllPrimOne");
     link1.setSource(new URI("ESDelta(100)"));
@@ -126,7 +126,7 @@ public class JsonDeltaSerializerTest {
   public void deletedEntity() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
-    List<DeletedEntity> deletedEntity = new ArrayList<DeletedEntity>();
+    List<DeletedEntity> deletedEntity = new ArrayList<>();
     DeletedEntity entity1 = new DeletedEntity();
     entity1.setId(new URI("ESDelta(100)"));
     entity1.setReason(Reason.deleted);
@@ -159,7 +159,7 @@ public class JsonDeltaSerializerTest {
     Delta delta = new Delta();
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     final Entity entity2 = data.readAll(edmEntitySet).getEntities().get(1);
-    List<Entity> addedEntity = new ArrayList<Entity>();
+    List<Entity> addedEntity = new ArrayList<>();
     Entity changedEntity = new Entity();
     changedEntity.setId(entity2.getId());
     changedEntity.addProperty(entity2.getProperty("PropertyString"));
@@ -185,7 +185,7 @@ public class JsonDeltaSerializerTest {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
     
-    List<DeltaLink> addedLinks = new ArrayList<DeltaLink>();
+    List<DeltaLink> addedLinks = new ArrayList<>();
     DeltaLink link1 = new DeltaLink();
     link1.setRelationship("NavPropertyETAllPrimOne");
     link1.setSource(new URI("ESDelta(100)"));
@@ -193,7 +193,7 @@ public class JsonDeltaSerializerTest {
     addedLinks.add(link1 );
     delta.getAddedLinks().addAll(addedLinks );
     
-    List<DeltaLink> deletedLinks = new ArrayList<DeltaLink>();
+    List<DeltaLink> deletedLinks = new ArrayList<>();
     DeltaLink delLink = new DeltaLink();
     delLink.setRelationship("NavPropertyETAllPrimOne");
     delLink.setSource(new URI("ESDelta(100)"));
@@ -201,7 +201,7 @@ public class JsonDeltaSerializerTest {
     deletedLinks.add(delLink );
     delta.getDeletedLinks().addAll(deletedLinks);
     
-    List<DeletedEntity> deletedEntity = new ArrayList<DeletedEntity>();
+    List<DeletedEntity> deletedEntity = new ArrayList<>();
     DeletedEntity delEntity1 = new DeletedEntity();
     delEntity1.setId(new URI("ESDelta(100)"));
     delEntity1.setReason(Reason.deleted);
@@ -214,7 +214,7 @@ public class JsonDeltaSerializerTest {
     
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     final Entity entity2 = data.readAll(edmEntitySet).getEntities().get(1);
-    List<Entity> addedEntity = new ArrayList<Entity>();
+    List<Entity> addedEntity = new ArrayList<>();
     Entity changedEntity = new Entity();
     changedEntity.setId(entity2.getId());
     changedEntity.addProperty(entity2.getProperty("PropertyString"));
@@ -248,7 +248,7 @@ public class JsonDeltaSerializerTest {
     final EdmEntitySet edmEntitySet2 = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
-    List<Entity> addedEntity = new ArrayList<Entity>();
+    List<Entity> addedEntity = new ArrayList<>();
     addedEntity.add(entity);
     delta.getEntities().addAll(addedEntity);
      InputStream stream = ser.entityCollection(metadata, edmEntitySet2.getEntityType(), delta ,
@@ -269,7 +269,7 @@ public class JsonDeltaSerializerTest {
   public void testDeltaToken() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
-    List<DeltaLink> addedLinks = new ArrayList<DeltaLink>();
+    List<DeltaLink> addedLinks = new ArrayList<>();
     DeltaLink link1 = new DeltaLink();
     link1.setRelationship("NavPropertyETAllPrimOne");
     link1.setSource(new URI("ESDelta(100)"));
@@ -297,7 +297,7 @@ public class JsonDeltaSerializerTest {
   public void testSkipToken() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
-    List<DeltaLink> addedLinks = new ArrayList<DeltaLink>();
+    List<DeltaLink> addedLinks = new ArrayList<>();
     DeltaLink link1 = new DeltaLink();
     link1.setRelationship("NavPropertyETAllPrimOne");
     link1.setSource(new URI("ESDelta(100)"));
@@ -325,7 +325,7 @@ public class JsonDeltaSerializerTest {
   public void testSkipDeltaToken() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
-    List<DeltaLink> addedLinks = new ArrayList<DeltaLink>();
+    List<DeltaLink> addedLinks = new ArrayList<>();
     DeltaLink link1 = new DeltaLink();
     link1.setRelationship("NavPropertyETAllPrimOne");
     link1.setSource(new URI("ESDelta(100)"));
@@ -357,7 +357,7 @@ public class JsonDeltaSerializerTest {
     Mockito.when(countOption.getValue()).thenReturn(true);
     Delta delta = new Delta();
     delta.setCount(1);
-    List<DeltaLink> addedLinks = new ArrayList<DeltaLink>();
+    List<DeltaLink> addedLinks = new ArrayList<>();
     DeltaLink link1 = new DeltaLink();
     link1.setRelationship("NavPropertyETAllPrimOne");
     link1.setSource(new URI("ESDelta(100)"));
@@ -403,7 +403,7 @@ public class JsonDeltaSerializerTest {
   public void testDeltaForStream() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESWithStream");
     Delta delta = new Delta();
-    List<DeltaLink> addedLinks = new ArrayList<DeltaLink>();
+    List<DeltaLink> addedLinks = new ArrayList<>();
     DeltaLink link1 = new DeltaLink();
     link1.setRelationship("NavPropertyETAllPrimOne");
     link1.setSource(new URI("ESDelta(100)"));
@@ -437,7 +437,7 @@ public class JsonDeltaSerializerTest {
     final Entity entity2 = data.readAll(edmEntitySet).getEntities().get(1);
        
        Delta delta = new Delta();
-       List<Entity> addedEntity = new ArrayList<Entity>();
+       List<Entity> addedEntity = new ArrayList<>();
        Entity changedEntity = new Entity();
        changedEntity.setId(entity2.getId());
        changedEntity.addProperty(entity2.getProperty("PropertyString"));
@@ -464,8 +464,8 @@ public class JsonDeltaSerializerTest {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESCollAllPrim");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     Delta delta = new Delta();
-    List<DeltaLink> addedLinks = new ArrayList<DeltaLink>();
-    List<Entity> addedEntities = new ArrayList<Entity>();
+    List<DeltaLink> addedLinks = new ArrayList<>();
+    List<Entity> addedEntities = new ArrayList<>();
     DeltaLink link1 = new DeltaLink();
     link1.setRelationship("NavPropertyETAllPrimOne");
     link1.setSource(new URI("ESDelta(100)"));
@@ -507,8 +507,8 @@ public class JsonDeltaSerializerTest {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESKeyNav");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     Delta delta = new Delta();
-    List<DeltaLink> addedLinks = new ArrayList<DeltaLink>();
-    List<Entity> addedEntities = new ArrayList<Entity>();
+    List<DeltaLink> addedLinks = new ArrayList<>();
+    List<Entity> addedEntities = new ArrayList<>();
     DeltaLink link1 = new DeltaLink();
     link1.setRelationship("NavPropertyETAllPrimOne");
     link1.setSource(new URI("ESDelta(100)"));
@@ -582,7 +582,7 @@ public class JsonDeltaSerializerTest {
     final Entity entity2 = data.readAll(edmEntitySet).getEntities().get(3);
     final ExpandOption expand = ExpandSelectMock.mockExpandOption(Collections.singletonList(
         ExpandSelectMock.mockExpandItem(edmEntitySet, "NavPropertyETAllPrimOne")));
-    List<Entity> addedEntity = new ArrayList<Entity>();
+    List<Entity> addedEntity = new ArrayList<>();
     Entity changedEntity = new Entity();
     changedEntity.setId(entity.getId());
     changedEntity.addProperty(entity.getProperty("PropertyString"));
@@ -610,7 +610,7 @@ public class JsonDeltaSerializerTest {
           final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
           Delta delta = new Delta();
           final Entity entity2 = data.readAll(edmEntitySet).getEntities().get(1);
-          List<Entity> addedEntity = new ArrayList<Entity>();
+          List<Entity> addedEntity = new ArrayList<>();
           Entity changedEntity = new Entity();
           changedEntity.addProperty(entity2.getProperty("PropertyString"));
           addedEntity.add(changedEntity);
@@ -627,7 +627,7 @@ public class JsonDeltaSerializerTest {
       assertThrows(SerializerException.class, () -> {
           final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
           Delta delta = new Delta();
-          List<DeltaLink> addedLinks = new ArrayList<DeltaLink>();
+          List<DeltaLink> addedLinks = new ArrayList<>();
           DeltaLink link1 = new DeltaLink();
           link1.setSource(new URI("ESDelta(100)"));
           link1.setTarget(new URI("ESAllPrim(0)"));
@@ -645,7 +645,7 @@ public class JsonDeltaSerializerTest {
       assertThrows(SerializerException.class, () -> {
           final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
           Delta delta = new Delta();
-          List<DeltaLink> addedLinks = new ArrayList<DeltaLink>();
+          List<DeltaLink> addedLinks = new ArrayList<>();
           DeltaLink link1 = new DeltaLink();
           link1.setRelationship("NavPropertyETAllPrimOne");
           link1.setTarget(new URI("ESAllPrim(0)"));
@@ -662,7 +662,7 @@ public class JsonDeltaSerializerTest {
       assertThrows(SerializerException.class, () -> {
           final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
           Delta delta = new Delta();
-          List<DeltaLink> addedLinks = new ArrayList<DeltaLink>();
+          List<DeltaLink> addedLinks = new ArrayList<>();
           DeltaLink link1 = new DeltaLink();
           link1.setRelationship("NavPropertyETAllPrimOne");
           link1.setSource(new URI("ESDelta(100)"));
@@ -680,7 +680,7 @@ public class JsonDeltaSerializerTest {
       assertThrows(SerializerException.class, () -> {
           final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
           Delta delta = new Delta();
-          List<DeltaLink> addedLinks = new ArrayList<DeltaLink>();
+          List<DeltaLink> addedLinks = new ArrayList<>();
           DeltaLink link1 = null;
           addedLinks.add(link1 );
           delta.getAddedLinks().addAll(addedLinks );
@@ -695,7 +695,7 @@ public class JsonDeltaSerializerTest {
       assertThrows(SerializerException.class, () -> {
           final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
           Delta delta = new Delta();
-          List<DeletedEntity> deletedEntity = new ArrayList<DeletedEntity>();
+          List<DeletedEntity> deletedEntity = new ArrayList<>();
           DeletedEntity delEntity1 = new DeletedEntity();
           delEntity1.setReason(Reason.deleted);
           deletedEntity.add(delEntity1);
@@ -712,7 +712,7 @@ public class JsonDeltaSerializerTest {
       assertThrows(SerializerException.class, () -> {
           final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
           Delta delta = new Delta();
-          List<DeletedEntity> deletedEntity = new ArrayList<DeletedEntity>();
+          List<DeletedEntity> deletedEntity = new ArrayList<>();
           DeletedEntity delEntity1 = new DeletedEntity();
           delEntity1.setId(new URI("ESDelta(100)"));
           deletedEntity.add(delEntity1);

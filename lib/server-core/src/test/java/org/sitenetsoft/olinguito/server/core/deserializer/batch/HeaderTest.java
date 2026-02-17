@@ -103,7 +103,7 @@ public class HeaderTest {
 
   @Test
   public void deepCopyHeaderField() throws Exception {
-    List<String> values = new ArrayList<String>();
+    List<String> values = new ArrayList<>();
     values.add("abc");
     values.add("def");
     HeaderField field = new HeaderField("name", values, 17);

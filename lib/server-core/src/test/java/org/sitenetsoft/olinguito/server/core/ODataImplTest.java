@@ -42,7 +42,7 @@ public class ODataImplTest {
     assertNotNull(odata.createSerializer(ContentType.JSON));
     assertNotNull(odata.createSerializer(ContentType.APPLICATION_JSON));
     assertNotNull(odata.createSerializer(ContentType.JSON_FULL_METADATA));
-    List<String> versions = new ArrayList<String>();
+    List<String> versions = new ArrayList<>();
     versions.add("4.01");
     assertNotNull(odata.createSerializer(ContentType.JSON_FULL_METADATA, versions));
   }
@@ -53,7 +53,7 @@ public class ODataImplTest {
     assertNotNull(odata.createDeserializer(ContentType.JSON));
     assertNotNull(odata.createDeserializer(ContentType.JSON_FULL_METADATA));
     assertNotNull(odata.createDeserializer(ContentType.APPLICATION_JSON));
-    List<String> versions = new ArrayList<String>();
+    List<String> versions = new ArrayList<>();
     versions.add("4.01");
     assertNotNull(odata.createDeserializer(ContentType.APPLICATION_JSON, versions));
   }
@@ -70,7 +70,7 @@ public class ODataImplTest {
   @Test
   public void deserializerWithoutContentTypeAndWithVersions() throws DeserializerException {
       assertThrows(DeserializerException.class, () -> {
-          List<String> versions = new ArrayList<String>();
+          List<String> versions = new ArrayList<>();
           versions.add("4.01");
           odata.createDeserializer(null, versions);
       });
@@ -79,7 +79,7 @@ public class ODataImplTest {
   @Test
   public void deltaSerializer() throws SerializerException {
       assertThrows(SerializerException.class, () -> {
-          List<String> versions = new ArrayList<String>();
+          List<String> versions = new ArrayList<>();
           versions.add("4.01");
           odata.createEdmDeltaSerializer(null, versions);
       });
@@ -93,7 +93,7 @@ public class ODataImplTest {
   @Test
   public void deserializer1() throws DeserializerException {
       assertThrows(DeserializerException.class, () -> {
-          List<String> versions = new ArrayList<String>();
+          List<String> versions = new ArrayList<>();
           versions.add("4.01");
           odata.createDeserializer(null, null, versions);
       });
@@ -108,7 +108,7 @@ public class ODataImplTest {
   @Test
   public void serializerWithVersions() throws SerializerException {
       assertThrows(SerializerException.class, () -> {
-          List<String> versions = new ArrayList<String>();
+          List<String> versions = new ArrayList<>();
           versions.add("4.01");
           odata.createSerializer(null, versions);
       });
@@ -121,7 +121,7 @@ public class ODataImplTest {
   
   @Test
   public void edmAssistedSerializerWithVersion() throws SerializerException {
-	  List<String> versions = new ArrayList<String>();
+	  List<String> versions = new ArrayList<>();
 	  versions.add("4.01");
 	  assertNotNull(odata.createEdmAssistedSerializer(ContentType.APPLICATION_JSON, versions));
 	  

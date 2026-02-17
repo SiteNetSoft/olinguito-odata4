@@ -492,7 +492,7 @@ public class ContextURLHelperTest {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESTwoKeyNav");
     final EdmFunction function = edm.getBoundFunction(
         new FullQualifiedName("olingo.odata.test1.BFCESTwoKeyNavRTString"), 
-        new FullQualifiedName("olingo.odata.test1.ETTwoKeyNav"), true, new ArrayList<String>());
+        new FullQualifiedName("olingo.odata.test1.ETTwoKeyNav"), true, new ArrayList<>());
     final SelectItem selectItem = ExpandSelectMock.mockSelectItemHavingFunction(
         entitySet, function);
     final SelectOption select = ExpandSelectMock.mockSelectOption(Arrays.asList(

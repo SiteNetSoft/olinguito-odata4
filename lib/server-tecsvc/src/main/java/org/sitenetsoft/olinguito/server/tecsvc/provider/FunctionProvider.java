@@ -242,7 +242,7 @@ public class FunctionProvider {
         name_FC_RTTimeOfDay_
     };
     
-    List<CsdlFunction> functions = new ArrayList<CsdlFunction>();
+    List<CsdlFunction> functions = new ArrayList<>();
     for (FullQualifiedName fqn:funcNames) {
       List<CsdlFunction> entityFuncs = getFunctions(fqn);
       for (CsdlFunction func:entityFuncs) {
@@ -258,7 +258,7 @@ public class FunctionProvider {
   public static List<CsdlFunction> getFunctions(final FullQualifiedName functionName) throws ODataException {
       
       if(functionName.equals(name_FC_RTTimeOfDay_)){
-        List<CsdlFunction> functions = new ArrayList<CsdlFunction>();
+        List<CsdlFunction> functions = new ArrayList<>();
        
             functions.add(new CsdlFunction()
             .setName(name_FC_RTTimeOfDay_.getName())

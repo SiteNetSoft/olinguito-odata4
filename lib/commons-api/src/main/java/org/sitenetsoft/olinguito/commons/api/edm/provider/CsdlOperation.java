@@ -44,7 +44,7 @@ public abstract class CsdlOperation extends CsdlAbstractEdmItem implements CsdlN
   /**
    * The Parameters.
    */
-  protected List<CsdlParameter> parameters = new ArrayList<CsdlParameter>();
+  protected List<CsdlParameter> parameters = new ArrayList<>();
 
   /**
    * The Return type.
@@ -54,7 +54,7 @@ public abstract class CsdlOperation extends CsdlAbstractEdmItem implements CsdlN
   /**
    * The Annotations.
    */
-  protected List<CsdlAnnotation> annotations = new ArrayList<CsdlAnnotation>();
+  protected List<CsdlAnnotation> annotations = new ArrayList<>();
 
   @Override
   public String getName() {

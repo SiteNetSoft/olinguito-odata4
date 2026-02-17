@@ -71,7 +71,7 @@ public class EdmUrlRefImplTest extends AbstractAnnotationTest {
   public void urlRefWithValue() {
     CsdlUrlRef csdlUrlRef = new CsdlUrlRef();
     csdlUrlRef.setValue(new CsdlConstantExpression(ConstantExpressionType.String));
-    List<CsdlAnnotation> csdlAnnotations = new ArrayList<CsdlAnnotation>();
+    List<CsdlAnnotation> csdlAnnotations = new ArrayList<>();
     csdlAnnotations.add(new CsdlAnnotation().setTerm("ns.term"));
     csdlUrlRef.setAnnotations(csdlAnnotations);
     EdmExpression exp = AbstractEdmExpression.getExpression(mock(Edm.class), csdlUrlRef);

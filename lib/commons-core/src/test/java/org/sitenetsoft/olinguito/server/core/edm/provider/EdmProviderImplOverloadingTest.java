@@ -59,47 +59,47 @@ public class EdmProviderImplOverloadingTest {
   public void setup() throws Exception {
     CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
 
-    List<CsdlAction> actions = new ArrayList<CsdlAction>();
+    List<CsdlAction> actions = new ArrayList<>();
     CsdlAction action = new CsdlAction().setName(operationName1.getName());
     actions.add(action);
-    List<CsdlParameter> action1Parameters = new ArrayList<CsdlParameter>();
+    List<CsdlParameter> action1Parameters = new ArrayList<>();
     action1Parameters.add(new CsdlParameter().setType(operationType1).setCollection(false));
     action =
         new CsdlAction().setName(operationName1.getName()).setBound(true).setParameters(action1Parameters);
     actions.add(action);
-    List<CsdlParameter> action2Parameters = new ArrayList<CsdlParameter>();
+    List<CsdlParameter> action2Parameters = new ArrayList<>();
     action2Parameters.add(new CsdlParameter().setType(operationType1).setCollection(true));
     action =
         new CsdlAction().setName(operationName1.getName()).setBound(true).setParameters(action2Parameters);
     actions.add(action);
     when(provider.getActions(operationName1)).thenReturn(actions);
-    CsdlEntityType type = new CsdlEntityType().setProperties(new ArrayList<CsdlProperty>());
+    CsdlEntityType type = new CsdlEntityType().setProperties(new ArrayList<>());
     when(provider.getEntityType(operationType1)).thenReturn(type);
     when(provider.getEntityType(operationType2)).thenReturn(type);
-    List<CsdlFunction> functions = new ArrayList<CsdlFunction>();
+    List<CsdlFunction> functions = new ArrayList<>();
     CsdlFunction function = new CsdlFunction().setName(operationName1.getName());
     functions.add(function);
-    List<CsdlParameter> function1Parameters = new ArrayList<CsdlParameter>();
+    List<CsdlParameter> function1Parameters = new ArrayList<>();
     function1Parameters.add(new CsdlParameter().setType(operationType1).setName("a"));
     function = new CsdlFunction().setName(operationName1.getName()).setParameters(function1Parameters);
     functions.add(function);
-    List<CsdlParameter> function2Parameters = new ArrayList<CsdlParameter>();
+    List<CsdlParameter> function2Parameters = new ArrayList<>();
     function2Parameters.add(new CsdlParameter().setType(operationType1).setName("b"));
     function = new CsdlFunction().setName(operationName1.getName()).setParameters(function2Parameters);
     functions.add(function);
-    List<CsdlParameter> function3Parameters = new ArrayList<CsdlParameter>();
+    List<CsdlParameter> function3Parameters = new ArrayList<>();
     function3Parameters.add(new CsdlParameter().setName("a").setType(operationType1));
     function3Parameters.add(new CsdlParameter().setName("b").setType(operationType1));
     function = new CsdlFunction().setName(operationName1.getName()).setParameters(function3Parameters).setBound(true);
     functions.add(function);
-    List<CsdlParameter> function4Parameters = new ArrayList<CsdlParameter>();
+    List<CsdlParameter> function4Parameters = new ArrayList<>();
     function4Parameters.add(new CsdlParameter().setName("a").setType(operationType2));
     function4Parameters.add(new CsdlParameter().setName("b").setType(operationType2));
     function = new CsdlFunction().setName(operationName1.getName()).setParameters(function4Parameters).setBound(true);
     functions.add(function);
     when(provider.getFunctions(operationName1)).thenReturn(functions);
 
-    List<CsdlFunction> badFunctions = new ArrayList<CsdlFunction>();
+    List<CsdlFunction> badFunctions = new ArrayList<>();
     CsdlFunction badFunction = new CsdlFunction().setName(operationName1.getName()).setBound(true).setParameters(null);
     badFunctions.add(badFunction);
 
@@ -142,23 +142,23 @@ public class EdmProviderImplOverloadingTest {
     assertEquals(operationName1.getNamespace(), function.getNamespace());
     assertEquals(operationName1.getName(), function.getName());
 
-    EdmFunction function2 = edm.getUnboundFunction(operationName1, new ArrayList<String>());
+    EdmFunction function2 = edm.getUnboundFunction(operationName1, new ArrayList<>());
     assertNotNull(function2);
     assertEquals(operationName1.getNamespace(), function2.getNamespace());
     assertEquals(operationName1.getName(), function2.getName());
 
     assertEquals(function, function2);
 
-    assertNull(edm.getUnboundFunction(wrongOperationName, new ArrayList<String>()));
+    assertNull(edm.getUnboundFunction(wrongOperationName, new ArrayList<>()));
   }
 
   @Test
   public void functionOverloading() {
-    ArrayList<String> parameter1Names = new ArrayList<String>();
+    ArrayList<String> parameter1Names = new ArrayList<>();
     parameter1Names.add("a");
-    List<String> parameter2Names = new ArrayList<String>();
+    List<String> parameter2Names = new ArrayList<>();
     parameter2Names.add("b");
-    EdmFunction function = edm.getUnboundFunction(operationName1, new ArrayList<String>());
+    EdmFunction function = edm.getUnboundFunction(operationName1, new ArrayList<>());
     assertNotNull(function);
     assertFalse(function.isBound());
 

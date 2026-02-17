@@ -324,7 +324,7 @@ public class EdmEntityContainerImpl extends AbstractEdmNamed implements EdmEntit
     String containerName = null;
     try {
       List<CsdlEntitySet> entitySets = this.provider.getEntityContainer() != null ?
-          this.provider.getEntityContainer().getEntitySets() : new ArrayList<CsdlEntitySet>();
+          this.provider.getEntityContainer().getEntitySets() : new ArrayList<>();
       for (CsdlEntitySet entitySet : entitySets) {
         entitySetName = entitySet.getName();
         String entityTypeName = entitySet.getTypeFQN().getFullQualifiedNameAsString();
@@ -862,7 +862,7 @@ public class EdmEntityContainerImpl extends AbstractEdmNamed implements EdmEntit
   protected void loadAllEntitySets() {
     loadContainer();
     final List<CsdlEntitySet> providerEntitySets = container.getEntitySets();
-    final List<EdmEntitySet> entitySetsLocal = new ArrayList<EdmEntitySet>();
+    final List<EdmEntitySet> entitySetsLocal = new ArrayList<>();
 
     if (providerEntitySets != null) {
       for (CsdlEntitySet entitySet : providerEntitySets) {
@@ -883,7 +883,7 @@ public class EdmEntityContainerImpl extends AbstractEdmNamed implements EdmEntit
   protected void loadAllFunctionImports() {
     loadContainer();
     final List<CsdlFunctionImport> providerFunctionImports = container.getFunctionImports();
-    final ArrayList<EdmFunctionImport> functionImportsLocal = new ArrayList<EdmFunctionImport>();
+    final ArrayList<EdmFunctionImport> functionImportsLocal = new ArrayList<>();
 
     if (providerFunctionImports != null) {
       for (CsdlFunctionImport functionImport : providerFunctionImports) {
@@ -899,7 +899,7 @@ public class EdmEntityContainerImpl extends AbstractEdmNamed implements EdmEntit
   protected void loadAllSingletons() {
     loadContainer();
     final List<CsdlSingleton> providerSingletons = container.getSingletons();
-    final List<EdmSingleton> singletonsLocal = new ArrayList<EdmSingleton>();
+    final List<EdmSingleton> singletonsLocal = new ArrayList<>();
 
     if (providerSingletons != null) {
       for (CsdlSingleton singleton : providerSingletons) {
@@ -915,7 +915,7 @@ public class EdmEntityContainerImpl extends AbstractEdmNamed implements EdmEntit
   protected void loadAllActionImports() {
     loadContainer();
     final List<CsdlActionImport> providerActionImports = container.getActionImports();
-    final List<EdmActionImport> actionImportsLocal = new ArrayList<EdmActionImport>();
+    final List<EdmActionImport> actionImportsLocal = new ArrayList<>();
 
     if (providerActionImports != null) {
       for (CsdlActionImport actionImport : providerActionImports) {

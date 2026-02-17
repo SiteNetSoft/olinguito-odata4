@@ -18,9 +18,12 @@
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser.search;
 
+import java.io.Serial;
 import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserSyntaxException;
 
 public class SearchParserException extends UriParserSyntaxException {
+
+  @Serial
 
   private static final long serialVersionUID = 5781553037561337795L;
 

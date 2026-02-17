@@ -93,10 +93,10 @@ public class EdmTermImplTest {
     derivedCsdlTerm.setName(derivedTermName.getName());
     derivedCsdlTerm.setType("Edm.String");
     derivedCsdlTerm.setBaseTerm("namespace.name1");
-    List<String> appliesTo = new ArrayList<String>();
+    List<String> appliesTo = new ArrayList<>();
     appliesTo.add("Property");
     derivedCsdlTerm.setAppliesTo(appliesTo);
-    List<CsdlAnnotation> csdlAnnotations = new ArrayList<CsdlAnnotation>();
+    List<CsdlAnnotation> csdlAnnotations = new ArrayList<>();
     csdlAnnotations.add(new CsdlAnnotation().setTerm("name1"));
     derivedCsdlTerm.setAnnotations(csdlAnnotations);
 

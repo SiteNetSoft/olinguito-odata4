@@ -34,9 +34,9 @@ public class CsdlEnumType extends CsdlAbstractEdmItem implements CsdlNamed, Csdl
 
   private FullQualifiedName underlyingType;
 
-  private List<CsdlEnumMember> members = new ArrayList<CsdlEnumMember>();
+  private List<CsdlEnumMember> members = new ArrayList<>();
 
-  private List<CsdlAnnotation> annotations = new ArrayList<CsdlAnnotation>();
+  private List<CsdlAnnotation> annotations = new ArrayList<>();
 
   @Override
   public String getName() {

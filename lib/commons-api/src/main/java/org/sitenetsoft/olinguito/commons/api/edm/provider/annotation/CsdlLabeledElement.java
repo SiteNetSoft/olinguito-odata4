@@ -31,7 +31,7 @@ public class CsdlLabeledElement extends CsdlDynamicExpression implements CsdlAnn
 
   private String name;
   private CsdlExpression value;
-  private List<CsdlAnnotation> annotations = new ArrayList<CsdlAnnotation>();
+  private List<CsdlAnnotation> annotations = new ArrayList<>();
 
   @Override
   public List<CsdlAnnotation> getAnnotations() {

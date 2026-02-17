@@ -152,8 +152,8 @@ public final class ContentType {
     if (format == null) {
       throw new IllegalArgumentException("Parameter format MUST NOT be NULL.");
     }
-    List<String> typeSubtype = new ArrayList<String>();
-    Map<String, String> parameters = new HashMap<String, String>();
+    List<String> typeSubtype = new ArrayList<>();
+    Map<String, String> parameters = new HashMap<>();
     parse(format, typeSubtype, parameters);
     return new ContentType(typeSubtype.get(0), typeSubtype.get(1), parameters);
   }

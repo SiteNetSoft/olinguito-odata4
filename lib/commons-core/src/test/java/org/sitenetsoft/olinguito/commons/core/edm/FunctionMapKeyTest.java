@@ -51,25 +51,25 @@ public class FunctionMapKeyTest {
     someKey = new FunctionMapKey(fqn, fqnType, false, null);
     assertEquals(key, someKey);
 
-    key = new FunctionMapKey(fqn, fqnType, false, new ArrayList<String>());
-    someKey = new FunctionMapKey(fqn, fqnType, false, new ArrayList<String>());
+    key = new FunctionMapKey(fqn, fqnType, false, new ArrayList<>());
+    someKey = new FunctionMapKey(fqn, fqnType, false, new ArrayList<>());
     assertEquals(key, someKey);
 
-    List<String> keyList = new ArrayList<String>();
+    List<String> keyList = new ArrayList<>();
     keyList.add("Employee");
-    List<String> someKeyList = new ArrayList<String>();
+    List<String> someKeyList = new ArrayList<>();
     someKeyList.add("Employee");
     key = new FunctionMapKey(fqn, fqnType, false, keyList);
     someKey = new FunctionMapKey(fqn, fqnType, false, someKeyList);
     assertEquals(key, someKey);
 
-    key = new FunctionMapKey(fqn, null, null, new ArrayList<String>());
-    someKey = new FunctionMapKey(fqn, null, null, new ArrayList<String>());
+    key = new FunctionMapKey(fqn, null, null, new ArrayList<>());
+    someKey = new FunctionMapKey(fqn, null, null, new ArrayList<>());
     assertEquals(key, someKey);
 
-    keyList = new ArrayList<String>();
+    keyList = new ArrayList<>();
     keyList.add("Employee");
-    someKeyList = new ArrayList<String>();
+    someKeyList = new ArrayList<>();
     someKeyList.add("Employee");
     key = new FunctionMapKey(fqn, null, null, keyList);
     someKey = new FunctionMapKey(fqn, null, null, someKeyList);
@@ -95,43 +95,43 @@ public class FunctionMapKeyTest {
     assertNotSame(key, someKey);
 
     key = new FunctionMapKey(fqn, fqnType, false, null);
-    someKey = new FunctionMapKey(fqn, fqnType, false, new ArrayList<String>());
+    someKey = new FunctionMapKey(fqn, fqnType, false, new ArrayList<>());
     assertNotSame(key, someKey);
 
-    List<String> keyList = new ArrayList<String>();
+    List<String> keyList = new ArrayList<>();
     keyList.add("Employee");
-    List<String> someKeyList = new ArrayList<String>();
+    List<String> someKeyList = new ArrayList<>();
     someKeyList.add("Employee2");
     key = new FunctionMapKey(fqn, fqnType, false, keyList);
     someKey = new FunctionMapKey(fqn, fqnType, false, someKeyList);
     assertNotSame(key, someKey);
 
-    key = new FunctionMapKey(fqn, null, null, new ArrayList<String>());
-    someKey = new FunctionMapKey(fqn, null, null, new ArrayList<String>());
+    key = new FunctionMapKey(fqn, null, null, new ArrayList<>());
+    someKey = new FunctionMapKey(fqn, null, null, new ArrayList<>());
     assertNotSame(key, someKey);
 
-    keyList = new ArrayList<String>();
+    keyList = new ArrayList<>();
     keyList.add("Employee");
-    someKeyList = new ArrayList<String>();
+    someKeyList = new ArrayList<>();
     someKeyList.add("Employee2");
     key = new FunctionMapKey(fqn, null, null, keyList);
     someKey = new FunctionMapKey(fqn, null, null, someKeyList);
     assertNotSame(key, someKey);
 
-    key = new FunctionMapKey(fqn, null, null, new ArrayList<String>());
+    key = new FunctionMapKey(fqn, null, null, new ArrayList<>());
     someKey = new FunctionMapKey(fqn, null, null, null);
     assertNotSame(key, someKey);
 
-    keyList = new ArrayList<String>();
+    keyList = new ArrayList<>();
     keyList.add("Employee");
-    someKeyList = new ArrayList<String>();
+    someKeyList = new ArrayList<>();
     key = new FunctionMapKey(fqn, null, null, keyList);
     someKey = new FunctionMapKey(fqn, null, null, someKeyList);
     assertNotSame(key, someKey);
 
-    keyList = new ArrayList<String>();
+    keyList = new ArrayList<>();
     keyList.add("Employee");
-    someKeyList = new ArrayList<String>();
+    someKeyList = new ArrayList<>();
     someKeyList.add("EmpLoYeE");
     key = new FunctionMapKey(fqn, null, null, keyList);
     someKey = new FunctionMapKey(fqn, null, null, someKeyList);
@@ -156,44 +156,44 @@ public class FunctionMapKeyTest {
     someKey = new FunctionMapKey(fqn, fqnType, false, null);
     assertEquals(key.hashCode(), someKey.hashCode());
 
-    key = new FunctionMapKey(fqn, fqnType, false, new ArrayList<String>());
-    someKey = new FunctionMapKey(fqn, fqnType, false, new ArrayList<String>());
+    key = new FunctionMapKey(fqn, fqnType, false, new ArrayList<>());
+    someKey = new FunctionMapKey(fqn, fqnType, false, new ArrayList<>());
     assertEquals(key.hashCode(), someKey.hashCode());
 
-    List<String> keyList = new ArrayList<String>();
+    List<String> keyList = new ArrayList<>();
     keyList.add("Employee");
-    List<String> someKeyList = new ArrayList<String>();
+    List<String> someKeyList = new ArrayList<>();
     someKeyList.add("Employee");
     key = new FunctionMapKey(fqn, fqnType, false, keyList);
     someKey = new FunctionMapKey(fqn, fqnType, false, someKeyList);
     assertEquals(key.hashCode(), someKey.hashCode());
 
-    key = new FunctionMapKey(fqn, null, null, new ArrayList<String>());
-    someKey = new FunctionMapKey(fqn, null, null, new ArrayList<String>());
+    key = new FunctionMapKey(fqn, null, null, new ArrayList<>());
+    someKey = new FunctionMapKey(fqn, null, null, new ArrayList<>());
     assertEquals(key.hashCode(), someKey.hashCode());
 
-    keyList = new ArrayList<String>();
+    keyList = new ArrayList<>();
     keyList.add("Employee");
-    someKeyList = new ArrayList<String>();
+    someKeyList = new ArrayList<>();
     someKeyList.add("Employee");
     key = new FunctionMapKey(fqn, null, null, keyList);
     someKey = new FunctionMapKey(fqn, null, null, someKeyList);
     assertEquals(key.hashCode(), someKey.hashCode());
 
-    keyList = new ArrayList<String>();
+    keyList = new ArrayList<>();
     keyList.add("Employee");
     keyList.add("employee");
-    someKeyList = new ArrayList<String>();
+    someKeyList = new ArrayList<>();
     someKeyList.add("Employee");
     someKeyList.add("employee");
     key = new FunctionMapKey(fqn, null, null, keyList);
     someKey = new FunctionMapKey(fqn, null, null, someKeyList);
     assertEquals(key.hashCode(), someKey.hashCode());
 
-    keyList = new ArrayList<String>();
+    keyList = new ArrayList<>();
     keyList.add("Employee");
     keyList.add("Employee2");
-    someKeyList = new ArrayList<String>();
+    someKeyList = new ArrayList<>();
     someKeyList.add("Employee2");
     someKeyList.add("Employee");
     key = new FunctionMapKey(fqn, null, null, keyList);
@@ -220,30 +220,30 @@ public class FunctionMapKeyTest {
     assertNotSame(key.hashCode(), someKey.hashCode());
 
     key = new FunctionMapKey(fqn, fqnType, false, null);
-    someKey = new FunctionMapKey(fqn, fqnType, false, new ArrayList<String>());
+    someKey = new FunctionMapKey(fqn, fqnType, false, new ArrayList<>());
     assertNotSame(key.hashCode(), someKey.hashCode());
 
-    List<String> keyList = new ArrayList<String>();
+    List<String> keyList = new ArrayList<>();
     keyList.add("Employee");
-    List<String> someKeyList = new ArrayList<String>();
+    List<String> someKeyList = new ArrayList<>();
     someKeyList.add("Employee2");
     key = new FunctionMapKey(fqn, fqnType, false, keyList);
     someKey = new FunctionMapKey(fqn, fqnType, false, someKeyList);
     assertNotSame(key.hashCode(), someKey.hashCode());
 
-    key = new FunctionMapKey(fqn, null, null, new ArrayList<String>());
-    someKey = new FunctionMapKey(fqn, null, null, new ArrayList<String>());
+    key = new FunctionMapKey(fqn, null, null, new ArrayList<>());
+    someKey = new FunctionMapKey(fqn, null, null, new ArrayList<>());
     assertNotSame(key.hashCode(), someKey.hashCode());
 
-    keyList = new ArrayList<String>();
+    keyList = new ArrayList<>();
     keyList.add("Employee");
-    someKeyList = new ArrayList<String>();
+    someKeyList = new ArrayList<>();
     someKeyList.add("Employee2");
     key = new FunctionMapKey(fqn, null, null, keyList);
     someKey = new FunctionMapKey(fqn, null, null, someKeyList);
     assertNotSame(key.hashCode(), someKey.hashCode());
 
-    key = new FunctionMapKey(fqn, null, null, new ArrayList<String>());
+    key = new FunctionMapKey(fqn, null, null, new ArrayList<>());
     someKey = new FunctionMapKey(fqn, null, null, null);
     assertNotSame(key.hashCode(), someKey.hashCode());
   }

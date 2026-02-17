@@ -24,6 +24,7 @@ import org.sitenetsoft.olinguito.commons.api.ex.ODataError;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
 
 import java.io.InputStream;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.Map;
 
@@ -33,6 +34,8 @@ import java.util.Map;
  * @see ODataError
  */
 public class ODataClientErrorException extends ODataRuntimeException {
+
+  @Serial
 
   private static final long serialVersionUID = -2551523202755268162L;
 

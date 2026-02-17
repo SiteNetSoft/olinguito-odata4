@@ -182,13 +182,13 @@ public abstract class AbstractGeospatialType<T extends Geospatial> extends Singl
 
     final List<LineString> interiorRings = new ArrayList<>();
     for (int i = 0; i < first.length -1; i++) {
-    	List<Point> interior = new ArrayList<Point>();
+    	List<Point> interior = new ArrayList<>();
 	    for (final String pointCoo : split(first[i].substring(i==0?1:0, first[i].length()), ',')) {
 	      interior.add(newPoint(null, pointCoo, isNullable, maxLength, precision, scale, isUnicode));
 	    }
 	    interiorRings.add(new LineString(dimension, srid, interior));
     }
-    final List<Point> exterior = new ArrayList<Point>();
+    final List<Point> exterior = new ArrayList<>();
     for (final String pointCoo : split(first[first.length -1].substring(0, first[first.length -1].length() - 1), ',')) {
       exterior.add(newPoint(null, pointCoo, isNullable, maxLength, precision, scale, isUnicode));
     }
@@ -533,7 +533,7 @@ public abstract class AbstractGeospatialType<T extends Geospatial> extends Singl
     if (input == null) {
       return null;
     }
-    List<String> list = new ArrayList<String>();
+    List<String> list = new ArrayList<>();
     int start = 0;
     int end;
     while ((end = input.indexOf(separator, start)) >= 0) {

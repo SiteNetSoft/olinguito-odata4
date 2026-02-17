@@ -18,10 +18,14 @@
  */
 package org.sitenetsoft.olinguito.server.api.serializer;
 
+import java.io.Serial;
+
 /**
  * Thrown for invalid batch payloads.
  */
 public class BatchSerializerException extends SerializerException {
+
+  @Serial
 
   private static final long serialVersionUID = 2634433974342796905L;
 

@@ -55,7 +55,7 @@ public class EdmActionImplTest {
   @BeforeEach
   public void setup() {
     EdmProviderImpl provider = mock(EdmProviderImpl.class);
-    List<CsdlParameter> parameters = new ArrayList<CsdlParameter>();
+    List<CsdlParameter> parameters = new ArrayList<>();
     parameters.add(new CsdlParameter().setName("Id").setType(new FullQualifiedName("namespace", "name")));
     FullQualifiedName action1Name = new FullQualifiedName("namespace", "action1");
     CsdlAction action1 = new CsdlAction().setName("action1").setBound(true).setParameters(parameters);

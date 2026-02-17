@@ -90,7 +90,7 @@ public class EdmSchemaImplTest {
 
   @Test
   public void emptySchemaTest() throws Exception {
-    ArrayList<CsdlSchema> schemas = new ArrayList<CsdlSchema>();
+    ArrayList<CsdlSchema> schemas = new ArrayList<>();
     CsdlSchema providerSchema = new CsdlSchema();
     schemas.add(providerSchema);
     CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
@@ -312,28 +312,28 @@ public class EdmSchemaImplTest {
       providerSchema.setAlias(ALIAS);
       CsdlEntityContainer container = new CsdlEntityContainer().setName("container");
 
-      List<CsdlEntitySet> entitySets = new ArrayList<CsdlEntitySet>();
+      List<CsdlEntitySet> entitySets = new ArrayList<>();
       entitySets.add(new CsdlEntitySet().setName("entitySetName")
           .setType(new FullQualifiedName(NAMESPACE, "entityType1")));
       entitySets
           .add(new CsdlEntitySet().setName("entitySetName2").setType(new FullQualifiedName(NAMESPACE, "entityType2")));
       container.setEntitySets(entitySets);
 
-      List<CsdlSingleton> singletons = new ArrayList<CsdlSingleton>();
+      List<CsdlSingleton> singletons = new ArrayList<>();
       singletons.add(new CsdlSingleton().setName("singletonName")
           .setType(new FullQualifiedName(NAMESPACE, "entityType1")));
       singletons
           .add(new CsdlSingleton().setName("singletonName2").setType(new FullQualifiedName(NAMESPACE, "entityType2")));
       container.setSingletons(singletons);
 
-      List<CsdlActionImport> actionImports = new ArrayList<CsdlActionImport>();
+      List<CsdlActionImport> actionImports = new ArrayList<>();
       actionImports.add(new CsdlActionImport().setName("actionImportName").setAction(
           new FullQualifiedName(NAMESPACE, "action1")));
       actionImports.add(new CsdlActionImport().setName("actionImportName2").setAction(
           new FullQualifiedName(NAMESPACE, "action2")));
       container.setActionImports(actionImports);
 
-      List<CsdlFunctionImport> functionImports = new ArrayList<CsdlFunctionImport>();
+      List<CsdlFunctionImport> functionImports = new ArrayList<>();
       functionImports.add(new CsdlFunctionImport().setName("functionImportName").setFunction(
           new FullQualifiedName(NAMESPACE, "function1")));
       functionImports.add(new CsdlFunctionImport().setName("functionImportName2").setFunction(
@@ -341,51 +341,51 @@ public class EdmSchemaImplTest {
       container.setFunctionImports(functionImports);
       providerSchema.setEntityContainer(container);
 
-      List<CsdlTypeDefinition> typeDefinitions = new ArrayList<CsdlTypeDefinition>();
+      List<CsdlTypeDefinition> typeDefinitions = new ArrayList<>();
       typeDefinitions.add(new CsdlTypeDefinition().setName("typeDefinition1").setUnderlyingType(
           EdmPrimitiveTypeKind.String.getFullQualifiedName()));
       typeDefinitions.add(new CsdlTypeDefinition().setName("typeDefinition2").setUnderlyingType(
           EdmPrimitiveTypeKind.String.getFullQualifiedName()));
       providerSchema.setTypeDefinitions(typeDefinitions);
 
-      List<CsdlEnumType> enumTypes = new ArrayList<CsdlEnumType>();
+      List<CsdlEnumType> enumTypes = new ArrayList<>();
       enumTypes.add(new CsdlEnumType().setName("enumType1"));
       enumTypes.add(new CsdlEnumType().setName("enumType2"));
       providerSchema.setEnumTypes(enumTypes);
 
-      List<CsdlEntityType> entityTypes = new ArrayList<CsdlEntityType>();
+      List<CsdlEntityType> entityTypes = new ArrayList<>();
       entityTypes.add(new CsdlEntityType().setName("entityType1"));
       entityTypes.add(new CsdlEntityType().setName("entityType2")
           .setBaseType(new FullQualifiedName(NAMESPACE, "entityType1")));
       providerSchema.setEntityTypes(entityTypes);
 
-      List<CsdlComplexType> complexTypes = new ArrayList<CsdlComplexType>();
+      List<CsdlComplexType> complexTypes = new ArrayList<>();
       complexTypes.add(new CsdlComplexType().setName("complexType1"));
       complexTypes.add(new CsdlComplexType().setName("complexType2").setBaseType(
           new FullQualifiedName(NAMESPACE, "complexType1")));
       providerSchema.setComplexTypes(complexTypes);
 
-      List<CsdlAction> actions = new ArrayList<CsdlAction>();
+      List<CsdlAction> actions = new ArrayList<>();
       actions.add(new CsdlAction().setName("action1"));
       actions.add(new CsdlAction().setName("action2"));
       providerSchema.setActions(actions);
 
-      List<CsdlFunction> functions = new ArrayList<CsdlFunction>();
+      List<CsdlFunction> functions = new ArrayList<>();
       functions.add(new CsdlFunction().setName("function1"));
       functions.add(new CsdlFunction().setName("function2"));
       providerSchema.setFunctions(functions);
 
-      List<CsdlAnnotations> annotationGroups = new ArrayList<CsdlAnnotations>();
+      List<CsdlAnnotations> annotationGroups = new ArrayList<>();
       annotationGroups.add(new CsdlAnnotations().setTarget(NAMESPACE + ".entityType1"));
       annotationGroups.add(new CsdlAnnotations().setTarget(NAMESPACE + ".entityType2"));
       providerSchema.setAnnotationsGroup(annotationGroups);
 
-      List<CsdlTerm> terms = new ArrayList<CsdlTerm>();
+      List<CsdlTerm> terms = new ArrayList<>();
       terms.add(new CsdlTerm().setName("term1").setType("Edm.String"));
       terms.add(new CsdlTerm().setName("term2").setType("Edm.String"));
       providerSchema.setTerms(terms);
 
-      ArrayList<CsdlSchema> schemas = new ArrayList<CsdlSchema>();
+      ArrayList<CsdlSchema> schemas = new ArrayList<>();
       schemas.add(providerSchema);
       return schemas;
     }

@@ -18,10 +18,14 @@
  */
 package org.sitenetsoft.olinguito.commons.api.ex;
 
+import java.io.Serial;
+
 /**
  * Core runtime exception for OData.
  */
 public class ODataRuntimeException extends RuntimeException {
+
+  @Serial
 
   private static final long serialVersionUID = 5492375572049190883L;
 

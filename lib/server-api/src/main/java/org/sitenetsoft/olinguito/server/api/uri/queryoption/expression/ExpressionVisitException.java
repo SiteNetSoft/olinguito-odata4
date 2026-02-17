@@ -18,12 +18,15 @@
  */
 package org.sitenetsoft.olinguito.server.api.uri.queryoption.expression;
 
+import java.io.Serial;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
 
 /**
  * Exception class used by the {@link ExpressionVisitor} to throw exceptions while traversing the expression tree
  */
 public class ExpressionVisitException extends ODataException {
+
+  @Serial
 
   private static final long serialVersionUID = 1L;
 

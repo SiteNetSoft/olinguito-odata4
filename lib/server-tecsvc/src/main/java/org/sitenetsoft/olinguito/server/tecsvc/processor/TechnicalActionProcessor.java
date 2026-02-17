@@ -86,7 +86,7 @@ public class TechnicalActionProcessor extends TechnicalProcessor
   public void processActionEntityCollection(final ODataRequest request, final ODataResponse response,
       final UriInfo uriInfo, final ContentType requestFormat, final ContentType responseFormat)
       throws ODataApplicationException, ODataLibraryException {
-    Map<String, Parameter> parameters = new HashMap<String, Parameter>();
+    Map<String, Parameter> parameters = new HashMap<>();
     EdmAction action = null;
     EntityCollection collection = null;
     List<UriResource> resourcePaths = uriInfo.asUriInfoResource().getUriResourceParts();
@@ -150,7 +150,7 @@ public class TechnicalActionProcessor extends TechnicalProcessor
       final ContentType requestFormat, final ContentType responseFormat)
       throws ODataApplicationException, ODataLibraryException {
     EdmAction action = null;
-    Map<String, Parameter> parameters = new HashMap<String, Parameter>(); 
+    Map<String, Parameter> parameters = new HashMap<>(); 
     EntityActionResult entityResult = null;
     
     final List<UriResource> resourcePaths = uriInfo.asUriInfoResource().getUriResourceParts();

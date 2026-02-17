@@ -124,7 +124,7 @@ public class JSONTest extends AbstractTest {
     if (node.has(Constants.JSON_ID)) {
       node.remove(Constants.JSON_ID);
     }
-    final List<String> toRemove = new ArrayList<String>();
+    final List<String> toRemove = new ArrayList<>();
     for (final Iterator<Map.Entry<String, JsonNode>> itor = node.fields(); itor.hasNext();) {
       final Map.Entry<String, JsonNode> field = itor.next();
 
@@ -181,7 +181,7 @@ public class JSONTest extends AbstractTest {
     if (node.has(Constants.JSON_MEDIA_ETAG)) {
       node.remove(Constants.JSON_MEDIA_ETAG);
     }
-    final List<String> toRemove = new ArrayList<String>();
+    final List<String> toRemove = new ArrayList<>();
     for (final Iterator<Map.Entry<String, JsonNode>> itor = node.fields(); itor.hasNext();) {
       final Map.Entry<String, JsonNode> field = itor.next();
 
@@ -232,7 +232,7 @@ public class JSONTest extends AbstractTest {
     if (node.has(Constants.JSON_MEDIA_CONTENT_TYPE)) {
       node.remove(Constants.JSON_MEDIA_CONTENT_TYPE);
     }
-    final List<String> toRemove = new ArrayList<String>();
+    final List<String> toRemove = new ArrayList<>();
     for (final Iterator<Map.Entry<String, JsonNode>> itor = node.fields(); itor.hasNext();) {
       final Map.Entry<String, JsonNode> field = itor.next();
 

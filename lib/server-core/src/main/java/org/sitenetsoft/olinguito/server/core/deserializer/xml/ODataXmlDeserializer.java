@@ -171,7 +171,7 @@ public class ODataXmlDeserializer implements ODataDeserializer {
       final Integer scale, final boolean isUnicode) throws XMLStreamException, EdmPrimitiveTypeException,
       DeserializerException {
 
-    List<Object> values = new ArrayList<Object>();
+    List<Object> values = new ArrayList<>();
     boolean foundEndProperty = false;
     while (reader.hasNext() && !foundEndProperty) {
       final XMLEvent event = reader.nextEvent();
@@ -386,7 +386,7 @@ public class ODataXmlDeserializer implements ODataDeserializer {
   private List<String> entityRefCollection(final XMLEventReader reader, final StartElement start)
       throws XMLStreamException {
     boolean foundEndElement = false;
-    ArrayList<String> references = new ArrayList<String>();
+    ArrayList<String> references = new ArrayList<>();
     while (reader.hasNext() && !foundEndElement) {
       final XMLEvent event = reader.nextEvent();
 
@@ -534,7 +534,7 @@ public class ODataXmlDeserializer implements ODataDeserializer {
                 entity.getNavigationBindings().add(link);
               } else {
                 if (link.getInlineEntitySet() != null) {
-                  List<String> bindings = new ArrayList<String>();
+                  List<String> bindings = new ArrayList<>();
                   List<Entity> entities = link.getInlineEntitySet().getEntities();
 
                   for (Entity inlineEntity : entities) {
@@ -702,7 +702,7 @@ public class ODataXmlDeserializer implements ODataDeserializer {
   public DeserializerResult entityReferences(final InputStream stream) throws DeserializerException {
     try {
       XMLEventReader reader = getReader(stream);
-      ArrayList<URI> references = new ArrayList<URI>();
+      ArrayList<URI> references = new ArrayList<>();
 
       while (reader.hasNext()) {
         final XMLEvent event = reader.nextEvent();
@@ -724,7 +724,7 @@ public class ODataXmlDeserializer implements ODataDeserializer {
   @Override
   public DeserializerResult actionParameters(final InputStream stream, final EdmAction edmAction)
       throws DeserializerException {
-    Map<String, Parameter> parameters = new LinkedHashMap<String, Parameter>();
+    Map<String, Parameter> parameters = new LinkedHashMap<>();
     if (edmAction.getParameterNames() == null || edmAction.getParameterNames().isEmpty()
         || edmAction.isBound() && edmAction.getParameterNames().size() == 1) {
       return DeserializerResultImpl.with().actionParameters(parameters)

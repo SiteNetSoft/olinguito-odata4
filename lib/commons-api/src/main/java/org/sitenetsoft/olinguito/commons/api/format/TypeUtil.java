@@ -15,10 +15,11 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Convert anonymous Comparator to lambda
  */
 package org.sitenetsoft.olinguito.commons.api.format;
 
-import java.util.Comparator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
@@ -43,12 +44,7 @@ final class TypeUtil {
 
   /** Creates a parameter map with predictable order. */
   static Map<String, String> createParameterMap() {
-    return new TreeMap<String, String>(new Comparator<String>() {
-      @Override
-      public int compare(final String o1, final String o2) {
-        return o1.compareToIgnoreCase(o2);
-      }
-    });
+    return new TreeMap<>(String::compareToIgnoreCase);
   }
 
   /**
