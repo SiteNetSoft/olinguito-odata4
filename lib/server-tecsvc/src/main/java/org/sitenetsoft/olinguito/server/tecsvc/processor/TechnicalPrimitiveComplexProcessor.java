@@ -455,7 +455,7 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
   private String buildPropertyPath(final List<String> path) {
     StringBuilder result = new StringBuilder();
     for (final String segment : path) {
-      result.append(result.length() == 0 ? "" : '/').append(segment);
+      result.append(result.isEmpty() ? "" : '/').append(segment);
     }
     return result.toString();
   }

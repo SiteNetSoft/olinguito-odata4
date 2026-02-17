@@ -54,7 +54,7 @@ public class BatchQueryOperation implements BatchPart {
     } else {
       final int line = (!message.isEmpty()) ? message.get(0).getLineNumber() : 0;
       throw new BatchDeserializerException("Missing http request line",
-          BatchDeserializerException.MessageKeys.INVALID_STATUS_LINE, "" + line);
+          BatchDeserializerException.MessageKeys.INVALID_STATUS_LINE, String.valueOf(line));
     }
   }
 

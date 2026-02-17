@@ -53,6 +53,7 @@ import java.util.Map;
  * @param <T> "wrapped" Processor
  */
 public class AsyncProcessor<T extends Processor> {
+  private static final int COPY_BUFFER_SIZE = 8192;
   private final ProcessorInvocationHandler handler;
   private final TechnicalAsyncService service;
   private final T proxyProcessor;
@@ -235,10 +236,9 @@ public class AsyncProcessor<T extends Processor> {
     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
     InputStream input = request.getBody();
     if (input != null) {
-      try {
-        ByteBuffer inBuffer = ByteBuffer.allocate(8192);
-        ReadableByteChannel ic = Channels.newChannel(input);
-        WritableByteChannel oc = Channels.newChannel(buffer);
+      try (ReadableByteChannel ic = Channels.newChannel(input);
+           WritableByteChannel oc = Channels.newChannel(buffer)) {
+        ByteBuffer inBuffer = ByteBuffer.allocate(COPY_BUFFER_SIZE);
         while (ic.read(inBuffer) > 0) {
           inBuffer.flip();
           oc.write(inBuffer);

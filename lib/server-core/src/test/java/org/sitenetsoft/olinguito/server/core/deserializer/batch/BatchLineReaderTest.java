@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -301,7 +302,7 @@ public class BatchLineReaderTest {
     final String contentString = reader.readLine()  // initial part up to '\n'
         + reader.readLine()  // second part from '\n' to '\r'
         + reader.readLine();  // the rest
-    assertArrayEquals(content, contentString.getBytes(Charset.forName("ISO-8859-1")));
+    assertArrayEquals(content, contentString.getBytes(StandardCharsets.ISO_8859_1));
     assertNull(reader.readLine());
     reader.close();
   }

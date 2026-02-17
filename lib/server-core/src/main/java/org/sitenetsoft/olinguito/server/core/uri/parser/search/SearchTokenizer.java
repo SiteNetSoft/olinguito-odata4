@@ -75,7 +75,7 @@ public class SearchTokenizer {
 
     public State forbidden(final char c) throws SearchTokenizerException {
       throw new SearchTokenizerException("Forbidden character in state " + token + "->" + c,
-          SearchTokenizerException.MessageKeys.FORBIDDEN_CHARACTER, "" + c);
+          SearchTokenizerException.MessageKeys.FORBIDDEN_CHARACTER, String.valueOf(c));
     }
 
     public State invalid() throws SearchTokenizerException {

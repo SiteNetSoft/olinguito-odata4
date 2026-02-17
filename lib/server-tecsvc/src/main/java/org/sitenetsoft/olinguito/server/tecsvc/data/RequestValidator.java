@@ -113,7 +113,7 @@ public class RequestValidator {
     }
 
     if (edmProperty.isCollection()) {
-      if (navigationBinding.getBindingLinks().size() == 0) {
+      if (navigationBinding.getBindingLinks().isEmpty()) {
         return ValidationResult.EMPTY;
       }
 

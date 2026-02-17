@@ -1734,7 +1734,7 @@ public class ODataJsonSerializerTest {
                     EntitySerializerOptions.with()
                             .contextURL(build)
                             .expand(expandOption)
-                            .build()).getContent().readAllBytes(), Charset.defaultCharset());
+                            .build()).getContent().readAllBytes(), StandardCharsets.UTF_8);
 
 
     final Matcher<String> stringMatcher = CoreMatchers.endsWith("}],"

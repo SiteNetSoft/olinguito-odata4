@@ -433,7 +433,7 @@ public class ExpressionParser {
     }
 
     final TokenKind nextMethod =
-        ParserHelper.next(tokenizer, tokenToMethod.keySet().toArray(new TokenKind[tokenToMethod.size()]));
+        ParserHelper.next(tokenizer, tokenToMethod.keySet().toArray(new TokenKind[0]));
     if (nextMethod != null) {
       return parseMethod(nextMethod);
     }

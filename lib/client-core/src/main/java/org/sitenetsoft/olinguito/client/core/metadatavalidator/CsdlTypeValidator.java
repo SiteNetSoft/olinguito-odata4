@@ -382,13 +382,13 @@ public class CsdlTypeValidator {
     }
     String strNavProperty = paths[paths.length - 1];
     String remainingPath = navBindingPath.substring(navBindingPath.indexOf(lastFullQualifiedName) 
-        + lastFullQualifiedName.length() + (lastFullQualifiedName.length() == 0 ? 0 : 1), 
+        + lastFullQualifiedName.length() + (lastFullQualifiedName.isEmpty() ? 0 : 1),
         navBindingPath.lastIndexOf(strNavProperty));
     if (remainingPath.length() > 0) {
       remainingPath = remainingPath.substring(0, remainingPath.length() - 1);
     }
     CsdlNavigationProperty navProperty = null;
-    CsdlEntityType sourceEntityTypeHavingNavProp = lastFullQualifiedName.length() == 0 ? sourceEntityType : 
+    CsdlEntityType sourceEntityTypeHavingNavProp = lastFullQualifiedName.isEmpty() ? sourceEntityType :
       (csdlEntityTypesMap.containsKey(new FullQualifiedName(lastFullQualifiedName)) ? 
           csdlEntityTypesMap.get(new FullQualifiedName(lastFullQualifiedName)) : 
             csdlEntityTypesMap.get(fetchCorrectNamespaceFromAlias(new FullQualifiedName(lastFullQualifiedName))));

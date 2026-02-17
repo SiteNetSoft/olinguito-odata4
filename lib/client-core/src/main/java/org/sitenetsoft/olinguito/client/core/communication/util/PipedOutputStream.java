@@ -66,7 +66,7 @@ public class PipedOutputStream extends java.io.PipedOutputStream {
     if (sink != null) {
       try {
         connect(sink);
-      } catch (Exception e) {
+      } catch (IOException e) {
         throw new RuntimeException(e);
       }
       sink.buffer = new byte[bufferSize];

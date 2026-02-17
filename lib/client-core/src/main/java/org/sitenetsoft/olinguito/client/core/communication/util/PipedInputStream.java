@@ -73,7 +73,7 @@ public class PipedInputStream extends java.io.PipedInputStream {
     if (source != null) {
       try {
         connect(source);
-      } catch (Exception e) {
+      } catch (IOException e) {
         throw new RuntimeException(e);
       }
     }

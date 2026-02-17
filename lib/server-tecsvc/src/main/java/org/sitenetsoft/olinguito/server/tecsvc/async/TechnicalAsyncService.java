@@ -140,10 +140,9 @@ public class TechnicalAsyncService {
       return;
     }
 
-    try {
+    try (ReadableByteChannel ic = Channels.newChannel(input);
+         WritableByteChannel oc = Channels.newChannel(output)) {
       ByteBuffer inBuffer = ByteBuffer.allocate(8192);
-      ReadableByteChannel ic = Channels.newChannel(input);
-      WritableByteChannel oc = Channels.newChannel(output);
       while (ic.read(inBuffer) > 0) {
         inBuffer.flip();
         oc.write(inBuffer);
@@ -151,19 +150,6 @@ public class TechnicalAsyncService {
       }
     } catch (IOException e) {
       throw new ODataRuntimeException("Error on reading request content");
-    } finally {
-      closeStream(input);
-      closeStream(output);
-    }
-  }
-
-  private static void closeStream(final Closeable closeable) {
-    if (closeable != null) {
-      try {
-        closeable.close();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
     }
   }
 

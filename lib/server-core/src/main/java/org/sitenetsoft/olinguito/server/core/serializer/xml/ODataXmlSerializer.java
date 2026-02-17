@@ -21,8 +21,8 @@ package org.sitenetsoft.olinguito.server.core.serializer.xml;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -563,8 +563,8 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
     writer.writeEndElement();
 
     writer.writeStartElement(NS_ATOM, Constants.ATOM_ELEM_UPDATED);
-    writer.writeCharacters(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-        .format(new Date(System.currentTimeMillis())));
+    writer.writeCharacters(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        .format(LocalDateTime.now()));
     writer.writeEndElement();
 
     writer.writeStartElement(NS_ATOM, "author");

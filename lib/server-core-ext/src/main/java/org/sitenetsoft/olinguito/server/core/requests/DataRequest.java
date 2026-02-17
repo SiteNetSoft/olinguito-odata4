@@ -831,10 +831,9 @@ public class DataRequest extends ServiceRequest {
     InputStream input = getODataRequest().getBody();
     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
     if (input != null) {
-      try {
+      try (ReadableByteChannel ic = Channels.newChannel(input);
+           WritableByteChannel oc = Channels.newChannel(buffer)) {
         ByteBuffer inBuffer = ByteBuffer.allocate(DEFAULT_BUFFER_SIZE);
-        ReadableByteChannel ic = Channels.newChannel(input);
-        WritableByteChannel oc = Channels.newChannel(buffer);
         while (ic.read(inBuffer) > 0) {
           inBuffer.flip();
           oc.write(inBuffer);
@@ -910,9 +909,9 @@ public class DataRequest extends ServiceRequest {
   private static String buildPropertyPath(final List<String> path) {
     StringBuilder result = new StringBuilder();
     for (final String segment : path) {
-      result.append(result.length() == 0 ? "" : '/').append(segment); //$NON-NLS-1$
+      result.append(result.isEmpty() ? "" : '/').append(segment); //$NON-NLS-1$
     }
-    return result.length() == 0?null:result.toString();
+    return result.isEmpty() ? null : result.toString();
   }
 
   static String getTargetEntitySet(EdmBindingTarget root, LinkedList<UriResourceNavigation> navigations) {

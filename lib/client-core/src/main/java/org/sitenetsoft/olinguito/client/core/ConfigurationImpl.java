@@ -62,7 +62,7 @@ public class ConfigurationImpl implements Configuration {
 
   public static final int DEFAULT_BUFFER_SIZE = 4 * 1024 * 1024;  // 4MB
 
-  private final Map<String, Object> CONF = new HashMap<>();
+  private final Map<String, Object> conf = new HashMap<>();
 
   private transient ExecutorService executor = createExecutor(10);
 
@@ -85,7 +85,7 @@ public class ConfigurationImpl implements Configuration {
    * @return property value if exists; default value if does not exist.
    */
   protected Object getProperty(final String key, final Object defaultValue) {
-    return CONF.containsKey(key) ? CONF.get(key) : defaultValue;
+    return conf.containsKey(key) ? conf.get(key) : defaultValue;
   }
 
   /**
@@ -96,7 +96,7 @@ public class ConfigurationImpl implements Configuration {
    * @return given value.
    */
   protected Object setProperty(final String key, final Object value) {
-    return CONF.put(key, value);
+    return conf.put(key, value);
   }
 
   @Override

@@ -829,7 +829,7 @@ public class DataProvider {
     
     EntityCollection entityCollection = data.get(entitySet.getName());
     List<Entity> entities = new ArrayList<>();
-    Entity otherEntity = entitySet.getName() == "ESAllPrim" ? data.get("ESDelta").getEntities().get(0) :
+    Entity otherEntity = "ESAllPrim".equals(entitySet.getName()) ? data.get("ESDelta").getEntities().get(0) :
       data.get("ESAllPrim").getEntities().get(0);
     EntityCollection ec1=new EntityCollection();
     Entity entity1 = new Entity();
