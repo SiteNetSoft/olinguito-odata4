@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed resource leak and hardcoded charset string
  */
 package org.sitenetsoft.olinguito.server.core.deserializer;
 
@@ -23,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.data.Parameter;
@@ -68,9 +71,8 @@ public class FixedFormatDeserializerImpl implements FixedFormatDeserializer {
     if (property == null || !property.isPrimitive()) {
       throw new DeserializerException("Wrong property.", DeserializerException.MessageKeys.NOT_IMPLEMENTED);
     }
-    try {
+    try (InputStreamReader reader = new InputStreamReader(content, StandardCharsets.UTF_8)) {
       StringWriter writer = new StringWriter();
-      InputStreamReader reader = new InputStreamReader(content, "UTF-8");
       int c = -1;
       while ((c = reader.read()) != -1) {
         writer.append((char) c);

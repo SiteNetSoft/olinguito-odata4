@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
+ * Copyright 2026 SiteNetSoft - Fixed resource leak in readHeaders
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.batch;
 
@@ -189,13 +190,14 @@ public class ODataBatchUtilities {
       final ByteArrayOutputStream baos = new ByteArrayOutputStream();
       readBatchPart(new ODataBatchController(iterator, null), baos, true);
 
-      final BufferedReader headersReader = new BufferedReader(
-          new InputStreamReader(new ByteArrayInputStream(baos.toByteArray()), StandardCharsets.UTF_8));
-      String line;
-      while ((line = headersReader.readLine()) != null) {
-        line = line.trim();
-        if (line != null && !line.isBlank()) {
-          addHeaderLine(line, target);
+      try (BufferedReader headersReader = new BufferedReader(
+          new InputStreamReader(new ByteArrayInputStream(baos.toByteArray()), StandardCharsets.UTF_8))) {
+        String line;
+        while ((line = headersReader.readLine()) != null) {
+          line = line.trim();
+          if (line != null && !line.isBlank()) {
+            addHeaderLine(line, target);
+          }
         }
       }
     } catch (Exception e) {

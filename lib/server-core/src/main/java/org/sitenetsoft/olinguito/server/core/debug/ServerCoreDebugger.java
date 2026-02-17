@@ -17,12 +17,13 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed debugFormat not being set in resolveDebugMode(String)
+ * Copyright 2026 SiteNetSoft - Replace Charset.forName() with StandardCharsets
  */
 package org.sitenetsoft.olinguito.server.core.debug;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +41,6 @@ import org.sitenetsoft.olinguito.server.api.uri.UriInfo;
 
 public class ServerCoreDebugger {
 
-  private static final Charset DEFAULT_ENCODING = Charset.forName("UTF-8");
   private final List<RuntimeMeasurement> runtimeInformation = new ArrayList<>();
   private final OData odata;
 
@@ -114,7 +114,7 @@ public class ServerCoreDebugger {
     odResponse.setStatusCode(HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode());
     odResponse.setHeader(HttpHeader.CONTENT_TYPE, ContentType.TEXT_PLAIN.toContentTypeString());
     InputStream content = new ByteArrayInputStream("ODataLibrary: Could not assemble debug response."
-        .getBytes(DEFAULT_ENCODING));
+        .getBytes(StandardCharsets.UTF_8));
     odResponse.setContent(content);
     return odResponse;
   }

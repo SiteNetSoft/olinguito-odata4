@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed stray semicolon
  */
 package org.sitenetsoft.olinguito.server.core.requests;
 
@@ -112,7 +114,6 @@ public class BatchRequest extends ServiceRequest {
 
     // send response
     final String responseBoundary = "batch_" + UUID.randomUUID().toString();
-    ;
     final InputStream responseContent = odata.createFixedFormatSerializer().batchResponse(
         responseParts, responseBoundary);
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.MULTIPART_MIXED + ";boundary="

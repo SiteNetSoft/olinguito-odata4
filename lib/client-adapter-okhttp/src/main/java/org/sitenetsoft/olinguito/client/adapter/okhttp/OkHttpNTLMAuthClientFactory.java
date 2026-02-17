@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - OkHttp NTLM Auth client factory
+ * Copyright 2026 SiteNetSoft - Use Locale.ROOT for case conversion
  */
 package org.sitenetsoft.olinguito.client.adapter.okhttp;
 
@@ -68,7 +69,7 @@ public class OkHttpNTLMAuthClientFactory extends OkHttpClientFactory {
       }
 
       for (String challenge : response.challenges().stream()
-          .map(c -> c.scheme().toUpperCase())
+          .map(c -> c.scheme().toUpperCase(java.util.Locale.ROOT))
           .toList()) {
         if ("NTLM".equals(challenge) || "NEGOTIATE".equals(challenge)) {
           java.net.Authenticator.setDefault(new java.net.Authenticator() {

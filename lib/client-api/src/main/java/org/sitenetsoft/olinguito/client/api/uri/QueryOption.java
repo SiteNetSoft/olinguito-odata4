@@ -15,8 +15,12 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Use Locale.ROOT for case conversion
  */
 package org.sitenetsoft.olinguito.client.api.uri;
+
+import java.util.Locale;
 
 /**
  * Query options.
@@ -89,6 +93,6 @@ public enum QueryOption {
 
   @Override
   public String toString() {
-    return name().toLowerCase();
+    return name().toLowerCase(Locale.ROOT);
   }
 }

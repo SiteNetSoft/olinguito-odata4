@@ -15,18 +15,21 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Implemented Closeable to prevent resource leak
  */
 package org.sitenetsoft.olinguito.client.core.communication.response.batch;
 
+import java.io.BufferedReader;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 
 import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchLineIterator;
 import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchResponseItem;
@@ -41,7 +44,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Batch response manager class.
  */
-public class ODataBatchResponseManager implements Iterator<ODataBatchResponseItem> {
+public class ODataBatchResponseManager implements Iterator<ODataBatchResponseItem>, Closeable {
 
   /**
    * Logger.
@@ -71,6 +74,11 @@ public class ODataBatchResponseManager implements Iterator<ODataBatchResponseIte
   private final boolean continueOnError;
 
   /**
+   * Reader wrapping the raw batch response stream (closed by {@link #close()}).
+   */
+  private final BufferedReader reader;
+
+  /**
    * Constructor.
    *
    * @param res OData batch response.
@@ -90,8 +98,8 @@ public class ODataBatchResponseManager implements Iterator<ODataBatchResponseIte
 
     this.continueOnError = continueOnError;
     this.expectedItemsIterator = expectedItems.iterator();
-    this.batchLineIterator = new ODataBatchLineIteratorImpl(
-            new BufferedReader(new InputStreamReader(res.getRawResponse(), StandardCharsets.UTF_8)));
+    this.reader = new BufferedReader(new InputStreamReader(res.getRawResponse(), StandardCharsets.UTF_8));
+    this.batchLineIterator = new ODataBatchLineIteratorImpl(reader);
 
     // search for boundary
     batchBoundary = ODataBatchUtilities.getBoundaryFromHeader(
@@ -154,5 +162,10 @@ public class ODataBatchResponseManager implements Iterator<ODataBatchResponseIte
   @Override
   public void remove() {
     throw new UnsupportedOperationException("Remove operation is not supported");
+  }
+
+  @Override
+  public void close() throws IOException {
+    reader.close();
   }
 }

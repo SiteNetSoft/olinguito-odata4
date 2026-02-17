@@ -17,12 +17,14 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
+ * Copyright 2026 SiteNetSoft - Replace hardcoded charset string with StandardCharsets
  */
 package org.sitenetsoft.olinguito.server.core.debug;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
 import java.util.Base64;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
@@ -115,7 +117,7 @@ public class DebugTabBody implements DebugTab {
       final byte[] content = streamToBytes(response.getContent());
       return responseContent == ResponseContent.IMAGE ?
           Base64.getEncoder().encodeToString(content) :
-          new String(content, "UTF-8");
+          new String(content, StandardCharsets.UTF_8);
     } catch (final IOException e) {
       return "Could not parse Body for Debug Output";
     }

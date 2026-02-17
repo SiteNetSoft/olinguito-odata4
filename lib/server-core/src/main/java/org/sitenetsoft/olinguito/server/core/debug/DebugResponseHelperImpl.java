@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Added logging for invalid debug formats
+ * Copyright 2026 SiteNetSoft - Replace hardcoded charset strings with StandardCharsets
  */
 package org.sitenetsoft.olinguito.server.core.debug;
 
@@ -26,6 +27,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -249,7 +251,7 @@ public class DebugResponseHelperImpl implements DebugResponseHelper {
     writer.append("</body>\n")
         .append("</html>\n")
         .close();
-    byte[] bytes = writer.toString().getBytes("UTF-8");
+    byte[] bytes = writer.toString().getBytes(StandardCharsets.UTF_8);
     return new ByteArrayInputStream(bytes);
   }
 

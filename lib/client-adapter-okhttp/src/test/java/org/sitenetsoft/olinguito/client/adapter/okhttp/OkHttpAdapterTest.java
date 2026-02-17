@@ -17,10 +17,18 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Unit tests for OkHttp adapter
+ * Copyright 2026 SiteNetSoft - Replaced wildcard import with explicit imports
  */
 package org.sitenetsoft.olinguito.client.adapter.okhttp;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

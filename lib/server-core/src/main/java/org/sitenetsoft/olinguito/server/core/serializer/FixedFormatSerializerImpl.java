@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replace hardcoded charset strings with StandardCharsets
  */
 package org.sitenetsoft.olinguito.server.core.serializer;
 
@@ -22,7 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.data.EntityMediaObject;
@@ -65,12 +67,7 @@ public class FixedFormatSerializerImpl implements FixedFormatSerializer {
 
   @Override
   public InputStream count(final Integer count) throws SerializerException {
-    try {
-      return new ByteArrayInputStream(count.toString().getBytes("UTF-8"));
-    } catch (UnsupportedEncodingException e) {
-      throw new SerializerException("UTF-8 is nott supprted as an encoding", e,
-          SerializerException.MessageKeys.UNSUPPORTED_ENCODING, "UTF-8");
-    }
+    return new ByteArrayInputStream(count.toString().getBytes(StandardCharsets.UTF_8));
   }
 
   @Override
@@ -80,13 +77,11 @@ public class FixedFormatSerializerImpl implements FixedFormatSerializer {
       final String result = type.valueToString(value,
           options.isNullable(), options.getMaxLength(),
           options.getPrecision(), options.getScale(), options.isUnicode());
-      return new ByteArrayInputStream(result.getBytes("UTF-8"));
+      return new ByteArrayInputStream(result.getBytes(StandardCharsets.UTF_8));
     } catch (final EdmPrimitiveTypeException e) {
       throw new SerializerException("Error in primitive-value formatting.", e,
           SerializerException.MessageKeys.WRONG_PRIMITIVE_VALUE,
           type.getFullQualifiedName().getFullQualifiedNameAsString(), value.toString());
-    } catch (final UnsupportedEncodingException e) {
-      throw new SerializerException("Encoding exception.", e, SerializerException.MessageKeys.IO_EXCEPTION);
     }
   }
 

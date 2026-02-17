@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replace Charset.forName() with StandardCharsets
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.batch;
 
@@ -22,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -34,7 +37,7 @@ public class BatchLineReader {
   private static final byte LF = '\n';
   private static final int EOF = -1;
   private static final int BUFFER_SIZE = 8192;
-  private static final Charset DEFAULT_CHARSET = Charset.forName("ISO-8859-1");
+  private static final Charset DEFAULT_CHARSET = StandardCharsets.ISO_8859_1;
   public static final String BOUNDARY = "boundary";
   public static final String DOUBLE_DASH = "--";
   public static final String CRLF = "\r\n";
@@ -104,7 +107,7 @@ public class BatchLineReader {
           final String charsetString = contentType.getParameter(ContentType.PARAMETER_CHARSET);
           currentCharset = charsetString == null ?
               contentType.isCompatible(ContentType.APPLICATION_JSON) || contentType.getSubtype().contains("xml") ?
-                  Charset.forName("UTF-8") :
+                  StandardCharsets.UTF_8 :
                   DEFAULT_CHARSET :
               Charset.forName(charsetString);
 

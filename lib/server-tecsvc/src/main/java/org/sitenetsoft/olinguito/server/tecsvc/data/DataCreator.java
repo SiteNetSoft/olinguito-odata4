@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed heap pollution warning with @SafeVarargs
+ * Copyright 2026 SiteNetSoft - Replace Charset.forName() with StandardCharsets
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -24,7 +25,7 @@ import java.math.BigDecimal;
 import java.net.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -1837,7 +1838,7 @@ public class DataCreator {
     return ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
         + "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" viewBox=\"0 0 100 100\">\n"
         + "  <g stroke=\"darkmagenta\" stroke-width=\"16\" fill=\"" + color + "\">\n"
-        + "    <circle cx=\"50\" cy=\"50\" r=\"42\"/>\n" + "  </g>\n" + "</svg>\n").getBytes(Charset.forName("UTF-8"));
+        + "    <circle cx=\"50\" cy=\"50\" r=\"42\"/>\n" + "  </g>\n" + "</svg>\n").getBytes(StandardCharsets.UTF_8);
   }
   
   

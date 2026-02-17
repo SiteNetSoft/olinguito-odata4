@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Use Locale.ROOT for case conversion
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -73,8 +76,8 @@ public abstract class AbstractGeospatialType<T extends Geospatial> extends Singl
     Geospatial.Dimension _dimension = null;
     Geospatial.Type _type = null;
     try {
-      _dimension = Geospatial.Dimension.valueOf(matcher.group(1).toUpperCase());
-      _type = Geospatial.Type.valueOf(matcher.group(3).toUpperCase());
+      _dimension = Geospatial.Dimension.valueOf(matcher.group(1).toUpperCase(Locale.ROOT));
+      _type = Geospatial.Type.valueOf(matcher.group(3).toUpperCase(Locale.ROOT));
     } catch (IllegalArgumentException e) {
       throw new EdmPrimitiveTypeException("The literal '" + value + "' has illegal content.", e);
     }
@@ -239,7 +242,7 @@ public abstract class AbstractGeospatialType<T extends Geospatial> extends Singl
     final Matcher matcher = getMatcher(COLLECTION_PATTERN, value);
 
     Geospatial item = null;
-    switch (Geospatial.Type.valueOf(matcher.group(3).toUpperCase())) {
+    switch (Geospatial.Type.valueOf(matcher.group(3).toUpperCase(Locale.ROOT))) {
     case POINT:
       item = newPoint(SRID.valueOf(matcher.group(2)), matcher.group(4),
           isNullable, maxLength, precision, scale, isUnicode);
@@ -293,7 +296,7 @@ public abstract class AbstractGeospatialType<T extends Geospatial> extends Singl
   }
 
   private StringBuilder toStringBuilder(final SRID srid) {
-    return new StringBuilder(dimension.name().toLowerCase()).append('\'').
+    return new StringBuilder(dimension.name().toLowerCase(Locale.ROOT)).append('\'').
         append("SRID=").append(srid).append(';');
   }
 

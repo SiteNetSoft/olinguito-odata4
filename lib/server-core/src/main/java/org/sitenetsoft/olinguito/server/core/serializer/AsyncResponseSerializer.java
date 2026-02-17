@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replace hardcoded charset strings with StandardCharsets
  */
 package org.sitenetsoft.olinguito.server.core.serializer;
 
@@ -22,8 +24,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
@@ -39,7 +42,7 @@ public class AsyncResponseSerializer {
   private static final String COLON = ":";
   private static final String SP = " ";
   private static final String CRLF = "\r\n";
-  private static final String HEADER_CHARSET_NAME = "ISO-8859-1";
+  private static final Charset HEADER_CHARSET = StandardCharsets.ISO_8859_1;
   private static final String HTTP_VERSION = "HTTP/1.1";
 
   public InputStream serialize(final ODataResponse response) throws SerializerException {
@@ -97,11 +100,6 @@ public class AsyncResponseSerializer {
   }
 
   private void append(final String value, final ByteArrayOutputStream buffer) throws IOException {
-    try {
-      buffer.write(value.getBytes(HEADER_CHARSET_NAME));
-    } catch (UnsupportedEncodingException e) {
-      throw new IOException("Default header charset with name '" + HEADER_CHARSET_NAME +
-          "' is not available.", e);
-    }
+    buffer.write(value.getBytes(HEADER_CHARSET));
   }
 }

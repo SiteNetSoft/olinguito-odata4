@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
+ * Copyright 2026 SiteNetSoft - Replaced wildcard import with explicit imports
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -24,7 +25,12 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
+import java.util.TimeZone;
+import java.util.UUID;
 
 import org.sitenetsoft.olinguito.commons.api.data.AbstractEntityCollection;
 import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
