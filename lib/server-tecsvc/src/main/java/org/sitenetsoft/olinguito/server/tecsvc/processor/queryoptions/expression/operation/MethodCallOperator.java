@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Use Locale.ROOT for case conversion
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operation;
 
@@ -122,7 +124,7 @@ public class MethodCallOperator {
     return stringFunction(new StringFunction() {
       @Override
       public Object perform(final List<String> params) {
-        return params.get(0).toLowerCase();
+        return params.get(0).toLowerCase(Locale.ROOT);
       }
     }, primString);
   }
@@ -131,7 +133,7 @@ public class MethodCallOperator {
     return stringFunction(new StringFunction() {
       @Override
       public Object perform(final List<String> params) {
-        return params.get(0).toUpperCase();
+        return params.get(0).toUpperCase(Locale.ROOT);
       }
     }, primString);
   }

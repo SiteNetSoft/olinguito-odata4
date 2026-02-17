@@ -17,10 +17,11 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced commons-codec Base64 with java.util.Base64
+ * Copyright 2026 SiteNetSoft - Replace Charset.forName() with StandardCharsets
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
@@ -29,8 +30,6 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
  * Implementation of the EDM primitive type Binary.
  */
 public class EdmBinary extends SingletonPrimitiveType {
-
-  private static final Charset UTF_8 = Charset.forName("UTF-8");
 
   /**
    * Byte used to pad output.
@@ -137,7 +136,7 @@ public class EdmBinary extends SingletonPrimitiveType {
 
     return value == null ?
         isNullable == null || isNullable :
-        isBase64(value.getBytes(UTF_8)) && validateMaxLength(value, maxLength);
+        isBase64(value.getBytes(StandardCharsets.UTF_8)) && validateMaxLength(value, maxLength);
   }
 
   private static boolean validateMaxLength(final String value, final Integer maxLength) {
@@ -165,7 +164,7 @@ public class EdmBinary extends SingletonPrimitiveType {
       final Boolean isNullable, final Integer maxLength, final Integer precision,
       final Integer scale, final Boolean isUnicode, final Class<T> returnType) throws EdmPrimitiveTypeException {
 
-    if (value == null || !isBase64(value.getBytes(UTF_8))) {
+    if (value == null || !isBase64(value.getBytes(StandardCharsets.UTF_8))) {
       throw new EdmPrimitiveTypeException("The literal '" + value + "' has illegal content.");
     }
     if (!validateMaxLength(value, maxLength)) {

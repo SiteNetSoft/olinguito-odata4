@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Use Locale.ROOT for case conversion
  */
 package org.sitenetsoft.olinguito.server.tecsvc.async;
 
@@ -33,6 +35,7 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Locale;
 import java.lang.reflect.Proxy;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
@@ -219,8 +222,8 @@ public class AsyncProcessor<T extends Processor> {
     req.setRawServiceResolutionUri(request.getRawServiceResolutionUri());
 
     for (Map.Entry<String, List<String>> header : request.getAllHeaders().entrySet()) {
-      if (!HttpHeader.PREFER.toLowerCase().equals(
-          header.getKey().toLowerCase())) {
+      if (!HttpHeader.PREFER.toLowerCase(Locale.ROOT).equals(
+          header.getKey().toLowerCase(Locale.ROOT))) {
         req.addHeader(header.getKey(), header.getValue());
       }
     }

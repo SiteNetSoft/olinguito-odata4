@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Replaced wildcard import with explicit imports
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -69,7 +70,9 @@ import org.codehaus.stax2.ri.evt.Stax2EventAllocatorImpl;
 import com.fasterxml.aalto.stax.InputFactoryImpl;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataErrorDetail;
 
-import static javax.xml.stream.XMLInputFactory.*;
+import static javax.xml.stream.XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES;
+import static javax.xml.stream.XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES;
+import static javax.xml.stream.XMLInputFactory.SUPPORT_DTD;
 
 public class AtomDeserializer implements ODataDeserializer {
 

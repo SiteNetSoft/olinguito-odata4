@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Fixed logger class, deprecated API usages, and code quality improvements
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
+ * Copyright 2026 SiteNetSoft - Fixed resource leak in initFromEnclosedPart
  */
 package org.sitenetsoft.olinguito.client.core.communication.response;
 
@@ -207,13 +208,12 @@ public abstract class AbstractODataResponse implements ODataResponse {
 
   @Override
   public ODataResponse initFromEnclosedPart(final InputStream part) {
-    try {
+    try (BufferedReader reader = new BufferedReader(new InputStreamReader(part, StandardCharsets.UTF_8))) {
       if (hasBeenInitialized) {
         throw new IllegalStateException("Request already initialized");
       }
 
-      final ODataBatchLineIteratorImpl batchLineIterator =
-          new ODataBatchLineIteratorImpl(new BufferedReader(new InputStreamReader(part, StandardCharsets.UTF_8)));
+      final ODataBatchLineIteratorImpl batchLineIterator = new ODataBatchLineIteratorImpl(reader);
 
       final Map.Entry<Integer, String> partResponseLine = ODataBatchUtilities.readResponseLine(batchLineIterator);
       LOG.debug("Retrieved async item response {}", partResponseLine);
@@ -233,12 +233,7 @@ public abstract class AbstractODataResponse implements ODataResponse {
         bos.write(CRLF);
       }
 
-      try {
-        this.payload = new ByteArrayInputStream(bos.toByteArray());
-      } catch (Exception e) {
-        LOG.error("Error retrieving payload", e);
-        throw new IllegalStateException(e);
-      }
+      this.payload = new ByteArrayInputStream(bos.toByteArray());
 
       this.hasBeenInitialized = true;
       return this;

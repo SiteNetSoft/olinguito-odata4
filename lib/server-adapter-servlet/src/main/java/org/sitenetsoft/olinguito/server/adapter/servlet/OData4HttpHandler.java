@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced wildcard import with explicit imports
  */
 package org.sitenetsoft.olinguito.server.adapter.servlet;
 
@@ -34,7 +36,12 @@ import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 import org.sitenetsoft.olinguito.server.api.processor.Processor;
 import org.sitenetsoft.olinguito.server.api.serializer.CustomContentTypeSupport;
 import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
-import org.sitenetsoft.olinguito.server.core.*;
+import org.sitenetsoft.olinguito.server.core.ErrorHandler;
+import org.sitenetsoft.olinguito.server.core.ODataHandlerException;
+import org.sitenetsoft.olinguito.server.core.RequestMethodResolver;
+import org.sitenetsoft.olinguito.server.core.RequestUriResolver;
+import org.sitenetsoft.olinguito.server.core.ServiceDispatcher;
+import org.sitenetsoft.olinguito.server.core.ServiceHandler;
 import org.sitenetsoft.olinguito.server.core.legacy.ProcessorServiceHandler;
 
 public class OData4HttpHandler {

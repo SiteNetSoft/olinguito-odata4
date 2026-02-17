@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Removed servlet-dependent methods to make engine-agnostic
+ * Copyright 2026 SiteNetSoft - Replaced synchronizedMap with ConcurrentHashMap
  */
 package org.sitenetsoft.olinguito.server.tecsvc.async;
 
@@ -40,8 +41,8 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -79,7 +80,7 @@ public class TechnicalAsyncService {
   public static final String STATUS_MONITOR_TOKEN = "status";
 
   private static final Map<String, AsyncRunner> LOCATION_2_ASYNC_RUNNER =
-      Collections.synchronizedMap(new HashMap<String, AsyncRunner>());
+      new ConcurrentHashMap<>();
   private static final ExecutorService ASYNC_REQUEST_EXECUTOR = Executors.newFixedThreadPool(10);
   private static final AtomicInteger ID_GENERATOR = new AtomicInteger();
 

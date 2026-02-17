@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
  * Copyright 2026 SiteNetSoft - Replace commons-io with Java standard library
+ * Copyright 2026 SiteNetSoft - Use Locale.ROOT for case conversion
  */
 package org.sitenetsoft.olinguito.client.api.domain;
 
@@ -29,6 +30,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 
 import org.sitenetsoft.olinguito.client.api.ODataClient;
@@ -294,8 +296,8 @@ public class ClientEntitySetIterator<T extends ClientEntitySet, E extends Client
           throws IOException {
 
     final char[] endKey = end.toCharArray();
-    final char[] endLowerKey = end.toLowerCase().toCharArray();
-    final char[] endUpperKey = end.toUpperCase().toCharArray();
+    final char[] endLowerKey = end.toLowerCase(Locale.ROOT).toCharArray();
+    final char[] endUpperKey = end.toUpperCase(Locale.ROOT).toCharArray();
 
     int pos = 0;
     int c = 0;

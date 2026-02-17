@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replace Charset.forName() with StandardCharsets
  */
 package org.sitenetsoft.olinguito.server.core.serializer;
 
@@ -27,6 +29,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -178,7 +181,7 @@ public class BatchResponseSerializer {
    * Builder class to create the body and the header.
    */
   private static class BodyBuilder {
-    private static final Charset CHARSET_ISO_8859_1 = Charset.forName("iso-8859-1");
+    private static final Charset CHARSET_ISO_8859_1 = StandardCharsets.ISO_8859_1;
     private ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
     private boolean isClosed = false;
 

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed resource leaks, replaced wildcard import
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -24,7 +26,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.*;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -202,15 +206,19 @@ public class MetadataParserTest {
   @Test
   public void testParsingWithNoFormat() throws Exception {
     MetadataParser parser = new MetadataParser();
-    provider = (CsdlEdmProvider) parser.buildEdmProvider(new FileReader("src/test/resources/skip-annotation.xml"));
-  } 
-  
+    try (FileReader reader = new FileReader("src/test/resources/skip-annotation.xml")) {
+      provider = (CsdlEdmProvider) parser.buildEdmProvider(reader);
+    }
+  }
+
   @Test
   public void testReferenceLoad() throws Exception {
     MetadataParser parser = new MetadataParser();
     parser.recursivelyLoadReferences(false);
     parser.referenceResolver(this.testReferenceResolver);
-    provider = (CsdlEdmProvider) parser.buildEdmProvider(new FileReader("src/test/resources/test.xml"));
+    try (FileReader reader = new FileReader("src/test/resources/test.xml")) {
+      provider = (CsdlEdmProvider) parser.buildEdmProvider(reader);
+    }
   }
 
   @Test
@@ -218,15 +226,17 @@ public class MetadataParserTest {
     MetadataParser parser = new MetadataParser();
     parser.recursivelyLoadReferences(true);
     parser.referenceResolver(testReferenceResolver);
-    SchemaBasedEdmProvider providerTest = parser.buildEdmProvider(new FileReader("src/test/resources/test.xml"));
+    try (FileReader reader = new FileReader("src/test/resources/test.xml")) {
+      SchemaBasedEdmProvider providerTest = parser.buildEdmProvider(reader);
 
-    Assertions.assertNotNull(providerTest.getSchema("Microsoft.OData.SampleService.Models.TripPin", false));
+      Assertions.assertNotNull(providerTest.getSchema("Microsoft.OData.SampleService.Models.TripPin", false));
 
-    Assertions.assertNull(providerTest.getSchema("org.sitenetsoft.olinguito.a", false));
-    Assertions.assertNull(providerTest.getSchema("org.sitenetsoft.olinguito.b", false));
+      Assertions.assertNull(providerTest.getSchema("org.sitenetsoft.olinguito.a", false));
+      Assertions.assertNull(providerTest.getSchema("org.sitenetsoft.olinguito.b", false));
 
-    Assertions.assertNotNull(providerTest.getSchema("org.sitenetsoft.olinguito.a", true));
-    Assertions.assertNotNull(providerTest.getSchema("org.sitenetsoft.olinguito.b", true));
+      Assertions.assertNotNull(providerTest.getSchema("org.sitenetsoft.olinguito.a", true));
+      Assertions.assertNotNull(providerTest.getSchema("org.sitenetsoft.olinguito.b", true));
+    }
   }
 
   @Test
@@ -234,11 +244,11 @@ public class MetadataParserTest {
     MetadataParser parser = new MetadataParser();
     parser.recursivelyLoadReferences(true);
     parser.referenceResolver(testReferenceResolver);
-    SchemaBasedEdmProvider providerTest = parser.buildEdmProvider(new FileReader("src/test/resources/test.xml"));
+    try (FileReader reader = new FileReader("src/test/resources/test.xml")) {
+      SchemaBasedEdmProvider providerTest = parser.buildEdmProvider(reader);
 
-    Assertions.assertNull(providerTest.getSchema("Not Found", true));
-
-
+      Assertions.assertNull(providerTest.getSchema("Not Found", true));
+    }
   }
 
   @Test
@@ -246,10 +256,11 @@ public class MetadataParserTest {
     MetadataParser parser = new MetadataParser();
     parser.implicitlyLoadCoreVocabularies(true);
     parser.referenceResolver(testReferenceResolver);
-    SchemaBasedEdmProvider provider = parser.buildEdmProvider(new FileReader("src/test/resources/test.xml"));
+    try (FileReader reader = new FileReader("src/test/resources/test.xml")) {
+      SchemaBasedEdmProvider provider = parser.buildEdmProvider(reader);
 
-    Assertions.assertNotNull(provider.getVocabularySchema("Org.OData.Core.V1"));
-    Assertions.assertNotNull(provider.getSchema("Org.OData.Core.V1"));
-
+      Assertions.assertNotNull(provider.getVocabularySchema("Org.OData.Core.V1"));
+      Assertions.assertNotNull(provider.getSchema("Org.OData.Core.V1"));
+    }
   }
 }

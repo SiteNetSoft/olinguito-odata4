@@ -15,12 +15,15 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replace Charset.forName() with StandardCharsets
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.batch;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -132,13 +135,13 @@ public class BatchRequestTransformator {
       final String charsetValue = contentType.getParameter(ContentType.PARAMETER_CHARSET);
       if (charsetValue == null) {
         if (contentType.isCompatible(ContentType.APPLICATION_JSON) || contentType.getSubtype().contains("xml")) {
-          return Charset.forName("UTF-8");
+          return StandardCharsets.UTF_8;
         }
       } else {
         return Charset.forName(charsetValue);
       }
     }
-    return Charset.forName("ISO-8859-1");
+    return StandardCharsets.ISO_8859_1;
   }
 
   private void validateForbiddenHeader(final BatchQueryOperation operation) throws BatchDeserializerException {

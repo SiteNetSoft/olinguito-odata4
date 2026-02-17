@@ -20,10 +20,14 @@
  * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  * Copyright 2026 SiteNetSoft - Fixed deprecated HC 5.x execute() calls
  * Copyright 2026 SiteNetSoft - Fixed HC 5.x resource leaks: shared HttpClient, close responses
+ * Copyright 2026 SiteNetSoft - Replaced wildcard imports with explicit imports
  */
 package org.sitenetsoft.olinguito.server.core;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
@@ -67,7 +71,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class ServiceDispatcherTest {
   private static final int TOMCAT_PORT = 9900;
