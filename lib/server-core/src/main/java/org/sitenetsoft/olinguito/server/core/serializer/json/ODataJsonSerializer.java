@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -531,8 +532,8 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
   }
   
   private void addKeyPropertiesToSelected(Set<String> selected, EdmStructuredType type) {
-    if (!selected.isEmpty() && type instanceof EdmEntityType) {
-      List<String> keyNames = ((EdmEntityType) type).getKeyPredicateNames();
+    if (!selected.isEmpty() && type instanceof EdmEntityType edmEntityType) {
+      List<String> keyNames = edmEntityType.getKeyPredicateNames();
       for (String key : keyNames) {
         if (!selected.contains(key)) {
           selected.add(key);
@@ -609,11 +610,10 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
             SerializerException.MessageKeys.UNSUPPORTED_OPERATION_TYPE, "expand", edmProperty.getName());
       }
       Property property = null;
-      if (linked instanceof Entity) {
-        Entity entity = (Entity) linked;
+      if (linked instanceof Entity entity) {
         property = (Property) entity.getProperty(propertyName);
-      } else if (linked instanceof ComplexValue) {
-        List<Property> properties = ((ComplexValue) linked).getValue();
+      } else if (linked instanceof ComplexValue complexValue) {
+        List<Property> properties = complexValue.getValue();
         for (Property prop : properties) {
           if (prop.getName().equals(propertyName)) {
             property = prop;
@@ -829,10 +829,10 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
         }
         
         if (null != linked) {
-          if (linked instanceof Entity) {
-            linked = ((Entity)linked).getProperty(property.getName()).asComplex();
-          } else if (linked instanceof ComplexValue) {
-            List<Property> complexProperties = ((ComplexValue)linked).getValue();
+          if (linked instanceof Entity entity) {
+            linked = entity.getProperty(property.getName()).asComplex();
+          } else if (linked instanceof ComplexValue complexValue) {
+            List<Property> complexProperties = complexValue.getValue();
             for (Property prop : complexProperties) {
               if (prop.getName().equals(property.getName())) {
                 linked = prop.asComplex();
@@ -948,8 +948,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
         && !isIEEE754Compatible) {
       json.writeNumber(value);
     } else if (type == EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Stream)) {
-      if (primitiveValue instanceof Link) {
-        Link stream = (Link)primitiveValue;
+      if (primitiveValue instanceof Link stream) {
         if (!isODataMetadataNone) {
           if (stream.getMediaETag() != null) {
             json.writeStringField(name+constants.getMediaEtag(), stream.getMediaETag());
@@ -1194,7 +1193,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       }
       writeOperations(property.getOperations(), json);      
       final List<Property> values =
-          property.isNull() ? Collections.emptyList() : property.asComplex().getValue();
+          property.isNull() ? List.of() : property.asComplex().getValue();
       writeProperties(metadata, type, values, options == null ? null : options == null ? null : options.getSelect(), 
           json, 
           property.asComplex(), options == null ? null : options.getExpand());

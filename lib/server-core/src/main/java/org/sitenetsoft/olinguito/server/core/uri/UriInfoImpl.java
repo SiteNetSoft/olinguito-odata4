@@ -156,12 +156,12 @@ public class UriInfoImpl implements UriInfo {
   }
 
   public UriInfoImpl setQueryOption(final QueryOption option) {
-    if (option instanceof SystemQueryOption) {
-      setSystemQueryOption((SystemQueryOption) option);
-    } else if (option instanceof AliasQueryOption) {
-      addAlias((AliasQueryOption) option);
-    } else if (option instanceof CustomQueryOption) {
-      addCustomQueryOption((CustomQueryOption) option);
+    if (option instanceof SystemQueryOption systemQueryOption) {
+      setSystemQueryOption(systemQueryOption);
+    } else if (option instanceof AliasQueryOption aliasQueryOption) {
+      addAlias(aliasQueryOption);
+    } else if (option instanceof CustomQueryOption customQueryOption) {
+      addCustomQueryOption(customQueryOption);
     }
     return this;
   }

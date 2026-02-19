@@ -52,8 +52,8 @@ public final class EdmGeometryPolygon extends AbstractGeospatialType<Polygon> {
   protected <T> String internalValueToString(final T value, final Boolean isNullable, final Integer maxLength,
       final Integer precision, final Integer scale, final Boolean isUnicode) throws EdmPrimitiveTypeException {
 
-    if (value instanceof Polygon) {
-      return toString((Polygon) value, isNullable, maxLength, precision, scale, isUnicode);
+    if (value instanceof Polygon polygon) {
+      return toString(polygon, isNullable, maxLength, precision, scale, isUnicode);
     }
 
     throw new EdmPrimitiveTypeException("The value type " + value.getClass() + " is not supported.");

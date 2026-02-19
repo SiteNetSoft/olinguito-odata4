@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -27,7 +28,7 @@ import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Set;
 
 import java.io.IOException;
 
@@ -78,7 +79,7 @@ public class ODataWriterImpl implements ODataWriter {
   @Override
   public InputStream writeEntity(final ClientEntity entity, final ContentType contentType)
       throws ODataSerializerException {
-    return writeEntities(Collections.singleton(entity), contentType);
+    return writeEntities(Set.of(entity), contentType);
   }
 
   @Override

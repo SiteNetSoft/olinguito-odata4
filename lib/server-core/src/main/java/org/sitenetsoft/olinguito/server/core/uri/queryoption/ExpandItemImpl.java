@@ -58,38 +58,38 @@ public class ExpandItemImpl implements ExpandItem {
 
   public ExpandItemImpl setSystemQueryOption(final SystemQueryOption sysItem) {
 
-    if (sysItem instanceof ApplyOption) {
+    if (sysItem instanceof ApplyOption applyOpt) {
       validateDoubleSystemQueryOption(applyOption, sysItem);
-      applyOption = (ApplyOption) sysItem;
-    } else if (sysItem instanceof ExpandOption) {
+      applyOption = applyOpt;
+    } else if (sysItem instanceof ExpandOption expandOpt) {
       validateDoubleSystemQueryOption(expandOption, sysItem);
-      expandOption = (ExpandOption) sysItem;
-    } else if (sysItem instanceof FilterOption) {
+      expandOption = expandOpt;
+    } else if (sysItem instanceof FilterOption filterOpt) {
       validateDoubleSystemQueryOption(filterOption, sysItem);
-      filterOption = (FilterOption) sysItem;
-    } else if (sysItem instanceof CountOption) {
+      filterOption = filterOpt;
+    } else if (sysItem instanceof CountOption countOpt) {
       validateDoubleSystemQueryOption(inlineCountOption, sysItem);
-      inlineCountOption = (CountOption) sysItem;
-    } else if (sysItem instanceof OrderByOption) {
+      inlineCountOption = countOpt;
+    } else if (sysItem instanceof OrderByOption orderByOpt) {
       validateDoubleSystemQueryOption(orderByOption, sysItem);
-      orderByOption = (OrderByOption) sysItem;
-    } else if (sysItem instanceof SearchOption) {
+      orderByOption = orderByOpt;
+    } else if (sysItem instanceof SearchOption searchOpt) {
       validateDoubleSystemQueryOption(searchOption, sysItem);
-      searchOption = (SearchOption) sysItem;
-    } else if (sysItem instanceof SelectOption) {
+      searchOption = searchOpt;
+    } else if (sysItem instanceof SelectOption selectOpt) {
       validateDoubleSystemQueryOption(selectOption, sysItem);
-      selectOption = (SelectOption) sysItem;
-    } else if (sysItem instanceof SkipOption) {
+      selectOption = selectOpt;
+    } else if (sysItem instanceof SkipOption skipOpt) {
       validateDoubleSystemQueryOption(skipOption, sysItem);
-      skipOption = (SkipOption) sysItem;
-    } else if (sysItem instanceof TopOption) {
+      skipOption = skipOpt;
+    } else if (sysItem instanceof TopOption topOpt) {
       validateDoubleSystemQueryOption(topOption, sysItem);
-      topOption = (TopOption) sysItem;
-    } else if (sysItem instanceof LevelsExpandOption) {
+      topOption = topOpt;
+    } else if (sysItem instanceof LevelsExpandOption levelsOpt) {
       if (levelsExpandOption != null) {
         throw new ODataRuntimeException("$levels");
       }
-      levelsExpandOption = (LevelsExpandOption) sysItem;
+      levelsExpandOption = levelsOpt;
     }
     return this;
   }

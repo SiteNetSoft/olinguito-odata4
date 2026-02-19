@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.server.api.prefer;
 
@@ -106,7 +108,7 @@ public interface Preferences {
      */
     public Map<String, String> getParameters() {
       return parameters == null ?
-          Collections.emptyMap() :
+          Map.of() :
             Collections.unmodifiableMap(parameters);
     }
   }

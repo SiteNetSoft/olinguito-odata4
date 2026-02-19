@@ -27,7 +27,7 @@ import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
 
-public class AbstractODataDeserializerTest {
+public abstract class AbstractODataDeserializerTest {
 
   protected static final String NAMESPACE = "Namespace1_Alias";
   protected static final Edm edm = OData.newInstance()

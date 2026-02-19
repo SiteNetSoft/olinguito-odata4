@@ -75,8 +75,7 @@ public class DebugTabStacktrace implements DebugTab {
 
   private String getMessageText(final Throwable throwable) {
     String message;
-    if (throwable instanceof ODataLibraryException) {
-      ODataLibraryException ex = (ODataLibraryException) throwable;
+    if (throwable instanceof ODataLibraryException ex) {
       // We use the default locale
       ODataErrorMessage translatedMessage = ex.getTranslatedMessage(null);
       // We provide the best message we can

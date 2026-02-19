@@ -215,15 +215,13 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
 
     // UriResourceParts contains at least one UriResource.
     final UriResource initialPart = uriResourceParts.get(0);
-    if (initialPart instanceof UriResourceProperty) {
-      EdmProperty currentEdmProperty = ((UriResourceProperty) initialPart).getProperty();
+    if (initialPart instanceof UriResourceProperty uriResourceProp) {
+      EdmProperty currentEdmProperty = uriResourceProp.getProperty();
       Property currentProperty = entity.getProperty(currentEdmProperty.getName());
       for (int i = 1; i < uriResourceParts.size(); i++) {
         if (currentProperty.isComplex()) {
-          if (uriResourceParts.get(i) instanceof UriResourceLambdaAny) {
-            UriResourceLambdaAny any = ((UriResourceLambdaAny) uriResourceParts.get(i));
-            if (any.getExpression() instanceof Binary) {
-              Binary expression = (Binary) any.getExpression();
+          if (uriResourceParts.get(i) instanceof UriResourceLambdaAny any) {
+            if (any.getExpression() instanceof Binary expression) {
               if (currentProperty.isCollection()) {
                 final List<ComplexValue> complex = (List<ComplexValue>) currentProperty.asCollection();
                 Iterator<ComplexValue> itr = complex.iterator();
@@ -253,14 +251,14 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
         }
       }
       return new TypedOperand(currentProperty.getValue(), currentEdmProperty.getType(), currentEdmProperty);
-    } else if (initialPart instanceof UriResourceFunction) {
-      final EdmFunction function = ((UriResourceFunction) initialPart).getFunction();
+    } else if (initialPart instanceof UriResourceFunction uriResourceFunc) {
+      final EdmFunction function = uriResourceFunc.getFunction();
       if (uriResourceParts.size() > 1) {
         return throwNotImplemented();
       }
       final EdmType type = function.getReturnType().getType();
       final DataProvider dataProvider = new DataProvider(OData.newInstance(), edm);
-      final List<UriParameter> parameters = ((UriResourceFunction) initialPart).getParameters();
+      final List<UriParameter> parameters = uriResourceFunc.getParameters();
       return new TypedOperand(
         type.getKind() == EdmTypeKind.ENTITY ?
             function.getReturnType().isCollection() ?
@@ -283,8 +281,8 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
       }
       return new TypedOperand(currentProperty == null ? null : currentProperty.getValue(), 
           currentEdmProperty.getType(), currentEdmProperty);
-    } else if (initialPart instanceof UriResourceNavigation) {
-      EdmNavigationProperty currentEdmNavProperty = ((UriResourceNavigation) initialPart).getProperty();
+    } else if (initialPart instanceof UriResourceNavigation uriResourceNav) {
+      EdmNavigationProperty currentEdmNavProperty = uriResourceNav.getProperty();
       EdmProperty currentEdmProperty = null;
       Link link = entity.getNavigationLink(currentEdmNavProperty.getName());
       Entity inlineEntity = link != null ? link.getInlineEntity() : null;

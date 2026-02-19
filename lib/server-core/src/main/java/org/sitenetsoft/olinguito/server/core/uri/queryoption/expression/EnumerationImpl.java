@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.server.core.uri.queryoption.expression;
 
@@ -45,7 +47,7 @@ public class EnumerationImpl implements Enumeration {
   @Override
   public List<String> getValues() {
     return values == null ?
-        Collections.emptyList() :
+        List.of() :
         Collections.unmodifiableList(values);
   }
 

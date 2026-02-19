@@ -109,10 +109,9 @@ public class CsdlAnnotation extends CsdlAbstractEdmItem implements CsdlAnnotatab
     if (obj == null) {
       return false;
     }
-    if (!(obj instanceof CsdlAnnotation)) {
+    if (!(obj instanceof CsdlAnnotation csdlAnnot)) {
       return false;
     }
-    CsdlAnnotation csdlAnnot = (CsdlAnnotation) obj;
     return (this.getTerm() == null ? csdlAnnot.getTerm() == null : 
       this.getTerm().equals(csdlAnnot.getTerm()))
         && (this.getQualifier() == null ? csdlAnnot.getQualifier() == null :

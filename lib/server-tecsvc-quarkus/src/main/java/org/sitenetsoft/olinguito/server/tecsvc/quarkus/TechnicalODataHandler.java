@@ -12,6 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.server.tecsvc.quarkus;
 
@@ -48,7 +50,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -83,7 +84,7 @@ public class TechnicalODataHandler implements Handler<RoutingContext> {
         reference.addInclude(new EdmxReferenceInclude("Org.OData.Core.V1", "Core"));
         this.serviceMetadata = odata.createServiceMetadata(
                 new EdmTechProvider(),
-                Collections.singletonList(reference),
+                List.of(reference),
                 new MetadataETagSupport(METADATA_ETAG));
     }
 

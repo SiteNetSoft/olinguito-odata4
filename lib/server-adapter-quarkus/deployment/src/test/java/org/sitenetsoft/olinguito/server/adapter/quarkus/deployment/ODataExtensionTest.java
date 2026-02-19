@@ -16,11 +16,7 @@
 package org.sitenetsoft.olinguito.server.adapter.quarkus.deployment;
 
 import io.quarkus.test.QuarkusUnitTest;
-import io.restassured.RestAssured;
 
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -35,7 +31,6 @@ import static org.hamcrest.Matchers.containsString;
  * to be a timing issue with the QuarkusUnitTest extension where routes aren't fully registered
  * before tests run. The extension works correctly when tested manually or in the fit module.
  */
-@Disabled("Quarkus test framework timing issue - routes not ready when tests execute")
 class ODataExtensionTest {
 
     @RegisterExtension

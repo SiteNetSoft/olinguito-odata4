@@ -90,14 +90,14 @@ public class ExpandSystemQueryOptionHandler {
         List<EdmNavigationPropertyBinding> bindings = edmBindingTarget.getNavigationPropertyBindings();
         for (EdmNavigationPropertyBinding binding : bindings) {
           EdmElement property = entityType.getProperty(binding.getPath());
-          if(property instanceof EdmNavigationProperty) {
-            navigationProperties.add((EdmNavigationProperty) property);
+          if(property instanceof EdmNavigationProperty edmNavProperty) {
+            navigationProperties.add(edmNavProperty);
           }
         }
       } else {
         final List<UriResource> uriResourceParts = item.getResourcePath().getUriResourceParts();
-        if (uriResourceParts.get(0) instanceof UriResourceNavigation) {
-          navigationProperties.add(((UriResourceNavigation) uriResourceParts.get(0)).getProperty());
+        if (uriResourceParts.get(0) instanceof UriResourceNavigation uriResourceNav) {
+          navigationProperties.add(uriResourceNav.getProperty());
         }
       }
 
@@ -249,8 +249,8 @@ public class ExpandSystemQueryOptionHandler {
     for (final ExpandItem item : expandItems) {
       final List<UriResource> resourceParts = item.getResourcePath().getUriResourceParts();
       final UriResource resource = resourceParts.get(0);
-      if (resource instanceof UriResourceNavigation) {
-        expanded.add(((UriResourceNavigation) resource).getProperty().getName());
+      if (resource instanceof UriResourceNavigation uriResourceNav) {
+        expanded.add(uriResourceNav.getProperty().getName());
       }
     }
     return expanded;
@@ -263,8 +263,8 @@ public class ExpandSystemQueryOptionHandler {
       }
 
       final UriResource resource = item.getResourcePath().getUriResourceParts().get(0);
-      if (resource instanceof UriResourceNavigation
-          && propertyName.equals(((UriResourceNavigation) resource).getProperty().getName())) {
+      if (resource instanceof UriResourceNavigation uriResourceNav
+          && propertyName.equals(uriResourceNav.getProperty().getName())) {
         return item;
       }
     }

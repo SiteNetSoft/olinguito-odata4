@@ -15,10 +15,12 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.server.core.responses;
 
-import java.util.Collections;
+import java.util.Map;
 
 import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
 import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
@@ -29,7 +31,7 @@ import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 public class NoContentResponse extends ServiceResponse {
 
   public NoContentResponse(ServiceMetadata metadata, ODataResponse response) {
-    super(metadata, response, Collections.emptyMap());
+    super(metadata, response, Map.of());
   }
 
   // 200

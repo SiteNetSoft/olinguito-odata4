@@ -20,7 +20,7 @@ package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expressio
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.HashMap;
+import java.util.Map;
 
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
@@ -32,7 +32,7 @@ import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.primitive.EdmNull;
 
 public abstract class VisitorOperand {
-  final static private HashMap<EdmType, Class<?>> defaultTypeMapping = new HashMap<>();
+  private static final Map<EdmType, Class<?>> defaultTypeMapping = new java.util.HashMap<>();
   protected Object value;
   protected static final OData oData;
   protected static final EdmPrimitiveType primNull = EdmNull.getInstance();

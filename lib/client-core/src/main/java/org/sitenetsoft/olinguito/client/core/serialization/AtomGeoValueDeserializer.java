@@ -17,11 +17,11 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.xml.stream.XMLEventReader;
@@ -88,7 +88,7 @@ class AtomGeoValueDeserializer {
   private MultiPoint multipoint(final XMLEventReader reader, final StartElement start,
       final EdmPrimitiveTypeKind type, final SRID srid) throws XMLStreamException {
 
-    List<Point> points = Collections.emptyList();
+    List<Point> points = List.of();
 
     boolean foundEndProperty = false;
     while (reader.hasNext() && !foundEndProperty) {

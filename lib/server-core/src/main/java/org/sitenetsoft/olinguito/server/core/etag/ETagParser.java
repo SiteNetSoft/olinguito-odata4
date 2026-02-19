@@ -15,11 +15,12 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.server.core.etag;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -50,7 +51,7 @@ public class ETagParser {
 
   protected static Collection<String> parse(final Collection<String> values) {
     if (values == null) {
-      return Collections.emptySet();
+      return Set.of();
     }
 
     Set<String> result = new HashSet<>();
@@ -67,7 +68,7 @@ public class ETagParser {
 
   private static Collection<String> parse(final String value) {
     if ("*".equals(value.trim())) {
-      return Collections.singleton("*");
+      return Set.of("*");
     } else {
       Set<String> result = new HashSet<>();
       String separator = "";
@@ -81,10 +82,10 @@ public class ETagParser {
           result.add(matcher.group(2));
           separator = null;
         } else {
-          return Collections.emptySet();
+          return Set.of();
         }
       }
-      return matcher.hitEnd() ? result : Collections.emptySet();
+      return matcher.hitEnd() ? result : Set.of();
     }
   }
 }

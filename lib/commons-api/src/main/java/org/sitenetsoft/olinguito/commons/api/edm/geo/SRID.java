@@ -15,11 +15,14 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.commons.api.edm.geo;
 
 import java.io.Serializable;
 import java.io.Serial;
+import java.util.Objects;
 
 import org.sitenetsoft.olinguito.commons.api.edm.geo.Geospatial.Dimension;
 
@@ -106,28 +109,17 @@ public final class SRID implements Serializable {
     if (this == o) {
       return true;
     }
-    if (o == null || getClass() != o.getClass()) {
+    if (!(o instanceof SRID srid)) {
       return false;
     }
-
-    SRID srid = (SRID) o;
-
-    if (dimension != srid.dimension) {
-      return false;
-    }
-    if (value != null ? !value.equals(srid.value) : srid.value != null) {
-      return false;
-    }
-    return !(variable != null ? !variable.equals(srid.variable) : srid.variable != null);
-
+    return dimension == srid.dimension
+        && Objects.equals(value, srid.value)
+        && Objects.equals(variable, srid.variable);
   }
 
   @Override
   public int hashCode() {
-    int result = dimension != null ? dimension.hashCode() : 0;
-    result = 31 * result + (value != null ? value.hashCode() : 0);
-    result = 31 * result + (variable != null ? variable.hashCode() : 0);
-    return result;
+    return Objects.hash(dimension, value, variable);
   }
 
   @Override

@@ -15,12 +15,13 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.server.core.debug;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +47,7 @@ public class DebugTabResponse implements DebugTab {
       headers = response.getAllHeaders();
     } else {
       status = HttpStatusCode.INTERNAL_SERVER_ERROR;
-      headers = Collections.emptyMap();
+      headers = Map.of();
     }
   }
 

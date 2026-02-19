@@ -54,35 +54,35 @@ public class ErrorHandler {
   }
 
   public void handleException(Exception e, ODataRequest request, ODataResponse response) {
-    if (e instanceof UriValidationException) {
-      ODataServerError serverError = ODataExceptionHelper.createServerErrorObject((UriValidationException)e, null);
+    if (e instanceof UriValidationException uriValidationException) {
+      ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(uriValidationException, null);
       handleServerError(request, response, serverError);
-    } else if(e instanceof UriParserSemanticException) {
-      ODataServerError serverError = ODataExceptionHelper.createServerErrorObject((UriParserSemanticException)e, null);
+    } else if(e instanceof UriParserSemanticException uriParserSemanticException) {
+      ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(uriParserSemanticException, null);
       handleServerError(request, response, serverError);
-    } else if(e instanceof  UriParserSyntaxException) {
-      ODataServerError serverError = ODataExceptionHelper.createServerErrorObject((UriParserSyntaxException)e, null);
+    } else if(e instanceof UriParserSyntaxException uriParserSyntaxException) {
+      ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(uriParserSyntaxException, null);
       handleServerError(request, response, serverError);
-    } else if(e instanceof  UriParserException) {
-      ODataServerError serverError = ODataExceptionHelper.createServerErrorObject((UriParserException)e, null);
+    } else if(e instanceof UriParserException uriParserException) {
+      ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(uriParserException, null);
       handleServerError(request, response, serverError);
-    } else if(e instanceof ContentNegotiatorException) {
-      ODataServerError serverError = ODataExceptionHelper.createServerErrorObject((ContentNegotiatorException)e, null);
+    } else if(e instanceof ContentNegotiatorException contentNegotiatorException) {
+      ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(contentNegotiatorException, null);
       handleServerError(request, response, serverError);
-    } else if(e instanceof SerializerException) {
-      ODataServerError serverError = ODataExceptionHelper.createServerErrorObject((SerializerException)e, null);
+    } else if(e instanceof SerializerException serializerException) {
+      ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(serializerException, null);
       handleServerError(request, response, serverError);
-    } else if(e instanceof BatchDeserializerException) {
-      ODataServerError serverError = ODataExceptionHelper.createServerErrorObject((BatchDeserializerException)e, null);
+    } else if(e instanceof BatchDeserializerException batchDeserializerException) {
+      ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(batchDeserializerException, null);
       handleServerError(request, response, serverError);
-    } else if(e instanceof DeserializerException) {
-      ODataServerError serverError = ODataExceptionHelper.createServerErrorObject((DeserializerException)e, null);
+    } else if(e instanceof DeserializerException deserializerException) {
+      ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(deserializerException, null);
       handleServerError(request, response, serverError);
-    } else if(e instanceof ODataHandlerException) {
-      ODataServerError serverError = ODataExceptionHelper.createServerErrorObject((ODataHandlerException)e, null);
+    } else if(e instanceof ODataHandlerException oDataHandlerException) {
+      ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(oDataHandlerException, null);
       handleServerError(request, response, serverError);
-    } else if(e instanceof ODataApplicationException) {
-      ODataServerError serverError = ODataExceptionHelper.createServerErrorObject((ODataApplicationException)e);
+    } else if(e instanceof ODataApplicationException oDataApplicationException) {
+      ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(oDataApplicationException);
       handleServerError(request, response, serverError);
     }else {
       ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(e);

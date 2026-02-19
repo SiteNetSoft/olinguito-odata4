@@ -235,13 +235,13 @@ public class ODataWritableContent implements ODataContent {
     }
     
     public ODataContent buildContent() {
-      if (serializer instanceof ODataJsonSerializer) {
+      if (serializer instanceof ODataJsonSerializer jsonSerializer) {
         StreamContent input = new StreamContentForJson(entities, entityType,
-            (ODataJsonSerializer) serializer, metadata, options);
+            jsonSerializer, metadata, options);
         return new ODataWritableContent(input);
-      }else if (serializer instanceof ODataXmlSerializer) {
+      }else if (serializer instanceof ODataXmlSerializer xmlSerializer) {
         StreamContentForXml input = new StreamContentForXml(entities, entityType,
-            (ODataXmlSerializer) serializer, metadata, options);
+            xmlSerializer, metadata, options);
         return new ODataWritableContent(input);
       } else if (fixedFormatSerializer instanceof FixedFormatSerializerImpl) {
     	  StreamContent input = new StreamContentForMedia(mediaEntity, fixedFormatSerializer);

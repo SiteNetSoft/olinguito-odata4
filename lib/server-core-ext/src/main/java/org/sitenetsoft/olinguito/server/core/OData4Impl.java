@@ -20,7 +20,6 @@ package org.sitenetsoft.olinguito.server.core;
 
 import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
 import org.sitenetsoft.olinguito.server.api.OData;
-import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 
 public class OData4Impl extends ODataImpl {
 

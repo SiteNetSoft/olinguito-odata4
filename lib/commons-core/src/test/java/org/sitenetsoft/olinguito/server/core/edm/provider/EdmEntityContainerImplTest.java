@@ -21,8 +21,8 @@ package org.sitenetsoft.olinguito.server.core.edm.provider;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -135,26 +135,10 @@ public class EdmEntityContainerImplTest {
     CsdlEntityContainerInfo entityContainerInfo =
         new CsdlEntityContainerInfo().setContainerName(containerName);
     EdmEntityContainer container = new EdmEntityContainerImpl(edm, provider, entityContainerInfo);
-    try {
-      container.getEntitySet(null);
-      fail("Expected EdmException not thrown");
-    } catch (EdmException e) {
-    }
-    try {
-      container.getSingleton(null);
-      fail("Expected EdmException not thrown");
-    } catch (EdmException e) {
-    }
-    try {
-      container.getActionImport(null);
-      fail("Expected EdmException not thrown");
-    } catch (EdmException e) {
-    }
-    try {
-      container.getFunctionImport(null);
-      fail("Expected EdmException not thrown");
-    } catch (EdmException e) {
-    }
+    assertThrows(EdmException.class, () -> container.getEntitySet(null));
+    assertThrows(EdmException.class, () -> container.getSingleton(null));
+    assertThrows(EdmException.class, () -> container.getActionImport(null));
+    assertThrows(EdmException.class, () -> container.getFunctionImport(null));
   }
 
   @Test

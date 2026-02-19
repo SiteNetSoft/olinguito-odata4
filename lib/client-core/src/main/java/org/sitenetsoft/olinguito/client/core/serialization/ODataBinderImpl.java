@@ -307,15 +307,15 @@ public class ODataBinderImpl implements ODataBinder {
     linkResource.setType(link.getType().toString());
     linkResource.setMediaETag(link.getMediaETag());
 
-    if (link instanceof ClientInlineEntity) {
+    if (link instanceof ClientInlineEntity inlineEntityLink) {
       // append inline entity
-      final ClientEntity inlineEntity = ((ClientInlineEntity) link).getEntity();
+      final ClientEntity inlineEntity = inlineEntityLink.getEntity();
       LOG.debug("Append in-line entity\n{}", inlineEntity);
 
       linkResource.setInlineEntity(getEntity(inlineEntity));
-    } else if (link instanceof ClientInlineEntitySet) {
+    } else if (link instanceof ClientInlineEntitySet inlineEntitySetLink) {
       // append inline entity set
-      final ClientEntitySet InlineEntitySet = ((ClientInlineEntitySet) link).getEntitySet();
+      final ClientEntitySet InlineEntitySet = inlineEntitySetLink.getEntitySet();
       LOG.debug("Append in-line entity set\n{}", InlineEntitySet);
 
       linkResource.setInlineEntitySet(getEntitySet(InlineEntitySet));
@@ -371,8 +371,8 @@ public class ODataBinderImpl implements ODataBinder {
   private void odataAnnotations(final Annotatable annotatable, final ClientAnnotatable odataAnnotatable) {
     for (Annotation annotation : annotatable.getAnnotations()) {
       FullQualifiedName fqn = null;
-      if (client instanceof EdmEnabledODataClient) {
-        final EdmTerm term = ((EdmEnabledODataClient) client).getCachedEdm().
+      if (client instanceof EdmEnabledODataClient edmClient) {
+        final EdmTerm term = edmClient.getCachedEdm().
             getTerm(new FullQualifiedName(annotation.getTerm()));
         if (term != null) {
           fqn = term.getType().getFullQualifiedName();
@@ -449,8 +449,8 @@ public class ODataBinderImpl implements ODataBinder {
       final EntityCollection inlineEntitySet = link.getInlineEntitySet();
       if (inlineEntity == null && inlineEntitySet == null) {
         ClientLinkType linkType = null;
-        if (edmType instanceof EdmStructuredType) {
-          final EdmNavigationProperty navProp = ((EdmStructuredType) edmType).getNavigationProperty(title);
+        if (edmType instanceof EdmStructuredType structuredType) {
+          final EdmNavigationProperty navProp = structuredType.getNavigationProperty(title);
           if (navProp != null) {
             linkType = navProp.isCollection() ?
                 ClientLinkType.ENTITY_SET_NAVIGATION :
@@ -545,8 +545,8 @@ public class ODataBinderImpl implements ODataBinder {
   private EdmType findType(final String candidateTypeName, final ContextURL contextURL, final String metadataETag) {
     EdmType type = null;
 
-    if (client instanceof EdmEnabledODataClient) {
-      final Edm edm = ((EdmEnabledODataClient) client).getEdm(metadataETag);
+    if (client instanceof EdmEnabledODataClient edmClient) {
+      final Edm edm = edmClient.getEdm(metadataETag);
       if ((candidateTypeName != null && !candidateTypeName.isBlank())) {
         type = edm.getEntityType(new FullQualifiedName(candidateTypeName));
       }
@@ -590,8 +590,8 @@ public class ODataBinderImpl implements ODataBinder {
       EntityCollection inlineEntitySet = new EntityCollection();
       for (final Object inlined : property.asCollection()) {
         Entity inlineEntity = new Entity();
-        if (inlined instanceof ComplexValue && ((ComplexValue) inlined).getTypeName() != null) {
-          inlineEntity.setType(((ComplexValue) inlined).getTypeName());
+        if (inlined instanceof ComplexValue complexVal && complexVal.getTypeName() != null) {
+          inlineEntity.setType(complexVal.getTypeName());
         } else {
           inlineEntity.setType(propertyTypeName);
         }
@@ -709,8 +709,8 @@ public class ODataBinderImpl implements ODataBinder {
     Map<String, Integer> countMap = new HashMap<>();
     for (final Property property : resource.getPayload().getProperties()) {
       EdmType propertyType = null;
-      if (edmType instanceof EdmEntityType) {
-        EdmElement edmProperty = ((EdmEntityType) edmType).getProperty(property.getName());
+      if (edmType instanceof EdmEntityType edmEntityType) {
+        EdmElement edmProperty = edmEntityType.getProperty(property.getName());
         if (edmProperty != null) {
           propertyType = edmProperty.getType();
           if (edmProperty instanceof EdmNavigationProperty && !property.isNull()) {
@@ -776,8 +776,8 @@ public class ODataBinderImpl implements ODataBinder {
 
     FullQualifiedName typeName = null;
     final EdmType type = findType(null, contextURL, metadataETag);
-    if (type instanceof EdmStructuredType) {
-      final EdmProperty edmProperty = ((EdmStructuredType) type).getStructuralProperty(propertyName);
+    if (type instanceof EdmStructuredType structuredType) {
+      final EdmProperty edmProperty = structuredType.getStructuralProperty(propertyName);
       if (edmProperty != null) {
         typeName = edmProperty.getType().getFullQualifiedName();
       }
@@ -831,8 +831,8 @@ public class ODataBinderImpl implements ODataBinder {
       final Valuable valuable, final URI contextURL, final String metadataETag) {
 
     // fixes enum values treated as primitive when no type information is available
-    if (client instanceof EdmEnabledODataClient && type != null) {
-      final EdmEnumType edmType = ((EdmEnabledODataClient) client).getEdm(metadataETag).getEnumType(type);
+    if (client instanceof EdmEnabledODataClient edmClient && type != null) {
+      final EdmEnumType edmType = edmClient.getEdm(metadataETag).getEnumType(type);
       if (!valuable.isCollection() && valuable.isPrimitive() && edmType != null) {
         valuable.setValue(ValueType.ENUM, valuable.asPrimitive());
       }
@@ -847,8 +847,8 @@ public class ODataBinderImpl implements ODataBinder {
         final Property fake = new Property();
         fake.setValue(valuable.getValueType().getBaseType(), _value);
         String typeName;
-        if (_value instanceof ComplexValue) {
-          typeName = ((ComplexValue) _value).getTypeName();
+        if (_value instanceof ComplexValue complexVal) {
+          typeName = complexVal.getTypeName();
           type = typeName == null? type : new FullQualifiedName(typeName);
         }
         value.asCollection().add(getODataValue(type, fake, contextURL, metadataETag));
@@ -861,8 +861,8 @@ public class ODataBinderImpl implements ODataBinder {
           client.getObjectFactory().newComplexValue(type == null ? null : type.toString());
 
       EdmComplexType edmType = null;
-      if (client instanceof EdmEnabledODataClient && type != null) {
-        edmType = ((EdmEnabledODataClient) client).getEdm(metadataETag).getComplexType(type);
+      if (client instanceof EdmEnabledODataClient edmClient2 && type != null) {
+        edmType = edmClient2.getEdm(metadataETag).getComplexType(type);
       }
 
       for (Property property : valuable.asComplex().getValue()) {
@@ -893,8 +893,8 @@ public class ODataBinderImpl implements ODataBinder {
       } else if (valuable.isPrimitive() || valuable.getValueType() == null) {
      // fixes non-string values treated as string when no type information is available at de-serialization level
         Edm edm = null;
-        if (client instanceof EdmEnabledODataClient && type != null) {
-          edm = ((EdmEnabledODataClient) client).getEdm(metadataETag);
+        if (client instanceof EdmEnabledODataClient edmClient3 && type != null) {
+          edm = edmClient3.getEdm(metadataETag);
         }
         if (edm != null && edm.getComplexType(type) != null) {
             value = client.getObjectFactory().newComplexValue(type.toString());
@@ -929,8 +929,8 @@ public class ODataBinderImpl implements ODataBinder {
 
         if (!valuable.isNull()) {
           EdmComplexType edmType = null;
-          if (client instanceof EdmEnabledODataClient && type != null) {
-            edmType = ((EdmEnabledODataClient) client).getEdm(metadataETag).getComplexType(type);
+          if (client instanceof EdmEnabledODataClient edmClient4 && type != null) {
+            edmType = edmClient4.getEdm(metadataETag).getComplexType(type);
           }
 
           for (Property property : valuable.asComplex().getValue()) {

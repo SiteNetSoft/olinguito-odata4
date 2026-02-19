@@ -96,10 +96,9 @@ public class CsdlIf extends CsdlDynamicExpression implements CsdlAnnotatable {
     if (obj == null) {
       return false;
     }
-    if (!(obj instanceof CsdlIf)) {
+    if (!(obj instanceof CsdlIf csdlIf)) {
       return false;
     }
-    CsdlIf csdlIf = (CsdlIf) obj;
     return (this.getGuard() == null ? csdlIf.getGuard() == null :
       this.getGuard().equals(csdlIf.getGuard()))
         && (this.getThen() == null ? csdlIf.getThen() == null :

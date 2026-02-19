@@ -15,10 +15,11 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.server.core.uri.queryoption.apply;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.edm.EdmAnnotation;
@@ -121,7 +122,7 @@ public class DynamicProperty implements EdmProperty {
 
   @Override
   public List<EdmAnnotation> getAnnotations() {
-    return Collections.emptyList();
+    return List.of();
   }
   
   @Override

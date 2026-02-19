@@ -15,11 +15,12 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAction;
@@ -47,11 +48,11 @@ public class SchemaProvider {
     schema.setAlias(NAMESPACE_ALIAS);
 
     // EnumTypes
-    schema.setEnumTypes(Collections.singletonList(
+    schema.setEnumTypes(List.of(
         prov.getEnumType(EnumTypeProvider.nameENString)));
 
     // TypeDefinitions
-    schema.setTypeDefinitions(Collections.singletonList(
+    schema.setTypeDefinitions(List.of(
         prov.getTypeDefinition(TypeDefinitionProvider.nameTDString)));
 
     // EntityTypes
@@ -223,7 +224,7 @@ public class SchemaProvider {
     // EntityContainer
     schema.setEntityContainer(prov.getEntityContainer());
 
-    return Collections.singletonList(schema);
+    return List.of(schema);
   }
 
 }

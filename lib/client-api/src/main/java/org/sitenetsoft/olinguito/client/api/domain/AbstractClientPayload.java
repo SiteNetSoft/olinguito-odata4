@@ -64,10 +64,9 @@ public abstract class AbstractClientPayload extends ClientItem {
     if (!super.equals(obj)) {
       return false;
     }
-    if (!(obj instanceof AbstractClientPayload)) {
+    if (!(obj instanceof AbstractClientPayload other)) {
       return false;
     }
-    AbstractClientPayload other = (AbstractClientPayload) obj;
     if (contextURL == null) {
       if (other.contextURL != null) {
         return false;

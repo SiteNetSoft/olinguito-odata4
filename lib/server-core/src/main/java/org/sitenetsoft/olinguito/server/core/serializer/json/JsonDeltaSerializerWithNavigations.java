@@ -446,8 +446,7 @@ public class JsonDeltaSerializerWithNavigations implements EdmDeltaSerializer {
             && !isIEEE754Compatible) {
       json.writeNumber(value);
     } else if (type == EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Stream)) {
-      if (primitiveValue instanceof Link) {
-        Link stream = (Link) primitiveValue;
+      if (primitiveValue instanceof Link stream) {
         if (!isODataMetadataNone) {
           if (stream.getMediaETag() != null) {
             json.writeStringField(name + Constants.JSON_MEDIA_ETAG, stream.getMediaETag());
@@ -568,10 +567,9 @@ public class JsonDeltaSerializerWithNavigations implements EdmDeltaSerializer {
       final AbstractEntityCollection entitySet, final ExpandOption expand, final SelectOption select,
       final boolean onlyReference, String name, final JsonGenerator json, 
       boolean isFullRepresentation) throws IOException, SerializerException {
-    if (entitySet instanceof AbstractEntityCollection) {
-      AbstractEntityCollection entities = (AbstractEntityCollection)entitySet;
+    if (entitySet != null) {
       json.writeStartArray();
-      for (final Entity entity : entities) {
+      for (final Entity entity : entitySet) {
         if (onlyReference) {
           json.writeStartObject();
           json.writeStringField(Constants.JSON_ID, getEntityId(entity, entityType, null));

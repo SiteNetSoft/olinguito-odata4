@@ -20,7 +20,6 @@ package org.sitenetsoft.olinguito.server.core;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;

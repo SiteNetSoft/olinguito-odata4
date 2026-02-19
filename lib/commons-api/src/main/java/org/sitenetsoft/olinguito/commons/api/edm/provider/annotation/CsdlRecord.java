@@ -75,10 +75,9 @@ public class CsdlRecord extends CsdlDynamicExpression implements CsdlAnnotatable
     if (obj == null) {
       return false;
     }
-    if (!(obj instanceof CsdlRecord)) {
+    if (!(obj instanceof CsdlRecord csdlRecord)) {
       return false;
     }
-    CsdlRecord csdlRecord = (CsdlRecord) obj;
     return (this.getType() == null ? csdlRecord.getType() == null :
       this.getType().equals(csdlRecord.getType()))
         && (this.getAnnotations() == null ? csdlRecord.getAnnotations() == null :

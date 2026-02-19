@@ -210,9 +210,9 @@ public class ClientPrimitiveValueImpl extends AbstractClientValue implements Cli
       try {
         Integer precision = Constants.DEFAULT_PRECISION;
         Integer scale = Constants.DEFAULT_SCALE;
-        if (typeKind.equals(EdmPrimitiveTypeKind.Decimal) && value instanceof BigDecimal) {
-            precision = ((BigDecimal) value).precision();
-            scale = ((BigDecimal) value).scale();
+        if (typeKind.equals(EdmPrimitiveTypeKind.Decimal) && value instanceof BigDecimal bigDecimal) {
+            precision = bigDecimal.precision();
+            scale = bigDecimal.scale();
             if (precision == 0) {
               precision = null;
             } else if (scale > precision) {

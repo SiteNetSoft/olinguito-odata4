@@ -52,10 +52,9 @@ public class CsdlCollection extends CsdlDynamicExpression {
     if (obj == null) {
       return false;
     }
-    if (!(obj instanceof CsdlCollection)) {
+    if (!(obj instanceof CsdlCollection annotColl)) {
       return false;
     }
-    CsdlCollection annotColl = (CsdlCollection) obj;
     return (this.getItems() == null ? annotColl.getItems() == null :
       checkItems(annotColl.getItems()));
   }

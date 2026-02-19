@@ -15,11 +15,12 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.server.core.uri.queryoption.apply;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.server.api.uri.UriInfo;
@@ -37,7 +38,7 @@ public class GroupByItemImpl implements GroupByItem {
 
   @Override
   public List<UriResource> getPath() {
-    return path == null ? Collections.emptyList() : path.getUriResourceParts();
+    return path == null ? List.of() : path.getUriResourceParts();
   }
 
   public GroupByItemImpl setPath(final UriInfo uriInfo) {

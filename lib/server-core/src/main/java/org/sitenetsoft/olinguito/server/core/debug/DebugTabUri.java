@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced redundant close() with flush() in try-with-resources blocks
  */
 package org.sitenetsoft.olinguito.server.core.debug;
 
@@ -199,27 +201,27 @@ public class DebugTabUri implements DebugTab {
       gen.writeStartObject();
       gen.writeStringField("uriResourceKind", resource.getKind().toString());
       gen.writeStringField("segment", resource.toString());
-      if (resource instanceof UriResourcePartTyped) {
-        appendType(gen, "type", ((UriResourcePartTyped) resource).getType());
-        gen.writeBooleanField("isCollection", ((UriResourcePartTyped) resource).isCollection());
+      if (resource instanceof UriResourcePartTyped partTyped) {
+        appendType(gen, "type", partTyped.getType());
+        gen.writeBooleanField("isCollection", partTyped.isCollection());
       }
-      if (resource instanceof UriResourceEntitySet) {
-        appendParameters(gen, "keys", ((UriResourceEntitySet) resource).getKeyPredicates());
-        appendType(gen, "typeFilterOnCollection", ((UriResourceEntitySet) resource).getTypeFilterOnCollection());
-        appendType(gen, "typeFilterOnEntry", ((UriResourceEntitySet) resource).getTypeFilterOnEntry());
-      } else if (resource instanceof UriResourceNavigation) {
-        appendParameters(gen, "keys", ((UriResourceNavigation) resource).getKeyPredicates());
-        appendType(gen, "typeFilterOnCollection", ((UriResourceNavigation) resource).getTypeFilterOnCollection());
-        appendType(gen, "typeFilterOnEntry", ((UriResourceNavigation) resource).getTypeFilterOnEntry());
-      } else if (resource instanceof UriResourceFunction) {
-        appendParameters(gen, "parameters", ((UriResourceFunction) resource).getParameters());
-        appendParameters(gen, "keys", ((UriResourceFunction) resource).getKeyPredicates());
-        appendType(gen, "typeFilterOnCollection", ((UriResourceFunction) resource).getTypeFilterOnCollection());
-        appendType(gen, "typeFilterOnEntry", ((UriResourceFunction) resource).getTypeFilterOnEntry());
-      } else if (resource instanceof UriResourceSingleton) {
-        appendType(gen, "typeFilter", ((UriResourceSingleton) resource).getEntityTypeFilter());
-      } else if (resource instanceof UriResourceComplexProperty) {
-        appendType(gen, "typeFilter", ((UriResourceComplexProperty) resource).getComplexTypeFilter());
+      if (resource instanceof UriResourceEntitySet entitySet) {
+        appendParameters(gen, "keys", entitySet.getKeyPredicates());
+        appendType(gen, "typeFilterOnCollection", entitySet.getTypeFilterOnCollection());
+        appendType(gen, "typeFilterOnEntry", entitySet.getTypeFilterOnEntry());
+      } else if (resource instanceof UriResourceNavigation navigation) {
+        appendParameters(gen, "keys", navigation.getKeyPredicates());
+        appendType(gen, "typeFilterOnCollection", navigation.getTypeFilterOnCollection());
+        appendType(gen, "typeFilterOnEntry", navigation.getTypeFilterOnEntry());
+      } else if (resource instanceof UriResourceFunction function) {
+        appendParameters(gen, "parameters", function.getParameters());
+        appendParameters(gen, "keys", function.getKeyPredicates());
+        appendType(gen, "typeFilterOnCollection", function.getTypeFilterOnCollection());
+        appendType(gen, "typeFilterOnEntry", function.getTypeFilterOnEntry());
+      } else if (resource instanceof UriResourceSingleton singleton) {
+        appendType(gen, "typeFilter", singleton.getEntityTypeFilter());
+      } else if (resource instanceof UriResourceComplexProperty complexProp) {
+        appendType(gen, "typeFilter", complexProp.getComplexTypeFilter());
       }
       gen.writeEndObject();
     }
@@ -504,7 +506,7 @@ public class DebugTabUri implements DebugTab {
           .append("<ul>\n<li class=\"json\">");
       try (JsonGenerator json = jsonFactory.createGenerator(writer).useDefaultPrettyPrinter()) {
         appendURIResourceParts(json, uriInfo.getUriResourceParts());
-        json.close();
+        json.flush();
         writer.append("\n</li>\n</ul>\n");
       }
     } else if (uriInfo.getKind() == UriInfoKind.crossjoin) {
@@ -529,7 +531,7 @@ public class DebugTabUri implements DebugTab {
           .append("<ul>\n<li class=\"json\">");
       try (JsonGenerator json = jsonFactory.createGenerator(writer).useDefaultPrettyPrinter()) {
         appendSearchJson(json, uriInfo.getSearchOption().getSearchExpression());
-        json.close();
+        json.flush();
         writer.append("\n</li>\n</ul>\n");
       }
     }
@@ -539,7 +541,7 @@ public class DebugTabUri implements DebugTab {
           .append("<ul>\n<li class=\"json\">");
       try (JsonGenerator json = jsonFactory.createGenerator(writer).useDefaultPrettyPrinter()) {
         appendExpressionJson(json, uriInfo.getFilterOption().getExpression());
-        json.close();
+        json.flush();
         writer.append("\n</li>\n</ul>\n");
       }
     }
@@ -549,7 +551,7 @@ public class DebugTabUri implements DebugTab {
           .append("<ul>\n<li class=\"json\">");
       try (JsonGenerator json = jsonFactory.createGenerator(writer).useDefaultPrettyPrinter()) {
         appendOrderByItemsJson(json, uriInfo.getOrderByOption().getOrders());
-        json.close();
+        json.flush();
         writer.append("\n</li>\n</ul>\n");
       }
     }
@@ -559,7 +561,7 @@ public class DebugTabUri implements DebugTab {
           .append("<ul>\n<li class=\"json\">");
       try (JsonGenerator json = jsonFactory.createGenerator(writer).useDefaultPrettyPrinter()) {
         appendExpandedPropertiesJson(json, uriInfo.getExpandOption().getExpandItems());
-        json.close();
+        json.flush();
         writer.append("\n</li>\n</ul>\n");
       }
     }
@@ -578,7 +580,7 @@ public class DebugTabUri implements DebugTab {
           .append("<ul>\n<li class=\"json\">");
       try (JsonGenerator json = jsonFactory.createGenerator(writer).useDefaultPrettyPrinter()) {
         appendApplyItemsJson(json, uriInfo.getApplyOption().getApplyItems());
-        json.close();
+        json.flush();
         writer.append("\n</li>\n</ul>\n");
       }
     }

@@ -15,11 +15,13 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
-import java.util.Collections;
 import java.util.Iterator;
+import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -133,7 +135,7 @@ class AtomGeoValueSerializer {
       writer.writeStartElement(Constants.PREFIX_GML, Constants.ELEM_POINT, Constants.NS_GML);
       writeSrsName(writer, value);
 
-      points(writer, Collections.singleton((Point) value).iterator(), false);
+      points(writer, Set.of((Point) value).iterator(), false);
 
       writer.writeEndElement();
       break;
@@ -157,7 +159,7 @@ class AtomGeoValueSerializer {
       writer.writeStartElement(Constants.PREFIX_GML, Constants.ELEM_LINESTRING, Constants.NS_GML);
       writeSrsName(writer, value);
 
-      lineStrings(writer, Collections.singleton((LineString) value).iterator(), false);
+      lineStrings(writer, Set.of((LineString) value).iterator(), false);
 
       writer.writeEndElement();
       break;
@@ -181,7 +183,7 @@ class AtomGeoValueSerializer {
       writer.writeStartElement(Constants.PREFIX_GML, Constants.ELEM_POLYGON, Constants.NS_GML);
       writeSrsName(writer, value);
 
-      polygons(writer, Collections.singleton(((Polygon) value)).iterator(), false);
+      polygons(writer, Set.of(((Polygon) value)).iterator(), false);
 
       writer.writeEndElement();
       break;

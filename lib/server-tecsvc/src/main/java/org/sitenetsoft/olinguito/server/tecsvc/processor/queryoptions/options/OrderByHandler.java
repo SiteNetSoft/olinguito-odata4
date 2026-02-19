@@ -45,9 +45,9 @@ public class OrderByHandler {
     try {
       applyOrderByOptionInternal(orderByOption, entitySet, uriInfo, edm);
     } catch (SystemQueryOptionsRuntimeException e) {
-      if (e.getCause() instanceof ODataApplicationException) {
+      if (e.getCause() instanceof ODataApplicationException oDataAppEx) {
         // Throw the nested exception, to send the correct HTTP status code in the HTTP response
-        throw (ODataApplicationException) e.getCause();
+        throw oDataAppEx;
       } else {
         throw new ODataApplicationException("Exception in orderBy evaluation",
             HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode(), Locale.ROOT);

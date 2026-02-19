@@ -46,10 +46,9 @@ public class CsdlNull extends CsdlDynamicExpression implements CsdlAnnotatable {
     if (obj == null) {
       return false;
     }
-    if (!(obj instanceof CsdlNull)) {
+    if (!(obj instanceof CsdlNull csdlNull)) {
       return false;
     }
-    CsdlNull csdlNull = (CsdlNull) obj;
     return (this.getAnnotations() == null ? csdlNull.getAnnotations() == null :
         checkAnnotations(csdlNull.getAnnotations()));
   }

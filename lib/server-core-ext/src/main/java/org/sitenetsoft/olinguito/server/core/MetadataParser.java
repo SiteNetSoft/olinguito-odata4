@@ -666,30 +666,30 @@ public class MetadataParser {
   } 
 
   private <T> void write(T t, CsdlExpression expr) throws XMLStreamException {
-    if(t instanceof CsdlAnnotation) {
-      ((CsdlAnnotation)t).setExpression(expr);
-    } else if (t instanceof CsdlUrlRef) {
-      ((CsdlUrlRef)t).setValue(expr);
-    } else if (t instanceof CsdlCast) {
-      ((CsdlCast)t).setValue(expr);
-    } else if (t instanceof CsdlLabeledElement) {
-      ((CsdlLabeledElement)t).setValue(expr);
-    } else if (t instanceof CsdlIsOf) {
-      ((CsdlIsOf)t).setValue(expr);
-    } else if (t instanceof CsdlCollection) {
-      ((CsdlCollection)t).getItems().add(((CsdlCollection)t).getItems().size(), expr);
-    } else if (t instanceof CsdlApply) {
-      ((CsdlApply)t).getParameters().add(expr);
-    } else if (t instanceof CsdlIf) {
-      if (((CsdlIf)t).getGuard() == null) {
-        ((CsdlIf)t).setGuard(expr);
-      } else if (((CsdlIf)t).getThen() == null) {
-        ((CsdlIf)t).setThen(expr);
+    if(t instanceof CsdlAnnotation csdlAnnotation) {
+      csdlAnnotation.setExpression(expr);
+    } else if (t instanceof CsdlUrlRef csdlUrlRef) {
+      csdlUrlRef.setValue(expr);
+    } else if (t instanceof CsdlCast csdlCast) {
+      csdlCast.setValue(expr);
+    } else if (t instanceof CsdlLabeledElement csdlLabeledElement) {
+      csdlLabeledElement.setValue(expr);
+    } else if (t instanceof CsdlIsOf csdlIsOf) {
+      csdlIsOf.setValue(expr);
+    } else if (t instanceof CsdlCollection csdlCollection) {
+      csdlCollection.getItems().add(csdlCollection.getItems().size(), expr);
+    } else if (t instanceof CsdlApply csdlApply) {
+      csdlApply.getParameters().add(expr);
+    } else if (t instanceof CsdlIf csdlIf) {
+      if (csdlIf.getGuard() == null) {
+        csdlIf.setGuard(expr);
+      } else if (csdlIf.getThen() == null) {
+        csdlIf.setThen(expr);
       } else {
-        ((CsdlIf)t).setElse(expr);
+        csdlIf.setElse(expr);
       }
-    } else if (t instanceof CsdlPropertyValue) {
-      ((CsdlPropertyValue)t).setValue(expr);
+    } else if (t instanceof CsdlPropertyValue csdlPropertyValue) {
+      csdlPropertyValue.setValue(expr);
     } else {
       throw new XMLStreamException("Unknown expression parent in Annoatation");
     }

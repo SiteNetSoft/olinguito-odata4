@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -22,7 +24,6 @@ import java.io.Serial;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -227,8 +228,8 @@ public class DataProvider {
     for (final String keyName : keyPredicateNames) {
       EdmType type = entityType.getProperty(keyName).getType();
       FullQualifiedName typeName = type.getFullQualifiedName();
-      if (type instanceof EdmTypeDefinition) {
-        typeName = ((EdmTypeDefinition) type).getUnderlyingType().getFullQualifiedName();
+      if (type instanceof EdmTypeDefinition edmTypeDefinition) {
+        typeName = edmTypeDefinition.getUnderlyingType().getFullQualifiedName();
       }
       Object newValue;
 
@@ -286,8 +287,8 @@ public class DataProvider {
 
   private void createProperties(final EdmStructuredType type, final List<Property> properties)
       throws DataProviderException {
-    final List<String> keyNames = type instanceof EdmEntityType ?
-        ((EdmEntityType) type).getKeyPredicateNames() : Collections.emptyList();
+    final List<String> keyNames = type instanceof EdmEntityType edmEntityType ?
+        edmEntityType.getKeyPredicateNames() : List.of();
     for (final String propertyName : type.getPropertyNames()) {
       if (!keyNames.contains(propertyName)) {
         final EdmProperty edmProperty = type.getStructuralProperty(propertyName);

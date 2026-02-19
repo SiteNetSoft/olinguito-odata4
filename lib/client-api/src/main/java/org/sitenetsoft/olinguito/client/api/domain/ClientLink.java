@@ -175,11 +175,11 @@ public class ClientLink extends ClientItem implements ClientAnnotatable {
   }
 
   public ClientInlineEntity asInlineEntity() {
-    return (this instanceof ClientInlineEntity) ? (ClientInlineEntity) this : null;
+    return this instanceof ClientInlineEntity e ? e : null;
   }
 
   public ClientInlineEntitySet asInlineEntitySet() {
-    return (this instanceof ClientInlineEntitySet) ? (ClientInlineEntitySet) this : null;
+    return this instanceof ClientInlineEntitySet e ? e : null;
   }
 
   /**

@@ -15,12 +15,12 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage; List.of() replacing verbose wrappers
  */
 package org.sitenetsoft.olinguito.server.core;
 
 import java.nio.charset.UnsupportedCharsetException;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -46,29 +46,28 @@ public final class ContentNegotiator {
   private static final Pattern CHARSET_PATTERN = Pattern.compile("([^,][\\w!#$%&'*+-._`|~;^]*)");
 
   private static final List<ContentType> DEFAULT_SUPPORTED_CONTENT_TYPES =
-      Collections.unmodifiableList(Arrays.asList(
+      List.of(
           ContentType.JSON,
           ContentType.JSON_NO_METADATA,
           ContentType.APPLICATION_JSON,
           ContentType.JSON_FULL_METADATA,
           ContentType.APPLICATION_ATOM_XML,
-          ContentType.APPLICATION_XML));
+          ContentType.APPLICATION_XML);
 
   private ContentNegotiator() {}
 
   private static List<ContentType> getDefaultSupportedContentTypes(final RepresentationType type) {
     switch (type) {
     case METADATA:
-      return Collections.unmodifiableList(Arrays.asList(ContentType.APPLICATION_XML,
-          ContentType.APPLICATION_JSON));
+      return List.of(ContentType.APPLICATION_XML, ContentType.APPLICATION_JSON);
     case MEDIA:
     case BINARY:
-      return Collections.singletonList(ContentType.APPLICATION_OCTET_STREAM);
+      return List.of(ContentType.APPLICATION_OCTET_STREAM);
     case VALUE:
     case COUNT:
-      return Collections.singletonList(ContentType.TEXT_PLAIN);
+      return List.of(ContentType.TEXT_PLAIN);
     case BATCH:
-      return Collections.singletonList(ContentType.MULTIPART_MIXED);
+      return List.of(ContentType.MULTIPART_MIXED);
     default:
       return DEFAULT_SUPPORTED_CONTENT_TYPES;
     }
@@ -120,7 +119,6 @@ public final class ContentNegotiator {
       if (!formatParameters.isEmpty() && null != formatParameters.get(ContentType.PARAMETER_CHARSET)) {
         isCharsetInFormat = true;
       } else {
-        isCharsetInFormat = false;
         charsets = getAcceptCharset(acceptCharset);
       }
       try {

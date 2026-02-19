@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.commons.api.format;
 
@@ -147,7 +149,7 @@ public final class AcceptType {
    * @return an immutable one-element list of <code>AcceptType</code> objects that matches only the given content type
    */
   public static List<AcceptType> fromContentType(final ContentType contentType) {
-    return Collections.singletonList(new AcceptType(
+    return List.of(new AcceptType(
         contentType.getType(), contentType.getSubtype(), contentType.getParameters(), 1F));
   }
 

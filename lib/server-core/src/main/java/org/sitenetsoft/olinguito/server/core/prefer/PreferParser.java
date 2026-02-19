@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.server.core.prefer;
 
@@ -65,7 +67,7 @@ public class PreferParser {
 
   protected static Map<String, Preference> parse(final Collection<String> values) {
     if (values == null || values.isEmpty()) {
-      return Collections.emptyMap();
+      return Map.of();
     }
 
     Map<String, Preference> result = new HashMap<>();

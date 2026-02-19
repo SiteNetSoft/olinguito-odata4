@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -74,7 +75,7 @@ class JsonGeoValueDeserializer {
       }
       multiPoint = new MultiPoint(GeoUtils.getDimension(type), srid, points);
     } else {
-      multiPoint = new MultiPoint(GeoUtils.getDimension(type), srid, Collections.emptyList());
+      multiPoint = new MultiPoint(GeoUtils.getDimension(type), srid, List.of());
     }
 
     return multiPoint;
@@ -91,7 +92,7 @@ class JsonGeoValueDeserializer {
       }
       lineString = new LineString(GeoUtils.getDimension(type), srid, points);
     } else {
-      lineString = new LineString(GeoUtils.getDimension(type), srid, Collections.emptyList());
+      lineString = new LineString(GeoUtils.getDimension(type), srid, List.of());
     }
 
     return lineString;
@@ -110,7 +111,7 @@ class JsonGeoValueDeserializer {
       }
       multiLineString = new MultiLineString(GeoUtils.getDimension(type), srid, lineStrings);
     } else {
-      multiLineString = new MultiLineString(GeoUtils.getDimension(type), srid, Collections.emptyList());
+      multiLineString = new MultiLineString(GeoUtils.getDimension(type), srid, List.of());
     }
 
     return multiLineString;
@@ -157,7 +158,7 @@ class JsonGeoValueDeserializer {
       }
       multiPolygon = new MultiPolygon(GeoUtils.getDimension(type), srid, polygons);
     } else {
-      multiPolygon = new MultiPolygon(GeoUtils.getDimension(type), srid, Collections.emptyList());
+      multiPolygon = new MultiPolygon(GeoUtils.getDimension(type), srid, List.of());
     }
 
     return multiPolygon;
@@ -189,7 +190,7 @@ class JsonGeoValueDeserializer {
 
       collection = new GeospatialCollection(GeoUtils.getDimension(type), srid, geospatials);
     } else {
-      collection = new GeospatialCollection(GeoUtils.getDimension(type), srid, Collections.emptyList());
+      collection = new GeospatialCollection(GeoUtils.getDimension(type), srid, List.of());
     }
 
     return collection;

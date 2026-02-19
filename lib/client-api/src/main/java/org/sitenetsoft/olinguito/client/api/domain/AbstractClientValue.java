@@ -108,10 +108,9 @@ public abstract class AbstractClientValue implements ClientValue {
     if (obj == null) {
       return false;
     }
-    if (!(obj instanceof AbstractClientValue)) {
+    if (!(obj instanceof AbstractClientValue other)) {
       return false;
     }
-    AbstractClientValue other = (AbstractClientValue) obj;
     if (typeName == null) {
       if (other.typeName != null) {
         return false;

@@ -231,15 +231,39 @@ public final class EdmDecimal extends SingletonPrimitiveType {
         throw new EdmPrimitiveTypeException("The value '" + value + "' does not match the facets' constraints.");
       }
 
-    } else if (value instanceof Double || value instanceof Float || value instanceof BigDecimal) {
+    } else if (value instanceof Double doubleVal) {
       BigDecimal bigDecimalValue;
       try {
-        bigDecimalValue = value instanceof Double ? BigDecimal.valueOf((Double) value)
-            : value instanceof Float ? BigDecimal.valueOf((Float) value) : (BigDecimal) value;
+        bigDecimalValue = BigDecimal.valueOf(doubleVal);
       } catch (final NumberFormatException e) {
         throw new EdmPrimitiveTypeException("The value '" + value + "' is not valid.", e);
       }
 
+      final int digits = bigDecimalValue.scale() >= 0
+          ? Math.max(bigDecimalValue.precision(), bigDecimalValue.scale())
+              : bigDecimalValue.precision() - bigDecimalValue.scale();
+          if ((precision == null || precision >= digits) && (bigDecimalValue.scale() <= (scale == null ? 0 : scale))) {
+            result = bigDecimalValue.toPlainString();
+          } else {
+            throw new EdmPrimitiveTypeException("The value '" + value + "' does not match the facets' constraints.");
+          }
+    } else if (value instanceof Float floatVal) {
+      BigDecimal bigDecimalValue;
+      try {
+        bigDecimalValue = BigDecimal.valueOf(floatVal);
+      } catch (final NumberFormatException e) {
+        throw new EdmPrimitiveTypeException("The value '" + value + "' is not valid.", e);
+      }
+
+      final int digits = bigDecimalValue.scale() >= 0
+          ? Math.max(bigDecimalValue.precision(), bigDecimalValue.scale())
+              : bigDecimalValue.precision() - bigDecimalValue.scale();
+          if ((precision == null || precision >= digits) && (bigDecimalValue.scale() <= (scale == null ? 0 : scale))) {
+            result = bigDecimalValue.toPlainString();
+          } else {
+            throw new EdmPrimitiveTypeException("The value '" + value + "' does not match the facets' constraints.");
+          }
+    } else if (value instanceof BigDecimal bigDecimalValue) {
       final int digits = bigDecimalValue.scale() >= 0
           ? Math.max(bigDecimalValue.precision(), bigDecimalValue.scale())
               : bigDecimalValue.precision() - bigDecimalValue.scale();

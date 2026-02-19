@@ -43,10 +43,9 @@ public class CsdlAnnotationPath extends CsdlDynamicExpression {
     if (obj == null) {
       return false;
     }
-    if (!(obj instanceof CsdlAnnotationPath)) {
+    if (!(obj instanceof CsdlAnnotationPath csdlAnnotPath)) {
       return false;
     }
-    CsdlAnnotationPath csdlAnnotPath = (CsdlAnnotationPath) obj;
      
     return this.getValue() == null ? csdlAnnotPath.getValue() == null : 
       this.getValue().equals(csdlAnnotPath.getValue());

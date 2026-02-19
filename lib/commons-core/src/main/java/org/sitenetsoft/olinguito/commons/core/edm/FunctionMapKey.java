@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Converted to Java record
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
@@ -25,68 +27,22 @@ import java.util.List;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmException;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 
-public final class FunctionMapKey {
+public record FunctionMapKey(
+    FullQualifiedName functionName,
+    FullQualifiedName bindingParameterTypeName,
+    Boolean isBindingParameterCollection,
+    List<String> parameterNames) {
 
-  private final FullQualifiedName functionName;
-
-  private final FullQualifiedName bindingParameterTypeName;
-
-  private final Boolean isBindingParameterCollection;
-
-  private final List<String> parameterNames;
-
-  public FunctionMapKey(final FullQualifiedName functionName, final FullQualifiedName bindingParameterTypeName,
-      final Boolean isBindingParameterCollection, final List<String> parameterNames) {
-
-    this.functionName = functionName;
+  public FunctionMapKey {
     if (bindingParameterTypeName != null && isBindingParameterCollection == null) {
       throw new EdmException(
           "Indicator that the bindingparameter is a collection must not be null if its an bound function.");
     }
-    this.bindingParameterTypeName = bindingParameterTypeName;
-    this.isBindingParameterCollection = isBindingParameterCollection;
-    this.parameterNames = new ArrayList<>();
+    List<String> sorted = new ArrayList<>();
     if (parameterNames != null) {
-      this.parameterNames.addAll(parameterNames);
-      Collections.sort(this.parameterNames);
+      sorted.addAll(parameterNames);
+      Collections.sort(sorted);
     }
-  }
-
-  @Override
-  public int hashCode() {
-    int result = functionName != null ? functionName.hashCode() : 0;
-    result = 31 * result + (bindingParameterTypeName != null ? bindingParameterTypeName.hashCode() : 0);
-    result = 31 * result + (isBindingParameterCollection != null ? isBindingParameterCollection.hashCode() : 0);
-    result = 31 * result + parameterNames.hashCode();
-    return result;
-  }
-
-  @Override
-  public boolean equals(final Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if ((obj == null) || !(obj instanceof FunctionMapKey)) {
-      return false;
-    }
-    final FunctionMapKey other = (FunctionMapKey) obj;
-
-    if (functionName.equals(other.functionName)
-        && (bindingParameterTypeName == null && other.bindingParameterTypeName == null)
-        || (bindingParameterTypeName != null && bindingParameterTypeName.equals(other.bindingParameterTypeName))
-        && (isBindingParameterCollection == null
-        && other.isBindingParameterCollection == null)
-        || (isBindingParameterCollection != null
-        && isBindingParameterCollection.equals(other.isBindingParameterCollection))
-            && parameterNames.size() == other.parameterNames.size()) {
-
-      for (String name : parameterNames) {
-        if (!other.parameterNames.contains(name)) {
-          return false;
-        }
-      }
-      return true;
-    }
-    return false;
+    parameterNames = Collections.unmodifiableList(sorted);
   }
 }

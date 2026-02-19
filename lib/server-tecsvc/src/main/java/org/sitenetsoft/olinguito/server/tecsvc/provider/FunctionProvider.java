@@ -15,12 +15,13 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
@@ -262,7 +263,7 @@ public class FunctionProvider {
        
             functions.add(new CsdlFunction()
             .setName(name_FC_RTTimeOfDay_.getName())
-            .setParameters(Collections.singletonList(
+            .setParameters(List.of(
                 new CsdlParameter()
                     .setName("ParameterTimeOfDay")
                     .setType(PropertyProvider.nameTimeOfDay)
@@ -310,7 +311,7 @@ public class FunctionProvider {
         
            functions.add(new CsdlFunction()
             .setName(name_FC_RTTimeOfDay_.getName())
-            .setParameters(Collections.singletonList(
+            .setParameters(List.of(
                 new CsdlParameter()
                     .setName("ParameterTimeOfDay")
                     .setType(PropertyProvider.nameTimeOfDay)
@@ -359,10 +360,10 @@ public class FunctionProvider {
         return functions;
         
     }else if(functionName.equals(nameUFCRTCollDecimal)){
-          return Collections.singletonList(
+          return List.of(
           new CsdlFunction()
               .setName(functionName.getName())
-              .setParameters(Collections.emptyList())
+              .setParameters(List.of())
               .setComposable(true)
               .setReturnType(new CsdlReturnType()
                       .setType(PropertyProvider.nameDecimal)
@@ -371,10 +372,10 @@ public class FunctionProvider {
                       .setCollection(true)));
           
     }else if(functionName.equals(nameUFCRTDecimal)){
-        return Collections.singletonList(
+        return List.of(
           new CsdlFunction()
               .setName(functionName.getName())
-              .setParameters(Collections.emptyList())
+              .setParameters(List.of())
               .setComposable(true)
               .setReturnType(new CsdlReturnType()
                       .setType(PropertyProvider.nameDecimal)
@@ -382,44 +383,44 @@ public class FunctionProvider {
                       .setScale(5)));
           
     }else if (functionName.equals(nameUFNRTInt16)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName(functionName.getName())
-              .setParameters(Collections.emptyList())
+              .setParameters(List.of())
               .setReturnType(new CsdlReturnType().setType(PropertyProvider.nameInt16)));
 
     } else if (functionName.equals(nameUFCRTETKeyNav)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("UFCRTETKeyNav")
-              .setParameters(Collections.emptyList())
+              .setParameters(List.of())
               .setComposable(true)
               .setReturnType(
                   new CsdlReturnType().setType(EntityTypeProvider.nameETKeyNav).setNullable(false)));
 
     } else if (functionName.equals(nameUFCRTETTwoKeyNav)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName(functionName.getName())
-              .setParameters(Collections.emptyList())
+              .setParameters(List.of())
               .setComposable(true)
               .setReturnType(
                   new CsdlReturnType().setType(EntityTypeProvider.nameETTwoKeyNav).setNullable(false)));
     } else if (functionName.equals(nameUFCRTETTwoKeyNavParam)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("UFCRTETTwoKeyNavParam")
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("ParameterInt16").setType(PropertyProvider.nameInt16).setNullable(false)))
               .setComposable(true)
               .setReturnType(new CsdlReturnType().setType(EntityTypeProvider.nameETTwoKeyNav).setNullable(false))
           );
 
     } else if (functionName.equals(nameUFCRTETTwoKeyNavParamCTTwoPrim)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("UFCRTETTwoKeyNavParamCTTwoPrim")
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("ParameterCTTwoPrim").setType(ComplexTypeProvider.nameCTTwoPrim)
                       .setNullable(false)))
               .setComposable(true)
@@ -432,7 +433,7 @@ public class FunctionProvider {
       return Arrays.asList(
           new CsdlFunction()
               .setName("UFCRTStringTwoParam")
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter()
                       .setName("ParameterInt16")
                       .setType(PropertyProvider.nameInt16)
@@ -455,10 +456,10 @@ public class FunctionProvider {
               .setReturnType(new CsdlReturnType().setType(PropertyProvider.nameString).setNullable(true)));
 
     } else if (functionName.equals(nameUFCRTCollETTwoKeyNavParam)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName(functionName.getName())
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter()
                       .setName("ParameterInt16")
                       .setType(PropertyProvider.nameInt16)
@@ -469,11 +470,11 @@ public class FunctionProvider {
                       .setNullable(false)));
 
     } else if (functionName.equals(nameUFCRTCollETKeyNavContParam)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("UFCRTCollETKeyNavContParam")
               .setComposable(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("ParameterInt16")
                       .setNullable(false)
                       .setType(PropertyProvider.nameInt16)))
@@ -482,17 +483,17 @@ public class FunctionProvider {
                   .setNullable(false)));
 
     } else if (functionName.equals(nameUFCRTString)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("UFCRTString")
               .setComposable(true)
-              .setParameters(Collections.emptyList())
+              .setParameters(List.of())
               .setComposable(true)
               .setReturnType(
                   new CsdlReturnType().setType(PropertyProvider.nameString).setNullable(false)));
 
     } else if (functionName.equals(nameUFCRTCollStringTwoParam)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("UFCRTCollStringTwoParam")
               .setParameters(Arrays.asList(
@@ -505,16 +506,16 @@ public class FunctionProvider {
                   new CsdlReturnType().setType(PropertyProvider.nameString).setCollection(true).setNullable(false)));
 
     } else if (functionName.equals(nameUFCRTCollString)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("UFCRTCollString")
-              .setParameters(Collections.emptyList())
+              .setParameters(List.of())
               .setComposable(true)
               .setReturnType(
                   new CsdlReturnType().setType(PropertyProvider.nameString).setCollection(true).setNullable(false)));
 
     } else if (functionName.equals(nameUFCRTCTAllPrimTwoParam)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("UFCRTCTAllPrimTwoParam")
               .setParameters(
@@ -528,7 +529,7 @@ public class FunctionProvider {
                   new CsdlReturnType().setType(ComplexTypeProvider.nameCTAllPrim).setNullable(false)));
 
     } else if (functionName.equals(nameUFNRTCollETMixPrimCollCompTwoParam)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("UFNRTCollETMixPrimCollCompTwoParam")
               .setParameters(
@@ -545,7 +546,7 @@ public class FunctionProvider {
                        .setCollection(true)));
 
     } else if (functionName.equals(nameUFNRTByteNineParam)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName(functionName.getName())
               .setParameters(Arrays.asList(
@@ -568,7 +569,7 @@ public class FunctionProvider {
               .setReturnType(new CsdlReturnType().setType(PropertyProvider.nameByte)));
 
     } else if (functionName.equals(nameUFCRTCTTwoPrimTwoParam)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("UFCRTCTTwoPrimTwoParam")
               .setParameters(
@@ -582,7 +583,7 @@ public class FunctionProvider {
                   new CsdlReturnType().setType(ComplexTypeProvider.nameCTTwoPrim).setNullable(false)));
 
     } else if (functionName.equals(nameUFCRTCollCTTwoPrimTwoParam)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("UFCRTCollCTTwoPrimTwoParam")
               .setParameters(
@@ -597,29 +598,29 @@ public class FunctionProvider {
                       .setNullable(false)));
 
     } else if (functionName.equals(nameUFCRTCTTwoPrim)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("UFCRTCTTwoPrim")
-              .setParameters(Collections.emptyList())
+              .setParameters(List.of())
               .setComposable(true)
               .setReturnType(
                   new CsdlReturnType().setType(ComplexTypeProvider.nameCTTwoPrim).setNullable(false)));
 
     } else if (functionName.equals(nameUFCRTCollCTTwoPrim)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("UFCRTCollCTTwoPrim")
               .setComposable(true)
-              .setParameters(Collections.emptyList())
+              .setParameters(List.of())
               .setReturnType(
                   new CsdlReturnType().setType(ComplexTypeProvider.nameCTTwoPrim).setCollection(true)
                       .setNullable(false)));
 
     } else if (functionName.equals(nameUFCRTETMedia)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("UFCRTETMedia")
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("ParameterInt16").setNullable(false)
                       .setType(PropertyProvider.nameInt16)))
               .setComposable(true)
@@ -627,16 +628,16 @@ public class FunctionProvider {
                   new CsdlReturnType().setType(EntityTypeProvider.nameETMedia).setNullable(false)));
 
     } else if (functionName.equals(nameUFCRTCollETMedia)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName(functionName.getName())
-              .setParameters(Collections.emptyList())
+              .setParameters(List.of())
               .setComposable(true)
               .setReturnType(
                   new CsdlReturnType().setType(EntityTypeProvider.nameETMedia).setCollection(true).setNullable(false)));
 
     } else if (functionName.equals(nameUFCRTCollETMixPrimCollCompTwoParam)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName(functionName.getName())
               .setParameters(
@@ -652,7 +653,7 @@ public class FunctionProvider {
                       .setNullable(false)));
 
     } else if (functionName.equals(nameUFCRTETAllPrimTwoParam)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("UFCRTETAllPrimTwoParam")
               .setParameters(
@@ -666,7 +667,7 @@ public class FunctionProvider {
                   new CsdlReturnType().setType(EntityTypeProvider.nameETAllPrim).setNullable(false)));
 
     } else if (functionName.equals(nameUFNRTCollCTNavFiveProp)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("UFNRTCollCTNavFiveProp")
               .setReturnType(
@@ -678,7 +679,7 @@ public class FunctionProvider {
               .setName(nameBFC_RTESTwoKeyNav_.getName())
               .setEntitySetPath("BindingParam/NavPropertyETTwoKeyNavMany")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETTwoKeyNav)
                       .setCollection(true).setNullable(false)))
               .setComposable(true)
@@ -702,7 +703,7 @@ public class FunctionProvider {
           new CsdlFunction()
               .setName(nameBFC_RTESTwoKeyNav_.getName())
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETKeyNav)
                       .setCollection(true).setNullable(false)))
               .setComposable(true)
@@ -711,10 +712,10 @@ public class FunctionProvider {
                       .setNullable(false)));
 
     } else if (functionName.equals(nameBFCStringRTESTwoKeyNav)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction().setName("BFCStringRTESTwoKeyNav")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(PropertyProvider.nameString).setNullable(false)))
               .setComposable(true)
               .setReturnType(
@@ -722,11 +723,11 @@ public class FunctionProvider {
                       .setNullable(false)));
 
     } else if (functionName.equals(nameBFCETBaseTwoKeyNavRTETTwoKeyNav)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFCETBaseTwoKeyNavRTETTwoKeyNav")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETBaseTwoKeyNav)
                       .setNullable(false)))
               .setComposable(true)
@@ -734,11 +735,11 @@ public class FunctionProvider {
                   new CsdlReturnType().setType(EntityTypeProvider.nameETTwoKeyNav).setNullable(false)));
 
     } else if (functionName.equals(nameBFCESBaseTwoKeyNavRTESBaseTwoKey)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFCESBaseTwoKeyNavRTESBaseTwoKey")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETBaseTwoKeyNav)
                       .setCollection(true).setNullable(false)))
               .setComposable(true)
@@ -751,7 +752,7 @@ public class FunctionProvider {
           new CsdlFunction()
               .setName("BFNESAllPrimRTCTAllPrim")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETAllPrim)
                       .setCollection(true).setNullable(false)))
               .setComposable(false)
@@ -759,11 +760,11 @@ public class FunctionProvider {
                   new CsdlReturnType().setType(ComplexTypeProvider.nameCTAllPrim).setNullable(false)));
 
     } else if (functionName.equals(nameBFCESTwoKeyNavRTCTTwoPrim)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFCESTwoKeyNavRTCTTwoPrim")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETTwoKeyNav)
                       .setCollection(true).setNullable(false)))
               .setComposable(true)
@@ -771,11 +772,11 @@ public class FunctionProvider {
                   new CsdlReturnType().setType(ComplexTypeProvider.nameCTTwoPrim).setNullable(false)));
 
     } else if (functionName.equals(nameBFCESTwoKeyNavRTCollCTTwoPrim)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFCESTwoKeyNavRTCollCTTwoPrim")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETTwoKeyNav)
                       .setCollection(true).setNullable(false)))
               .setComposable(true)
@@ -784,11 +785,11 @@ public class FunctionProvider {
                       .setNullable(false)));
 
     } else if (functionName.equals(nameBFCESTwoKeyNavRTString)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFCESTwoKeyNavRTString")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETTwoKeyNav)
                       .setCollection(true).setNullable(false)))
               .setComposable(true)
@@ -796,11 +797,11 @@ public class FunctionProvider {
                   new CsdlReturnType().setType(PropertyProvider.nameString).setNullable(false)));
       
     } else if (functionName.equals(nameBFNESTwoKeyNavRTString)){
-        return Collections.singletonList(
+        return List.of(
           new CsdlFunction()
               .setName("BFNESTwoKeyNavRTString")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETTwoKeyNav)
                       .setCollection(true).setNullable(false)))
               .setComposable(false)
@@ -808,11 +809,11 @@ public class FunctionProvider {
                   new CsdlReturnType().setType(PropertyProvider.nameString).setNullable(false)));
 
     } else if (functionName.equals(nameBFCESTwoKeyNavRTCollString)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFCESTwoKeyNavRTCollString")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETTwoKeyNav)
                       .setCollection(true).setNullable(false)))
               .setComposable(true)
@@ -820,12 +821,12 @@ public class FunctionProvider {
                   new CsdlReturnType().setType(PropertyProvider.nameString).setCollection(true).setNullable(false)));
 
     } else if (functionName.equals(nameBFCETTwoKeyNavRTESTwoKeyNav)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFCETTwoKeyNavRTESTwoKeyNav")
               .setEntitySetPath("BindingParam/NavPropertyETTwoKeyNavOne")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETTwoKeyNav)
                       .setNullable(false)))
               .setComposable(true)
@@ -834,11 +835,11 @@ public class FunctionProvider {
                       .setNullable(false)));
 
     } else if (functionName.equals(nameBFCETBaseTwoKeyNavRTESTwoKeyNav)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFCETBaseTwoKeyNavRTESTwoKeyNav")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETBaseTwoKeyNav)
                       .setNullable(false)))
               .setComposable(true)
@@ -847,11 +848,11 @@ public class FunctionProvider {
                       .setNullable(false)));
 
     } else if (functionName.equals(nameBFCSINavRTESTwoKeyNav)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFCSINavRTESTwoKeyNav")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETTwoKeyNav)
                           .setNullable(false)))
               .setComposable(true)
@@ -860,11 +861,11 @@ public class FunctionProvider {
                       .setNullable(false)));
 
     } else if (functionName.equals(nameBFCETBaseTwoKeyNavRTESBaseTwoKey)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFCETBaseTwoKeyNavRTESBaseTwoKey")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETBaseTwoKeyNav)
                       .setNullable(false)))
               .setComposable(true)
@@ -873,11 +874,11 @@ public class FunctionProvider {
                       .setNullable(false)));
 
     } else if (functionName.equals(nameBFCCollStringRTESTwoKeyNav)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFCCollStringRTESTwoKeyNav")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(PropertyProvider.nameString).setCollection(true)
                       .setNullable(false)))
               .setComposable(true)
@@ -890,7 +891,7 @@ public class FunctionProvider {
           new CsdlFunction()
               .setName("BFCCTPrimCompRTESTwoKeyNav")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(ComplexTypeProvider.nameCTPrimComp)
                       .setNullable(false)))
               .setComposable(true)
@@ -899,11 +900,11 @@ public class FunctionProvider {
                       .setNullable(false)));
 
     } else if (functionName.equals(nameBFCCTPrimCompRTESBaseTwoKeyNav)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFCCTPrimCompRTESBaseTwoKeyNav")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(ComplexTypeProvider.nameCTPrimComp)
                       .setNullable(false)))
               .setComposable(true)
@@ -912,11 +913,11 @@ public class FunctionProvider {
                       .setNullable(false)));
 
     } else if (functionName.equals(nameBFCColCTAllPrimRTESAllPrim)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFCColCTAllPrimRTESAllPrim")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(ComplexTypeProvider.nameCTAllPrim)
                       .setNullable(false)))
               .setComposable(true)
@@ -925,11 +926,11 @@ public class FunctionProvider {
                       .setNullable(false)));
 
     } else if (functionName.equals(nameBFCCollCTPrimCompRTESAllPrim)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFCCollCTPrimCompRTESAllPrim")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(ComplexTypeProvider.nameCTPrimComp)
                       .setCollection(true).setNullable(false)))
               .setComposable(true)
@@ -938,11 +939,11 @@ public class FunctionProvider {
                       .setNullable(false)));
 
     } else if (functionName.equals(nameBFCESTwoKeyNavRTTwoKeyNav)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFCESTwoKeyNavRTTwoKeyNav")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETTwoKeyNav)
                       .setCollection(true).setNullable(false)))
               .setComposable(true)
@@ -950,11 +951,11 @@ public class FunctionProvider {
                   new CsdlReturnType().setType(EntityTypeProvider.nameETTwoKeyNav).setNullable(false)));
 
     } else if (functionName.equals(nameBFCESKeyNavRTETKeyNav)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFCESKeyNavRTETKeyNav")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETKeyNav)
                       .setCollection(true).setNullable(false)))
               .setComposable(true)
@@ -962,11 +963,11 @@ public class FunctionProvider {
                   new CsdlReturnType().setType(EntityTypeProvider.nameETKeyNav).setNullable(false)));
 
     } else if (functionName.equals(nameBFCETKeyNavRTETKeyNav)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFCETKeyNavRTETKeyNav")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETKeyNav)
                       .setNullable(false)))
               .setComposable(true)
@@ -975,11 +976,11 @@ public class FunctionProvider {
                   new CsdlReturnType().setType(EntityTypeProvider.nameETKeyNav).setNullable(false)));
 
     } else if (functionName.equals(nameBFESTwoKeyNavRTESTwoKeyNav)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFESTwoKeyNavRTESTwoKeyNav")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETTwoKeyNav)
                       .setCollection(true).setNullable(false)))
               .setComposable(true)
@@ -988,11 +989,11 @@ public class FunctionProvider {
                       .setNullable(false)));
 
     } else if (functionName.equals(nameBFESBaseRTESTwoBase)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFESBaseRTESTwoBase")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETBase)
                   .setNullable(false)))
               .setComposable(true)
@@ -1002,7 +1003,7 @@ public class FunctionProvider {
                       .setNullable(false)));
 
     } else if (functionName.equals(nameBFCESKeyNavRTESTwoKeyNav)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFCESKeyNavRTESTwoKeyNav")
               .setEntitySetPath("BindingParam/NavPropertyETTwoKeyNavMany")
@@ -1022,11 +1023,11 @@ public class FunctionProvider {
                   .setCollection(true)));
 
     } else if (functionName.equals(nameBFCETTwoKeyNavRTETTwoKeyNav)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFCETTwoKeyNavRTETTwoKeyNav")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETTwoKeyNav)
                       .setNullable(false)))
               .setComposable(true)
@@ -1034,12 +1035,12 @@ public class FunctionProvider {
                   new CsdlReturnType().setType(EntityTypeProvider.nameETTwoKeyNav).setNullable(false)));
       
    } else if (functionName.equals(nameBFCESTwoKeyNavRTCollDecimal)){
-        return Collections.singletonList(
+        return List.of(
           new CsdlFunction()
               .setName("BFCESTwoKeyNavRTCollDecimal")
               .setBound(true)
               .setParameters(
-                  Collections.singletonList(
+                  List.of(
                       new CsdlParameter().setName("BindingParam")
                           .setType(EntityTypeProvider.nameETTwoKeyNav)
                           .setNullable(false)
@@ -1054,11 +1055,11 @@ public class FunctionProvider {
                       .setNullable(false)));
 
     } else if (functionName.equals(nameBFCETTwoKeyNavRTCTTwoPrim)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFCETTwoKeyNavRTCTTwoPrim")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETTwoKeyNav)
                       .setNullable(false)))
               .setComposable(true)
@@ -1066,11 +1067,11 @@ public class FunctionProvider {
                   new CsdlReturnType().setType(ComplexTypeProvider.nameCTTwoPrim).setNullable(false)));
 
     } else if (functionName.equals(nameBFCESTwoKeyNavRTCTNavFiveProp)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFCESTwoKeyNavRTCTNavFiveProp")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETTwoKeyNav)
                       .setCollection(true).setNullable(false)))
               .setComposable(true)
@@ -1078,11 +1079,11 @@ public class FunctionProvider {
                   new CsdlReturnType().setType(ComplexTypeProvider.nameCTNavFiveProp).setNullable(false)));
 
     } else if (functionName.equals(nameBFCESTwoKeyNavRTCollCTNavFiveProp)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFCESTwoKeyNavRTCollCTNavFiveProp")
               .setBound(true)
-              .setParameters(Collections.singletonList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETTwoKeyNav)
                       .setCollection(true).setNullable(false)))
               .setComposable(true)
@@ -1091,7 +1092,7 @@ public class FunctionProvider {
                       .setNullable(false)));
 
     } else if (functionName.equals(nameBFCESTwoKeyNavRTStringParam)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFCESTwoKeyNavRTStringParam")
               .setBound(true)
@@ -1106,7 +1107,7 @@ public class FunctionProvider {
                   new CsdlReturnType().setType(PropertyProvider.nameString).setNullable(false)));
 
     } else if (functionName.equals(nameBFCESKeyNavRTETKeyNavParam)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFCESKeyNavRTETKeyNavParam")
               .setBound(true)
@@ -1121,7 +1122,7 @@ public class FunctionProvider {
                   new CsdlReturnType().setType(EntityTypeProvider.nameETKeyNav).setNullable(false)));
 
     } else if (functionName.equals(nameBFCCTPrimCompRTETTwoKeyNavParam)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFCCTPrimCompRTETTwoKeyNavParam")
               .setBound(true)
@@ -1136,7 +1137,7 @@ public class FunctionProvider {
                   .setType(EntityTypeProvider.nameETTwoKeyNav).setNullable(false)));
 
     } else if (functionName.equals(nameBFCCTPrimCompRTESTwoKeyNavParam)) {
-      return Collections.singletonList(
+      return List.of(
           new CsdlFunction()
               .setName("BFCCTPrimCompRTESTwoKeyNavParam")
               .setBound(true)

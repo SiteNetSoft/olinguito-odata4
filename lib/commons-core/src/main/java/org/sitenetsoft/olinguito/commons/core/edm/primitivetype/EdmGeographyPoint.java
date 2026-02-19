@@ -52,8 +52,8 @@ public final class EdmGeographyPoint extends AbstractGeospatialType<Point> {
   protected <T> String internalValueToString(final T value, final Boolean isNullable, final Integer maxLength,
       final Integer precision, final Integer scale, final Boolean isUnicode) throws EdmPrimitiveTypeException {
 
-    if (value instanceof Point) {
-      return toString((Point) value, isNullable, maxLength, precision, scale, isUnicode);
+    if (value instanceof Point point) {
+      return toString(point, isNullable, maxLength, precision, scale, isUnicode);
     }
 
     throw new EdmPrimitiveTypeException("The value type " + value.getClass() + " is not supported.");

@@ -28,7 +28,6 @@ import java.io.IOException;
 
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.sitenetsoft.olinguito.client.api.http.HttpClientException;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;

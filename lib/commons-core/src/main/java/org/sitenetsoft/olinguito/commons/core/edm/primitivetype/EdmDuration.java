@@ -89,12 +89,12 @@ public class EdmDuration extends SingletonPrimitiveType {
       final Integer scale, final Boolean isUnicode) throws EdmPrimitiveTypeException {
 
     BigDecimal valueDecimal;
-    if (value instanceof BigDecimal) {
-      valueDecimal = (BigDecimal) value;
+    if (value instanceof BigDecimal bigDecimal) {
+      valueDecimal = bigDecimal;
     } else if (value instanceof Byte || value instanceof Short || value instanceof Integer || value instanceof Long) {
       valueDecimal = BigDecimal.valueOf(((Number) value).longValue());
-    } else if (value instanceof BigInteger) {
-      valueDecimal = new BigDecimal((BigInteger) value);
+    } else if (value instanceof BigInteger bigInteger) {
+      valueDecimal = new BigDecimal(bigInteger);
     } else {
       throw new EdmPrimitiveTypeException("The value type " + value.getClass() + " is not supported.");
     }

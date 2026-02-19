@@ -117,23 +117,23 @@ public final class EdmSingle extends SingletonPrimitiveType {
       }
     } else if (value instanceof Short || value instanceof Byte) {
       return value.toString();
-    } else if (value instanceof Double) {
-      if (((Double) value).isInfinite()) {
-        return (Double) value == Double.NEGATIVE_INFINITY ? EdmDouble.NEGATIVE_INFINITY : EdmDouble.POSITIVE_INFINITY;
+    } else if (value instanceof Double doubleVal) {
+      if (doubleVal.isInfinite()) {
+        return doubleVal == Double.NEGATIVE_INFINITY ? EdmDouble.NEGATIVE_INFINITY : EdmDouble.POSITIVE_INFINITY;
       } else {
-        final String floatString = Float.toString(((Double) value).floatValue());
+        final String floatString = Float.toString(doubleVal.floatValue());
         if (floatString.equals(value.toString())) {
           return floatString;
         } else {
           throw new EdmPrimitiveTypeException("The value '" + value + "' is not valid.");
         }
       }
-    } else if (value instanceof Float) {
-      return (Float) value == Float.NEGATIVE_INFINITY ? EdmDouble.NEGATIVE_INFINITY
-          : (Float) value == Float.POSITIVE_INFINITY ? EdmDouble.POSITIVE_INFINITY : value.toString();
-    } else if (value instanceof BigDecimal) {
-      final float floatValue = ((BigDecimal) value).floatValue();
-      if (!Float.isInfinite(floatValue) && BigDecimal.valueOf(floatValue).compareTo((BigDecimal) value) == 0) {
+    } else if (value instanceof Float floatVal) {
+      return floatVal == Float.NEGATIVE_INFINITY ? EdmDouble.NEGATIVE_INFINITY
+          : floatVal == Float.POSITIVE_INFINITY ? EdmDouble.POSITIVE_INFINITY : value.toString();
+    } else if (value instanceof BigDecimal bigDecimal) {
+      final float floatValue = bigDecimal.floatValue();
+      if (!Float.isInfinite(floatValue) && BigDecimal.valueOf(floatValue).compareTo(bigDecimal) == 0) {
         return value.toString();
       } else {
         throw new EdmPrimitiveTypeException("The value '" + value + "' is not valid.");

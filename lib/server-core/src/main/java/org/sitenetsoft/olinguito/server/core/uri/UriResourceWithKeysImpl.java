@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.server.core.uri;
 
@@ -46,7 +48,7 @@ public abstract class UriResourceWithKeysImpl extends UriResourceImpl implements
 
   public List<UriParameter> getKeyPredicates() {
     return keyPredicates == null ?
-        Collections.emptyList() :
+        List.of() :
         Collections.unmodifiableList(keyPredicates);
   }
 

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -245,7 +247,7 @@ public class ApplyParser {
 	      throws UriParserException, UriValidationException {
 	    this.tokenizer = tokenizer;
 
-	    return parseAggregateExpr(referringType, Collections.emptySet(), Requirement.FORBIDDEN);
+	    return parseAggregateExpr(referringType, Set.of(), Requirement.FORBIDDEN);
 	  }
 
   private AggregateExpression parseAggregateExpr(EdmStructuredType referencedType, Set<String> dynamicProps,
@@ -424,7 +426,7 @@ public class ApplyParser {
         throw new UriParserSemanticException("Compute expressions must return primitive values.",
             UriParserSemanticException.MessageKeys.ONLY_FOR_PRIMITIVE_TYPES, "compute");
       }
-      final String alias = parseAsAlias(referencedType, Collections.emptySet(), Requirement.REQUIRED);
+      final String alias = parseAsAlias(referencedType, Set.of(), Requirement.REQUIRED);
       ((DynamicStructuredType) referencedType).addProperty(createDynamicProperty(alias, expressionType));
       compute.addExpression(new ComputeExpressionImpl()
           .setExpression(expression)
@@ -536,8 +538,8 @@ public class ApplyParser {
       throw new UriParserSemanticException("Unknown identifier in grouping property path.",
           UriParserSemanticException.MessageKeys.EXPRESSION_PROPERTY_NOT_IN_TYPE,
           identifierLeft,
-          uriInfo.getLastResourcePart() != null && uriInfo.getLastResourcePart() instanceof UriResourcePartTyped ?
-              ((UriResourcePartTyped) uriInfo.getLastResourcePart())
+          uriInfo.getLastResourcePart() instanceof UriResourcePartTyped partTyped ?
+              partTyped
                   .getType().getFullQualifiedName().getFullQualifiedNameAsString() :
               "");
     }
@@ -565,8 +567,8 @@ public class ApplyParser {
           return name;
         } else {
           uriInfo.addResourcePart(
-              property instanceof EdmNavigationProperty ?
-                  new UriResourceNavigationPropertyImpl((EdmNavigationProperty) property) :
+              property instanceof EdmNavigationProperty navProp ?
+                  new UriResourceNavigationPropertyImpl(navProp) :
                   property.getType().getKind() == EdmTypeKind.COMPLEX ?
                       new UriResourceComplexPropertyImpl((EdmProperty) property) :
                       new UriResourcePrimitivePropertyImpl((EdmProperty) property));

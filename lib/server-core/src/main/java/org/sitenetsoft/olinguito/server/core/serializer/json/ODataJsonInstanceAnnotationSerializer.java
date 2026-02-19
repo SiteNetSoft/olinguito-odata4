@@ -197,8 +197,7 @@ public class ODataJsonInstanceAnnotationSerializer {
 						&& !isIEEE754Compatible) {
 			json.writeNumber(value);
 		} else if (type == EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Stream)) {
-			if (primitiveValue instanceof Link) {
-				Link stream = (Link) primitiveValue;
+			if (primitiveValue instanceof Link stream) {
 				if (!isODataMetadataNone) {
 					if (stream.getMediaETag() != null) {
 						json.writeStringField(name + constants.getMediaEtag(), 

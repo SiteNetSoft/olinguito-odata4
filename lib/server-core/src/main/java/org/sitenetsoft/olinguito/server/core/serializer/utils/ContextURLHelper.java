@@ -102,8 +102,8 @@ public final class ContextURLHelper {
       List<SelectItem> selectItems) {
     for (SelectItem item : selectItems) {
       final UriResource resource = item.getResourcePath().getUriResourceParts().get(0);
-      if (resource instanceof UriResourceAction) {
-        EdmAction action = ((UriResourceAction)resource).getAction();
+      if (resource instanceof UriResourceAction resAction) {
+        EdmAction action = resAction.getAction();
         if (action != null && action.isBound()) {
           String actionBindingParamType = action.getBindingParameterTypeFqn().
               getFullQualifiedNameAsString();
@@ -115,8 +115,8 @@ public final class ContextURLHelper {
             result.append(Encoder.encode(action.getFullQualifiedName().getFullQualifiedNameAsString()));
           }
         }
-      } else if (resource instanceof UriResourceFunction) {
-        EdmFunction function = ((UriResourceFunction)resource).getFunction();
+      } else if (resource instanceof UriResourceFunction resFunction) {
+        EdmFunction function = resFunction.getFunction();
         if (function != null && function.isBound()) {
           String functionBindingParamType = function.getBindingParameterTypeFqn().
               getFullQualifiedNameAsString();
@@ -142,8 +142,8 @@ public final class ContextURLHelper {
   private static EdmStructuredType getTypeFromSelectItems(List<SelectItem> selectItems, EdmStructuredType type) {
     EdmStructuredType edmType = type;
     for (final SelectItem item : selectItems) {
-      if (item.getStartTypeFilter() != null && item.getStartTypeFilter() instanceof EdmEntityType) {
-        edmType = (EdmEntityType) item.getStartTypeFilter();
+      if (item.getStartTypeFilter() != null && item.getStartTypeFilter() instanceof EdmEntityType entityType) {
+        edmType = entityType;
       }
     }
     return edmType;
@@ -202,8 +202,8 @@ public final class ContextURLHelper {
         }
       }
     } else {
-      if (type instanceof EdmEntityType) {
-        final List<String> keyNames = ((EdmEntityType) type).getKeyPredicateNames();
+      if (type instanceof EdmEntityType edmEntityType) {
+        final List<String> keyNames = edmEntityType.getKeyPredicateNames();
         if (keyNames.contains(propertyName)) {
           if (result.length() > 0) {
             result.append(',');
@@ -229,15 +229,15 @@ public final class ContextURLHelper {
       final List<UriResource> parts = item.getResourcePath().getUriResourceParts();
       int i = 0;
       for (UriResource part : parts) {
-        if (part instanceof UriResourceComplexProperty && 
-            ((UriResourceComplexProperty) part).getProperty().getName().equalsIgnoreCase(propertyName)) {
-          if (((UriResourceComplexProperty)part).getComplexTypeFilter() != null) {
-            return getComplexPropertyPosition(selectedPaths, (UriResourceComplexProperty)part);
+        if (part instanceof UriResourceComplexProperty complexPart &&
+            complexPart.getProperty().getName().equalsIgnoreCase(propertyName)) {
+          if (complexPart.getComplexTypeFilter() != null) {
+            return getComplexPropertyPosition(selectedPaths, complexPart);
           } else {
             return i;
           }
-        } else if (part instanceof UriResourceNavigation &&
-            ((UriResourceNavigation) part).getProperty().getName().equalsIgnoreCase(propertyName)) {
+        } else if (part instanceof UriResourceNavigation navPart &&
+            navPart.getProperty().getName().equalsIgnoreCase(propertyName)) {
           return -1;
         }
         i++;
@@ -321,8 +321,8 @@ public final class ContextURLHelper {
   private static List<String> getPropertyPath(final List<UriResource> path) {
     List<String> result = new LinkedList<>();
     int index = 1;
-    while (index < path.size() && path.get(index) instanceof UriResourceProperty) {
-      result.add(((UriResourceProperty) path.get(index)).getProperty().getName());
+    while (index < path.size() && path.get(index) instanceof UriResourceProperty property) {
+      result.add(property.getProperty().getName());
       index++;
     }
     return result;

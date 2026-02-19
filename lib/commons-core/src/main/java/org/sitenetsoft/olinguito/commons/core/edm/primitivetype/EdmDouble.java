@@ -115,23 +115,23 @@ public final class EdmDouble extends SingletonPrimitiveType {
   protected <T> String internalValueToString(final T value,
       final Boolean isNullable, final Integer maxLength, final Integer precision,
       final Integer scale, final Boolean isUnicode) throws EdmPrimitiveTypeException {
-    if (value instanceof Long) {
-      if (Math.abs((Long) value) < 1L << 51) {
+    if (value instanceof Long longVal) {
+      if (Math.abs(longVal) < 1L << 51) {
         return value.toString();
       } else {
         throw new EdmPrimitiveTypeException("The value '" + value + "' is not valid.");
       }
     } else if (value instanceof Integer || value instanceof Short || value instanceof Byte) {
       return value.toString();
-    } else if (value instanceof Double) {
-      return (Double) value == Double.NEGATIVE_INFINITY ? NEGATIVE_INFINITY
-          : (Double) value == Double.POSITIVE_INFINITY ? POSITIVE_INFINITY : value.toString();
-    } else if (value instanceof Float) {
-      return (Float) value == Float.NEGATIVE_INFINITY ? NEGATIVE_INFINITY
-          : (Float) value == Float.POSITIVE_INFINITY ? POSITIVE_INFINITY : value.toString();
-    } else if (value instanceof BigDecimal) {
-      final double doubleValue = ((BigDecimal) value).doubleValue();
-      if (!Double.isInfinite(doubleValue) && BigDecimal.valueOf(doubleValue).compareTo((BigDecimal) value) == 0) {
+    } else if (value instanceof Double doubleVal) {
+      return doubleVal == Double.NEGATIVE_INFINITY ? NEGATIVE_INFINITY
+          : doubleVal == Double.POSITIVE_INFINITY ? POSITIVE_INFINITY : value.toString();
+    } else if (value instanceof Float floatVal) {
+      return floatVal == Float.NEGATIVE_INFINITY ? NEGATIVE_INFINITY
+          : floatVal == Float.POSITIVE_INFINITY ? POSITIVE_INFINITY : value.toString();
+    } else if (value instanceof BigDecimal bigDecimal) {
+      final double doubleValue = bigDecimal.doubleValue();
+      if (!Double.isInfinite(doubleValue) && BigDecimal.valueOf(doubleValue).compareTo(bigDecimal) == 0) {
         return value.toString();
       } else {
         throw new EdmPrimitiveTypeException("The value '" + value + "' is not valid.");

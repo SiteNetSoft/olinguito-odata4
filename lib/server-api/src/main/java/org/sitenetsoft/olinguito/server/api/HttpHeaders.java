@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.server.api;
 
@@ -24,6 +26,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * HttpHeader container for internal use in this package.
@@ -114,7 +117,7 @@ final class HttpHeaders {
    * @return all header names or an empty collection if no headers have been set
    */
   public Collection<String> getHeaderNames() {
-    return headers.isEmpty() ? Collections.emptySet() : Collections.unmodifiableSet(headers.keySet());
+    return headers.isEmpty() ? Set.of() : Collections.unmodifiableSet(headers.keySet());
   }
 
   /**

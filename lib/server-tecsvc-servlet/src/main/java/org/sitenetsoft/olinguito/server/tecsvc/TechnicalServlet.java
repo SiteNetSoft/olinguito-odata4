@@ -17,13 +17,14 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Moved from server-tecsvc to server-tecsvc-servlet
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.server.tecsvc;
 
 import java.io.IOException;
 import java.io.Serial;
 import java.net.URI;
-import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.servlet.ServletException;
@@ -74,7 +75,7 @@ public class TechnicalServlet extends HttpServlet {
       reference.addInclude(new EdmxReferenceInclude("Org.OData.Core.V1", "Core"));
       final ServiceMetadata serviceMetadata = odata.createServiceMetadata(
           new EdmTechProvider(),
-          Collections.singletonList(reference),
+          List.of(reference),
           new MetadataETagSupport(metadataETag));
 
       HttpSession session = request.getSession(true);

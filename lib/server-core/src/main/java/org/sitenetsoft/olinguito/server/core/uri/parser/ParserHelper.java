@@ -195,8 +195,8 @@ public class ParserHelper {
         }
       } else if (withComplex) {
         final Expression expression = new ExpressionParser(edm, odata).parse(tokenizer, referringType, null, aliases);
-        parameter.setText(expression instanceof Literal ?
-            "null".equals(((Literal) expression).getText()) ? null : ((Literal) expression).getText() :
+        parameter.setText(expression instanceof Literal literal ?
+            "null".equals(literal.getText()) ? null : literal.getText() :
             null)
             .setExpression(expression instanceof Literal ? null : expression);
       } else if (nextPrimitiveValue(tokenizer) == null) {
@@ -483,8 +483,8 @@ public class ParserHelper {
 
   private static boolean nextPrimitiveTypeValue(UriTokenizer tokenizer,
       final EdmPrimitiveType primitiveType, final boolean nullable) {
-    final EdmPrimitiveType type = primitiveType instanceof EdmTypeDefinition ?
-        ((EdmTypeDefinition) primitiveType).getUnderlyingType() :
+    final EdmPrimitiveType type = primitiveType instanceof EdmTypeDefinition typeDef ?
+        typeDef.getUnderlyingType() :
         primitiveType;
     if (tokenizer.next(TokenKind.ParameterAliasName)) {
       return true;
@@ -566,8 +566,7 @@ public class ParserHelper {
 
   protected static EdmType getTypeInformation(final UriResourcePartTyped resourcePart) {
     EdmType type = null;
-    if (resourcePart instanceof UriResourceWithKeysImpl) {
-      final UriResourceWithKeysImpl lastPartWithKeys = (UriResourceWithKeysImpl) resourcePart;
+    if (resourcePart instanceof UriResourceWithKeysImpl lastPartWithKeys) {
       if (lastPartWithKeys.getTypeFilterOnEntry() != null) {
         type = lastPartWithKeys.getTypeFilterOnEntry();
       } else if (lastPartWithKeys.getTypeFilterOnCollection() != null) {
@@ -576,8 +575,7 @@ public class ParserHelper {
         type = lastPartWithKeys.getType();
       }
 
-    } else if (resourcePart instanceof UriResourceTypedImpl) {
-      final UriResourceTypedImpl lastPartTyped = (UriResourceTypedImpl) resourcePart;
+    } else if (resourcePart instanceof UriResourceTypedImpl lastPartTyped) {
       type = lastPartTyped.getTypeFilter() == null ?
           lastPartTyped.getType() :
           lastPartTyped.getTypeFilter();

@@ -20,6 +20,7 @@ package org.sitenetsoft.olinguito.commons.core.edm.annotations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -32,7 +33,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmConstantExpressio
 import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmDynamicExpression;
 import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmExpression;
 
-public class AbstractAnnotationTest {
+public abstract class AbstractAnnotationTest {
 
   protected EdmDynamicExpression assertDynamic(EdmExpression exp) {
     assertNotNull(exp);
@@ -122,6 +123,6 @@ public class AbstractAnnotationTest {
     allAsMethodValues.removeAll(Collections.singletonList(null));
     assertFalse(allAsMethodValues.contains(null));
     assertEquals(1, allAsMethodValues.size());
-    assertTrue(allAsMethodValues.get(0) instanceof EdmDynamicExpression);
+    assertInstanceOf(EdmDynamicExpression.class, allAsMethodValues.get(0));
   }
 }

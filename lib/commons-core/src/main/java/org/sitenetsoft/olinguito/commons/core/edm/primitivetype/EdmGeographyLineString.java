@@ -52,8 +52,8 @@ public final class EdmGeographyLineString extends AbstractGeospatialType<LineStr
   protected <T> String internalValueToString(final T value, final Boolean isNullable, final Integer maxLength,
       final Integer precision, final Integer scale, final Boolean isUnicode) throws EdmPrimitiveTypeException {
 
-    if (value instanceof LineString) {
-      return toString((LineString) value, isNullable, maxLength, precision, scale, isUnicode);
+    if (value instanceof LineString lineString) {
+      return toString(lineString, isNullable, maxLength, precision, scale, isUnicode);
     }
 
     throw new EdmPrimitiveTypeException("The value type " + value.getClass() + " is not supported.");
