@@ -132,10 +132,9 @@ public class CsdlCast extends CsdlDynamicExpression implements CsdlAnnotatable {
     if (obj == null) {
       return false;
     }
-    if (!(obj instanceof CsdlCast)) {
+    if (!(obj instanceof CsdlCast csdlCast)) {
       return false;
     }
-    CsdlCast csdlCast = (CsdlCast) obj;
     return (this.getValue() == null ? csdlCast.getValue() == null :
       this.getValue().equals(csdlCast.getValue()))
         && (this.getType() == null ? csdlCast.getType() == null :

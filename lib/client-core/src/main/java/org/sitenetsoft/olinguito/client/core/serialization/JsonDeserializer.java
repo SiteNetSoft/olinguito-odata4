@@ -384,8 +384,8 @@ public class JsonDeserializer implements ODataDeserializer {
         ((ObjectNode) node).remove(Constants.JSON_TYPE);
       }
       final Object value = fromComplex((ObjectNode) node, codec);
-      if (value instanceof ComplexValue) {
-        ((ComplexValue)value).setTypeName(valuable.getType());
+      if (value instanceof ComplexValue complexVal) {
+        complexVal.setTypeName(valuable.getType());
       }
       valuable.setValue(ValueType.COMPLEX, value);
       break;

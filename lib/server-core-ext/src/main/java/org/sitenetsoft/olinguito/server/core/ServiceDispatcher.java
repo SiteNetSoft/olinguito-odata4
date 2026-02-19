@@ -185,12 +185,10 @@ public class ServiceDispatcher extends RequestURLHierarchyVisitor {
 
   @Override
   public void visit(UriResourceCount option) {
-    if (this.request instanceof DataRequest) {
-      DataRequest dataRequest = (DataRequest) this.request;
+    if (this.request instanceof DataRequest dataRequest) {
       dataRequest.setCountRequest(option != null);
-    } else if (this.request instanceof OperationRequest) {
-      OperationRequest opRequest = (OperationRequest) this.request;
-      opRequest.setCountRequest(option != null);      
+    } else if (this.request instanceof OperationRequest opRequest) {
+      opRequest.setCountRequest(option != null);
     }
   }
 

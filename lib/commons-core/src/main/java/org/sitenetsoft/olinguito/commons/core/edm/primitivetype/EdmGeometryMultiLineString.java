@@ -53,8 +53,8 @@ public final class EdmGeometryMultiLineString extends AbstractGeospatialType<Mul
   protected <T> String internalValueToString(final T value, final Boolean isNullable, final Integer maxLength,
       final Integer precision, final Integer scale, final Boolean isUnicode) throws EdmPrimitiveTypeException {
 
-    if (value instanceof MultiLineString) {
-      return toString((MultiLineString) value, isNullable, maxLength, precision, scale, isUnicode);
+    if (value instanceof MultiLineString multiLineString) {
+      return toString(multiLineString, isNullable, maxLength, precision, scale, isUnicode);
     }
 
     throw new EdmPrimitiveTypeException("The value type " + value.getClass() + " is not supported.");

@@ -80,10 +80,9 @@ public class CsdlApply extends CsdlDynamicExpression implements CsdlAnnotatable 
     if (obj == null) {
       return false;
     }
-    if (!(obj instanceof CsdlApply)) {
+    if (!(obj instanceof CsdlApply annotApply)) {
       return false;
     }
-    CsdlApply annotApply = (CsdlApply) obj;
     return (this.getFunction() == null ? annotApply.getFunction() == null :
       this.getFunction().equals(annotApply.getFunction()))
       && (this.getParameters() == null ? annotApply.getParameters() == null :

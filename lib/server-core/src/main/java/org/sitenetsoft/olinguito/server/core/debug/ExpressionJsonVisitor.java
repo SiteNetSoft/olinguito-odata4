@@ -155,37 +155,35 @@ public class ExpressionJsonVisitor implements ExpressionVisitor<JsonNode> {
     putType(result, TYPE_FILTER_NAME, member.getStartTypeFilter());
     ArrayNode segments = result.putArray(RESOURCE_SEGMENTS_NAME);
     for (final UriResource segment : uriResourceParts) {
-      if (segment instanceof UriResourceLambdaAll) {
-        final UriResourceLambdaAll all = (UriResourceLambdaAll) segment;
+      if (segment instanceof UriResourceLambdaAll all) {
         segments.add(visitLambdaExpression(ALL_NAME, all.getLambdaVariable(), all.getExpression()));
-      } else if (segment instanceof UriResourceLambdaAny) {
-        final UriResourceLambdaAny any = (UriResourceLambdaAny) segment;
+      } else if (segment instanceof UriResourceLambdaAny any) {
         segments.add(visitLambdaExpression(ANY_NAME, any.getLambdaVariable(), any.getExpression()));
       } else if (segment instanceof UriResourcePartTyped) {
         ObjectNode node = nodeFactory.objectNode()
             .put(NODE_TYPE_NAME, segment.getKind().toString())
             .put(NAME_NAME, segment.toString())
             .put(TYPE_NAME, getType(segment));
-        if (segment instanceof UriResourceEntitySet) {
-          putParameters(node, KEYS_NAME, ((UriResourceEntitySet) segment).getKeyPredicates());
-          putType(node, TYPE_FILTER_ON_COLLECTION_NAME, ((UriResourceEntitySet) segment).getTypeFilterOnCollection());
-          putType(node, TYPE_FILTER_ON_ENTRY_NAME, ((UriResourceEntitySet) segment).getTypeFilterOnEntry());
-        } else if (segment instanceof UriResourceNavigation) {
-          putParameters(node, KEYS_NAME, ((UriResourceNavigation) segment).getKeyPredicates());
-          putType(node, TYPE_FILTER_ON_COLLECTION_NAME, ((UriResourceNavigation) segment).getTypeFilterOnCollection());
-          putType(node, TYPE_FILTER_ON_ENTRY_NAME, ((UriResourceNavigation) segment).getTypeFilterOnEntry());
-        } else if (segment instanceof UriResourceFunction) {
-          putParameters(node, PARAMETERS_NAME, ((UriResourceFunction) segment).getParameters());
-          putParameters(node, KEYS_NAME, ((UriResourceFunction) segment).getKeyPredicates());
-          putType(node, TYPE_FILTER_ON_COLLECTION_NAME, ((UriResourceFunction) segment).getTypeFilterOnCollection());
-          putType(node, TYPE_FILTER_ON_ENTRY_NAME, ((UriResourceFunction) segment).getTypeFilterOnEntry());
-        } else if (segment instanceof UriResourceIt) {
-          putType(node, TYPE_FILTER_ON_COLLECTION_NAME, ((UriResourceIt) segment).getTypeFilterOnCollection());
-          putType(node, TYPE_FILTER_ON_ENTRY_NAME, ((UriResourceIt) segment).getTypeFilterOnEntry());
-        } else if (segment instanceof UriResourceSingleton) {
-          putType(node, TYPE_FILTER_NAME, ((UriResourceSingleton) segment).getEntityTypeFilter());
-        } else if (segment instanceof UriResourceComplexProperty) {
-          putType(node, TYPE_FILTER_NAME, ((UriResourceComplexProperty) segment).getComplexTypeFilter());
+        if (segment instanceof UriResourceEntitySet entitySet) {
+          putParameters(node, KEYS_NAME, entitySet.getKeyPredicates());
+          putType(node, TYPE_FILTER_ON_COLLECTION_NAME, entitySet.getTypeFilterOnCollection());
+          putType(node, TYPE_FILTER_ON_ENTRY_NAME, entitySet.getTypeFilterOnEntry());
+        } else if (segment instanceof UriResourceNavigation navigation) {
+          putParameters(node, KEYS_NAME, navigation.getKeyPredicates());
+          putType(node, TYPE_FILTER_ON_COLLECTION_NAME, navigation.getTypeFilterOnCollection());
+          putType(node, TYPE_FILTER_ON_ENTRY_NAME, navigation.getTypeFilterOnEntry());
+        } else if (segment instanceof UriResourceFunction function) {
+          putParameters(node, PARAMETERS_NAME, function.getParameters());
+          putParameters(node, KEYS_NAME, function.getKeyPredicates());
+          putType(node, TYPE_FILTER_ON_COLLECTION_NAME, function.getTypeFilterOnCollection());
+          putType(node, TYPE_FILTER_ON_ENTRY_NAME, function.getTypeFilterOnEntry());
+        } else if (segment instanceof UriResourceIt it) {
+          putType(node, TYPE_FILTER_ON_COLLECTION_NAME, it.getTypeFilterOnCollection());
+          putType(node, TYPE_FILTER_ON_ENTRY_NAME, it.getTypeFilterOnEntry());
+        } else if (segment instanceof UriResourceSingleton singleton) {
+          putType(node, TYPE_FILTER_NAME, singleton.getEntityTypeFilter());
+        } else if (segment instanceof UriResourceComplexProperty complexProp) {
+          putType(node, TYPE_FILTER_NAME, complexProp.getComplexTypeFilter());
         }
         segments.add(node);
       } else {
@@ -341,7 +339,7 @@ public class ExpressionJsonVisitor implements ExpressionVisitor<JsonNode> {
   }
 
   private String getType(final UriResource segment) {
-    final EdmType type = segment instanceof UriResourcePartTyped ? ((UriResourcePartTyped) segment).getType() : null;
+    final EdmType type = segment instanceof UriResourcePartTyped partTyped ? partTyped.getType() : null;
     return type == null ? UNKNOWN_NAME : type.getFullQualifiedName().getFullQualifiedNameAsString();
   }
 

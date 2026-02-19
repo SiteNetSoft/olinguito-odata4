@@ -878,10 +878,10 @@ public class ExpressionParser {
   private void setTypeFilter(UriResourcePartTyped lastResource, final EdmStructuredType entityTypeFilter)
       throws UriParserException {
     checkStructuredTypeFilter(lastResource.getType(), entityTypeFilter);
-    if (lastResource instanceof UriResourceTypedImpl) {
-      ((UriResourceTypedImpl) lastResource).setTypeFilter(entityTypeFilter);
-    } else if (lastResource instanceof UriResourceWithKeysImpl) {
-      ((UriResourceWithKeysImpl) lastResource).setEntryTypeFilter(entityTypeFilter);
+    if (lastResource instanceof UriResourceTypedImpl typedImpl) {
+      typedImpl.setTypeFilter(entityTypeFilter);
+    } else if (lastResource instanceof UriResourceWithKeysImpl withKeysImpl) {
+      withKeysImpl.setEntryTypeFilter(entityTypeFilter);
     }
   }
 
@@ -918,12 +918,12 @@ public class ExpressionParser {
       } else {
         parseComplexPathExpr(uriInfo, complexResource);
       }
-    } else if (property instanceof EdmNavigationProperty) {
+    } else if (property instanceof EdmNavigationProperty navProperty) {
       // Nav. property; maybe a collection
       final UriResourceNavigationPropertyImpl navigationResource =
-          new UriResourceNavigationPropertyImpl((EdmNavigationProperty) property);
+          new UriResourceNavigationPropertyImpl(navProperty);
       navigationResource.setKeyPredicates(
-          ParserHelper.parseNavigationKeyPredicate(tokenizer, (EdmNavigationProperty) property,
+          ParserHelper.parseNavigationKeyPredicate(tokenizer, navProperty,
               edm, referringType, aliases));
       uriInfo.addResourcePart(navigationResource);
 
@@ -974,15 +974,15 @@ public class ExpressionParser {
     }
 
     if (!hasSlash && tokenizer.next(TokenKind.OPEN)) {
-      if (lastResource instanceof UriResourceNavigation) {
-        ((UriResourceNavigationPropertyImpl) lastResource).setKeyPredicates(
+      if (lastResource instanceof UriResourceNavigationPropertyImpl navPropImpl) {
+        navPropImpl.setKeyPredicates(
               ParserHelper.parseNavigationKeyPredicate(tokenizer,
-                  ((UriResourceNavigationPropertyImpl) lastResource).getProperty(), edm, referringType, aliases));
-      } else if (lastResource instanceof UriResourceFunction
-          && ((UriResourceFunction) lastResource).getType() instanceof EdmEntityType) {
-        ((UriResourceFunctionImpl) lastResource).setKeyPredicates(
+                  navPropImpl.getProperty(), edm, referringType, aliases));
+      } else if (lastResource instanceof UriResourceFunctionImpl funcImpl
+          && funcImpl.getType() instanceof EdmEntityType edmEntityType) {
+        funcImpl.setKeyPredicates(
             ParserHelper.parseKeyPredicate(tokenizer,
-                (EdmEntityType) ((UriResourceFunction) lastResource).getType(),
+                edmEntityType,
                 null,
                 edm,
                 referringType,
@@ -1168,22 +1168,22 @@ public class ExpressionParser {
 
   protected static EdmType getType(final Expression expression) throws UriParserException {
     EdmType type;
-    if (expression instanceof Literal) {
-      type = ((Literal) expression).getType();
-    } else if (expression instanceof TypeLiteral) {
-      type = ((TypeLiteral) expression).getType();
-    } else if (expression instanceof Enumeration) {
-      type = ((Enumeration) expression).getType();
-    } else if (expression instanceof Member) {
-      type = ((Member) expression).getType();
-    } else if (expression instanceof Unary) {
-      type = ((UnaryImpl) expression).getType();
-    } else if (expression instanceof Binary) {
-      type = ((BinaryImpl) expression).getType();
-    } else if (expression instanceof Method) {
-      type = ((MethodImpl) expression).getType();
-    } else if (expression instanceof Alias) {
-      final AliasQueryOption alias = ((AliasImpl) expression).getAlias();
+    if (expression instanceof Literal literal) {
+      type = literal.getType();
+    } else if (expression instanceof TypeLiteral typeLiteral) {
+      type = typeLiteral.getType();
+    } else if (expression instanceof Enumeration enumeration) {
+      type = enumeration.getType();
+    } else if (expression instanceof Member member) {
+      type = member.getType();
+    } else if (expression instanceof UnaryImpl unaryImpl) {
+      type = unaryImpl.getType();
+    } else if (expression instanceof BinaryImpl binaryImpl) {
+      type = binaryImpl.getType();
+    } else if (expression instanceof MethodImpl methodImpl) {
+      type = methodImpl.getType();
+    } else if (expression instanceof AliasImpl aliasImpl) {
+      final AliasQueryOption alias = aliasImpl.getAlias();
       type = alias == null || alias.getValue() == null ? null : getType(alias.getValue());
     } else if (expression instanceof LambdaRef) {
       throw new UriParserSemanticException("Type determination not implemented.",
@@ -1221,7 +1221,7 @@ public class ExpressionParser {
   }
 
   private void checkNoCollection(final Expression expression) throws UriParserException {
-    if (expression instanceof Member  && ((Member) expression).isCollection()) {
+    if (expression instanceof Member member && member.isCollection()) {
       throw new UriParserSemanticException("Collection not allowed.",
           UriParserSemanticException.MessageKeys.COLLECTION_NOT_ALLOWED);
     }
@@ -1383,7 +1383,7 @@ public class ExpressionParser {
 
   private void checkStructuredTypeFilter(final EdmType type, final EdmType filterType)
       throws UriParserException {
-    if (!(filterType instanceof EdmStructuredType && ((EdmStructuredType) filterType).compatibleTo(type))) {
+    if (!(filterType instanceof EdmStructuredType structuredFilter && structuredFilter.compatibleTo(type))) {
       throw new UriParserSemanticException("Incompatible type filter.",
           UriParserSemanticException.MessageKeys.INCOMPATIBLE_TYPE_FILTER,
           filterType.getFullQualifiedName().getFullQualifiedNameAsString());

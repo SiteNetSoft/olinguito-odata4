@@ -76,8 +76,8 @@ public final class EdmGuid extends SingletonPrimitiveType {
       final Boolean isNullable, final Integer maxLength, final Integer precision,
       final Integer scale, final Boolean isUnicode) throws EdmPrimitiveTypeException {
 
-    if (value instanceof UUID) {
-      return ((UUID) value).toString();
+    if (value instanceof UUID uuid) {
+      return uuid.toString();
     } else {
       throw new EdmPrimitiveTypeException("The value type " + value.getClass() + " is not supported.");
     }

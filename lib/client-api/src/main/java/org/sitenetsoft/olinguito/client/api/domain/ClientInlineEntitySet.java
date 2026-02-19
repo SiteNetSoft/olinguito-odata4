@@ -83,10 +83,9 @@ public class ClientInlineEntitySet extends ClientLink {
     if (!super.equals(obj)) {
       return false;
     }
-    if (!(obj instanceof ClientInlineEntitySet)) {
+    if (!(obj instanceof ClientInlineEntitySet other)) {
       return false;
     }
-    ClientInlineEntitySet other = (ClientInlineEntitySet) obj;
     if (entitySet == null) {
       if (other.entitySet != null) {
         return false;

@@ -45,10 +45,9 @@ public class CsdlNavigationPropertyPath extends CsdlDynamicExpression {
     if (obj == null) {
       return false;
     }
-    if (!(obj instanceof CsdlNavigationPropertyPath)) {
+    if (!(obj instanceof CsdlNavigationPropertyPath csdlNavPropPath)) {
       return false;
     }
-    CsdlNavigationPropertyPath csdlNavPropPath = (CsdlNavigationPropertyPath) obj;
     return (this.getValue() == null ? csdlNavPropPath.getValue() == null :
       this.getValue().equals(csdlNavPropPath.getValue()));
   }

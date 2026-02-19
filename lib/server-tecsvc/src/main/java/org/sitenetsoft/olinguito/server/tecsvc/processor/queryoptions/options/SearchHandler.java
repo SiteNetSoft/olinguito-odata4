@@ -97,12 +97,12 @@ public class SearchHandler {
    * which may return more results than a strict string-only search.
    */
   private static String asString(final Object primitive) {
-    if (primitive instanceof String) {
-      return (String) primitive;
-    } else if (primitive instanceof Calendar) {
-      return DatatypeConverter.printDateTime((Calendar) primitive);
-    } else if (primitive instanceof byte[]) {
-      return DatatypeConverter.printBase64Binary((byte[]) primitive);
+    if (primitive instanceof String s) {
+      return s;
+    } else if (primitive instanceof Calendar calendar) {
+      return DatatypeConverter.printDateTime(calendar);
+    } else if (primitive instanceof byte[] bytes) {
+      return DatatypeConverter.printBase64Binary(bytes);
     } else {
       return primitive.toString();
     }

@@ -67,7 +67,7 @@ public final class EdmString extends SingletonPrimitiveType {
       final Boolean isNullable, final Integer maxLength, final Integer precision,
       final Integer scale, final Boolean isUnicode) throws EdmPrimitiveTypeException {
 
-    final String result = value instanceof String ? (String) value : String.valueOf(value);
+    final String result = value instanceof String str ? str : String.valueOf(value);
 
     if (isUnicode != null && !isUnicode && !PATTERN_ASCII.matcher(result).matches()
         || maxLength != null && maxLength < result.length()) {

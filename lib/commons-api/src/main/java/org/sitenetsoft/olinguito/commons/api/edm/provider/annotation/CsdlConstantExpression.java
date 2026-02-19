@@ -133,10 +133,9 @@ public class CsdlConstantExpression extends CsdlExpression {
     if (obj == null) {
       return false;
     }
-    if (!(obj instanceof CsdlConstantExpression)) {
+    if (!(obj instanceof CsdlConstantExpression csdlConstExp)) {
       return false;
     }
-    CsdlConstantExpression csdlConstExp = (CsdlConstantExpression) obj;
     
     return (this.getValue() == null ? csdlConstExp.getValue() == null :
       this.getValue().equals(csdlConstExp.getValue()))

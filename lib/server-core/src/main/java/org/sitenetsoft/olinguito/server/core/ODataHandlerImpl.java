@@ -261,10 +261,10 @@ public class ODataHandlerImpl implements ODataHandler {
 
   @Override
   public void register(OlingoExtension extension) {
-    if(extension instanceof CustomContentTypeSupport) {
-      this.customContentTypeSupport = (CustomContentTypeSupport) extension;
-    } else if(extension instanceof CustomETagSupport) {
-      this.customETagSupport = (CustomETagSupport) extension;
+    if(extension instanceof CustomContentTypeSupport customContentType) {
+      this.customContentTypeSupport = customContentType;
+    } else if(extension instanceof CustomETagSupport customETag) {
+      this.customETagSupport = customETag;
     } else {
       throw new ODataRuntimeException("Got not supported exception with class name " +
           extension.getClass().getSimpleName());

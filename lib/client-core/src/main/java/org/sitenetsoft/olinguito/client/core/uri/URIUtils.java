@@ -213,44 +213,40 @@ public final class URIUtils {
         buffer.append('}');
 
         value = buffer.toString();
+      } else if (obj instanceof ParameterAlias alias) {
+        value = "@" + alias.getAlias();
+      } else if (obj instanceof Boolean b) {
+        value = Boolean.toString(b);
+      } else if (obj instanceof UUID) {
+        value = obj.toString();
+      } else if (obj instanceof byte[] bytes) {
+        value = EdmBinary.getInstance().toUriLiteral(HexFormat.of().formatHex(bytes));
+      } else if (obj instanceof Timestamp ts) {
+        value = timestamp(ts);
+      } else if (obj instanceof Calendar cal) {
+        value = calendar(cal);
+      } else if (obj instanceof Duration dur) {
+        value = duration(dur);
+      } else if (obj instanceof BigDecimal) {
+        value = EdmDecimal.getInstance().valueToString(obj, null, null,
+            Constants.DEFAULT_PRECISION, Constants.DEFAULT_SCALE, null);
+      } else if (obj instanceof Double) {
+        value = EdmDouble.getInstance().valueToString(obj, null, null,
+            Constants.DEFAULT_PRECISION, Constants.DEFAULT_SCALE, null);
+      } else if (obj instanceof Float) {
+        value = EdmSingle.getInstance().valueToString(obj, null, null,
+            Constants.DEFAULT_PRECISION, Constants.DEFAULT_SCALE, null);
+      } else if (obj instanceof Long) {
+        value = EdmInt64.getInstance().valueToString(obj, null, null,
+            Constants.DEFAULT_PRECISION, Constants.DEFAULT_SCALE, null);
+      } else if (obj instanceof Geospatial geo) {
+        value = Encoder.encode(EdmPrimitiveTypeFactory.getInstance(
+            geo.getEdmPrimitiveTypeKind()).valueToString(geo, null, null,
+            Constants.DEFAULT_PRECISION, Constants.DEFAULT_SCALE, null));
+      } else if (obj instanceof String s) {
+        value = quoteString(s, singleQuoteEscape);
       } else {
-        value =
-            (obj instanceof ParameterAlias)
-                ? "@" + ((ParameterAlias) obj).getAlias()
-                : (obj instanceof Boolean)
-                    ? Boolean.toString((Boolean) obj)
-                    : (obj instanceof UUID)
-                        ? obj.toString()
-
-                        : (obj instanceof byte[])
-                            ? EdmBinary.getInstance().toUriLiteral(HexFormat.of().formatHex((byte[]) obj))
-                            : (obj instanceof Timestamp)
-                                ? timestamp((Timestamp) obj)
-                                : (obj instanceof Calendar)
-                                    ? calendar((Calendar) obj)
-                                    : (obj instanceof Duration)
-                                        ? duration((Duration) obj)
-                                        : (obj instanceof BigDecimal)
-                                            ? EdmDecimal.getInstance().valueToString(obj, null, null,
-                                                Constants.DEFAULT_PRECISION, Constants.DEFAULT_SCALE, null)
-                                            : (obj instanceof Double)
-                                                ? EdmDouble.getInstance().valueToString(obj, null, null,
-                                                    Constants.DEFAULT_PRECISION, Constants.DEFAULT_SCALE, null)
-                                                : (obj instanceof Float)
-                                                    ? EdmSingle.getInstance().valueToString(obj, null, null,
-                                                        Constants.DEFAULT_PRECISION, Constants.DEFAULT_SCALE, null)
-                                                    : (obj instanceof Long)
-                                                        ? EdmInt64.getInstance().valueToString(obj, null, null,
-                                                            Constants.DEFAULT_PRECISION, Constants.DEFAULT_SCALE, null)
-                                                        : (obj instanceof Geospatial)
-                                                            ? Encoder.encode(EdmPrimitiveTypeFactory.getInstance(
-                                                                ((Geospatial) obj).getEdmPrimitiveTypeKind()).
-                                                                valueToString(obj, null, null,
-                                                                    Constants.DEFAULT_PRECISION,
-                                                                    Constants.DEFAULT_SCALE, null))
-                                                            : (obj instanceof String)
-                                                                ? quoteString((String) obj, singleQuoteEscape)
-                                                                : obj.toString();
+        value = obj.toString();
       }
     } catch (final EdmPrimitiveTypeException | UnsupportedEncodingException e) {
       value = obj.toString();

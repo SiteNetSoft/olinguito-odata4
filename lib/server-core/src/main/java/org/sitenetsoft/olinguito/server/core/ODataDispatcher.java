@@ -322,8 +322,8 @@ public class ODataDispatcher {
     // The URI Parser already checked if $value is allowed here so we only have to dispatch to the correct processor
     final UriResource resource = uriInfo.getUriResourceParts().get(lastPathSegmentIndex - 1);
     if (resource instanceof UriResourceProperty
-        || resource instanceof UriResourceFunction
-            && ((UriResourceFunction) resource).getType().getKind() == EdmTypeKind.PRIMITIVE) {
+        || resource instanceof UriResourceFunction uriResourceFunc
+            && uriResourceFunc.getType().getKind() == EdmTypeKind.PRIMITIVE) {
       handlePrimitiveValueDispatching(request, response, resource);
     } else {
       handleMediaValueDispatching(request, response, resource);
@@ -366,8 +366,8 @@ public class ODataDispatcher {
   ODataApplicationException, ODataLibraryException,
       ODataHandlerException, PreconditionException {
     final HttpMethod method = request.getMethod();
-    final EdmType type = resource instanceof UriResourceProperty ?
-        ((UriResourceProperty) resource).getType() : ((UriResourceFunction) resource).getType();
+    final EdmType type = resource instanceof UriResourceProperty uriResProp ?
+        uriResProp.getType() : ((UriResourceFunction) resource).getType();
     final RepresentationType valueRepresentationType =
         type == EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Binary) ?
             RepresentationType.BINARY : RepresentationType.VALUE;
@@ -464,8 +464,8 @@ public class ODataDispatcher {
       ContentType requestFormat = null;
       List<UriResource> uriResources = uriInfo.getUriResourceParts();
       UriResource uriResource = uriResources.get(uriResources.size() - 1);
-      if (uriResource instanceof UriResourcePrimitiveProperty &&
-    		  ((UriResourcePrimitiveProperty)uriResource).getType()
+      if (uriResource instanceof UriResourcePrimitiveProperty uriResPrimProp &&
+    		  uriResPrimProp.getType()
     		  .getFullQualifiedName().getFullQualifiedNameAsString().equalsIgnoreCase(EDMSTREAM)) {
     	 requestFormat = ContentType.parse(request.getHeader(HttpHeader.CONTENT_TYPE));
       } else {
@@ -502,13 +502,13 @@ public class ODataDispatcher {
     final UriResource resource = uriInfo.getUriResourceParts().get(lastPathSegmentIndex - 1);
     if (resource instanceof UriResourceEntitySet
         || resource instanceof UriResourceNavigation
-        || resource instanceof UriResourceFunction
-            && ((UriResourceFunction) resource).getType().getKind() == EdmTypeKind.ENTITY) {
+        || resource instanceof UriResourceFunction uriResFunc1
+            && uriResFunc1.getType().getKind() == EdmTypeKind.ENTITY) {
       handler.selectProcessor(CountEntityCollectionProcessor.class)
           .countEntityCollection(request, response, uriInfo);
     } else if (resource instanceof UriResourcePrimitiveProperty
-        || resource instanceof UriResourceFunction
-            && ((UriResourceFunction) resource).getType().getKind() == EdmTypeKind.PRIMITIVE) {
+        || resource instanceof UriResourceFunction uriResFunc2
+            && uriResFunc2.getType().getKind() == EdmTypeKind.PRIMITIVE) {
       handler.selectProcessor(CountPrimitiveCollectionProcessor.class)
           .countPrimitiveCollection(request, response, uriInfo);
     } else {
@@ -601,8 +601,8 @@ public class ODataDispatcher {
   }
   
   private boolean isSingletonMedia(final UriResource pathSegment) { 
-   return pathSegment instanceof UriResourceSingleton
-       && ((UriResourceSingleton) pathSegment).getEntityType().hasStream();
+   return pathSegment instanceof UriResourceSingleton singleton
+       && singleton.getEntityType().hasStream();
   }
 
   
@@ -653,8 +653,8 @@ public class ODataDispatcher {
     final int lastPathSegmentIndex = uriInfo.getUriResourceParts().size() - 1;
     final UriResource pathSegment = uriInfo.getUriResourceParts().get(lastPathSegmentIndex);
     if (pathSegment instanceof UriResourceNavigation
-        && uriInfo.getUriResourceParts().get(lastPathSegmentIndex - 1) instanceof UriResourceEntitySet
-        && ((UriResourceEntitySet) uriInfo.getUriResourceParts().get(lastPathSegmentIndex - 1)).getEntitySet()
+        && uriInfo.getUriResourceParts().get(lastPathSegmentIndex - 1) instanceof UriResourceEntitySet entitySet
+        && entitySet.getEntitySet()
             .getRelatedBindingTarget(
                 pathSegment.getSegmentValue()) instanceof EdmSingleton) {
       throwMethodNotAllowed(method);
@@ -722,10 +722,10 @@ public class ODataDispatcher {
 
   private boolean isEntityOrNavigationMedia(final UriResource pathSegment) {
     // This method MUST NOT check if the resource is of type function since these are handled differently
-    return pathSegment instanceof UriResourceEntitySet
-        && ((UriResourceEntitySet) pathSegment).getEntityType().hasStream()
-        || pathSegment instanceof UriResourceNavigation
-            && ((EdmEntityType) ((UriResourceNavigation) pathSegment).getType()).hasStream();
+    return pathSegment instanceof UriResourceEntitySet entitySet
+        && entitySet.getEntityType().hasStream()
+        || pathSegment instanceof UriResourceNavigation nav
+            && ((EdmEntityType) nav.getType()).hasStream();
   }
 
 }

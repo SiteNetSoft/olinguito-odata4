@@ -76,14 +76,14 @@ public final class EdmInt32 extends SingletonPrimitiveType {
 
     if (value instanceof Byte || value instanceof Short || value instanceof Integer) {
       return value.toString();
-    } else if (value instanceof Long) {
-      if ((Long) value >= Integer.MIN_VALUE && (Long) value <= Integer.MAX_VALUE) {
+    } else if (value instanceof Long longVal) {
+      if (longVal >= Integer.MIN_VALUE && longVal <= Integer.MAX_VALUE) {
         return value.toString();
       } else {
         throw new EdmPrimitiveTypeException("The value '" + value + "' is not valid.");
       }
-    } else if (value instanceof BigInteger) {
-      if (((BigInteger) value).bitLength() < Integer.SIZE) {
+    } else if (value instanceof BigInteger bigInteger) {
+      if (bigInteger.bitLength() < Integer.SIZE) {
         return value.toString();
       } else {
         throw new EdmPrimitiveTypeException("The value '" + value + "' is not valid.");

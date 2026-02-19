@@ -37,7 +37,6 @@ import org.sitenetsoft.olinguito.commons.api.data.Parameter;
 import org.sitenetsoft.olinguito.commons.api.data.Property;
 import org.sitenetsoft.olinguito.commons.api.data.ValueType;
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
-import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
 import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider.DataProviderException;

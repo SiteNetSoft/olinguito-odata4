@@ -643,8 +643,8 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
   }
 
   private void addKeyPropertiesToSelected(Set<String> selected, EdmStructuredType type) {
-    if (!selected.isEmpty() && type instanceof EdmEntityType) {
-      List<String> keyNames = ((EdmEntityType) type).getKeyPredicateNames();
+    if (!selected.isEmpty() && type instanceof EdmEntityType edmEntityType) {
+      List<String> keyNames = edmEntityType.getKeyPredicateNames();
       for (String key : keyNames) {
         if (!selected.contains(key)) {
           selected.add(key);
@@ -880,10 +880,10 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
         (EdmComplexType) edmProperty.getType(), derivedName);
        
        if (null != linked) {
-         if (linked instanceof Entity) {
-           linked = ((Entity)linked).getProperty(property.getName()).asComplex();
-         } else if (linked instanceof ComplexValue) {
-           List<Property> complexProperties = ((ComplexValue)linked).getValue();
+         if (linked instanceof Entity entity) {
+           linked = entity.getProperty(property.getName()).asComplex();
+         } else if (linked instanceof ComplexValue complexValue) {
+           List<Property> complexProperties = complexValue.getValue();
            for (Property prop : complexProperties) {
              if (prop.getName().equals(property.getName())) {
                linked = prop.asComplex();

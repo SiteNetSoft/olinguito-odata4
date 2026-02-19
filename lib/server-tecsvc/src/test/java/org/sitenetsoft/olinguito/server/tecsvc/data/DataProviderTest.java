@@ -29,7 +29,6 @@ import org.sitenetsoft.olinguito.commons.api.data.Property;
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
-import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.uri.UriParameter;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;

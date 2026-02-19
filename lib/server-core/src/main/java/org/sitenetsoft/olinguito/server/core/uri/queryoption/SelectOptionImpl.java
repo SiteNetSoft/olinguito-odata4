@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.server.core.uri.queryoption;
 
@@ -40,7 +42,7 @@ public class SelectOptionImpl extends SystemQueryOptionImpl implements SelectOpt
 
   @Override
   public List<SelectItem> getSelectItems() {
-    return selectItems == null ? Collections.emptyList() : Collections.unmodifiableList(selectItems);
+    return selectItems == null ? List.of() : Collections.unmodifiableList(selectItems);
   }
 
 }

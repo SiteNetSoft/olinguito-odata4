@@ -15,13 +15,14 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -513,8 +514,7 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
   private boolean checkIfContNavigation(UriInfo uriInfo) {
     List<UriResource> pathSegments = uriInfo.getUriResourceParts();
     for(UriResource resource : pathSegments) {
-      if (resource instanceof UriResourceNavigation) {
-        UriResourceNavigation navResource = (UriResourceNavigation) resource;
+      if (resource instanceof UriResourceNavigation navResource) {
         if (navResource.getProperty().containsTarget()) {
           return true;
         }
@@ -527,8 +527,7 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
     List<UriResource> pathSegments = uriInfo.getUriResourceParts();
     EdmEntityType type = null;
     for(UriResource resource : pathSegments) {
-      if (resource instanceof UriResourceNavigation) {
-        UriResourceNavigation navResource = (UriResourceNavigation) resource;
+      if (resource instanceof UriResourceNavigation navResource) {
         if (navResource.getProperty().containsTarget()) {
           if (navResource.getTypeFilterOnCollection() != null) {
             type = ((EdmEntityType) navResource.getTypeFilterOnCollection());
@@ -559,14 +558,12 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
   private EdmEntityType getEdmType(UriInfo uriInfo, EdmEntitySet edmEntitySet) {
     if(edmEntitySet!=null){
       return edmEntitySet.getEntityType();
-    }else if(edmEntitySet==null && uriInfo.getUriResourceParts()
-              .get(uriInfo.getUriResourceParts().size() - 1) instanceof UriResourcePartTyped){
-      return  (EdmEntityType) ((UriResourcePartTyped) uriInfo.getUriResourceParts()
-                .get(uriInfo.getUriResourceParts().size() - 1)).getType();
-    }else if((UriResourceSingleton) uriInfo.getUriResourceParts()
-              .get(0) instanceof UriResourceSingleton){
-      return (EdmEntityType)((UriResourceSingleton) uriInfo.getUriResourceParts()
-                .get(0)).getType();
+    }else if(uriInfo.getUriResourceParts()
+              .get(uriInfo.getUriResourceParts().size() - 1) instanceof UriResourcePartTyped partTyped){
+      return  (EdmEntityType) partTyped.getType();
+    }else if(uriInfo.getUriResourceParts()
+              .get(0) instanceof UriResourceSingleton singleton){
+      return (EdmEntityType) singleton.getType();
     }
 
   return null;
@@ -838,7 +835,7 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
             @SuppressWarnings("unchecked")
             final List<ComplexValue> cvs = property.isCollection() ?
                 (List<ComplexValue>) property.asCollection() :
-                Collections.singletonList(property.asComplex());
+                List.of(property.asComplex());
             for (ComplexValue cv : cvs) {
               final List<Property> value = cv.getValue();
               if (value != null) {

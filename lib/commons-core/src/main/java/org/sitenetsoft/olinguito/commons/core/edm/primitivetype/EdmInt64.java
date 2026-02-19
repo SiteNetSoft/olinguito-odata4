@@ -117,8 +117,8 @@ public final class EdmInt64 extends SingletonPrimitiveType {
 
     if (value instanceof Byte || value instanceof Short || value instanceof Integer || value instanceof Long) {
       return value.toString();
-    } else if (value instanceof BigInteger) {
-      if (((BigInteger) value).bitLength() < Long.SIZE) {
+    } else if (value instanceof BigInteger bigInteger) {
+      if (bigInteger.bitLength() < Long.SIZE) {
         return value.toString();
       } else {
         throw new EdmPrimitiveTypeException("The value '" + value + "' is not valid.");

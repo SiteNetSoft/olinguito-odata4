@@ -131,10 +131,9 @@ return this;
     if (obj == null) {
       return false;
     }
-    if (!(obj instanceof CsdlIsOf)) {
+    if (!(obj instanceof CsdlIsOf csdlIsOf)) {
       return false;
     }
-    CsdlIsOf csdlIsOf = (CsdlIsOf) obj;
     return (this.getType() == null ? csdlIsOf.getType() == null :
       this.getType().equals(csdlIsOf.getType()))
         && (this.getMaxLength() == null ? csdlIsOf.getMaxLength() == null :

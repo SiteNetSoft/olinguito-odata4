@@ -26,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
@@ -206,7 +205,9 @@ public class MetadataParserTest {
   @Test
   public void testParsingWithNoFormat() throws Exception {
     MetadataParser parser = new MetadataParser();
-    try (FileReader reader = new FileReader("src/test/resources/skip-annotation.xml")) {
+    try (var reader = new java.io.InputStreamReader(
+            java.nio.file.Files.newInputStream(java.nio.file.Path.of("src/test/resources/skip-annotation.xml")),
+            StandardCharsets.UTF_8)) {
       provider = (CsdlEdmProvider) parser.buildEdmProvider(reader);
     }
   }
@@ -216,7 +217,9 @@ public class MetadataParserTest {
     MetadataParser parser = new MetadataParser();
     parser.recursivelyLoadReferences(false);
     parser.referenceResolver(this.testReferenceResolver);
-    try (FileReader reader = new FileReader("src/test/resources/test.xml")) {
+    try (var reader = new java.io.InputStreamReader(
+            java.nio.file.Files.newInputStream(java.nio.file.Path.of("src/test/resources/test.xml")),
+            StandardCharsets.UTF_8)) {
       provider = (CsdlEdmProvider) parser.buildEdmProvider(reader);
     }
   }
@@ -226,7 +229,9 @@ public class MetadataParserTest {
     MetadataParser parser = new MetadataParser();
     parser.recursivelyLoadReferences(true);
     parser.referenceResolver(testReferenceResolver);
-    try (FileReader reader = new FileReader("src/test/resources/test.xml")) {
+    try (var reader = new java.io.InputStreamReader(
+            java.nio.file.Files.newInputStream(java.nio.file.Path.of("src/test/resources/test.xml")),
+            StandardCharsets.UTF_8)) {
       SchemaBasedEdmProvider providerTest = parser.buildEdmProvider(reader);
 
       Assertions.assertNotNull(providerTest.getSchema("Microsoft.OData.SampleService.Models.TripPin", false));
@@ -244,7 +249,9 @@ public class MetadataParserTest {
     MetadataParser parser = new MetadataParser();
     parser.recursivelyLoadReferences(true);
     parser.referenceResolver(testReferenceResolver);
-    try (FileReader reader = new FileReader("src/test/resources/test.xml")) {
+    try (var reader = new java.io.InputStreamReader(
+            java.nio.file.Files.newInputStream(java.nio.file.Path.of("src/test/resources/test.xml")),
+            StandardCharsets.UTF_8)) {
       SchemaBasedEdmProvider providerTest = parser.buildEdmProvider(reader);
 
       Assertions.assertNull(providerTest.getSchema("Not Found", true));
@@ -256,7 +263,9 @@ public class MetadataParserTest {
     MetadataParser parser = new MetadataParser();
     parser.implicitlyLoadCoreVocabularies(true);
     parser.referenceResolver(testReferenceResolver);
-    try (FileReader reader = new FileReader("src/test/resources/test.xml")) {
+    try (var reader = new java.io.InputStreamReader(
+            java.nio.file.Files.newInputStream(java.nio.file.Path.of("src/test/resources/test.xml")),
+            StandardCharsets.UTF_8)) {
       SchemaBasedEdmProvider provider = parser.buildEdmProvider(reader);
 
       Assertions.assertNotNull(provider.getVocabularySchema("Org.OData.Core.V1"));

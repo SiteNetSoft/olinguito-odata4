@@ -263,8 +263,8 @@ public class UriValidator {
   }
 
   private boolean isCollection(final UriResource pathSegment) throws UriValidationException {
-    if (pathSegment instanceof UriResourcePartTyped) {
-      return ((UriResourcePartTyped) pathSegment).isCollection();
+    if (pathSegment instanceof UriResourcePartTyped partTyped) {
+      return partTyped.isCollection();
     } else {
       throw new UriValidationException(
           "Path segment is not an instance of UriResourcePartTyped but " + pathSegment.getClass(),

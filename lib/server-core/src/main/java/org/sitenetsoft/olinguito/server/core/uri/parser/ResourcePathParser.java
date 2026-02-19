@@ -172,13 +172,11 @@ public class ResourcePathParser {
    * With this logic, /entitySet('key') and /entitySet/key should be equivalent.
    */
   private boolean canParseKeyFromSegment(final String pathSegment, UriResource previous) {
-    if (previous instanceof UriResourceEntitySetImpl) {
-      UriResourceEntitySetImpl entitySet = (UriResourceEntitySetImpl) previous;
+    if (previous instanceof UriResourceEntitySetImpl entitySet) {
       if (entitySet.getEntitySet().isKeyAsSegmentAllowed()) {
         return didSetKeySegmentAsKey(pathSegment, entitySet, entitySet.getEntitySet().getEntityType());
       }
-    } else if (previous instanceof UriResourceNavigationPropertyImpl) {
-      UriResourceNavigationPropertyImpl navProp = (UriResourceNavigationPropertyImpl) previous;
+    } else if (previous instanceof UriResourceNavigationPropertyImpl navProp) {
       EdmNavigationProperty edmNavProperty = navProp.getProperty();
       if (edmNavProperty.isKeyAsSegmentAllowed()) {
         return didSetKeySegmentAsKey(pathSegment, navProp, edmNavProperty.getType());
@@ -212,18 +210,18 @@ public class ResourcePathParser {
 
   private void requireMediaResourceInCaseOfEntity(UriResource resource) throws UriParserSemanticException {
     // If the resource is an entity or navigatio
-    if (resource instanceof UriResourceEntitySet && !((UriResourceEntitySet) resource).getEntityType().hasStream()
-        || resource instanceof UriResourceNavigation
-        && !((EdmEntityType) ((UriResourceNavigation) resource).getType()).hasStream()) {
+    if (resource instanceof UriResourceEntitySet resEntitySet && !resEntitySet.getEntityType().hasStream()
+        || resource instanceof UriResourceNavigation resNav
+        && !((EdmEntityType) resNav.getType()).hasStream()) {
       throw new UriParserSemanticException("$value on entity is only allowed on media resources.",
           UriParserSemanticException.MessageKeys.NOT_A_MEDIA_RESOURCE, resource.getSegmentValue());
     }
 
     // Functions can also deliver an entity. In this case we have to check if the returned entity is a media resource
-    if (resource instanceof UriResourceFunction) {
-      EdmType returnType = ((UriResourceFunction) resource).getFunction().getReturnType().getType();
+    if (resource instanceof UriResourceFunction resFunc) {
+      EdmType returnType = resFunc.getFunction().getReturnType().getType();
       //Collection check is above so not needed here
-      if (returnType instanceof EdmEntityType && !((EdmEntityType) returnType).hasStream()) {
+      if (returnType instanceof EdmEntityType edmEntityType && !edmEntityType.hasStream()) {
         throw new UriParserSemanticException("$value on returned entity is only allowed on media resources.",
             UriParserSemanticException.MessageKeys.NOT_A_MEDIA_RESOURCE, resource.getSegmentValue());
       }
@@ -291,8 +289,8 @@ public class ResourcePathParser {
     UriResourcePartTyped previousTyped = null;
     EdmStructuredType structType = null;
     requireTyped(previous, name);
-    if (((UriResourcePartTyped) previous).getType() instanceof EdmStructuredType) {
-      previousTyped = (UriResourcePartTyped) previous;
+    if (previous instanceof UriResourcePartTyped prevTyped && prevTyped.getType() instanceof EdmStructuredType) {
+      previousTyped = prevTyped;
       final EdmType previousTypeFilter = getPreviousTypeFilter(previousTyped);
       structType = (EdmStructuredType) (previousTypeFilter == null ? previousTyped.getType() : previousTypeFilter);
     } else {
@@ -372,42 +370,42 @@ public class ResourcePathParser {
       final UriResourcePartTyped previousTyped) throws UriParserException, UriValidationException {
     if (type.compatibleTo(previousTyped.getType())) {
       EdmType previousTypeFilter = null;
-      if (previousTyped instanceof UriResourceWithKeysImpl) {
+      if (previousTyped instanceof UriResourceWithKeysImpl withKeysImpl) {
         if (previousTyped.isCollection()) {
-          previousTypeFilter = ((UriResourceWithKeysImpl) previousTyped).getTypeFilterOnCollection();
+          previousTypeFilter = withKeysImpl.getTypeFilterOnCollection();
           if (previousTypeFilter != null) {
             throw new UriParserSemanticException("Type filters are not chainable.",
                 UriParserSemanticException.MessageKeys.TYPE_FILTER_NOT_CHAINABLE,
                 previousTypeFilter.getName(), type.getName());
           }
-          ((UriResourceWithKeysImpl) previousTyped).setCollectionTypeFilter(type);
+          withKeysImpl.setCollectionTypeFilter(type);
         } else {
-          previousTypeFilter = ((UriResourceWithKeysImpl) previousTyped).getTypeFilterOnEntry();
+          previousTypeFilter = withKeysImpl.getTypeFilterOnEntry();
           if (previousTypeFilter != null) {
             throw new UriParserSemanticException("Type filters are not chainable.",
                 UriParserSemanticException.MessageKeys.TYPE_FILTER_NOT_CHAINABLE,
                 previousTypeFilter.getName(), type.getName());
           }
-          ((UriResourceWithKeysImpl) previousTyped).setEntryTypeFilter(type);
+          withKeysImpl.setEntryTypeFilter(type);
         }
         if (tokenizer.next(TokenKind.OPEN)) {
           final List<UriParameter> keys =
               ParserHelper.parseKeyPredicate(tokenizer, (EdmEntityType) type, null, edm, null, aliases);
           if (previousTyped.isCollection()) {
-            ((UriResourceWithKeysImpl) previousTyped).setKeyPredicates(keys);
+            withKeysImpl.setKeyPredicates(keys);
           } else {
             throw new UriParserSemanticException("Key not allowed here.",
                 UriParserSemanticException.MessageKeys.KEY_NOT_ALLOWED);
           }
         }
-      } else {
-        previousTypeFilter = ((UriResourceTypedImpl) previousTyped).getTypeFilter();
+      } else if (previousTyped instanceof UriResourceTypedImpl typedImpl) {
+        previousTypeFilter = typedImpl.getTypeFilter();
         if (previousTypeFilter != null) {
           throw new UriParserSemanticException("Type filters are not chainable.",
               UriParserSemanticException.MessageKeys.TYPE_FILTER_NOT_CHAINABLE,
               previousTypeFilter.getName(), type.getName());
         }
-        ((UriResourceTypedImpl) previousTyped).setTypeFilter(type);
+        typedImpl.setTypeFilter(type);
       }
       ParserHelper.requireTokenEnd(tokenizer);
       return null;
@@ -419,10 +417,10 @@ public class ResourcePathParser {
   }
 
   private EdmType getPreviousTypeFilter(final UriResourcePartTyped previousTyped) {
-    if (previousTyped instanceof UriResourceWithKeysImpl) {
-      return ((UriResourceWithKeysImpl) previousTyped).getTypeFilterOnEntry() == null ?
-          ((UriResourceWithKeysImpl) previousTyped).getTypeFilterOnCollection() :
-          ((UriResourceWithKeysImpl) previousTyped).getTypeFilterOnEntry();
+    if (previousTyped instanceof UriResourceWithKeysImpl withKeysImpl) {
+      return withKeysImpl.getTypeFilterOnEntry() == null ?
+          withKeysImpl.getTypeFilterOnCollection() :
+          withKeysImpl.getTypeFilterOnEntry();
     } else {
       return ((UriResourceTypedImpl) previousTyped).getTypeFilter();
     }

@@ -111,10 +111,10 @@ public class EdmAssistedJsonSerializer implements EdmAssistedSerializer {
     CircleStreamBuffer buffer = new CircleStreamBuffer();
     outputStream = buffer.getOutputStream();
     try (JsonGenerator json = new JsonFactory().createGenerator(outputStream)) {
-      if (obj instanceof AbstractEntityCollection) {
-        doSerialize(entityType, (AbstractEntityCollection) obj, contextURLString, metadataETag, json);
-      } else if (obj instanceof Entity) {
-        doSerialize(entityType, (Entity) obj, contextURLString, metadataETag, json);
+      if (obj instanceof AbstractEntityCollection entityCollection) {
+        doSerialize(entityType, entityCollection, contextURLString, metadataETag, json);
+      } else if (obj instanceof Entity entity) {
+        doSerialize(entityType, entity, contextURLString, metadataETag, json);
       } else {
         throw new SerializerException("Input type not supported.", MessageKeys.NOT_IMPLEMENTED);
       }
@@ -309,8 +309,8 @@ public class EdmAssistedJsonSerializer implements EdmAssistedSerializer {
       String serialized = null;
       try {
     	  Integer scale = null;
-    	  if (value instanceof BigDecimal) {
-    		  scale = Math.max(0, ((BigDecimal) value).scale());
+    	  if (value instanceof BigDecimal bigDecimal) {
+    		  scale = Math.max(0, bigDecimal.scale());
     	  } else {
     		  scale = Constants.DEFAULT_SCALE;
     	  }

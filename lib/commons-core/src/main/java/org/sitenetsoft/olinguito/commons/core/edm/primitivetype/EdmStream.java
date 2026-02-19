@@ -84,10 +84,10 @@ public final class EdmStream extends SingletonPrimitiveType {
       final Boolean isNullable, final Integer maxLength, final Integer precision,
       final Integer scale, final Boolean isUnicode) throws EdmPrimitiveTypeException {
 
-    if (value instanceof URI) {
-      return ((URI) value).toASCIIString();
-    } else if (value instanceof Link) {
-      return ((Link)value).getHref();
+    if (value instanceof URI uri) {
+      return uri.toASCIIString();
+    } else if (value instanceof Link link) {
+      return link.getHref();
     } else {
       throw new EdmPrimitiveTypeException("The value type " + value.getClass() + " is not supported.");
     }

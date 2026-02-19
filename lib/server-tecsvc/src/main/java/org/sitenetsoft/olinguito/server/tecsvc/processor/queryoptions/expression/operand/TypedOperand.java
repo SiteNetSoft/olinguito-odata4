@@ -55,14 +55,14 @@ public class TypedOperand extends VisitorOperand {
   public TypedOperand asTypedOperand() throws ODataApplicationException {
     if (isNull()) {
       return this;
-    } else if (type instanceof EdmPrimitiveType && !(value instanceof Collection)) {
-      return value.getClass() == getDefaultType((EdmPrimitiveType) type) ?
+    } else if (type instanceof EdmPrimitiveType edmPrimType && !(value instanceof Collection)) {
+      return value.getClass() == getDefaultType(edmPrimType) ?
           this :
-          asTypedOperand((EdmPrimitiveType) type);
-    } else if (type instanceof EdmPrimitiveType && value instanceof Collection) {
-      return value.getClass() == getDefaultType((EdmPrimitiveType) type) ?
+          asTypedOperand(edmPrimType);
+    } else if (type instanceof EdmPrimitiveType edmPrimType2 && value instanceof Collection) {
+      return value.getClass() == getDefaultType(edmPrimType2) ?
           this :
-          asTypedOperandForCollection((EdmPrimitiveType) type);
+          asTypedOperandForCollection(edmPrimType2);
     } else {
       throw new ODataApplicationException("A single primitive-type instance is expected.",
           HttpStatusCode.BAD_REQUEST.getStatusCode(), Locale.ROOT);

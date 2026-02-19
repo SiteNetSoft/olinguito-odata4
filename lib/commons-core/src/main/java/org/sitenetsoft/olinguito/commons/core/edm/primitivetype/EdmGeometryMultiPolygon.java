@@ -53,8 +53,8 @@ public final class EdmGeometryMultiPolygon extends AbstractGeospatialType<MultiP
   protected <T> String internalValueToString(final T value, final Boolean isNullable, final Integer maxLength,
       final Integer precision, final Integer scale, final Boolean isUnicode) throws EdmPrimitiveTypeException {
 
-    if (value instanceof MultiPolygon) {
-      return toString((MultiPolygon) value, isNullable, maxLength, precision, scale, isUnicode);
+    if (value instanceof MultiPolygon multiPolygon) {
+      return toString(multiPolygon, isNullable, maxLength, precision, scale, isUnicode);
     }
 
     throw new EdmPrimitiveTypeException("The value type " + value.getClass() + " is not supported.");

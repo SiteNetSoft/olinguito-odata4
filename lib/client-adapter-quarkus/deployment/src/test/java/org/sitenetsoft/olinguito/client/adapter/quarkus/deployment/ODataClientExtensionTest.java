@@ -26,11 +26,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Integration tests for the OData client Quarkus extension.
  * <p>
- * Note: These tests are currently disabled due to the same Quarkus test framework
- * timing issue observed in the server extension (NoHttpResponse on test port).
- * The extension works correctly when tested in a real Quarkus application.
+ * Disabled: ODataClientProcessor consumes runtime config in a build step.
+ * Needs refactoring to use RuntimeValue&lt;ODataClientsRuntimeConfig&gt; in a @Recorder constructor.
  */
-@Disabled("Quarkus test framework timing issue - same as server extension")
+@Disabled("ODataClientProcessor build step consumes runtime config directly - needs @Recorder refactoring")
 class ODataClientExtensionTest {
 
     @RegisterExtension

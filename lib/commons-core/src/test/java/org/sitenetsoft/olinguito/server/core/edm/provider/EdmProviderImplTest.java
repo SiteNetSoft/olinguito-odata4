@@ -48,7 +48,6 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEdmProvider;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityContainerInfo;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityType;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEnumType;
-import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlPropertyRef;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlTypeDefinition;
 import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
 import org.junit.jupiter.api.BeforeEach;

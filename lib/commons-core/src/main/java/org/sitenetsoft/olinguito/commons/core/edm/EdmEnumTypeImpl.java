@@ -282,7 +282,7 @@ public class EdmEnumTypeImpl extends EdmTypeImpl implements EdmEnumType {
   public boolean equals(final Object obj) {
     return obj != null
         && (obj == this
-        || obj instanceof EdmEnumType
-            && getFullQualifiedName().equals(((EdmEnumType) obj).getFullQualifiedName()));
+        || obj instanceof EdmEnumType enumType
+            && getFullQualifiedName().equals(enumType.getFullQualifiedName()));
   }
 }

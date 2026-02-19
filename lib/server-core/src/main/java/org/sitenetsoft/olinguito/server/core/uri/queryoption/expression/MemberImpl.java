@@ -62,23 +62,21 @@ public class MemberImpl implements Member {
     UriInfoImpl uriInfo = (UriInfoImpl) path;
     UriResourceImpl lastResourcePart = (UriResourceImpl) uriInfo.getLastResourcePart();
 
-    if (lastResourcePart instanceof UriResourceWithKeysImpl) {
-      UriResourceWithKeysImpl lastKeyPred = (UriResourceWithKeysImpl) lastResourcePart;
+    if (lastResourcePart instanceof UriResourceWithKeysImpl lastKeyPred) {
       if (lastKeyPred.getTypeFilterOnEntry() != null) {
         return lastKeyPred.getTypeFilterOnEntry();
       } else if (lastKeyPred.getTypeFilterOnCollection() != null) {
         return lastKeyPred.getTypeFilterOnCollection();
       }
       return lastKeyPred.getType();
-    } else if (lastResourcePart instanceof UriResourceTypedImpl) {
-      UriResourceTypedImpl lastTyped = (UriResourceTypedImpl) lastResourcePart;
+    } else if (lastResourcePart instanceof UriResourceTypedImpl lastTyped) {
       EdmType type = lastTyped.getTypeFilter();
       if (type != null) {
         return type;
       }
       return lastTyped.getType();
-    } else if (lastResourcePart instanceof UriResourceActionImpl) {
-      return ((UriResourceActionImpl) lastResourcePart).getType();
+    } else if (lastResourcePart instanceof UriResourceActionImpl actionImpl) {
+      return actionImpl.getType();
     } else {
       return null;
     }
@@ -88,8 +86,8 @@ public class MemberImpl implements Member {
   public boolean isCollection() {
     UriInfoImpl uriInfo = (UriInfoImpl) path;
     UriResource lastResourcePart = uriInfo.getLastResourcePart();
-    return lastResourcePart instanceof UriResourcePartTyped ?
-        ((UriResourcePartTyped) lastResourcePart).isCollection() :
+    return lastResourcePart instanceof UriResourcePartTyped partTyped ?
+        partTyped.isCollection() :
         false;
   }
 

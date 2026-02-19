@@ -80,10 +80,10 @@ public class ODataNettyHandlerImpl implements ODataNettyHandler {
   private ODataResponse handleException(final ODataRequest odRequest, final Exception e) {
     ODataResponse resp = new ODataResponse();
     ODataServerError serverError;
-    if (e instanceof ODataHandlerException) {
-      serverError = ODataExceptionHelper.createServerErrorObject((ODataHandlerException) e, null);
-    } else if (e instanceof ODataLibraryException) {
-      serverError = ODataExceptionHelper.createServerErrorObject((ODataLibraryException) e, null);
+    if (e instanceof ODataHandlerException oDataHandlerEx) {
+      serverError = ODataExceptionHelper.createServerErrorObject(oDataHandlerEx, null);
+    } else if (e instanceof ODataLibraryException oDataLibraryEx) {
+      serverError = ODataExceptionHelper.createServerErrorObject(oDataLibraryEx, null);
     } else {
       serverError = ODataExceptionHelper.createServerErrorObject(e);
     }

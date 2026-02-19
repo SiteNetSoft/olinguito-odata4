@@ -15,11 +15,12 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -92,8 +93,7 @@ public class TechnicalActionProcessor extends TechnicalProcessor
     List<UriResource> resourcePaths = uriInfo.asUriInfoResource().getUriResourceParts();
     if (resourcePaths.size() > 1) {
       UriResourceEntitySet boundEntityCollection = (UriResourceEntitySet) resourcePaths.get(0);
-      if (resourcePaths.get(1) instanceof UriResourceNavigation) {
-        UriResourceNavigation navResource = (UriResourceNavigation) resourcePaths.get(1);
+      if (resourcePaths.get(1) instanceof UriResourceNavigation navResource) {
         EdmNavigationProperty navProperty = navResource.getProperty();
         action = ((UriResourceAction) resourcePaths.get(2))
             .getAction();
@@ -157,8 +157,7 @@ public class TechnicalActionProcessor extends TechnicalProcessor
     if (resourcePaths.size() > 1) {
       UriResourceEntitySet boundEntity = (UriResourceEntitySet) resourcePaths.get(0);
       EdmEntitySet entitySet = boundEntity.getEntitySet();
-      if (resourcePaths.get(1) instanceof UriResourceNavigation) {
-        UriResourceNavigation navEntity = (UriResourceNavigation) resourcePaths.get(1);
+      if (resourcePaths.get(1) instanceof UriResourceNavigation navEntity) {
         action = ((UriResourceAction) resourcePaths.get(2))
             .getAction();
         parameters = readParameters(action, request.getBody(), requestFormat);
@@ -176,8 +175,7 @@ public class TechnicalActionProcessor extends TechnicalProcessor
                   parameters, boundEntity.getKeyPredicates(),
                   entitySet, navProperty);
         }
-      } else if (resourcePaths.get(0) instanceof UriResourceEntitySet) {
-        UriResourceEntitySet uriResourceEntitySet = (UriResourceEntitySet) resourcePaths.get(0);
+      } else if (resourcePaths.get(0) instanceof UriResourceEntitySet uriResourceEntitySet) {
         action = ((UriResourceAction) resourcePaths.get(1))
             .getAction();
         if (uriResourceEntitySet.getTypeFilterOnEntry() != null) {
@@ -373,14 +371,13 @@ public class TechnicalActionProcessor extends TechnicalProcessor
     Property property = null;
     final List<UriResource> resourcePaths = uriInfo.asUriInfoResource().getUriResourceParts();
     if (resourcePaths.size() > 1) {
-      if (resourcePaths.get(0) instanceof UriResourceEntitySet) {
-        UriResourceEntitySet uriResourceEntitySet = (UriResourceEntitySet) resourcePaths.get(0);
+      if (resourcePaths.get(0) instanceof UriResourceEntitySet uriResourceEntitySet) {
         EdmEntitySet entitySet = uriResourceEntitySet.getEntitySet();
         action = ((UriResourceAction) resourcePaths.get(resourcePaths.size() - 1))
             .getAction();
         parameters = readParameters(action, request.getBody(), requestFormat);
         property =
-            dataProvider.processBoundActionComplexCollection(action.getName(), parameters, entitySet, 
+            dataProvider.processBoundActionComplexCollection(action.getName(), parameters, entitySet,
                 uriResourceEntitySet.getKeyPredicates());
       }
     } else {
@@ -428,14 +425,13 @@ public class TechnicalActionProcessor extends TechnicalProcessor
     Property property = null;
     final List<UriResource> resourcePaths = uriInfo.asUriInfoResource().getUriResourceParts();
     if (resourcePaths.size() > 1) {
-      if (resourcePaths.get(0) instanceof UriResourceEntitySet) {
-        UriResourceEntitySet uriResourceEntitySet = (UriResourceEntitySet) resourcePaths.get(0);
+      if (resourcePaths.get(0) instanceof UriResourceEntitySet uriResourceEntitySet) {
         EdmEntitySet entitySet = uriResourceEntitySet.getEntitySet();
         action = ((UriResourceAction) resourcePaths.get(resourcePaths.size() - 1))
             .getAction();
         parameters = readParameters(action, request.getBody(), requestFormat);
         property =
-            dataProvider.processBoundActionComplex(action.getName(), parameters, entitySet, 
+            dataProvider.processBoundActionComplex(action.getName(), parameters, entitySet,
                 uriResourceEntitySet.getKeyPredicates());
       }
     } else {
@@ -491,7 +487,7 @@ public class TechnicalActionProcessor extends TechnicalProcessor
       return odata.createDeserializer(requestFormat, serviceMetadata).
           actionParameters(body, action).getActionParameters();
     }
-    return Collections.emptyMap();
+    return Map.of();
   }
 
   private ContextURL getContextUrl(final EdmEntitySet entitySet, final EdmEntityType entityType,

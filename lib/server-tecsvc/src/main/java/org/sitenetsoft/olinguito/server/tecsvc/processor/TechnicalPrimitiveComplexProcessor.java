@@ -15,11 +15,12 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -252,27 +253,23 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
           final EdmProperty edmProperty = path.isEmpty() ? null :
               ((UriResourceProperty) resourceParts.get(resourceParts.size() - trailing - 1)).getProperty();
           EdmType type = null;
-          if (resourceParts.get(resourceParts.size() - trailing - 1) 
-             instanceof UriResourceComplexProperty &&
-              ((UriResourceComplexProperty)resourceParts.get(resourceParts.size() - trailing - 1)).
-              getComplexTypeFilter() != null) {
-            type = ((UriResourceComplexProperty)resourceParts.get(resourceParts.size() - trailing - 1)).
-                getComplexTypeFilter();
-          }else if(resourceParts.get(resourceParts.size() - trailing - 1) 
-             instanceof UriResourceFunction &&
-              ((UriResourceFunction)resourceParts.get(resourceParts.size() - trailing - 1)).
-              getFunction() != null){ 
-            type = ((UriResourceFunction)resourceParts.get(resourceParts.size() - trailing - 1)).
-                getType();
+          if (resourceParts.get(resourceParts.size() - trailing - 1)
+             instanceof UriResourceComplexProperty complexProp &&
+              complexProp.getComplexTypeFilter() != null) {
+            type = complexProp.getComplexTypeFilter();
+          }else if(resourceParts.get(resourceParts.size() - trailing - 1)
+             instanceof UriResourceFunction funcResource &&
+              funcResource.getFunction() != null){
+            type = funcResource.getType();
           }else {
             type = edmProperty == null ?
                 ((UriResourceFunction) resourceParts.get(0)).getType() :
                 edmProperty.getType();
           }
-          final EdmReturnType returnType = resourceParts.get(0) instanceof UriResourceFunction ?
-              ((UriResourceFunction) resourceParts.get(0)).getFunction().getReturnType() : 
-                resourceParts.get(1) instanceof UriResourceFunction ? 
-                    ((UriResourceFunction) resourceParts.get(1)).getFunction().getReturnType():null ;
+          final EdmReturnType returnType = resourceParts.get(0) instanceof UriResourceFunction func0 ?
+              func0.getFunction().getReturnType() :
+                resourceParts.get(1) instanceof UriResourceFunction func1 ?
+                    func1.getFunction().getReturnType():null ;
 
           if (representationType == RepresentationType.VALUE) {
             response.setContent(serializePrimitiveValue(property, edmProperty, (EdmPrimitiveType) type, returnType));
@@ -302,9 +299,9 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
 
   private Property getData(Entity entity, List<String> path, List<UriResource> resourceParts, UriInfoResource resource) 
       throws DataProviderException {
-    if(resourceParts.size()>1 && resourceParts.get(1) instanceof UriResourceFunction){
-      return dataProvider.readFunctionPrimitiveComplex(((UriResourceFunction) resourceParts.get(1)).getFunction(),
-          ((UriResourceFunction) resourceParts.get(1)).getParameters(), resource);
+    if(resourceParts.size()>1 && resourceParts.get(1) instanceof UriResourceFunction funcResource){
+      return dataProvider.readFunctionPrimitiveComplex(funcResource.getFunction(),
+          funcResource.getParameters(), resource);
     }
     return getPropertyData(entity, path);
   }
@@ -410,7 +407,7 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
         .getProperty();
 
     if (edmProperty.isNullable()) {
-      property.setValue(property.getValueType(), edmProperty.isCollection() ? Collections.emptyList() : null);
+      property.setValue(property.getValueType(), edmProperty.isCollection() ? List.of() : null);
       dataProvider.updateETag(entity);
       response.setStatusCode(HttpStatusCode.NO_CONTENT.getStatusCode());
       if (entity.getETag() != null) {
@@ -445,8 +442,8 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
   private List<String> getPropertyPath(final List<UriResource> path, final int trailing) {
     List<String> result = new LinkedList<>();
     int index = path.size() - trailing - 1;
-    while (path.get(index) instanceof UriResourceProperty) {
-      result.add(0, ((UriResourceProperty) path.get(index)).getProperty().getName());
+    while (path.get(index) instanceof UriResourceProperty uriResourceProp) {
+      result.add(0, uriResourceProp.getProperty().getName());
       index--;
     }
     return result;

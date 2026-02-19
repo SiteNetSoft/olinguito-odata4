@@ -179,8 +179,8 @@ public class ODataXmlDeserializer implements ODataDeserializer {
         if (edmType instanceof EdmPrimitiveType) {
           values.add(primitive(reader, event.asStartElement(), edmType, isNullable,
               maxLength, precision, scale, isUnicode));
-        } else if (edmType instanceof EdmComplexType) {
-          values.add(complex(reader, event.asStartElement(), (EdmComplexType) edmType));
+        } else if (edmType instanceof EdmComplexType edmComplexType) {
+          values.add(complex(reader, event.asStartElement(), edmComplexType));
         }
         // do not add null or empty values
       }
@@ -263,10 +263,10 @@ public class ODataXmlDeserializer implements ODataDeserializer {
     } else if (edmType instanceof EdmPrimitiveType) {
       valuable.setValue(getValueType(edmType, false),
           primitive(reader, start, edmType, isNullable, maxLength, precision, scale, isUnicode));
-    } else if (edmType instanceof EdmComplexType) {
-      valuable.setValue(ValueType.COMPLEX, complex(reader, start, (EdmComplexType) edmType));
-    } else if (edmType instanceof EdmEntityType) {
-      valuable.setValue(ValueType.ENTITY, entity(reader, start, (EdmEntityType) edmType));
+    } else if (edmType instanceof EdmComplexType edmComplexType) {
+      valuable.setValue(ValueType.COMPLEX, complex(reader, start, edmComplexType));
+    } else if (edmType instanceof EdmEntityType edmEntityType) {
+      valuable.setValue(ValueType.ENTITY, entity(reader, start, edmEntityType));
     }
     // do not add null or empty values
   }

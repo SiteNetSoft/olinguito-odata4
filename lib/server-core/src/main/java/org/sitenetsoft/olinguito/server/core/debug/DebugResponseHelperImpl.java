@@ -29,7 +29,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -99,7 +100,7 @@ public class DebugResponseHelperImpl implements DebugResponseHelper {
       // for download add additional Content-Disposition header
       if (requestedFormat == DebugFormat.DOWNLOAD) {
         response.setHeader("Content-Disposition", "attachment; filename=OData-Response."
-            + new Date().toString().replace(' ', '_').replace(':', '.') + ".html");
+            + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss")) + ".html");
       }
       response.setStatusCode(HttpStatusCode.OK.getStatusCode());
       response.setHeader(HttpHeader.CONTENT_TYPE, contentTypeString);

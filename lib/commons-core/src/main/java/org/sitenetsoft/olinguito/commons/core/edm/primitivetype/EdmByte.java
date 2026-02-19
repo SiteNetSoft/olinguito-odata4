@@ -74,9 +74,9 @@ public final class EdmByte extends SingletonPrimitiveType {
       } else {
         throw new EdmPrimitiveTypeException("The value '" + value + "' is not valid.");
       }
-    } else if (value instanceof BigInteger) {
-      if (((BigInteger) value).compareTo(BigInteger.ZERO) >= 0
-          && ((BigInteger) value).compareTo(BigInteger.valueOf(1 << Byte.SIZE)) < 0) {
+    } else if (value instanceof BigInteger bigInteger) {
+      if (bigInteger.compareTo(BigInteger.ZERO) >= 0
+          && bigInteger.compareTo(BigInteger.valueOf(1 << Byte.SIZE)) < 0) {
         return value.toString();
       } else {
         throw new EdmPrimitiveTypeException("The value '" + value + "' is not valid.");

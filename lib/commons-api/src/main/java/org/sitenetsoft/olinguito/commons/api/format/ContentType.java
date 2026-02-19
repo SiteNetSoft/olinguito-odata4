@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.commons.api.format;
 
@@ -107,7 +109,7 @@ public final class ContentType {
     this.subtype = validateType(subtype);
 
     if (parameters == null) {
-      this.parameters = Collections.emptyMap();
+      this.parameters = Map.of();
     } else {
       this.parameters = TypeUtil.createParameterMap();
       this.parameters.putAll(parameters);

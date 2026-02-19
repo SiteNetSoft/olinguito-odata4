@@ -69,8 +69,8 @@ public final class EdmBoolean extends SingletonPrimitiveType {
       final Boolean isNullable, final Integer maxLength, final Integer precision,
       final Integer scale, final Boolean isUnicode) throws EdmPrimitiveTypeException {
 
-    if (value instanceof Boolean) {
-      return Boolean.toString((Boolean) value);
+    if (value instanceof Boolean boolVal) {
+      return Boolean.toString(boolVal);
     } else {
       throw new EdmPrimitiveTypeException("The value type " + value.getClass() + " is not supported.");
     }

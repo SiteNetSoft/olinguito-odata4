@@ -120,16 +120,15 @@ public final class EdmDateTimeOffset extends SingletonPrimitiveType {
   }
 
   private static <T> ZonedDateTime createZonedDateTime(final T value) throws EdmPrimitiveTypeException {
-    if (value instanceof ZonedDateTime) {
-      return (ZonedDateTime) value;
+    if (value instanceof ZonedDateTime zdt) {
+      return zdt;
     }
 
-    if (value instanceof Instant) {
-      return ((Instant) value).atZone(ZULU);
+    if (value instanceof Instant instant) {
+      return instant.atZone(ZULU);
     }
 
-    if (value instanceof GregorianCalendar) {
-      GregorianCalendar calendar = (GregorianCalendar) value;
+    if (value instanceof GregorianCalendar calendar) {
       ZonedDateTime zdt = calendar.toZonedDateTime();
       ZoneId normalizedZoneId = calendar.getTimeZone().toZoneId().normalized();
       return zdt.withZoneSameInstant(normalizedZoneId);
@@ -167,12 +166,12 @@ public final class EdmDateTimeOffset extends SingletonPrimitiveType {
   private static <T> Instant convertToInstant(final T value) throws EdmPrimitiveTypeException {
     if (value instanceof java.sql.Time || value instanceof java.sql.Date) {
       throw new EdmPrimitiveTypeException("The value type " + value.getClass() + " is not supported.");
-    } else if (value instanceof java.util.Date) {
-      return ((java.util.Date) value).toInstant();
-    } else if (value instanceof Timestamp) {
-      return ((Timestamp) value).toInstant();
-    } else if (value instanceof Long) {
-      return Instant.ofEpochMilli((Long) value);
+    } else if (value instanceof java.util.Date date) {
+      return date.toInstant();
+    } else if (value instanceof Timestamp timestamp) {
+      return timestamp.toInstant();
+    } else if (value instanceof Long longVal) {
+      return Instant.ofEpochMilli(longVal);
     } else {
       throw new EdmPrimitiveTypeException("The value type " + value.getClass() + " is not supported.");
     }

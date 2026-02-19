@@ -31,9 +31,9 @@ public class EdmEnabledODataClientImpl extends ODataClientImpl implements EdmEna
 
   private final String serviceRoot;
 
-  private Edm edm;
+  private volatile Edm edm;
 
-  private String metadataETag;
+  private volatile String metadataETag;
 
   private volatile EdmEnabledInvokeRequestFactory edmEnabledInvokeRequestFactory;
 

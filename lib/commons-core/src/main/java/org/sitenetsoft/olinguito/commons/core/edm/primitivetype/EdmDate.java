@@ -93,16 +93,15 @@ public final class EdmDate extends SingletonPrimitiveType {
     }
 
     // inappropriate types, which need to be supported for backward compatibility
-    if (value instanceof GregorianCalendar) {
-      GregorianCalendar calendar = (GregorianCalendar) value;
+    if (value instanceof GregorianCalendar calendar) {
       return calendar.toZonedDateTime().toLocalDate().toString();
     }
 
     long millis;
-    if (value instanceof Long) {
-      millis = (Long) value;
-    } else if (value instanceof java.util.Date) {
-      millis = ((java.util.Date) value).getTime();
+    if (value instanceof Long longVal) {
+      millis = longVal;
+    } else if (value instanceof java.util.Date date) {
+      millis = date.getTime();
     } else {
       throw new EdmPrimitiveTypeException("The value type " + value.getClass() + " is not supported.");
     }

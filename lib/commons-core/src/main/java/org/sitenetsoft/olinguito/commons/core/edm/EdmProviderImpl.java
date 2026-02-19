@@ -17,11 +17,11 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Thread-safe EDM caches using ConcurrentHashMap
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -765,7 +765,7 @@ public class EdmProviderImpl extends AbstractEdm {
         }
       }
       final List<String> parameterNamesCopy =
-          parameterNames == null ? Collections.emptyList() : parameterNames;
+          parameterNames == null ? List.of() : parameterNames;
       for (CsdlFunction function : functions) {
         if (function.isBound()) {
           List<CsdlParameter> providerParameters = function.getParameters();
@@ -887,12 +887,12 @@ public class EdmProviderImpl extends AbstractEdm {
       }
 
       final List<String> parameterNamesCopy =
-          parameterNames == null ? Collections.emptyList() : parameterNames;
+          parameterNames == null ? List.of() : parameterNames;
       for (CsdlFunction function : functions) {
         if (!function.isBound()) {
           List<CsdlParameter> providerParameters = function.getParameters();
           if (providerParameters == null) {
-            providerParameters = Collections.emptyList();
+            providerParameters = List.of();
           }
           if (parameterNamesCopy.size() == providerParameters.size()) {
             final List<String> functionParameterNames = new ArrayList<>();

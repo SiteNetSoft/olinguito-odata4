@@ -83,14 +83,14 @@ public abstract class TechnicalProcessor implements Processor {
     
     // First must be an entity, an entity collection, a function import, or an action import.
     blockTypeFilters(resourcePaths.get(0));
-    if (resourcePaths.get(0) instanceof UriResourceEntitySet) {
-      entitySet = getEntitySetBasedOnTypeCast(((UriResourceEntitySet)resourcePaths.get(0)));
-    } else if (resourcePaths.get(0) instanceof UriResourceFunction) {
-      entitySet = ((UriResourceFunction) resourcePaths.get(0)).getFunctionImport().getReturnedEntitySet();
-    } else if (resourcePaths.get(0) instanceof UriResourceAction) {
-      entitySet = ((UriResourceAction) resourcePaths.get(0)).getActionImport().getReturnedEntitySet();
-    }else if (resourcePaths.get(0) instanceof UriResourceSingleton ) {      
-      singleton =((UriResourceSingleton) resourcePaths.get(0)).getSingleton();
+    if (resourcePaths.get(0) instanceof UriResourceEntitySet uriResourceEntitySet) {
+      entitySet = getEntitySetBasedOnTypeCast(uriResourceEntitySet);
+    } else if (resourcePaths.get(0) instanceof UriResourceFunction uriResourceFunc) {
+      entitySet = uriResourceFunc.getFunctionImport().getReturnedEntitySet();
+    } else if (resourcePaths.get(0) instanceof UriResourceAction uriResourceAction) {
+      entitySet = uriResourceAction.getActionImport().getReturnedEntitySet();
+    }else if (resourcePaths.get(0) instanceof UriResourceSingleton uriResourceSingleton) {
+      singleton = uriResourceSingleton.getSingleton();
     } else {
       throw new ODataApplicationException("Invalid resource type.",
           HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), Locale.ROOT);
@@ -106,9 +106,7 @@ public abstract class TechnicalProcessor implements Processor {
     int navigationCount = 0;
       while ((entitySet != null || singleton!=null)
           && ++navigationCount < resourcePaths.size()
-          && resourcePaths.get(navigationCount) instanceof UriResourceNavigation) {
-        final UriResourceNavigation uriResourceNavigation = 
-            (UriResourceNavigation) resourcePaths.get(navigationCount);
+          && resourcePaths.get(navigationCount) instanceof UriResourceNavigation uriResourceNavigation) {
         blockTypeFilters(uriResourceNavigation);
         if (uriResourceNavigation.getProperty().containsTarget()) {
           return entitySet;
@@ -119,8 +117,8 @@ public abstract class TechnicalProcessor implements Processor {
         }else if(singleton != null){
           target = singleton.getRelatedBindingTarget(uriResourceNavigation.getProperty().getName());
         }
-        if (target instanceof EdmEntitySet) {
-          entitySet = (EdmEntitySet) target;
+        if (target instanceof EdmEntitySet edmEntitySet) {
+          entitySet = edmEntitySet;
         }
       }
     return entitySet;
@@ -145,15 +143,12 @@ public abstract class TechnicalProcessor implements Processor {
     final List<UriResource> resourcePaths = uriInfo.getUriResourceParts();
 
     Entity entity = null;
-    if (resourcePaths.get(0) instanceof UriResourceEntitySet) {
-      final UriResourceEntitySet uriResource = (UriResourceEntitySet) resourcePaths.get(0);
+    if (resourcePaths.get(0) instanceof UriResourceEntitySet uriResource) {
       EdmEntitySet entitySet = getEntitySetBasedOnTypeCast(uriResource);
       entity = dataProvider.read(entitySet, uriResource.getKeyPredicates());
-    }else if (resourcePaths.get(0) instanceof UriResourceSingleton) {
-      final UriResourceSingleton uriResource = (UriResourceSingleton) resourcePaths.get(0);
+    }else if (resourcePaths.get(0) instanceof UriResourceSingleton uriResource) {
       entity = dataProvider.read( uriResource.getSingleton());
-    } else if (resourcePaths.get(0) instanceof UriResourceFunction) {
-      final UriResourceFunction uriResource = (UriResourceFunction) resourcePaths.get(0);
+    } else if (resourcePaths.get(0) instanceof UriResourceFunction uriResource) {
       final EdmFunction function = uriResource.getFunction();
       if (function.getReturnType().getType() instanceof EdmEntityType) {
         final List<UriParameter> key = uriResource.getKeyPredicates();
@@ -192,8 +187,7 @@ public abstract class TechnicalProcessor implements Processor {
 	int navigationResCount = getNavigationResourceCount(resourcePaths);
     Link previous = null;
     while (++navigationCount < readAtMostNavigations
-        && resourcePaths.get(navigationCount) instanceof UriResourceNavigation) {
-      final UriResourceNavigation uriNavigationResource = (UriResourceNavigation) resourcePaths.get(navigationCount);
+        && resourcePaths.get(navigationCount) instanceof UriResourceNavigation uriNavigationResource) {
       final EdmNavigationProperty navigationProperty = uriNavigationResource.getProperty();
       final List<UriParameter> key = uriNavigationResource.getKeyPredicates();
       if (navigationProperty.isCollection() && key.isEmpty()) { // handled in readEntityCollection()
@@ -285,16 +279,13 @@ public abstract class TechnicalProcessor implements Processor {
       final Link link = entity.getNavigationLink(getLastNavigation(uriInfo).getProperty().getName());
       return link == null ? null : link.getInlineEntitySet();
     } else {
-      if (resourcePaths.get(0) instanceof UriResourceFunction) {
-        final UriResourceFunction uriResource = (UriResourceFunction) resourcePaths.get(0);
+      if (resourcePaths.get(0) instanceof UriResourceFunction uriResource) {
         return dataProvider.readFunctionEntityCollection(uriResource.getFunction(), uriResource.getParameters(),
             uriInfo);
       } else {
         if (uriInfo.getFilterOption() != null) {
-          if (uriInfo.getFilterOption().getExpression() instanceof Binary) {
-            Binary expression = (Binary) uriInfo.getFilterOption().getExpression();
-            if (expression.getLeftOperand() instanceof Member) {
-              Member member = (Member) expression.getLeftOperand();
+          if (uriInfo.getFilterOption().getExpression() instanceof Binary expression) {
+            if (expression.getLeftOperand() instanceof Member member) {
               if (member.getStartTypeFilter() != null) {
                 EdmEntityType entityType = (EdmEntityType) member.getStartTypeFilter();
                 EdmEntityContainer container = this.serviceMetadata.getEdm().getEntityContainer();
@@ -323,13 +314,13 @@ public abstract class TechnicalProcessor implements Processor {
     }
     
     final UriResource lastSegment = resourcePaths.get(--navigationCount);
-    return (lastSegment instanceof UriResourceNavigation) ? (UriResourceNavigation) lastSegment : null;
+    return (lastSegment instanceof UriResourceNavigation uriResourceNav) ? uriResourceNav : null;
   }
 
   private void blockTypeFilters(final UriResource uriResource) throws ODataApplicationException {
-    if (uriResource instanceof UriResourceFunction
-        && (((UriResourceFunction) uriResource).getTypeFilterOnCollection() != null
-        || ((UriResourceFunction) uriResource).getTypeFilterOnEntry() != null)) {
+    if (uriResource instanceof UriResourceFunction uriResourceFunc
+        && (uriResourceFunc.getTypeFilterOnCollection() != null
+        || uriResourceFunc.getTypeFilterOnEntry() != null)) {
       throw new ODataApplicationException("Type filters are not supported.",
           HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), Locale.ROOT);
     }

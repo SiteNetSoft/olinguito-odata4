@@ -899,8 +899,8 @@ public class DataRequest extends ServiceRequest {
   private static List<String> getPropertyPath(final List<UriResource> path) {
     List<String> result = new LinkedList<>();
     int index = 1;
-    while (index < path.size() && path.get(index) instanceof UriResourceProperty) {
-      result.add(((UriResourceProperty) path.get(index)).getProperty().getName());
+    while (index < path.size() && path.get(index) instanceof UriResourceProperty uriResourceProp) {
+      result.add(uriResourceProp.getProperty().getName());
       index++;
     }
     return result;

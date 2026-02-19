@@ -375,8 +375,7 @@ public class BinaryOperator {
         }
       } 
     } else {
-      if (right.getValue() instanceof String) {
-        String value = (String) right.getValue();
+      if (right.getValue() instanceof String value) {
         value = value.substring(value.indexOf("[") + 1, value.indexOf("]"));
         String values[] = value.split(",");
         for (String val : values) {

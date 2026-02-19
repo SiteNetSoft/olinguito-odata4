@@ -422,10 +422,10 @@ public class CsdlTypeValidator {
     String[] paths = remainingPath.split("/");
     for (String path : paths) {
       FullQualifiedName fqName = null;
-      if (sourceTypeHavingNavProp instanceof CsdlComplexType) {
-        fqName = ((CsdlComplexType)sourceTypeHavingNavProp).getProperty(path).getTypeAsFQNObject();
-      } else if (sourceTypeHavingNavProp instanceof CsdlEntityType) {
-        fqName = ((CsdlEntityType)sourceTypeHavingNavProp).getProperty(path).getTypeAsFQNObject();
+      if (sourceTypeHavingNavProp instanceof CsdlComplexType complexType) {
+        fqName = complexType.getProperty(path).getTypeAsFQNObject();
+      } else if (sourceTypeHavingNavProp instanceof CsdlEntityType entityType) {
+        fqName = entityType.getProperty(path).getTypeAsFQNObject();
       }
       if (fqName != null) {
         String namespace = aliasNamespaceMap.get(fqName.getNamespace());

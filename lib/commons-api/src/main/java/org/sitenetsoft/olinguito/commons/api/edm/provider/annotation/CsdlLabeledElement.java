@@ -75,10 +75,9 @@ public class CsdlLabeledElement extends CsdlDynamicExpression implements CsdlAnn
     if (obj == null) {
       return false;
     }
-    if (!(obj instanceof CsdlLabeledElement)) {
+    if (!(obj instanceof CsdlLabeledElement csdlLabelledEle)) {
       return false;
     }
-    CsdlLabeledElement csdlLabelledEle = (CsdlLabeledElement) obj;
     return (this.getName() == null ? csdlLabelledEle.getName() == null :
       this.getName().equals(csdlLabelledEle.getName()))
         && (this.getValue() == null ? csdlLabelledEle.getValue() == null :

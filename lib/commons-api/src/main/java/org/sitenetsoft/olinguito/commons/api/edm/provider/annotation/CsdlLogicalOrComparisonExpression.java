@@ -151,10 +151,9 @@ public class CsdlLogicalOrComparisonExpression extends CsdlDynamicExpression imp
     if (obj == null) {
       return false;
     }
-    if (!(obj instanceof CsdlLogicalOrComparisonExpression)) {
+    if (!(obj instanceof CsdlLogicalOrComparisonExpression csdlLogComp)) {
       return false;
     }
-    CsdlLogicalOrComparisonExpression csdlLogComp = (CsdlLogicalOrComparisonExpression) obj;
     return (this.getLeft() == null ? csdlLogComp.getLeft() == null :
       this.getLeft().equals(csdlLogComp.getLeft()))
         && (this.getRight() == null ? csdlLogComp.getRight() == null : 

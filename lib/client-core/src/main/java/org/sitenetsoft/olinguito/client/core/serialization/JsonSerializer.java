@@ -80,14 +80,14 @@ public class JsonSerializer implements ODataSerializer {
   @Override
   public <T> void write(final Writer writer, final T obj) throws ODataSerializerException {
     try (final JsonGenerator json = new JsonFactory().createGenerator(writer)) {
-      if (obj instanceof EntityCollection) {
-        new JsonEntitySetSerializer(serverMode, contentType).doSerialize((EntityCollection) obj, json);
-      } else if (obj instanceof Entity) {
-        new JsonEntitySerializer(serverMode, contentType).doSerialize((Entity) obj, json);
-      } else if (obj instanceof Property) {
-        new JsonPropertySerializer(serverMode, contentType).doSerialize((Property) obj, json);
-      } else if (obj instanceof Link) {
-        link((Link) obj, json);
+      if (obj instanceof EntityCollection entityCollection) {
+        new JsonEntitySetSerializer(serverMode, contentType).doSerialize(entityCollection, json);
+      } else if (obj instanceof Entity entity) {
+        new JsonEntitySerializer(serverMode, contentType).doSerialize(entity, json);
+      } else if (obj instanceof Property property) {
+        new JsonPropertySerializer(serverMode, contentType).doSerialize(property, json);
+      } else if (obj instanceof Link link) {
+        link(link, json);
       }
       json.flush();
     } catch (final IOException | EdmPrimitiveTypeException e) {
@@ -118,8 +118,8 @@ public class JsonSerializer implements ODataSerializer {
         new JsonEntitySerializer(serverMode, contentType).doContainerSerialize((ResWrap<Entity>) container, json);
       } else if (obj instanceof Property) {
         new JsonPropertySerializer(serverMode, contentType).doContainerSerialize((ResWrap<Property>) container, json);
-      } else if (obj instanceof Link) {
-        link((Link) obj, json);
+      } else if (obj instanceof Link link) {
+        link(link, json);
       } else if (obj instanceof URI) {
         reference((ResWrap<URI>) container, json);
       }
@@ -200,8 +200,8 @@ public class JsonSerializer implements ODataSerializer {
 
   protected void serverLinks(final Linked linked, final JsonGenerator jgen)
       throws IOException, EdmPrimitiveTypeException {
-    if (linked instanceof Entity && isODataMetadataFull) {
-      for (Link link : ((Entity) linked).getMediaEditLinks()) {
+    if (linked instanceof Entity entity && isODataMetadataFull) {
+      for (Link link : entity.getMediaEditLinks()) {
         if (link.getHref() != null && !link.getHref().isEmpty()) {
           jgen.writeStringField(link.getTitle() + Constants.JSON_MEDIA_EDIT_LINK, link.getHref());
         }

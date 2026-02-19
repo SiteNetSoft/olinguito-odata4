@@ -78,10 +78,9 @@ public class CsdlPropertyValue extends CsdlAbstractEdmItem implements CsdlAnnota
     if (obj == null) {
       return false;
     }
-    if (!(obj instanceof CsdlPropertyValue)) {
+    if (!(obj instanceof CsdlPropertyValue csdlPropertyValue)) {
       return false;
     }
-    CsdlPropertyValue csdlPropertyValue = (CsdlPropertyValue) obj;
     
     return (this.getProperty() == null ? csdlPropertyValue.getProperty() == null :
       this.getProperty().equalsIgnoreCase(csdlPropertyValue.getProperty()))

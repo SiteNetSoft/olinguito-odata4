@@ -15,10 +15,11 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -100,7 +101,7 @@ public class Parser {
     // This is done before parsing the resource path because the aliases have to be available there.
     // System query options that can only be parsed with context from the resource path will be post-processed later.
     final List<QueryOption> options =
-        query == null ? Collections.emptyList() : UriDecoder.splitAndDecodeOptions(query);
+        query == null ? List.of() : UriDecoder.splitAndDecodeOptions(query);
     for (final QueryOption option : options) {
       final String optionName = option.getName();
       String value = option.getText();
@@ -238,8 +239,8 @@ public class Parser {
                 || segment instanceof UriResourceValue) {
               ensureLastSegment(pathSegment, count, numberOfSegments);
             } else if (segment instanceof UriResourceAction
-                || segment instanceof UriResourceFunction
-                && !((UriResourceFunction) segment).getFunction().isComposable()) {
+                || segment instanceof UriResourceFunction uriResFunc
+                && !uriResFunc.getFunction().isComposable()) {
               if (count < numberOfSegments) {
                 throw new UriValidationException(
                     "The segment of an action or of a non-composable function must be the last resource-path segment.",
@@ -258,23 +259,22 @@ public class Parser {
         }
       }
 
-      if (lastSegment instanceof UriResourcePartTyped) {
-        final UriResourcePartTyped typed = (UriResourcePartTyped) lastSegment;
+      if (lastSegment instanceof UriResourcePartTyped typed) {
         contextType = ParserHelper.getTypeInformation(typed);
-        if (contextType != null && ((lastSegment instanceof UriResourceEntitySet &&
-            (((UriResourceEntitySet) lastSegment).getTypeFilterOnCollection() != null
-                || ((UriResourceEntitySet) lastSegment).getTypeFilterOnEntry() != null))
-            || contextUriInfo.getIdOption() != null) && contextType instanceof EdmEntityType) {
-          contextUriInfo.setEntityTypeCast((EdmEntityType) contextType);
+        if (contextType != null && ((lastSegment instanceof UriResourceEntitySet lastEntitySet &&
+            (lastEntitySet.getTypeFilterOnCollection() != null
+                || lastEntitySet.getTypeFilterOnEntry() != null))
+            || contextUriInfo.getIdOption() != null) && contextType instanceof EdmEntityType edmEntityType) {
+          contextUriInfo.setEntityTypeCast(edmEntityType);
         }
         contextIsCollection = typed.isCollection();
       }
     }
 
     // Post-process system query options that need context information from the resource path.
-    if (contextType instanceof EdmStructuredType && contextUriInfo.getApplyOption() != null) {
+    if (contextType instanceof EdmStructuredType structuredType && contextUriInfo.getApplyOption() != null) {
       // Data aggregation may change the structure of the result.
-      contextType = new DynamicStructuredType((EdmStructuredType) contextType);
+      contextType = new DynamicStructuredType(structuredType);
     }
     parseApplyOption(contextUriInfo.getApplyOption(), contextType,
         contextUriInfo.getEntitySetNames(), contextUriInfo.getAliasMap());
@@ -423,7 +423,7 @@ public class Parser {
       final String optionValue = orderByOption.getText();
       UriTokenizer orderByTokenizer = new UriTokenizer(optionValue);
       final OrderByOption option = new OrderByParser(edm, odata).parse(orderByTokenizer,
-          contextType instanceof EdmStructuredType ? (EdmStructuredType) contextType : null,
+          contextType instanceof EdmStructuredType structuredType ? structuredType : null,
           entitySetNames,
           aliases);
       checkOptionEOF(orderByTokenizer, orderByOption.getName(), optionValue);
@@ -445,7 +445,7 @@ public class Parser {
       final String optionValue = expandOption.getText();
       UriTokenizer expandTokenizer = new UriTokenizer(optionValue);
       final ExpandOption option = new ExpandParser(edm, odata, aliases, entitySetNames).parse(expandTokenizer,
-          contextType instanceof EdmStructuredType ? (EdmStructuredType) contextType : null);
+          contextType instanceof EdmStructuredType structuredType ? structuredType : null);
       checkOptionEOF(expandTokenizer, expandOption.getName(), optionValue);
       for (final ExpandItem item : option.getExpandItems()) {
         ((ExpandOptionImpl) expandOption).addExpandItem(item);
@@ -460,7 +460,7 @@ public class Parser {
       UriTokenizer selectTokenizer = new UriTokenizer(optionValue);
       ((SelectOptionImpl) selectOption).setSelectItems(
           new SelectParser(edm).parse(selectTokenizer,
-              contextType instanceof EdmStructuredType ? (EdmStructuredType) contextType : null,
+              contextType instanceof EdmStructuredType structuredType ? structuredType : null,
               contextIsCollection)
               .getSelectItems());
       checkOptionEOF(selectTokenizer, selectOption.getName(), optionValue);
@@ -474,7 +474,7 @@ public class Parser {
       final String optionValue = applyOption.getText();
       UriTokenizer applyTokenizer = new UriTokenizer(optionValue);
       final ApplyOption option = new ApplyParser(edm, odata).parse(applyTokenizer,
-          contextType instanceof EdmStructuredType ? (EdmStructuredType) contextType : null,
+          contextType instanceof EdmStructuredType structuredType ? structuredType : null,
           entitySetNames,
           aliases);
       checkOptionEOF(applyTokenizer, applyOption.getName(), optionValue);

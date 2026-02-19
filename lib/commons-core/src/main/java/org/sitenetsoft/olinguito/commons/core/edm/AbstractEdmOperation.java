@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
@@ -80,7 +82,7 @@ public abstract class AbstractEdmOperation extends EdmTypeImpl implements EdmOpe
         parameters = parametersLocal;
         parameterNames = parameterNamesLocal;
       } else {
-        parameterNames = Collections.emptyList();
+        parameterNames = List.of();
       }
     }
   }
@@ -94,8 +96,8 @@ public abstract class AbstractEdmOperation extends EdmTypeImpl implements EdmOpe
       if (relatedBindingTarget == null) {
         throw new EdmException("Cannot find entity set with path: " + operation.getEntitySetPath());
       }
-      if (relatedBindingTarget instanceof EdmEntitySet) {
-        returnedEntitySet = (EdmEntitySet) relatedBindingTarget;
+      if (relatedBindingTarget instanceof EdmEntitySet edmEntitySet) {
+        returnedEntitySet = edmEntitySet;
       } else {
         throw new EdmException("BindingTarget with name: " + relatedBindingTarget.getName()
             + " must be an entity set");

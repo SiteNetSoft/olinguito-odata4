@@ -77,10 +77,9 @@ public abstract class ClientItem {
     if (obj == null) {
       return false;
     }
-    if (!(obj instanceof ClientItem)) {
+    if (!(obj instanceof ClientItem other)) {
       return false;
     }
-    ClientItem other = (ClientItem) obj;
     if (link == null) {
       if (other.link != null) {
         return false;

@@ -15,11 +15,14 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.server.core.etag;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 
 import org.sitenetsoft.olinguito.server.api.etag.ETagHelper;
 import org.sitenetsoft.olinguito.server.api.etag.PreconditionException;
@@ -67,6 +70,6 @@ public class ETagHelperImpl implements ETagHelper {
     final Collection<String> eTags = ETagParser.parse(values);
     final boolean isAll = eTags.size() == 1 && "*".equals(eTags.iterator().next());
     return new ETagInformation(isAll,
-        isAll ? Collections.emptySet() : Collections.unmodifiableCollection(eTags));
+        isAll ? Set.of() : Collections.unmodifiableCollection(eTags));
   }
 }

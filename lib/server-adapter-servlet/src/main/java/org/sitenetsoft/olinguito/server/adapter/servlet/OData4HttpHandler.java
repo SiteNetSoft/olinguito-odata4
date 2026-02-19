@@ -125,13 +125,13 @@ public class OData4HttpHandler {
   }
 
   public void register(final Processor processor) {
-    if (processor instanceof ServiceHandler) {
-      this.handler = (ServiceHandler) processor;
+    if (processor instanceof ServiceHandler serviceHandler) {
+      this.handler = serviceHandler;
       this.handler.init(this.odata, this.serviceMetadata);
     }
 
-    if (this.handler instanceof ProcessorServiceHandler) {
-      ((ProcessorServiceHandler) this.handler).register(processor);
+    if (this.handler instanceof ProcessorServiceHandler processorServiceHandler) {
+      processorServiceHandler.register(processor);
     }
   }
 

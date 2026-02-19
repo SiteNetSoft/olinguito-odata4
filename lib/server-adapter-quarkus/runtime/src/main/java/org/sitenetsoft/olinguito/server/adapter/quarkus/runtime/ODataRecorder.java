@@ -18,7 +18,6 @@
 package org.sitenetsoft.olinguito.server.adapter.quarkus.runtime;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -147,7 +146,7 @@ public class ODataRecorder {
 
         ServiceMetadata serviceMetadata = odata.createServiceMetadata(
                 edmProviderInstance.get(),
-                references.isEmpty() ? Collections.emptyList() : references);
+                references.isEmpty() ? List.of() : references);
 
         ODataRequestHandler requestHandler = odata.createHandler(serviceMetadata);
 

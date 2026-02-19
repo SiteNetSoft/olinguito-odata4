@@ -17,13 +17,13 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
 import java.io.Writer;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -402,11 +402,11 @@ public class AtomSerializer implements ODataSerializer {
 
     if (serverMode) {
       if (entity.getEditLink() != null) {
-        links(writer, Collections.singletonList(entity.getEditLink()));
+        links(writer, List.of(entity.getEditLink()));
       }
 
       if (entity.getSelfLink() != null) {
-        links(writer, Collections.singletonList(entity.getSelfLink()));
+        links(writer, List.of(entity.getSelfLink()));
       }
     }
 
@@ -550,14 +550,14 @@ public class AtomSerializer implements ODataSerializer {
         next.setRel(Constants.NEXT_LINK_REL);
         next.setHref(entitySet.getNext().toASCIIString());
 
-        links(writer, Collections.singletonList(next));
+        links(writer, List.of(next));
       }
       if (entitySet.getDeltaLink() != null) {
         final Link next = new Link();
         next.setRel(Constants.NS_DELTA_LINK_REL);
         next.setHref(entitySet.getDeltaLink().toASCIIString());
 
-        links(writer, Collections.singletonList(next));
+        links(writer, List.of(next));
       }
     }
   }
@@ -611,14 +611,14 @@ public class AtomSerializer implements ODataSerializer {
   @Override
   public <T> void write(final Writer writer, final T obj) throws ODataSerializerException {
     try {
-      if (obj instanceof EntityCollection) {
-        entitySet(writer, (EntityCollection) obj);
-      } else if (obj instanceof Entity) {
-        entity(writer, (Entity) obj);
-      } else if (obj instanceof Property) {
-        property(writer, (Property) obj);
-      } else if (obj instanceof Link) {
-        link(writer, (Link) obj);
+      if (obj instanceof EntityCollection entityCollection) {
+        entitySet(writer, entityCollection);
+      } else if (obj instanceof Entity entity) {
+        entity(writer, entity);
+      } else if (obj instanceof Property property) {
+        property(writer, property);
+      } else if (obj instanceof Link link) {
+        link(writer, link);
       }
     } catch (final XMLStreamException | EdmPrimitiveTypeException e) {
       throw new ODataSerializerException(e);
@@ -650,10 +650,10 @@ public class AtomSerializer implements ODataSerializer {
         this.entitySet(writer, (ResWrap<EntityCollection>) container);
       } else if (obj instanceof Entity) {
         entity(writer, (ResWrap<Entity>) container);
-      } else if (obj instanceof Property) {
-        property(writer, (Property) obj);
-      } else if (obj instanceof Link) {
-        link(writer, (Link) obj);
+      } else if (obj instanceof Property property) {
+        property(writer, property);
+      } else if (obj instanceof Link link) {
+        link(writer, link);
       } else if (obj instanceof URI) {
         reference(writer, (ResWrap<URI>) container);
       }
@@ -668,11 +668,11 @@ public class AtomSerializer implements ODataSerializer {
     if (container.getContextURL() != null) {
       final ContextURL contextURL = ContextURLParser.parse(container.getContextURL());
       final URI base = contextURL.getServiceRoot();
-      if (container.getPayload() instanceof EntityCollection) {
-        ((EntityCollection) container.getPayload()).setBaseURI(base);
+      if (container.getPayload() instanceof EntityCollection entityCollection) {
+        entityCollection.setBaseURI(base);
       }
-      if (container.getPayload() instanceof Entity) {
-        ((Entity) container.getPayload()).setBaseURI(base);
+      if (container.getPayload() instanceof Entity entity) {
+        entity.setBaseURI(base);
       }
 
       writer.writeAttribute(Constants.NS_METADATA, Constants.CONTEXT,

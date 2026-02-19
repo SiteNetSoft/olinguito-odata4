@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Implemented accept() method
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
  */
 package org.sitenetsoft.olinguito.server.core.uri.queryoption.apply;
 
@@ -51,7 +52,7 @@ public class AggregateExpressionImpl implements AggregateExpression {
 
   @Override
   public List<UriResource> getPath() {
-    return path == null ? Collections.emptyList() : path.getUriResourceParts();
+    return path == null ? List.of() : path.getUriResourceParts();
   }
 
   public AggregateExpressionImpl setPath(final UriInfo uriInfo) {
