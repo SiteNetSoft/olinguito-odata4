@@ -15,6 +15,9 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -26,7 +29,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -582,7 +586,7 @@ public class MetadataParser {
     }
     if (attr(element, "AppliesTo") != null) {
       String[] appliesTo = attr(element, "AppliesTo").split("\\s+");
-      term.setAppliesTo(Arrays.asList(appliesTo));
+      term.setAppliesTo(List.of(appliesTo));
     }
     term.setNullable(Boolean.parseBoolean(attr(element, "Nullable")));
     String maxLength = attr(element, "MaxLength");
@@ -817,7 +821,7 @@ public class MetadataParser {
       } else if (event.isCharacters()){
         reader.nextEvent();
         String data = event.asCharacters().getData();
-        if (data.trim().length() > 0) {
+        if (!data.isBlank()) {
           return data.trim();
         }
       }

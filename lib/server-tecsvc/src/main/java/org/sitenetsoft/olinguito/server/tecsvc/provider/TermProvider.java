@@ -15,10 +15,12 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
@@ -39,19 +41,19 @@ public class TermProvider {
   public CsdlTerm getTerm(FullQualifiedName termName) {
     if (TERM_DESCRIPTION.equals(termName)) {
       return new CsdlTerm().setName("Description").setType("Edm.String")
-          .setAnnotations(Arrays.asList(new CsdlAnnotation().setTerm("Core.Description").setExpression(
+          .setAnnotations(List.of(new CsdlAnnotation().setTerm("Core.Description").setExpression(
               new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String,
                   "A brief description of a model element")),
               new CsdlAnnotation().setTerm("Core.IsLanguageDependent")));
     } else if (TERM_LONG_DESCRIPTION.equals(termName)) {
       return new CsdlTerm().setName("LongDescription").setType("Edm.String")
-          .setAnnotations(Arrays.asList(new CsdlAnnotation().setTerm("Core.Description").setExpression(
+          .setAnnotations(List.of(new CsdlAnnotation().setTerm("Core.Description").setExpression(
               new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String,
                   "A lengthy description of a model element")),
               new CsdlAnnotation().setTerm("Core.IsLanguageDependent")));
     } else if (TERM_DATA.equals(termName)) {
       return new CsdlTerm().setName("Data").setType("Edm.Boolean")
-          .setAnnotations(Arrays.asList(new CsdlAnnotation().setTerm("Core.Description").setExpression(
+          .setAnnotations(List.of(new CsdlAnnotation().setTerm("Core.Description").setExpression(
               new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String,
                   "Indicates if data in the TechSvc is available for the given object"))));
     }

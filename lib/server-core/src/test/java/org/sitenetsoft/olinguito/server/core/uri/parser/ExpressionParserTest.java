@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -27,6 +29,7 @@ import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -526,7 +529,7 @@ public class ExpressionParserTest {
     EdmProperty complexProperty = mockProperty(complexPropertyName, complexType);
     
     EdmEntityType entityType = mockEntityType(keyPropertyName, keyPropertyRef);
-    Mockito.when(entityType.getPropertyNames()).thenReturn(Arrays.asList(keyPropertyName, complexPropertyName));
+    Mockito.when(entityType.getPropertyNames()).thenReturn(List.of(keyPropertyName, complexPropertyName));
     Mockito.when(entityType.getProperty(keyPropertyName)).thenReturn(keyProperty);
     Mockito.when(entityType.getProperty(complexPropertyName)).thenReturn(complexProperty);
     EdmEntitySet entitySet = mockEntitySet(entitySetName, entityType);
@@ -588,7 +591,7 @@ public class ExpressionParserTest {
     Mockito.when(complexProperty.isCollection()).thenReturn(true);
     
     EdmEntityType entityType = mockEntityType(keyPropertyName, keyPropertyRef);
-    Mockito.when(entityType.getPropertyNames()).thenReturn(Arrays.asList(keyPropertyName, complexPropertyName));
+    Mockito.when(entityType.getPropertyNames()).thenReturn(List.of(keyPropertyName, complexPropertyName));
     Mockito.when(entityType.getProperty(keyPropertyName)).thenReturn(keyProperty);
     Mockito.when(entityType.getProperty(complexPropertyName)).thenReturn(complexProperty);
     Mockito.when(entityType.getFullQualifiedName()).thenReturn(new FullQualifiedName("test.ET"));
@@ -630,7 +633,7 @@ public class ExpressionParserTest {
     EdmEntityType startEntityType = mockEntityType(keyPropertyName, keyPropertyRef);
     Mockito.when(startEntityType.getFullQualifiedName()).thenReturn(new FullQualifiedName("test.StartET"));
     Mockito.when(startEntityType.getPropertyNames()).thenReturn(
-        Arrays.asList(keyPropertyName, complexPropertyName));
+        List.of(keyPropertyName, complexPropertyName));
     Mockito.when(startEntityType.getProperty(keyPropertyName)).thenReturn(keyProperty);
     Mockito.when(startEntityType.getProperty(complexPropertyName)).thenReturn(complexProperty);
     EdmEntitySet entitySet = mockEntitySet(entitySetName, startEntityType);
@@ -670,14 +673,14 @@ public class ExpressionParserTest {
     Mockito.when(navEntityType.getFullQualifiedName()).thenReturn(new FullQualifiedName("test.navET"));
     Mockito.when(navEntityType.getNamespace()).thenReturn("test");
     Mockito.when(navEntityType.getPropertyNames()).thenReturn(
-        Arrays.asList(keyPropertyName));
+        List.of(keyPropertyName));
     Mockito.when(navEntityType.getProperty(keyPropertyName)).thenReturn(keyProperty);
     
     EdmEntityType baseEntityType = mockEntityType(keyPropertyName, keyPropertyRef);
     Mockito.when(baseEntityType.getFullQualifiedName()).thenReturn(new FullQualifiedName("test.baseET"));
     Mockito.when(baseEntityType.getNamespace()).thenReturn("test");
     Mockito.when(baseEntityType.getPropertyNames()).thenReturn(
-        Arrays.asList(keyPropertyName));
+        List.of(keyPropertyName));
     Mockito.when(baseEntityType.getProperty(keyPropertyName)).thenReturn(keyProperty);
     
     Mockito.when(navEntityType.getBaseType()).thenReturn(baseEntityType);
@@ -686,7 +689,7 @@ public class ExpressionParserTest {
     EdmEntityType entityType = mockEntityType(keyPropertyName, keyPropertyRef);
     Mockito.when(entityType.getFullQualifiedName()).thenReturn(new FullQualifiedName("test.derivedET"));
     Mockito.when(entityType.getNamespace()).thenReturn("test");
-    Mockito.when(entityType.getPropertyNames()).thenReturn(Arrays.asList(keyPropertyName, propertyName));
+    Mockito.when(entityType.getPropertyNames()).thenReturn(List.of(keyPropertyName, propertyName));
     EdmNavigationProperty navProperty = mockNavigationProperty(propertyName, navEntityType);
     Mockito.when(entityType.getProperty(propertyName)).thenReturn(navProperty);
     

@@ -15,12 +15,14 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -30,7 +32,7 @@ public class ODataRequestTest {
   public void testHeader() {
     ODataRequest r = new ODataRequest();
 
-    r.addHeader("aa", Arrays.asList("cc"));
+    r.addHeader("aa", List.of("cc"));
 
     assertEquals("cc", r.getHeaders("aa").get(0));
     assertEquals("cc", r.getHeaders("aA").get(0));
@@ -45,7 +47,7 @@ public class ODataRequestTest {
   @Test
   public void testHeader2() {
     ODataRequest r = new ODataRequest();
-    r.addHeader("AA", Arrays.asList("dd"));
+    r.addHeader("AA", List.of("dd"));
 
     assertEquals("dd", r.getHeaders("aa").get(0));
     assertEquals("dd", r.getHeaders("aA").get(0));
@@ -56,12 +58,12 @@ public class ODataRequestTest {
   public void testMultiValueHeader() {
     ODataRequest r = new ODataRequest();
 
-    r.addHeader("aa", Arrays.asList("a", "b"));
+    r.addHeader("aa", List.of("a", "b"));
 
     assertEquals("a", r.getHeaders("aa").get(0));
     assertEquals("b", r.getHeaders("aA").get(1));
 
-    r.addHeader("Aa", Arrays.asList("c"));
+    r.addHeader("Aa", List.of("c"));
 
     assertEquals("a", r.getHeaders("aa").get(0));
     assertEquals("b", r.getHeaders("aA").get(1));

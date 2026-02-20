@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -97,20 +98,20 @@ public class ODataJsonInstanceAnnotationSerializer {
 		try {
 			switch (annotation.getValueType()) {
 			case PRIMITIVE:
-				if (isODataMetadataFull && name.length() > 0) {
+				if (isODataMetadataFull && !name.isEmpty()) {
 					json.writeStringField(name + constants.getType(), "#" + annotation.getType());
 				}
-				if (name.length() > 0) {
+				if (!name.isEmpty()) {
 					json.writeFieldName(name);
 				}
 				writeInstanceAnnotOnPrimitiveProperty(json, annotation, annotation.getValue());
 				break;
 			case COLLECTION_PRIMITIVE:
-				if (isODataMetadataFull && name.length() > 0) {
+				if (isODataMetadataFull && !name.isEmpty()) {
 					json.writeStringField(name + constants.getType(), 
 							"#Collection(" + annotation.getType() + ")");
 				}
-				if (name.length() > 0) {
+				if (!name.isEmpty()) {
 					json.writeFieldName(name);
 				}
 				json.writeStartArray();
@@ -121,21 +122,21 @@ public class ODataJsonInstanceAnnotationSerializer {
 				json.writeEndArray();
 				break;
 			case COMPLEX:
-				if (isODataMetadataFull && name.length() > 0) {
+				if (isODataMetadataFull && !name.isEmpty()) {
 					json.writeStringField(name + constants.getType(), "#" + annotation.getType());
 				}
-				if (name.length() > 0) {
+				if (!name.isEmpty()) {
 					json.writeFieldName(name);
 				}
 				ComplexValue complexValue = annotation.asComplex();
 				writeInstanceAnnotOnComplexProperty(json, annotation, complexValue);
 				break;
 			case COLLECTION_COMPLEX:
-				if (isODataMetadataFull && name.length() > 0) {
+				if (isODataMetadataFull && !name.isEmpty()) {
 					json.writeStringField(name + constants.getType(), 
 							"#Collection(" + annotation.getType() + ")");
 				}
-				if (name.length() > 0) {
+				if (!name.isEmpty()) {
 					json.writeFieldName(name);
 				}
 				json.writeStartArray();

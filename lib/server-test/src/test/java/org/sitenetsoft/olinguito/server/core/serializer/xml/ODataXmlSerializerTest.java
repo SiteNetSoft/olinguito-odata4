@@ -17,7 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
- * Copyright 2026 SiteNetSoft - Migrated XMLUnit 1.6 to 2.11.0
+ * Copyright 2026 SiteNetSoft - Migrated XMLUnit 1.6 to 2.11.0; Replaced Arrays.asList with List.of
  */
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
@@ -25,7 +25,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Collections;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -1204,10 +1203,10 @@ public class ODataXmlSerializerTest {
     entity.setId(URI.create("id"));
     entity.addProperty(new Property(null, "PropertyEnumString", ValueType.ENUM, 6));
     entity.addProperty(new Property(null, "CollPropertyEnumString", ValueType.COLLECTION_ENUM,
-        Arrays.asList(2, 4, 6)));
+        List.of(2, 4, 6)));
     entity.addProperty(new Property(null, "PropertyDefString", ValueType.PRIMITIVE, "Test"));
     entity.addProperty(new Property(null, "CollPropertyDefString", ValueType.COLLECTION_PRIMITIVE,
-        Arrays.asList("Test1", "Test2")));
+        List.of("Test1", "Test2")));
     ComplexValue complexValue = new ComplexValue();
     complexValue.getValue().add(entity.getProperty("PropertyEnumString"));
     complexValue.getValue().add(entity.getProperty("CollPropertyEnumString"));
@@ -1596,7 +1595,7 @@ public class ODataXmlSerializerTest {
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     final SelectItem selectItem1 = ExpandSelectMock.mockSelectItem(edmEntitySet, "PropertyDate");
     final SelectItem selectItem2 = ExpandSelectMock.mockSelectItem(edmEntitySet, "PropertyBoolean");
-    final SelectOption select = ExpandSelectMock.mockSelectOption(Arrays.asList(
+    final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(
         selectItem1, selectItem2, selectItem2));
     long currentTimeMillis = System.currentTimeMillis();
     InputStream result = serializer
@@ -1651,7 +1650,7 @@ public class ODataXmlSerializerTest {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESFourKeyAlias");
     final EdmEntityType entityType = edmEntitySet.getEntityType();
     final EntityCollection entitySet = data.readAll(edmEntitySet);
-    final SelectOption select = ExpandSelectMock.mockSelectOption(Arrays.asList(
+    final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(
         ExpandSelectMock.mockSelectItem(edmEntitySet, "PropertyInt16"),
         ExpandSelectMock.mockSelectItem(edmEntitySet,"PropertyCompComp", "PropertyComp", "PropertyString")));
     long currentTimeMillis = System.currentTimeMillis();
@@ -1776,7 +1775,7 @@ public class ODataXmlSerializerTest {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESFourKeyAlias");
     final EdmEntityType entityType = edmEntitySet.getEntityType();
     final EntityCollection entitySet = data.readAll(edmEntitySet);
-    final SelectOption select = ExpandSelectMock.mockSelectOption(Arrays.asList(
+    final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(
         ExpandSelectMock.mockSelectItem(edmEntitySet, "PropertyComp", "PropertyString"),
         ExpandSelectMock.mockSelectItem(edmEntitySet, "PropertyCompComp", "PropertyComp")));
     long currentTimeMillis = System.currentTimeMillis();
@@ -2192,7 +2191,7 @@ public class ODataXmlSerializerTest {
     final ExpandItem expandItem = ExpandSelectMock.mockExpandItem(edmEntitySet, "NavPropertyETTwoPrimOne");
     ExpandItem expandItemAll = Mockito.mock(ExpandItem.class);
     Mockito.when(expandItemAll.isStar()).thenReturn(true);
-    final ExpandOption expand = ExpandSelectMock.mockExpandOption(Arrays.asList(
+    final ExpandOption expand = ExpandSelectMock.mockExpandOption(List.of(
         expandItem, expandItem, expandItemAll));
     final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(
             ExpandSelectMock.mockSelectItem(edmEntitySet, "PropertySByte")));

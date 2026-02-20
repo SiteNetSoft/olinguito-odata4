@@ -16,9 +16,10 @@ package org.sitenetsoft.olinguito.commons.core.edm;
   * KIND, either express or implied. See the License for the
   * specific language governing permissions and limitations
   * under the License.
+  *
+  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
   */
  
- import java.util.Arrays;
  import java.util.Collections;
  import java.util.List;
  
@@ -78,7 +79,7 @@ package org.sitenetsoft.olinguito.commons.core.edm;
  
      @Override
      public List<CsdlAliasInfo> getAliasInfos() throws ODataException {
-       return Arrays.asList(
+       return List.of(
            new CsdlAliasInfo().setNamespace(NAMESPACE_PREFIX + name).setAlias(ALIAS_PREFIX + name),
            new CsdlAliasInfo().setNamespace(NAMESPACE_PREFIX + other).setAlias(ALIAS_PREFIX + other));
      }

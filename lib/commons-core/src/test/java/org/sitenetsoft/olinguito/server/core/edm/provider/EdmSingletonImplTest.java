@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -24,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.edm.EdmBindingTarget;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
@@ -53,7 +55,7 @@ public class EdmSingletonImplTest {
     final FullQualifiedName typeName = new FullQualifiedName("ns", "entityType");
     final CsdlEntityType entityTypeProvider = new CsdlEntityType()
         .setName(typeName.getName())
-        .setKey(Arrays.asList(new CsdlPropertyRef().setName("Id")));
+        .setKey(List.of(new CsdlPropertyRef().setName("Id")));
     when(provider.getEntityType(typeName)).thenReturn(entityTypeProvider);
 
     final FullQualifiedName containerName = new FullQualifiedName("ns", "container");
@@ -68,7 +70,7 @@ public class EdmSingletonImplTest {
             .setTitle("title")
             .setType(typeName)
             .setNavigationPropertyBindings(
-                Arrays.asList(
+                List.of(
                     new CsdlNavigationPropertyBinding().setPath("path").setTarget(
                         containerName.getFullQualifiedNameAsString() + "/" + singletonName)));
     when(provider.getSingleton(containerName, singletonName)).thenReturn(singletonProvider);
@@ -96,7 +98,7 @@ public class EdmSingletonImplTest {
           when(provider.getEntityContainerInfo(containerName)).thenReturn(containerInfo);
           final String singletonName = "singleton";
           final CsdlSingleton singletonProvider = new CsdlSingleton()
-          .setNavigationPropertyBindings(Arrays.asList(
+          .setNavigationPropertyBindings(List.of(
           new CsdlNavigationPropertyBinding().setPath("path")
           .setTarget(containerName.getFullQualifiedNameAsString() + "/wrong")));
           when(provider.getSingleton(containerName, singletonName)).thenReturn(singletonProvider);
@@ -113,7 +115,7 @@ public class EdmSingletonImplTest {
           final FullQualifiedName containerName = new FullQualifiedName("ns", "container");
           final String singletonName = "singleton";
           final CsdlSingleton singletonProvider = new CsdlSingleton()
-          .setNavigationPropertyBindings(Arrays.asList(
+          .setNavigationPropertyBindings(List.of(
           new CsdlNavigationPropertyBinding().setPath("path").setTarget("ns.wrongContainer/" + singletonName)));
           when(provider.getSingleton(containerName, singletonName)).thenReturn(singletonProvider);
           final EdmSingleton singleton = new EdmSingletonImpl(edm, null, singletonProvider);

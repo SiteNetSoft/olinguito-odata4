@@ -25,7 +25,9 @@ import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
 import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.TopOption;
 
-public class TopHandler {
+public final class TopHandler {
+  private TopHandler() {}
+
   public static void applyTopSystemQueryOption(final TopOption topOption, final EntityCollection entitySet)
       throws ODataApplicationException {
 

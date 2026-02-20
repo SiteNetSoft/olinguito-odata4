@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -515,10 +516,10 @@ public class ODataBinderImpl implements ODataBinder {
     if (entitySetOrSingletonOrType.indexOf('/') != -1) {
       final String[] splitted = entitySetOrSingletonOrType.split("/");
       if (splitted.length > 1) {
-        for (int i = 1; i < splitted.length && type != null; i++) {
-          final EdmNavigationProperty navProp = ((EdmStructuredType) type).getNavigationProperty(splitted[i]);
+        for (int i = 1; i < splitted.length && type instanceof EdmStructuredType structuredType; i++) {
+          final EdmNavigationProperty navProp = structuredType.getNavigationProperty(splitted[i]);
           if (navProp == null) {
-            EdmProperty property = ((EdmStructuredType) type).getStructuralProperty(splitted[i]);
+            EdmProperty property = structuredType.getStructuralProperty(splitted[i]);
             if (property != null) {
               type = property.getType();
             } else {
@@ -557,12 +558,12 @@ public class ODataBinderImpl implements ODataBinder {
             if (container != null) {
               final EdmType structuredType = findEntityType(contextURL.getEntitySetOrSingletonOrType(), container);
 
-              if (structuredType != null) {
+              if (structuredType instanceof EdmStructuredType st) {
                 if (contextURL.getNavOrPropertyPath() == null) {
                   type = structuredType;
                 } else {
                   final EdmNavigationProperty navProp =
-                      ((EdmStructuredType) structuredType).getNavigationProperty(contextURL.getNavOrPropertyPath());
+                      st.getNavigationProperty(contextURL.getNavOrPropertyPath());
 
                   type = navProp == null
                       ? structuredType
@@ -595,9 +596,10 @@ public class ODataBinderImpl implements ODataBinder {
         } else {
           inlineEntity.setType(propertyTypeName);
         }
-          assert inlined instanceof ComplexValue;
-          inlineEntity.getProperties().addAll(((ComplexValue) inlined).getValue());
-        copyAnnotations(inlineEntity, (ComplexValue) inlined);
+        if (inlined instanceof ComplexValue cvInlined) {
+          inlineEntity.getProperties().addAll(cvInlined.getValue());
+          copyAnnotations(inlineEntity, cvInlined);
+        }
         inlineEntitySet.getEntities().add(inlineEntity);
       }
       if (count != null) {
@@ -723,7 +725,7 @@ public class ODataBinderImpl implements ODataBinder {
           int idx =  property.getName().indexOf(Constants.JSON_COUNT);
           if (idx != -1) {
             String navigationName = property.getName().substring(0, idx);
-            edmProperty = ((EdmEntityType) edmType).getProperty(navigationName);
+            edmProperty = edmEntityType.getProperty(navigationName);
             if (edmProperty instanceof EdmNavigationProperty) {
               ClientLink link = entity.getNavigationLink(navigationName);
               if (link == null) {

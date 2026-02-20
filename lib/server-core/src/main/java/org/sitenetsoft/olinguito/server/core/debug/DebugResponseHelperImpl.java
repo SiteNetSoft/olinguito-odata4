@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Added logging for invalid debug formats
  * Copyright 2026 SiteNetSoft - Replace hardcoded charset strings with StandardCharsets
+ * Copyright 2026 SiteNetSoft - Replaced JUL logger with System.Logger
  */
 package org.sitenetsoft.olinguito.server.core.debug;
 
@@ -49,12 +50,9 @@ import org.sitenetsoft.olinguito.server.core.serializer.utils.CircleStreamBuffer
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 public class DebugResponseHelperImpl implements DebugResponseHelper {
 
-  private static final Logger LOG = Logger.getLogger(DebugResponseHelperImpl.class.getName());
+  private static final System.Logger LOG = System.getLogger(DebugResponseHelperImpl.class.getName());
 
   private enum DebugFormat {
     JSON, HTML, DOWNLOAD
@@ -72,8 +70,9 @@ public class DebugResponseHelperImpl implements DebugResponseHelper {
     } else {
       // Unknown format - log warning and default to JSON
       if (debugFormat != null && !debugFormat.isEmpty()) {
-        LOG.log(Level.WARNING, "Unknown debug format ''{0}'', defaulting to JSON. " +
-            "Supported formats: json, html, download", debugFormat);
+        LOG.log(System.Logger.Level.WARNING,
+            "Unknown debug format ''{0}'', defaulting to JSON. Supported formats: json, html, download",
+            debugFormat);
       }
       requestedFormat = DebugFormat.JSON;
     }

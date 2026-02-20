@@ -15,10 +15,12 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
@@ -36,7 +38,7 @@ public class EnumTypeProvider {
           .setName("ENString")
           .setFlags(true)
           .setUnderlyingType(EdmPrimitiveTypeKind.Int16.getFullQualifiedName())
-          .setMembers(Arrays.asList(
+          .setMembers(List.of(
               new CsdlEnumMember().setName("String1").setValue("1"),
               new CsdlEnumMember().setName("String2").setValue("2"),
               new CsdlEnumMember().setName("String3").setValue("4")));

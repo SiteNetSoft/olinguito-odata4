@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
@@ -150,7 +152,7 @@ public abstract class TechnicalProcessor implements Processor {
       entity = dataProvider.read( uriResource.getSingleton());
     } else if (resourcePaths.get(0) instanceof UriResourceFunction uriResource) {
       final EdmFunction function = uriResource.getFunction();
-      if (function.getReturnType().getType() instanceof EdmEntityType) {
+      if (function.getReturnType().getType() instanceof EdmEntityType returnEntityType) {
         final List<UriParameter> key = uriResource.getKeyPredicates();
         if (key.isEmpty()) {
           if (uriResource.isCollection()) { // handled in readEntityCollection()
@@ -159,7 +161,7 @@ public abstract class TechnicalProcessor implements Processor {
             entity = dataProvider.readFunctionEntity(function, uriResource.getParameters(), uriInfo);
           }
         } else {
-          entity = dataProvider.read((EdmEntityType) function.getReturnType().getType(),
+          entity = dataProvider.read(returnEntityType,
               dataProvider.readFunctionEntityCollection(function, uriResource.getParameters(), uriInfo),
               key);
         }

@@ -15,14 +15,16 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.data.Annotation;
@@ -71,7 +73,7 @@ public class ODataJsonSerializerWithInstanceAnnotationsTest {
     annotation = new Annotation();
     annotation.setTerm("com.contoso.PersonalInfo.PhoneNumbers");
     annotation.setType("String");
-    annotation.setValue(ValueType.COLLECTION_PRIMITIVE, Arrays.asList("(203)555-1718", "(203)555-1719"));
+    annotation.setValue(ValueType.COLLECTION_PRIMITIVE, List.of("(203)555-1718", "(203)555-1719"));
     entity.getAnnotations().add(annotation);
     InputStream result = serializer.entity(metadata, edmEntitySet.getEntityType(), entity,
         EntitySerializerOptions.with()

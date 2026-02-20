@@ -27,7 +27,9 @@ import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
 import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.SkipOption;
 
-public class SkipHandler {
+public final class SkipHandler {
+  private SkipHandler() {}
+
   public static void applySkipSystemQueryHandler(final SkipOption skipOption, final EntityCollection entitySet)
       throws ODataApplicationException {
 

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -25,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
@@ -218,7 +220,7 @@ public class MetadataParserAnnotationsTest {
   @Test
   public void testTermAppliesTo() throws ODataException {
     CsdlTerm term = this.provider.getTerm(new FullQualifiedName(NS, "IsURI"));
-    assertEquals(Arrays.asList("Property", "PropertyPath"), term.getAppliesTo());
+    assertEquals(List.of("Property", "PropertyPath"), term.getAppliesTo());
   }
   
   @Test

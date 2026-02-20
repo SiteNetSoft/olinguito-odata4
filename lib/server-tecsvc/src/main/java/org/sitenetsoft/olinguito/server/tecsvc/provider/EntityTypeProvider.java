@@ -15,10 +15,12 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
@@ -117,9 +119,9 @@ public class EntityTypeProvider {
     if(entityTypeName.equals(nameETAllPrimDefaultValues)){        
         return new CsdlEntityType()
           .setName("ETAllPrimDefaultValues")
-          .setKey(Arrays.asList(
+          .setKey(List.of(
               new CsdlPropertyRef().setName("PropertyInt16")))
-          .setProperties(Arrays.asList(
+          .setProperties(List.of(
               PropertyProvider.propertyInt16_NotNullable_WithDefaultValue, 
               PropertyProvider.propertyString_NotNullable_WithDefaultValue,
               PropertyProvider.propertyBoolean_NotNullable_WithDefaultValue, 
@@ -143,9 +145,9 @@ public class EntityTypeProvider {
     }else if (entityTypeName.equals(nameETAllPrim)) {
       return new CsdlEntityType()
           .setName("ETAllPrim")
-          .setKey(Arrays.asList(
+          .setKey(List.of(
               new CsdlPropertyRef().setName("PropertyInt16")))
-          .setProperties(Arrays.asList(
+          .setProperties(List.of(
               PropertyProvider.propertyInt16_NotNullable, PropertyProvider.propertyString,
               PropertyProvider.propertyBoolean, PropertyProvider.propertyByte, PropertyProvider.propertySByte,
               PropertyProvider.propertyInt32, PropertyProvider.propertyInt64,
@@ -153,16 +155,16 @@ public class EntityTypeProvider {
               PropertyProvider.propertyBinary, PropertyProvider.propertyDate, PropertyProvider.propertyDateTimeOffset,
               PropertyProvider.propertyDuration, PropertyProvider.propertyGuid, PropertyProvider.propertyTimeOfDay
               ))
-          .setNavigationProperties(Arrays.asList(PropertyProvider.navPropertyETTwoPrimOne_ETTwoPrim,
+          .setNavigationProperties(List.of(PropertyProvider.navPropertyETTwoPrimOne_ETTwoPrim,
               PropertyProvider.collectionNavPropertyETTwoPrimMany_ETTwoPrim));
 
     } else if (entityTypeName.equals(nameETCollAllPrim)) {
       return new CsdlEntityType()
           .setName("ETCollAllPrim")
-          .setKey(Arrays.asList(new CsdlPropertyRef().setName("PropertyInt16")))
+          .setKey(List.of(new CsdlPropertyRef().setName("PropertyInt16")))
 
           .setProperties(
-              Arrays.asList(
+              List.of(
                   PropertyProvider.propertyInt16_NotNullable,
                   PropertyProvider.collPropertyString_NotNullable,
                   PropertyProvider.collPropertyBoolean, PropertyProvider.collPropertyByte,
@@ -180,26 +182,26 @@ public class EntityTypeProvider {
     } else if (entityTypeName.equals(nameETTwoPrim)) {
       return new CsdlEntityType()
           .setName("ETTwoPrim")
-          .setKey(Arrays.asList(new CsdlPropertyRef().setName("PropertyInt16")))
-          .setProperties(Arrays.asList(
+          .setKey(List.of(new CsdlPropertyRef().setName("PropertyInt16")))
+          .setProperties(List.of(
               PropertyProvider.propertyInt16_NotNullable, PropertyProvider.propertyString))
           .setNavigationProperties(
-              Arrays.asList(PropertyProvider.navPropertyETAllPrimOne_ETAllPrim,
+              List.of(PropertyProvider.navPropertyETAllPrimOne_ETAllPrim,
                   PropertyProvider.collectionNavPropertyETAllPrimMany_ETAllPrim));
 
     } else if (entityTypeName.equals(nameETMixPrimCollComp)) {
       return new CsdlEntityType()
           .setName("ETMixPrimCollComp")
-          .setKey(Arrays.asList(new CsdlPropertyRef().setName("PropertyInt16")))
-          .setProperties(Arrays.asList(
+          .setKey(List.of(new CsdlPropertyRef().setName("PropertyInt16")))
+          .setProperties(List.of(
               PropertyProvider.propertyInt16_NotNullable, PropertyProvider.collPropertyString,
               PropertyProvider.propertyComp_CTTwoPrim, PropertyProvider.collPropertyComp_CTTwoPrim));
 
     } else if (entityTypeName.equals(nameETDeriveCollComp)) {
       return new CsdlEntityType()
           .setName("ETDeriveCollComp")
-          .setKey(Arrays.asList(new CsdlPropertyRef().setName("PropertyInt16")))
-          .setProperties(Arrays.asList(
+          .setKey(List.of(new CsdlPropertyRef().setName("PropertyInt16")))
+          .setProperties(List.of(
              PropertyProvider.propertyInt16_NotNullable,
              PropertyProvider.propertyComp_CTTwoPrim_Ano,
              PropertyProvider.collPropertyComp_CTTwoPrim_Ano));
@@ -207,10 +209,10 @@ public class EntityTypeProvider {
     } else if (entityTypeName.equals(nameETTwoKeyTwoPrim)) {
       return new CsdlEntityType()
           .setName("ETTwoKeyTwoPrim")
-          .setKey(Arrays.asList(
+          .setKey(List.of(
               new CsdlPropertyRef().setName("PropertyInt16"),
               new CsdlPropertyRef().setName("PropertyString")))
-          .setProperties(Arrays.asList(
+          .setProperties(List.of(
               PropertyProvider.propertyInt16_NotNullable, PropertyProvider.propertyString_NotNullable));
 
     } else if (entityTypeName.equals(nameETBaseTwoKeyTwoPrim)) {
@@ -227,7 +229,7 @@ public class EntityTypeProvider {
       return new CsdlEntityType()
           .setName("ETBase")
           .setBaseType(nameETTwoPrim)
-          .setProperties(Arrays.asList(new CsdlProperty()
+          .setProperties(List.of(new CsdlProperty()
               .setName("AdditionalPropertyString_5")
               .setType(PropertyProvider.nameString)));
 
@@ -235,7 +237,7 @@ public class EntityTypeProvider {
       return new CsdlEntityType()
           .setName("ETTwoBase")
           .setBaseType(nameETBase)
-          .setProperties(Arrays.asList(new CsdlProperty()
+          .setProperties(List.of(new CsdlProperty()
               .setName("AdditionalPropertyString_6")
               .setType(PropertyProvider.nameString))
           );
@@ -243,7 +245,7 @@ public class EntityTypeProvider {
     } else if (entityTypeName.equals(nameETAllKey)) {
       return new CsdlEntityType()
           .setName("ETAllKey")
-          .setKey(Arrays.asList(
+          .setKey(List.of(
               new CsdlPropertyRef().setName("PropertyString"),
               new CsdlPropertyRef().setName("PropertyBoolean"),
               new CsdlPropertyRef().setName("PropertyByte"),
@@ -258,7 +260,7 @@ public class EntityTypeProvider {
               new CsdlPropertyRef().setName("PropertyGuid"),
               new CsdlPropertyRef().setName("PropertyTimeOfDay")))
           .setProperties(
-              Arrays.asList(
+              List.of(
                   PropertyProvider.propertyString_NotNullable, PropertyProvider.propertyBoolean_NotNullable,
                   PropertyProvider.propertyByte_NotNullable, PropertyProvider.propertySByte_NotNullable,
                   PropertyProvider.propertyInt16_NotNullable, PropertyProvider.propertyInt32_NotNullable,
@@ -271,64 +273,64 @@ public class EntityTypeProvider {
     } else if (entityTypeName.equals(nameETCompAllPrim)) {
       return new CsdlEntityType()
           .setName("ETCompAllPrim")
-          .setKey(Arrays.asList(new CsdlPropertyRef().setName("PropertyInt16")))
+          .setKey(List.of(new CsdlPropertyRef().setName("PropertyInt16")))
           .setProperties(
-              Arrays.asList(PropertyProvider.propertyInt16_NotNullable, PropertyProvider.propertyComp_CTAllPrim));
+              List.of(PropertyProvider.propertyInt16_NotNullable, PropertyProvider.propertyComp_CTAllPrim));
 
     } else if (entityTypeName.equals(nameETCompCollAllPrim)) {
       return new CsdlEntityType()
           .setName("ETCompCollAllPrim")
-          .setKey(Arrays.asList(new CsdlPropertyRef().setName("PropertyInt16")))
+          .setKey(List.of(new CsdlPropertyRef().setName("PropertyInt16")))
 
           .setProperties(
-              Arrays.asList(PropertyProvider.propertyInt16_NotNullable,
+              List.of(PropertyProvider.propertyInt16_NotNullable,
                   PropertyProvider.propertyComp_CTCollAllPrim));
 
     } else if (entityTypeName.equals(nameETCompComp)) {
       return new CsdlEntityType()
           .setName("ETCompComp")
-          .setKey(Arrays.asList(new CsdlPropertyRef().setName("PropertyInt16")))
+          .setKey(List.of(new CsdlPropertyRef().setName("PropertyInt16")))
           .setProperties(
-              Arrays.asList(PropertyProvider.propertyInt16_NotNullable, PropertyProvider.propertyComp_CTCompComp));
+              List.of(PropertyProvider.propertyInt16_NotNullable, PropertyProvider.propertyComp_CTCompComp));
 
     } else if (entityTypeName.equals(nameETCompCollComp)) {
       return new CsdlEntityType()
           .setName("ETCompCollComp")
-          .setKey(Arrays.asList(new CsdlPropertyRef().setName("PropertyInt16")))
-          .setProperties(Arrays.asList(
+          .setKey(List.of(new CsdlPropertyRef().setName("PropertyInt16")))
+          .setProperties(List.of(
               PropertyProvider.propertyInt16_NotNullable,
               PropertyProvider.propertyComp_CTCompCollComp));
 
     } else if (entityTypeName.equals(nameETMedia)) {
       return new CsdlEntityType()
           .setName("ETMedia")
-          .setKey(Arrays.asList(new CsdlPropertyRef().setName("PropertyInt16")))
-          .setProperties(Arrays.asList(PropertyProvider.propertyInt16_NotNullable))
-          .setNavigationProperties(Arrays.asList(PropertyProvider.navPropertyETMediaOne_ETKeyNavMany))
+          .setKey(List.of(new CsdlPropertyRef().setName("PropertyInt16")))
+          .setProperties(List.of(PropertyProvider.propertyInt16_NotNullable))
+          .setNavigationProperties(List.of(PropertyProvider.navPropertyETMediaOne_ETKeyNavMany))
           .setHasStream(true);
 
     } else if (entityTypeName.equals(nameETServerSidePaging)) {
       return new CsdlEntityType()
           .setName(nameETServerSidePaging.getName())
-          .setKey(Arrays.asList(new CsdlPropertyRef().setName("PropertyInt16")))
-          .setProperties(Arrays.asList(PropertyProvider.propertyInt16_NotNullable,
+          .setKey(List.of(new CsdlPropertyRef().setName("PropertyInt16")))
+          .setProperties(List.of(PropertyProvider.propertyInt16_NotNullable,
               PropertyProvider.propertyString_NotNullable));
 
     }else if (entityTypeName.equals(nameETStreamServerSidePaging)) {
       return new CsdlEntityType()
           .setName(nameETStreamServerSidePaging.getName())
-          .setKey(Arrays.asList(
+          .setKey(List.of(
               new CsdlPropertyRef()
                   .setName("PropertyInt16")))
-          .setProperties(Arrays.asList(
+          .setProperties(List.of(
               PropertyProvider.propertyInt16_NotNullable,
               PropertyProvider.propertyStream));     
     } else if (entityTypeName.equals(nameETAllNullable)) {
       return new CsdlEntityType()
           .setName("ETAllNullable")
-          .setKey(Arrays.asList(new CsdlPropertyRef().setName("PropertyKey")))
+          .setKey(List.of(new CsdlPropertyRef().setName("PropertyKey")))
           .setProperties(
-              Arrays.asList(
+              List.of(
                   new CsdlProperty()
                       .setName("PropertyKey").setType(PropertyProvider.nameInt16).setNullable(false),
                   PropertyProvider.propertyInt16_ExplicitNullable, PropertyProvider.propertyString_ExplicitNullable,
@@ -360,9 +362,9 @@ public class EntityTypeProvider {
     } else if (entityTypeName.equals(nameETKeyNav)) {
       return new CsdlEntityType()
           .setName("ETKeyNav")
-          .setKey(Arrays.asList(new CsdlPropertyRef().setName("PropertyInt16")))
+          .setKey(List.of(new CsdlPropertyRef().setName("PropertyInt16")))
           .setProperties(
-              Arrays.asList(
+              List.of(
                   PropertyProvider.propertyInt16_NotNullable, PropertyProvider.propertyString_NotNullable,
                   PropertyProvider.propertyCompNav_CTNavFiveProp,
                   PropertyProvider.propertyCompAllPrim_CTAllPrim, PropertyProvider.propertyCompTwoPrim_CTTwoPrim,
@@ -372,7 +374,7 @@ public class EntityTypeProvider {
                       .setName("PropertyCompCompNav").setType(ComplexTypeProvider.nameCTCompNav)
                   ))
           .setNavigationProperties(
-              Arrays.asList(
+              List.of(
                   PropertyProvider.navPropertyETTwoKeyNavOne_ETTwoKeyNav_NotNullable,
                   PropertyProvider.collectionNavPropertyETTwoKeyNavMany_ETTwoKeyNav_WithPartnerERKeyNavOne,
                   PropertyProvider.navPropertyETKeyNavOne_ETKeyNav,
@@ -382,25 +384,25 @@ public class EntityTypeProvider {
     } else if (entityTypeName.equals(nameETKeyPrimNav)) {
       return new CsdlEntityType()
           .setName("ETKeyPrimNav")
-          .setKey(Arrays.asList(new CsdlPropertyRef().setName("PropertyInt16")))
-          .setProperties(Arrays.asList(
+          .setKey(List.of(new CsdlPropertyRef().setName("PropertyInt16")))
+          .setProperties(List.of(
               PropertyProvider.propertyInt16_NotNullable, PropertyProvider.propertyString_ExplicitNullable))
           .setNavigationProperties(
-              Arrays.asList(
+              List.of(
                   PropertyProvider.navPropertyETKeyPrimNavOne_ETKeyPrimNav));
     } else if (entityTypeName.equals(nameETKeyPrimNavDerived)) {
       return new CsdlEntityType()
       .setName("ETKeyPrimNavDerived")
       .setBaseType(nameETKeyPrimNav)
-      .setProperties(Arrays.asList(PropertyProvider.propertyBoolean_NotNullable));
+      .setProperties(List.of(PropertyProvider.propertyBoolean_NotNullable));
     } else if (entityTypeName.equals(nameETKeyNavCont)) {
       return new CsdlEntityType()
           .setName("ETKeyNavCont")
-          .setKey(Arrays.asList(new CsdlPropertyRef().setName("PropertyInt16")))
-          .setProperties(Arrays.asList(
+          .setKey(List.of(new CsdlPropertyRef().setName("PropertyInt16")))
+          .setProperties(List.of(
               PropertyProvider.propertyInt16_NotNullable, PropertyProvider.propertyString_NotNullable,
               PropertyProvider.propertyCompNavCont))
-          .setNavigationProperties(Arrays.asList(
+          .setNavigationProperties(List.of(
               PropertyProvider.navPropertyETTwoKeyNavOneCT_ETTwoKeyNav,
               PropertyProvider.collectionNavPropertyETTwoKeyNavMany_CT_ETTwoKeyNav,
               PropertyProvider.navPropertyETTwoKeyNavContOne_ETTwoKeyNav,
@@ -413,23 +415,23 @@ public class EntityTypeProvider {
     } else if (entityTypeName.equals(nameETTwoKeyNavCont)) {
       return new CsdlEntityType()
       .setName("ETTwoKeyNavCont")
-      .setKey(Arrays.asList(
+      .setKey(List.of(
           new CsdlPropertyRef().setName("PropertyInt16"),
           new CsdlPropertyRef().setName("PropertyString")))
-      .setProperties(Arrays.asList(
+      .setProperties(List.of(
           PropertyProvider.propertyInt16_NotNullable, PropertyProvider.propertyString_NotNullable))
-      .setNavigationProperties(Arrays.asList(
+      .setNavigationProperties(List.of(
           PropertyProvider.navPropertyETTwoKeyNavContOneCT_ETTwoKeyNav,
           PropertyProvider.collectionNavPropertyETTwoKeyNavContMany_CT_ETTwoKeyNav
           ));
     } else if (entityTypeName.equals(nameETTwoKeyNav)) {
       return new CsdlEntityType()
           .setName("ETTwoKeyNav")
-          .setKey(Arrays.asList(
+          .setKey(List.of(
               new CsdlPropertyRef().setName("PropertyInt16"),
               new CsdlPropertyRef().setName("PropertyString")))
           .setProperties(
-              Arrays.asList(
+              List.of(
                   PropertyProvider.propertyInt16_NotNullable, PropertyProvider.propertyString_NotNullable,
                   PropertyProvider.propertyComp_CTPrimComp_NotNullable,
                   new CsdlProperty().setName("PropertyCompNav").setType(ComplexTypeProvider.nameCTBasePrimCompNav)
@@ -439,12 +441,12 @@ public class EntityTypeProvider {
                       .setCollection(true),
                   PropertyProvider.collPropertyString, PropertyProvider.propertyCompTwoPrim_CTTwoPrim
                   ))
-          .setNavigationProperties(Arrays.asList(
+          .setNavigationProperties(List.of(
               new CsdlNavigationProperty()
                   .setName("NavPropertyETKeyNavOne")
                   .setType(nameETKeyNav)
                   .setPartner("NavPropertyETTwoKeyNavMany")
-                  .setReferentialConstraints(Arrays.asList(
+                  .setReferentialConstraints(List.of(
                       new CsdlReferentialConstraint()
                           .setProperty("PropertyInt16")
                           .setReferencedProperty("PropertyInt16"))),
@@ -457,8 +459,8 @@ public class EntityTypeProvider {
       return new CsdlEntityType()
           .setName("ETBaseTwoKeyNav")
           .setBaseType(nameETTwoKeyNav)
-          .setProperties(Arrays.asList(PropertyProvider.propertyDate_ExplicitNullable))
-          .setNavigationProperties(Arrays.asList(
+          .setProperties(List.of(PropertyProvider.propertyDate_ExplicitNullable))
+          .setNavigationProperties(List.of(
               new CsdlNavigationProperty()
                   .setName("NavPropertyETBaseTwoKeyNavOne")
                   .setType(nameETBaseTwoKeyNav),
@@ -470,9 +472,9 @@ public class EntityTypeProvider {
       return new CsdlEntityType()
           .setName("ETTwoBaseTwoKeyNav")
           .setBaseType(nameETBaseTwoKeyNav)
-          .setKey(Arrays.asList(new CsdlPropertyRef().setName("PropertyInt16")))
-          .setProperties(Arrays.asList(PropertyProvider.propertyGuid_ExplicitNullable))
-          .setNavigationProperties(Arrays.asList(
+          .setKey(List.of(new CsdlPropertyRef().setName("PropertyInt16")))
+          .setProperties(List.of(PropertyProvider.propertyGuid_ExplicitNullable))
+          .setNavigationProperties(List.of(
               new CsdlNavigationProperty()
                   .setName("NavPropertyETBaseTwoKeyNavMany")
                   .setType(nameETBaseTwoKeyNav)
@@ -483,31 +485,31 @@ public class EntityTypeProvider {
       return new CsdlEntityType()
           .setName("ETFourKeyAlias")
           .setKey(
-              Arrays.asList(
+              List.of(
                   new CsdlPropertyRef().setName("PropertyInt16"),
                   new CsdlPropertyRef().setName("PropertyComp/PropertyInt16").setAlias("KeyAlias1"),
                   new CsdlPropertyRef().setName("PropertyComp/PropertyString").setAlias("KeyAlias2"),
                   new CsdlPropertyRef().setName("PropertyCompComp/PropertyComp/PropertyString").setAlias("KeyAlias3")))
           .setProperties(
-              Arrays.asList(PropertyProvider.propertyInt16_NotNullable,
+              List.of(PropertyProvider.propertyInt16_NotNullable,
                   PropertyProvider.propertyComp_CTTwoPrim_NotNullable,
                   PropertyProvider.propertyCompComp_CTCompComp_NotNullable));
     } else if (entityTypeName.equals(nameETCompMixPrimCollComp)) {
       return new CsdlEntityType()
           .setName("ETCompMixPrimCollComp")
-          .setKey(Arrays.asList(
+          .setKey(List.of(
               new CsdlPropertyRef()
                   .setName("PropertyInt16")))
           .setProperties(
-              Arrays.asList(PropertyProvider.propertyInt16_NotNullable,
+              List.of(PropertyProvider.propertyInt16_NotNullable,
                   PropertyProvider.propertyMixedPrimCollComp_CTMixPrimCollComp));
 
     } else if (entityTypeName.equals(nameETMixEnumDefCollComp)) {
       return new CsdlEntityType()
           .setName(nameETMixEnumDefCollComp.getName())
-          .setKey(Arrays.asList(new CsdlPropertyRef().setName("PropertyEnumString"),
+          .setKey(List.of(new CsdlPropertyRef().setName("PropertyEnumString"),
               new CsdlPropertyRef().setName("PropertyDefString")))
-          .setProperties(Arrays.asList(
+          .setProperties(List.of(
               PropertyProvider.propertyEnumString_ENString_NonNullable,
               PropertyProvider.collPropertyEnumString_ENString,
               PropertyProvider.propertyTypeDefinition_TDString_NonNullable,
@@ -517,59 +519,59 @@ public class EntityTypeProvider {
     } else if (entityTypeName.equals(nameETStream)) {
       return new CsdlEntityType()
           .setName(nameETStream.getName())
-          .setKey(Arrays.asList(
+          .setKey(List.of(
               new CsdlPropertyRef()
                   .setName("PropertyInt16")))
-          .setProperties(Arrays.asList(
+          .setProperties(List.of(
               PropertyProvider.propertyInt16_NotNullable,
               PropertyProvider.propertyStream));      
     } else if (entityTypeName.equals(nameETPeople)) {
         return new CsdlEntityType()
           .setName(nameETPeople.getName())
-          .setKey(Arrays.asList(new CsdlPropertyRef().setName("id")))
-          .setProperties(Arrays.asList(
+          .setKey(List.of(new CsdlPropertyRef().setName("id")))
+          .setProperties(List.of(
             PropertyProvider.propertyId,
             PropertyProvider.propertyName))
-          .setNavigationProperties(Arrays.asList(PropertyProvider.navPropertyFriends));
+          .setNavigationProperties(List.of(PropertyProvider.navPropertyFriends));
     } else if (entityTypeName.equals(nameETDelta)) {
       return new CsdlEntityType()
           .setName("ETDelta")
           .setBaseType(nameETTwoPrim)
           .setNavigationProperties(
-              Arrays.asList(
+              List.of(
                   PropertyProvider.navPropertyETBaseCont_ETTwoCont,
                   PropertyProvider.collectionNavPropertyETBaseContMany_ETTwoCont));
     } else if (entityTypeName.equals(nameETCont)) {
       return new CsdlEntityType()
           .setName("ETCont").setBaseType(nameETBaseCont)
-          .setProperties(Arrays.asList(
+          .setProperties(List.of(
               PropertyProvider.propertyBoolean, PropertyProvider.propertyByte, PropertyProvider.propertySByte
               ))
-          .setNavigationProperties(Arrays.asList(PropertyProvider.navPropertyETCont_ETTwoPrim,
+          .setNavigationProperties(List.of(PropertyProvider.navPropertyETCont_ETTwoPrim,
               PropertyProvider.collectionNavPropertyETContMany_ETTwoPrim));
     } else if (entityTypeName.equals(nameETBaseCont)) {
       return new CsdlEntityType()
           .setName("ETBaseCont")
-          .setKey(Arrays.asList(
+          .setKey(List.of(
               new CsdlPropertyRef().setName("PropertyInt16")))
-          .setProperties(Arrays.asList(
+          .setProperties(List.of(
               PropertyProvider.propertyInt16_NotNullable, PropertyProvider.propertyString,
               PropertyProvider.propertyInt32, PropertyProvider.propertyInt64,
               PropertyProvider.propertySingle, PropertyProvider.propertyDouble, PropertyProvider.propertyDecimal_Scale,
               PropertyProvider.propertyBinary, PropertyProvider.propertyDate, PropertyProvider.propertyDateTimeOffset,
               PropertyProvider.propertyDuration, PropertyProvider.propertyGuid, PropertyProvider.propertyTimeOfDay
               ))
-          .setNavigationProperties(Arrays.asList(PropertyProvider.navPropertyETBaseCont_ETTwoPrim,
+          .setNavigationProperties(List.of(PropertyProvider.navPropertyETBaseCont_ETTwoPrim,
               PropertyProvider.collectionNavPropertyETBaseContMany_ETTwoPrim,
               PropertyProvider.collectionNavPropertyETBaseContMany_ETTwoCont,
               PropertyProvider.navPropertyETBaseCont_ETTwoCont));
     } else if (entityTypeName.equals(nameETTwoCont)) {
       return new CsdlEntityType()
           .setName("ETTwoCont")
-          .setKey(Arrays.asList(
+          .setKey(List.of(
               new CsdlPropertyRef().setName("PropertyInt16"),
               new CsdlPropertyRef().setName("PropertyString")))
-          .setProperties(Arrays.asList(
+          .setProperties(List.of(
               PropertyProvider.propertyInt16_NotNullable, PropertyProvider.propertyString_NotNullable,
               PropertyProvider.propertyInt32, PropertyProvider.propertyInt64,
               PropertyProvider.propertySingle, PropertyProvider.propertyDouble, PropertyProvider.propertyDecimal_Scale,
@@ -579,9 +581,9 @@ public class EntityTypeProvider {
     } else if (entityTypeName.equals(nameETStreamOnComplexProp)) {
       return new CsdlEntityType()
           .setName("ETStreamOnComplexProp")
-          .setKey(Arrays.asList(
+          .setKey(List.of(
               new CsdlPropertyRef().setName("PropertyInt16")))
-          .setProperties(Arrays.asList(
+          .setProperties(List.of(
               PropertyProvider.propertyInt16_NotNullable, 
               PropertyProvider.propertyInt32, PropertyProvider.propertyEntityStream,
               PropertyProvider.propertyCompWithStream_CTWithStreamProp
@@ -589,34 +591,34 @@ public class EntityTypeProvider {
     } else if (entityTypeName.equals(nameETKeyAsSegmentString)) {
       return new CsdlEntityType()
               .setName("ETKeyAsSegmentString")
-              .setKey(Arrays.asList(
+              .setKey(List.of(
                       new CsdlPropertyRef().setName("PropertyString")))
-              .setProperties(Arrays.asList(
+              .setProperties(List.of(
                       PropertyProvider.propertyString_NotNullable));
     } else if (entityTypeName.equals(nameETKeyAsSegmentInt)) {
       return new CsdlEntityType()
               .setName("ETKeyAsSegmentInt")
-              .setKey(Arrays.asList(
+              .setKey(List.of(
                       new CsdlPropertyRef().setName("PropertyInt16")))
-              .setProperties(Arrays.asList(
+              .setProperties(List.of(
                       PropertyProvider.propertyInt16_NotNullable));
     } else if (entityTypeName.equals(nameETComplexKeyAsSegment)) {
       return new CsdlEntityType()
               .setName("ETComplexKeyAsSegment")
-              .setKey(Arrays.asList(
+              .setKey(List.of(
                       new CsdlPropertyRef().setName("PropertyString"),
                       new CsdlPropertyRef().setName("PropertyInt16")))
-              .setProperties(Arrays.asList(
+              .setProperties(List.of(
                       PropertyProvider.propertyString_NotNullable,
                       PropertyProvider.propertyInt16_NotNullable));
     } else if(entityTypeName.equals(nameETKeyAsSegmentStringNavKeyAsSegment)) {
       return new CsdlEntityType()
               .setName(nameETKeyAsSegmentStringNavKeyAsSegment.getName())
-              .setKey(Arrays.asList(
+              .setKey(List.of(
                       new CsdlPropertyRef().setName("PropertyString")))
-              .setProperties(Arrays.asList(
+              .setProperties(List.of(
                       PropertyProvider.propertyString_NotNullable))
-              .setNavigationProperties(Arrays.asList(PropertyProvider.navPropertyKeyAsSegment));
+              .setNavigationProperties(List.of(PropertyProvider.navPropertyKeyAsSegment));
     }
     return null;
   }

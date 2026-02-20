@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Converted switch statements to switch expressions
  */
 package org.sitenetsoft.olinguito.commons.core.edm.annotation;
 
@@ -42,28 +44,17 @@ public abstract class AbstractEdmLogicalOrComparisonExpression
 
   @Override
   public EdmExpressionType getExpressionType() {
-    switch (csdlExp.getType()) {
-    case And:
-      return EdmExpressionType.And;
-    case Or:
-      return EdmExpressionType.Or;
-    case Not:
-      return EdmExpressionType.Not;
-    case Eq:
-      return EdmExpressionType.Eq;
-    case Ne:
-      return EdmExpressionType.Ne;
-    case Gt:
-      return EdmExpressionType.Gt;
-    case Ge:
-      return EdmExpressionType.Ge;
-    case Lt:
-      return EdmExpressionType.Lt;
-    case Le:
-      return EdmExpressionType.Le;
-    default:
-      throw new EdmException("Invalid Expressiontype for logical or comparison expression: " + csdlExp.getType());
-    }
+    return switch (csdlExp.getType()) {
+      case And -> EdmExpressionType.And;
+      case Or -> EdmExpressionType.Or;
+      case Not -> EdmExpressionType.Not;
+      case Eq -> EdmExpressionType.Eq;
+      case Ne -> EdmExpressionType.Ne;
+      case Gt -> EdmExpressionType.Gt;
+      case Ge -> EdmExpressionType.Ge;
+      case Lt -> EdmExpressionType.Lt;
+      case Le -> EdmExpressionType.Le;
+    };
   }
 
   @Override

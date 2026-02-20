@@ -17,6 +17,8 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  */
 package org.sitenetsoft.olinguito.client.core.edm.xml;
 
@@ -33,7 +35,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.io.IOException;
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Arrays;
+import java.util.List;
 
 @JsonDeserialize(using = ClientCsdlTerm.TermDeserializer.class)
 class ClientCsdlTerm extends CsdlTerm implements Serializable {
@@ -64,7 +66,7 @@ class ClientCsdlTerm extends CsdlTerm implements Serializable {
             final String maxLength = jp.nextTextValue();
             term.setMaxLength("max".equalsIgnoreCase(maxLength) ? Integer.MAX_VALUE : Integer.parseInt(maxLength));
           } else if ("Precision".equals(jp.currentName())) {
-            term.setPrecision(Integer.valueOf(jp.nextTextValue()));
+            term.setPrecision(Integer.parseInt(jp.nextTextValue()));
           } else if ("Scale".equals(jp.currentName())) {
             final String scale = jp.nextTextValue();
             term.setScale("variable".equalsIgnoreCase(scale) || "floating".equalsIgnoreCase(scale) ?
@@ -76,7 +78,7 @@ class ClientCsdlTerm extends CsdlTerm implements Serializable {
             }
           } else if ("AppliesTo".equals(jp.currentName())) {
             String text = jp.nextTextValue();
-            term.getAppliesTo().addAll(Arrays.asList(
+            term.getAppliesTo().addAll(List.of(
                 text != null ? text.trim().split("\\s+") : new String[0]));
           } else if ("Annotation".equals(jp.currentName())) {
             jp.nextToken();

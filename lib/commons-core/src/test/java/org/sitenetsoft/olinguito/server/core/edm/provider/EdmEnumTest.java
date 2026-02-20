@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -29,7 +31,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
@@ -57,7 +58,7 @@ public class EdmEnumTest {
 
   public EdmEnumTest() {
     Edm edm = mock(Edm.class);
-    final List<CsdlEnumMember> memberList = Arrays.asList(
+    final List<CsdlEnumMember> memberList = List.of(
         new CsdlEnumMember().setName("first").setValue("1"),
         new CsdlEnumMember().setName("second").setValue("64"));
 
@@ -82,7 +83,7 @@ public class EdmEnumTest {
     int16EnumType = new EdmEnumTypeImpl(null, testName,
         new CsdlEnumType().setName("MyEnum")
             .setUnderlyingType(EdmPrimitiveTypeKind.Int16.getFullQualifiedName())
-            .setMembers(Arrays.asList(  // implicit values according to specification: 0, 1, 2
+            .setMembers(List.of(  // implicit values according to specification: 0, 1, 2
                 new CsdlEnumMember().setName("A"),
                 new CsdlEnumMember().setName("B"),
                 new CsdlEnumMember().setName("C"))));
@@ -91,7 +92,7 @@ public class EdmEnumTest {
         new CsdlEnumType().setName("MyEnum")
             .setFlags(false)
             .setUnderlyingType(EdmPrimitiveTypeKind.Int32.getFullQualifiedName())
-            .setMembers(Arrays.asList(
+            .setMembers(List.of(
                 new CsdlEnumMember().setName("A").setValue("0"),
                 new CsdlEnumMember().setName("B").setValue("1"),
                 new CsdlEnumMember().setName("C").setValue("65536"))));
@@ -99,7 +100,7 @@ public class EdmEnumTest {
     int32FlagType = new EdmEnumTypeImpl(null, testName,
         new CsdlEnumType().setName("MyEnum")
             .setFlags(true)
-            .setMembers(Arrays.asList(
+            .setMembers(List.of(
                 new CsdlEnumMember().setName("A").setValue("2"),
                 new CsdlEnumMember().setName("B").setValue("4"),
                 new CsdlEnumMember().setName("C").setValue("8"))));

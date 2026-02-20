@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Added server-driven paging support
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  */
 package org.sitenetsoft.olinguito.server.core.responses;
 
@@ -172,7 +173,7 @@ public class EntitySetResponse extends ServiceResponse {
       result.append(contextURL.getServiceRoot());
     }
     if (contextURL.getEntitySetOrSingletonOrType() != null) {
-      if (result.length() != 0) {
+      if (!result.isEmpty()) {
         result.append("/");
       }
       result.append(Encoder.encode(contextURL.getEntitySetOrSingletonOrType()));

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.batch;
 
@@ -24,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
@@ -120,9 +121,9 @@ public class HeaderTest {
   public void duplicatedAddList() {
     Header header = new Header(1);
     header.addHeader(HttpHeader.CONTENT_TYPE, ContentType.MULTIPART_MIXED.toContentTypeString(), 1);
-    header.addHeader(HttpHeader.CONTENT_TYPE, Arrays.asList(new String[] {
+    header.addHeader(HttpHeader.CONTENT_TYPE, List.of(
         ContentType.MULTIPART_MIXED.toContentTypeString(),
-        ContentType.APPLICATION_ATOM_SVC.toContentTypeString() }), 2);
+        ContentType.APPLICATION_ATOM_SVC.toContentTypeString()), 2);
 
     assertEquals(ContentType.MULTIPART_MIXED + ", " + ContentType.APPLICATION_ATOM_SVC, header
         .getHeader(HttpHeader.CONTENT_TYPE));

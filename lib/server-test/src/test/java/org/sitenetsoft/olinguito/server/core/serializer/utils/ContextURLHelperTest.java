@@ -15,14 +15,16 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.core.serializer.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.data.ContextURL;
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
@@ -57,7 +59,7 @@ public class ContextURLHelperTest {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESAllPrim");
     final SelectItem selectItem1 = ExpandSelectMock.mockSelectItem(entitySet, "PropertyString");
     final SelectItem selectItem2 = ExpandSelectMock.mockSelectItem(entitySet, "PropertyInt16");
-    final SelectOption select = ExpandSelectMock.mockSelectOption(Arrays.asList(
+    final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(
         selectItem1, selectItem2, selectItem2));
     final ContextURL contextURL = ContextURL.with().entitySet(entitySet)
         .selectList(ContextURLHelper.buildSelectList(entitySet.getEntityType(), null, select)).build();
@@ -71,7 +73,7 @@ public class ContextURLHelperTest {
     final SelectItem selectItem1 = ExpandSelectMock.mockSelectItem(entitySet, "PropertyGuid");
     SelectItem selectItem2 = Mockito.mock(SelectItem.class);
     Mockito.when(selectItem2.isStar()).thenReturn(true);
-    final SelectOption select = ExpandSelectMock.mockSelectOption(Arrays.asList(selectItem1, selectItem2));
+    final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(selectItem1, selectItem2));
     final ContextURL contextURL = ContextURL.with().entitySet(entitySet)
         .selectList(ContextURLHelper.buildSelectList(entitySet.getEntityType(), null, select)).build();
     assertEquals("$metadata#ESAllPrim(*)", ContextURLBuilder.create(contextURL).toASCIIString());
@@ -80,7 +82,7 @@ public class ContextURLHelperTest {
   @Test
   public void buildSelectComplex() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESCompMixPrimCollComp");
-    final SelectOption select = ExpandSelectMock.mockSelectOption(Arrays.asList(
+    final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(
         ExpandSelectMock.mockSelectItem(entitySet,
             "PropertyMixedPrimCollComp", "PropertyComp", "PropertyString"),
             ExpandSelectMock.mockSelectItem(entitySet,
@@ -174,7 +176,7 @@ public class ContextURLHelperTest {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESTwoPrim");
     ExpandItem expandItem = Mockito.mock(ExpandItem.class);
     Mockito.when(expandItem.isStar()).thenReturn(true);
-    final ExpandOption expand = ExpandSelectMock.mockExpandOption(Arrays.asList(expandItem));
+    final ExpandOption expand = ExpandSelectMock.mockExpandOption(List.of(expandItem));
     final ContextURL contextURL = ContextURL.with().entitySet(entitySet)
         .selectList(ContextURLHelper.buildSelectList(entitySet.getEntityType(), expand, null)).build();
     assertEquals("$metadata#ESTwoPrim(NavPropertyETAllPrimOne(),NavPropertyETAllPrimMany())", 
@@ -184,7 +186,7 @@ public class ContextURLHelperTest {
   @Test
   public void buildExpandNoSelect() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESTwoPrim");
-    final ExpandOption expand = ExpandSelectMock.mockExpandOption(Arrays.asList(
+    final ExpandOption expand = ExpandSelectMock.mockExpandOption(List.of(
         ExpandSelectMock.mockExpandItem(entitySet, "NavPropertyETAllPrimOne")));
     final ContextURL contextURL = ContextURL.with().entitySet(entitySet)
         .selectList(ContextURLHelper.buildSelectList(entitySet.getEntityType(), expand, null)).build();
@@ -198,13 +200,13 @@ public class ContextURLHelperTest {
     final ExpandItem expandItem1 = ExpandSelectMock.mockExpandItem(entitySet, "NavPropertyETAllPrimOne");
     final EdmEntitySet innerEntitySet = entityContainer.getEntitySet("ESAllPrim");
     ExpandItem expandItem2 = ExpandSelectMock.mockExpandItem(entitySet, "NavPropertyETAllPrimMany");
-    final SelectOption innerSelect = ExpandSelectMock.mockSelectOption(Arrays.asList(
+    final SelectOption innerSelect = ExpandSelectMock.mockSelectOption(List.of(
         ExpandSelectMock.mockSelectItem(innerEntitySet, "PropertyInt32")));
     Mockito.when(expandItem2.getSelectOption()).thenReturn(innerSelect);
-    final ExpandOption expand = ExpandSelectMock.mockExpandOption(Arrays.asList(
+    final ExpandOption expand = ExpandSelectMock.mockExpandOption(List.of(
         expandItem1, expandItem2));
     final SelectItem selectItem = ExpandSelectMock.mockSelectItem(entitySet, "PropertyString");
-    final SelectOption select = ExpandSelectMock.mockSelectOption(Arrays.asList(selectItem));
+    final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(selectItem));
     final ContextURL contextURL = ContextURL.with().entitySet(entitySet)
         .selectList(ContextURLHelper.buildSelectList(entitySet.getEntityType(), expand, select)).build();
     assertEquals("$metadata#ESTwoPrim(PropertyInt16,PropertyString,NavPropertyETAllPrimOne(),"
@@ -216,11 +218,11 @@ public class ContextURLHelperTest {
   public void buildExpandTwoLevels() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESTwoPrim");
     final EdmEntitySet innerEntitySet = entityContainer.getEntitySet("ESAllPrim");
-    final ExpandOption innerExpand = ExpandSelectMock.mockExpandOption(Arrays.asList(
+    final ExpandOption innerExpand = ExpandSelectMock.mockExpandOption(List.of(
         ExpandSelectMock.mockExpandItem(innerEntitySet, "NavPropertyETTwoPrimOne")));
     ExpandItem expandItem = ExpandSelectMock.mockExpandItem(entitySet, "NavPropertyETAllPrimOne");
     Mockito.when(expandItem.getExpandOption()).thenReturn(innerExpand);
-    final ExpandOption expand = ExpandSelectMock.mockExpandOption(Arrays.asList(expandItem));
+    final ExpandOption expand = ExpandSelectMock.mockExpandOption(List.of(expandItem));
     final ContextURL contextURL = ContextURL.with().entitySet(entitySet)
         .selectList(ContextURLHelper.buildSelectList(entitySet.getEntityType(), expand, null)).build();
     assertEquals("$metadata#ESTwoPrim(NavPropertyETAllPrimOne(NavPropertyETTwoPrimOne()))", 
@@ -232,10 +234,10 @@ public class ContextURLHelperTest {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESTwoPrim");
     ExpandItem expandItemInner = Mockito.mock(ExpandItem.class);
     Mockito.when(expandItemInner.isStar()).thenReturn(true);
-    final ExpandOption innerExpand = ExpandSelectMock.mockExpandOption(Arrays.asList(expandItemInner));
+    final ExpandOption innerExpand = ExpandSelectMock.mockExpandOption(List.of(expandItemInner));
     ExpandItem expandItem = ExpandSelectMock.mockExpandItem(entitySet, "NavPropertyETAllPrimOne");
     Mockito.when(expandItem.getExpandOption()).thenReturn(innerExpand);
-    final ExpandOption expand = ExpandSelectMock.mockExpandOption(Arrays.asList(expandItem));
+    final ExpandOption expand = ExpandSelectMock.mockExpandOption(List.of(expandItem));
     final ContextURL contextURL = ContextURL.with().entitySet(entitySet)
         .selectList(ContextURLHelper.buildSelectList(entitySet.getEntityType(), expand, null)).build();
     assertEquals("$metadata#ESTwoPrim(NavPropertyETAllPrimOne())", 
@@ -249,12 +251,12 @@ public class ContextURLHelperTest {
     ExpandItem expandItemInner = ExpandSelectMock.mockExpandItem(innerEntitySet, "NavPropertyETTwoPrimOne");
     SelectItem innerSelectItem = Mockito.mock(SelectItem.class);
     Mockito.when(innerSelectItem.isStar()).thenReturn(true);
-    final SelectOption innerSelect = ExpandSelectMock.mockSelectOption(Arrays.asList(innerSelectItem));
+    final SelectOption innerSelect = ExpandSelectMock.mockSelectOption(List.of(innerSelectItem));
     Mockito.when(expandItemInner.getSelectOption()).thenReturn(innerSelect);
-    final ExpandOption innerExpand = ExpandSelectMock.mockExpandOption(Arrays.asList(expandItemInner));
+    final ExpandOption innerExpand = ExpandSelectMock.mockExpandOption(List.of(expandItemInner));
     ExpandItem expandItem = ExpandSelectMock.mockExpandItem(entitySet, "NavPropertyETAllPrimOne");
     Mockito.when(expandItem.getExpandOption()).thenReturn(innerExpand);
-    final ExpandOption expand = ExpandSelectMock.mockExpandOption(Arrays.asList(expandItem));
+    final ExpandOption expand = ExpandSelectMock.mockExpandOption(List.of(expandItem));
     final ContextURL contextURL = ContextURL.with().entitySet(entitySet)
         .selectList(ContextURLHelper.buildSelectList(entitySet.getEntityType(), expand, null)).build();
     assertEquals("$metadata#ESTwoPrim(NavPropertyETAllPrimOne(NavPropertyETTwoPrimOne(*)))",
@@ -269,7 +271,7 @@ public class ContextURLHelperTest {
     Mockito.when(key.getName()).thenReturn(edmProperty.getName());
     Mockito.when(key.getText()).thenReturn("42");
     final ContextURL contextURL = ContextURL.with().entitySet(entitySet)
-        .keyPath(ContextURLHelper.buildKeyPredicate(Arrays.asList(key)))
+        .keyPath(ContextURLHelper.buildKeyPredicate(List.of(key)))
         .navOrPropertyPath(edmProperty.getName()).build();
     assertEquals("../$metadata#ESTwoPrim(42)/PropertyInt16",
         ContextURLBuilder.create(contextURL).toASCIIString());
@@ -286,7 +288,7 @@ public class ContextURLHelperTest {
     Mockito.when(key2.getName()).thenReturn("PropertyString");
     Mockito.when(key2.getText()).thenReturn("'2'");
     final ContextURL contextURL = ContextURL.with().entitySet(entitySet)
-        .keyPath(ContextURLHelper.buildKeyPredicate(Arrays.asList(key1, key2)))
+        .keyPath(ContextURLHelper.buildKeyPredicate(List.of(key1, key2)))
         .navOrPropertyPath(edmProperty.getName()).build();
     assertEquals("../$metadata#ESTwoKeyNav(PropertyInt16=1,PropertyString='2')/PropertyInt16",
         ContextURLBuilder.create(contextURL).toASCIIString());
@@ -309,7 +311,7 @@ public class ContextURLHelperTest {
     Mockito.when(key4.getName()).thenReturn("KeyAlias3");
     Mockito.when(key4.getText()).thenReturn("'Num111'");
     final ContextURL contextURL = ContextURL.with().entitySet(entitySet)
-        .keyPath(ContextURLHelper.buildKeyPredicate(Arrays.asList(key1, key2, key3, key4)))
+        .keyPath(ContextURLHelper.buildKeyPredicate(List.of(key1, key2, key3, key4)))
         .navOrPropertyPath(edmProperty.getName()).build();
     assertEquals("../$metadata#ESFourKeyAlias"
             + "(PropertyInt16=1,KeyAlias1=11,KeyAlias2='Num11',KeyAlias3='Num111')/PropertyComp",
@@ -323,7 +325,7 @@ public class ContextURLHelperTest {
         new FullQualifiedName("olingo.odata.test1.CTBaseAno"));
     final SelectItem selectItem = ExpandSelectMock.mockSelectItemOnDerivedComplexTypes(entitySet, 
         "PropertyCompAno", derivedComplexType, "AdditionalPropString");
-    final SelectOption select = ExpandSelectMock.mockSelectOption(Arrays.asList(selectItem));
+    final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(selectItem));
     final ContextURL contextURL = ContextURL.with().entitySet(entitySet)
         .selectList(ContextURLHelper.buildSelectList(entitySet.getEntityType(), null, select)).build();
     assertEquals("$metadata#ESCompCollDerived(PropertyInt16,PropertyCompAno/"
@@ -338,7 +340,7 @@ public class ContextURLHelperTest {
         new FullQualifiedName("olingo.odata.test1.CTBase"));
     final SelectItem selectItem = ExpandSelectMock.mockSelectItemMultiLevelOnDerivedComplexTypes(
         entitySet, "PropertyComp", "CollPropertyComp", derivedComplexType, "AdditionalPropString");
-    final SelectOption select = ExpandSelectMock.mockSelectOption(Arrays.asList(selectItem));
+    final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(selectItem));
     final ContextURL contextURL = ContextURL.with().entitySet(entitySet)
         .selectList(ContextURLHelper.buildSelectList(entitySet.getEntityType(), null, select)).build();
     assertEquals("$metadata#ESCompCollComp(PropertyInt16,PropertyComp/CollPropertyComp/"
@@ -354,7 +356,7 @@ public class ContextURLHelperTest {
     final SelectItem selectItem = ExpandSelectMock.mockSelectItemOnDerivedEntityTypes( 
         "NavPropertyETBaseTwoKeyNavOne", derivedEntityType);
     Mockito.when(selectItem.getStartTypeFilter()).thenReturn(derivedEntityType);
-    final SelectOption select = ExpandSelectMock.mockSelectOption(Arrays.asList(selectItem));
+    final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(selectItem));
     final ContextURL contextURL = ContextURL.with().entitySet(entitySet)
         .selectList(ContextURLHelper.buildSelectList(entitySet.getEntityType(), null, select)).build();
     assertEquals("$metadata#ESTwoKeyNav(PropertyInt16,PropertyString,"
@@ -371,7 +373,7 @@ public class ContextURLHelperTest {
     final SelectItem selectItem = ExpandSelectMock.mockSelectItemOnDerivedEntityTypes( 
         "PropertyDate", derivedEntityType);
     Mockito.when(selectItem.getStartTypeFilter()).thenReturn(derivedEntityType);
-    final SelectOption select = ExpandSelectMock.mockSelectOption(Arrays.asList(selectItem));
+    final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(selectItem));
     final ContextURL contextURL = ContextURL.with().entitySet(entitySet)
         .selectList(ContextURLHelper.buildSelectList(entitySet.getEntityType(), null, select)).build();
     assertEquals("$metadata#ESTwoKeyNav(PropertyInt16,PropertyString,"
@@ -388,7 +390,7 @@ public class ContextURLHelperTest {
     final SelectItem selectItem2 = ExpandSelectMock.mockSelectItemOnDerivedEntityTypes( 
         "NavPropertyETTwoBaseTwoKeyNavOne", derivedEntityType);
     Mockito.when(selectItem2.getStartTypeFilter()).thenReturn(derivedEntityType);
-    final SelectOption select = ExpandSelectMock.mockSelectOption(Arrays.asList(selectItem1, selectItem2));
+    final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(selectItem1, selectItem2));
     final ContextURL contextURL = ContextURL.with().entitySet(entitySet)
         .selectList(ContextURLHelper.buildSelectList(entitySet.getEntityType(), null, select)).build();
     assertEquals("$metadata#ESTwoKeyNav(PropertyInt16,PropertyString,"
@@ -407,7 +409,7 @@ public class ContextURLHelperTest {
     final SelectItem selectItem = ExpandSelectMock.mockSelectItemOnDerivedEntityAndComplexTypes( 
         "CollPropertyComp", derivedEntityType, derivedComplexType, "NavPropertyETTwoKeyNavOne");
     Mockito.when(selectItem.getStartTypeFilter()).thenReturn(derivedEntityType);
-    final SelectOption select = ExpandSelectMock.mockSelectOption(Arrays.asList(selectItem));
+    final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(selectItem));
     final ContextURL contextURL = ContextURL.with().entitySet(entitySet)
         .selectList(ContextURLHelper.buildSelectList(entitySet.getEntityType(), null, select)).build();
     assertEquals("$metadata#ESTwoKeyNav(PropertyInt16,PropertyString,"
@@ -427,9 +429,9 @@ public class ContextURLHelperTest {
     Mockito.when(selectItem.getStartTypeFilter()).thenReturn(derivedEntityType);
     final UriInfoResource resource = ExpandSelectMock.mockComplexTypeResource(edmProperty);
     Mockito.when(selectItem.getResourcePath()).thenReturn(resource);
-    final SelectOption selectOption = ExpandSelectMock.mockSelectOption(Arrays.asList(selectItem));
+    final SelectOption selectOption = ExpandSelectMock.mockSelectOption(List.of(selectItem));
     Mockito.when(expandItem.getSelectOption()).thenReturn(selectOption);
-    final ExpandOption expand = ExpandSelectMock.mockExpandOption(Arrays.asList(expandItem));
+    final ExpandOption expand = ExpandSelectMock.mockExpandOption(List.of(expandItem));
     final ContextURL contextURL = ContextURL.with().entitySet(entitySet)
         .selectList(ContextURLHelper.buildSelectList(entitySet.getEntityType(), expand, null)).build();
     assertEquals("$metadata#ESKeyNavCont(NavPropertyETTwoKeyNavContOne("
@@ -442,7 +444,7 @@ public class ContextURLHelperTest {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESTwoKeyNav");
     final SelectItem selectItem = ExpandSelectMock.mockSelectItemOnComplexTypesWithNav(
         entitySet, "CollPropertyCompNav", "NavPropertyETTwoKeyNavMany");
-    final SelectOption select = ExpandSelectMock.mockSelectOption(Arrays.asList(
+    final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(
         selectItem));
     final ContextURL contextURL = ContextURL.with().entitySet(entitySet)
         .selectList(ContextURLHelper.buildSelectList(entitySet.getEntityType(), null, select)).build();
@@ -459,7 +461,7 @@ public class ContextURLHelperTest {
         new FullQualifiedName("olingo.odata.test1.ETTwoKeyNav"), true);
     final SelectItem selectItem = ExpandSelectMock.mockSelectItemHavingAction(
         entitySet, action);
-    final SelectOption select = ExpandSelectMock.mockSelectOption(Arrays.asList(
+    final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(
         selectItem));
     final ContextURL contextURL = ContextURL.with().entitySet(entitySet)
         .selectList(ContextURLHelper.buildSelectList(entitySet.getEntityType(), null, select)).build();
@@ -478,7 +480,7 @@ public class ContextURLHelperTest {
         entitySet, "PropertyString");
     final SelectItem selectItem2 = ExpandSelectMock.mockSelectItemHavingAction(
         entitySet, action);
-    final SelectOption select = ExpandSelectMock.mockSelectOption(Arrays.asList(
+    final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(
         selectItem1, selectItem2));
     final ContextURL contextURL = ContextURL.with().entitySet(entitySet)
         .selectList(ContextURLHelper.buildSelectList(entitySet.getEntityType(), null, select)).build();
@@ -495,7 +497,7 @@ public class ContextURLHelperTest {
         new FullQualifiedName("olingo.odata.test1.ETTwoKeyNav"), true, new ArrayList<>());
     final SelectItem selectItem = ExpandSelectMock.mockSelectItemHavingFunction(
         entitySet, function);
-    final SelectOption select = ExpandSelectMock.mockSelectOption(Arrays.asList(
+    final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(
         selectItem));
     final ContextURL contextURL = ContextURL.with().entitySet(entitySet)
         .selectList(ContextURLHelper.buildSelectList(entitySet.getEntityType(), null, select)).build();

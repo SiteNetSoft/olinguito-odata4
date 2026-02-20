@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -26,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -61,7 +63,7 @@ public class EdmFunctionImportImplTest {
         .setBound(false)
         .setComposable(false)
         .setReturnType(new CsdlReturnType().setType(EdmPrimitiveTypeKind.Boolean.getFullQualifiedName()));
-    when(provider.getFunctions(functionName)).thenReturn(Arrays.asList(functionProvider));
+    when(provider.getFunctions(functionName)).thenReturn(List.of(functionProvider));
 
     final FullQualifiedName containerName = new FullQualifiedName("ns", "container");
     final CsdlEntityContainerInfo containerInfo = new CsdlEntityContainerInfo().setContainerName(containerName);

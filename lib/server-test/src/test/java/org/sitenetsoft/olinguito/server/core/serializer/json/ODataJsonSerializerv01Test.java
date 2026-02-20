@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings; Replaced Arrays.asList with List.of
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -25,7 +25,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -826,10 +825,10 @@ public class ODataJsonSerializerv01Test {
     entity.setId(URI.create("id"));
     entity.addProperty(new Property(null, "PropertyEnumString", ValueType.ENUM, 6));
     entity.addProperty(new Property(null, "CollPropertyEnumString", ValueType.COLLECTION_ENUM,
-        Arrays.asList(2, 4, 6)));
+        List.of(2, 4, 6)));
     entity.addProperty(new Property(null, "PropertyDefString", ValueType.PRIMITIVE, "Test"));
     entity.addProperty(new Property(null, "CollPropertyDefString", ValueType.COLLECTION_PRIMITIVE,
-        Arrays.asList("Test1", "Test2")));
+        List.of("Test1", "Test2")));
     ComplexValue complexValue = new ComplexValue();
     complexValue.getValue().add(entity.getProperty("PropertyEnumString"));
     complexValue.getValue().add(entity.getProperty("CollPropertyEnumString"));
@@ -1163,7 +1162,7 @@ public class ODataJsonSerializerv01Test {
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     final SelectItem selectItem1 = ExpandSelectMock.mockSelectItem(edmEntitySet, "PropertyDate");
     final SelectItem selectItem2 = ExpandSelectMock.mockSelectItem(edmEntitySet, "PropertyBoolean");
-    final SelectOption select = ExpandSelectMock.mockSelectOption(Arrays.asList(
+    final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(
         selectItem1, selectItem2, selectItem2));
     InputStream result = serializer
         .entity(metadata, entityType, entity,
@@ -1189,7 +1188,7 @@ public class ODataJsonSerializerv01Test {
     final SelectItem selectItem1 = ExpandSelectMock.mockSelectItem(edmEntitySet, "PropertyString");
     SelectItem selectItem2 = Mockito.mock(SelectItem.class);
     Mockito.when(selectItem2.isStar()).thenReturn(true);
-    final SelectOption select = ExpandSelectMock.mockSelectOption(Arrays.asList(selectItem1, selectItem2));
+    final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(selectItem1, selectItem2));
     InputStream result = serializer.entity(metadata, edmEntitySet.getEntityType(), entity,
         EntitySerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
@@ -1207,7 +1206,7 @@ public class ODataJsonSerializerv01Test {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESFourKeyAlias");
     final EdmEntityType entityType = edmEntitySet.getEntityType();
     final EntityCollection entitySet = data.readAll(edmEntitySet);
-   final SelectOption select = ExpandSelectMock.mockSelectOption(Arrays.asList(
+   final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(
         ExpandSelectMock.mockSelectItem(edmEntitySet, "PropertyInt16"),
         ExpandSelectMock.mockSelectItem(edmEntitySet,"PropertyCompComp", "PropertyComp", "PropertyString")));
     InputStream result = serializer
@@ -1274,7 +1273,7 @@ public class ODataJsonSerializerv01Test {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESFourKeyAlias");
     final EdmEntityType entityType = edmEntitySet.getEntityType();
     final EntityCollection entitySet = data.readAll(edmEntitySet);
-    final SelectOption select = ExpandSelectMock.mockSelectOption(Arrays.asList(
+    final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(
         ExpandSelectMock.mockSelectItem(edmEntitySet, "PropertyComp", "PropertyString"),
         ExpandSelectMock.mockSelectItem(edmEntitySet, "PropertyCompComp", "PropertyComp")));
     final String resultString = new String(serializer
@@ -1435,7 +1434,7 @@ public class ODataJsonSerializerv01Test {
     entity.setId(null);
     final SelectItem selectItem1 = ExpandSelectMock.mockSelectItem(edmEntitySet, "PropertyDate");
     final SelectItem selectItem2 = ExpandSelectMock.mockSelectItem(edmEntitySet, "PropertyBoolean");
-    final SelectOption select = ExpandSelectMock.mockSelectOption(Arrays.asList(
+    final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(
         selectItem1, selectItem2, selectItem2));
       InputStream result = serializer.entity(metadata, entityType, entity,
             EntitySerializerOptions.with()
@@ -1524,7 +1523,7 @@ public class ODataJsonSerializerv01Test {
     final ExpandItem expandItem = ExpandSelectMock.mockExpandItem(edmEntitySet, "NavPropertyETTwoPrimOne");
     ExpandItem expandItemAll = Mockito.mock(ExpandItem.class);
     Mockito.when(expandItemAll.isStar()).thenReturn(true);
-    final ExpandOption expand = ExpandSelectMock.mockExpandOption(Arrays.asList(
+    final ExpandOption expand = ExpandSelectMock.mockExpandOption(List.of(
         expandItem, expandItem, expandItemAll));
     final SelectOption select = ExpandSelectMock.mockSelectOption(Collections.singletonList(
         ExpandSelectMock.mockSelectItem(edmEntitySet, "PropertySByte")));
@@ -2209,7 +2208,7 @@ public class ODataJsonSerializerv01Test {
     final EdmEntityType entityType = mockEntityType(EdmPrimitiveTypeKind.GeometryMultiPoint);
     final Entity entity = new Entity()
         .addProperty(new Property(null, entityType.getPropertyNames().get(0), ValueType.GEOSPATIAL,
-            new MultiPoint(Dimension.GEOMETRY, null, Arrays.asList(
+            new MultiPoint(Dimension.GEOMETRY, null, List.of(
                 createPoint(2.5, 3.125), createPoint(3.5, 4.125), createPoint(4.5, 5.125)))));
     Assertions.assertEquals("{\"" + entityType.getPropertyNames().get(0) + "\":{"
         + "\"type\":\"MultiPoint\",\"coordinates\":[[2.5,3.125],[3.5,4.125],[4.5,5.125]]}}",
@@ -2222,7 +2221,7 @@ public class ODataJsonSerializerv01Test {
     final EdmEntityType entityType = mockEntityType(EdmPrimitiveTypeKind.GeometryLineString);
     final Entity entity = new Entity()
         .addProperty(new Property(null, entityType.getPropertyNames().get(0), ValueType.GEOSPATIAL,
-            new LineString(Dimension.GEOMETRY, null, Arrays.asList(
+            new LineString(Dimension.GEOMETRY, null, List.of(
                 createPoint(1, 1), createPoint(2, 2), createPoint(3, 3), createPoint(4, 4), createPoint(5, 5)))));
     Assertions.assertEquals("{\"" + entityType.getPropertyNames().get(0) + "\":{"
         + "\"type\":\"LineString\",\"coordinates\":[[1.0,1.0],[2.0,2.0],[3.0,3.0],[4.0,4.0],[5.0,5.0]]}}",
@@ -2235,10 +2234,10 @@ public class ODataJsonSerializerv01Test {
     final EdmEntityType entityType = mockEntityType(EdmPrimitiveTypeKind.GeometryMultiLineString);
     final Entity entity = new Entity()
         .addProperty(new Property(null, entityType.getPropertyNames().get(0), ValueType.GEOSPATIAL,
-            new MultiLineString(Dimension.GEOMETRY, null, Arrays.asList(
-                new LineString(Dimension.GEOMETRY, null, Arrays.asList(
+            new MultiLineString(Dimension.GEOMETRY, null, List.of(
+                new LineString(Dimension.GEOMETRY, null, List.of(
                     createPoint(1, 1), createPoint(2, 2), createPoint(3, 3), createPoint(4, 4), createPoint(5, 5))),
-                new LineString(Dimension.GEOMETRY, null, Arrays.asList(
+                new LineString(Dimension.GEOMETRY, null, List.of(
                     createPoint(99.5, 101.5), createPoint(150, 151.25)))))));
     Assertions.assertEquals("{\"" + entityType.getPropertyNames().get(0) + "\":{"
         + "\"type\":\"MultiLineString\",\"coordinates\":["
@@ -2254,10 +2253,10 @@ public class ODataJsonSerializerv01Test {
     Entity entity = new Entity()
         .addProperty(new Property(null, entityType.getPropertyNames().get(0), ValueType.GEOSPATIAL,
             new Polygon(Dimension.GEOMETRY, null,
-                    List.of(new LineString(Dimension.GEOMETRY, null, Arrays.asList(
+                    List.of(new LineString(Dimension.GEOMETRY, null, List.of(
                             createPoint(1, 1), createPoint(1, 2), createPoint(2, 2),
                             createPoint(2, 1), createPoint(1, 1)))),
-                new LineString(Dimension.GEOMETRY, null, Arrays.asList(
+                new LineString(Dimension.GEOMETRY, null, List.of(
                     createPoint(0, 0), createPoint(3, 0), createPoint(3, 3),
                     createPoint(0, 3), createPoint(0, 0))))));
     Assertions.assertEquals("{\"" + entityType.getPropertyNames().get(0) + "\":{"
@@ -2268,7 +2267,7 @@ public class ODataJsonSerializerv01Test {
 
     entity = new Entity().addProperty(new Property(null, entityType.getPropertyNames().get(0), ValueType.GEOSPATIAL,
         new Polygon(Dimension.GEOMETRY, null, null,
-            new LineString(Dimension.GEOMETRY, null, Arrays.asList(
+            new LineString(Dimension.GEOMETRY, null, List.of(
                 createPoint(10, 10), createPoint(30, 10), createPoint(30, 30), createPoint(10, 30),
                 createPoint(10, 10))))));
     Assertions.assertEquals("{\"" + entityType.getPropertyNames().get(0) + "\":{"
@@ -2282,19 +2281,19 @@ public class ODataJsonSerializerv01Test {
     final EdmEntityType entityType = mockEntityType(EdmPrimitiveTypeKind.GeometryMultiPolygon);
     final Entity entity = new Entity()
         .addProperty(new Property(null, entityType.getPropertyNames().get(0), ValueType.GEOSPATIAL,
-            new MultiPolygon(Dimension.GEOMETRY, null, Arrays.asList(
+            new MultiPolygon(Dimension.GEOMETRY, null, List.of(
                 new Polygon(Dimension.GEOMETRY, null,
-                        List.of(new LineString(Dimension.GEOMETRY, null, Arrays.asList(
+                        List.of(new LineString(Dimension.GEOMETRY, null, List.of(
                                 createPoint(1, 1), createPoint(1, 2), createPoint(2, 2),
                                 createPoint(2, 1), createPoint(1, 1)))),
-                    new LineString(Dimension.GEOMETRY, null, Arrays.asList(
+                    new LineString(Dimension.GEOMETRY, null, List.of(
                         createPoint(0, 0), createPoint(3, 0), createPoint(3, 3), createPoint(0, 3),
                         createPoint(0, 0)))),
                 new Polygon(Dimension.GEOMETRY, null,
-                        List.of(new LineString(Dimension.GEOMETRY, null, Arrays.asList(
+                        List.of(new LineString(Dimension.GEOMETRY, null, List.of(
                                 createPoint(10, 10), createPoint(10, 20),
                                 createPoint(20, 10), createPoint(10, 10)))),
-                    new LineString(Dimension.GEOMETRY, null, Arrays.asList(
+                    new LineString(Dimension.GEOMETRY, null, List.of(
                         createPoint(0, 0), createPoint(30, 0), createPoint(0, 30), createPoint(0, 0))))))));
     Assertions.assertEquals("{\"" + entityType.getPropertyNames().get(0) + "\":{"
         + "\"type\":\"MultiPolygon\",\"coordinates\":["
@@ -2311,9 +2310,9 @@ public class ODataJsonSerializerv01Test {
     final EdmEntityType entityType = mockEntityType(EdmPrimitiveTypeKind.GeometryCollection);
     final Entity entity = new Entity()
         .addProperty(new Property(null, entityType.getPropertyNames().get(0), ValueType.GEOSPATIAL,
-            new GeospatialCollection(Dimension.GEOMETRY, null, Arrays.asList(
+            new GeospatialCollection(Dimension.GEOMETRY, null, List.of(
                 createPoint(100, 0),
-                new LineString(Dimension.GEOMETRY, null, Arrays.asList(createPoint(101, 0), createPoint(102, 1)))))));
+                new LineString(Dimension.GEOMETRY, null, List.of(createPoint(101, 0), createPoint(102, 1)))))));
     Assertions.assertEquals("{\"" + entityType.getPropertyNames().get(0) + "\":{"
         + "\"type\":\"GeometryCollection\",\"geometries\":["
         + "{\"type\":\"Point\",\"coordinates\":[100.0,0.0]},"
@@ -2551,7 +2550,7 @@ public class ODataJsonSerializerv01Test {
     Mockito.when(property3.isPrimitive()).thenReturn(true);
     
     EdmComplexType complexType = Mockito.mock(EdmComplexType.class);
-    Mockito.when(complexType.getPropertyNames()).thenReturn(Arrays.asList(name1, name2, name3));
+    Mockito.when(complexType.getPropertyNames()).thenReturn(List.of(name1, name2, name3));
     Mockito.when(complexType.getStructuralProperty(name1)).thenReturn(property1);
     Mockito.when(complexType.getStructuralProperty(name2)).thenReturn(property2);
     Mockito.when(complexType.getStructuralProperty(name3)).thenReturn(property3);

@@ -36,8 +36,8 @@ import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
 
 public class TypedOperand extends VisitorOperand {
 
-  final private EdmType type;
-  final private EdmProperty edmProperty;
+  private final EdmType type;
+  private final EdmProperty edmProperty;
 
   public TypedOperand(final Object value, final EdmType type) {
     super(value);

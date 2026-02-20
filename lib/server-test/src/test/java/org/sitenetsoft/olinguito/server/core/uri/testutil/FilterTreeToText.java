@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  */
 package org.sitenetsoft.olinguito.server.core.uri.testutil;
 
@@ -104,7 +106,7 @@ public class FilterTreeToText implements ExpressionVisitor<String> {
         tmp = typed.toString(true);
       }
 
-      if (ret.length() > 0) {
+      if (!ret.isEmpty()) {
         ret += "/";
       }
       ret += tmp;
@@ -141,7 +143,7 @@ public class FilterTreeToText implements ExpressionVisitor<String> {
     String tmp = "";
 
     for (String item : enumValues) {
-      if (tmp.length() > 0) {
+      if (!tmp.isEmpty()) {
         tmp += ",";
       }
       tmp += item;

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
@@ -181,7 +183,7 @@ public class EdmEnumTypeImpl extends EdmTypeImpl implements EdmEnumType {
       memberValue = member.getValue() == null ? memberValue + 1 : Long.parseLong(member.getValue());
       if (flags) {
         if ((memberValue & remaining) == memberValue) {
-          if (result.length() > 0) {
+          if (!result.isEmpty()) {
             result.append(',');
           }
           result.append(member.getName());

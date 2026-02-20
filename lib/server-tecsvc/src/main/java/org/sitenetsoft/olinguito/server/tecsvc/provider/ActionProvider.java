@@ -17,11 +17,11 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
@@ -147,9 +147,9 @@ public class ActionProvider {
   public static List<CsdlAction> getActions(final FullQualifiedName actionName) throws ODataException {
       
     if(actionName.equals(name_A_RTTimeOfDay_)){
-        return  Arrays.asList(
+        return  List.of(
           new CsdlAction().setName(name_A_RTTimeOfDay_.getName())
-              .setParameters(Arrays.asList(
+              .setParameters(List.of(
                 new CsdlParameter().setName("ParameterTimeOfDay").setType(PropertyProvider.nameTimeOfDay)
                       .setNullable(false),
                 new CsdlParameter().setName("ParameterAny").setType(PropertyProvider.nameString)
@@ -158,7 +158,7 @@ public class ActionProvider {
               .setReturnType(new CsdlReturnType().setType(PropertyProvider.nameTimeOfDay)),
                 
           new CsdlAction().setName(name_A_RTTimeOfDay_.getName())
-              .setParameters(Arrays.asList(
+              .setParameters(List.of(
                 new CsdlParameter().setName("ParameterTimeOfDay").setType(PropertyProvider.nameTimeOfDay)
                       .setNullable(false),
                 new CsdlParameter().setName("ParameterAny").setType(PropertyProvider.nameString)
@@ -167,7 +167,7 @@ public class ActionProvider {
               .setReturnType(new CsdlReturnType().setType(PropertyProvider.nameTimeOfDay)),
 
           new CsdlAction().setName(name_A_RTTimeOfDay_.getName())
-              .setParameters(Arrays.asList(
+              .setParameters(List.of(
                 new CsdlParameter().setName("ParameterString").setType(PropertyProvider.nameString)
                       .setNullable(false),    
                 new CsdlParameter().setName("ParameterTimeOfDay").setType(PropertyProvider.nameTimeOfDay)
@@ -185,7 +185,7 @@ public class ActionProvider {
     } else if (actionName.equals(nameUARTCollStringTwoParam)) {
       return List.of(
           new CsdlAction().setName(nameUARTCollStringTwoParam.getName())
-              .setParameters(Arrays.asList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("ParameterInt16").setType(PropertyProvider.nameInt16),
                   new CsdlParameter().setName("ParameterDuration").setType(PropertyProvider.nameDuration)))
               .setReturnType(new CsdlReturnType().setType(PropertyProvider.nameString).setCollection(true)));
@@ -254,7 +254,7 @@ public class ActionProvider {
       return List.of(
           new CsdlAction()
               .setName(nameUARTTwoParam.getName())
-              .setParameters(Arrays.asList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("ParameterInt16").setType(PropertyProvider.nameInt16),
                   new CsdlParameter().setName("ParameterDuration").setType(PropertyProvider.nameDuration))));
 
@@ -262,7 +262,7 @@ public class ActionProvider {
       return List.of(
           new CsdlAction()
               .setName(nameUARTByteNineParam.getName())
-              .setParameters(Arrays.asList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("ParameterEnum").setType(EnumTypeProvider.nameENString),
                   new CsdlParameter().setName("ParameterDef").setType(TypeDefinitionProvider.nameTDString),
                   new CsdlParameter().setName("ParameterComp").setType(ComplexTypeProvider.nameCTTwoPrim),
@@ -280,7 +280,7 @@ public class ActionProvider {
               .setReturnType(new CsdlReturnType().setType(PropertyProvider.nameByte)));
 
     } else if (actionName.equals(nameBA_RTETTwoKeyNav)) {
-      return Arrays.asList(
+      return List.of(
           new CsdlAction().setName("BA_RTETTwoKeyNav")
               .setParameters(List.of(
                   new CsdlParameter().setName("ParameterETTwoKeyNav").setType(EntityTypeProvider.nameETTwoKeyNav)
@@ -421,7 +421,7 @@ public class ActionProvider {
           new CsdlAction().setName(nameBAETTwoKeyNavRTETTwoKeyNavParam.getName())
               .setBound(true)
               .setEntitySetPath("BindingParam/NavPropertyETTwoKeyNavOne")
-              .setParameters(Arrays.asList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETTwoKeyNav)
                       .setNullable(false),
                   new CsdlParameter().setName("PropertyComp").setType(ComplexTypeProvider.nameCTPrimComp)
@@ -432,7 +432,7 @@ public class ActionProvider {
           new CsdlAction().setName(nameBAETBaseETTwoBaseRTETTwoBase.getName())
               .setBound(true)
               .setEntitySetPath("BindingParam/olingo.odata.test1.ETTwoBase")
-              .setParameters(Arrays.asList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETBase)
                       .setNullable(false),
                   new CsdlParameter().setName("PropertyString").setType(PropertyProvider.nameString)
@@ -446,7 +446,7 @@ public class ActionProvider {
       return List.of(
           new CsdlAction().setName(nameBAETMixPrimCollCompRTCTTwoPrim.getName())
               .setBound(true)
-              .setParameters(Arrays.asList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETMixPrimCollComp)
                       .setNullable(false),
                   new CsdlParameter().setName("CollPropertyComp").setType(ComplexTypeProvider.nameCTTwoPrim)
@@ -457,7 +457,7 @@ public class ActionProvider {
           new CsdlAction().setName(nameBAETMixPrimCollCompCTTWOPrimCompRTCTTwoPrim.getName())
               .setBound(true)
               .setEntitySetPath("BindingParam")
-              .setParameters(Arrays.asList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETMixPrimCollComp)
                       .setNullable(false),
                   new CsdlParameter().setName("PropertyComp").setType(ComplexTypeProvider.nameCTTwoPrim)
@@ -468,7 +468,7 @@ public class ActionProvider {
           new CsdlAction().setName(nameBAETMixPrimCollCompCTTWOPrimCompRTCollCTTwoPrim.getName())
               .setBound(true)
               .setEntitySetPath("BindingParam/CollPropertyComp")
-              .setParameters(Arrays.asList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETMixPrimCollComp)
                       .setNullable(false).setCollection(true),
                   new CsdlParameter().setName("PropertyComp").setType(ComplexTypeProvider.nameCTTwoPrim)
@@ -480,7 +480,7 @@ public class ActionProvider {
               nameBAETTwoKeyNavCTBasePrimCompNavCTTwoBasePrimCompNavRTCTTwoBasePrimCompNav.getName())
               .setBound(true)
               .setEntitySetPath("BindingParam/PropertyCompNav/olingo.odata.test1.CTTwoBasePrimCompNav")
-              .setParameters(Arrays.asList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETTwoKeyNav)
                       .setNullable(false)))
               .setReturnType(new CsdlReturnType().setType(ComplexTypeProvider.nameCTTwoBasePrimCompNav)));

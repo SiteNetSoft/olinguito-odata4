@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Improved test assertions
  */
 package org.sitenetsoft.olinguito.client.core;
 
@@ -345,7 +347,7 @@ public class EntityTest extends AbstractTest {
 
     ClientAnnotation annotation = entity.getAnnotations().get(0);
     assertEquals("com.contoso.display.highlight", annotation.getTerm());
-    assertEquals(true, annotation.getPrimitiveValue().toCastValue(Boolean.class));
+    assertTrue(annotation.getPrimitiveValue().toCastValue(Boolean.class));
 
     annotation = entity.getAnnotations().get(1);
     assertEquals("com.contoso.PersonalInfo.PhoneNumbers", annotation.getTerm());

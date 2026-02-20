@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  */
 package org.sitenetsoft.olinguito.server.api.prefer;
 
@@ -54,7 +56,7 @@ public final class PreferencesApplied {
   public String toValueString() {
     StringBuilder result = new StringBuilder();
     for (final Map.Entry<String, String> entry : applied.entrySet()) {
-      if (result.length() > 0) {
+      if (!result.isEmpty()) {
         result.append(',').append(' ');
       }
       final String key = entry.getKey();

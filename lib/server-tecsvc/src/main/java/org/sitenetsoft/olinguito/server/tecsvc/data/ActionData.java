@@ -15,14 +15,18 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Calendar.getInstance() with GregorianCalendar.from()
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +71,7 @@ public class ActionData {
       return FunctionData.primitiveComplexFunction("UFNRTByteNineParam", parameters, null);
     }else if("_A_RTTimeOfDay_".equals(name)){
         Parameter paramTimeOfDay = parameters.get("ParameterTimeOfDay");
-        Calendar timeOfDay = Calendar.getInstance();
+        Calendar timeOfDay = GregorianCalendar.from(ZonedDateTime.now());
       if (paramTimeOfDay != null && !paramTimeOfDay.isNull()) {
         timeOfDay = (Calendar) paramTimeOfDay.asPrimitive();
       }
@@ -106,7 +110,7 @@ public class ActionData {
           String param16String = valueAsString(paramInt16, EdmPrimitiveTypeKind.Int16, oData);
           String paramDurationString = valueAsString(paramDuration, EdmPrimitiveTypeKind.Duration, oData);
 
-          return new Property(null, name, ValueType.COLLECTION_PRIMITIVE, Arrays.asList(
+          return new Property(null, name, ValueType.COLLECTION_PRIMITIVE, List.of(
                   name + " int16 value: " + param16String,
                   name + " duration value: " + paramDurationString));
         } catch (EdmPrimitiveTypeException e) {
@@ -565,7 +569,7 @@ public class ActionData {
         .addProperty(DataCreator.createComplexCollection("CollPropertyComp", null))
         .addProperty(DataCreator.createComplexCollection("CollPropertyCompNav",
             ComplexTypeProvider.nameCTNavFiveProp.getFullQualifiedNameAsString(),
-            Arrays.asList(
+            List.of(
                 DataCreator.createPrimitive("PropertyInt16", (short) 1))))
         .addProperty(DataCreator.createPrimitiveCollection("CollPropertyString",
             "1",

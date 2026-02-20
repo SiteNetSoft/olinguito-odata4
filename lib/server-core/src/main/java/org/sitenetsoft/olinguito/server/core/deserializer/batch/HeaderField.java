@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.batch;
 
@@ -52,7 +54,7 @@ public class HeaderField implements Cloneable {
       result.append(", ");
     }
 
-    if (result.length() > 0) {
+    if (!result.isEmpty()) {
       result.delete(result.length() - 2, result.length());
     }
 

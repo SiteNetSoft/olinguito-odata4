@@ -17,11 +17,11 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
@@ -275,7 +275,7 @@ public class FunctionProvider {
 
            functions.add( new CsdlFunction()
             .setName(name_FC_RTTimeOfDay_.getName())
-            .setParameters(Arrays.asList(
+            .setParameters(List.of(
                 new CsdlParameter()
                     .setName("ParameterTimeOfDay")
                     .setType(PropertyProvider.nameTimeOfDay)
@@ -291,7 +291,7 @@ public class FunctionProvider {
 
            functions.add( new CsdlFunction()
             .setName(name_FC_RTTimeOfDay_.getName())
-            .setParameters(Arrays.asList(
+            .setParameters(List.of(
                 new CsdlParameter()
                     .setName("ParameterTimeOfDay")
                     .setType(PropertyProvider.nameTimeOfDay)
@@ -323,7 +323,7 @@ public class FunctionProvider {
 
            functions.add( new CsdlFunction()
             .setName(name_FC_RTTimeOfDay_.getName())
-            .setParameters(Arrays.asList(
+            .setParameters(List.of(
                 new CsdlParameter()
                     .setName("ParameterTimeOfDay")
                     .setType(PropertyProvider.nameTimeOfDay)
@@ -339,7 +339,7 @@ public class FunctionProvider {
 
            functions.add( new CsdlFunction()
             .setName(name_FC_RTTimeOfDay_.getName())
-            .setParameters(Arrays.asList(
+            .setParameters(List.of(
                 new CsdlParameter()
                     .setName("ParameterTimeOfDay")
                     .setType(PropertyProvider.nameTimeOfDay)
@@ -430,7 +430,7 @@ public class FunctionProvider {
           );
 
     } else if (functionName.equals(nameUFCRTStringTwoParam)) {
-      return Arrays.asList(
+      return List.of(
           new CsdlFunction()
               .setName("UFCRTStringTwoParam")
               .setParameters(List.of(
@@ -443,7 +443,7 @@ public class FunctionProvider {
                   new CsdlReturnType().setType(PropertyProvider.nameString).setNullable(true)),
           new CsdlFunction()
               .setName("UFCRTStringTwoParam")
-              .setParameters(Arrays.asList(
+              .setParameters(List.of(
                   new CsdlParameter()
                       .setName("ParameterString")
                       .setType(PropertyProvider.nameString)
@@ -496,7 +496,7 @@ public class FunctionProvider {
       return List.of(
           new CsdlFunction()
               .setName("UFCRTCollStringTwoParam")
-              .setParameters(Arrays.asList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("ParameterString").setType(PropertyProvider.nameString)
                       .setNullable(false),
                   new CsdlParameter().setName("ParameterInt16").setType(PropertyProvider.nameInt16)
@@ -519,7 +519,7 @@ public class FunctionProvider {
           new CsdlFunction()
               .setName("UFCRTCTAllPrimTwoParam")
               .setParameters(
-                  Arrays.asList(
+                  List.of(
                       new CsdlParameter().setName("ParameterString").setType(PropertyProvider.nameString)
                           .setNullable(false),
                       new CsdlParameter().setName("ParameterInt16").setType(PropertyProvider.nameInt16)
@@ -533,7 +533,7 @@ public class FunctionProvider {
           new CsdlFunction()
               .setName("UFNRTCollETMixPrimCollCompTwoParam")
               .setParameters(
-                  Arrays.asList(
+                  List.of(
                       new CsdlParameter().setName("ParameterString").setType(PropertyProvider.nameString)
                           .setNullable(false),
                       new CsdlParameter().setName("ParameterInt16").setType(PropertyProvider.nameInt16)
@@ -549,7 +549,7 @@ public class FunctionProvider {
       return List.of(
           new CsdlFunction()
               .setName(functionName.getName())
-              .setParameters(Arrays.asList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("ParameterEnum").setType(EnumTypeProvider.nameENString),
                   new CsdlParameter().setName("ParameterDef").setType(TypeDefinitionProvider.nameTDString),
                   new CsdlParameter().setName("ParameterComp").setType(ComplexTypeProvider.nameCTTwoPrim),
@@ -573,7 +573,7 @@ public class FunctionProvider {
           new CsdlFunction()
               .setName("UFCRTCTTwoPrimTwoParam")
               .setParameters(
-                  Arrays.asList(
+                  List.of(
                       new CsdlParameter().setName("ParameterInt16").setType(PropertyProvider.nameInt16)
                           .setNullable(false),
                       new CsdlParameter().setName("ParameterString").setType(PropertyProvider.nameString)
@@ -587,7 +587,7 @@ public class FunctionProvider {
           new CsdlFunction()
               .setName("UFCRTCollCTTwoPrimTwoParam")
               .setParameters(
-                  Arrays.asList(
+                  List.of(
                       new CsdlParameter().setName("ParameterInt16").setType(PropertyProvider.nameInt16)
                           .setNullable(false),
                       new CsdlParameter().setName("ParameterString").setType(PropertyProvider.nameString)
@@ -641,7 +641,7 @@ public class FunctionProvider {
           new CsdlFunction()
               .setName(functionName.getName())
               .setParameters(
-                  Arrays.asList(
+                  List.of(
                       new CsdlParameter().setName("ParameterString").setType(PropertyProvider.nameString)
                           .setNullable(false),
                       new CsdlParameter().setName("ParameterInt16").setType(PropertyProvider.nameInt16)
@@ -657,7 +657,7 @@ public class FunctionProvider {
           new CsdlFunction()
               .setName("UFCRTETAllPrimTwoParam")
               .setParameters(
-                  Arrays.asList(
+                  List.of(
                       new CsdlParameter().setName("ParameterString").setType(PropertyProvider.nameString)
                           .setNullable(false),
                       new CsdlParameter().setName("ParameterInt16").setType(PropertyProvider.nameInt16)
@@ -674,7 +674,7 @@ public class FunctionProvider {
                   new CsdlReturnType().setType(ComplexTypeProvider.nameCTNavFiveProp).setCollection(true)));
 
     } else if (functionName.equals(nameBFC_RTESTwoKeyNav_)) {
-      return Arrays.asList(
+      return List.of(
           new CsdlFunction()
               .setName(nameBFC_RTESTwoKeyNav_.getName())
               .setEntitySetPath("BindingParam/NavPropertyETTwoKeyNavMany")
@@ -690,7 +690,7 @@ public class FunctionProvider {
           new CsdlFunction()
               .setName(nameBFC_RTESTwoKeyNav_.getName())
               .setBound(true)
-              .setParameters(Arrays.asList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETTwoKeyNav)
                       .setCollection(true).setNullable(false),
                   new CsdlParameter().setName("ParameterString").setType(PropertyProvider.nameString)
@@ -748,7 +748,7 @@ public class FunctionProvider {
                       .setNullable(false)));
 
     } else if (functionName.equals(nameBFNESAllPrimRTCTAllPrim)) {
-      return Arrays.asList(
+      return List.of(
           new CsdlFunction()
               .setName("BFNESAllPrimRTCTAllPrim")
               .setBound(true)
@@ -887,7 +887,7 @@ public class FunctionProvider {
                       .setNullable(false)));
 
     } else if (functionName.equals(nameBFCCTPrimCompRTESTwoKeyNav)) {
-      return Arrays.asList(
+      return List.of(
           new CsdlFunction()
               .setName("BFCCTPrimCompRTESTwoKeyNav")
               .setBound(true)
@@ -1009,7 +1009,7 @@ public class FunctionProvider {
               .setEntitySetPath("BindingParam/NavPropertyETTwoKeyNavMany")
               .setBound(true)
               .setComposable(true)
-              .setParameters(Arrays.asList(
+              .setParameters(List.of(
                   new CsdlParameter().setName("BindingParam")
                       .setNullable(false)
                       .setType(EntityTypeProvider.nameETKeyNav)
@@ -1097,7 +1097,7 @@ public class FunctionProvider {
               .setName("BFCESTwoKeyNavRTStringParam")
               .setBound(true)
               .setParameters(
-                  Arrays.asList(
+                  List.of(
                       new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETTwoKeyNav)
                           .setCollection(true).setNullable(false),
                       new CsdlParameter().setName("ParameterComp").setType(ComplexTypeProvider.nameCTTwoPrim)
@@ -1112,7 +1112,7 @@ public class FunctionProvider {
               .setName("BFCESKeyNavRTETKeyNavParam")
               .setBound(true)
               .setParameters(
-                  Arrays.asList(
+                  List.of(
                       new CsdlParameter().setName("BindingParam").setType(EntityTypeProvider.nameETKeyNav)
                           .setCollection(true).setNullable(false),
                       new CsdlParameter().setName("ParameterString").setType(PropertyProvider.nameString)
@@ -1127,7 +1127,7 @@ public class FunctionProvider {
               .setName("BFCCTPrimCompRTETTwoKeyNavParam")
               .setBound(true)
               .setParameters(
-                  Arrays.asList(
+                  List.of(
                       new CsdlParameter().setName("BindingParam").setType(ComplexTypeProvider.nameCTPrimComp)
                           .setNullable(false),
                       new CsdlParameter().setName("ParameterString").setType(PropertyProvider.nameString)
@@ -1142,7 +1142,7 @@ public class FunctionProvider {
               .setName("BFCCTPrimCompRTESTwoKeyNavParam")
               .setBound(true)
               .setParameters(
-                  Arrays.asList(
+                  List.of(
                       new CsdlParameter().setName("BindingParam").setType(ComplexTypeProvider.nameCTPrimComp)
                           .setNullable(false),
                       new CsdlParameter().setName("ParameterString").setType(PropertyProvider.nameString)

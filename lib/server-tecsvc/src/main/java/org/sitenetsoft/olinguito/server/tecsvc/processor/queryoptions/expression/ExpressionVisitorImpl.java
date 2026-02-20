@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Converted switch statements to switch expressions
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression;
 
@@ -90,37 +92,19 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
 
     final BinaryOperator binaryOperator = new BinaryOperator(left, right);
 
-    switch (operator) {
-    case AND:
-      return binaryOperator.andOperator();
-    case OR:
-      return binaryOperator.orOperator();
-    case EQ:
-      return binaryOperator.equalsOperator();
-    case NE:
-      return binaryOperator.notEqualsOperator();
-    case GE:
-      return binaryOperator.greaterEqualsOperator();
-    case GT:
-      return binaryOperator.greaterThanOperator();
-    case LE:
-      return binaryOperator.lessEqualsOperator();
-    case LT:
-      return binaryOperator.lessThanOperator();
-    case ADD:
-    case SUB:
-    case MUL:
-    case DIV:
-    case MOD:
-      return binaryOperator.arithmeticOperator(operator);
-    case HAS:
-      return binaryOperator.hasOperator();
-    case IN:
-      return binaryOperator.inOperator();
-
-    default:
-      return throwNotImplemented();
-    }
+    return switch (operator) {
+      case AND -> binaryOperator.andOperator();
+      case OR -> binaryOperator.orOperator();
+      case EQ -> binaryOperator.equalsOperator();
+      case NE -> binaryOperator.notEqualsOperator();
+      case GE -> binaryOperator.greaterEqualsOperator();
+      case GT -> binaryOperator.greaterThanOperator();
+      case LE -> binaryOperator.lessEqualsOperator();
+      case LT -> binaryOperator.lessThanOperator();
+      case ADD, SUB, MUL, DIV, MOD -> binaryOperator.arithmeticOperator(operator);
+      case HAS -> binaryOperator.hasOperator();
+      case IN -> binaryOperator.inOperator();
+    };
   }
 
   @Override
@@ -129,15 +113,10 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
 
     final UnaryOperator unaryOperator = new UnaryOperator(operand);
 
-    switch (operator) {
-    case MINUS:
-      return unaryOperator.minusOperation();
-    case NOT:
-      return unaryOperator.notOperation();
-    default:
-      // Can't happen.
-      return throwNotImplemented();
-    }
+    return switch (operator) {
+      case MINUS -> unaryOperator.minusOperation();
+      case NOT -> unaryOperator.notOperation();
+    };
   }
 
   @Override
@@ -146,53 +125,30 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
 
     final MethodCallOperator methodCallOperation = new MethodCallOperator(parameters);
 
-    switch (methodCall) {
-    case ENDSWITH:
-      return methodCallOperation.endsWith();
-    case INDEXOF:
-      return methodCallOperation.indexOf();
-    case STARTSWITH:
-      return methodCallOperation.startsWith();
-    case TOLOWER:
-      return methodCallOperation.toLower();
-    case TOUPPER:
-      return methodCallOperation.toUpper();
-    case TRIM:
-      return methodCallOperation.trim();
-    case SUBSTRING:
-      return methodCallOperation.substring();
-    case CONTAINS:
-      return methodCallOperation.contains();
-    case CONCAT:
-      return methodCallOperation.concat();
-    case LENGTH:
-      return methodCallOperation.length();
-    case YEAR:
-      return methodCallOperation.year();
-    case MONTH:
-      return methodCallOperation.month();
-    case DAY:
-      return methodCallOperation.day();
-    case HOUR:
-      return methodCallOperation.hour();
-    case MINUTE:
-      return methodCallOperation.minute();
-    case SECOND:
-      return methodCallOperation.second();
-    case FRACTIONALSECONDS:
-      return methodCallOperation.fractionalseconds();
-    case ROUND:
-      return methodCallOperation.round();
-    case FLOOR:
-      return methodCallOperation.floor();
-    case CEILING:
-      return methodCallOperation.ceiling();
-    case SUBSTRINGOF:
-      return methodCallOperation.substringof();
-
-    default:
-      return throwNotImplemented();
-    }
+    return switch (methodCall) {
+      case ENDSWITH -> methodCallOperation.endsWith();
+      case INDEXOF -> methodCallOperation.indexOf();
+      case STARTSWITH -> methodCallOperation.startsWith();
+      case TOLOWER -> methodCallOperation.toLower();
+      case TOUPPER -> methodCallOperation.toUpper();
+      case TRIM -> methodCallOperation.trim();
+      case SUBSTRING -> methodCallOperation.substring();
+      case CONTAINS -> methodCallOperation.contains();
+      case CONCAT -> methodCallOperation.concat();
+      case LENGTH -> methodCallOperation.length();
+      case YEAR -> methodCallOperation.year();
+      case MONTH -> methodCallOperation.month();
+      case DAY -> methodCallOperation.day();
+      case HOUR -> methodCallOperation.hour();
+      case MINUTE -> methodCallOperation.minute();
+      case SECOND -> methodCallOperation.second();
+      case FRACTIONALSECONDS -> methodCallOperation.fractionalseconds();
+      case ROUND -> methodCallOperation.round();
+      case FLOOR -> methodCallOperation.floor();
+      case CEILING -> methodCallOperation.ceiling();
+      case SUBSTRINGOF -> methodCallOperation.substringof();
+      default -> throwNotImplemented();
+    };
   }
 
   @Override
@@ -351,10 +307,9 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
   public VisitorOperand visitBinaryOperator(BinaryOperatorKind operator, VisitorOperand left,
       List<VisitorOperand> right) throws ExpressionVisitException, ODataApplicationException {
     BinaryOperator binaryOperator = new BinaryOperator(left, right);
-    switch (operator) {
-    case IN : return binaryOperator.inOperator();
-    default:
-      return throwNotImplemented();
-    }
+    return switch (operator) {
+      case IN -> binaryOperator.inOperator();
+      default -> throwNotImplemented();
+    };
   }
 }

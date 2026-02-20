@@ -78,7 +78,7 @@ public class MethodCallOperator {
     primDouble = oData.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Double);
   }
 
-  final private List<VisitorOperand> parameters;
+  private final List<VisitorOperand> parameters;
 
   public MethodCallOperator(final List<VisitorOperand> parameters) {
     this.parameters = parameters;

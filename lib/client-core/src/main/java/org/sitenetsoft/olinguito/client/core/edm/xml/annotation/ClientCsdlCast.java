@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  */
 package org.sitenetsoft.olinguito.client.core.edm.xml.annotation;
 
@@ -57,7 +58,7 @@ class ClientCsdlCast extends CsdlCast implements Serializable {
             final String maxLenght = jp.nextTextValue();
             cast.setMaxLength("max".equalsIgnoreCase(maxLenght) ? Integer.MAX_VALUE : Integer.parseInt(maxLenght));
           } else if ("Precision".equals(jp.currentName())) {
-            cast.setPrecision(Integer.valueOf(jp.nextTextValue()));
+            cast.setPrecision(Integer.parseInt(jp.nextTextValue()));
           } else if ("Scale".equals(jp.currentName())) {
             final String scale = jp.nextTextValue();
             cast.setScale("variable".equalsIgnoreCase(scale) || "floating".equalsIgnoreCase(scale) ?

@@ -15,10 +15,14 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Improved test assertions
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
@@ -50,8 +54,8 @@ public class EdmBooleanTest extends PrimitiveTypeBaseTest {
   
   @Test
   public void valueOfString() throws Exception {
-    assertEquals(true, instance.valueOfString("true", null, null, null, null, null, Boolean.class));
-    assertEquals(false, instance.valueOfString("false", null, null, null, null, null, Boolean.class));
+    assertTrue(instance.valueOfString("true", null, null, null, null, null, Boolean.class));
+    assertFalse(instance.valueOfString("false", null, null, null, null, null, Boolean.class));
 
     expectContentErrorInValueOfString(instance, "True");
     expectContentErrorInValueOfString(instance, "1");

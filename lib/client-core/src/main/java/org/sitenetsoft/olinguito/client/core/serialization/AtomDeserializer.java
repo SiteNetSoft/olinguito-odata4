@@ -18,6 +18,8 @@
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
  * Copyright 2026 SiteNetSoft - Replaced wildcard import with explicit imports
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
+ * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -197,16 +199,18 @@ public class AtomDeserializer implements ODataDeserializer {
 
           if (link.getRel().startsWith(Constants.NS_NAVIGATION_LINK_REL)) {
 
-              assert value instanceof ComplexValue;
-              ((ComplexValue) value).getNavigationLinks().add(link);
+              if (value instanceof ComplexValue cv) {
+                cv.getNavigationLinks().add(link);
+              }
             inline(reader, event.asStartElement(), link);
           } else if (link.getRel().startsWith(Constants.NS_ASSOCIATION_LINK_REL)) {
 
             ((Valuable) value).asComplex().getAssociationLinks().add(link);
           }
         } else {
-            assert value instanceof ComplexValue;
-            ((ComplexValue) value).getValue().add(property(reader, event.asStartElement()));
+            if (value instanceof ComplexValue cv) {
+              cv.getValue().add(property(reader, event.asStartElement()));
+            }
         }
       }
 
@@ -244,8 +248,8 @@ public class AtomDeserializer implements ODataDeserializer {
           final String typeAttrValue = typeAttr == null ? null : typeAttr.getValue();
           final EdmTypeInfo typeInfoEle = (typeAttrValue == null || typeAttrValue.isBlank()) ? null :
             new EdmTypeInfo.Builder().setTypeExpression(typeAttrValue).build();
-          if (typeInfoEle != null) {
-            ((ComplexValue)complexValue).setTypeName(typeInfoEle.external());
+          if (typeInfoEle != null && complexValue instanceof ComplexValue cv) {
+            cv.setTypeName(typeInfoEle.external());
           }
           values.add(complexValue);
           break;
@@ -357,9 +361,9 @@ public class AtomDeserializer implements ODataDeserializer {
 
       case COMPLEX:
         final Object complexValue = fromComplexOrEnum(reader, start);
-        if (typeInfo != null && complexValue instanceof ComplexValue && 
-            start.getAttributeByName(QName.valueOf(Constants.ATOM_ATTR_TERM)) == null) {
-          ((ComplexValue)complexValue).setTypeName(typeInfo.external());
+        if (typeInfo != null && complexValue instanceof ComplexValue cv
+            && start.getAttributeByName(QName.valueOf(Constants.ATOM_ATTR_TERM)) == null) {
+          cv.setTypeName(typeInfo.external());
         }
         valuable.setValue(complexValue instanceof ComplexValue ? ValueType.COMPLEX : ValueType.ENUM,
             complexValue);
@@ -773,7 +777,7 @@ public class AtomDeserializer implements ODataDeserializer {
       final XMLEvent event = reader.nextEvent();
 
       if (event.isCharacters() && !event.asCharacters().isWhiteSpace()) {
-        entitySet.setCount(Integer.valueOf(event.asCharacters().getData()));
+        entitySet.setCount(Integer.parseInt(event.asCharacters().getData()));
       }
 
       if (event.isEndElement() && start.getName().equals(event.asEndElement().getName())) {

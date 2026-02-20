@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
@@ -55,7 +57,7 @@ public final class EdmBoolean extends SingletonPrimitiveType {
 
     if (validateLiteral(value)) {
       if (returnType.isAssignableFrom(Boolean.class)) {
-        return returnType.cast(Boolean.valueOf("true".equals(value)));
+        return returnType.cast("true".equals(value));
       } else {
         throw new EdmPrimitiveTypeException("The value type " + returnType + " is not supported.");
       }

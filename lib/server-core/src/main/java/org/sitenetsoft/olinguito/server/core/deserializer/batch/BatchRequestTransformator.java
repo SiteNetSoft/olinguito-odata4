@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replace Charset.forName() with StandardCharsets
+ * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.batch;
 
@@ -61,8 +62,8 @@ public class BatchRequestTransformator {
 
   private ODataRequest processQueryOperation(final BatchBodyPart bodyPart, final String baseUri,
       final BatchQueryOperation queryOperation) throws BatchDeserializerException {
-    if (bodyPart.isChangeSet()) {
-      BatchQueryOperation encapsulatedQueryOperation = ((BatchChangeSetPart) queryOperation).getRequest();
+    if (bodyPart.isChangeSet() && queryOperation instanceof BatchChangeSetPart changeSetPart) {
+      BatchQueryOperation encapsulatedQueryOperation = changeSetPart.getRequest();
       handleContentId(queryOperation, encapsulatedQueryOperation);
       validateHeaders(queryOperation.getHeaders(), false);
 

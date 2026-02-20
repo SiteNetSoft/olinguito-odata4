@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Modernized Collections usage; List.of() replacing verbose wrappers
+ * Copyright 2026 SiteNetSoft - Converted switch statements to switch expressions
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -57,20 +58,13 @@ public final class ContentNegotiator {
   private ContentNegotiator() {}
 
   private static List<ContentType> getDefaultSupportedContentTypes(final RepresentationType type) {
-    switch (type) {
-    case METADATA:
-      return List.of(ContentType.APPLICATION_XML, ContentType.APPLICATION_JSON);
-    case MEDIA:
-    case BINARY:
-      return List.of(ContentType.APPLICATION_OCTET_STREAM);
-    case VALUE:
-    case COUNT:
-      return List.of(ContentType.TEXT_PLAIN);
-    case BATCH:
-      return List.of(ContentType.MULTIPART_MIXED);
-    default:
-      return DEFAULT_SUPPORTED_CONTENT_TYPES;
-    }
+    return switch (type) {
+      case METADATA -> List.of(ContentType.APPLICATION_XML, ContentType.APPLICATION_JSON);
+      case MEDIA, BINARY -> List.of(ContentType.APPLICATION_OCTET_STREAM);
+      case VALUE, COUNT -> List.of(ContentType.TEXT_PLAIN);
+      case BATCH -> List.of(ContentType.MULTIPART_MIXED);
+      default -> DEFAULT_SUPPORTED_CONTENT_TYPES;
+    };
   }
 
   private static List<ContentType> getSupportedContentTypes(

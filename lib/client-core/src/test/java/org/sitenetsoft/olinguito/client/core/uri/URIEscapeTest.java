@@ -15,15 +15,17 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.List;
 import java.util.TimeZone;
 
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEnumType;
@@ -78,7 +80,7 @@ public class URIEscapeTest {
   @Test
   public void collection() {
     assertEquals("[\"red\",\"green\"]",
-        URIUtils.escape( Arrays.asList(new String[] { "red", "green" })));
+        URIUtils.escape( List.of(new String[] { "red", "green" })));
   }
 
   @Test

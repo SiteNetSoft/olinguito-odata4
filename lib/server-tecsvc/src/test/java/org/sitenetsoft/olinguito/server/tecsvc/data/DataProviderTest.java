@@ -15,10 +15,11 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -58,7 +59,7 @@ public class DataProviderTest {
     Assertions.assertEquals(16, entity.getProperties().size());
 
     Assertions.assertEquals(entity,
-        dataProvider.read(esAllPrim, Arrays.asList(mockParameter("PropertyInt16", "-0"))));
+        dataProvider.read(esAllPrim, List.of(mockParameter("PropertyInt16", "-0"))));
   }
 
   @Test
@@ -67,7 +68,7 @@ public class DataProviderTest {
     final Entity entity = dataProvider.readAll(esAllKey).getEntities().get(0);
     Assertions.assertEquals(13, entity.getProperties().size());
 
-    Assertions.assertEquals(entity, dataProvider.read(esAllKey, Arrays.asList(
+    Assertions.assertEquals(entity, dataProvider.read(esAllKey, List.of(
         mockParameter("PropertyBoolean", "true"),
         mockParameter("PropertyByte", "255"),
         mockParameter("PropertyDate", "2012-12-03"),
@@ -162,7 +163,7 @@ public class DataProviderTest {
   public void esMedia() throws Exception {
     DataProvider dataProvider = new DataProvider(oData, edm);
 
-    Entity entity = dataProvider.read(esMedia, Arrays.asList(mockParameter("PropertyInt16", "3")));
+    Entity entity = dataProvider.read(esMedia, List.of(mockParameter("PropertyInt16", "3")));
     Assertions.assertNotNull(dataProvider.readMedia(entity));
     dataProvider.delete(esMedia, entity);
     Assertions.assertEquals(3, dataProvider.readAll(esMedia).getEntities().size());

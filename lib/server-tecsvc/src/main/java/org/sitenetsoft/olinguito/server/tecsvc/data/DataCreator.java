@@ -18,6 +18,8 @@
  *
  * Copyright 2026 SiteNetSoft - Fixed heap pollution warning with @SafeVarargs
  * Copyright 2026 SiteNetSoft - Replace Charset.forName() with StandardCharsets
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -33,7 +35,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
+
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -159,7 +161,7 @@ public class DataCreator {
     link.setTitle("NavPropertyETStreamOnComplexPropMany");
     EntityCollection target = new EntityCollection();
     target.setCount(2);
-    target.getEntities().addAll(Arrays.asList(esStreamTargets.get(0), esStreamTargets.get(1)));
+    target.getEntities().addAll(List.of(esStreamTargets.get(0), esStreamTargets.get(1)));
     link.setInlineEntitySet(target);
     link.setHref(entity.getId().toASCIIString() + "/" + 
     entity.getProperties().get(3).getName() + "/"
@@ -303,7 +305,7 @@ public class DataCreator {
     link.setTitle("NavPropertyETTwoKeyNavMany");
     EntityCollection target = new EntityCollection();
     target.setCount(2);
-    target.getEntities().addAll(Arrays.asList(esTwoKeyNavTargets.get(0), esTwoKeyNavTargets.get(2)));
+    target.getEntities().addAll(List.of(esTwoKeyNavTargets.get(0), esTwoKeyNavTargets.get(2)));
     link.setInlineEntitySet(target);
     link.setHref(entity.getId().toASCIIString() + "/" + 
     entity.getProperties().get(1).getName() + "/"
@@ -395,7 +397,7 @@ public class DataCreator {
         .addProperty(
             createComplexCollection("CollPropertyCompAno",
                 ComplexTypeProvider.nameCTTwoPrimAno.getFullQualifiedNameAsString(),
-                Arrays.asList(new Property[] {
+                List.of(new Property[] {
                     createDerived("PropertyString", 
                         ComplexTypeProvider.nameCTTwoPrimAno.getFullQualifiedNameAsString(),
                         "TEST9876")
@@ -407,9 +409,9 @@ public class DataCreator {
         .addProperty(derivedComplexProperty)
         .addProperty(createComplexDerievedCollection("CollPropertyCompAno",
                 ComplexTypeProvider.nameCTTwoPrimAno.getFullQualifiedNameAsString(),
-                Arrays.asList(new ComplexValue[] {
+                List.of(new ComplexValue[] {
                 createComplexValue(ComplexTypeProvider.nameCTBaseAno.getFullQualifiedNameAsString(),
-                    "CollPropertyCompAno", Arrays.asList(new Property[] {
+                    "CollPropertyCompAno", List.of(new Property[] {
                         createDerived("AdditionalPropString",
                             ComplexTypeProvider.nameCTBaseAno.getFullQualifiedNameAsString(),
                             "Additional12345"),
@@ -419,7 +421,7 @@ public class DataCreator {
                     }
               )),
                 createComplexValue(ComplexTypeProvider.nameCTTwoPrimAno.getFullQualifiedNameAsString(),
-                    "CollPropertyCompAno", Arrays.asList(new Property[] {
+                    "CollPropertyCompAno", List.of(new Property[] {
                         createDerived("PropertyString", 
                             ComplexTypeProvider.nameCTTwoPrimAno.getFullQualifiedNameAsString(),
                             "TESTabcd")
@@ -505,11 +507,11 @@ public class DataCreator {
             ),
             createComplexCollection("CollPropertyComp",
                 ComplexTypeProvider.nameCTTwoPrim.getFullQualifiedNameAsString(),
-                Arrays.asList(new Property[] {
+                List.of(new Property[] {
                     createPrimitive("PropertyInt16", (short) 222),
                     createPrimitive("PropertyString", "TEST9876")
                 }),
-                Arrays.asList(new Property[] {
+                List.of(new Property[] {
                     createPrimitive("PropertyInt16", (short) 333),
                     createPrimitive("PropertyString", "TEST123")
                 })
@@ -908,13 +910,13 @@ public class DataCreator {
             (short) 30112))
         .addProperty(createComplexCollection("CollPropertyComp",
             ComplexTypeProvider.nameCTPrimComp.getFullQualifiedNameAsString(),
-            Arrays.asList(
+            List.of(
                 createPrimitive("PropertyInt16", (short) 1),
                 createKeyNavAllPrimComplexValue("PropertyComp")),
-            Arrays.asList(
+            List.of(
                 createPrimitive("PropertyInt16", (short) 2),
                 createKeyNavAllPrimComplexValue("PropertyComp")),
-            Arrays.asList(
+            List.of(
                 createPrimitive("PropertyInt16", (short) 3),
                 createKeyNavAllPrimComplexValue("PropertyComp"))))
         .addProperty(createComplex("PropertyCompCompNav",
@@ -971,7 +973,7 @@ public class DataCreator {
         .addProperty(createComplexCollection("CollPropertyComp", null))
         .addProperty(createComplexCollection("CollPropertyCompNav",
             ComplexTypeProvider.nameCTNavFiveProp.getFullQualifiedNameAsString(),
-            Arrays.asList(
+            List.of(
                 createPrimitive("PropertyInt16", (short) 1))))
         .addProperty(createPrimitiveCollection("CollPropertyString",
             "1",
@@ -1011,13 +1013,13 @@ public class DataCreator {
             ComplexTypeProvider.nameCTCompCollComp.getFullQualifiedNameAsString(),
             createComplexCollection("CollPropertyComp",
                 ComplexTypeProvider.nameCTCompCollComp.getFullQualifiedNameAsString(),
-                Arrays.asList(
+                List.of(
                     createPrimitive("PropertyInt16", (short) 555),
                     createPrimitive("PropertyString", "1 Test Complex in Complex Property")),
-                Arrays.asList(
+                List.of(
                     createPrimitive("PropertyInt16", (short) 666),
                     createPrimitive("PropertyString", "2 Test Complex in Complex Property")),
-                Arrays.asList(
+                List.of(
                     createPrimitive("PropertyInt16", (short) 777),
                     createPrimitive("PropertyString", "3 Test Complex in Complex Property"))))));
 
@@ -1027,13 +1029,13 @@ public class DataCreator {
             ComplexTypeProvider.nameCTCompCollComp.getFullQualifiedNameAsString(),
             createComplexCollection("CollPropertyComp",
                 ComplexTypeProvider.nameCTCompCollComp.getFullQualifiedNameAsString(),
-                Arrays.asList(
+                List.of(
                     createPrimitive("PropertyInt16", (short) 888),
                     createPrimitive("PropertyString", "11 Test Complex in Complex Property")),
-                Arrays.asList(
+                List.of(
                     createPrimitive("PropertyInt16", (short) 999),
                     createPrimitive("PropertyString", "12 Test Complex in Complex Property")),
-                Arrays.asList(
+                List.of(
                     createPrimitive("PropertyInt16", (short) 0),
                     createPrimitive("PropertyString", "13 Test Complex in Complex Property"))))));
 
@@ -1662,21 +1664,21 @@ public class DataCreator {
   private Property createCollPropertyComp() {
     return createComplexDerievedCollection("CollPropertyComp",
         ComplexTypeProvider.nameCTTwoPrim.getFullQualifiedNameAsString(),
-        Arrays.asList(new ComplexValue[] {
+        List.of(new ComplexValue[] {
             createComplexValue(ComplexTypeProvider.nameCTTwoPrim.getFullQualifiedNameAsString(),
-                "CollPropertyComp", Arrays.asList(new Property[] {
+                "CollPropertyComp", List.of(new Property[] {
                     createPrimitive("PropertyInt16", (short) 123),
                     createPrimitive("PropertyString", "TEST 1")
                 }
           )),
             createComplexValue(ComplexTypeProvider.nameCTTwoPrim.getFullQualifiedNameAsString(),
-                "CollPropertyComp", Arrays.asList(new Property[] {
+                "CollPropertyComp", List.of(new Property[] {
                     createPrimitive("PropertyInt16", (short) 456),
                     createPrimitive("PropertyString", "TEST 2")
                 }
           )),
             createComplexValue(ComplexTypeProvider.nameCTBase.getFullQualifiedNameAsString(),
-                "CollPropertyComp", Arrays.asList(new Property[] {
+                "CollPropertyComp", List.of(new Property[] {
                     createPrimitive("PropertyInt16", (short) 789),
                     createPrimitive("PropertyString", "TEST 3"),
                     createPrimitive("AdditionalPropString", "ADD TEST")
@@ -1869,12 +1871,12 @@ public class DataCreator {
       link.setType(Constants.ENTITY_SET_NAVIGATION_LINK_TYPE);
       link.setTitle(navigationPropertyName);
       EntityCollection target = new EntityCollection();
-      target.getEntities().addAll(Arrays.asList(targets));
+      target.getEntities().addAll(List.of(targets));
       link.setInlineEntitySet(target);
       link.setHref(entity.getId().toASCIIString() + "/" + navigationPropertyName);
       entity.getNavigationLinks().add(link);
     } else {
-      link.getInlineEntitySet().getEntities().addAll(Arrays.asList(targets));
+      link.getInlineEntitySet().getEntities().addAll(List.of(targets));
     }
   }
 
@@ -2090,7 +2092,7 @@ public class DataCreator {
        link.setType(Constants.ENTITY_NAVIGATION_LINK_TYPE);
        link.setTitle(navigationPropertyName);
        link.setHref(entity.getId().toASCIIString() + 
-           (navigationPropertyName != null && navigationPropertyName.length() > 0 ? "/" + navigationPropertyName: ""));
+           (navigationPropertyName != null && !navigationPropertyName.isEmpty() ? "/" + navigationPropertyName: ""));
        entity.getNavigationLinks().add(link);
      }
      link.setInlineEntity(target);
@@ -2227,12 +2229,12 @@ public class DataCreator {
       link.setType(Constants.ENTITY_SET_NAVIGATION_LINK_TYPE);
       link.setTitle(navigationPropertyName);
       EntityCollection target = new EntityCollection();
-      target.getEntities().addAll(Arrays.asList(targets));
+      target.getEntities().addAll(List.of(targets));
       link.setInlineEntitySet(target);
       link.setHref(entity.getId().toASCIIString() + "/" + navigationPropertyName);
       entity.getNavigationLinks().add(link);
     } else {
-      link.getInlineEntitySet().getEntities().addAll(Arrays.asList(targets));
+      link.getInlineEntitySet().getEntities().addAll(List.of(targets));
     }
   }
 

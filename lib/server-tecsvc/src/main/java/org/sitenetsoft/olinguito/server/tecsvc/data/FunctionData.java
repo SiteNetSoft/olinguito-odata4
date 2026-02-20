@@ -15,18 +15,26 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Calendar.getInstance() with java.time-based construction
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
 import java.math.BigDecimal;
 import java.net.URI;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.UUID;
 
 import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
@@ -122,11 +130,11 @@ public class FunctionData {
     } else if (name.equals("UFCRTCollCTTwoPrim")) {
       return DataCreator.createComplexCollection(name,
           ComplexTypeProvider.nameCTTwoPrim.getFullQualifiedNameAsString(),
-          Arrays.asList(DataCreator.createPrimitive("PropertyInt16", (short) 16),
+          List.of(DataCreator.createPrimitive("PropertyInt16", (short) 16),
               DataCreator.createPrimitive("PropertyString", "Test123")),
-          Arrays.asList(DataCreator.createPrimitive("PropertyInt16", 17),
+          List.of(DataCreator.createPrimitive("PropertyInt16", 17),
               DataCreator.createPrimitive("PropertyString", "Test456")),
-          Arrays.asList(DataCreator.createPrimitive("PropertyInt16", 18),
+          List.of(DataCreator.createPrimitive("PropertyInt16", 18),
               DataCreator.createPrimitive("PropertyString", "Test678")));
     } else if (name.equals("UFCRTStringTwoParam")) {
       final String parameterString = getParameterString(parameters);
@@ -138,7 +146,7 @@ public class FunctionData {
         final StringBuilder builder = new StringBuilder();
         // if parameterInt16 <= 0 return an empty string
         for (short i = parameterInt16; i > 0; i--) {
-          if (builder.length() != 0) {
+          if (!builder.isEmpty()) {
             builder.append(',');
           }
           builder.append('"')
@@ -153,9 +161,9 @@ public class FunctionData {
       if (parameterString == null) {
         return DataCreator.createComplexCollection(name,
             ComplexTypeProvider.nameCTTwoPrim.getFullQualifiedNameAsString(),
-            Arrays.asList(DataCreator.createPrimitive("PropertyInt16", 1),
+            List.of(DataCreator.createPrimitive("PropertyInt16", 1),
                 DataCreator.createPrimitive("PropertyString", name + " int16 value: " + parameterInt16)),
-            Arrays.asList(DataCreator.createPrimitive("PropertyInt16", 2),
+            List.of(DataCreator.createPrimitive("PropertyInt16", 2),
                 DataCreator.createPrimitive("PropertyString", name + "string value: null")));
       } else {
         List<ComplexValue> complexValues = new ArrayList<>();
@@ -209,7 +217,7 @@ public class FunctionData {
     } else if (name.equals("BFCESTwoKeyNavRTCollCTNavFiveProp")) {
       return DataCreator.createComplexCollection(name,
           ComplexTypeProvider.nameCTNavFiveProp.getFullQualifiedNameAsString(),
-          Arrays.asList(
+          List.of(
               DataCreator.createPrimitive("PropertyInt16", (short) 1)));
     } else if (name.equals("BFCESTwoKeyNavRTCollDecimal")) {
       return DataCreator.createPrimitiveCollection(name,
@@ -239,21 +247,14 @@ public class FunctionData {
   }
   
   private static Calendar getDate(final int year, final int month, final int day) {
-    // Date values are always in the local timezone.
-    Calendar date = Calendar.getInstance();
-    date.clear();
-    date.set(year, month - 1, day, 0, 0, 0);
-    date.set(Calendar.MILLISECOND, 0);
-    return date;
+    return GregorianCalendar.from(
+        LocalDate.of(year, month, day).atStartOfDay(ZoneId.systemDefault()));
   }
 
   private static Calendar getTime(final int hour, final int minute, final int second) {
-    // Time values are always in the local timezone.
-    Calendar time = Calendar.getInstance();
-    time.clear();
-    time.set(1970, Calendar.JANUARY, 1, hour, minute, second);
-    time.set(Calendar.MILLISECOND, 0);
-    return time;
+    return GregorianCalendar.from(
+        LocalTime.of(hour, minute, second).atDate(LocalDate.of(1970, 1, 1))
+            .atZone(ZoneId.systemDefault()));
   }
 
   private static Timestamp getTimestamp(final int year, final int month, final int day,
@@ -266,11 +267,7 @@ public class FunctionData {
 
   private static Calendar getDateTime(final int year, final int month, final int day,
       final int hour, final int minute, final int second) {
-    // Date/Time values are serialized with a timezone offset, so we choose a predictable timezone.
-    Calendar dateTime = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-    dateTime.clear();
-    dateTime.set(year, month - 1, day, hour, minute, second);
-    dateTime.set(Calendar.MILLISECOND, 0);
-    return dateTime;
+    return GregorianCalendar.from(
+        ZonedDateTime.of(year, month, day, hour, minute, second, 0, ZoneOffset.UTC));
   }
 }

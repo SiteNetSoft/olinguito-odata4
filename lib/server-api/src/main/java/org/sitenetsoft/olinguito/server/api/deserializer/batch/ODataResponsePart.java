@@ -15,10 +15,11 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.api.deserializer.batch;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.server.api.ODataResponse;
@@ -58,7 +59,7 @@ public class ODataResponsePart {
    * @param isChangeSet whether this ODataResponsePart represents a change set
    */
   public ODataResponsePart(final ODataResponse response, final boolean isChangeSet) {
-    responses = Arrays.asList(response);
+    responses = List.of(response);
     this.isChangeSet = isChangeSet;
   }
 

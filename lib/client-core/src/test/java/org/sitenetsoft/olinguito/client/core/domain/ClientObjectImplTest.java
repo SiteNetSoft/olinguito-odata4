@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
  * Copyright 2026 SiteNetSoft - Replaced wildcard import with explicit imports
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  */
 package org.sitenetsoft.olinguito.client.core.domain;
 
@@ -208,11 +209,11 @@ public class ClientObjectImplTest {
     assertNotNull(builder);
     byte[] byteArray = new byte[2];
     assertNotNull(builder.buildBinary(byteArray));
-    Short shortValue = Short.valueOf("1");
+    Short shortValue = Short.parseShort("1");
     assertNotNull(builder.buildInt16(shortValue));
-    assertNotNull(builder.buildInt32(Integer.valueOf("1")));
-    assertNotNull(builder.buildSingle(Float.valueOf("1")));
-    assertNotNull(builder.buildDouble(Double.valueOf("1")));
+    assertNotNull(builder.buildInt32(Integer.parseInt("1")));
+    assertNotNull(builder.buildSingle(Float.parseFloat("1")));
+    assertNotNull(builder.buildDouble(Double.parseDouble("1")));
     assertNotNull(builder.buildGuid(new UUID(1,1)));
     assertNotNull(builder.buildDecimal(new BigDecimal("1")));
     assertNotNull(builder.buildDuration(new BigDecimal("1")));

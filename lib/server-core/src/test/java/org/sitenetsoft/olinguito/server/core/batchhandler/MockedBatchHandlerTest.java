@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.core.batchhandler;
 
@@ -28,8 +30,8 @@ import static org.mockito.Mockito.when;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -513,7 +515,7 @@ public class MockedBatchHandlerTest {
           + CRLF
           + "--batch_12345--";
           final Map<String, List<String>> header = new HashMap<>();
-          header.put(HttpHeader.CONTENT_TYPE, Arrays.asList(new String[] { "application/http" }));
+          header.put(HttpHeader.CONTENT_TYPE, List.of("application/http"));
           final ODataResponse response = new ODataResponse();
           final ODataRequest request = buildODataRequest(content, header);
           batchHandler.process(request, response, true);

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser.search;
 
@@ -32,7 +34,7 @@ public abstract class SearchExpressionImpl implements SearchExpression {
 
   @Override
   public SearchTerm asSearchTerm() {
-    return isSearchTerm() ? (SearchTerm) this : null;
+    return this instanceof SearchTerm t ? t : null;
   }
 
   @Override
@@ -42,7 +44,7 @@ public abstract class SearchExpressionImpl implements SearchExpression {
 
   @Override
   public SearchBinary asSearchBinary() {
-    return isSearchBinary() ? (SearchBinary) this : null;
+    return this instanceof SearchBinary b ? b : null;
   }
 
   @Override
@@ -52,7 +54,7 @@ public abstract class SearchExpressionImpl implements SearchExpression {
 
   @Override
   public SearchUnary asSearchUnary() {
-    return isSearchUnary() ? (SearchUnary) this : null;
+    return this instanceof SearchUnary u ? u : null;
   }
 
 }

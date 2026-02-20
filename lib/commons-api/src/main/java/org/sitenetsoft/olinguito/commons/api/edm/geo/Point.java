@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Double boxing with Double.hashCode() static method
  */
 package org.sitenetsoft.olinguito.commons.api.edm.geo;
 
@@ -127,9 +129,9 @@ public class Point extends Geospatial {
   public int hashCode() {
     int result = dimension == null ? 0 : dimension.hashCode();
     result = 31 * result + (srid == null ? 0 : srid.hashCode());
-    result = 31 * result + Double.valueOf(x).hashCode();
-    result = 31 * result + Double.valueOf(y).hashCode();
-    result = 31 * result + Double.valueOf(z).hashCode();
+    result = 31 * result + Double.hashCode(x);
+    result = 31 * result + Double.hashCode(y);
+    result = 31 * result + Double.hashCode(z);
     return result;
   }
 

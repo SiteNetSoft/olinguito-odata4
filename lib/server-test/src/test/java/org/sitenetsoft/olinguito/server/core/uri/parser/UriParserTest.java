@@ -15,11 +15,13 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
@@ -149,11 +151,11 @@ public class UriParserTest {
   public void crossjoin() throws Exception {
     testUri.run("$crossjoin(ESKeyNav)")
         .isKind(UriInfoKind.crossjoin)
-        .isCrossJoinEntityList(Arrays.asList("ESKeyNav"));
+        .isCrossJoinEntityList(List.of("ESKeyNav"));
 
     testUri.run("$crossjoin(ESKeyNav,ESTwoKeyNav)")
         .isKind(UriInfoKind.crossjoin)
-        .isCrossJoinEntityList(Arrays.asList("ESKeyNav", "ESTwoKeyNav"));
+        .isCrossJoinEntityList(List.of("ESKeyNav", "ESTwoKeyNav"));
   }
 
   @Test

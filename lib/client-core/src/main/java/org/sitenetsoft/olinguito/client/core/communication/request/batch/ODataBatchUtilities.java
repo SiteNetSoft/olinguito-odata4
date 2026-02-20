@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
  * Copyright 2026 SiteNetSoft - Fixed resource leak in readHeaders
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.batch;
 
@@ -268,7 +269,7 @@ public class ODataBatchUtilities {
       final Matcher matcher = RESPONSE_PATTERN.matcher(line.trim());
 
       if (matcher.matches()) {
-        return new AbstractMap.SimpleEntry<>(Integer.valueOf(matcher.group(1)), matcher.group(2));
+        return new AbstractMap.SimpleEntry<>(Integer.parseInt(matcher.group(1)), matcher.group(2));
       }
     }
 

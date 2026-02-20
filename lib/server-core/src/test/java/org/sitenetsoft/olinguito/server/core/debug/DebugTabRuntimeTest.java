@@ -15,12 +15,14 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.core.debug;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.sitenetsoft.olinguito.server.api.debug.RuntimeMeasurement;
 import org.junit.jupiter.api.Test;
@@ -29,7 +31,7 @@ public class DebugTabRuntimeTest extends AbstractDebugTabTest {
 
   @Test
   public void runtime() throws Exception {
-    final DebugTabRuntime tab = new DebugTabRuntime(Arrays.asList(
+    final DebugTabRuntime tab = new DebugTabRuntime(List.of(
         createMeasurement("class1", "method1", 0, 42),
         createMeasurement("class2", "method2", 12, 23),
         createMeasurement("class2", "method2", 24, 26),

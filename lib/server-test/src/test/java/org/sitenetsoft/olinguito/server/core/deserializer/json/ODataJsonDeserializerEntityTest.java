@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Improved test assertions; Replaced Arrays.asList with List.of
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -32,7 +34,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -110,7 +111,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
 
     assertEquals(Short.valueOf((short) 32767), entity.getProperty("PropertyInt16").getValue());
     assertEquals("First Resource - positive values", entity.getProperty("PropertyString").getValue());
-    assertEquals(Boolean.TRUE, entity.getProperty("PropertyBoolean").getValue());
+    assertTrue((Boolean) entity.getProperty("PropertyBoolean").getValue());
     assertEquals(Short.valueOf((short) 255), entity.getProperty("PropertyByte").getValue());
     assertEquals(Byte.valueOf((byte) 127), entity.getProperty("PropertySByte").getValue());
     assertEquals(Integer.valueOf(2147483647), entity.getProperty("PropertyInt32").getValue());
@@ -327,7 +328,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
     Assertions.assertEquals("olingo.odata.test1.ETKeyPrimNavDerived", e.getType());
     Assertions.assertEquals(Short.valueOf((short)32767), e.getProperty("PropertyInt16").getValue());
     Assertions.assertEquals("First Resource - first", e.getProperty("PropertyString").getValue());
-    Assertions.assertEquals(true, e.getProperty("PropertyBoolean").getValue());
+    Assertions.assertTrue((Boolean) e.getProperty("PropertyBoolean").getValue());
   }
     
   @Test
@@ -507,9 +508,9 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
     }
     Property property = entity.getProperty("CollPropertyBoolean");
     List<? extends Object> asCollection = property.asCollection();
-    assertEquals(true, asCollection.get(0));
-    assertEquals(false, asCollection.get(1));
-    assertEquals(true, asCollection.get(2));
+    assertTrue((Boolean) asCollection.get(0));
+    assertFalse((Boolean) asCollection.get(1));
+    assertTrue((Boolean) asCollection.get(2));
   }
 
   @Test
@@ -1123,7 +1124,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
     Mockito.when(property.getType()).thenReturn(odata.createPrimitiveTypeInstance(typeKind));
     EdmEntityType entityType = Mockito.mock(EdmEntityType.class);
     Mockito.when(entityType.getFullQualifiedName()).thenReturn(new FullQualifiedName(NAMESPACE, "entityType"));
-    Mockito.when(entityType.getPropertyNames()).thenReturn(Arrays.asList(name));
+    Mockito.when(entityType.getPropertyNames()).thenReturn(List.of(name));
     Mockito.when(entityType.getProperty(name)).thenReturn(property);
     return entityType;
   }

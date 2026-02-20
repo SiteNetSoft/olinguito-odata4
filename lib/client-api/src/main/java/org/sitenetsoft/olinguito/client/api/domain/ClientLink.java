@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Converted switch statements to switch expressions
  */
 package org.sitenetsoft.olinguito.client.api.domain;
 
@@ -127,28 +129,13 @@ public class ClientLink extends ClientItem implements ClientAnnotatable {
     setLink(uri);
     this.mediaETag = eTag;
 
-    switch (this.type) {
-    case ASSOCIATION:
-      rel = Constants.NS_ASSOCIATION_LINK_REL + title;
-      break;
-
-    case ENTITY_NAVIGATION:
-    case ENTITY_SET_NAVIGATION:
-      rel = Constants.NS_NAVIGATION_LINK_REL + title;
-      break;
-
-    case MEDIA_EDIT:
-      rel = Constants.NS_MEDIA_EDIT_LINK_REL + title;
-      break;
-
-    case MEDIA_READ:
-      rel = Constants.NS_MEDIA_READ_LINK_REL + title;
-      break;
-      
-    default:
-      rel = Constants.NS_MEDIA_EDIT_LINK_REL + title;
-      break;
-    }
+    rel = switch (this.type) {
+      case ASSOCIATION -> Constants.NS_ASSOCIATION_LINK_REL + title;
+      case ENTITY_NAVIGATION, ENTITY_SET_NAVIGATION -> Constants.NS_NAVIGATION_LINK_REL + title;
+      case MEDIA_EDIT -> Constants.NS_MEDIA_EDIT_LINK_REL + title;
+      case MEDIA_READ -> Constants.NS_MEDIA_READ_LINK_REL + title;
+      default -> Constants.NS_MEDIA_EDIT_LINK_REL + title;
+    };
   }
   
   /**

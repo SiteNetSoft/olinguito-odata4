@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Converted switch statements to switch expressions
  */
 package org.sitenetsoft.olinguito.server.core.debug;
 
@@ -250,88 +252,30 @@ public class ExpressionJsonVisitor implements ExpressionVisitor<JsonNode> {
   }
 
   private String getType(final UnaryOperatorKind operator) {
-    switch (operator) {
-    case MINUS:
-      return NUMBER_NAME;
-    case NOT:
-      return BOOLEAN_NAME;
-    }
-    return UNKNOWN_NAME;
+    return switch (operator) {
+      case MINUS -> NUMBER_NAME;
+      case NOT -> BOOLEAN_NAME;
+    };
   }
 
   private String getType(final MethodKind methodCall) {
-    switch (methodCall) {
-    case STARTSWITH:
-    case CONTAINS:
-    case ENDSWITH:
-    case ISOF:
-    case GEOINTERSECTS:
-      return BOOLEAN_NAME;
-
-    case INDEXOF:
-    case LENGTH:
-    case ROUND:
-    case FLOOR:
-    case CEILING:
-    case YEAR:
-    case MONTH:
-    case DAY:
-    case HOUR:
-    case MINUTE:
-    case SECOND:
-    case FRACTIONALSECONDS:
-    case TOTALOFFSETMINUTES:
-    case TOTALSECONDS:
-    case GEODISTANCE:
-    case GEOLENGTH:
-      return NUMBER_NAME;
-
-    case CONCAT:
-    case SUBSTRING:
-    case TOLOWER:
-    case TOUPPER:
-    case TRIM:
-      return STRING_NAME;
-
-    case DATE:
-      return DATE_NAME;
-
-    case TIME:
-      return TIME_NAME;
-
-    case MAXDATETIME:
-    case MINDATETIME:
-    case NOW:
-      return DATETIMEOFFSET_NAME;
-
-    case CAST:
-      return UNKNOWN_NAME;
-    }
-    return UNKNOWN_NAME;
+    return switch (methodCall) {
+      case STARTSWITH, CONTAINS, ENDSWITH, ISOF, GEOINTERSECTS -> BOOLEAN_NAME;
+      case INDEXOF, LENGTH, ROUND, FLOOR, CEILING, YEAR, MONTH, DAY, HOUR, MINUTE, SECOND,
+           FRACTIONALSECONDS, TOTALOFFSETMINUTES, TOTALSECONDS, GEODISTANCE, GEOLENGTH -> NUMBER_NAME;
+      case CONCAT, SUBSTRING, TOLOWER, TOUPPER, TRIM -> STRING_NAME;
+      case DATE -> DATE_NAME;
+      case TIME -> TIME_NAME;
+      case MAXDATETIME, MINDATETIME, NOW -> DATETIMEOFFSET_NAME;
+      default -> UNKNOWN_NAME;
+    };
   }
 
   private String getType(final BinaryOperatorKind operator) {
-    switch (operator) {
-    case MUL:
-    case DIV:
-    case MOD:
-    case ADD:
-    case SUB:
-      return NUMBER_NAME;
-
-    case HAS:
-    case GT:
-    case GE:
-    case LT:
-    case LE:
-    case EQ:
-    case NE:
-    case AND:
-    case OR:
-    case IN:
-      return BOOLEAN_NAME;
-    }
-    return UNKNOWN_NAME;
+    return switch (operator) {
+      case MUL, DIV, MOD, ADD, SUB -> NUMBER_NAME;
+      case HAS, GT, GE, LT, LE, EQ, NE, AND, OR, IN -> BOOLEAN_NAME;
+    };
   }
 
   private String getTypeString(final EdmType type) {

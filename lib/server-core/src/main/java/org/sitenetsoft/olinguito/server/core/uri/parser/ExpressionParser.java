@@ -15,6 +15,9 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -891,12 +894,10 @@ public class ExpressionParser {
     final String oDataIdentifier = tokenizer.getText();
 
     final EdmType lastType = lastResource == null ? referringType : ParserHelper.getTypeInformation(lastResource);
-    if (!(lastType instanceof EdmStructuredType)) {
+    if (!(lastType instanceof EdmStructuredType structuredType)) {
       throw new UriParserSemanticException("Property paths must follow a structured type.",
           UriParserSemanticException.MessageKeys.ONLY_FOR_STRUCTURAL_TYPES, oDataIdentifier);
     }
-
-    final EdmStructuredType structuredType = (EdmStructuredType) lastType;
     final EdmElement property = structuredType.getProperty(oDataIdentifier);
 
     if (property == null) {
@@ -1192,8 +1193,8 @@ public class ExpressionParser {
       throw new UriParserSemanticException("Unknown expression type.",
           UriParserSemanticException.MessageKeys.NOT_IMPLEMENTED, expression.toString());
     }
-    if (type != null && type.getKind() == EdmTypeKind.DEFINITION) {
-      type = ((EdmTypeDefinition) type).getUnderlyingType();
+    if (type instanceof EdmTypeDefinition typeDef) {
+      type = typeDef.getUnderlyingType();
     }
     return type;
   }
@@ -1258,10 +1259,9 @@ public class ExpressionParser {
       return;
     }
 
-    if (leftType.getKind() != EdmTypeKind.PRIMITIVE
-        || rightType.getKind() != EdmTypeKind.PRIMITIVE
-        || !(((EdmPrimitiveType) leftType).isCompatible((EdmPrimitiveType) rightType)
-        || ((EdmPrimitiveType) rightType).isCompatible((EdmPrimitiveType) leftType))) {
+    if (!(leftType instanceof EdmPrimitiveType leftPrim)
+        || !(rightType instanceof EdmPrimitiveType rightPrim)
+        || !(leftPrim.isCompatible(rightPrim) || rightPrim.isCompatible(leftPrim))) {
       throw new UriParserSemanticException("Incompatible types.",
           UriParserSemanticException.MessageKeys.TYPES_NOT_COMPATIBLE,
           leftType.getFullQualifiedName().getFullQualifiedNameAsString(),
@@ -1293,7 +1293,7 @@ public class ExpressionParser {
     // The Enumeration interface could be extended to handle the value as a whole, in line with the primitive type.
     try {
       return new EnumerationImpl(enumType,
-          Arrays.asList(enumType.fromUriLiteral(primitiveValueLiteral).split(",")));
+          List.of(enumType.fromUriLiteral(primitiveValueLiteral).split(",")));
     } catch (final EdmPrimitiveTypeException e) {
       // This part should not be reached, so a general error message key can be re-used.
       throw new UriParserSemanticException("Wrong enumeration value '" + primitiveValueLiteral + "'.", e,
@@ -1323,12 +1323,13 @@ public class ExpressionParser {
     if (leftType == null || rightType == null) {
       return;
     }
-    if (!(((EdmPrimitiveType) leftType).isCompatible((EdmPrimitiveType) rightType)
-        || ((EdmPrimitiveType) rightType).isCompatible((EdmPrimitiveType) leftType))) {
-      throw new UriParserSemanticException("Incompatible types.",
-          UriParserSemanticException.MessageKeys.TYPES_NOT_COMPATIBLE,
-          leftType.getFullQualifiedName().getFullQualifiedNameAsString(),
-          rightType.getFullQualifiedName().getFullQualifiedNameAsString());
+    if (leftType instanceof EdmPrimitiveType leftPrim && rightType instanceof EdmPrimitiveType rightPrim) {
+      if (!(leftPrim.isCompatible(rightPrim) || rightPrim.isCompatible(leftPrim))) {
+        throw new UriParserSemanticException("Incompatible types.",
+            UriParserSemanticException.MessageKeys.TYPES_NOT_COMPATIBLE,
+            leftType.getFullQualifiedName().getFullQualifiedNameAsString(),
+            rightType.getFullQualifiedName().getFullQualifiedNameAsString());
+      }
     }
   }
 

@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  */
 package org.sitenetsoft.olinguito.commons.api.edm.geo;
 
@@ -60,7 +61,7 @@ public final class SRID implements Serializable {
     if (VARIABLE.equalsIgnoreCase(exp)) {
       instance.variable = Boolean.TRUE;
     } else {
-      instance.value = Integer.valueOf(exp);
+      instance.value = Integer.parseInt(exp);
       if (instance.value < 0) {
         throw new IllegalArgumentException(
             "The value of the SRID attribute MUST be a non-negative integer or the special value 'variable'");

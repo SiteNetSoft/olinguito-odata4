@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -207,7 +208,7 @@ public class EdmAssistedJsonSerializerV401Test {
     EntityCollection entityCollection = new EntityCollection();
     entityCollection.getEntities().add(new Entity()
         .addProperty(new Property(null, "CollPropertyComp", ValueType.COLLECTION_COMPLEX,
-            Arrays.asList(complexValue1, complexValue2, complexValue3))));
+            List.of(complexValue1, complexValue2, complexValue3))));
     Assertions.assertEquals("{\"@context\":\"$metadata#ESMixPrimCollComp(CollPropertyComp)\","
         + "\"value\":[{\"@id\":null,"
         + "\"CollPropertyComp\":["
@@ -569,7 +570,7 @@ public class EdmAssistedJsonSerializerV401Test {
     EntityCollection entityCollection = new EntityCollection();
     entityCollection.getEntities().add(new Entity()
         .addProperty(new Property(null, "CollPropertyComp", ValueType.COLLECTION_COMPLEX,
-            Arrays.asList(complexValue1, complexValue2, complexValue3))));
+            List.of(complexValue1, complexValue2, complexValue3))));
     Assertions.assertEquals("{\"@context\":\"$metadata#ESMixPrimCollComp(CollPropertyComp)\","
          + "\"value\":[{"
          + "\"CollPropertyComp\":["
@@ -594,7 +595,7 @@ public class EdmAssistedJsonSerializerV401Test {
     EntityCollection entityCollection = new EntityCollection();
     entityCollection.getEntities().add(new Entity()
         .addProperty(new Property(null, "CollPropertyComp", ValueType.COLLECTION_COMPLEX,
-            Arrays.asList(complexValue1, complexValue2, complexValue3))));
+            List.of(complexValue1, complexValue2, complexValue3))));
     Assertions.assertEquals("{"
          + "\"value\":[{"
          + "\"CollPropertyComp\":["

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  */
 package org.sitenetsoft.olinguito.commons.api.edm.provider.annotation;
 
@@ -35,7 +37,7 @@ public abstract class CsdlDynamicExpression extends CsdlExpression {
    * @return CsdlLogicalExpression expression
    */
   public CsdlLogicalOrComparisonExpression asLogicalOrComparison() {
-    return isLogicalOrComparison() ? (CsdlLogicalOrComparisonExpression) this : null;
+    return this instanceof CsdlLogicalOrComparisonExpression e ? e : null;
   }
 
   /**
@@ -51,7 +53,7 @@ public abstract class CsdlDynamicExpression extends CsdlExpression {
    * @return AnnotationPath expression
    */
   public CsdlAnnotationPath asAnnotationPath() {
-    return isAnnotationPath() ? (CsdlAnnotationPath) this : null;
+    return this instanceof CsdlAnnotationPath e ? e : null;
   }
 
   /**
@@ -67,7 +69,7 @@ public abstract class CsdlDynamicExpression extends CsdlExpression {
    * @return Apply expression
    */
   public CsdlApply asApply() {
-    return isApply() ? (CsdlApply) this : null;
+    return this instanceof CsdlApply e ? e : null;
   }
 
   /**
@@ -83,7 +85,7 @@ public abstract class CsdlDynamicExpression extends CsdlExpression {
    * @return Cast expression
    */
   public CsdlCast asCast() {
-    return isCast() ? (CsdlCast) this : null;
+    return this instanceof CsdlCast e ? e : null;
   }
 
   /**
@@ -99,7 +101,7 @@ public abstract class CsdlDynamicExpression extends CsdlExpression {
    * @return Collection expression
    */
   public CsdlCollection asCollection() {
-    return isCollection() ? (CsdlCollection) this : null;
+    return this instanceof CsdlCollection e ? e : null;
   }
 
   /**
@@ -115,7 +117,7 @@ public abstract class CsdlDynamicExpression extends CsdlExpression {
    * @return If expression
    */
   public CsdlIf asIf() {
-    return isIf() ? (CsdlIf) this : null;
+    return this instanceof CsdlIf e ? e : null;
   }
 
   /**
@@ -131,7 +133,7 @@ public abstract class CsdlDynamicExpression extends CsdlExpression {
    * @return IsOf expression
    */
   public CsdlIsOf asIsOf() {
-    return isIsOf() ? (CsdlIsOf) this : null;
+    return this instanceof CsdlIsOf e ? e : null;
   }
 
   /**
@@ -147,7 +149,7 @@ public abstract class CsdlDynamicExpression extends CsdlExpression {
    * @return LabeledElement expression
    */
   public CsdlLabeledElement asLabeledElement() {
-    return isLabeledElement() ? (CsdlLabeledElement) this : null;
+    return this instanceof CsdlLabeledElement e ? e : null;
   }
 
   /**
@@ -163,7 +165,7 @@ public abstract class CsdlDynamicExpression extends CsdlExpression {
    * @return LabeledElementReference expression
    */
   public CsdlLabeledElementReference asLabeledElementReference() {
-    return isLabeledElementReference() ? (CsdlLabeledElementReference) this : null;
+    return this instanceof CsdlLabeledElementReference e ? e : null;
   }
 
   /**
@@ -179,7 +181,7 @@ public abstract class CsdlDynamicExpression extends CsdlExpression {
    * @return Null expression
    */
   public CsdlNull asNull() {
-    return isNull() ? (CsdlNull) this : null;
+    return this instanceof CsdlNull e ? e : null;
   }
 
   /**
@@ -195,7 +197,7 @@ public abstract class CsdlDynamicExpression extends CsdlExpression {
    * @return NavigationPropertyPath expression
    */
   public CsdlNavigationPropertyPath asNavigationPropertyPath() {
-    return isNavigationPropertyPath() ? (CsdlNavigationPropertyPath) this : null;
+    return this instanceof CsdlNavigationPropertyPath e ? e : null;
   }
 
   /**
@@ -211,7 +213,7 @@ public abstract class CsdlDynamicExpression extends CsdlExpression {
    * @return Path expression
    */
   public CsdlPath asPath() {
-    return isPath() ? (CsdlPath) this : null;
+    return this instanceof CsdlPath e ? e : null;
   }
 
   /**
@@ -227,7 +229,7 @@ public abstract class CsdlDynamicExpression extends CsdlExpression {
    * @return PropertyPath expression
    */
   public CsdlPropertyPath asPropertyPath() {
-    return isPropertyPath() ? (CsdlPropertyPath) this : null;
+    return this instanceof CsdlPropertyPath e ? e : null;
   }
 
   /**
@@ -243,7 +245,7 @@ public abstract class CsdlDynamicExpression extends CsdlExpression {
    * @return Record expression
    */
   public CsdlRecord asRecord() {
-    return isRecord() ? (CsdlRecord) this : null;
+    return this instanceof CsdlRecord e ? e : null;
   }
 
   /**
@@ -259,6 +261,6 @@ public abstract class CsdlDynamicExpression extends CsdlExpression {
    * @return UrlRef expression
    */
   public CsdlUrlRef asUrlRef() {
-    return isUrlRef() ? (CsdlUrlRef) this : null;
+    return this instanceof CsdlUrlRef e ? e : null;
   }
 }

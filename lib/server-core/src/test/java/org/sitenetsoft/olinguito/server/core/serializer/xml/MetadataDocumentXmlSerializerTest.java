@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
@@ -31,7 +32,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -457,7 +458,7 @@ public class MetadataDocumentXmlSerializerTest {
     when(complexType.isOpenType()).thenReturn(true);
 
     final EdmPrimitiveType stringType = OData.newInstance().createPrimitiveTypeInstance(EdmPrimitiveTypeKind.String);
-    when(complexType.getPropertyNames()).thenReturn(Arrays.asList("prop1", "prop2"));
+    when(complexType.getPropertyNames()).thenReturn(List.of("prop1", "prop2"));
     EdmProperty prop1 = mock(EdmProperty.class);
     when(prop1.isPrimitive()).thenReturn(true);
     when(prop1.getType()).thenReturn(stringType);
@@ -571,7 +572,7 @@ public class MetadataDocumentXmlSerializerTest {
         return new CsdlEntityType()
         .setName("ET")
         .setKey(Collections.singletonList(new CsdlPropertyRef().setName("PropertyInt16")))
-        .setProperties(Arrays.asList(propertyInt16_NotNullable, propertyDecimal_VariableScale))
+        .setProperties(List.of(propertyInt16_NotNullable, propertyDecimal_VariableScale))
         .setNavigationProperties(Collections.singletonList(navProperty));
       }
       return null;
@@ -582,14 +583,14 @@ public class MetadataDocumentXmlSerializerTest {
       if (complexTypeName.equals(nameCTTwoPrim)) {
         return new CsdlComplexType()
         .setName("CTTwoPrim")
-        .setProperties(Arrays.asList(propertyInt16_NotNullable, propertyString));
+        .setProperties(List.of(propertyInt16_NotNullable, propertyString));
 
       }
       if (complexTypeName.equals(nameCTTwoPrimBase)) {
         return new CsdlComplexType()
         .setName("CTTwoPrimBase")
         .setBaseType(nameCTTwoPrim)
-        .setProperties(Arrays.asList(propertyInt16_NotNullable, propertyString));
+        .setProperties(List.of(propertyInt16_NotNullable, propertyString));
       }
       return null;
 
@@ -733,12 +734,12 @@ public class MetadataDocumentXmlSerializerTest {
       schema.setEnumTypes(Collections.singletonList(getEnumType(nameENString)));
 
       // EntityTypes
-      schema.setEntityTypes(Arrays.asList(
+      schema.setEntityTypes(List.of(
           getEntityType(nameETAbstract),
           getEntityType(nameETAbstractBase)));
 
       // ComplexTypes
-      schema.setComplexTypes(Arrays.asList(
+      schema.setComplexTypes(List.of(
           getComplexType(nameCTTwoPrim),
           getComplexType(nameCTTwoPrimBase)));
 
@@ -760,7 +761,7 @@ public class MetadataDocumentXmlSerializerTest {
       schema.setEntityContainer(getEntityContainer());
 
       // Terms
-      schema.setTerms(Arrays.asList(
+      schema.setTerms(List.of(
           getTerm(new FullQualifiedName("ns", "term")),
           getTerm(new FullQualifiedName("namespace", "Term1")),
           getTerm(new FullQualifiedName("ns", "Term2")),
@@ -797,12 +798,12 @@ public class MetadataDocumentXmlSerializerTest {
       container.setSingletons(Collections.singletonList(getSingleton(nameContainer, "SI")));
 
       // ActionImports
-      container.setActionImports(Arrays.asList(getActionImport(nameContainer, "AIRTPrimParam"), 
+      container.setActionImports(List.of(getActionImport(nameContainer, "AIRTPrimParam"), 
           getActionImport(nameContainer, "AIRTOtherEntity"), getActionImport(nameContainer, "AIRTEntity"),
           getActionImport(nameContainer, "AIRTEntityNoES")));
 
       // FunctionImports
-      container.setFunctionImports(Arrays.asList(getFunctionImport(nameContainer, "FINRTInt16"),
+      container.setFunctionImports(List.of(getFunctionImport(nameContainer, "FINRTInt16"),
           getFunctionImport(nameContainer, "FINRTET")));
 
       return container;
@@ -836,7 +837,7 @@ public class MetadataDocumentXmlSerializerTest {
 
       } else if (new FullQualifiedName("ns", "Term3").equals(termName)) {
         return new CsdlTerm().setType("Edm.String").setName("Term3")
-            .setAppliesTo(Arrays.asList("Property", "EntitySet", "Schema"));
+            .setAppliesTo(List.of("Property", "EntitySet", "Schema"));
 
       } else if (new FullQualifiedName("ns", "Term4").equals(termName)) {
         return new CsdlTerm().setType("Edm.String").setName("Term4").setBaseTerm("namespace.Term1");
