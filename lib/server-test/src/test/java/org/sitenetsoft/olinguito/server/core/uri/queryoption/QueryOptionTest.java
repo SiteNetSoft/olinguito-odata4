@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.uri.queryoption;
 
@@ -39,10 +40,10 @@ import org.sitenetsoft.olinguito.server.core.uri.queryoption.expression.AliasImp
 import org.sitenetsoft.olinguito.server.core.uri.queryoption.expression.LiteralImpl;
 import org.junit.jupiter.api.Test;
 
-public class QueryOptionTest {
+class QueryOptionTest {
 
   @Test
-  public void testAliasQueryOption() {
+  void testAliasQueryOption() {
     AliasQueryOptionImpl option = new AliasQueryOptionImpl();
 
     Expression expression = new LiteralImpl(null, null);
@@ -52,7 +53,7 @@ public class QueryOptionTest {
   }
 
   @Test
-  public void testExpandItemImpl() {
+  void testExpandItemImpl() {
     ExpandItemImpl option = new ExpandItemImpl();
 
     // input options
@@ -116,7 +117,7 @@ public class QueryOptionTest {
   }
 
   @Test
-  public void testExpandOptionImpl() {
+  void testExpandOptionImpl() {
     ExpandOptionImpl option = new ExpandOptionImpl();
     assertEquals(SystemQueryOptionKind.EXPAND, option.getKind());
 
@@ -129,7 +130,7 @@ public class QueryOptionTest {
   }
 
   @Test
-  public void testFilterOptionImpl() {
+  void testFilterOptionImpl() {
     FilterOptionImpl option = new FilterOptionImpl();
     assertEquals(SystemQueryOptionKind.FILTER, option.getKind());
 
@@ -140,7 +141,7 @@ public class QueryOptionTest {
   }
 
   @Test
-  public void testFormatOptionImpl() {
+  void testFormatOptionImpl() {
     FormatOptionImpl option = new FormatOptionImpl();
     assertEquals(SystemQueryOptionKind.FORMAT, option.getKind());
 
@@ -149,7 +150,7 @@ public class QueryOptionTest {
   }
 
   @Test
-  public void testIdOptionImpl() {
+  void testIdOptionImpl() {
     IdOptionImpl option = new IdOptionImpl();
     assertEquals(SystemQueryOptionKind.ID, option.getKind());
 
@@ -158,7 +159,7 @@ public class QueryOptionTest {
   }
 
   @Test
-  public void testInlineCountImpl() {
+  void testInlineCountImpl() {
     CountOptionImpl option = new CountOptionImpl();
     assertEquals(SystemQueryOptionKind.COUNT, option.getKind());
 
@@ -168,7 +169,7 @@ public class QueryOptionTest {
   }
 
   @Test
-  public void testLevelsExpandOptionImpl() {
+  void testLevelsExpandOptionImpl() {
     LevelsOptionImpl option = new LevelsOptionImpl();
     assertEquals(SystemQueryOptionKind.LEVELS, option.getKind());
 
@@ -182,7 +183,7 @@ public class QueryOptionTest {
   }
 
   @Test
-  public void testOrderByItemImpl() {
+  void testOrderByItemImpl() {
     OrderByItemImpl option = new OrderByItemImpl();
 
     AliasImpl expression = new AliasImpl(null, null);
@@ -195,7 +196,7 @@ public class QueryOptionTest {
   }
 
   @Test
-  public void testOrderByOptionImpl() {
+  void testOrderByOptionImpl() {
     OrderByOptionImpl option = new OrderByOptionImpl();
     assertEquals(SystemQueryOptionKind.ORDERBY, option.getKind());
 
@@ -209,7 +210,7 @@ public class QueryOptionTest {
   }
 
   @Test
-  public void testQueryOptionImpl() {
+  void testQueryOptionImpl() {
     QueryOptionImpl option = new AliasQueryOptionImpl();
 
     option.setName("A");
@@ -219,7 +220,7 @@ public class QueryOptionTest {
   }
 
   @Test
-  public void searchOptionImpl() {
+  void searchOptionImpl() {
     SearchOptionImpl option = new SearchOptionImpl();
     assertEquals(SystemQueryOptionKind.SEARCH, option.getKind());
 
@@ -229,7 +230,7 @@ public class QueryOptionTest {
   }
 
   @Test
-  public void selectItemImpl() {
+  void selectItemImpl() {
     SelectItemImpl option = new SelectItemImpl();
 
     // no typed collection else case ( e.g. if not path is added)
@@ -249,7 +250,7 @@ public class QueryOptionTest {
   }
 
   @Test
-  public void selectOptionImpl() {
+  void selectOptionImpl() {
     SelectOptionImpl option = new SelectOptionImpl();
     assertEquals(SystemQueryOptionKind.SELECT, option.getKind());
 
@@ -262,7 +263,7 @@ public class QueryOptionTest {
   }
 
   @Test
-  public void testSkipOptionImpl() {
+  void testSkipOptionImpl() {
     SkipOptionImpl option = new SkipOptionImpl();
     assertEquals(SystemQueryOptionKind.SKIP, option.getKind());
 
@@ -271,7 +272,7 @@ public class QueryOptionTest {
   }
 
   @Test
-  public void testSkipTokenOptionImpl() {
+  void testSkipTokenOptionImpl() {
     SkipTokenOptionImpl option = new SkipTokenOptionImpl();
     assertEquals(SystemQueryOptionKind.SKIPTOKEN, option.getKind());
 
@@ -280,14 +281,14 @@ public class QueryOptionTest {
   }
 
   @Test
-  public void testSystemQueryOptionImpl() {
+  void testSystemQueryOptionImpl() {
     SystemQueryOptionImpl option = new ExpandOptionImpl();
     assertEquals(SystemQueryOptionKind.EXPAND, option.getKind());
     assertEquals("$expand", option.getName());
   }
 
   @Test
-  public void testTopOptionImpl() {
+  void testTopOptionImpl() {
     TopOptionImpl option = new TopOptionImpl();
     assertEquals(SystemQueryOptionKind.TOP, option.getKind());
 

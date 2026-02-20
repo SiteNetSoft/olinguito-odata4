@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -49,7 +51,7 @@ import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class EdmEntityTypeImplTest {
+class EdmEntityTypeImplTest {
 
   private EdmEntityType baseType;
 
@@ -58,7 +60,7 @@ public class EdmEntityTypeImplTest {
   private EdmEntityType typeWithComplexKey;
 
   @BeforeEach
-  public void setupTypes() throws Exception {
+  void setupTypes() throws Exception {
     CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
     EdmProviderImpl edm = new EdmProviderImpl(provider);
 
@@ -122,7 +124,7 @@ public class EdmEntityTypeImplTest {
   }
 
   @Test
-  public void testAbstractBaseTypeWithoutKey() throws Exception {
+  void testAbstractBaseTypeWithoutKey() throws Exception {
     CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
     EdmProviderImpl edm = new EdmProviderImpl(provider);
 
@@ -182,7 +184,7 @@ public class EdmEntityTypeImplTest {
   }
 
   @Test
-  public void testAbstractBaseTypeWithtKey() throws Exception {
+  void testAbstractBaseTypeWithtKey() throws Exception {
     CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
     EdmProviderImpl edm = new EdmProviderImpl(provider);
 
@@ -237,12 +239,12 @@ public class EdmEntityTypeImplTest {
   }
 
   @Test
-  public void hasStream() {
+  void hasStream() {
     assertFalse(typeWithBaseType.hasStream());
   }
 
   @Test
-  public void hasStreamInherited() throws Exception {
+  void hasStreamInherited() throws Exception {
     CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
     EdmProviderImpl edm = new EdmProviderImpl(provider);
 
@@ -261,7 +263,7 @@ public class EdmEntityTypeImplTest {
   }
 
   @Test
-  public void complexKeyWithAlias() {
+  void complexKeyWithAlias() {
     List<String> keyPredicateNames = typeWithComplexKey.getKeyPredicateNames();
     assertEquals(2, keyPredicateNames.size());
     assertEquals("Id", keyPredicateNames.get(0));
@@ -289,7 +291,7 @@ public class EdmEntityTypeImplTest {
   }
 
   @Test
-  public void keyBehaviour() {
+  void keyBehaviour() {
     List<String> keyPredicateNames = baseType.getKeyPredicateNames();
     assertEquals(1, keyPredicateNames.size());
     assertEquals("Id", keyPredicateNames.get(0));
@@ -310,7 +312,7 @@ public class EdmEntityTypeImplTest {
   }
 
   @Test
-  public void keyBehaviourWithBasetype() {
+  void keyBehaviourWithBasetype() {
     List<String> keyPredicateNames = typeWithBaseType.getKeyPredicateNames();
     assertEquals(1, keyPredicateNames.size());
     assertEquals("Id", keyPredicateNames.get(0));
@@ -330,13 +332,13 @@ public class EdmEntityTypeImplTest {
   }
 
   @Test
-  public void getBaseType() {
+  void getBaseType() {
     assertNull(baseType.getBaseType());
     assertNotNull(typeWithBaseType.getBaseType());
   }
 
   @Test
-  public void propertiesBehaviour() {
+  void propertiesBehaviour() {
     List<String> propertyNames = baseType.getPropertyNames();
     assertEquals(2, propertyNames.size());
     assertEquals("Id", baseType.getProperty("Id").getName());
@@ -344,7 +346,7 @@ public class EdmEntityTypeImplTest {
   }
 
   @Test
-  public void propertiesBehaviourWithBaseType() {
+  void propertiesBehaviourWithBaseType() {
     List<String> propertyNames = typeWithBaseType.getPropertyNames();
     assertEquals(4, propertyNames.size());
     assertEquals("Id", typeWithBaseType.getProperty("Id").getName());
@@ -354,14 +356,14 @@ public class EdmEntityTypeImplTest {
   }
 
   @Test
-  public void navigationPropertiesBehaviour() {
+  void navigationPropertiesBehaviour() {
     List<String> navigationPropertyNames = baseType.getNavigationPropertyNames();
     assertEquals(1, navigationPropertyNames.size());
     assertEquals("nav1", baseType.getProperty("nav1").getName());
   }
 
   @Test
-  public void navigationPropertiesBehaviourWithBaseType() {
+  void navigationPropertiesBehaviourWithBaseType() {
     List<String> navigationPropertyNames = typeWithBaseType.getNavigationPropertyNames();
     assertEquals(2, navigationPropertyNames.size());
     assertEquals("nav1", typeWithBaseType.getProperty("nav1").getName());
@@ -369,7 +371,7 @@ public class EdmEntityTypeImplTest {
   }
 
   @Test
-  public void propertyCaching() {
+  void propertyCaching() {
     EdmElement property = typeWithBaseType.getProperty("Id");
     assertTrue(property == typeWithBaseType.getProperty("Id"));
 
@@ -384,14 +386,14 @@ public class EdmEntityTypeImplTest {
   }
 
   @Test
-  public void abstractTypeDoesNotNeedKey() {
+  void abstractTypeDoesNotNeedKey() {
     EdmProviderImpl edm = mock(EdmProviderImpl.class);
     CsdlEntityType entityType = new CsdlEntityType().setName("n").setAbstract(true);
     new EdmEntityTypeImpl(edm, new FullQualifiedName("n", "n"), entityType);
   }
 
   @Test
-  public void invalidBaseType() {
+  void invalidBaseType() {
       assertThrows(EdmException.class, () -> {
           EdmProviderImpl edm = mock(EdmProviderImpl.class);
           CsdlEntityType entityType = new CsdlEntityType()
@@ -402,12 +404,12 @@ public class EdmEntityTypeImplTest {
   }
 
   @Test
-  public void openTypeDefaultIsFalse() {
+  void openTypeDefaultIsFalse() {
     assertFalse(baseType.isOpenType());
   }
 
   @Test
-  public void abstractTypeWithAbstractBaseTypeDoesNotNeedKey() throws Exception {
+  void abstractTypeWithAbstractBaseTypeDoesNotNeedKey() throws Exception {
     CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
     EdmProviderImpl edm = new EdmProviderImpl(provider);
     FullQualifiedName baseName = new FullQualifiedName("n", "base");

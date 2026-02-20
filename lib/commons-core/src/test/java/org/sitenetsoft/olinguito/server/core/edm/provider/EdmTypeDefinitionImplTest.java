@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -39,7 +41,7 @@ import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmString;
 import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.PrimitiveTypeBaseTest;
 import org.junit.jupiter.api.Test;
 
-public class EdmTypeDefinitionImplTest extends PrimitiveTypeBaseTest {
+class EdmTypeDefinitionImplTest extends PrimitiveTypeBaseTest {
 
   private final EdmPrimitiveType instance = new EdmTypeDefinitionImpl(null,
       new FullQualifiedName("namespace", "def"),
@@ -49,12 +51,12 @@ public class EdmTypeDefinitionImplTest extends PrimitiveTypeBaseTest {
           .setUnicode(false));
 
   @Test
-  public void defaultType() throws Exception {
+  void defaultType() throws Exception {
     assertEquals(String.class, instance.getDefaultType());
   }
 
   @Test
-  public void compatibility() {
+  void compatibility() {
     assertTrue(instance.isCompatible(instance));
     for (final EdmPrimitiveTypeKind kind : EdmPrimitiveTypeKind.values()) {
       if (kind != EdmPrimitiveTypeKind.String) {
@@ -64,17 +66,17 @@ public class EdmTypeDefinitionImplTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void toUriLiteral() throws Exception {
+  void toUriLiteral() throws Exception {
     assertEquals("'Value'", instance.toUriLiteral("Value"));
   }
 
   @Test
-  public void fromUriLiteral() throws Exception {
+  void fromUriLiteral() throws Exception {
     assertEquals("Value", instance.fromUriLiteral("'Value'"));
   }
 
   @Test
-  public void valueToString() throws Exception {
+  void valueToString() throws Exception {
     assertEquals("text", instance.valueToString("text", null, null, null, null, null));
 
     expectFacetsErrorInValueToString(instance, "longtext", null, null, null, null, null);
@@ -84,7 +86,7 @@ public class EdmTypeDefinitionImplTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void valueOfString() throws Exception {
+  void valueOfString() throws Exception {
     assertEquals("text", instance.valueOfString("text", null, null, null, null, null, String.class));
 
     expectFacetsErrorInValueOfString(instance, "longtext", null, null, null, null, null);
@@ -96,7 +98,7 @@ public class EdmTypeDefinitionImplTest extends PrimitiveTypeBaseTest {
   }
   
   @Test
-  public void typeDefOnStringNoFacets() throws Exception {
+  void typeDefOnStringNoFacets() throws Exception {
     final FullQualifiedName typeDefName = new FullQualifiedName("namespace", "name");
     final CsdlTypeDefinition providerTypeDef =
         new CsdlTypeDefinition().setName("typeDef").setUnderlyingType(new FullQualifiedName("Edm", "String"));
@@ -127,7 +129,7 @@ public class EdmTypeDefinitionImplTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void invalidTypeResultsInEdmException() throws Exception {
+  void invalidTypeResultsInEdmException() throws Exception {
     FullQualifiedName typeDefName = new FullQualifiedName("namespace", "name");
     CsdlTypeDefinition providerTypeDef =
         new CsdlTypeDefinition().setName("typeDef").setUnderlyingType(new FullQualifiedName("wrong", "wrong"));
@@ -141,7 +143,7 @@ public class EdmTypeDefinitionImplTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void nullTypeResultsInEdmException() throws Exception {
+  void nullTypeResultsInEdmException() throws Exception {
     FullQualifiedName typeDefName = new FullQualifiedName("namespace", "name");
     CsdlTypeDefinition providerTypeDef = new CsdlTypeDefinition().setName("typeDef");
     EdmTypeDefinitionImpl def = new EdmTypeDefinitionImpl(mock(EdmProviderImpl.class), typeDefName, providerTypeDef);

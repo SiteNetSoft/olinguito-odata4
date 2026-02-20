@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -46,14 +48,14 @@ import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class EdmActionImplTest {
+class EdmActionImplTest {
 
   private EdmAction actionImpl1;
   private EdmAction actionImpl2;
   private EdmAction actionImpl3;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     EdmProviderImpl provider = mock(EdmProviderImpl.class);
     List<CsdlParameter> parameters = new ArrayList<>();
     parameters.add(new CsdlParameter().setName("Id").setType(new FullQualifiedName("namespace", "name")));
@@ -75,7 +77,7 @@ public class EdmActionImplTest {
   }
 
   @Test
-  public void action1BasicMethodCalls() {
+  void action1BasicMethodCalls() {
     assertTrue(actionImpl1.isBound());
     assertEquals(EdmTypeKind.ACTION, actionImpl1.getKind());
     assertNull(actionImpl1.getReturnType());
@@ -93,7 +95,7 @@ public class EdmActionImplTest {
   }
 
   @Test
-  public void action2BasicMethodCalls() {
+  void action2BasicMethodCalls() {
     assertFalse(actionImpl2.isBound());
     assertEquals(EdmTypeKind.ACTION, actionImpl2.getKind());
     assertEquals("String", actionImpl2.getReturnType().getType().getName());
@@ -110,7 +112,7 @@ public class EdmActionImplTest {
   }
 
   @Test
-  public void action3BasicMethodCalls() {
+  void action3BasicMethodCalls() {
     assertFalse(actionImpl3.isBound());
     assertEquals(EdmTypeKind.ACTION, actionImpl3.getKind());
     assertEquals("String", actionImpl3.getReturnType().getType().getName());
@@ -126,7 +128,7 @@ public class EdmActionImplTest {
   }
 
   @Test
-  public void action3getReturnedEntitySetWithEntitySet() {
+  void action3getReturnedEntitySetWithEntitySet() {
     EdmEntitySet set = mock(EdmEntitySet.class);
     when(set.getRelatedBindingTarget("path/Id")).thenReturn(set);
 
@@ -136,7 +138,7 @@ public class EdmActionImplTest {
   }
 
   @Test
-  public void action3getReturnedEntitySetWithNullReturn() {
+  void action3getReturnedEntitySetWithNullReturn() {
       assertThrows(EdmException.class, () -> {
           EdmEntitySet set = mock(EdmEntitySet.class);
           when(set.getRelatedBindingTarget("path")).thenReturn(null);
@@ -146,7 +148,7 @@ public class EdmActionImplTest {
   }
 
   @Test
-  public void action3getReturnedEntitySetWithSingleton() {
+  void action3getReturnedEntitySetWithSingleton() {
       assertThrows(EdmException.class, () -> {
           EdmSingleton singleton = mock(EdmSingleton.class);
           EdmEntitySet set = mock(EdmEntitySet.class);

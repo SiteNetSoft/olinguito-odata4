@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Remove unnecessary @SuppressWarnings and raw type usage
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -62,7 +63,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.mockito.Mockito;
 
-public class JsonDeltaSerializerWithNavigationsTest {
+class JsonDeltaSerializerWithNavigationsTest {
 
   EdmDeltaSerializer ser;
   private static final OData odata = OData.newInstance();
@@ -81,7 +82,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
   }
 
   @Test
-  public void addedDeltaLink() throws Exception {
+  void addedDeltaLink() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
     List<DeltaLink> addedLinks = new ArrayList<>();
@@ -106,7 +107,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
      } 
   
   @Test
-  public void deletedDeltaLink() throws Exception {
+  void deletedDeltaLink() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
     List<DeltaLink> deletedLinks = new ArrayList<>();
@@ -132,7 +133,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
      } 
   
   @Test
-  public void deletedEntity() throws Exception {
+  void deletedEntity() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
     List<DeletedEntity> deletedEntity = new ArrayList<>();
@@ -163,7 +164,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
   
 
   @Test
-  public void addedChangedDeltaEntity() throws Exception {
+  void addedChangedDeltaEntity() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
@@ -190,7 +191,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
        Assertions.assertEquals(expectedResult, jsonString);
      } 
   @Test
-  public void basicDeltaTest() throws Exception {
+  void basicDeltaTest() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
     
@@ -252,7 +253,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
      } 
   
   @Test
-  public void addedDifferentdDeltaEntity() throws Exception {
+  void addedDifferentdDeltaEntity() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final EdmEntitySet edmEntitySet2 = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
@@ -275,7 +276,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
      } 
   
   @Test
-  public void testDeltaToken() throws Exception {
+  void testDeltaToken() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
     List<DeltaLink> addedLinks = new ArrayList<>();
@@ -303,7 +304,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
      } 
   
   @Test
-  public void testSkipToken() throws Exception {
+  void testSkipToken() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
     List<DeltaLink> addedLinks = new ArrayList<>();
@@ -331,7 +332,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
      } 
   
   @Test
-  public void testSkipDeltaToken() throws Exception {
+  void testSkipDeltaToken() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
     List<DeltaLink> addedLinks = new ArrayList<>();
@@ -361,7 +362,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
   
   
   @Test
-  public void testDeltaCount() throws Exception {
+  void testDeltaCount() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     CountOption countOption = Mockito.mock(CountOption.class);
     Mockito.when(countOption.getValue()).thenReturn(true);
@@ -395,7 +396,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
      } 
   
   @Test
-  public void testEmptyDelta() throws Exception {
+  void testEmptyDelta() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
      InputStream stream = ser.entityCollection(metadata, edmEntitySet.getEntityType(), delta ,
@@ -412,7 +413,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
   
   
   @Test
-  public void deletedEntityWithAnnotation() throws Exception {
+  void deletedEntityWithAnnotation() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
     List<DeletedEntity> deletedEntity = new ArrayList<>();
@@ -446,7 +447,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
      } 
   
   @Test
-  public void deletedEntityWithProperty() throws Exception {
+  void deletedEntityWithProperty() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
     List<DeletedEntity> deletedEntity = new ArrayList<>();
@@ -478,7 +479,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
        Assertions.assertEquals(expectedResult, jsonString);
      } 
   @Test
-  public void testDeltaForStream() throws Exception {
+  void testDeltaForStream() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESWithStream");
     Delta delta = new Delta();
     List<DeltaLink> addedLinks = new ArrayList<>();
@@ -504,7 +505,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
      } 
   
   @Test
-  public void navigationInDeltaEntity() throws Exception {
+  void navigationInDeltaEntity() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
@@ -550,7 +551,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
      } 
   
   @Test
-  public void navigationInDeltaEntityInFullRepresentation() throws Exception {
+  void navigationInDeltaEntityInFullRepresentation() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
@@ -595,7 +596,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
      } 
   
   @Test
-  public void navigationInDeltaEntityWithDeleted() throws Exception {
+  void navigationInDeltaEntityWithDeleted() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
@@ -633,7 +634,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
    } 
   
   @Test
-  public void expandSelectInDelta() throws Exception {
+  void expandSelectInDelta() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     final EdmEntityType entityType = edmEntitySet.getEntityType();
     final UriHelper helper = odata.createUriHelper();
@@ -663,7 +664,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
         jsonString);
   }
   @Test
-  public void selectInDelta() throws Exception {
+  void selectInDelta() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     final EdmEntityType entityType = edmEntitySet.getEntityType();
     final UriHelper helper = odata.createUriHelper();
@@ -697,7 +698,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
   }
   
   @Test
-  public void testCollPropertyInDelta() throws Exception {
+  void testCollPropertyInDelta() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESCollAllPrim");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     Delta delta = new Delta();
@@ -746,7 +747,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
      } 
   
   @Test
-  public void testCollEntityInDelta() throws Exception {
+  void testCollEntityInDelta() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESBaseTwoKeyNav");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     Delta delta = new Delta();
@@ -796,7 +797,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
        Assertions.assertEquals(expectedResult, jsonString);
      } 
   @Test
-  public void testComplexCollPropertyInDelta() throws Exception {
+  void testComplexCollPropertyInDelta() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESKeyNav");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     Delta delta = new Delta();
@@ -865,7 +866,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
        Assertions.assertEquals(expectedResult, jsonString);
      } 
   @Test
-  public void navigationEntityInDeltaEntity() throws Exception {
+  void navigationEntityInDeltaEntity() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
@@ -903,7 +904,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
      } 
   
   @Test
-  public void navigationEntityInDeltaEntityWithFullRepresentation() throws Exception {
+  void navigationEntityInDeltaEntityWithFullRepresentation() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
@@ -942,7 +943,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
      } 
   
   @Test
-  public void negativeDeltaEntityTest() throws Exception {
+  void negativeDeltaEntityTest() throws Exception {
       assertThrows(SerializerException.class, () -> {
           final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
           Delta delta = new Delta();
@@ -960,7 +961,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
   }
   
   @Test
-  public void negativeLinkDeltaTest1() throws Exception {
+  void negativeLinkDeltaTest1() throws Exception {
       assertThrows(SerializerException.class, () -> {
           final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
           Delta delta = new Delta();
@@ -978,7 +979,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
   }
   
   @Test
-  public void negativeLinkDeltaTest2() throws Exception {
+  void negativeLinkDeltaTest2() throws Exception {
       assertThrows(SerializerException.class, () -> {
           final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
           Delta delta = new Delta();
@@ -995,7 +996,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
       });
   }
   @Test
-  public void negativeLinkDeltaTest3() throws Exception {
+  void negativeLinkDeltaTest3() throws Exception {
       assertThrows(SerializerException.class, () -> {
           final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
           Delta delta = new Delta();
@@ -1013,7 +1014,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
   }
   
   @Test
-  public void negativeLinkDeltaTest4() throws Exception {
+  void negativeLinkDeltaTest4() throws Exception {
       assertThrows(SerializerException.class, () -> {
           final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
           Delta delta = new Delta();
@@ -1028,7 +1029,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
       });
   }
   @Test
-  public void negativeDeltaDeletedEntityTest1() throws Exception {
+  void negativeDeltaDeletedEntityTest1() throws Exception {
       assertThrows(SerializerException.class, () -> {
           final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
           Delta delta = new Delta();
@@ -1045,7 +1046,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
   }
   
   @Test
-  public void negativeDeltaDeletedEntityTest2() throws Exception {
+  void negativeDeltaDeletedEntityTest2() throws Exception {
       assertThrows(SerializerException.class, () -> {
           final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
           Delta delta = new Delta();
@@ -1062,7 +1063,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
   }
   
   @Test
-  public void testDeltaTokenWithBothVersions() throws Exception {
+  void testDeltaTokenWithBothVersions() throws Exception {
     List<String> versions = new ArrayList<>();
     versions.add("4.01");
     versions.add("4.0");
@@ -1094,7 +1095,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
      } 
   
   @Test
-  public void emptynavigationToManyInDeltaEntityInFullRepresentation() throws Exception {
+  void emptynavigationToManyInDeltaEntityInFullRepresentation() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(2);
@@ -1116,7 +1117,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
      }
   
   @Test
-  public void emptynavigationToOneInDeltaEntityInFullRepresentation() throws Exception {
+  void emptynavigationToOneInDeltaEntityInFullRepresentation() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(1);
@@ -1138,7 +1139,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
      }
   
   @Test
-  public void nullnavigationToOneInDeltaEntityInFullRepresentation() throws Exception {
+  void nullnavigationToOneInDeltaEntityInFullRepresentation() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(4);
@@ -1160,7 +1161,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
      }
   
   @Test
-  public void nullnavigationToManyInDeltaEntityInFullRepresentation() throws Exception {
+  void nullnavigationToManyInDeltaEntityInFullRepresentation() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(4);
@@ -1182,7 +1183,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
      }
   
   @Test
-  public void testIdAnnotationWithNavigationOneInDelta() throws Exception {
+  void testIdAnnotationWithNavigationOneInDelta() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
@@ -1214,7 +1215,7 @@ public class JsonDeltaSerializerWithNavigationsTest {
      }
   
   @Test
-  public void testIdAnnotationWithNavigationManyInDelta() throws Exception {
+  void testIdAnnotationWithNavigationManyInDelta() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESDelta");
     Delta delta = new Delta();
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(1);

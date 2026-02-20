@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.cud;
 
@@ -38,10 +40,10 @@ import org.sitenetsoft.olinguito.client.core.domain.ClientPropertyImpl;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.junit.jupiter.api.Test;
 
-public class ODataRequestImplTest {
+class ODataRequestImplTest {
 
   @Test
-  public void testdel() throws URISyntaxException{
+  void testdel() throws URISyntaxException{
     ODataClientImpl client = (ODataClientImpl) ODataClientFactory.getClient();
     URI uri = new URI("test");
     assertNotNull(client);
@@ -55,7 +57,7 @@ public class ODataRequestImplTest {
     }
   
   @Test
-  public void testcreate() throws URISyntaxException{
+  void testcreate() throws URISyntaxException{
     ODataClientImpl client = (ODataClientImpl) ODataClientFactory.getClient();
     URI uri = new URI("test");
     assertNotNull(client);
@@ -71,7 +73,7 @@ public class ODataRequestImplTest {
     }
   
   @Test
-  public void testUpdate() throws URISyntaxException{
+  void testUpdate() throws URISyntaxException{
     ODataClientImpl client = (ODataClientImpl) ODataClientFactory.getClient();
     URI uri = new URI("test");
     assertNotNull(client);
@@ -88,7 +90,7 @@ public class ODataRequestImplTest {
     }
   
   @Test
-  public void testUpdatePropColl() throws URISyntaxException{
+  void testUpdatePropColl() throws URISyntaxException{
     ODataClientImpl client = (ODataClientImpl) ODataClientFactory.getClient();
     URI uri = new URI("test");
     assertNotNull(client);
@@ -104,7 +106,7 @@ public class ODataRequestImplTest {
     }
   
   @Test
-  public void testUpdatePropComplex() throws URISyntaxException{
+  void testUpdatePropComplex() throws URISyntaxException{
     ODataClientImpl client = (ODataClientImpl) ODataClientFactory.getClient();
     URI uri = new URI("test");
     assertNotNull(client);
@@ -120,7 +122,7 @@ public class ODataRequestImplTest {
     }
   
   @Test
-  public void testUpdate2() throws URISyntaxException{
+  void testUpdate2() throws URISyntaxException{
     ODataClientImpl client = (ODataClientImpl) ODataClientFactory.getClient();
     URI uri = new URI("test");
     assertNotNull(client);
@@ -137,7 +139,7 @@ public class ODataRequestImplTest {
     }
   
   @Test
-  public void testRef() throws URISyntaxException{
+  void testRef() throws URISyntaxException{
     ODataClientImpl client = (ODataClientImpl) ODataClientFactory.getClient();
     URI uri = new URI("test");
     assertNotNull(client);

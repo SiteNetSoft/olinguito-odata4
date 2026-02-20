@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -37,7 +39,7 @@ import org.junit.jupiter.api.Test;
  * Generic test for all exceptions which inherit from ODataTranslatedException
  * if their MessageKeys are available in the resource bundle and the parameters are replaced.
  */
-public class TranslatedExceptionSubclassesTest {
+class TranslatedExceptionSubclassesTest {
 
   private final Properties properties;
 
@@ -49,7 +51,7 @@ public class TranslatedExceptionSubclassesTest {
   }
 
   @Test
-  public void messageKeysValid() throws Exception {
+  void messageKeysValid() throws Exception {
     testException(ODataHandlerException.class, ODataHandlerException.MessageKeys.values());
     testException(UriParserSemanticException.class, UriParserSemanticException.MessageKeys.values());
     testException(UriParserSyntaxException.class, UriParserSyntaxException.MessageKeys.values());

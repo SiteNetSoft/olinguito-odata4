@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced printStackTrace with SLF4J logging
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.example;
 
@@ -73,7 +74,7 @@ import org.sitenetsoft.olinguito.server.core.responses.StreamResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TripPinHandler implements ServiceHandler {
+class TripPinHandler implements ServiceHandler {
   private static final Logger LOG = LoggerFactory.getLogger(TripPinHandler.class);
   private OData odata;
   private ServiceMetadata serviceMetadata;

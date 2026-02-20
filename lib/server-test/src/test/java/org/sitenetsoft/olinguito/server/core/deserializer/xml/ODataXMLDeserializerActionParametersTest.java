@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Improved test assertions
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.xml;
 
@@ -44,7 +45,7 @@ import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException.M
 import org.sitenetsoft.olinguito.server.core.deserializer.AbstractODataDeserializerTest;
 import org.junit.jupiter.api.Test;
 
-public class ODataXMLDeserializerActionParametersTest extends AbstractODataDeserializerTest {
+class ODataXMLDeserializerActionParametersTest extends AbstractODataDeserializerTest {
 
   private static final String PREAMBLE = "<?xml version='1.0' encoding='UTF-8'?>"
       + "<metadata:parameters xmlns:data=\"" + Constants.NS_DATASERVICES + "\""
@@ -52,14 +53,14 @@ public class ODataXMLDeserializerActionParametersTest extends AbstractODataDeser
   private static final String POSTAMBLE = "</metadata:parameters>";
 
   @Test
-  public void empty() throws Exception {
+  void empty() throws Exception {
     final Map<String, Parameter> parameters = deserialize(PREAMBLE + POSTAMBLE, "UART", null);
     assertNotNull(parameters);
     assertTrue(parameters.isEmpty());
   }
 
   @Test
-  public void primitive() throws Exception {
+  void primitive() throws Exception {
     final String input = PREAMBLE
         + "<data:ParameterDuration>P42DT11H22M33S</data:ParameterDuration>"
         + "<data:ParameterInt16>42</data:ParameterInt16>"
@@ -77,7 +78,7 @@ public class ODataXMLDeserializerActionParametersTest extends AbstractODataDeser
   }
 
   @Test
-  public void primitiveCollection() throws Exception {
+  void primitiveCollection() throws Exception {
     final Parameter parameter = deserializeUARTByteNineParam("CollParameterByte",
         "<metadata:element>0</metadata:element>"
         + "<metadata:element>42</metadata:element>"
@@ -91,7 +92,7 @@ public class ODataXMLDeserializerActionParametersTest extends AbstractODataDeser
   }
 
   @Test
-  public void enumeration() throws Exception {
+  void enumeration() throws Exception {
     final Parameter parameter = deserializeUARTByteNineParam("ParameterEnum", "String3,String1");
     assertTrue(parameter.isEnum());
     assertFalse(parameter.isCollection());
@@ -99,7 +100,7 @@ public class ODataXMLDeserializerActionParametersTest extends AbstractODataDeser
   }
 
   @Test
-  public void enumCollection() throws Exception {
+  void enumCollection() throws Exception {
     final Parameter parameter = deserializeUARTByteNineParam("CollParameterEnum",
         "<metadata:element>String1,String2</metadata:element>"
         + "<metadata:element>String3,String3,String3</metadata:element>");
@@ -110,7 +111,7 @@ public class ODataXMLDeserializerActionParametersTest extends AbstractODataDeser
   }
 
   @Test
-  public void typeDefinition() throws Exception {
+  void typeDefinition() throws Exception {
     final Parameter parameter = deserializeUARTByteNineParam("ParameterDef", "Test String");
     assertTrue(parameter.isPrimitive());
     assertFalse(parameter.isCollection());
@@ -118,7 +119,7 @@ public class ODataXMLDeserializerActionParametersTest extends AbstractODataDeser
   }
 
   @Test
-  public void typeDefinitionCollection() throws Exception {
+  void typeDefinitionCollection() throws Exception {
     final Parameter parameter = deserializeUARTByteNineParam("CollParameterDef",
         "<metadata:element>Test String</metadata:element>"
         + "<metadata:element>Another String</metadata:element>");
@@ -129,7 +130,7 @@ public class ODataXMLDeserializerActionParametersTest extends AbstractODataDeser
   }
 
   @Test
-  public void complex() throws Exception {
+  void complex() throws Exception {
     final Parameter parameter = deserializeUARTByteNineParam("ParameterComp",
         "<data:PropertyInt16>42</data:PropertyInt16>    <data:PropertyString>Yes</data:PropertyString>");
     assertNotNull(parameter);
@@ -141,7 +142,7 @@ public class ODataXMLDeserializerActionParametersTest extends AbstractODataDeser
   }
 
   @Test
-  public void complexCollection() throws Exception {
+  void complexCollection() throws Exception {
     final Parameter parameter = deserializeUARTByteNineParam("CollParameterComp",
         "<metadata:element>"
         + "<data:PropertyInt16>9999</data:PropertyInt16><data:PropertyString>One</data:PropertyString>"
@@ -161,7 +162,7 @@ public class ODataXMLDeserializerActionParametersTest extends AbstractODataDeser
   }
 
   @Test
-  public void boundEmpty() throws Exception {
+  void boundEmpty() throws Exception {
     final Map<String, Parameter> parameters = deserialize(PREAMBLE + POSTAMBLE,
         "BAETAllPrimRT", "ETAllPrim");
     assertNotNull(parameters);
@@ -169,7 +170,7 @@ public class ODataXMLDeserializerActionParametersTest extends AbstractODataDeser
   }
 
   @Test
-  public void parameterWithNullLiteral() throws Exception {
+  void parameterWithNullLiteral() throws Exception {
     final String input = PREAMBLE
         + "<data:ParameterInt16>1</data:ParameterInt16>"
         + "<data:ParameterDuration metadata:null=\"true\" />"
@@ -186,30 +187,30 @@ public class ODataXMLDeserializerActionParametersTest extends AbstractODataDeser
   }
 
   @Test
-  public void bindingParameter() throws Exception {
+  void bindingParameter() throws Exception {
     final String input = PREAMBLE + "<data:ParameterETAllPrim>1</data:ParameterETAllPrim>" + POSTAMBLE;
     deserialize(input, "BAETAllPrimRT", "ETAllPrim");
   }
 
   @Test
-  public void wrongName() throws Exception {
+  void wrongName() throws Exception {
     expectException(PREAMBLE + "<data:ParameterWrong>1</data:ParameterWrong>" + POSTAMBLE,
         "UARTParam", null, MessageKeys.UNKNOWN_CONTENT);
   }
 
   @Test
-  public void nullNotNullable() throws Exception {
+  void nullNotNullable() throws Exception {
     expectException(PREAMBLE + "<data:ParameterInt16>null</data:ParameterInt16>" + POSTAMBLE,
         "UARTCTTwoPrimParam", null, MessageKeys.INVALID_VALUE_FOR_PROPERTY);
   }
 
   @Test
-  public void missingParameter() throws Exception {
+  void missingParameter() throws Exception {
     expectException(PREAMBLE + POSTAMBLE, "UARTCTTwoPrimParam", null, MessageKeys.INVALID_NULL_PARAMETER);
   }
 
   @Test
-  public void parameterTwice() throws Exception {
+  void parameterTwice() throws Exception {
     expectException(PREAMBLE
         + "<data:ParameterInt16>1</data:ParameterInt16>"
         + "<data:ParameterInt16>2</data:ParameterInt16>"

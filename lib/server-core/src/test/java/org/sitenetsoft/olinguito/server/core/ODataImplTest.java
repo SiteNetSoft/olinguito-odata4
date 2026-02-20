@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -32,12 +34,12 @@ import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class ODataImplTest {
+class ODataImplTest {
 
   private final OData odata = OData.newInstance();
 
   @Test
-  public void serializerSupportedFormats() throws SerializerException {
+  void serializerSupportedFormats() throws SerializerException {
     assertNotNull(odata.createSerializer(ContentType.JSON_NO_METADATA));
     assertNotNull(odata.createSerializer(ContentType.JSON));
     assertNotNull(odata.createSerializer(ContentType.APPLICATION_JSON));
@@ -48,7 +50,7 @@ public class ODataImplTest {
   }
 
   @Test
-  public void deserializerSupportedFormats() throws DeserializerException {
+  void deserializerSupportedFormats() throws DeserializerException {
     assertNotNull(odata.createDeserializer(ContentType.JSON_NO_METADATA));
     assertNotNull(odata.createDeserializer(ContentType.JSON));
     assertNotNull(odata.createDeserializer(ContentType.JSON_FULL_METADATA));
@@ -63,12 +65,12 @@ public class ODataImplTest {
   }
   
   @Test
-  public void deserializerWithoutContentType() throws DeserializerException {
+  void deserializerWithoutContentType() throws DeserializerException {
       assertThrows(DeserializerException.class, () -> odata.createDeserializer(null));
   }
   
   @Test
-  public void deserializerWithoutContentTypeAndWithVersions() throws DeserializerException {
+  void deserializerWithoutContentTypeAndWithVersions() throws DeserializerException {
       assertThrows(DeserializerException.class, () -> {
           List<String> versions = new ArrayList<>();
           versions.add("4.01");
@@ -77,7 +79,7 @@ public class ODataImplTest {
   }
   
   @Test
-  public void deltaSerializer() throws SerializerException {
+  void deltaSerializer() throws SerializerException {
       assertThrows(SerializerException.class, () -> {
           List<String> versions = new ArrayList<>();
           versions.add("4.01");
@@ -86,12 +88,12 @@ public class ODataImplTest {
   }
   
   @Test
-  public void edmAssitedSerializer() throws SerializerException {
+  void edmAssitedSerializer() throws SerializerException {
       assertThrows(SerializerException.class, () -> odata.createEdmAssistedSerializer(null));
   }
   
   @Test
-  public void deserializer1() throws DeserializerException {
+  void deserializer1() throws DeserializerException {
       assertThrows(DeserializerException.class, () -> {
           List<String> versions = new ArrayList<>();
           versions.add("4.01");
@@ -100,13 +102,13 @@ public class ODataImplTest {
   }
   
   @Test
-  public void deserializer2() throws DeserializerException {
+  void deserializer2() throws DeserializerException {
       assertThrows(DeserializerException.class,
           () -> odata.createDeserializer(null, Mockito.mock(ServiceMetadata.class)));
   }
   
   @Test
-  public void serializerWithVersions() throws SerializerException {
+  void serializerWithVersions() throws SerializerException {
       assertThrows(SerializerException.class, () -> {
           List<String> versions = new ArrayList<>();
           versions.add("4.01");
@@ -115,12 +117,12 @@ public class ODataImplTest {
   }
   
   @Test
-  public void serializer() throws SerializerException {
+  void serializer() throws SerializerException {
       assertThrows(SerializerException.class, () -> odata.createSerializer(null));
   }
   
   @Test
-  public void edmAssistedSerializerWithVersion() throws SerializerException {
+  void edmAssistedSerializerWithVersion() throws SerializerException {
 	  List<String> versions = new ArrayList<>();
 	  versions.add("4.01");
 	  assertNotNull(odata.createEdmAssistedSerializer(ContentType.APPLICATION_JSON, versions));

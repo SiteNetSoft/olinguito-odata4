@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.debug;
 
@@ -27,10 +29,10 @@ import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.sitenetsoft.olinguito.server.api.ODataRequest;
 import org.junit.jupiter.api.Test;
 
-public class DebugTabRequestTest extends AbstractDebugTabTest {
+class DebugTabRequestTest extends AbstractDebugTabTest {
 
   @Test
-  public void initialRequestMustNotleadToException() throws Exception {
+  void initialRequestMustNotleadToException() throws Exception {
     String expectedJson = "{\"method\":\"unkown\",\"uri\":\"unkown\",\"protocol\":\"unkown\"}";
     String expectedHtml = "<h2>Request Method</h2>\n"
         + "<p>unkown</p>\n"
@@ -57,7 +59,7 @@ public class DebugTabRequestTest extends AbstractDebugTabTest {
   }
 
   @Test
-  public void onlyProtocolNotSet() throws Exception {
+  void onlyProtocolNotSet() throws Exception {
     String expectedJson = "{\"method\":\"GET\",\"uri\":\"def&\",\"protocol\":\"unkown\"}";
     String expectedHtml = "<h2>Request Method</h2>\n"
         + "<p>GET</p>\n"
@@ -84,7 +86,7 @@ public class DebugTabRequestTest extends AbstractDebugTabTest {
   }
 
   @Test
-  public void singleHeaderValue() throws Exception {
+  void singleHeaderValue() throws Exception {
     String expectedJson =
         "{\"method\":\"GET\",\"uri\":\"def&\",\"protocol\":\"def&\",\"headers\":{\"HeaderName\":\"Value1\"}}";
     String expectedHtml = "<h2>Request Method</h2>\n"
@@ -117,7 +119,7 @@ public class DebugTabRequestTest extends AbstractDebugTabTest {
   }
 
   @Test
-  public void multiHeaderValueResultsInMap() throws Exception {
+  void multiHeaderValueResultsInMap() throws Exception {
     String expectedJson = "{\"method\":\"GET\",\"uri\":\"def&\",\"protocol\":\"def&\","
         + "\"headers\":{\"HeaderName\":[\"Value1\",\"Value2\"]}}";
     String expectedHtml = "<h2>Request Method</h2>\n"

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -31,17 +33,17 @@ import org.sitenetsoft.olinguito.commons.core.edm.EdmAnnotationsImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class EdmAnnotationsImplTest {
+class EdmAnnotationsImplTest {
 
   private Edm edm;
 
   @BeforeEach
-  public void setupEdm() {
+  void setupEdm() {
     edm = mock(Edm.class);
   }
 
   @Test
-  public void initialAnnotationGroup() {
+  void initialAnnotationGroup() {
     CsdlAnnotations csdlAnnotationGroup = new CsdlAnnotations();
     EdmAnnotations annotationGroup = new EdmAnnotationsImpl(edm, csdlAnnotationGroup);
 
@@ -53,7 +55,7 @@ public class EdmAnnotationsImplTest {
   }
 
   @Test
-  public void annotationGroupWithQualifierAndPathButNonValidTarget() {
+  void annotationGroupWithQualifierAndPathButNonValidTarget() {
     CsdlAnnotations csdlAnnotationGroup = new CsdlAnnotations();
     csdlAnnotationGroup.setQualifier("qualifier");
     csdlAnnotationGroup.setTarget("invalid.invalid");

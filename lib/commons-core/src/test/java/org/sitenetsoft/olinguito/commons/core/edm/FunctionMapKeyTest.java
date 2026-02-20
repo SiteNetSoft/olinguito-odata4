@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
@@ -27,14 +29,14 @@ import java.util.List;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.junit.jupiter.api.Test;
 
-public class FunctionMapKeyTest {
+class FunctionMapKeyTest {
 
   private final FullQualifiedName fqn = new FullQualifiedName("namespace", "name");
 
   private final FullQualifiedName fqnType = new FullQualifiedName("namespace2", "name2");
 
   @Test
-  public void testEqualsPositive() {
+  void testEqualsPositive() {
     FunctionMapKey key = new FunctionMapKey(fqn, null, null, null);
     FunctionMapKey someKey = new FunctionMapKey(fqn, null, null, null);
     assertEquals(key, someKey);
@@ -77,7 +79,7 @@ public class FunctionMapKeyTest {
   }
 
   @Test
-  public void testEqualsNegative() {
+  void testEqualsNegative() {
     FunctionMapKey key = new FunctionMapKey(fqn, null, null, null);
     FunctionMapKey someKey = new FunctionMapKey(fqn, null, true, null);
     assertNotSame(key, someKey);
@@ -139,7 +141,7 @@ public class FunctionMapKeyTest {
   }
 
   @Test
-  public void testHashCodePositive() {
+  void testHashCodePositive() {
     FunctionMapKey key = new FunctionMapKey(fqn, null, null, null);
     FunctionMapKey someKey = new FunctionMapKey(fqn, null, null, null);
     assertEquals(key.hashCode(), someKey.hashCode());
@@ -202,7 +204,7 @@ public class FunctionMapKeyTest {
   }
 
   @Test
-  public void testHashCodeNegative() {
+  void testHashCodeNegative() {
     FunctionMapKey key = new FunctionMapKey(fqn, null, null, null);
     FunctionMapKey someKey = new FunctionMapKey(fqn, null, true, null);
     assertNotSame(key.hashCode(), someKey.hashCode());

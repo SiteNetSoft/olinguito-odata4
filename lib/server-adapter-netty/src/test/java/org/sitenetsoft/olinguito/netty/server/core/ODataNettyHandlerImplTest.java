@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.netty.server.core;
 
@@ -33,10 +34,10 @@ import org.junit.jupiter.api.Test;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
 
-public class ODataNettyHandlerImplTest {
+class ODataNettyHandlerImplTest {
 
   @Test
-  public void extractMethodForNettyRequest() throws Exception {
+  void extractMethodForNettyRequest() throws Exception {
     String[][] mm = {
         { "GET", null, null, "GET" },
         { "GET", "xxx", "yyy", "GET" },
@@ -71,7 +72,7 @@ public class ODataNettyHandlerImplTest {
   }
   
   @Test
-  public void extractMethodFailForNettyRequest() throws Exception {
+  void extractMethodFailForNettyRequest() throws Exception {
     String[][] mm = {
         { "POST", "bla", null },
         { "POST", "PUT", "PATCH" },
@@ -100,7 +101,7 @@ public class ODataNettyHandlerImplTest {
   }
   
   @Test
-  public void extractUriForNettyRequests() {
+  void extractUriForNettyRequests() {
 
     //@formatter:off (Eclipse formatter)
     //CHECKSTYLE:OFF (Maven checkstyle)

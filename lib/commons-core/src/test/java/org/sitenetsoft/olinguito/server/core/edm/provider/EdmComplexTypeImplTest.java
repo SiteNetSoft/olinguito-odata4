@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -44,14 +46,14 @@ import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class EdmComplexTypeImplTest {
+class EdmComplexTypeImplTest {
 
   private EdmComplexType baseType;
 
   private EdmComplexType type;
 
   @BeforeEach
-  public void setupTypes() throws Exception {
+  void setupTypes() throws Exception {
     CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
     EdmProviderImpl edm = new EdmProviderImpl(provider);
 
@@ -82,42 +84,42 @@ public class EdmComplexTypeImplTest {
   }
 
   @Test
-  public void noPropertiesAndNoNavPropertiesMustNotResultInException() {
+  void noPropertiesAndNoNavPropertiesMustNotResultInException() {
     EdmProviderImpl edm = mock(EdmProviderImpl.class);
     CsdlComplexType complexType = new CsdlComplexType().setName("n");
     new EdmComplexTypeImpl(edm, new FullQualifiedName("n", "n"), complexType);
   }
 
   @Test
-  public void typeMustBeCompatibletoBasetype() {
+  void typeMustBeCompatibletoBasetype() {
     assertTrue(type.compatibleTo(baseType));
   }
 
   @Test
-  public void baseTypeMustNotBeCompatibleToType() {
+  void baseTypeMustNotBeCompatibleToType() {
     assertFalse(baseType.compatibleTo(type));
   }
 
   @Test
-  public void nullForCompatibleTypeMustResultInEdmException() {
+  void nullForCompatibleTypeMustResultInEdmException() {
       assertThrows(EdmException.class, () -> assertFalse(type.compatibleTo(null)));
   }
 
   @Test
-  public void getBaseType() {
+  void getBaseType() {
     assertNull(baseType.getBaseType());
     assertNotNull(type.getBaseType());
   }
 
   @Test
-  public void propertiesBehaviour() {
+  void propertiesBehaviour() {
     List<String> propertyNames = baseType.getPropertyNames();
     assertEquals(1, propertyNames.size());
     assertEquals("prop1", baseType.getProperty("prop1").getName());
   }
 
   @Test
-  public void propertiesBehaviourWithBaseType() {
+  void propertiesBehaviourWithBaseType() {
     List<String> propertyNames = type.getPropertyNames();
     assertEquals(2, propertyNames.size());
     assertEquals("prop1", type.getProperty("prop1").getName());
@@ -125,14 +127,14 @@ public class EdmComplexTypeImplTest {
   }
 
   @Test
-  public void navigationPropertiesBehaviour() {
+  void navigationPropertiesBehaviour() {
     List<String> navigationPropertyNames = baseType.getNavigationPropertyNames();
     assertEquals(1, navigationPropertyNames.size());
     assertEquals("nav1", baseType.getProperty("nav1").getName());
   }
 
   @Test
-  public void navigationPropertiesBehaviourWithBaseType() {
+  void navigationPropertiesBehaviourWithBaseType() {
     List<String> navigationPropertyNames = type.getNavigationPropertyNames();
     assertEquals(2, navigationPropertyNames.size());
     assertEquals("nav1", type.getProperty("nav1").getName());
@@ -140,7 +142,7 @@ public class EdmComplexTypeImplTest {
   }
 
   @Test
-  public void propertyCaching() {
+  void propertyCaching() {
     EdmElement property = type.getProperty("prop1");
     assertTrue(property == type.getProperty("prop1"));
 
@@ -155,7 +157,7 @@ public class EdmComplexTypeImplTest {
   }
 
   @Test
-  public void nonExistingBaseType() throws Exception {
+  void nonExistingBaseType() throws Exception {
       assertThrows(EdmException.class, () -> {
           CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
           EdmProviderImpl edm = new EdmProviderImpl(provider);

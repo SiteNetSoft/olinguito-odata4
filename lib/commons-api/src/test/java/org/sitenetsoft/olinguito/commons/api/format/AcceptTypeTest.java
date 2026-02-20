@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.api.format;
 
@@ -29,10 +31,10 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 
-public class AcceptTypeTest {
+class AcceptTypeTest {
 
   @Test
-  public void wildcard() {
+  void wildcard() {
     List<AcceptType> atl = AcceptType.create("*/*");
 
     assertEquals(1, atl.size());
@@ -43,7 +45,7 @@ public class AcceptTypeTest {
   }
 
   @Test
-  public void wildcardSubtype() {
+  void wildcardSubtype() {
     List<AcceptType> atl = AcceptType.create("a/*");
 
     assertEquals(1, atl.size());
@@ -54,7 +56,7 @@ public class AcceptTypeTest {
   }
 
   @Test
-  public void singleAcceptType() {
+  void singleAcceptType() {
     assertTrue(AcceptType.create("a/a").get(0).matches(ContentType.create("a/a")));
     assertTrue(AcceptType.create("a/a;q=0.2").get(0).matches(ContentType.create("a/a")));
     assertFalse(AcceptType.create("a/a;x=y;q=0.2").get(0).matches(ContentType.create("a/a")));
@@ -65,7 +67,7 @@ public class AcceptTypeTest {
   }
 
   @Test
-  public void acceptTypes() {
+  void acceptTypes() {
     List<AcceptType> atl;
 
     atl = AcceptType.create("b/b,*/*,a/a,c/*");
@@ -102,7 +104,7 @@ public class AcceptTypeTest {
   }
 
   @Test
-  public void withQParameter() {
+  void withQParameter() {
     List<AcceptType> acceptTypes = AcceptType.create("application/json;q=0.2");
 
     assertEquals(1, acceptTypes.size());
@@ -116,7 +118,7 @@ public class AcceptTypeTest {
   }
 
   @Test
-  public void formatErrors() {
+  void formatErrors() {
     expectCreateError("/");
     expectCreateError("//");
     expectCreateError("///");
@@ -125,17 +127,17 @@ public class AcceptTypeTest {
   }
 
   @Test
-  public void abbreviationsNotAllowed() {
+  void abbreviationsNotAllowed() {
     expectCreateError("application");
   }
 
   @Test
-  public void wildcardError() {
+  void wildcardError() {
     expectCreateError("*/json");
   }
 
   @Test
-  public void wrongQParameter() {
+  void wrongQParameter() {
     expectCreateError(" a/a;q=z ");
     expectCreateError("a/a;q=42");
     expectCreateError("a/a;q=0.0001");
@@ -144,7 +146,7 @@ public class AcceptTypeTest {
   }
 
   @Test
-  public void parameterErrors() {
+  void parameterErrors() {
     expectCreateError("a/b;parameter");
     expectCreateError("a/b;parameter=");
     expectCreateError("a/b;name= value");
@@ -153,12 +155,12 @@ public class AcceptTypeTest {
   }
 
   @Test
-  public void trailingSemicolon() {
+  void trailingSemicolon() {
     expectCreateError("a/b;");
   }
 
   @Test
-  public void fromContentType() {
+  void fromContentType() {
     final List<AcceptType> acceptType = AcceptType.fromContentType(ContentType.APPLICATION_JSON);
     assertNotNull(acceptType);
     assertEquals(1, acceptType.size());
@@ -175,7 +177,7 @@ public class AcceptTypeTest {
   }
   
   @Test
-  public void multipleTypeswithQParameter() {
+  void multipleTypeswithQParameter() {
     List<AcceptType> acceptTypes = AcceptType.create("application/json;q=0.2,application/json;q=0.2");
 
     assertEquals(2, acceptTypes.size());
@@ -189,7 +191,7 @@ public class AcceptTypeTest {
   }
   
   @Test
-  public void multipleTypeswithIllegalTypes() {
+  void multipleTypeswithIllegalTypes() {
     List<AcceptType> acceptTypes = AcceptType.create("application/json;q=0.2,abc/xyz");
 
     assertEquals(2, acceptTypes.size());
@@ -203,27 +205,27 @@ public class AcceptTypeTest {
   }
   
   @Test
-  public void multipleFormatErrors() {
+  void multipleFormatErrors() {
     expectCreateError("/,abc,a/a;parameter=");
   }
   
   @Test
-  public void nullAcceptType() {
+  void nullAcceptType() {
     expectCreateError(null);
   }
   
   @Test
-  public void emptyAcceptType() {
+  void emptyAcceptType() {
     expectCreateError("");
   }
   
   @Test
-  public void noTypeAcceptType() {
+  void noTypeAcceptType() {
     expectCreateError("/json");
   }
   
   @Test
-  public void withCharset() {
+  void withCharset() {
     List<AcceptType> acceptTypes = AcceptType.create("application/json;charset=utf-8");
     assertEquals(1, acceptTypes.size());
     final AcceptType acceptType = acceptTypes.get(0);
@@ -240,7 +242,7 @@ public class AcceptTypeTest {
   }
   
   @Test
-  public void withSubtypeStar1() {
+  void withSubtypeStar1() {
     List<AcceptType> acceptTypes = AcceptType.create("application/json,application/*");
     assertEquals(2, acceptTypes.size());
     final AcceptType acceptType1 = acceptTypes.get(0);
@@ -253,7 +255,7 @@ public class AcceptTypeTest {
   }
   
   @Test
-  public void withSubtypeStar2() {
+  void withSubtypeStar2() {
     List<AcceptType> acceptTypes = AcceptType.create("application/*,application/json");
     assertEquals(2, acceptTypes.size());
     final AcceptType acceptType1 = acceptTypes.get(0);

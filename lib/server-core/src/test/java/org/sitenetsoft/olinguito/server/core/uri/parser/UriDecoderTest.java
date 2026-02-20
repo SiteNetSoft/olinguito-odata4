@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -29,10 +30,10 @@ import java.util.List;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.QueryOption;
 import org.junit.jupiter.api.Test;
 
-public class UriDecoderTest {
+class UriDecoderTest {
 
   @Test
-  public void split() throws Exception {
+  void split() throws Exception {
     assertEquals(List.of(""), UriDecoder.splitAndDecodePath(""));
     assertEquals(List.of("", ""), UriDecoder.splitAndDecodePath("/"));
     assertEquals(List.of("a"), UriDecoder.splitAndDecodePath("a"));
@@ -44,13 +45,13 @@ public class UriDecoderTest {
   }
 
   @Test
-  public void path() throws Exception {
+  void path() throws Exception {
     assertEquals(List.of("a", "entitySet('/')", "bcd"),
         UriDecoder.splitAndDecodePath("a/entitySet('%2F')/b%63d"));
   }
 
   @Test
-  public void options() throws Exception {
+  void options() throws Exception {
     checkOption("", "", "");
 
     checkOption("a", "a", "");
@@ -79,7 +80,7 @@ public class UriDecoderTest {
   }
 
   @Test
-  public void wrongPercentEncoding() throws Exception {
+  void wrongPercentEncoding() throws Exception {
       assertThrows(UriParserSyntaxException.class, () -> UriDecoder.splitAndDecodePath("%wrong"));
   }
 

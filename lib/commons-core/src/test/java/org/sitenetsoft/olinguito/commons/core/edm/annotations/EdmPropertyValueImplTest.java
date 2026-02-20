@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.core.edm.annotations;
 
@@ -37,9 +39,9 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlPropert
 import org.sitenetsoft.olinguito.commons.core.edm.annotation.EdmPropertyValueImpl;
 import org.junit.jupiter.api.Test;
 
-public class EdmPropertyValueImplTest extends AbstractAnnotationTest {
+class EdmPropertyValueImplTest extends AbstractAnnotationTest {
   @Test
-  public void initialPropertyValue() {
+  void initialPropertyValue() {
     EdmPropertyValue asPropValue = new EdmPropertyValueImpl(mock(Edm.class), new CsdlPropertyValue());
     try {
       asPropValue.getProperty();
@@ -60,7 +62,7 @@ public class EdmPropertyValueImplTest extends AbstractAnnotationTest {
   }
 
   @Test
-  public void propertyValue() {
+  void propertyValue() {
     CsdlPropertyValue csdlPropertyValue = new CsdlPropertyValue();
     csdlPropertyValue.setProperty("property");
     csdlPropertyValue.setValue(new CsdlConstantExpression(ConstantExpressionType.String));

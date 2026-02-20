@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
  * Copyright 2026 SiteNetSoft - Replaced wildcard import with explicit imports
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.serializer;
 
@@ -37,7 +38,7 @@ import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
 import org.sitenetsoft.olinguito.server.api.serializer.SerializerStreamResult;
 import org.junit.jupiter.api.Test;
 
-public class FixedFormatSerializerTest {
+class FixedFormatSerializerTest {
 
   private final FixedFormatSerializer serializer;
 
@@ -46,25 +47,25 @@ public class FixedFormatSerializerTest {
   }
 
   @Test
-  public void binary() throws Exception {
+  void binary() throws Exception {
     assertEquals("ABC",
         new String(serializer.binary(new byte[] { 0x41, 0x42, 0x43 }).readAllBytes(), StandardCharsets.UTF_8));
   }
 
   @Test
-  public void count() throws Exception {
+  void count() throws Exception {
     assertEquals("42", new String(serializer.count(42).readAllBytes(), StandardCharsets.UTF_8));
   }
 
   @Test
-  public void primitiveValue() throws Exception {
+  void primitiveValue() throws Exception {
     final EdmPrimitiveType type = OData.newInstance().createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Int32);
     assertEquals("42", new String(serializer.primitiveValue(type, 42,
         PrimitiveValueSerializerOptions.with().nullable(true).build()).readAllBytes(), StandardCharsets.UTF_8));
   }
   
   @Test
-  public void binaryIntoStreamed() throws Exception {
+  void binaryIntoStreamed() throws Exception {
 	  EntityMediaObject mediaObject = new EntityMediaObject();
 	  mediaObject.setBytes(new byte[] { 0x41, 0x42, 0x43 });
 	  ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -73,7 +74,7 @@ public class FixedFormatSerializerTest {
   }
   
   @Test
-  public void mediaEntityStreamed() throws Exception {
+  void mediaEntityStreamed() throws Exception {
 	  EntityMediaObject mediaObject = new EntityMediaObject();
 	  mediaObject.setBytes(new byte[] { 0x41, 0x42, 0x43 });
 	  SerializerStreamResult result = serializer.mediaEntityStreamed(mediaObject);

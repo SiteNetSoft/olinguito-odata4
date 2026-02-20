@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -47,7 +48,7 @@ import org.sitenetsoft.olinguito.commons.core.edm.EdmEnumTypeImpl;
 import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmPrimitiveTypeFactory;
 import org.junit.jupiter.api.Test;
 
-public class EdmEnumTest {
+class EdmEnumTest {
 
   private final EdmEnumType instance;
   private final EdmEnumType otherInstance;
@@ -107,54 +108,54 @@ public class EdmEnumTest {
   }
 
   @Test
-  public void nameSpace() throws Exception {
+  void nameSpace() throws Exception {
     assertEquals("namespace", instance.getNamespace());
   }
 
   @Test
-  public void name() throws Exception {
+  void name() throws Exception {
     assertEquals("name", instance.getName());
   }
 
   @Test
-  public void kind() throws Exception {
+  void kind() throws Exception {
     assertEquals(EdmTypeKind.ENUM, instance.getKind());
   }
 
   @Test
-  public void compatibility() {
+  void compatibility() {
     assertTrue(instance.isCompatible(instance));
     assertTrue(instance.isCompatible(otherInstance));
     assertFalse(instance.isCompatible(instance.getUnderlyingType()));
   }
 
   @Test
-  public void defaultType() throws Exception {
+  void defaultType() throws Exception {
     assertEquals(Byte.class, instance.getDefaultType());
     assertEquals(Integer.class, int32FlagType.getUnderlyingType().getDefaultType());
   }
 
   @Test
-  public void members() throws Exception {
+  void members() throws Exception {
     assertArrayEquals(new String[] { "first", "second" }, instance.getMemberNames().toArray());
     assertEquals("64", otherInstance.getMember("second").getValue());
     assertNull(instance.getMember("notExisting"));
   }
 
   @Test
-  public void underlyingType() throws Exception {
+  void underlyingType() throws Exception {
     assertEquals(EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.SByte), instance.getUnderlyingType());
   }
 
   @Test
-  public void isFlags() throws Exception {
+  void isFlags() throws Exception {
     assertTrue(instance.isFlags());
     assertFalse(nonFlagsInstance.isFlags());
     assertFalse(int16EnumType.isFlags());
   }
 
   @Test
-  public void validate() throws Exception {
+  void validate() throws Exception {
     assertTrue(instance.validate(null, null, null, null, null, null));
     assertTrue(instance.validate(null, true, null, null, null, null));
     assertFalse(instance.validate(null, false, null, null, null, null));
@@ -168,13 +169,13 @@ public class EdmEnumTest {
   }
 
   @Test
-  public void toUriLiteral() throws Exception {
+  void toUriLiteral() throws Exception {
     assertNull(instance.toUriLiteral(null));
     assertEquals("namespace.name'first'", instance.toUriLiteral("first"));
   }
 
   @Test
-  public void fromUriLiteral() throws Exception {
+  void fromUriLiteral() throws Exception {
     assertNull(instance.fromUriLiteral(null));
     assertEquals("first", instance.fromUriLiteral("namespace.name'first'"));
     assertEquals("first", instance.fromUriLiteral("alias.name'first'"));
@@ -191,7 +192,7 @@ public class EdmEnumTest {
   }
 
   @Test
-  public void valueToString() throws Exception {
+  void valueToString() throws Exception {
     assertNull(instance.valueToString(null, null, null, null, null, null));
     assertNull(instance.valueToString(null, true, null, null, null, null));
     assertEquals("first", instance.valueToString(1, null, null, null, null, null));
@@ -221,7 +222,7 @@ public class EdmEnumTest {
   }
 
   @Test
-  public void valueOfString() throws Exception {
+  void valueOfString() throws Exception {
     assertNull(instance.valueOfString(null, null, null, null, null, null, Byte.class));
     assertNull(instance.valueOfString(null, true, null, null, null, null, Byte.class));
     assertEquals(Short.valueOf((short) 1), instance.valueOfString("1", null, null, null, null, null, Short.class));
@@ -280,7 +281,7 @@ public class EdmEnumTest {
   }
 
   @Test
-  public void unsupportedUnderlyingType() throws Exception {
+  void unsupportedUnderlyingType() throws Exception {
     // Test some random unsupported types.
     expectErrorInUnderlyingType(EdmPrimitiveTypeKind.Date);
     expectErrorInUnderlyingType(EdmPrimitiveTypeKind.GeographyPoint);
@@ -288,7 +289,7 @@ public class EdmEnumTest {
   }
 
   @Test
-  public void outOfRangeValueToString() throws Exception {
+  void outOfRangeValueToString() throws Exception {
     expectContentErrorInValueToString(int16EnumType, Integer.MAX_VALUE);
   }
 

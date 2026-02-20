@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.prefer;
 
@@ -37,10 +38,10 @@ import org.sitenetsoft.olinguito.server.api.prefer.Preferences.Preference;
 import org.sitenetsoft.olinguito.server.api.prefer.Preferences.Return;
 import org.junit.jupiter.api.Test;
 
-public class PreferencesTest {
+class PreferencesTest {
 
   @Test
-  public void empty() {
+  void empty() {
     final Preferences preferences = new PreferencesImpl(null);
     assertFalse(preferences.hasAllowEntityReferences());
     assertNull(preferences.getCallback());
@@ -53,7 +54,7 @@ public class PreferencesTest {
   }
 
   @Test
-  public void all() {
+  void all() {
     final Preferences preferences = new PreferencesImpl(Collections.singleton(
         "odata.allow-entityreferences, odata.callback;url=\"callbackURI\","
             + "odata.continue-on-error, odata.include-annotations=\"*\", odata.maxpagesize=42,"
@@ -74,7 +75,7 @@ public class PreferencesTest {
   }
 
   @Test
-  public void caseSensitivity() {
+  void caseSensitivity() {
     final Preferences preferences = new PreferencesImpl(Collections.singleton(
         "OData.Callback;URL=\"callbackURI\", return=REPRESENTATION, Wait=42"));
     assertEquals(URI.create("callbackURI"), preferences.getCallback());
@@ -83,7 +84,7 @@ public class PreferencesTest {
   }
 
   @Test
-  public void multipleValues() {
+  void multipleValues() {
     final Preferences preferences = new PreferencesImpl(Collections.singleton(
         ",return=minimal, ,, return=representation, wait=1, wait=2, wait=3,"));
     assertEquals(Return.MINIMAL, preferences.getReturn());
@@ -91,7 +92,7 @@ public class PreferencesTest {
   }
 
   @Test
-  public void multipleValuesDifferentHeaders() {
+  void multipleValuesDifferentHeaders() {
     final Preferences preferences = new PreferencesImpl(Arrays.asList(
         null, "",
         "return=representation, wait=1",
@@ -102,7 +103,7 @@ public class PreferencesTest {
   }
 
   @Test
-  public void multipleParameters() {
+  void multipleParameters() {
     final Preferences preferences = new PreferencesImpl(Collections.singleton(
         "preference=a;;b=c; d = e; f;; ; g; h=\"i\";, wait=42"));
     final Preference preference = preferences.getPreference("preference");
@@ -120,7 +121,7 @@ public class PreferencesTest {
   }
 
   @Test
-  public void quotedValue() {
+  void quotedValue() {
     final Preferences preferences = new PreferencesImpl(Collections.singleton(
         "strangePreference=\"x\\\\y,\\\"abc\\\"z\", wait=42"));
     assertEquals("x\\y,\"abc\"z", preferences.getPreference("strangePreference").getValue());
@@ -128,7 +129,7 @@ public class PreferencesTest {
   }
 
   @Test
-  public void specialCharacters() {
+  void specialCharacters() {
     final Preferences preferences = new PreferencesImpl(Collections.singleton(
         "!#$%&'*+-.^_`|~ = \"!#$%&'()*+,-./:;<=>?@[]^_`{|}~¡\u00FF\", wait=42"));
     assertEquals("!#$%&'()*+,-./:;<=>?@[]^_`{|}~¡\u00FF",
@@ -137,7 +138,7 @@ public class PreferencesTest {
   }
 
   @Test
-  public void wrongContent() {
+  void wrongContent() {
     final Preferences preferences = new PreferencesImpl(List.of(
         "odata.callback;url=\":\"",
         "odata.maxpagesize=12345678901234567890",
@@ -154,7 +155,7 @@ public class PreferencesTest {
   }
 
   @Test
-  public void wrongFormat() {
+  void wrongFormat() {
     final Preferences preferences = new PreferencesImpl(List.of(
         "return=, wait=1",
         "return=;, wait=2",

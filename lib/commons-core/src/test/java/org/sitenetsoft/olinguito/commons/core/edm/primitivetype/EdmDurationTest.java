@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
@@ -27,17 +29,17 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.junit.jupiter.api.Test;
 
-public class EdmDurationTest extends PrimitiveTypeBaseTest {
+class EdmDurationTest extends PrimitiveTypeBaseTest {
 
   private final EdmPrimitiveType instance = EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Duration);
 
   @Test
-  public void toUriLiteral() throws Exception {
+  void toUriLiteral() throws Exception {
     assertEquals("duration'P120D'", instance.toUriLiteral("P120D"));
   }
 
   @Test
-  public void fromUriLiteral() throws Exception {
+  void fromUriLiteral() throws Exception {
     assertEquals("P120D", instance.fromUriLiteral("duration'P120D'"));
 
     expectErrorInFromUriLiteral(instance, "");
@@ -46,7 +48,7 @@ public class EdmDurationTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void valueToString() throws Exception {
+  void valueToString() throws Exception {
     assertEquals("PT10S", instance.valueToString(BigDecimal.TEN, null, null, null, null, null));
     assertEquals("-PT10S", instance.valueToString(BigDecimal.TEN.negate(), null, null, null, null, null));
     assertEquals("PT10S", instance.valueToString(BigDecimal.TEN, null, null, null, null, null));
@@ -67,7 +69,7 @@ public class EdmDurationTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void valueOfString() throws Exception {
+  void valueOfString() throws Exception {
     assertEquals(BigDecimal.TEN, instance.valueOfString("PT10S", null, null, null, null, null, BigDecimal.class));
     assertEquals(BigDecimal.TEN.negate(), instance.valueOfString("-PT10S", null, null, null, null, null,
         BigDecimal.class));

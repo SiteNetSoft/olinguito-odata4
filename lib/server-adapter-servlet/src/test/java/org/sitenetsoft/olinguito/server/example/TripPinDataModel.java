@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced printStackTrace with SLF4J logging
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.example;
 
@@ -59,7 +60,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class TripPinDataModel {
+class TripPinDataModel {
   private static final Logger LOG = LoggerFactory.getLogger(TripPinDataModel.class);
   private final ServiceMetadata metadata;
   private HashMap<String, EntityCollection> entitySetMap = new HashMap<>();

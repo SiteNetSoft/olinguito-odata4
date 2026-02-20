@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.serializer.utils;
 
@@ -36,24 +38,24 @@ import org.sitenetsoft.olinguito.server.api.OData;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class ContextURLBuilderTest {
+class ContextURLBuilderTest {
 
   private static final URI serviceRoot = URI.create("http://host/service/");
 
   @Test
-  public void buildServiceDocument() {
+  void buildServiceDocument() {
     final ContextURL contextURL = ContextURL.with().serviceRoot(serviceRoot).build();
     assertEquals(serviceRoot + "$metadata", ContextURLBuilder.create(contextURL).toASCIIString());
   }
 
   @Test
-  public void buildRelative() {
+  void buildRelative() {
     final ContextURL contextURL = ContextURL.with().build();
     assertEquals("$metadata", ContextURLBuilder.create(contextURL).toASCIIString());
   }
 
   @Test
-  public void buildEntitySet() {
+  void buildEntitySet() {
     EdmEntitySet entitySet = Mockito.mock(EdmEntitySet.class);
     Mockito.when(entitySet.getName()).thenReturn("Customers");
     final ContextURL contextURL = ContextURL.with().serviceRoot(serviceRoot)
@@ -63,7 +65,7 @@ public class ContextURLBuilderTest {
   }
 
   @Test
-  public void buildDerivedEntitySet() {
+  void buildDerivedEntitySet() {
     EdmEntitySet entitySet = Mockito.mock(EdmEntitySet.class);
     Mockito.when(entitySet.getName()).thenReturn("Customers");
     EdmEntityType derivedType = Mockito.mock(EdmEntityType.class);
@@ -77,7 +79,7 @@ public class ContextURLBuilderTest {
   }
 
   @Test
-  public void buildEntitySetWithEntitySuffix() {
+  void buildEntitySetWithEntitySuffix() {
     EdmEntitySet entitySet = Mockito.mock(EdmEntitySet.class);
     Mockito.when(entitySet.getName()).thenReturn("Customers");
     final ContextURL contextURL = ContextURL.with().serviceRoot(serviceRoot)
@@ -89,7 +91,7 @@ public class ContextURLBuilderTest {
   }
 
   @Test
-  public void buildEntity() {
+  void buildEntity() {
     EdmEntityType entityType = mock(EdmEntityType.class);
     when(entityType.getFullQualifiedName()).thenReturn(new FullQualifiedName("namespace", "entityType"));
     ContextURL contextURL = ContextURL.with().serviceRoot(serviceRoot)
@@ -107,7 +109,7 @@ public class ContextURLBuilderTest {
   }
 
   @Test
-  public void buildDerivedEntitySetWithoutEntitySet() {
+  void buildDerivedEntitySetWithoutEntitySet() {
       assertThrows(IllegalArgumentException.class, () -> {
           EdmEntityType derivedType = Mockito.mock(EdmEntityType.class);
           Mockito.when(derivedType.getFullQualifiedName()).thenReturn(new FullQualifiedName("Model", "VipCustomer"));
@@ -116,7 +118,7 @@ public class ContextURLBuilderTest {
   }
 
   @Test
-  public void buildDerivedEntity() {
+  void buildDerivedEntity() {
     EdmEntitySet entitySet = Mockito.mock(EdmEntitySet.class);
     Mockito.when(entitySet.getName()).thenReturn("Customers");
     EdmEntityType derivedType = Mockito.mock(EdmEntityType.class);
@@ -131,7 +133,7 @@ public class ContextURLBuilderTest {
   }
 
   @Test
-  public void buildProperty() {
+  void buildProperty() {
     EdmEntitySet entitySet = Mockito.mock(EdmEntitySet.class);
     Mockito.when(entitySet.getName()).thenReturn("Customers");
     ContextURL contextURL = ContextURL.with().serviceRoot(serviceRoot)
@@ -153,7 +155,7 @@ public class ContextURLBuilderTest {
   }
 
   @Test
-  public void buildPrimitiveType() {
+  void buildPrimitiveType() {
     ContextURL contextURL = ContextURL.with().serviceRoot(serviceRoot)
         .type(OData.newInstance().createPrimitiveTypeInstance(EdmPrimitiveTypeKind.String))
         .build();
@@ -168,7 +170,7 @@ public class ContextURLBuilderTest {
   }
 
   @Test
-  public void buildComplexType() throws Exception {
+  void buildComplexType() throws Exception {
     EdmComplexType baseType = mock(EdmComplexType.class);
     when(baseType.getFullQualifiedName()).thenReturn(new FullQualifiedName("namespace", "BaseTypeName"));
 
@@ -187,19 +189,19 @@ public class ContextURLBuilderTest {
   }
 
   @Test
-  public void buildSuffixWithoutEntitySet() {
+  void buildSuffixWithoutEntitySet() {
       assertThrows(IllegalArgumentException.class,
           () -> ContextURLBuilder.create(ContextURL.with().suffix(Suffix.ENTITY).build()));
   }
 
   @Test
-  public void buildReference() {
+  void buildReference() {
     final ContextURL contextURL = ContextURL.with().suffix(Suffix.REFERENCE).build();
     assertEquals("../$metadata#$ref", ContextURLBuilder.create(contextURL).toASCIIString());
   }
 
   @Test
-  public void buildReferenceWithEntitySet() {
+  void buildReferenceWithEntitySet() {
       assertThrows(IllegalArgumentException.class, () -> {
           EdmEntitySet entitySet = mock(EdmEntitySet.class);
           when(entitySet.getName()).thenReturn("Customers");
@@ -208,7 +210,7 @@ public class ContextURLBuilderTest {
   }
 
   @Test
-  public void buildWithCharactersToBeEscaped() {
+  void buildWithCharactersToBeEscaped() {
     EdmEntitySet entitySet = Mockito.mock(EdmEntitySet.class);
     Mockito.when(entitySet.getName()).thenReturn("Entitäten");
     EdmEntityType derivedType = Mockito.mock(EdmEntityType.class);
@@ -220,7 +222,7 @@ public class ContextURLBuilderTest {
   }
   
   @Test
-  public void buildWithComplexDerivedTypeInSelect1() {
+  void buildWithComplexDerivedTypeInSelect1() {
     EdmEntitySet entitySet = Mockito.mock(EdmEntitySet.class);
     Mockito.when(entitySet.getName()).thenReturn("ESCompCollDerived");
     ContextURL contextURL = ContextURL.with().serviceRoot(serviceRoot)
@@ -233,7 +235,7 @@ public class ContextURLBuilderTest {
   }
   
   @Test
-  public void buildWithComplexDerivedTypeInSelect2() {
+  void buildWithComplexDerivedTypeInSelect2() {
     EdmEntitySet entitySet = Mockito.mock(EdmEntitySet.class);
     Mockito.when(entitySet.getName()).thenReturn("ESCompCollComp");
     ContextURL contextURL = ContextURL.with().serviceRoot(serviceRoot)
@@ -246,7 +248,7 @@ public class ContextURLBuilderTest {
   }
   
   @Test
-  public void buildWithNavPropertyInSelect() {
+  void buildWithNavPropertyInSelect() {
     EdmEntitySet entitySet = Mockito.mock(EdmEntitySet.class);
     Mockito.when(entitySet.getName()).thenReturn("ESTwoKeyNav");
     ContextURL contextURL = ContextURL.with().serviceRoot(serviceRoot)

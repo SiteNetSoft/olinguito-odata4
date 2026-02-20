@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Removed commented-out dead code
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core;
 
@@ -88,10 +89,10 @@ import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmInt32;
 import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmPrimitiveTypeFactory;
 import org.junit.jupiter.api.Test;
 
-public class MetadataTest extends AbstractTest {
+class MetadataTest extends AbstractTest {
 
   @Test
-  public void parse() {
+  void parse() {
     final Edm edm = client.getReader().readMetadata(getClass().getResourceAsStream("metadata.xml"));
     assertNotNull(edm);
 
@@ -152,7 +153,7 @@ public class MetadataTest extends AbstractTest {
   }
 
   @Test
-  public void demo() {
+  void demo() {
     final XMLMetadata metadata = client.getDeserializer(ContentType.APPLICATION_XML).
         toMetadata(getClass().getResourceAsStream("demo-metadata.xml"));
     assertNotNull(metadata);
@@ -193,7 +194,7 @@ public class MetadataTest extends AbstractTest {
   }
 
   @Test
-  public void multipleSchemas() {
+  void multipleSchemas() {
     final XMLMetadata metadata = client.getDeserializer(ContentType.APPLICATION_XML).
         toMetadata(getClass().getResourceAsStream("northwind-metadata.xml"));
     assertNotNull(metadata);
@@ -210,7 +211,7 @@ public class MetadataTest extends AbstractTest {
   }
 
   @Test
-  public void getContainerWithoutCallingGetSchemas() {
+  void getContainerWithoutCallingGetSchemas() {
     final XMLMetadata metadata = client.getDeserializer(ContentType.APPLICATION_XML).
         toMetadata(getClass().getResourceAsStream("fromdoc1-metadata.xml"));
 
@@ -223,7 +224,7 @@ public class MetadataTest extends AbstractTest {
    * Tests Example 85 from CSDL specification.
    */
   @Test
-  public void fromdoc1() {
+  void fromdoc1() {
     final XMLMetadata metadata = client.getDeserializer(ContentType.APPLICATION_XML).
         toMetadata(getClass().getResourceAsStream("fromdoc1-metadata.xml"));
     assertNotNull(metadata);
@@ -302,7 +303,7 @@ public class MetadataTest extends AbstractTest {
    * Tests Example 86 from CSDL specification.
    */
   @Test
-  public void fromdoc2() {
+  void fromdoc2() {
     final XMLMetadata metadata = client.getDeserializer(ContentType.APPLICATION_XML)
         .toMetadata(getClass().getResourceAsStream("fromdoc2-metadata.xml"));
     assertNotNull(metadata);
@@ -347,7 +348,7 @@ public class MetadataTest extends AbstractTest {
    * Various annotation examples taken from CSDL specification.
    */
   @Test
-  public void fromdoc3() {
+  void fromdoc3() {
     final Edm edm = client.getReader().readMetadata(getClass().getResourceAsStream("fromdoc3-metadata.xml"));
     assertNotNull(edm);
 
@@ -365,7 +366,7 @@ public class MetadataTest extends AbstractTest {
    * Various annotation examples taken from CSDL specification.
    */
   @Test
-  public void fromdoc4() {
+  void fromdoc4() {
     final XMLMetadata metadata = client.getDeserializer(ContentType.APPLICATION_XML).
         toMetadata(getClass().getResourceAsStream("fromdoc4-metadata.xml"));
     assertNotNull(metadata);
@@ -420,7 +421,7 @@ public class MetadataTest extends AbstractTest {
   }
 
   @Test
-  public void metadataWithCapabilities() throws Exception {
+  void metadataWithCapabilities() throws Exception {
     InputStream input = getClass().getResourceAsStream("Metadata-With-Capabilities.xml");
     final XMLMetadata metadata = client.getDeserializer(ContentType.APPLICATION_XML).toMetadata(input);
 
@@ -434,7 +435,7 @@ public class MetadataTest extends AbstractTest {
   }
   
   @Test
-  public void readPropertyAnnotations() {
+  void readPropertyAnnotations() {
     List<InputStream> streams = new ArrayList<>();
     streams.add(getClass().getResourceAsStream("VOC_Core.xml"));
     final Edm edm = client.getReader().readMetadata(getClass().getResourceAsStream("edmxWithCoreAnnotation.xml"),
@@ -470,7 +471,7 @@ public class MetadataTest extends AbstractTest {
     }
   }
   @Test
-  public void testOLINGO1100() {
+  void testOLINGO1100() {
     final Edm edm = client.getReader().readMetadata(getClass().getResourceAsStream("olingo1100.xml"));
     assertNotNull(edm);
     final EdmEntityContainer container = edm.getEntityContainer(
@@ -497,7 +498,7 @@ public class MetadataTest extends AbstractTest {
   }
   
   @Test
-  public void issueOLINGO1232() {
+  void issueOLINGO1232() {
     XMLMetadata xmlMetadata  = client.getDeserializer(ContentType.APPLICATION_XML).
     toMetadata(getClass().getResourceAsStream("caps.products.CatalogService_default.xml"));
     assertNotNull(xmlMetadata);
@@ -513,7 +514,7 @@ public class MetadataTest extends AbstractTest {
   }
   
   @Test
-  public void readPropertyAnnotationsTest() {
+  void readPropertyAnnotationsTest() {
     List<InputStream> streams = new ArrayList<>();
     streams.add(getClass().getResourceAsStream("VOC_Core.xml"));
     final Edm edm = client.getReader().readMetadata(getClass().getResourceAsStream("edmxWithCsdlAnnotationPath.xml"),
@@ -539,7 +540,7 @@ public class MetadataTest extends AbstractTest {
   }
   
   @Test
- public void readAnnotationOnAnEntityType() {
+ void readAnnotationOnAnEntityType() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);
    EdmEntityType entity = edm.getEntityTypeWithAnnotations(
@@ -577,7 +578,7 @@ public class MetadataTest extends AbstractTest {
  }
  
  @Test
- public void readAnnotationOnAProperty() {
+ void readAnnotationOnAProperty() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);
    EdmEntityType entity = edm.getEntityTypeWithAnnotations(
@@ -590,7 +591,7 @@ public class MetadataTest extends AbstractTest {
  }
 
  @Test
- public void readVariableFloatingDecimalProperty() {
+ void readVariableFloatingDecimalProperty() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);
    EdmEntityType entity = edm.getEntityTypeWithAnnotations(
@@ -607,7 +608,7 @@ public class MetadataTest extends AbstractTest {
  }
 
  @Test
- public void readAnnotationOnActionImport() {
+ void readAnnotationOnActionImport() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);
    EdmEntityContainer container = edm.getEntityContainer();
@@ -618,7 +619,7 @@ public class MetadataTest extends AbstractTest {
  }
  
  @Test
- public void readAnnotationOnASingleton() {
+ void readAnnotationOnASingleton() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);
    EdmEntityContainer container = edm.getEntityContainer();
@@ -639,7 +640,7 @@ public class MetadataTest extends AbstractTest {
  }
  
  @Test
- public void readAnnotationOnBoundFunction() {
+ void readAnnotationOnBoundFunction() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);
    List<String> parameterNames = new ArrayList<>();
@@ -666,7 +667,7 @@ public class MetadataTest extends AbstractTest {
  }
  
  @Test
- public void readAnnotationOnSchema() {
+ void readAnnotationOnSchema() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);
    EdmSchema schema = edm.getSchema("sepmra_so_man2_anno_mdl.v1");
@@ -682,7 +683,7 @@ public class MetadataTest extends AbstractTest {
  }
  
  @Test
- public void readAnnotationOnContainer() {
+ void readAnnotationOnContainer() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);
    EdmEntityContainer container = edm.getEntityContainer();
@@ -691,7 +692,7 @@ public class MetadataTest extends AbstractTest {
  }
  
  @Test
- public void readAnnotationOnComplexType() {
+ void readAnnotationOnComplexType() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);
    EdmComplexType complexType = edm.getComplexTypeWithAnnotations(
@@ -715,7 +716,7 @@ public class MetadataTest extends AbstractTest {
  }
  
  @Test
- public void readAnnotationOnTypeDefinitions() {
+ void readAnnotationOnTypeDefinitions() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);
    EdmTypeDefinition typeDefn = edm.getTypeDefinition(new FullQualifiedName("SEPMRA_SO_MAN2", "TDString"));
@@ -724,7 +725,7 @@ public class MetadataTest extends AbstractTest {
  }
  
  @Test
- public void readAnnotationOnBoundActions() {
+ void readAnnotationOnBoundActions() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);
    EdmAction action = edm.getBoundAction(new FullQualifiedName("SEPMRA_SO_MAN2", "BA_RTCountryVHType"),
@@ -744,7 +745,7 @@ public class MetadataTest extends AbstractTest {
  }
  
  @Test
- public void readAnnotationOnEntitySet() {
+ void readAnnotationOnEntitySet() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);
    EdmEntityContainer container = edm.getEntityContainer();
@@ -823,7 +824,7 @@ public class MetadataTest extends AbstractTest {
   }
 
   @Test
- public void readAnnotationOnFunctionImport() {
+ void readAnnotationOnFunctionImport() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);
    EdmEntityContainer container = edm.getEntityContainer();
@@ -838,7 +839,7 @@ public class MetadataTest extends AbstractTest {
  }
  
  @Test
- public void readAnnotationWithinMetadataFile() {
+ void readAnnotationWithinMetadataFile() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);
 
@@ -1030,7 +1031,7 @@ public class MetadataTest extends AbstractTest {
  }
  
  @Test
- public void readAnnotationWithAliasOnEntityTypesProperties() {
+ void readAnnotationWithAliasOnEntityTypesProperties() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);
    EdmEntityType entityType = edm.getEntityTypeWithAnnotations(new FullQualifiedName("Test.CDI_CDC_SOURCEResult"));
@@ -1058,7 +1059,7 @@ public class MetadataTest extends AbstractTest {
  }
  
  @Test
- public void readAnnotationWithAliasOnEntitySetProperties() {
+ void readAnnotationWithAliasOnEntitySetProperties() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);
    EdmEntityContainer container = edm.getEntityContainer();
@@ -1076,7 +1077,7 @@ public class MetadataTest extends AbstractTest {
  }
  
  @Test
- public void readAnnotationFetchingAllSingletons() {
+ void readAnnotationFetchingAllSingletons() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);
    EdmEntityContainer container = edm.getEntityContainer();
@@ -1090,7 +1091,7 @@ public class MetadataTest extends AbstractTest {
  }
  
  @Test
- public void readAnnotationFetchingAllActionImports() {
+ void readAnnotationFetchingAllActionImports() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);
    EdmEntityContainer container = edm.getEntityContainer();
@@ -1099,7 +1100,7 @@ public class MetadataTest extends AbstractTest {
  }
  
  @Test
- public void readAnnotationFetchingAllFunctionImports() {
+ void readAnnotationFetchingAllFunctionImports() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);
    EdmEntityContainer container = edm.getEntityContainer();
@@ -1113,7 +1114,7 @@ public class MetadataTest extends AbstractTest {
  }
  
  @Test
- public void readAnnotationFetchingAllEntitySets() {
+ void readAnnotationFetchingAllEntitySets() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);
    EdmEntityContainer container = edm.getEntityContainer();
@@ -1127,7 +1128,7 @@ public class MetadataTest extends AbstractTest {
  }
  
  @Test
- public void readAnnotationOnEnumTypes() {
+ void readAnnotationOnEnumTypes() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);
    EdmEnumType enumType = edm.getEnumType(new FullQualifiedName("SEPMRA_SO_MAN2.ENString"));
@@ -1140,7 +1141,7 @@ public class MetadataTest extends AbstractTest {
  }
  
  @Test
- public void readAnnotationOnFunction() {
+ void readAnnotationOnFunction() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);
    List<EdmFunction> function = edm.getUnboundFunctions(new FullQualifiedName("SEPMRA_SO_MAN2", "UFCRTCollString"));
@@ -1157,7 +1158,7 @@ public class MetadataTest extends AbstractTest {
  }
  
  @Test
- public void readAnnotationOnFunctionWithParameters() {
+ void readAnnotationOnFunctionWithParameters() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);
    List<String> paramNames = new ArrayList<>();
@@ -1184,7 +1185,7 @@ public class MetadataTest extends AbstractTest {
  }
  
  @Test
- public void readAnnotationOnAction() {
+ void readAnnotationOnAction() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);
    EdmAction action = edm.getUnboundAction(new FullQualifiedName("SEPMRA_SO_MAN2", "UARTString"));
@@ -1200,7 +1201,7 @@ public class MetadataTest extends AbstractTest {
  }
  
  @Test
- public void readAnnotationGroup() {
+ void readAnnotationGroup() {
    final Edm edm = fetchEdm();
    assertNotNull(edm);
    // Read annotations on annotation group within metadata file
@@ -1224,7 +1225,7 @@ public class MetadataTest extends AbstractTest {
  }
  
  @Test
- public void metadataWithEmptyCollection() throws Exception {
+ void metadataWithEmptyCollection() throws Exception {
    InputStream input = getClass().getResourceAsStream("empty-collection-metadata.xml");
    final XMLMetadata metadata = client.getDeserializer(ContentType.APPLICATION_XML).toMetadata(input);
 

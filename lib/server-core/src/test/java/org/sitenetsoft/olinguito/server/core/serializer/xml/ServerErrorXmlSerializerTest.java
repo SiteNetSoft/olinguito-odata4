@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
@@ -35,7 +36,7 @@ import org.sitenetsoft.olinguito.server.api.serializer.ODataSerializer;
 import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
 import org.junit.jupiter.api.Test;
 
-public class ServerErrorXmlSerializerTest {
+class ServerErrorXmlSerializerTest {
 
   final ODataSerializer ser;
 
@@ -44,7 +45,7 @@ public class ServerErrorXmlSerializerTest {
   }
 
   @Test
-  public void basicODataErrorWithCode() throws Exception {
+  void basicODataErrorWithCode() throws Exception {
     ODataServerError error = new ODataServerError();
     error.setCode("Code").setMessage("ErrorMessage");
     InputStream stream = ser.error(error).getContent();
@@ -58,12 +59,12 @@ public class ServerErrorXmlSerializerTest {
   }
 
   @Test
-  public void nullErrorResultsInException() throws Exception {
+  void nullErrorResultsInException() throws Exception {
       assertThrows(SerializerException.class, () -> ser.error(null));
   }
 
   @Test
-  public void singleDetailNothingSet() throws Exception {
+  void singleDetailNothingSet() throws Exception {
     ODataServerError error = new ODataServerError()
     .setCode("code")
     .setMessage("err message")

@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Improved test assertions
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core;
 
@@ -37,7 +38,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmException;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.junit.jupiter.api.Test;
 
-public class MetadataValidationTest extends AbstractTest {
+class MetadataValidationTest extends AbstractTest {
   public static final String wrongBindingTarget = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
       + "<edmx:Edmx Version=\"4.0\" "
       + "xmlns:edmx=\"http://docs.oasis-open.org/odata/ns/edmx\">"
@@ -687,7 +688,7 @@ public class MetadataValidationTest extends AbstractTest {
 			+"</edmx:Edmx>";
   
   @Test
-  public void testXMLMetadataWithOneSchema() {
+  void testXMLMetadataWithOneSchema() {
     final XMLMetadata metadata = client.getDeserializer(ContentType.APPLICATION_XML).
         toMetadata(getClass().getResourceAsStream("metadata.xml"));
     assertNotNull(metadata);
@@ -696,7 +697,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testXMLMetadataWithTwoSchemas() {
+  void testXMLMetadataWithTwoSchemas() {
     final XMLMetadata metadata = client.getDeserializer(ContentType.APPLICATION_XML).
         toMetadata(getClass().getResourceAsStream("northwind-metadata.xml"));
     assertNotNull(metadata);
@@ -705,7 +706,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void checkValidV4XMLMetadataWithTwoSchemas() {
+  void checkValidV4XMLMetadataWithTwoSchemas() {
     final XMLMetadata metadata = client.getDeserializer(ContentType.APPLICATION_XML).
         toMetadata(getClass().getResourceAsStream("northwind-metadata.xml"));
     assertNotNull(metadata);
@@ -718,7 +719,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void checkInValidV4XMLMetadataWithTwoSchemas() {
+  void checkInValidV4XMLMetadataWithTwoSchemas() {
     
     boolean checkException = false;
     try {
@@ -737,7 +738,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void checkInValidV4XMLMetadataWithNoSchemas() {
+  void checkInValidV4XMLMetadataWithNoSchemas() {
 	  boolean checkException = false;
     try {
       InputStream stream = new ByteArrayInputStream(invalidV4MetadataWithNoSchema.getBytes("UTF-8"));
@@ -757,7 +758,7 @@ public class MetadataValidationTest extends AbstractTest {
   
   
   @Test
-  public void checkInValidV4XMLMetadataWithNoSchemasample() {
+  void checkInValidV4XMLMetadataWithNoSchemasample() {
 	  boolean checkException = false;
     try {
       InputStream stream = new ByteArrayInputStream(validMetadataWithMultipleSchemaNamespaces.getBytes("UTF-8"));
@@ -775,7 +776,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void checkInValidV4XMLMetadataWithV2Schemas() {
+  void checkInValidV4XMLMetadataWithV2Schemas() {
 	
     try {
       InputStream stream = new ByteArrayInputStream(invalidV4MetadataWithV2Schemas.getBytes("UTF-8"));
@@ -794,7 +795,7 @@ public class MetadataValidationTest extends AbstractTest {
   
   
   @Test
-  public void testIfV4Service() {
+  void testIfV4Service() {
     final XMLMetadata metadata = client.getDeserializer(ContentType.APPLICATION_XML).
         toMetadata(getClass().getResourceAsStream("northwind-metadata.xml"));
     assertNotNull(metadata);
@@ -803,7 +804,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
 
   @Test
-  public void testIfV4ServiceWithNoEntityContainer() {
+  void testIfV4ServiceWithNoEntityContainer() {
 	  try{
 		  InputStream stream = new ByteArrayInputStream(V4MetadataWithNoEntityContainer.getBytes("UTF-8"));
 	      final XMLMetadata metadata = client.getDeserializer(ContentType.APPLICATION_XML).
@@ -819,7 +820,7 @@ public class MetadataValidationTest extends AbstractTest {
 
   }
   @Test
-  public void testXMLMetadataWithTripInService() {
+  void testXMLMetadataWithTripInService() {
     final XMLMetadata metadata = client.getDeserializer(ContentType.APPLICATION_XML).
         toMetadata(getClass().getResourceAsStream("metadata_TripInService.xml"));
     assertNotNull(metadata);
@@ -828,7 +829,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testXMLMetadataWithDiffNavBindingPath() {
+  void testXMLMetadataWithDiffNavBindingPath() {
     final XMLMetadata metadata = client.getDeserializer(ContentType.APPLICATION_XML).
         toMetadata(getClass().getResourceAsStream("metadata_1.xml"));
     assertNotNull(metadata);
@@ -837,7 +838,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testXMLMetadataWithDiffNavBindingTarget() {
+  void testXMLMetadataWithDiffNavBindingTarget() {
     final XMLMetadata metadata = client.getDeserializer(ContentType.APPLICATION_XML).
         toMetadata(getClass().getResourceAsStream("metadata_2.xml"));
     assertNotNull(metadata);
@@ -846,7 +847,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testXMLMetadataWithAliasNamespaceMapping() {
+  void testXMLMetadataWithAliasNamespaceMapping() {
     final XMLMetadata metadata = client.getDeserializer(ContentType.APPLICATION_XML).
         toMetadata(getClass().getResourceAsStream("metadata_3.xml"));
     assertNotNull(metadata);
@@ -855,7 +856,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testEdmWithOneSchema() {
+  void testEdmWithOneSchema() {
     final Edm edm = client.getReader().readMetadata(getClass().getResourceAsStream("metadata.xml"));
     assertNotNull(edm);
     ODataMetadataValidation metadataValidator = client.metadataValidation();
@@ -863,7 +864,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testEdmWithWithTripInService() {
+  void testEdmWithWithTripInService() {
     final Edm edm = client.getReader().readMetadata(getClass().
         getResourceAsStream("metadata_TripInService.xml"));
     assertNotNull(edm);
@@ -872,7 +873,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testEdmWithDiffNavBindingPath() {
+  void testEdmWithDiffNavBindingPath() {
     final Edm edm = client.getReader().readMetadata(getClass().
         getResourceAsStream("metadata_1.xml"));
     assertNotNull(edm);
@@ -881,7 +882,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testEdmWithDiffNavBindingTarget() {
+  void testEdmWithDiffNavBindingTarget() {
     final Edm edm = client.getReader().readMetadata(getClass().
         getResourceAsStream("metadata_2.xml"));
     assertNotNull(edm);
@@ -890,7 +891,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testEdmWithAliasNamespaceMapping() {
+  void testEdmWithAliasNamespaceMapping() {
     final Edm edm = client.getReader().readMetadata(getClass().
         getResourceAsStream("metadata_3.xml"));
     assertNotNull(edm);
@@ -899,7 +900,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testEdmWithTwoSchema() {
+  void testEdmWithTwoSchema() {
     final Edm edm = client.getReader().readMetadata(getClass().
         getResourceAsStream("northwind-metadata.xml"));
     assertNotNull(edm);
@@ -908,7 +909,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test 
-  public void testWrongEdm1() throws UnsupportedEncodingException {
+  void testWrongEdm1() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(wrongBindingTarget.getBytes("UTF-8"));
       final Edm edm = client.getReader().readMetadata(stream);
@@ -926,7 +927,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testInvalidFunction() throws UnsupportedEncodingException {
+  void testInvalidFunction() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(invalidFunction.getBytes("UTF-8"));
       final Edm edm = client.getReader().readMetadata(stream);
@@ -941,7 +942,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testInvalidFunctionInXMLMetadata1() throws UnsupportedEncodingException {
+  void testInvalidFunctionInXMLMetadata1() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(invalidFunction.getBytes("UTF-8"));
       final XMLMetadata metadata = client.getDeserializer(ContentType.APPLICATION_XML).
@@ -957,7 +958,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testInvalidActionInXMLMetadata1() throws UnsupportedEncodingException {
+  void testInvalidActionInXMLMetadata1() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(invalidAction.getBytes("UTF-8"));
       final XMLMetadata metadata = client.getDeserializer(ContentType.APPLICATION_XML).
@@ -973,7 +974,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testWrongXMLMetadata1() throws UnsupportedEncodingException {
+  void testWrongXMLMetadata1() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(wrongBindingTarget.getBytes("UTF-8"));
       final XMLMetadata metadata = client.getDeserializer(ContentType.APPLICATION_XML).
@@ -992,7 +993,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test 
-  public void testWrongEdm2() throws UnsupportedEncodingException {
+  void testWrongEdm2() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(xmlWithNonKeyEntity.getBytes("UTF-8"));
       final Edm edm = client.getReader().readMetadata(stream);
@@ -1007,7 +1008,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test 
-  public void testWrongEdm3() throws UnsupportedEncodingException {
+  void testWrongEdm3() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(
           xmlWithWrongNamespaceInBindingPath.getBytes("UTF-8"));
@@ -1024,7 +1025,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testWrongEdm4() throws UnsupportedEncodingException {
+  void testWrongEdm4() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(
           xmlWithWrongComplexBaseType.getBytes("UTF-8"));
@@ -1041,7 +1042,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testWrongEdm5() throws UnsupportedEncodingException {
+  void testWrongEdm5() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(
           xmlWithNonKeyEntity1.getBytes("UTF-8"));
@@ -1057,7 +1058,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testWrongEdm6() throws UnsupportedEncodingException {
+  void testWrongEdm6() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(
           xmlWithIncorrectReferentialConstraint1.getBytes("UTF-8"));
@@ -1073,7 +1074,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testWrongEdm7() throws UnsupportedEncodingException {
+  void testWrongEdm7() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(
           xmlWithIncorrectReferentialConstraint2.getBytes("UTF-8"));
@@ -1089,7 +1090,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testEdmWithBaseEntityAsBindingTarget() throws UnsupportedEncodingException {
+  void testEdmWithBaseEntityAsBindingTarget() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(
           xmlWithBaseEntityAsBindingTarget.getBytes("UTF-8"));
@@ -1103,7 +1104,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testEdmWithBasicXML() throws UnsupportedEncodingException {
+  void testEdmWithBasicXML() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(
           basicXml.getBytes("UTF-8"));
@@ -1117,7 +1118,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testEdmWithActionAndFunctionImportXML() throws UnsupportedEncodingException {
+  void testEdmWithActionAndFunctionImportXML() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(
           basicActionImportAndFunctionImport.getBytes("UTF-8"));
@@ -1131,7 +1132,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testEdmWithNavPropInBaseType() throws UnsupportedEncodingException {
+  void testEdmWithNavPropInBaseType() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(
           xmlWithNavPropInBaseType.getBytes("UTF-8"));
@@ -1145,7 +1146,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testEdmWithtestEdmWithActionAndFunctionImport() 
+  void testEdmWithtestEdmWithActionAndFunctionImport() 
       throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(
@@ -1160,7 +1161,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testWrongXMLMetadata2() throws UnsupportedEncodingException {
+  void testWrongXMLMetadata2() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(xmlWithNonKeyEntity.getBytes("UTF-8"));
       final XMLMetadata metadata = client.getDeserializer(ContentType.APPLICATION_XML).
@@ -1176,7 +1177,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test 
-  public void testWrongXMLMetadata3() throws UnsupportedEncodingException {
+  void testWrongXMLMetadata3() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(
           xmlWithWrongNamespaceInBindingTarget.getBytes("UTF-8"));
@@ -1194,7 +1195,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testWrongXMLMetadata4() throws UnsupportedEncodingException {
+  void testWrongXMLMetadata4() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(
           xmlWithWrongNamespaceInBindingPath.getBytes("UTF-8"));
@@ -1212,7 +1213,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testWrongXMLMetadata5() throws UnsupportedEncodingException {
+  void testWrongXMLMetadata5() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(
           xmlWithInvalidEntityTypeNamespace.getBytes("UTF-8"));
@@ -1229,7 +1230,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testWrongXMLMetadata6() throws UnsupportedEncodingException {
+  void testWrongXMLMetadata6() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(
           xmlWithWrongComplexBaseType.getBytes("UTF-8"));
@@ -1246,7 +1247,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testWrongXMLMetadata7() throws UnsupportedEncodingException {
+  void testWrongXMLMetadata7() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(
           xmlWithNonKeyEntity1.getBytes("UTF-8"));
@@ -1263,7 +1264,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test 
-  public void testWrongXMLMetadata8() throws UnsupportedEncodingException {
+  void testWrongXMLMetadata8() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(
           xmlWithWrongBindingTarget.getBytes("UTF-8"));
@@ -1281,7 +1282,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testXMLMetadataBaseEntityAsBindingTaget() throws UnsupportedEncodingException {
+  void testXMLMetadataBaseEntityAsBindingTaget() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(
           xmlWithBaseEntityAsBindingTarget.getBytes("UTF-8"));
@@ -1296,7 +1297,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testBasicXMLMetadata10() throws UnsupportedEncodingException {
+  void testBasicXMLMetadata10() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(
           basicXml.getBytes("UTF-8"));
@@ -1311,7 +1312,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test 
-  public void testWrongXMLMetadata11() throws UnsupportedEncodingException {
+  void testWrongXMLMetadata11() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(
           xmlWithWrongBindingTarget1.getBytes("UTF-8"));
@@ -1329,7 +1330,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testWrongXMLMetadata12() throws UnsupportedEncodingException {
+  void testWrongXMLMetadata12() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(
           xmlWithIncorrectReferentialConstraint1.getBytes("UTF-8"));
@@ -1346,7 +1347,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testWrongXMLMetadata13() throws UnsupportedEncodingException {
+  void testWrongXMLMetadata13() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(
           xmlWithIncorrectReferentialConstraint2.getBytes("UTF-8"));
@@ -1363,7 +1364,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void XMLMetadataActionImportAndFunctionImport() throws UnsupportedEncodingException {
+  void XMLMetadataActionImportAndFunctionImport() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(
           basicActionImportAndFunctionImport.getBytes("UTF-8"));
@@ -1378,7 +1379,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void XMLMetadataWithNavigationPropertyInBaseType() throws UnsupportedEncodingException {
+  void XMLMetadataWithNavigationPropertyInBaseType() throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(
           xmlWithNavPropInBaseType.getBytes("UTF-8"));
@@ -1393,7 +1394,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
   
   @Test
-  public void testEdmWithSingleton() 
+  void testEdmWithSingleton() 
       throws UnsupportedEncodingException {
     try {
       InputStream stream = new ByteArrayInputStream(
@@ -1410,7 +1411,7 @@ public class MetadataValidationTest extends AbstractTest {
   }
     
     @Test
-    public void XMLMetadataWithSingleton() throws UnsupportedEncodingException {
+    void XMLMetadataWithSingleton() throws UnsupportedEncodingException {
       try {
         InputStream stream = new ByteArrayInputStream(
             basicXmlWithSingleton.getBytes("UTF-8"));

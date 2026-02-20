@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -34,10 +35,10 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
 import org.sitenetsoft.olinguito.commons.core.edm.EdmTypeImpl;
 import org.junit.jupiter.api.Test;
 
-public class EdmTypeImplTest {
+class EdmTypeImplTest {
 
   @Test
-  public void getterTest() {
+  void getterTest() {
     EdmType type = new EdmTypeImplTester(new FullQualifiedName("namespace", "name"), EdmTypeKind.PRIMITIVE);
     assertEquals("name", type.getName());
     assertEquals("namespace", type.getNamespace());

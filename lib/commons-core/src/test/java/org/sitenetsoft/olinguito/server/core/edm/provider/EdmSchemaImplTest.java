@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -66,7 +68,7 @@ import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class EdmSchemaImplTest {
+class EdmSchemaImplTest {
 
   private EdmSchema schema;
   private Edm edm;
@@ -74,7 +76,7 @@ public class EdmSchemaImplTest {
   public static final String ALIAS = "alias";
 
   @BeforeEach
-  public void before() {
+  void before() {
     CsdlEdmProvider provider = new LocalProvider();
     edm = new EdmProviderImpl(provider);
     schema = edm.getSchemas().get(0);
@@ -82,14 +84,14 @@ public class EdmSchemaImplTest {
   }
 
   @Test
-  public void initialSchemaTest() {
+  void initialSchemaTest() {
     CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
     edm = new EdmProviderImpl(provider);
     edm.getSchemas();
   }
 
   @Test
-  public void emptySchemaTest() throws Exception {
+  void emptySchemaTest() throws Exception {
     ArrayList<CsdlSchema> schemas = new ArrayList<>();
     CsdlSchema providerSchema = new CsdlSchema();
     schemas.add(providerSchema);
@@ -100,13 +102,13 @@ public class EdmSchemaImplTest {
   }
 
   @Test
-  public void basicGetters() {
+  void basicGetters() {
     assertEquals("org.namespace", schema.getNamespace());
     assertEquals("alias", schema.getAlias());
   }
 
   @Test
-  public void getTypeDefinitions() {
+  void getTypeDefinitions() {
     List<EdmTypeDefinition> typeDefinitions = schema.getTypeDefinitions();
     assertNotNull(typeDefinitions);
     assertEquals(2, typeDefinitions.size());
@@ -118,7 +120,7 @@ public class EdmSchemaImplTest {
   }
 
   @Test
-  public void getEnumTypes() {
+  void getEnumTypes() {
     List<EdmEnumType> enumTypes = schema.getEnumTypes();
     assertNotNull(enumTypes);
     assertEquals(2, enumTypes.size());
@@ -130,7 +132,7 @@ public class EdmSchemaImplTest {
   }
 
   @Test
-  public void getEntityTypes() {
+  void getEntityTypes() {
     List<EdmEntityType> entityTypes = schema.getEntityTypes();
     assertNotNull(entityTypes);
     assertEquals(2, entityTypes.size());
@@ -142,7 +144,7 @@ public class EdmSchemaImplTest {
   }
 
   @Test
-  public void getComplexTypes() {
+  void getComplexTypes() {
     List<EdmComplexType> complexTypes = schema.getComplexTypes();
     assertNotNull(complexTypes);
     assertEquals(2, complexTypes.size());
@@ -154,7 +156,7 @@ public class EdmSchemaImplTest {
   }
 
   @Test
-  public void getActions() {
+  void getActions() {
     List<EdmAction> actions = schema.getActions();
     assertNotNull(actions);
     assertEquals(2, actions.size());
@@ -166,7 +168,7 @@ public class EdmSchemaImplTest {
   }
 
   @Test
-  public void getFunctions() {
+  void getFunctions() {
     List<EdmFunction> functions = schema.getFunctions();
     assertNotNull(functions);
     assertEquals(2, functions.size());
@@ -181,7 +183,7 @@ public class EdmSchemaImplTest {
   }
 
   @Test
-  public void getAnnotationGroups() {
+  void getAnnotationGroups() {
     List<EdmAnnotations> annotationGroups = schema.getAnnotationGroups();
     assertNotNull(annotationGroups);
     assertEquals(2, annotationGroups.size());
@@ -195,7 +197,7 @@ public class EdmSchemaImplTest {
   }
 
   @Test
-  public void getContainer() {
+  void getContainer() {
     EdmEntityContainer container = schema.getEntityContainer();
     assertNotNull(container);
 

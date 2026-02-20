@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.batch;
 
@@ -32,10 +33,10 @@ import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.junit.jupiter.api.Test;
 
-public class HeaderTest {
+class HeaderTest {
 
   @Test
-  public void test() {
+  void test() {
     Header header = new Header(1);
     header.addHeader(HttpHeader.CONTENT_TYPE, ContentType.MULTIPART_MIXED.toContentTypeString(), 1);
 
@@ -46,7 +47,7 @@ public class HeaderTest {
   }
 
   @Test
-  public void notAvailable() {
+  void notAvailable() {
     Header header = new Header(1);
 
     assertNull(header.getHeader(HttpHeader.CONTENT_TYPE));
@@ -54,7 +55,7 @@ public class HeaderTest {
   }
 
   @Test
-  public void caseInsensitive() {
+  void caseInsensitive() {
     Header header = new Header(1);
     header.addHeader(HttpHeader.CONTENT_TYPE, ContentType.MULTIPART_MIXED.toContentTypeString(), 1);
 
@@ -64,7 +65,7 @@ public class HeaderTest {
   }
 
   @Test
-  public void duplicatedAdd() {
+  void duplicatedAdd() {
     Header header = new Header(1);
     header.addHeader(HttpHeader.CONTENT_TYPE, ContentType.MULTIPART_MIXED.toContentTypeString(), 1);
     header.addHeader(HttpHeader.CONTENT_TYPE, ContentType.MULTIPART_MIXED.toContentTypeString(), 2);
@@ -76,7 +77,7 @@ public class HeaderTest {
   }
 
   @Test
-  public void fieldName() {
+  void fieldName() {
     Header header = new Header(0);
     header.addHeader("MyFieldNamE", "myValue", 1);
 
@@ -89,7 +90,7 @@ public class HeaderTest {
   }
 
   @Test
-  public void deepCopy() throws Exception {
+  void deepCopy() throws Exception {
     Header header = new Header(1);
     header.addHeader(HttpHeader.CONTENT_TYPE, ContentType.MULTIPART_MIXED + ";boundary=123", 1);
 
@@ -103,7 +104,7 @@ public class HeaderTest {
   }
 
   @Test
-  public void deepCopyHeaderField() throws Exception {
+  void deepCopyHeaderField() throws Exception {
     List<String> values = new ArrayList<>();
     values.add("abc");
     values.add("def");
@@ -118,7 +119,7 @@ public class HeaderTest {
   }
 
   @Test
-  public void duplicatedAddList() {
+  void duplicatedAddList() {
     Header header = new Header(1);
     header.addHeader(HttpHeader.CONTENT_TYPE, ContentType.MULTIPART_MIXED.toContentTypeString(), 1);
     header.addHeader(HttpHeader.CONTENT_TYPE, List.of(
@@ -135,7 +136,7 @@ public class HeaderTest {
   }
 
   @Test
-  public void remove() {
+  void remove() {
     Header header = new Header(1);
     header.addHeader(HttpHeader.CONTENT_TYPE, ContentType.MULTIPART_MIXED.toContentTypeString(), 1);
     header.removeHeader(HttpHeader.CONTENT_TYPE);
@@ -145,7 +146,7 @@ public class HeaderTest {
   }
 
   @Test
-  public void multipleValues() {
+  void multipleValues() {
     Header header = new Header(1);
     header.addHeader(HttpHeader.CONTENT_TYPE, ContentType.MULTIPART_MIXED.toContentTypeString(), 1);
     header.addHeader(HttpHeader.CONTENT_TYPE, ContentType.APPLICATION_ATOM_SVC.toContentTypeString(), 2);
@@ -166,7 +167,7 @@ public class HeaderTest {
   }
 
   @Test
-  public void splitValues() {
+  void splitValues() {
     final String values = "abc, def,123,77,   99, ysd";
     List<String> splittedValues = Header.splitValuesByComma(values);
 
@@ -180,7 +181,7 @@ public class HeaderTest {
   }
   
   @Test
-  public void testHashCode() {
+  void testHashCode() {
     HeaderField header = new HeaderField("filed", 0);
     header.hashCode();
   }

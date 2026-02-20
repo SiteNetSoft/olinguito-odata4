@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -37,7 +39,7 @@ import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class EdmActionImportImplTest {
+class EdmActionImportImplTest {
 
   EdmEntityContainer container;
 
@@ -48,7 +50,7 @@ public class EdmActionImportImplTest {
   private EdmEntitySet entitySet;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     FullQualifiedName actionFqn = new FullQualifiedName("namespace", "actionName");
     FullQualifiedName entityContainerFqn = new FullQualifiedName("namespace", "containerName");
     String target = entityContainerFqn.getFullQualifiedNameAsString() + "/entitySetName";
@@ -67,14 +69,14 @@ public class EdmActionImportImplTest {
   }
 
   @Test
-  public void simpleActionTest() {
+  void simpleActionTest() {
     assertEquals("actionImportName", actionImport.getName());
     assertTrue(container == actionImport.getEntityContainer());
     assertTrue(action == actionImport.getUnboundAction());
   }
 
   @Test
-  public void getReturnedEntitySet() {
+  void getReturnedEntitySet() {
     EdmEntitySet returnedEntitySet = actionImport.getReturnedEntitySet();
     assertNotNull(returnedEntitySet);
     assertTrue(returnedEntitySet == entitySet);
@@ -84,7 +86,7 @@ public class EdmActionImportImplTest {
   }
 
   @Test
-  public void getReturnedEntitySetNonExistingContainer() {
+  void getReturnedEntitySetNonExistingContainer() {
       assertThrows(EdmException.class, () -> {
           String target = "alias.nonexisting/Es";
           CsdlActionImport providerActionImport =
@@ -96,7 +98,7 @@ public class EdmActionImportImplTest {
   }
 
   @Test
-  public void getReturnedEntitySetNonExistingEntitySet() {
+  void getReturnedEntitySetNonExistingEntitySet() {
       assertThrows(EdmException.class, () -> {
           String target = "nonExisting";
           CsdlActionImport providerActionImport =

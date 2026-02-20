@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser.search;
 
@@ -34,10 +36,10 @@ import org.sitenetsoft.olinguito.server.core.uri.parser.search.SearchParserExcep
 import org.sitenetsoft.olinguito.server.core.uri.parser.search.SearchQueryToken.Token;
 import org.junit.jupiter.api.Test;
 
-public class SearchParserTest extends SearchParser {
+class SearchParserTest extends SearchParser {
 
   @Test
-  public void simple() throws Exception {
+  void simple() throws Exception {
     SearchExpression se = run(Token.WORD);
     assertEquals("'word1'", se.toString());
     assertTrue(se.isSearchTerm());
@@ -50,7 +52,7 @@ public class SearchParserTest extends SearchParser {
   }
 
   @Test
-  public void simpleAnd() throws Exception {
+  void simpleAnd() throws Exception {
     SearchExpression se = run(Token.WORD, Token.AND, Token.WORD);
     assertEquals("{'word1' AND 'word2'}", se.toString());
     assertTrue(se.isSearchBinary());
@@ -67,7 +69,7 @@ public class SearchParserTest extends SearchParser {
   }
 
   @Test
-  public void simpleOr() throws Exception {
+  void simpleOr() throws Exception {
     SearchExpression se = run(Token.WORD, Token.OR, Token.WORD);
     assertEquals("{'word1' OR 'word2'}", se.toString());
     assertTrue(se.isSearchBinary());
@@ -84,7 +86,7 @@ public class SearchParserTest extends SearchParser {
   }
 
   @Test
-  public void simpleImplicitAnd() throws Exception {
+  void simpleImplicitAnd() throws Exception {
     SearchExpression se = run(Token.WORD, Token.WORD);
     assertEquals("{'word1' AND 'word2'}", se.toString());
     assertTrue(se.isSearchBinary());
@@ -101,7 +103,7 @@ public class SearchParserTest extends SearchParser {
   }
 
   @Test
-  public void simpleBrackets() throws Exception {
+  void simpleBrackets() throws Exception {
     SearchExpression se = run(Token.OPEN, Token.WORD, Token.CLOSE);
     assertEquals("'word1'", se.toString());
     assertTrue(se.isSearchTerm());
@@ -114,7 +116,7 @@ public class SearchParserTest extends SearchParser {
   }
 
   @Test
-  public void simpleNot() throws Exception {
+  void simpleNot() throws Exception {
     SearchExpression se = run(Token.NOT, Token.WORD);
     assertEquals("{NOT 'word1'}", se.toString());
     assertTrue(se.isSearchUnary());
@@ -127,21 +129,21 @@ public class SearchParserTest extends SearchParser {
   }
 
   @Test
-  public void precedenceLast() throws Exception {
+  void precedenceLast() throws Exception {
     // word1 AND (word2 AND word3)
     SearchExpression se = run(Token.WORD, Token.AND, Token.OPEN, Token.WORD, Token.AND, Token.WORD, Token.CLOSE);
     assertEquals("{'word1' AND {'word2' AND 'word3'}}", se.toString());
   }
 
   @Test
-  public void precedenceFirst() throws Exception {
+  void precedenceFirst() throws Exception {
     // (word1 AND word2) AND word3
     SearchExpression se = run(Token.OPEN, Token.WORD, Token.AND, Token.WORD, Token.CLOSE, Token.AND, Token.WORD);
     assertEquals("{{'word1' AND 'word2'} AND 'word3'}", se.toString());
   }
 
   @Test
-  public void combinationAndOr() throws Exception {
+  void combinationAndOr() throws Exception {
     // word1 AND word2 OR word3
     SearchExpression se = run(Token.WORD, Token.AND, Token.WORD, Token.OR, Token.WORD);
     assertEquals("{{'word1' AND 'word2'} OR 'word3'}", se.toString());
@@ -151,14 +153,14 @@ public class SearchParserTest extends SearchParser {
   }
 
   @Test
-  public void unnecessaryBrackets() throws Exception {
+  void unnecessaryBrackets() throws Exception {
     // (word1) (word2)
     SearchExpression se = run(Token.OPEN, Token.WORD, Token.CLOSE, Token.OPEN, Token.WORD, Token.CLOSE);
     assertEquals("{'word1' AND 'word2'}", se.toString());
   }
 
   @Test
-  public void complex() throws Exception {
+  void complex() throws Exception {
     // ((word1 word2) word3) OR word4
     SearchExpression se =
         run(Token.OPEN, Token.OPEN, Token.WORD, Token.WORD, Token.CLOSE, Token.WORD, Token.CLOSE, Token.OR, Token.WORD);
@@ -166,28 +168,28 @@ public class SearchParserTest extends SearchParser {
   }
 
   @Test
-  public void doubleNot() throws Exception {
+  void doubleNot() throws Exception {
     SearchExpression se = run(Token.NOT, Token.WORD, Token.AND, Token.NOT, Token.PHRASE);
     assertEquals("{{NOT 'word1'} AND {NOT 'phrase1'}}", se.toString());
   }
 
   @Test
-  public void notAnd() throws Exception {
+  void notAnd() throws Exception {
     runEx(SearchParserException.MessageKeys.INVALID_NOT_OPERAND, Token.NOT, Token.AND);
   }
 
   @Test
-  public void notNotWord() throws Exception {
+  void notNotWord() throws Exception {
     runEx(SearchParserException.MessageKeys.INVALID_NOT_OPERAND, Token.NOT, Token.NOT, Token.WORD);
   }
 
   @Test
-  public void doubleAnd() throws Exception {
+  void doubleAnd() throws Exception {
     runEx(SearchParserException.MessageKeys.EXPECTED_DIFFERENT_TOKEN, Token.WORD, Token.AND, Token.AND, Token.WORD);
   }
 
   @Test
-  public void invalidQueryEnds() {
+  void invalidQueryEnds() {
     runEx(MessageKeys.EXPECTED_DIFFERENT_TOKEN, Token.WORD, Token.AND);
     runEx(MessageKeys.EXPECTED_DIFFERENT_TOKEN, Token.WORD, Token.OR);
     runEx(MessageKeys.EXPECTED_DIFFERENT_TOKEN, Token.NOT, Token.WORD, Token.OR);
@@ -196,27 +198,27 @@ public class SearchParserTest extends SearchParser {
   }
 
   @Test
-  public void invalidQueryStarts() throws Exception {
+  void invalidQueryStarts() throws Exception {
     run(Token.WORD, Token.AND, Token.WORD, Token.AND, Token.WORD);
   }
 
   @Test
-  public void singleAnd() {
+  void singleAnd() {
     runEx(SearchParserException.MessageKeys.EXPECTED_DIFFERENT_TOKEN, Token.AND);
   }
 
   @Test
-  public void singleOpenBracket() {
+  void singleOpenBracket() {
     runEx(SearchParserException.MessageKeys.EXPECTED_DIFFERENT_TOKEN, Token.OPEN);
   }
 
   @Test
-  public void emptyBrackets() {
+  void emptyBrackets() {
     runEx(SearchParserException.MessageKeys.EXPECTED_DIFFERENT_TOKEN, Token.OPEN, Token.CLOSE);
   }
 
   @Test
-  public void empty() {
+  void empty() {
     Token[] emptyArray = new Token[0];
     runEx(SearchParserException.MessageKeys.NO_EXPRESSION_FOUND, emptyArray);
   }

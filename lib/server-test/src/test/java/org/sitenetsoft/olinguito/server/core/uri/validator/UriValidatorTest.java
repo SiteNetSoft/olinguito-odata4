@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.uri.validator;
 
@@ -33,7 +35,7 @@ import org.sitenetsoft.olinguito.server.core.uri.testutil.TestUriValidator;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
 import org.junit.jupiter.api.Test;
 
-public class UriValidatorTest {
+class UriValidatorTest {
 
   private static final String URI_ACTION_NO_RETURN = "AIRT";
   private static final String URI_ACTION_PRIM = "AIRTString";
@@ -337,7 +339,7 @@ public class UriValidatorTest {
       new EdmTechProvider(), Collections.emptyList()).getEdm();
 
   @Test
-  public void serviceDocumentMustNotFailForAllHttpMethods() throws Exception {
+  void serviceDocumentMustNotFailForAllHttpMethods() throws Exception {
     // We must not fail with a nullpointer here as the HTTP method to resource validation happens in the dispatcher.
     for (final HttpMethod method : HttpMethod.values()) {
       validate(URI_SERVICE, null, method);
@@ -345,14 +347,14 @@ public class UriValidatorTest {
   }
 
   @Test
-  public void validateForHttpMethods() throws Exception {
+  void validateForHttpMethods() throws Exception {
     for (final HttpMethod method : HttpMethod.values()) {
       validate(URI_ENTITY, null, method);
     }
   }
 
   @Test
-  public void systemQueryOptionsNotAllowedForHttpDelete() throws Exception {
+  void systemQueryOptionsNotAllowedForHttpDelete() throws Exception {
     final String[] queryOptions =
         { QO_FILTER, QO_FORMAT, QO_EXPAND, QO_COUNT, QO_ORDERBY, QO_SEARCH, QO_SELECT, QO_SKIP, QO_TOP, QO_SKIPTOKEN };
     for (int i = 0; i < queryOptions.length; i++) {
@@ -362,7 +364,7 @@ public class UriValidatorTest {
   }
   
   @Test
-  public void systemQueryOptionsNotAllowedForHttpPost() throws Exception {
+  void systemQueryOptionsNotAllowedForHttpPost() throws Exception {
     final String[] queryOptions =
         { QO_FILTER, QO_FORMAT, QO_COUNT, QO_ORDERBY, QO_SEARCH, QO_SKIP, QO_TOP, QO_SKIPTOKEN };
     for (int i = 0; i < queryOptions.length; i++) {
@@ -372,7 +374,7 @@ public class UriValidatorTest {
   }
   
   @Test
-  public void systemQueryOptionsExpandAndSelectAllowedForHttpPutAndPatch() throws Exception {
+  void systemQueryOptionsExpandAndSelectAllowedForHttpPutAndPatch() throws Exception {
     final String[] queryOptions =
         { QO_SELECT, QO_EXPAND };
     for (int i = 0; i < queryOptions.length; i++) {
@@ -383,7 +385,7 @@ public class UriValidatorTest {
   }
   
   @Test
-  public void systemQueryOptionsNotAllowedForHttpPutAndPatch() throws Exception {
+  void systemQueryOptionsNotAllowedForHttpPutAndPatch() throws Exception {
     final String[] queryOptions =
         { QO_FILTER, QO_FORMAT, QO_COUNT, QO_ORDERBY, QO_SEARCH, QO_SKIP, QO_TOP, QO_SKIPTOKEN };
     for (int i = 0; i < queryOptions.length; i++) {
@@ -395,7 +397,7 @@ public class UriValidatorTest {
   }
 
   @Test
-  public void systemQueryOptionIDAllowedForDELETEReferencesOnly() throws Exception {
+  void systemQueryOptionIDAllowedForDELETEReferencesOnly() throws Exception {
     validate(URI_REFERENCES, QO_ID, HttpMethod.DELETE);
 
     validateWrong(URI_REFERENCES, QO_ID, HttpMethod.POST,
@@ -410,7 +412,7 @@ public class UriValidatorTest {
   }
 
   @Test
-  public void checkKeys() throws Exception {
+  void checkKeys() throws Exception {
     final TestUriValidator testUri = new TestUriValidator().setEdm(edm);
 
     testUri.run("ESTwoKeyNav(PropertyInt16=1,PropertyString='abc')");
@@ -434,7 +436,7 @@ public class UriValidatorTest {
   }
 
   @Test
-  public void checkValidSystemQueryOption() throws Exception {
+  void checkValidSystemQueryOption() throws Exception {
     for (final String[] uriArray : urisWithValidSystemQueryOptions) {
       final String[] uri = constructUri(uriArray);
       validate(uri[0], uri[1], HttpMethod.GET);
@@ -442,7 +444,7 @@ public class UriValidatorTest {
   }
 
   @Test
-  public void checkNonValidSystemQueryOption() throws Exception {
+  void checkNonValidSystemQueryOption() throws Exception {
     for (final String[] uriArray : urisWithNonValidSystemQueryOptions) {
       final String[] uri = constructUri(uriArray);
       validateWrong(uri[0], uri[1], HttpMethod.GET,
@@ -451,7 +453,7 @@ public class UriValidatorTest {
   }
 
   @Test
-  public void validatePostOnActionSystemQueryOptions() throws Exception {
+  void validatePostOnActionSystemQueryOptions() throws Exception {
     for (final String[] uriArray : actionWithValidSystemQueryOptions) {
       final String[] uri = constructUri(uriArray);
       validate(uri[0], uri[1], HttpMethod.POST);
@@ -459,7 +461,7 @@ public class UriValidatorTest {
   }
 
   @Test
-  public void checkPostOnActionSystemQueryOptionsNotValid() throws Exception {
+  void checkPostOnActionSystemQueryOptionsNotValid() throws Exception {
     for (final String[] uriArray : actionsWithNotValidSystemQueryOptions) {
       final String[] uri = constructUri(uriArray);
       validateWrong(uri[0], uri[1], HttpMethod.POST,
@@ -468,7 +470,7 @@ public class UriValidatorTest {
   }
 
   @Test
-  public void propertyOperations() throws Exception {
+  void propertyOperations() throws Exception {
     validateWrong(URI_PROPERTY_PRIMITIVE_COLLECTION, null, HttpMethod.PATCH,
         UriValidationException.MessageKeys.UNSUPPORTED_HTTP_METHOD);
     validateWrong(URI_PROPERTY_COMPLEX_COLLECTION, null, HttpMethod.PATCH,

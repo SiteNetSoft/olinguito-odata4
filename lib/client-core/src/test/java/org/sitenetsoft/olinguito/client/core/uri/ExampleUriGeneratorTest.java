@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
@@ -24,14 +26,14 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ExampleUriGeneratorTest {
+class ExampleUriGeneratorTest {
     /**
      * This test demonstrates the normal behavior of encapsulating a string with single quotes
      * <p>
      * The test succeeds
      */
     @Test
-    public void testHappyPath() {
+    void testHappyPath() {
         String uri = ExampleUriGenerator.filterPersonByName("henk");
 
         // Expected: https://example.com/Person?$filter=(name eq 'henk')
@@ -48,7 +50,7 @@ public class ExampleUriGeneratorTest {
      * The test <b>fails</b>
      */
     @Test
-    public void testODataInjection() {
+    void testODataInjection() {
         String uri = ExampleUriGenerator.filterPersonByName("' or name ne '");
 
         // Expected: https://example.com/Person?$filter=(name eq ''' or name ne ''')

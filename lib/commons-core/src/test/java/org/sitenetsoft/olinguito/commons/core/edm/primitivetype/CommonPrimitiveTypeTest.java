@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
@@ -41,38 +43,38 @@ import org.sitenetsoft.olinguito.commons.api.edm.geo.Point;
 import org.sitenetsoft.olinguito.commons.api.edm.geo.Polygon;
 import org.junit.jupiter.api.Test;
 
-public class CommonPrimitiveTypeTest extends PrimitiveTypeBaseTest {
+class CommonPrimitiveTypeTest extends PrimitiveTypeBaseTest {
 
   @Test
-  public void nameSpace() throws Exception {
+  void nameSpace() throws Exception {
     for (final EdmPrimitiveTypeKind kind : EdmPrimitiveTypeKind.values()) {
       assertEquals(EdmPrimitiveType.EDM_NAMESPACE, EdmPrimitiveTypeFactory.getInstance(kind).getNamespace());
     }
   }
 
   @Test
-  public void names() throws Exception {
+  void names() throws Exception {
     for (final EdmPrimitiveTypeKind kind : EdmPrimitiveTypeKind.values()) {
       assertEquals(kind.name(), EdmPrimitiveTypeFactory.getInstance(kind).getName());
     }
   }
 
   @Test
-  public void kind() throws Exception {
+  void kind() throws Exception {
     for (final EdmPrimitiveTypeKind kind : EdmPrimitiveTypeKind.values()) {
       assertEquals(EdmTypeKind.PRIMITIVE, EdmPrimitiveTypeFactory.getInstance(kind).getKind());
     }
   }
 
   @Test
-  public void toStringAll() throws Exception {
+  void toStringAll() throws Exception {
     for (final EdmPrimitiveTypeKind kind : EdmPrimitiveTypeKind.values()) {
       assertEquals(kind.getFullQualifiedName().toString(), EdmPrimitiveTypeFactory.getInstance(kind).toString());
     }
   }
 
   @Test
-  public void compatibility() {
+  void compatibility() {
     for (final EdmPrimitiveTypeKind kind : EdmPrimitiveTypeKind.values()) {
       final EdmPrimitiveType instance = EdmPrimitiveTypeFactory.getInstance(kind);
       assertTrue(instance.isCompatible(instance));
@@ -82,7 +84,7 @@ public class CommonPrimitiveTypeTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void defaultType() throws Exception {
+  void defaultType() throws Exception {
     assertEquals(byte[].class, EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Binary).getDefaultType());
     assertEquals(Boolean.class,
         EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Boolean).getDefaultType());
@@ -140,7 +142,7 @@ public class CommonPrimitiveTypeTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void validate() throws Exception {
+  void validate() throws Exception {
     for (final EdmPrimitiveTypeKind kind : EdmPrimitiveTypeKind.values()) {
       final EdmPrimitiveType instance = EdmPrimitiveTypeFactory.getInstance(kind);
       assertTrue(instance.validate(null, null, null, null, null, null));
@@ -171,7 +173,7 @@ public class CommonPrimitiveTypeTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void uriLiteral() throws Exception {
+  void uriLiteral() throws Exception {
     for (final EdmPrimitiveTypeKind kind : EdmPrimitiveTypeKind.values()) {
       final EdmPrimitiveType instance = EdmPrimitiveTypeFactory.getInstance(kind);
       assertEquals("test", instance.fromUriLiteral(instance.toUriLiteral("test")));

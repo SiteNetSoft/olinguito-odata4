@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.api;
 
@@ -26,10 +27,10 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-public class ODataRequestTest {
+class ODataRequestTest {
 
   @Test
-  public void testHeader() {
+  void testHeader() {
     ODataRequest r = new ODataRequest();
 
     r.addHeader("aa", List.of("cc"));
@@ -45,7 +46,7 @@ public class ODataRequestTest {
   }
 
   @Test
-  public void testHeader2() {
+  void testHeader2() {
     ODataRequest r = new ODataRequest();
     r.addHeader("AA", List.of("dd"));
 
@@ -55,7 +56,7 @@ public class ODataRequestTest {
   }
 
   @Test
-  public void testMultiValueHeader() {
+  void testMultiValueHeader() {
     ODataRequest r = new ODataRequest();
 
     r.addHeader("aa", List.of("a", "b"));

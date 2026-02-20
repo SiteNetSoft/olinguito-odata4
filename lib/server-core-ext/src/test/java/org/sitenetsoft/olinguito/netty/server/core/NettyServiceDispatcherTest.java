@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced wildcard import with explicit imports
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.netty.server.core;
 
@@ -55,14 +56,14 @@ import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 
-public class NettyServiceDispatcherTest {
+class NettyServiceDispatcherTest {
   
   ServiceMetadata metadata = null;
   ODataNetty odata = ODataNetty.newInstance();
   SchemaBasedEdmProvider provider = null;
   
   @BeforeEach
-  public void beforeTest() throws Exception {
+  void beforeTest() throws Exception {
     MetadataParser parser = new MetadataParser();
     parser.parseAnnotations(true);
     parser.useLocalCoreVocabularies(true);
@@ -79,22 +80,22 @@ public class NettyServiceDispatcherTest {
   }
 
   @Test
-  public void testCreateHandler() {
+  void testCreateHandler() {
     assertNotNull(odata.createHandler(metadata));
   }
   
   @Test
-  public void testCreateRawHandler() {
+  void testCreateRawHandler() {
     assertNotNull(odata.createRawHandler(metadata));
   }
   
   @Test
-  public void testCreateDeserializer() throws DeserializerException {
+  void testCreateDeserializer() throws DeserializerException {
     assertNotNull(odata.createDeserializer(ContentType.APPLICATION_JSON, metadata));
   }
   
   @Test
-  public void testCreatePrimitiveTypeInstance() throws DeserializerException {
+  void testCreatePrimitiveTypeInstance() throws DeserializerException {
     assertNotNull(odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Date));
     assertEquals(EdmTypeKind.PRIMITIVE, 
         odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Date).getKind());
@@ -235,7 +236,7 @@ public class NettyServiceDispatcherTest {
   }
   
   @Test
-  public void testCreatePreferences() {
+  void testCreatePreferences() {
     List<String> preferHeaders = new ArrayList<>();
     preferHeaders.add("return=representation");
     preferHeaders.add("odata.track-changes");
@@ -243,19 +244,19 @@ public class NettyServiceDispatcherTest {
   }
   
   @Test
-  public void testCreateEdmAssistedSerializer() throws SerializerException {
+  void testCreateEdmAssistedSerializer() throws SerializerException {
     assertNotNull(odata.createEdmAssistedSerializer(ContentType.APPLICATION_JSON));
   }
   
   @Test
-  public void testCreateEdmDeltaSerializer() throws SerializerException {
+  void testCreateEdmDeltaSerializer() throws SerializerException {
     List<String> versions = new ArrayList<>();
     versions.add("4.01");
     assertNotNull(odata.createEdmDeltaSerializer(ContentType.APPLICATION_JSON, versions));
   }
   
   @Test
-  public void testMetadata() throws Exception {
+  void testMetadata() throws Exception {
     DefaultFullHttpRequest nettyRequest = Mockito.mock(DefaultFullHttpRequest.class);
     io.netty.handler.codec.http.HttpMethod httpMethod = mock(io.netty.handler.codec.http.HttpMethod.class);
     when(httpMethod.name()).thenReturn("GET");
@@ -282,7 +283,7 @@ public class NettyServiceDispatcherTest {
   }
   
   @Test
-  public void testCreateServiceMetadata() throws SerializerException {
+  void testCreateServiceMetadata() throws SerializerException {
     assertNotNull(odata.createServiceMetadata(provider, metadata.getReferences(), 
         metadata.getServiceMetadataETagSupport()));
   }

@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Improved test assertions
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -38,17 +39,17 @@ import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException.M
 import org.sitenetsoft.olinguito.server.core.deserializer.AbstractODataDeserializerTest;
 import org.junit.jupiter.api.Test;
 
-public class ODataJsonDeserializerFunctionParametersTest extends AbstractODataDeserializerTest {
+class ODataJsonDeserializerFunctionParametersTest extends AbstractODataDeserializerTest {
 
   @Test
-  public void empty() throws Exception {
+  void empty() throws Exception {
     final Parameter parameter = deserialize("{}", "UFCRTETTwoKeyNavParamCTTwoPrim", "ParameterCTTwoPrim");
     assertNotNull(parameter);
     assertTrue(parameter.isComplex());
   }
 
   @Test
-  public void primitive() throws Exception {
+  void primitive() throws Exception {
     final Parameter parameter = deserialize("'test'", "UFCRTCollStringTwoParam", "ParameterString");
     assertNotNull(parameter);
     assertTrue(parameter.isPrimitive());
@@ -57,7 +58,7 @@ public class ODataJsonDeserializerFunctionParametersTest extends AbstractODataDe
   }
 
   @Test
-  public void complex() throws Exception {
+  void complex() throws Exception {
     final Parameter parameter = deserialize("{ \"PropertyString\": \"Yes\", \"PropertyInt16\": 42 }",
         "UFCRTETTwoKeyNavParamCTTwoPrim", "ParameterCTTwoPrim");
     assertNotNull(parameter);
@@ -69,7 +70,7 @@ public class ODataJsonDeserializerFunctionParametersTest extends AbstractODataDe
   }
 
   @Test
-  public void ignoreODataAnnotations() throws Exception {
+  void ignoreODataAnnotations() throws Exception {
     final Parameter parameter = deserialize("{\"PropertyInt16@odata.type\":\"Edm.Int16\",\"PropertyInt16\":42,"
         + "\"PropertyString\":\"Test\"}",
         "UFCRTETTwoKeyNavParamCTTwoPrim", "ParameterCTTwoPrim");
@@ -82,7 +83,7 @@ public class ODataJsonDeserializerFunctionParametersTest extends AbstractODataDe
   }
 
   @Test
-  public void parameterWithNullLiteral() throws Exception {
+  void parameterWithNullLiteral() throws Exception {
     final Parameter parameter = deserialize(null, "UFCRTCollCTTwoPrimTwoParam", "ParameterString");
     assertNotNull(parameter);
     assertNull(parameter.getValue());
@@ -91,12 +92,12 @@ public class ODataJsonDeserializerFunctionParametersTest extends AbstractODataDe
   }
 
   @Test
-  public void noContent() throws Exception {
+  void noContent() throws Exception {
     expectException("", "UFCRTETTwoKeyNavParamCTTwoPrim", "ParameterCTTwoPrim", MessageKeys.JSON_SYNTAX_EXCEPTION);
   }
 
   @Test
-  public void wrongType() throws Exception {
+  void wrongType() throws Exception {
     expectException("null", "UFCRTStringTwoParam", "ParameterInt16", MessageKeys.INVALID_VALUE_FOR_PROPERTY);
     expectException("\"42\"", "UFCRTStringTwoParam", "ParameterInt16", MessageKeys.INVALID_VALUE_FOR_PROPERTY);
     expectException("'42'", "UFCRTStringTwoParam", "ParameterInt16", MessageKeys.INVALID_VALUE_FOR_PROPERTY);

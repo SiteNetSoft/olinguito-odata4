@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Servlet-dependent async methods extracted from TechnicalAsyncService
+ * Copyright 2026 SiteNetSoft - Replaced bare RuntimeException with ODataRuntimeException
  */
 package org.sitenetsoft.olinguito.server.tecsvc.async;
 
@@ -150,7 +151,7 @@ public class TechnicalAsyncServletService {
       try {
         closeable.close();
       } catch (IOException e) {
-        throw new RuntimeException(e);
+        throw new ODataRuntimeException(e);
       }
     }
   }

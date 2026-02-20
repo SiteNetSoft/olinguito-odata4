@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -44,7 +45,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 
-public class ServerErrorSerializerTest {
+class ServerErrorSerializerTest {
 
   final ODataSerializer ser;
 
@@ -53,7 +54,7 @@ public class ServerErrorSerializerTest {
   }
 
   @Test
-  public void basicODataErrorNoCode() throws Exception {
+  void basicODataErrorNoCode() throws Exception {
     ODataServerError error = new ODataServerError();
     error.setMessage("ErrorMessage");
     InputStream stream = ser.error(error).getContent();
@@ -62,7 +63,7 @@ public class ServerErrorSerializerTest {
   }
 
   @Test
-  public void basicODataErrorWithCode() throws Exception {
+  void basicODataErrorWithCode() throws Exception {
     ODataServerError error = new ODataServerError();
     error.setCode("Code").setMessage("ErrorMessage");
     InputStream stream = ser.error(error).getContent();
@@ -71,7 +72,7 @@ public class ServerErrorSerializerTest {
   }
 
   @Test
-  public void basicODataErrorWithCodeAndTarget() throws Exception {
+  void basicODataErrorWithCodeAndTarget() throws Exception {
     ODataServerError error = new ODataServerError();
     error.setCode("Code").setMessage("ErrorMessage").setTarget("Target");
     InputStream stream = ser.error(error).getContent();
@@ -80,12 +81,12 @@ public class ServerErrorSerializerTest {
   }
 
   @Test
-  public void nullErrorResultsInException() throws Exception {
+  void nullErrorResultsInException() throws Exception {
       assertThrows(SerializerException.class, () -> ser.error(null));
   }
 
   @Test
-  public void emptyDetailsList() throws Exception {
+  void emptyDetailsList() throws Exception {
     ODataServerError error = new ODataServerError();
     error.setMessage("ErrorMessage").setDetails(new ArrayList<>());
     InputStream stream = ser.error(error).getContent();
@@ -94,7 +95,7 @@ public class ServerErrorSerializerTest {
   }
 
   @Test
-  public void nothingSetAtODataErrorObject() throws Exception {
+  void nothingSetAtODataErrorObject() throws Exception {
     ODataServerError error = new ODataServerError();
     InputStream stream = ser.error(error).getContent();
     String jsonString = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
@@ -102,7 +103,7 @@ public class ServerErrorSerializerTest {
   }
 
   @Test
-  public void singleDetailNothingSet() throws Exception {
+  void singleDetailNothingSet() throws Exception {
     List<ODataErrorDetail> details = new ArrayList<>();
     details.add(new ODataErrorDetail());
     ODataServerError error = new ODataServerError().setDetails(details);
@@ -113,7 +114,7 @@ public class ServerErrorSerializerTest {
   }
 
   @Test
-  public void verifiedWithJacksonParser() throws Exception {
+  void verifiedWithJacksonParser() throws Exception {
     ODataServerError error =
         new ODataServerError().setCode("Code").setMessage("Message").setTarget("Target")
         .setDetails(Collections.singletonList(
@@ -139,7 +140,7 @@ public class ServerErrorSerializerTest {
   }
   
   @Test
-  public void testErrorObjectWithAdditionalProperties() throws Exception {
+  void testErrorObjectWithAdditionalProperties() throws Exception {
 	  Map<String, Object> innerError = new HashMap<>();
 	  List<Map<String, Object>> list = new ArrayList<>();
 	  Map<String, Object> map = new HashMap<>();

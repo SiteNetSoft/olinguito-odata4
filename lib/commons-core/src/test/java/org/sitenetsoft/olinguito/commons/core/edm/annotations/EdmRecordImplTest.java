@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.core.edm.annotations;
 
@@ -44,10 +46,10 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlRecord;
 import org.sitenetsoft.olinguito.commons.core.edm.annotation.AbstractEdmExpression;
 import org.junit.jupiter.api.Test;
 
-public class EdmRecordImplTest extends AbstractAnnotationTest {
+class EdmRecordImplTest extends AbstractAnnotationTest {
 
   @Test
-  public void initialRecord() {
+  void initialRecord() {
     EdmExpression record = AbstractEdmExpression.getExpression(mock(Edm.class), new CsdlRecord());
 
     EdmDynamicExpression dynExp = assertDynamic(record);
@@ -68,7 +70,7 @@ public class EdmRecordImplTest extends AbstractAnnotationTest {
   }
 
   @Test
-  public void recordWithEntityTypeAndPropValues() {
+  void recordWithEntityTypeAndPropValues() {
     CsdlRecord csdlRecord = new CsdlRecord();
     csdlRecord.setType("ns.et");
     Edm mock = mock(Edm.class);
@@ -95,7 +97,7 @@ public class EdmRecordImplTest extends AbstractAnnotationTest {
   }
 
   @Test
-  public void recordWithComplexType() {
+  void recordWithComplexType() {
     CsdlRecord csdlRecord = new CsdlRecord();
     csdlRecord.setType("ns.ct");
     Edm mock = mock(Edm.class);
@@ -110,7 +112,7 @@ public class EdmRecordImplTest extends AbstractAnnotationTest {
   }
 
   @Test
-  public void recordWithInvalidTypes() {
+  void recordWithInvalidTypes() {
     Edm edm = mock(Edm.class);
     EdmExpression exp = AbstractEdmExpression.getExpression(edm, new CsdlRecord().setType("ns.invalid"));
     EdmRecord record = exp.asDynamic().asRecord();

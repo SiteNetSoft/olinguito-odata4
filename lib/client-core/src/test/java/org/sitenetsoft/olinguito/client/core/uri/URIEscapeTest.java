@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
@@ -37,20 +38,20 @@ import org.sitenetsoft.olinguito.commons.core.Encoder;
 import org.sitenetsoft.olinguito.commons.core.edm.EdmEnumTypeImpl;
 import org.junit.jupiter.api.Test;
 
-public class URIEscapeTest {
+class URIEscapeTest {
 
   @Test
-  public void _null() {
+  void _null() {
     assertEquals("null", URIUtils.escape( null));
   }
 
   @Test
-  public void _boolean() {
+  void _boolean() {
     assertEquals("true", URIUtils.escape( Boolean.TRUE));
   }
 
   @Test
-  public void _enum() throws UnsupportedEncodingException {
+  void _enum() throws UnsupportedEncodingException {
     final EdmEnumType pattern =
         new EdmEnumTypeImpl(null, new FullQualifiedName("Sales", "Pattern"), new CsdlEnumType());
 
@@ -58,7 +59,7 @@ public class URIEscapeTest {
   }
 
   @Test
-  public void datetimeoffset() throws UnsupportedEncodingException {
+  void datetimeoffset() throws UnsupportedEncodingException {
     final Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+1"));
     calendar.clear();
     calendar.set(2014, 6, 11, 12, 30, 04);
@@ -68,7 +69,7 @@ public class URIEscapeTest {
   }
 
   @Test
-  public void geospatial() throws UnsupportedEncodingException {
+  void geospatial() throws UnsupportedEncodingException {
     final Point point = new Point(Geospatial.Dimension.GEOGRAPHY, null);
     point.setX(142.1);
     point.setY(64.1);
@@ -78,13 +79,13 @@ public class URIEscapeTest {
   }
 
   @Test
-  public void collection() {
+  void collection() {
     assertEquals("[\"red\",\"green\"]",
         URIUtils.escape( List.of(new String[] { "red", "green" })));
   }
 
   @Test
-  public void complex() {
+  void complex() {
     assertEquals("{\"Name\":\"Value\"}",
         URIUtils.escape( Collections.singletonMap("Name", "Value")));
   }

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -49,11 +51,11 @@ import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidationExceptio
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class ErrorHandlerTest {
+class ErrorHandlerTest {
   CsdlEdmProvider provider = null;
   
   @BeforeEach
-  public void setUp() throws Exception {
+  void setUp() throws Exception {
     MetadataParser parser = new MetadataParser();
     parser.parseAnnotations(true);
     parser.useLocalCoreVocabularies(true);
@@ -63,7 +65,7 @@ public class ErrorHandlerTest {
   }
   
   @Test
-  public void testError(){
+  void testError(){
     EdmxReference reference = new EdmxReference
         (URI.create("../v4.0/cs02/vocabularies/Org.OData.Core.V1.xml"));
     reference.addInclude(new EdmxReferenceInclude("Org.OData.Core.V1", "Core"));

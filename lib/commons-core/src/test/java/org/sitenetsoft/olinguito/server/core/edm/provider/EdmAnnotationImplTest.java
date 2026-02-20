@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -37,10 +39,10 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlConstan
 import org.sitenetsoft.olinguito.commons.core.edm.EdmAnnotationImpl;
 import org.junit.jupiter.api.Test;
 
-public class EdmAnnotationImplTest {
+class EdmAnnotationImplTest {
 
   @Test
-  public void initialAnnotation() {
+  void initialAnnotation() {
     EdmAnnotation anno = new EdmAnnotationImpl(mock(Edm.class), new CsdlAnnotation());
 
     assertNull(anno.getQualifier());
@@ -56,7 +58,7 @@ public class EdmAnnotationImplTest {
   }
 
   @Test
-  public void simpleAnnotationNoExpression() {
+  void simpleAnnotationNoExpression() {
     Edm mock = mock(Edm.class);
     EdmTerm termMock = mock(EdmTerm.class);
     when(mock.getTerm(new FullQualifiedName("ns", "termName"))).thenReturn(termMock);
@@ -71,7 +73,7 @@ public class EdmAnnotationImplTest {
   }
 
   @Test
-  public void simpleAnnotationWitConstantExpression() {
+  void simpleAnnotationWitConstantExpression() {
     EdmAnnotation anno =
         new EdmAnnotationImpl(mock(Edm.class), new CsdlAnnotation()
             .setExpression(new CsdlConstantExpression(ConstantExpressionType.String).setValue("value")));

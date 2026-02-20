@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  * Copyright 2026 SiteNetSoft - Fixed deprecated HC 5.x execute() calls
  * Copyright 2026 SiteNetSoft - Fixed HC 5.x resource leaks: close responses and HttpClient
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.example;
 
@@ -65,7 +66,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
  * right now. These tests designed to test the framework, all options are responsibilities
  * of service developer.
  */
-public class TripPinServiceTest {
+class TripPinServiceTest {
   private static Tomcat tomcat = new Tomcat();
   private static String baseURL;
   private static CloseableHttpClient http;
@@ -73,7 +74,7 @@ public class TripPinServiceTest {
   private static final String CRLF = "\r\n";
 
   @BeforeAll
-  public static void beforeTest() throws Exception {
+  static void beforeTest() throws Exception {
     PoolingHttpClientConnectionManager conMan = new PoolingHttpClientConnectionManager();
     conMan.setMaxTotal(200);
     conMan.setDefaultMaxPerRoute(200);
@@ -93,7 +94,7 @@ public class TripPinServiceTest {
   }
 
   @AfterAll
-  public static void afterTest() throws Exception {
+  static void afterTest() throws Exception {
     http.close();
     tomcat.stop();
   }
@@ -130,7 +131,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testXMLInvalidChars() throws Exception {
+  void testXMLInvalidChars() throws Exception {
     ClassicHttpRequest req = new HttpGet(baseURL+"/Airlines('FM')");
     req.setHeader("Accept", "application/xml");
 
@@ -152,7 +153,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testmetadata() throws Exception {
+  void testmetadata() throws Exception {
     ClassicHttpRequest req = new HttpGet(baseURL+"/$metadata");
     try (ClassicHttpResponse response = httpSend(req, 200)) {
       new String(response.getEntity().getContent().readAllBytes(), StandardCharsets.UTF_8);
@@ -160,7 +161,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testReadEntitySetWithPaging() throws Exception {
+  void testReadEntitySetWithPaging() throws Exception {
     String url = baseURL+"/People";
     ClassicHttpRequest request = new HttpGet(url);
     request.setHeader("Prefer", "odata.maxpagesize=10");
@@ -179,7 +180,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testReadEntityWithKey() throws Exception {
+  void testReadEntityWithKey() throws Exception {
     try (ClassicHttpResponse response = httpGET(baseURL + "/Airlines('AA')", 200)) {
       JsonNode node = getJSONNode(response);
       assertEquals(baseURL+"/$metadata#Airlines/$entity", node.get("@odata.context").asText());
@@ -189,7 +190,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testReadEntityWithFullMetadata() throws Exception {
+  void testReadEntityWithFullMetadata() throws Exception {
     try (ClassicHttpResponse response = httpGET(
         baseURL+ "/People('russellwhyte')?$format=application/json;odata.metadata=full",
         200)) {
@@ -214,7 +215,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testErrorResponse() throws Exception {
+  void testErrorResponse() throws Exception {
     try (ClassicHttpResponse response = httpGET(baseURL + "/Airlines(1)", 400)) {
       Header[] headers = response.getHeaders("Content-Type");
       assertEquals("application/json;odata.metadata=minimal", headers[0].getValue());
@@ -224,7 +225,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testReadEntityWithNonExistingKey() throws Exception {
+  void testReadEntityWithNonExistingKey() throws Exception {
     ClassicHttpResponse response = httpGET(baseURL + "/Airlines('OO')", 404);
     EntityUtils.consume(response.getEntity());
   }
@@ -237,7 +238,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testReadPrimitiveProperty() throws Exception {
+  void testReadPrimitiveProperty() throws Exception {
     try (ClassicHttpResponse response = httpGET(baseURL + "/Airlines('AA')/Name", 200)) {
       JsonNode node = getJSONNode(response);
       assertEquals(baseURL+"/$metadata#Airlines('AA')/Name", node.get("@odata.context").asText());
@@ -246,13 +247,13 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testReadNonExistentProperty() throws Exception {
+  void testReadNonExistentProperty() throws Exception {
     ClassicHttpResponse response = httpGET(baseURL + "/Airlines('AA')/Unknown", 404);
     EntityUtils.consume(response.getEntity());
   }
 
   @Test
-  public void testReadPrimitiveArrayProperty() throws Exception {
+  void testReadPrimitiveArrayProperty() throws Exception {
     try (ClassicHttpResponse response = httpGET(baseURL + "/People('russellwhyte')/Emails", 200)) {
       JsonNode node = getJSONNode(response);
       assertEquals(baseURL+"/$metadata#People('russellwhyte')/Emails", node.get("@odata.context").asText());
@@ -263,7 +264,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testReadPrimitivePropertyValue() throws Exception {
+  void testReadPrimitivePropertyValue() throws Exception {
     try (ClassicHttpResponse response = httpGET(baseURL + "/Airlines('AA')/Name/$value", 200)) {
       assertEquals("American Airlines",
           new String(response.getEntity().getContent().readAllBytes(), StandardCharsets.UTF_8));
@@ -271,7 +272,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testUpdateRawValue() throws Exception {
+  void testUpdateRawValue() throws Exception {
     // Note that in-real services must convert raw value (byte[]) to
     // the data type it needs to save in in updateProperty method
     String editUrl = baseURL + "/Airlines('AF')/Name/$value";
@@ -294,7 +295,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testReadComplexArrayProperty() throws Exception {
+  void testReadComplexArrayProperty() throws Exception {
     try (ClassicHttpResponse response = httpGET(baseURL + "/People('russellwhyte')/AddressInfo", 200)) {
       JsonNode node = getJSONNode(response);
       assertEquals(baseURL+"/$metadata#People('russellwhyte')/AddressInfo", node.get("@odata.context").asText());
@@ -304,13 +305,13 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testReadMedia() throws Exception {
+  void testReadMedia() throws Exception {
     ClassicHttpResponse response = httpGET(baseURL + "/Photos(1)/$value", 200);
     EntityUtils.consume(response.getEntity());
   }
 
   @Test
-  public void testCreateMedia() throws Exception {
+  void testCreateMedia() throws Exception {
     // treating update and create as same for now, as there is details about
     // how entity payload and media payload can be sent at same time in request's body
     String editUrl = baseURL + "/Photos(1)/$value";
@@ -321,7 +322,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testDeleteMedia() throws Exception {
+  void testDeleteMedia() throws Exception {
     // treating update and create as same for now, as there is details about
     // how entity payload and media payload can be sent at same time in request's body
     String editUrl = baseURL + "/Photos(1)/$value";
@@ -331,7 +332,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testCreateStream() throws Exception {
+  void testCreateStream() throws Exception {
     // treating update and create as same for now, as there is details about
     // how entity payload and media payload can be sent at same time in request's body
     String editUrl = baseURL + "/Airlines('AA')/Picture";
@@ -343,7 +344,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testCreateStream2() throws Exception {
+  void testCreateStream2() throws Exception {
     // treating update and create as same for now, as there is details about
     // how entity payload and media payload can be sent at same time in request's body
     String editUrl = baseURL + "/Airlines('AA')/Picture";
@@ -354,7 +355,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testDeleteStream() throws Exception {
+  void testDeleteStream() throws Exception {
     // treating update and create as same for now, as there is details about
     // how entity payload and media payload can be sent at same time in request's body
     String editUrl = baseURL + "/Airlines('AA')/Picture";
@@ -364,7 +365,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testReadStream() throws Exception {
+  void testReadStream() throws Exception {
     // treating update and create as same for now, as there is details about
     // how entity payload and media payload can be sent at same time in request's body
     String editUrl = baseURL + "/Airlines('AA')/Picture";
@@ -373,7 +374,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testLambdaAny() throws Exception {
+  void testLambdaAny() throws Exception {
     // this is just testing to see the lamda expressions are going through the
     // framework, none of the system options are not implemented in example service
     String query = "Friends/any(d%3Ad/UserName%20eq%20'foo')";
@@ -382,7 +383,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testSingleton() throws Exception {
+  void testSingleton() throws Exception {
     try (ClassicHttpResponse response = httpGET(baseURL + "/Me", 200)) {
       JsonNode node = getJSONNode(response);
       assertEquals(baseURL+"/$metadata#Me", node.get("@odata.context").asText());
@@ -391,7 +392,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testSelectOption() throws Exception {
+  void testSelectOption() throws Exception {
     try (ClassicHttpResponse response = httpGET(baseURL + "/People('russellwhyte')?$select=FirstName,LastName", 200)) {
       JsonNode node = getJSONNode(response);
       assertEquals(baseURL+"/$metadata#People(UserName,FirstName,LastName)/$entity",
@@ -401,14 +402,14 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testActionImportWithNoResponse() throws Exception {
+  void testActionImportWithNoResponse() throws Exception {
     HttpPost request = new HttpPost(baseURL + "/ResetDataSource");
     ClassicHttpResponse response = httpSend(request, 204);
     EntityUtils.consume(response.getEntity());
   }
 
   @Test
-  public void testAllowHeader() throws Exception {
+  void testAllowHeader() throws Exception {
     ClassicHttpResponse response = httpGET(baseURL + "/ResetDataSource", 405);
     Header[] headers = response.getHeaders("Allow");
     assertEquals("POST", headers[0].getValue());
@@ -416,20 +417,20 @@ public class TripPinServiceTest {
   }
 
   @Test @Disabled
-  public void testFunctionImport() throws Exception {
+  void testFunctionImport() throws Exception {
     //TODO: fails because of lack of geometery support
     ClassicHttpResponse response = httpGET(baseURL + "/GetNearestAirport(lat=23.0,lon=34.0)", 200);
     EntityUtils.consume(response.getEntity());
   }
 
   @Test
-  public void testBadReferences() throws Exception {
+  void testBadReferences() throws Exception {
     ClassicHttpResponse response = httpGET(baseURL + "/People('russelwhyte')/$ref", 405);
     EntityUtils.consume(response.getEntity());
   }
 
   @Test
-  public void testReadReferences() throws Exception {
+  void testReadReferences() throws Exception {
     try (ClassicHttpResponse response = httpGET(baseURL + "/People('russellwhyte')/Friends/$ref", 200)) {
       JsonNode node = getJSONNode(response);
       assertEquals(baseURL+"/$metadata#Collection($ref)", node.get("@odata.context").asText());
@@ -439,7 +440,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testAddCollectionReferences() throws Exception {
+  void testAddCollectionReferences() throws Exception {
     //GET
     try (ClassicHttpResponse response = httpGET(baseURL + "/People('kristakemp')/Friends/$ref", 200)) {
       JsonNode node = getJSONNode(response);
@@ -470,7 +471,7 @@ public class TripPinServiceTest {
 
 
   @Test
-  public void testEntityId() throws Exception {
+  void testEntityId() throws Exception {
     try (ClassicHttpResponse response = httpGET(baseURL+"/$entity?$id="+baseURL
         + "/People('kristakemp')&$select=FirstName", 200)) {
       JsonNode node = getJSONNode(response);
@@ -488,7 +489,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testCreateReadDeleteEntity() throws Exception {
+  void testCreateReadDeleteEntity() throws Exception {
     String payload = "{\n" +
         "         \"UserName\":\"olingodude\",\n" +
         "         \"FirstName\":\"Olingo\",\n" +
@@ -536,7 +537,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testUpdateEntity() throws Exception {
+  void testUpdateEntity() throws Exception {
     String payload = "{" +
         "  \"Emails\":[" +
         "     \"Krista@example.com\"," +
@@ -558,7 +559,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testDeleteEntity() throws Exception{
+  void testDeleteEntity() throws Exception{
     // fail because no key predicates supplied
     HttpDelete deleteRequest = new HttpDelete(baseURL+"/People");
     ClassicHttpResponse response = httpSend(deleteRequest, 405);
@@ -566,7 +567,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testCreateEntityWithLinkToRelatedEntities() throws Exception {
+  void testCreateEntityWithLinkToRelatedEntities() throws Exception {
     String payload = "{\n" +
         "         \"UserName\":\"olingo\",\n" +
         "         \"FirstName\":\"Olingo\",\n" +
@@ -608,7 +609,7 @@ public class TripPinServiceTest {
 
   @Disabled("4.01 style binding not supported")
   @Test
-  public void testCreateEntityWithLinkToRelatedEntitiesIds() throws Exception {
+  void testCreateEntityWithLinkToRelatedEntitiesIds() throws Exception {
     String payload = "{\n" +
         "         \"UserName\":\"olingo\",\n" +
         "         \"FirstName\":\"Olingo\",\n" +
@@ -647,7 +648,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testUpdatePrimitiveProperty() throws Exception {
+  void testUpdatePrimitiveProperty() throws Exception {
     String payload = "{"
         + " \"value\":\"Pilar Ackerman\""
         + "}";
@@ -667,7 +668,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testUpdatePrimitiveArrayProperty() throws Exception {
+  void testUpdatePrimitiveArrayProperty() throws Exception {
     String payload = "{"
         + " \"value\": [\n" +
         "       \"olingo@apache.com\"\n" +
@@ -690,7 +691,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testDeleteProperty() throws Exception {
+  void testDeleteProperty() throws Exception {
     String editUrl = baseURL + "/People('russellwhyte')/FirstName";
     try (ClassicHttpResponse response = httpGET(editUrl, 200)) {
       JsonNode node = getJSONNode(response);
@@ -708,7 +709,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testReadNavigationPropertyEntityCollection() throws Exception {
+  void testReadNavigationPropertyEntityCollection() throws Exception {
     String editUrl = baseURL + "/People('russellwhyte')/Friends";
     try (ClassicHttpResponse response = httpGET(editUrl, 200)) {
       JsonNode node = getJSONNode(response);
@@ -720,7 +721,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testReadNavigationPropertyNoContainsTarget() throws Exception {
+  void testReadNavigationPropertyNoContainsTarget() throws Exception {
     String editUrl = baseURL + "/People('scottketchum')/Photo";
     try (ClassicHttpResponse response = httpGET(editUrl, 200)) {
       JsonNode node = getJSONNode(response);
@@ -729,7 +730,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testReadNavigationPropertyNonExistingNavigation() throws Exception {
+  void testReadNavigationPropertyNonExistingNavigation() throws Exception {
     String editUrl = baseURL + "/People('russellwhyte')/Foobar";
     try (ClassicHttpResponse response = httpGET(editUrl, 404)) {
       EntityUtils.consume(response.getEntity());
@@ -737,7 +738,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testReadNavigationPropertyEntityCollection2() throws Exception {
+  void testReadNavigationPropertyEntityCollection2() throws Exception {
     String editUrl = baseURL + "/People('russellwhyte')/Friends('scottketchum')/Trips";
     try (ClassicHttpResponse response = httpGET(editUrl, 200)) {
       JsonNode node = getJSONNode(response);
@@ -749,7 +750,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testReadNavigationPropertyEntity() throws Exception {
+  void testReadNavigationPropertyEntity() throws Exception {
     String editUrl = baseURL + "/People('russellwhyte')/Trips(1003)";
     try (ClassicHttpResponse response = httpGET(editUrl, 200)) {
       JsonNode node = getJSONNode(response);
@@ -760,14 +761,14 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testReadNavigationPropertyEntityNotExisting() throws Exception {
+  void testReadNavigationPropertyEntityNotExisting() throws Exception {
     String editUrl = baseURL + "/People('russellwhyte')/Trips(9999)";
     ClassicHttpResponse response = httpGET(editUrl, 204);
     EntityUtils.consume(response.getEntity());
   }
 
   @Test
-  public void testReadNavigationPropertyEntitySetNotExisting() throws Exception {
+  void testReadNavigationPropertyEntitySetNotExisting() throws Exception {
     String editUrl = baseURL + "/People('jhondoe')/Trips";
     try (ClassicHttpResponse response = httpGET(editUrl, 200)) {
       JsonNode node = getJSONNode(response);
@@ -778,14 +779,14 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testBadNavigationProperty() throws Exception {
+  void testBadNavigationProperty() throws Exception {
     String editUrl = baseURL + "/People('russellwhyte')/Unknown";
     ClassicHttpResponse response = httpGET(editUrl, 404);
     EntityUtils.consume(response.getEntity());
   }
 
   @Test
-  public void testReadNavigationPropertyEntityProperty() throws Exception {
+  void testReadNavigationPropertyEntityProperty() throws Exception {
     String editUrl = baseURL + "/People('russellwhyte')/Trips(1003)/PlanItems(5)/ConfirmationCode";
     try (ClassicHttpResponse response = httpGET(editUrl, 200)) {
       JsonNode node = getJSONNode(response);
@@ -796,7 +797,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testReadNavigationPropertyEntityMultipleDerivedTypes() throws Exception {
+  void testReadNavigationPropertyEntityMultipleDerivedTypes() throws Exception {
     String editUrl = baseURL + "/People('russellwhyte')/Trips(1003)/PlanItems";
     try (ClassicHttpResponse response = httpGET(editUrl, 200)) {
       JsonNode node = getJSONNode(response);
@@ -808,7 +809,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testReadNavigationPropertyEntityCoolectionDerivedFilter() throws Exception {
+  void testReadNavigationPropertyEntityCoolectionDerivedFilter() throws Exception {
     String editUrl = baseURL
         + "/People('russellwhyte')/Trips(1003)/PlanItems/Microsoft.OData.SampleService.Models.TripPin.Event";
     try (ClassicHttpResponse response = httpGET(editUrl, 200)) {
@@ -823,7 +824,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testReadNavigationPropertyEntityDerivedFilter() throws Exception {
+  void testReadNavigationPropertyEntityDerivedFilter() throws Exception {
     String editUrl = baseURL+ "/People('russellwhyte')/Trips(1003)/PlanItems(56)/"
         + "Microsoft.OData.SampleService.Models.TripPin.Event";
     try (ClassicHttpResponse response = httpGET(editUrl, 200)) {
@@ -837,7 +838,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testUpdateReference() throws Exception {
+  void testUpdateReference() throws Exception {
     try (ClassicHttpResponse response = httpGET(baseURL+"/People('ronaldmundy')/Photo/$ref", 200)) {
       JsonNode node = getJSONNode(response);
       assertEquals("/Photos(12)", node.get("@odata.id").asText());
@@ -861,7 +862,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testAddDelete2ReferenceCollection() throws Exception {
+  void testAddDelete2ReferenceCollection() throws Exception {
     // add
     String msg = "{\n" +
         "\"@odata.id\": \"/People('russellwhyte')\"\n" +
@@ -896,7 +897,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testAddEntityToNavigationFailsNotEntitySet() throws Exception {
+  void testAddEntityToNavigationFailsNotEntitySet() throws Exception {
     // adding to an entity that is not part of an entity set
     // goes against a few assumptions in downstream code, so
     // not handling for now
@@ -915,7 +916,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testAddEntityToNavigation() throws Exception {
+  void testAddEntityToNavigation() throws Exception {
     String msg = "{\n" +
         "\"Id\": 1010,\n" +
         "\"Name\": \"Grand Prize\"\n" +
@@ -936,7 +937,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testAddEntityToNavigationSelf() throws Exception {
+  void testAddEntityToNavigationSelf() throws Exception {
     String payload = "{\n" +
         "         \"UserName\":\"olingo\",\n" +
         "         \"FirstName\":\"Olingo\",\n" +
@@ -974,7 +975,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void testDeleteReference() throws Exception {
+  void testDeleteReference() throws Exception {
     String editUrl = baseURL + "/People('russellwhyte')/Photo/$ref";
     ClassicHttpResponse response = httpGET(editUrl, 200);
     EntityUtils.consume(response.getEntity());
@@ -988,7 +989,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void crossJoin() throws Exception {
+  void crossJoin() throws Exception {
     String editUrl = baseURL + "/$crossjoin(People,Airlines)?$filter="
         + "People/UserName%20eq%20Airlines/AirlineCode";
     ClassicHttpResponse response = httpGET(editUrl, 501);
@@ -996,7 +997,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void dataIsolation() throws Exception {
+  void dataIsolation() throws Exception {
     String url = baseURL + "/People";
     ClassicHttpRequest request = new HttpGet(url);
     request.setHeader(HttpHeader.ODATA_ISOLATION, "snapshot");
@@ -1005,7 +1006,7 @@ public class TripPinServiceTest {
   }
 
   @Test
-  public void batchAccept() throws Exception {
+  void batchAccept() throws Exception {
   	final String batchtUrl = baseURL + "/$batch";
 
   	final String content = ""

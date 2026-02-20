@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
@@ -24,10 +26,10 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.junit.jupiter.api.Test;
 
-public class EdmNullTest extends PrimitiveTypeBaseTest {
+class EdmNullTest extends PrimitiveTypeBaseTest {
 
   @Test
-  public void checkNull() throws Exception {
+  void checkNull() throws Exception {
     for (EdmPrimitiveTypeKind kind : EdmPrimitiveTypeKind.values()) {
       final EdmPrimitiveType instance = EdmPrimitiveTypeFactory.getInstance(kind);
       assertNull(instance.valueToString(null, null, null, null, null, null));
@@ -38,7 +40,7 @@ public class EdmNullTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void checkValueOfNull() throws Exception {
+  void checkValueOfNull() throws Exception {
     for (EdmPrimitiveTypeKind kind : EdmPrimitiveTypeKind.values()) {
       final EdmPrimitiveType instance = EdmPrimitiveTypeFactory.getInstance(kind);
       assertNull(instance.valueOfString(null, null, null, null, null, null, instance.getDefaultType()));

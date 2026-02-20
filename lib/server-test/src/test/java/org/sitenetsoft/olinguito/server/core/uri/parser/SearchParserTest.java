@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -28,7 +30,7 @@ import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
 import org.junit.jupiter.api.Test;
 
 /** Tests of the parts of the URI parser that parse the sytem query option $search. */
-public class SearchParserTest {
+class SearchParserTest {
 
   private static final Edm edm = OData.newInstance().createServiceMetadata(
       new EdmTechProvider(), Collections.emptyList()).getEdm();
@@ -36,7 +38,7 @@ public class SearchParserTest {
   private final TestUriValidator testUri = new TestUriValidator().setEdm(edm);
 
   @Test
-  public void search() throws Exception {
+  void search() throws Exception {
     testUri.run("ESTwoKeyNav", "$search=abc");
     testUri.run("ESTwoKeyNav", "$search=NOT abc");
 
@@ -94,7 +96,7 @@ public class SearchParserTest {
   }
 
   @Test
-  public void searchTree() throws Exception {
+  void searchTree() throws Exception {
     testUri.run("ESTwoKeyNav", "$expand=NavPropertyETKeyNavMany($search=(abc AND def) OR NOT ghi)")
         .goExpand().isSearchSerialized("{{'abc' AND 'def'} OR {NOT 'ghi'}}");
   }
@@ -105,7 +107,7 @@ public class SearchParserTest {
    * cases at OASIS</a>.
    */
   @Test
-  public void searchQueryPhraseAbnfTestcases() throws Exception {
+  void searchQueryPhraseAbnfTestcases() throws Exception {
     // <TestCase Name="5.1.7 Search - simple phrase" Rule="queryOptions">
     testUri.run("ESTwoKeyNav", "$search=\"blue%20green\"");
     // <TestCase Name="5.1.7 Search - simple phrase" Rule="queryOptions">

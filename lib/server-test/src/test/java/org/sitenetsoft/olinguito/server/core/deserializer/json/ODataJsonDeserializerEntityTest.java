@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Improved test assertions; Replaced Arrays.asList with List.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -68,14 +69,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTest {
+class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTest {
 
   private static final ContentType CONTENT_TYPE_JSON_IEEE754Compatible =
       ContentType.create(ContentType.JSON, ContentType.PARAMETER_IEEE754_COMPATIBLE, "true");
   private static final OData odata = OData.newInstance();
 
   @Test
-  public void emptyEntity() throws Exception {
+  void emptyEntity() throws Exception {
     final String entityString = "{}";
     final Entity entity = deserialize(entityString, "ETAllPrim");
     assertNotNull(entity);
@@ -85,7 +86,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void simpleEntityETAllPrim() throws Exception {
+  void simpleEntityETAllPrim() throws Exception {
     String entityString =
         "{\"PropertyInt16\":32767," +
             "\"PropertyString\":\"First Resource - positive values\"," +
@@ -128,7 +129,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
   
   @Test
-  public void derivedEntityETTwoPrim() throws Exception {
+  void derivedEntityETTwoPrim() throws Exception {
     String entityString =
         "{\"@odata.type\":\"#olingo.odata.test1.ETBase\","+
             "\"PropertyInt16\":32767," +
@@ -146,7 +147,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
   
   @Test
-  public void derivedEntityETTwoPrimError() throws Exception {
+  void derivedEntityETTwoPrimError() throws Exception {
       assertThrows(DeserializerException.class, () -> {
           String entityString =
           "{  \"PropertyInt16\":32767," +
@@ -157,7 +158,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void simpleEntityETAllPrimWithDefaultNullValue() throws Exception {
+  void simpleEntityETAllPrimWithDefaultNullValue() throws Exception {
     String entityString =
         "{\"PropertyInt16\":32767," +
             "\"PropertyString\":\"First Resource - positive values\"," +
@@ -187,7 +188,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void simpleEntityETAllPrimNoTAllPropertiesPresent() throws Exception {
+  void simpleEntityETAllPrimNoTAllPropertiesPresent() throws Exception {
     String entityString =
         "{\"PropertyInt16\":32767," +
             "\"PropertyString\":\"First Resource - positive values\"" +
@@ -200,7 +201,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void simpleEntityETNoneNullable() throws Exception {
+  void simpleEntityETNoneNullable() throws Exception {
     String entityString =
         "{\"PropertyInt16\":32767," +
             "\"PropertyString\":\"First Resource - positive values\"," +
@@ -230,7 +231,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void simpleEntityETCompAllPrim() throws Exception {
+  void simpleEntityETCompAllPrim() throws Exception {
     String entityString = "{\"PropertyInt16\":32767," +
         "\"PropertyComp\":{" +
         "\"PropertyString\":\"First Resource - first\"," +
@@ -264,7 +265,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void extendedComplexProperty() throws Exception {
+  void extendedComplexProperty() throws Exception {
     
     final String payload = "{"
         + "\"@odata.context\":\"$metadata#ESCompComp/$entity\","
@@ -303,7 +304,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }  
   
   @Test
-  public void extendedEntityProperty() throws Exception {
+  void extendedEntityProperty() throws Exception {
     final String payload = "{\n" + 
         "   \"@odata.context\":\"$metadata#ETKeyPrimNav/$entity\",\n" + 
         "   \"@odata.metadataEtag\":\"W/metadataETag\",\n" + 
@@ -332,7 +333,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
     
   @Test
-  public void derivedEntityESCompCollDerived() throws Exception {
+  void derivedEntityESCompCollDerived() throws Exception {
     final String payload = "{\n" +
         "   \"@odata.context\": \"$metadata#ESCompCollDerived/$entity\",\n" +
         "   \"@odata.metadataEtag\":\"W/metadataETag\",\n" +
@@ -385,7 +386,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
   
   @Test
-  public void derivedEntityESCompCollDerivedEmptyNull() throws Exception {
+  void derivedEntityESCompCollDerivedEmptyNull() throws Exception {
     final String payload = "{\n" +
         "   \"@odata.context\": \"$metadata#ESCompCollDerived/$entity\",\n" +
         "   \"@odata.metadataEtag\":\"W/metadataETag\",\n" +
@@ -436,7 +437,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
   
   @Test
-  public void derivedEntityESCompCollDerivedError() throws Exception {
+  void derivedEntityESCompCollDerivedError() throws Exception {
       assertThrows(DeserializerException.class, () -> {
           final String payload = "{\n" +
           "   \"@odata.context\": \"$metadata#ESCompCollDerived/$entity\",\n" +
@@ -468,7 +469,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
   
   @Test
-  public void simpleEntityETCollAllPrim() throws Exception {
+  void simpleEntityETCollAllPrim() throws Exception {
     final String entityString = "{"
         + "\"PropertyInt16\":1,"
         + "\"CollPropertyString\":"
@@ -514,7 +515,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void simpleEntityETMixPrimCollComp() throws Exception {
+  void simpleEntityETMixPrimCollComp() throws Exception {
     final String entityString = "{"
         + "\"PropertyInt16\":32767,"
         + "\"CollPropertyString\":"
@@ -545,7 +546,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void deriveEntityETMixPrimCollComp() throws Exception {
+  void deriveEntityETMixPrimCollComp() throws Exception {
     final String entityString = "{"
         + "\"PropertyInt16\":32767,"
         + "\"CollPropertyString\":"
@@ -578,7 +579,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
   
   @Test
-  public void deriveEntityESAllPrimDeepInsert() throws Exception {
+  void deriveEntityESAllPrimDeepInsert() throws Exception {
     final String entityString =  "{\"PropertyInt16\": 32767,"
         + "\"PropertyString\": \"First Resource - positive values\","
         + "\"PropertyBoolean\": true,"
@@ -616,7 +617,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
 
   
   @Test
-  public void eTMixPrimCollCompMissingPropertyInComplexType() throws Exception {
+  void eTMixPrimCollCompMissingPropertyInComplexType() throws Exception {
     final String entityString = "{"
         + "\"PropertyComp\":{\"PropertyInt16\":111},"
         + "\"CollPropertyComp\":["
@@ -649,7 +650,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void simpleEntityWithContextURL() throws Exception {
+  void simpleEntityWithContextURL() throws Exception {
     String entityString =
         "{\"@odata.context\": \"$metadata#ESAllPrim/$entity\"," +
             "\"PropertyInt16\":32767," +
@@ -673,7 +674,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void ignoreSomeAnnotationsInEntityTypes() throws Exception {
+  void ignoreSomeAnnotationsInEntityTypes() throws Exception {
     // We have to ignore @odata.navigation, @odata.association and @odata.type annotations on server side
     String entityString =
         "{\"PropertyInt16\":32767,"
@@ -686,7 +687,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void ignoreSomeAnnotationsInComplexTypes() throws Exception {
+  void ignoreSomeAnnotationsInComplexTypes() throws Exception {
     final String entityString = "{"
         + "\"PropertyInt16\":32767,"
         + "\"CollPropertyString\":"
@@ -702,7 +703,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void odataControlInformationIsIgnoredForRequests() throws Exception {
+  void odataControlInformationIsIgnoredForRequests() throws Exception {
     String entityString =
         "{"
             + "\"@odata.context\":\"http://localhost:8080\","
@@ -725,7 +726,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void etAllPrimBindingOperation() throws Exception {
+  void etAllPrimBindingOperation() throws Exception {
     String entityString =
         "{\"PropertyInt16\":32767,"
             + "\"PropertyString\":\"First Resource - positive values\","
@@ -756,7 +757,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void etAllPrimBindingOperationEmptyArray() throws Exception {
+  void etAllPrimBindingOperationEmptyArray() throws Exception {
     String entityString =
         "{\"PropertyInt16\":32767,"
             + "\"PropertyString\":\"First Resource - positive values\","
@@ -769,7 +770,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void eTMixEnumDefCollCompTest() throws Exception {
+  void eTMixEnumDefCollCompTest() throws Exception {
     InputStream stream = getFileAsStream("EntityETMixEnumDefCollComp.json");
     final Entity entity = deserialize(stream, "ETMixEnumDefCollComp", ContentType.JSON);
 
@@ -794,7 +795,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
   
   @Test
-  public void eTMixEnumDefCollCompTestWithEnumStrings() throws Exception {
+  void eTMixEnumDefCollCompTestWithEnumStrings() throws Exception {
     InputStream stream = getFileAsStream("EntityETMixEnumDefCollCompWithEnumStrings.json");
     final Entity entity = deserialize(stream, "ETMixEnumDefCollComp", ContentType.JSON);
 
@@ -819,7 +820,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void eTCollAllPrimWithNullValue() throws Exception {
+  void eTCollAllPrimWithNullValue() throws Exception {
     final String entityString = "{"
         + "\"PropertyInt16\":1,"
         + "\"CollPropertyString\":"
@@ -849,14 +850,14 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void validJsonValueForComplexTypeNull() throws Exception {
+  void validJsonValueForComplexTypeNull() throws Exception {
     final String entityString = "{\"PropertyComp\":null}";
     final Entity entity = deserialize(entityString, "ETMixPrimCollComp");
     assertNull(entity.getProperty("PropertyComp").getValue());
   }
 
   @Test
-  public void validJsonValueForComplexCollectionNullValue() throws Exception {
+  void validJsonValueForComplexCollectionNullValue() throws Exception {
     final String entityString = "{"
         + "\"CollPropertyComp\":["
         + "null,"
@@ -870,7 +871,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void validJsonValueForPrimPropertyInComplexTypeNull() throws Exception {
+  void validJsonValueForPrimPropertyInComplexTypeNull() throws Exception {
     final String entityString = "{"
         + "\"PropertyComp\":{\"PropertyString\":\"TEST A\",\"PropertyInt16\":null}"
         + "}";
@@ -880,7 +881,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void eTMixEnumDefCollCompNavValidComplexEnumValueNull() throws Exception {
+  void eTMixEnumDefCollCompNavValidComplexEnumValueNull() throws Exception {
     String entityString = "{"
         + "\"PropertyEnumString\" : \"String2\","
         + "\"PropertyCompMixedEnumDef\" : {"
@@ -893,14 +894,14 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void eTMixEnumDefCollCompMultipleValuesForEnum() throws Exception {
+  void eTMixEnumDefCollCompMultipleValuesForEnum() throws Exception {
     final String entityString = "{\"PropertyEnumString\": \"String1,String2\"}";
     final Entity entity = deserialize(entityString, "ETMixEnumDefCollComp");
     assertEquals((short) 3, entity.getProperty("PropertyEnumString").getValue());
   }
 
   @Test
-  public void geoPoint() throws Exception {
+  void geoPoint() throws Exception {
     final EdmEntityType entityType = mockEntityType(EdmPrimitiveTypeKind.GeometryPoint);
     final String preamble = "{\"" + entityType.getPropertyNames().get(0) + "\":{";
     final Entity entity = deserialize(preamble + "\"type\":\"Point\",\"coordinates\":[1.25,2.75]," +
@@ -949,7 +950,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void geoMultiPoint() throws Exception {
+  void geoMultiPoint() throws Exception {
     final EdmEntityType entityType = mockEntityType(EdmPrimitiveTypeKind.GeographyMultiPoint);
     final Entity entity = deserialize("{\"" + entityType.getPropertyNames().get(0) + "\":{"
         + "\"type\":\"MultiPoint\",\"coordinates\":[[2.5,3.125,99],[3.5,4.125],[4.5,5.125]]}}",
@@ -979,7 +980,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void geoLineString() throws Exception {
+  void geoLineString() throws Exception {
     final EdmEntityType entityType = mockEntityType(EdmPrimitiveTypeKind.GeometryLineString);
     final Entity entity = deserialize("{\"" + entityType.getPropertyNames().get(0) + "\":{"
         + "\"type\":\"LineString\",\"coordinates\":[[1.0,1.0],[2.0,2.0]]}}",
@@ -1011,7 +1012,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void geoMultiLineString() throws Exception {
+  void geoMultiLineString() throws Exception {
     final EdmEntityType entityType = mockEntityType(EdmPrimitiveTypeKind.GeometryMultiLineString);
     final Entity entity = deserialize("{\"" + entityType.getPropertyNames().get(0) + "\":{"
         + "\"type\":\"MultiLineString\",\"coordinates\":["
@@ -1035,7 +1036,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void geoPolygon() throws Exception {
+  void geoPolygon() throws Exception {
     final EdmEntityType entityType = mockEntityType(EdmPrimitiveTypeKind.GeometryPolygon);
     Entity entity = deserialize("{\"" + entityType.getPropertyNames().get(0) + "\":{"
         + "\"type\":\"Polygon\",\"coordinates\":[[[0.0,0.0],[3.0,0.0],[3.0,3.0],[0.0,3.0],[0.0,0.0]],"
@@ -1073,7 +1074,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void geoMultiPolygon() throws Exception {
+  void geoMultiPolygon() throws Exception {
     final EdmEntityType entityType = mockEntityType(EdmPrimitiveTypeKind.GeometryMultiPolygon);
     final Entity entity = deserialize("{\"" + entityType.getPropertyNames().get(0) + "\":{"
         + "\"type\":\"MultiPolygon\",\"coordinates\":["
@@ -1090,7 +1091,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void geoCollection() throws Exception {
+  void geoCollection() throws Exception {
     final EdmEntityType entityType = mockEntityType(EdmPrimitiveTypeKind.GeometryCollection);
     final Entity entity = deserialize("{\"" + entityType.getPropertyNames().get(0) + "\":{"
         + "\"type\":\"GeometryCollection\",\"geometries\":["
@@ -1130,7 +1131,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void mappingTest() throws Exception {
+  void mappingTest() throws Exception {
     EdmEntityType entityType = mock(EdmEntityType.class);
     when(entityType.getFullQualifiedName()).thenReturn(new FullQualifiedName("namespace", "name"));
     List<String> propertyNames = new ArrayList<>();
@@ -1172,19 +1173,19 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   // ---------------------------------- Negative Tests -----------------------------------------------------------
 
   @Test
-  public void emptyInput() throws Exception {
+  void emptyInput() throws Exception {
     expectException("", "ETAllPrim", DeserializerException.MessageKeys.JSON_SYNTAX_EXCEPTION);
   }
 
   @Test
-  public void nonJsonInput() throws Exception {
+  void nonJsonInput() throws Exception {
     expectException("0", "ETAllPrim", DeserializerException.MessageKeys.JSON_SYNTAX_EXCEPTION);
     expectException("[]", "ETAllPrim", DeserializerException.MessageKeys.JSON_SYNTAX_EXCEPTION);
     expectException("}{", "ETAllPrim", DeserializerException.MessageKeys.JSON_SYNTAX_EXCEPTION);
   }
 
   @Test
-  public void etAllPrimWithInvalidNullValue() throws Exception {
+  void etAllPrimWithInvalidNullValue() throws Exception {
     String entityString =
         "{\"PropertyInt16\":null," +
             "\"PropertyString\":\"First Resource - positive values\"," +
@@ -1207,7 +1208,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void doublePrimitiveProperty() throws Exception {
+  void doublePrimitiveProperty() throws Exception {
     final String entityString = "{\"@odata.context\":\"$metadata#ESTwoPrim/$entity\"," +
         "\"PropertyInt16\":32766,\"PropertyInt16\":32766,\"PropertyString\":\"Test String1\"}";
     expectException(entityString, "ETTwoPrim",
@@ -1215,7 +1216,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void doubleComplexProperty() throws Exception {
+  void doubleComplexProperty() throws Exception {
     final String entityString = "{"
         + "\"PropertyInt16\":32767,"
         + "\"CollPropertyString\":"
@@ -1231,7 +1232,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void doubleComplexPropertyCollection() throws Exception {
+  void doubleComplexPropertyCollection() throws Exception {
     final String entityString = "{"
         + "\"PropertyInt16\":32767,"
         + "\"CollPropertyString\":"
@@ -1251,7 +1252,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void doublePrimitivePropertyCollection() throws Exception {
+  void doublePrimitivePropertyCollection() throws Exception {
     final String entityString = "{"
         + "\"PropertyInt16\":32767,"
         + "\"CollPropertyString\":"
@@ -1268,7 +1269,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void customAnnotationInEntityLeadToNotImplemented() throws Exception {
+  void customAnnotationInEntityLeadToNotImplemented() throws Exception {
     final String entityString = "{"
         + "\"PropertyInt16\":32767,"
         + "\"CollPropertyString@custom.annotation\": 12,"
@@ -1289,7 +1290,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void customAnnotationInComplexValueLeadToNotImplemented() throws Exception {
+  void customAnnotationInComplexValueLeadToNotImplemented() throws Exception {
     final String entityString = "{"
         + "\"PropertyInt16\":32767,"
         + "\"CollPropertyString\":"
@@ -1305,7 +1306,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void customAnnotationInComplexCollectionValueLeadToNotImplemented() throws Exception {
+  void customAnnotationInComplexCollectionValueLeadToNotImplemented() throws Exception {
     final String entityString = "{"
         + "\"PropertyInt16\":32767,"
         + "\"CollPropertyString\":"
@@ -1320,7 +1321,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void unknownContentInEntity() throws Exception {
+  void unknownContentInEntity() throws Exception {
     final String entityString = "{"
         + "\"PropertyInt16\":32767,"
         + "\"unknown\": 12,"
@@ -1336,7 +1337,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void unknownContentInComplexProperty() throws Exception {
+  void unknownContentInComplexProperty() throws Exception {
     final String entityString = "{"
         + "\"PropertyInt16\":32767,"
         + "\"CollPropertyString\":"
@@ -1351,7 +1352,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void unknownContentInComplexCollectionProperty() throws Exception {
+  void unknownContentInComplexCollectionProperty() throws Exception {
     final String entityString = "{"
         + "\"PropertyInt16\":32767,"
         + "\"CollPropertyString\":"
@@ -1366,103 +1367,103 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void propertyInt16JsonTypesNegativeCheck() throws Exception {
+  void propertyInt16JsonTypesNegativeCheck() throws Exception {
     checkPropertyJsonType("{\"PropertyInt16\":\"32767\"}");
     checkPropertyJsonType("{\"PropertyInt16\":true}");
   }
 
   @Test
-  public void propertyInt32JsonTypesNegativeCheck() throws Exception {
+  void propertyInt32JsonTypesNegativeCheck() throws Exception {
     checkPropertyJsonType("{\"PropertyInt32\":\"2147483647\"}");
     checkPropertyJsonType("{\"PropertyInt32\":true}");
   }
 
   @Test
-  public void propertyInt64JsonTypesNegativeCheck() throws Exception {
+  void propertyInt64JsonTypesNegativeCheck() throws Exception {
     checkPropertyJsonType("{\"PropertyInt64\":\"9223372036854775807\"}");
     checkPropertyJsonType("{\"PropertyInt64\":true}");
   }
 
   @Test
-  public void propertyStringJsonTypesNegativeCheck() throws Exception {
+  void propertyStringJsonTypesNegativeCheck() throws Exception {
     checkPropertyJsonType("{\"PropertyString\":32767}");
     checkPropertyJsonType("{\"PropertyString\":true}");
   }
 
   @Test
-  public void propertyBooleanJsonTypesNegativeCheck() throws Exception {
+  void propertyBooleanJsonTypesNegativeCheck() throws Exception {
     checkPropertyJsonType("{\"PropertyBoolean\":\"true\"}");
     checkPropertyJsonType("{\"PropertyBoolean\":123}");
   }
 
   @Test
-  public void propertyByteJsonTypesNegativeCheck() throws Exception {
+  void propertyByteJsonTypesNegativeCheck() throws Exception {
     checkPropertyJsonType("{\"PropertyByte\":\"255\"}");
     checkPropertyJsonType("{\"PropertyByte\":true}");
   }
 
   @Test
-  public void propertySByteJsonTypesNegativeCheck() throws Exception {
+  void propertySByteJsonTypesNegativeCheck() throws Exception {
     checkPropertyJsonType("{\"PropertySByte\":\"127\"}");
     checkPropertyJsonType("{\"PropertySByte\":true}");
   }
 
   @Test
-  public void propertySingleJsonTypesNegativeCheck() throws Exception {
+  void propertySingleJsonTypesNegativeCheck() throws Exception {
     checkPropertyJsonType("{\"PropertySingle\":\"1.79E20\"}");
     checkPropertyJsonType("{\"PropertySingle\":true}");
   }
 
   @Test
-  public void propertyDoubleJsonTypesNegativeCheck() throws Exception {
+  void propertyDoubleJsonTypesNegativeCheck() throws Exception {
     checkPropertyJsonType("{\"PropertyDouble\":\"-1.79E19\"}");
     checkPropertyJsonType("{\"PropertyDouble\":true}");
   }
 
   @Test
-  public void propertyDecimalJsonTypesNegativeCheck() throws Exception {
+  void propertyDecimalJsonTypesNegativeCheck() throws Exception {
     checkPropertyJsonType("{\"PropertyDecimal\":\"34\"}");
     checkPropertyJsonType("{\"PropertyDecimal\":true}");
   }
 
   @Test
-  public void propertyBinaryJsonTypesNegativeCheck() throws Exception {
+  void propertyBinaryJsonTypesNegativeCheck() throws Exception {
     checkPropertyJsonType("{\"PropertyBinary\":32767}");
     checkPropertyJsonType("{\"PropertyBinary\":true}");
   }
 
   @Test
-  public void propertyDateJsonTypesNegativeCheck() throws Exception {
+  void propertyDateJsonTypesNegativeCheck() throws Exception {
     checkPropertyJsonType("{\"PropertyDate\":32767}");
     checkPropertyJsonType("{\"PropertyDate\":true}");
   }
 
   @Test
-  public void propertyDateTimeOffsetJsonTypesNegativeCheck() throws Exception {
+  void propertyDateTimeOffsetJsonTypesNegativeCheck() throws Exception {
     checkPropertyJsonType("{\"PropertyDateTimeOffset\":32767}");
     checkPropertyJsonType("{\"PropertyDateTimeOffset\":true}");
   }
 
   @Test
-  public void propertyDurationJsonTypesNegativeCheck() throws Exception {
+  void propertyDurationJsonTypesNegativeCheck() throws Exception {
     checkPropertyJsonType("{\"PropertyDuration\":32767}");
     checkPropertyJsonType("{\"PropertyDuration\":true}");
   }
 
   @Test
-  public void propertyGuidTimeOffsetJsonTypesNegativeCheck() throws Exception {
+  void propertyGuidTimeOffsetJsonTypesNegativeCheck() throws Exception {
     checkPropertyJsonType("{\"PropertyGuid\":32767}");
     checkPropertyJsonType("{\"PropertyGuid\":true}");
   }
 
   @Test
-  public void propertyTimeOfDayJsonTypesNegativeCheck() throws Exception {
+  void propertyTimeOfDayJsonTypesNegativeCheck() throws Exception {
     checkPropertyJsonType("{\"PropertyTimeOfDay\":32767}");
     checkPropertyJsonType("{\"PropertyTimeOfDay\":true}");
   }
 
   @Test
-  public void bindOperationWrongJsonTypeForToOne() throws Exception {
+  void bindOperationWrongJsonTypeForToOne() throws Exception {
     String entityString =
         "{\"PropertyInt16\":32767,"
             + "\"PropertyString\":\"First Resource - positive values\","
@@ -1473,7 +1474,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void bindOperationWrongJsonTypeForToMany() throws Exception {
+  void bindOperationWrongJsonTypeForToMany() throws Exception {
     String entityString =
         "{\"PropertyInt16\":32767,"
             + "\"PropertyString\":\"First Resource - positive values\","
@@ -1484,7 +1485,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void bindOperationWrongJsonTypeForToManyNumberInArray() throws Exception {
+  void bindOperationWrongJsonTypeForToManyNumberInArray() throws Exception {
     String entityString =
         "{\"PropertyInt16\":32767,"
             + "\"PropertyString\":\"First Resource - positive values\","
@@ -1495,7 +1496,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void bindOperationWrongAnnotationFormat() throws Exception {
+  void bindOperationWrongAnnotationFormat() throws Exception {
     String entityString =
         "{\"PropertyInt16\":32767,"
             + "\"PropertyString\":\"First Resource - positive values\","
@@ -1506,7 +1507,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void bindingOperationNullOnToOneNonNull() throws Exception {
+  void bindingOperationNullOnToOneNonNull() throws Exception {
     String entityString =
         "{\"PropertyInt16\":32767,"
             + "\"PropertyString\":\"First Resource - positive values\","
@@ -1517,7 +1518,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
   
   @Test
-  public void bindingOperationNullOnToOneNull() throws Exception {
+  void bindingOperationNullOnToOneNull() throws Exception {
     String entityString =
         "{\"PropertyInt16\":32767,"
             + "\"PropertyString\":\"First Resource - positive values\","
@@ -1529,7 +1530,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
     assertNull(entity.getNavigationBinding("NavPropertyETAllPrimOne").getBindingLink());
   }  
   @Test
-  public void bindingOperationNullOnToMany() throws Exception {
+  void bindingOperationNullOnToMany() throws Exception {
     String entityString =
         "{\"PropertyInt16\":32767,"
             + "\"PropertyString\":\"First Resource - positive values\","
@@ -1540,7 +1541,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void bindingOperationNullInArray() throws Exception {
+  void bindingOperationNullInArray() throws Exception {
     String entityString =
         "{\"PropertyInt16\":32767,"
             + "\"PropertyString\":\"First Resource - positive values\","
@@ -1551,28 +1552,28 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void invalidJsonSyntax() throws Exception {
+  void invalidJsonSyntax() throws Exception {
     final String entityString = "{\"PropertyInt16\":32767,}";
     expectException(entityString, "ETAllPrim",
         DeserializerException.MessageKeys.JSON_SYNTAX_EXCEPTION);
   }
 
   @Test
-  public void invalidJsonValueForPrimTypeArray() throws Exception {
+  void invalidJsonValueForPrimTypeArray() throws Exception {
     final String entityString = "{\"PropertyInt16\":[]}";
     expectException(entityString, "ETAllPrim",
         DeserializerException.MessageKeys.INVALID_JSON_TYPE_FOR_PROPERTY);
   }
 
   @Test
-  public void invalidJsonValueForPrimTypeObject() throws Exception {
+  void invalidJsonValueForPrimTypeObject() throws Exception {
     final String entityString = "{\"PropertyInt16\":{}}";
     expectException(entityString, "ETAllPrim",
         DeserializerException.MessageKeys.INVALID_JSON_TYPE_FOR_PROPERTY);
   }
 
   @Test
-  public void invalidJsonValueForPrimCollectionTypeObject() throws Exception {
+  void invalidJsonValueForPrimCollectionTypeObject() throws Exception {
     final String entityString = "{"
         + "\"CollPropertyString\":"
         + "{\"Employee1@company.example\":1234}"
@@ -1582,21 +1583,21 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void invalidJsonValueForComplexTypeTypeString() throws Exception {
+  void invalidJsonValueForComplexTypeTypeString() throws Exception {
     final String entityString = "{\"PropertyComp\":\"InvalidString\"}";
     expectException(entityString, "ETMixPrimCollComp",
         DeserializerException.MessageKeys.INVALID_JSON_TYPE_FOR_PROPERTY);
   }
 
   @Test
-  public void invalidNullValueForComplexTypeNullableFalse() throws Exception {
+  void invalidNullValueForComplexTypeNullableFalse() throws Exception {
     final String entityString = "{\"PropertyComp\":null}";
     expectException(entityString, "ETTwoKeyNav",
         DeserializerException.MessageKeys.INVALID_NULL_PROPERTY);
   }
 
   @Test
-  public void invalidNullValueForPrimBeforeComplexTypeNullableFalse() throws Exception {
+  void invalidNullValueForPrimBeforeComplexTypeNullableFalse() throws Exception {
     final String entityString = "{"
         + "\"PropertyInt16\": null, \"PropertyString\": \"321\", "
         + "\"PropertyComp\":{\"PropertyInt16\": null, "
@@ -1607,7 +1608,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void invalidNullValueForComplexTypePropertyNullableFalse() throws Exception {
+  void invalidNullValueForComplexTypePropertyNullableFalse() throws Exception {
     final String entityString = "{"
         + "\"PropertyInt16\": 123, "
         + "\"PropertyCompTwoPrim\":{\"PropertyInt16\": null, \"PropertyString\":\"StringValue\"}"
@@ -1617,7 +1618,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void invalidNullValueForPrimCollectionNullableFalse() throws Exception {
+  void invalidNullValueForPrimCollectionNullableFalse() throws Exception {
     final String entityString = "{"
         + "\"CollPropertyString\":["
         + "null,"
@@ -1627,21 +1628,21 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void invalidNullValueForPrimIntCollectionNullableFalse() throws Exception {
+  void invalidNullValueForPrimIntCollectionNullableFalse() throws Exception {
     final String entityString = "{\"CollPropertyInt16\":[123,\"null\",4711]}";
     expectException(entityString, "ETCollAllPrim",
         DeserializerException.MessageKeys.INVALID_VALUE_FOR_PROPERTY);
   }
 
   @Test
-  public void provokedPrimitiveTypeException() throws Exception {
+  void provokedPrimitiveTypeException() throws Exception {
     final String entityString = "{\"PropertyInt16\":32767000000000000000000000000000000000000}";
     expectException(entityString, "ETMixPrimCollComp",
         DeserializerException.MessageKeys.INVALID_VALUE_FOR_PROPERTY);
   }
 
   @Test
-  public void eTMixEnumDefCollCompInvalidEnumValueNull() throws Exception {
+  void eTMixEnumDefCollCompInvalidEnumValueNull() throws Exception {
     String entityString = "{"
         + "\"PropertyEnumString\" : null,"
         + "\"PropertyCompMixedEnumDef\" : {"
@@ -1652,7 +1653,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void eTMixEnumDefCollCompInvalidEnumValueArray() throws Exception {
+  void eTMixEnumDefCollCompInvalidEnumValueArray() throws Exception {
     String entityString = "{"
         + "\"PropertyEnumString\" : [],"
         + "\"PropertyCompEnum\" : {"
@@ -1663,7 +1664,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void eTMixEnumDefCollCompInvalidEnumValueObject() throws Exception {
+  void eTMixEnumDefCollCompInvalidEnumValueObject() throws Exception {
     String entityString = "{"
         + "\"PropertyEnumString\" : {},"
         + "\"PropertyCompEnum\" : {"
@@ -1674,7 +1675,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void eTMixEnumDefCollCompInvalidEnumValue() throws Exception {
+  void eTMixEnumDefCollCompInvalidEnumValue() throws Exception {
     String entityString = "{"
         + "\"PropertyEnumString\" : \"invalid\","
         + "\"PropertyCompEnum\" : {"
@@ -1685,7 +1686,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void eTMixEnumDefCollCompInvalidEnumValueByPrimitiveTypeException() throws Exception {
+  void eTMixEnumDefCollCompInvalidEnumValueByPrimitiveTypeException() throws Exception {
     String entityString = "{"
         + "\"PropertyEnumString\" : \"18\","
         + "\"PropertyCompEnum\" : {"
@@ -1696,7 +1697,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void ieee754Compatible() throws Exception {
+  void ieee754Compatible() throws Exception {
     String entityString =
         "{\"PropertyInt16\":32767," +
             "\"PropertyString\":\"First Resource - positive values\"," +
@@ -1721,7 +1722,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void ieee754CompatibleNull() throws Exception {
+  void ieee754CompatibleNull() throws Exception {
     String entityString =
         "{\"PropertyInt16\":32767," +
             "\"PropertyString\":\"First Resource - positive values\"," +
@@ -1746,7 +1747,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void ieee754CompatibleEmptyString() throws Exception {
+  void ieee754CompatibleEmptyString() throws Exception {
     String entityString =
         "{\"PropertyInt16\":32767," +
             "\"PropertyString\":\"First Resource - positive values\"," +
@@ -1769,7 +1770,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void ieee754CompatibleNullAsString() throws Exception {
+  void ieee754CompatibleNullAsString() throws Exception {
     String entityString =
         "{\"PropertyInt16\":32767," +
             "\"PropertyString\":\"First Resource - positive values\"," +
@@ -1792,7 +1793,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void ieee754CompatibleAsNumber() throws Exception {
+  void ieee754CompatibleAsNumber() throws Exception {
     String entityString =
         "{\"PropertyInt16\":32767," +
             "\"PropertyString\":\"First Resource - positive values\"," +
@@ -1815,7 +1816,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void ieee754NotCompatibleAsString() throws Exception {
+  void ieee754NotCompatibleAsString() throws Exception {
     String entityString =
         "{\"PropertyInt16\":32767," +
             "\"PropertyString\":\"First Resource - positive values\"," +
@@ -1902,7 +1903,7 @@ public class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTe
   }
   
   @Test
-  public void testEntityLargeNumbers() throws Exception {
+  void testEntityLargeNumbers() throws Exception {
 	  String entityString =
 		        "{\"PropertyKey\":327," +
 		            "\"PropertyDecimal\":12345678912345678.1234567891234}";

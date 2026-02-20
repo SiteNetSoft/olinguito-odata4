@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Migrated XMLUnit 1.6 to 2.11.0; Replaced Arrays.asList with List.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.xml;
 
@@ -49,7 +50,7 @@ import org.sitenetsoft.olinguito.server.core.deserializer.AbstractODataDeseriali
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
+class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
 
   private static final EdmEntityContainer entityContainer = edm.getEntityContainer();
   private final ODataDeserializer deserializer = new ODataXmlDeserializer(metadata);
@@ -60,7 +61,7 @@ public class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
   }
 
   @Test
-  public void entitySimple() throws Exception {
+  void entitySimple() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     
     String payload = "<?xml version='1.0' encoding='UTF-8'?>\n" + 
@@ -128,7 +129,7 @@ public class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
   }
   
   @Test
-  public void derivedEntityETTwoPrim() throws Exception {
+  void derivedEntityETTwoPrim() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESTwoPrim");
     
     String payload = "<?xml version='1.0' encoding='UTF-8'?>\n" + 
@@ -158,7 +159,7 @@ public class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
   }
   
   @Test
-  public void derivedEntityETTwoPrimNull() throws Exception {
+  void derivedEntityETTwoPrimNull() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESTwoPrim");
     
     String payload = "<?xml version='1.0' encoding='UTF-8'?>\n" + 
@@ -189,7 +190,7 @@ public class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
   
   
   @Test
-  public void entitySimpleWithTypes() throws Exception {
+  void entitySimpleWithTypes() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     
     String payload = "<?xml version='1.0' encoding='UTF-8'?>\n" + 
@@ -259,7 +260,7 @@ public class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
   }  
 
   @Test
-  public void entityCompAllPrim() throws Exception {
+  void entityCompAllPrim() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESCompAllPrim");
 
     String payload = "<?xml version='1.0' encoding='UTF-8'?>"
@@ -329,7 +330,7 @@ public class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
   }
 
   @Test
-  public void entityMixPrimCollComp() throws Exception {
+  void entityMixPrimCollComp() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESMixPrimCollComp");
     final String payload = "<?xml version='1.0' encoding='UTF-8'?>\n" + 
         "<atom:entry xmlns:atom=\"http://www.w3.org/2005/Atom\"\n" + 
@@ -404,7 +405,7 @@ public class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
 
 
   @Test
-  public void derivedEntityMixPrimCollComp() throws Exception {
+  void derivedEntityMixPrimCollComp() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESMixPrimCollComp");
     final String payload = "<?xml version='1.0' encoding='UTF-8'?>\n" + 
         "<atom:entry xmlns:atom=\"http://www.w3.org/2005/Atom\"\n" + 
@@ -483,7 +484,7 @@ public class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
   }
   
   @Test
-  public void deriveEntityESAllPrimDeepInsert() throws Exception {
+  void deriveEntityESAllPrimDeepInsert() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final String payload = "<?xml version='1.0' encoding='UTF-8'?>\n" + 
         "<a:entry xmlns:a=\"http://www.w3.org/2005/Atom\" \n" + 
@@ -577,7 +578,7 @@ public class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
   }
 
   @Test
-  public void derivedEntityESCompCollDerived() throws Exception {
+  void derivedEntityESCompCollDerived() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESCompCollDerived");
     final String payload = "<?xml version='1.0' encoding='UTF-8'?>\n" + 
         "<a:entry xmlns:a=\"http://www.w3.org/2005/Atom\" xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\"\n" + 
@@ -638,7 +639,7 @@ public class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
   }
   
   @Test
-  public void derivedEntityESCompCollDerivedNullEmpty() throws Exception {
+  void derivedEntityESCompCollDerivedNullEmpty() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESCompCollDerived");
     final String payload = "<?xml version='1.0' encoding='UTF-8'?>\n" + 
         "<a:entry xmlns:a=\"http://www.w3.org/2005/Atom\" xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\"\n" + 
@@ -693,7 +694,7 @@ public class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
   }
    
   @Test
-  public void entityMixEnumDefCollComp() throws Exception {
+  void entityMixEnumDefCollComp() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESMixEnumDefCollComp");
     final String payload = "<?xml version='1.0' encoding='UTF-8'?>\n"
         + "<a:entry xmlns:a=\"" + Constants.NS_ATOM + "\""
@@ -759,7 +760,7 @@ public class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
   }
 
   @Test
-  public void entityWithNavigation() throws Exception {
+  void entityWithNavigation() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESTwoPrim");
 
     final String payload  = "<?xml version='1.0' encoding='UTF-8'?>\n" + 
@@ -824,7 +825,7 @@ public class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
   } 
 
   @Test
-  public void primitiveProperty() throws Exception {
+  void primitiveProperty() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("PropertyInt16");
    
@@ -837,7 +838,7 @@ public class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
   }
 
   @Test
-  public void primitivePropertyNull() throws Exception {
+  void primitivePropertyNull() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("PropertyString");
     String payload = "<?xml version='1.0' encoding='UTF-8'?>"
@@ -849,7 +850,7 @@ public class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
   }
   
   @Test
-  public void primitiveCollectionProperty() throws Exception {
+  void primitiveCollectionProperty() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESCollAllPrim");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("CollPropertyString");
     String payload = "<?xml version='1.0' encoding='UTF-8'?>"
@@ -864,7 +865,7 @@ public class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
   }
 
   @Test
-  public void complexProperty() throws Exception {
+  void complexProperty() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESMixPrimCollComp");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("PropertyComp");
     final String payload = "<data:PropertyComp xmlns:data=\"http://docs.oasis-open.org/odata/ns/data\" "
@@ -886,7 +887,7 @@ public class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
   }
 
   @Test
-  public void extendedComplexProperty() throws Exception {
+  void extendedComplexProperty() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESFourKeyAlias");
     
     String payload = "<?xml version='1.0' encoding='UTF-8'?>"
@@ -934,7 +935,7 @@ public class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
   }
   
   @Test
-  public void complexCollectionProperty() throws Exception {
+  void complexCollectionProperty() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESMixPrimCollComp");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("CollPropertyComp");
     String payload = "<metadata:value xmlns:metadata=\"http://docs.oasis-open.org/odata/ns/metadata\"\n" + 
@@ -970,7 +971,7 @@ public class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
   }
 
   @Test
-  public void entityReference() throws Exception {
+  void entityReference() throws Exception {
     String payload = "<metadata:ref xmlns:metadata=\"http://docs.oasis-open.org/odata/ns/metadata\"\n" + 
         "              metadata:context=\"http://host/service/$metadata#$ref\"\n" + 
         "              xmlns=\"http://www.w3.org/2005/Atom\" "+
@@ -983,7 +984,7 @@ public class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
   }
 
   @Test
-  public void entityReferences() throws Exception {
+  void entityReferences() throws Exception {
     String payload = "<feed xmlns=\"http://www.w3.org/2005/Atom\"\n" + 
         "      xmlns:metadata=\"http://docs.oasis-open.org/odata/ns/metadata\"\n" + 
         "      metadata:context=\"http://host/service/$metadata#Collection($ref)\" >\n" + 

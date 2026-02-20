@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -41,14 +43,14 @@ import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerResult;
 import org.sitenetsoft.olinguito.server.core.deserializer.AbstractODataDeserializerTest;
 import org.junit.jupiter.api.Test;
 
-public class ODataJsonDeserializerWithInstanceAnnotationsTest extends AbstractODataDeserializerTest {
+class ODataJsonDeserializerWithInstanceAnnotationsTest extends AbstractODataDeserializerTest {
 
   private static final ContentType CONTENT_TYPE_JSON_IEEE754Compatible =
       ContentType.create(ContentType.JSON, ContentType.PARAMETER_IEEE754_COMPATIBLE, "true");
   private static final OData odata = OData.newInstance();
 
   @Test
-  public void instanceAnnotOnEntity() throws Exception {
+  void instanceAnnotOnEntity() throws Exception {
 	  final String entityString = "{"
 		        + "\"@context\":\"$metadata#ESAllPrim/$entity\","
 		        + "\"@metadataEtag\":\"W/\\\"metadataETag\\\"\","
@@ -91,7 +93,7 @@ public class ODataJsonDeserializerWithInstanceAnnotationsTest extends AbstractOD
   }
   
   @Test
-  public void instanceAnnotOnEntityProperty() throws Exception {
+  void instanceAnnotOnEntityProperty() throws Exception {
 	  final String entityString = "{"
 				+	"\"@odata.context\":\"$metadata#ESAllPrim/$entity\","
 				+	"\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
@@ -155,7 +157,7 @@ public class ODataJsonDeserializerWithInstanceAnnotationsTest extends AbstractOD
   }
   
   @Test
-  public void instanceAnnotOnComplexProperty() throws Exception {
+  void instanceAnnotOnComplexProperty() throws Exception {
 	  final String entityString = "{"
 	    		+	"\"@odata.context\":\"$metadata#ESMixPrimCollComp/$entity\","
 	    		+	"\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
@@ -233,7 +235,7 @@ public class ODataJsonDeserializerWithInstanceAnnotationsTest extends AbstractOD
   }
 
 	@Test
-	public void instanceAnnotationForStreamProperty() throws DeserializerException {
+	void instanceAnnotationForStreamProperty() throws DeserializerException {
 		final String entityString = "{"
 			+	"\"@odata.context\":\"$metadata#ETWithStream/$entity\","
 			+	"\"PropertyInt16@odata.type\":\"#Int16\","

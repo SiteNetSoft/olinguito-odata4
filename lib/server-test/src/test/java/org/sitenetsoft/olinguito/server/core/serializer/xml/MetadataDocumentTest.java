@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
@@ -36,13 +37,13 @@ import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
 import org.junit.jupiter.api.Test;
 
-public class MetadataDocumentTest {
+class MetadataDocumentTest {
 
   private static final String CORE_VOCABULARY =
       "http://docs.oasis-open.org/odata/odata/v4.0/cs02/vocabularies/Org.OData.Core.V1.xml";
 
   @Test
-  public void writeMetadataWithTechnicalScenario() throws Exception {
+  void writeMetadataWithTechnicalScenario() throws Exception {
     final OData odata = OData.newInstance();
     final ServiceMetadata serviceMetadata = odata.createServiceMetadata(
         new EdmTechProvider(),

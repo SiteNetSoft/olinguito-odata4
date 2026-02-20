@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -39,14 +41,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /** Tests of the parts of the URI parser that parse the sytem query option $expand. */
-public class ExpandParserTest {
+class ExpandParserTest {
 
   private static final OData oData = OData.newInstance();
   private static final Edm edm = oData.createServiceMetadata(
       new EdmTechProvider(), Collections.emptyList()).getEdm();
 
   @Test
-  public void expandStar() throws Exception {
+  void expandStar() throws Exception {
     runOnETKeyNav("*").isSegmentStar();
 
     runOnETKeyNav("*/$ref")
@@ -69,7 +71,7 @@ public class ExpandParserTest {
   }
 
   @Test
-  public void expandNavigationRef() throws Exception {
+  void expandNavigationRef() throws Exception {
     runOnETKeyNav("NavPropertyETKeyNavMany/$ref")
         .goPath()
         .isNavProperty("NavPropertyETKeyNavMany", EntityTypeProvider.nameETKeyNav, true)
@@ -133,7 +135,7 @@ public class ExpandParserTest {
   }
 
   @Test
-  public void expandNavigationCount() throws Exception {
+  void expandNavigationCount() throws Exception {
     runOnETKeyNav("NavPropertyETKeyNavMany/$count")
         .goPath()
         .isNavProperty("NavPropertyETKeyNavMany", EntityTypeProvider.nameETKeyNav, true)
@@ -153,7 +155,7 @@ public class ExpandParserTest {
   }
 
   @Test
-  public void expandNavigationOptions() throws Exception {
+  void expandNavigationOptions() throws Exception {
     runOnETTwoKeyNav("NavPropertyETKeyNavMany")
         .goPath()
         .isNavProperty("NavPropertyETKeyNavMany", EntityTypeProvider.nameETKeyNav, true);
@@ -249,7 +251,7 @@ public class ExpandParserTest {
   }
 
   @Test
-  public void expandNavigationApplyOption() throws Exception {
+  void expandNavigationApplyOption() throws Exception {
     UriInfo uriInfo = new Parser(edm, oData).parseUri("ESTwoKeyNav",
         "$expand=NavPropertyETKeyNavMany($apply=identity),NavPropertyETKeyNavOne", null, null);
     Assertions.assertEquals(ApplyItem.Kind.IDENTITY,
@@ -268,7 +270,7 @@ public class ExpandParserTest {
   }
 
   @Test
-  public void expandTypeCasts() throws Exception {
+  void expandTypeCasts() throws Exception {
     runOnETTwoKeyNav("olingo.odata.test1.ETBaseTwoKeyNav/NavPropertyETKeyNavMany")
         .isExpandStartType(EntityTypeProvider.nameETBaseTwoKeyNav)
         .goPath()
@@ -377,7 +379,7 @@ public class ExpandParserTest {
   }
 
   @Test
-  public void duplicatedSystemQueryOptionsInExpand() throws Exception {
+  void duplicatedSystemQueryOptionsInExpand() throws Exception {
     runOnETKeyNavEx("NavPropertyETKeyNavOne($select=PropertyInt16;$select=PropertyInt16)")
         .isExSyntax(UriParserSyntaxException.MessageKeys.DOUBLE_SYSTEM_QUERY_OPTION);
 
@@ -407,20 +409,20 @@ public class ExpandParserTest {
   }
 
   @Test
-  public void simpleKeyInExpandSystemQueryOption() throws Exception {
+  void simpleKeyInExpandSystemQueryOption() throws Exception {
     runOnETTwoKeyNavEx("NavPropertyETKeyNavMany(-365)($filter=PropertyString eq 'Test String1')")
         .isExSyntax(UriParserSyntaxException.MessageKeys.SYNTAX);
   }
 
   @Test
-  public void compoundKeyInExpandSystemQueryOption() throws Exception {
+  void compoundKeyInExpandSystemQueryOption() throws Exception {
     runOnETKeyNavEx("NavPropertyETTwoKeyNavMany(PropertyInt16=1,PropertyString=2)"
         + "($filter=PropertyString eq 'Test String1')")
         .isExSyntax(UriParserSyntaxException.MessageKeys.SYNTAX);
   }
 
   @Test
-  public void keyPredicatesInExpandFilter() throws Exception {
+  void keyPredicatesInExpandFilter() throws Exception {
     runOnETKeyNav("NavPropertyETTwoKeyNavMany($filter=NavPropertyETTwoKeyNavMany"
         + "(PropertyInt16=1,PropertyString='2')/PropertyInt16 eq 1)")
         .goPath().isNavProperty("NavPropertyETTwoKeyNavMany", EntityTypeProvider.nameETTwoKeyNav, true)
@@ -433,7 +435,7 @@ public class ExpandParserTest {
   }
 
   @Test
-  public void keyPredicatesInDoubleExpandedFilter() throws Exception {
+  void keyPredicatesInDoubleExpandedFilter() throws Exception {
     runOnETKeyNav("NavPropertyETTwoKeyNavMany($expand=NavPropertyETTwoKeyNavMany"
         + "($filter=NavPropertyETTwoKeyNavMany(PropertyInt16=1,PropertyString='2')/PropertyInt16 eq 1))")
         .goPath().isNavProperty("NavPropertyETTwoKeyNavMany", EntityTypeProvider.nameETTwoKeyNav, true)

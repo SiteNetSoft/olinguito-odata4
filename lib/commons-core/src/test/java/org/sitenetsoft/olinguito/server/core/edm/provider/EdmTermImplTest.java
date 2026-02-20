@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -50,13 +51,13 @@ import org.sitenetsoft.olinguito.commons.core.edm.EdmTermImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class EdmTermImplTest {
+class EdmTermImplTest {
 
   private EdmTerm initialTerm;
   private EdmTerm derivedTerm;
 
   @Test
-  public void initialTerm() {
+  void initialTerm() {
     EdmTerm term = new EdmTermImpl(mock(Edm.class), "namespace", new CsdlTerm());
 
     assertTrue(term.isNullable());
@@ -78,7 +79,7 @@ public class EdmTermImplTest {
   }
 
   @BeforeEach
-  public void setupTypes() throws Exception {
+  void setupTypes() throws Exception {
     CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
     EdmProviderImpl edm = new EdmProviderImpl(provider);
 
@@ -113,7 +114,7 @@ public class EdmTermImplTest {
   }
 
   @Test
-  public void termBasics() throws Exception {
+  void termBasics() throws Exception {
     assertEquals("name1", initialTerm.getName());
     assertEquals(new FullQualifiedName("namespace", "name1"), initialTerm.getFullQualifiedName());
 
@@ -134,7 +135,7 @@ public class EdmTermImplTest {
   }
 
   @Test
-  public void derivedTermTest() {
+  void derivedTermTest() {
     assertEquals("name2", derivedTerm.getName());
     assertEquals(new FullQualifiedName("namespace", "name2"), derivedTerm.getFullQualifiedName());
 
@@ -158,7 +159,7 @@ public class EdmTermImplTest {
   }
 
   @Test
-  public void termWithTypeDef() {
+  void termWithTypeDef() {
     CsdlTerm csdlTerm = new CsdlTerm();
     FullQualifiedName csdlTerm1Name = new FullQualifiedName("namespace", "name1");
     csdlTerm.setName(csdlTerm1Name.getName());
@@ -175,7 +176,7 @@ public class EdmTermImplTest {
   }
 
   @Test
-  public void termWithEnumType() {
+  void termWithEnumType() {
     CsdlTerm csdlTerm = new CsdlTerm();
     FullQualifiedName csdlTerm1Name = new FullQualifiedName("namespace", "name1");
     csdlTerm.setName(csdlTerm1Name.getName());
@@ -192,7 +193,7 @@ public class EdmTermImplTest {
   }
 
   @Test
-  public void termWithComplexType() {
+  void termWithComplexType() {
     CsdlTerm csdlTerm = new CsdlTerm();
     FullQualifiedName csdlTerm1Name = new FullQualifiedName("namespace", "name1");
     csdlTerm.setName(csdlTerm1Name.getName());
@@ -209,7 +210,7 @@ public class EdmTermImplTest {
   }
 
   @Test
-  public void termWithEntityType() {
+  void termWithEntityType() {
     CsdlTerm csdlTerm = new CsdlTerm();
     FullQualifiedName csdlTerm1Name = new FullQualifiedName("namespace", "name1");
     csdlTerm.setName(csdlTerm1Name.getName());
@@ -226,7 +227,7 @@ public class EdmTermImplTest {
   }
 
   @Test
-  public void invalidType() {
+  void invalidType() {
     CsdlTerm csdlTerm = new CsdlTerm();
     FullQualifiedName csdlTerm1Name = new FullQualifiedName("namespace", "name1");
     csdlTerm.setName(csdlTerm1Name.getName());
@@ -241,7 +242,7 @@ public class EdmTermImplTest {
   }
 
   @Test
-  public void invalidAppliesToContent() {
+  void invalidAppliesToContent() {
     CsdlTerm csdlTerm = new CsdlTerm();
     FullQualifiedName csdlTerm1Name = new FullQualifiedName("namespace", "name1");
     csdlTerm.setName(csdlTerm1Name.getName());

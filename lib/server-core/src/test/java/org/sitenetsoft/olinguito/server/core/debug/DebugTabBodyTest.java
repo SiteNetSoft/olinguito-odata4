@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.debug;
 
@@ -32,10 +33,10 @@ import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.sitenetsoft.olinguito.server.api.ODataResponse;
 import org.junit.jupiter.api.Test;
 
-public class DebugTabBodyTest extends AbstractDebugTabTest {
+class DebugTabBodyTest extends AbstractDebugTabTest {
 
   @Test
-  public void nullResponseMustNotLeadToException() throws Exception {
+  void nullResponseMustNotLeadToException() throws Exception {
     DebugTabBody tab = new DebugTabBody(null);
 
     assertEquals("null", createJson(tab));
@@ -43,7 +44,7 @@ public class DebugTabBodyTest extends AbstractDebugTabTest {
   }
 
   @Test
-  public void json() throws Exception {
+  void json() throws Exception {
     ODataResponse response = new ODataResponse();
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.JSON_NO_METADATA.toContentTypeString());
     response.setContent(new ByteArrayInputStream("{\"property\": true}".getBytes(StandardCharsets.UTF_8)));
@@ -54,7 +55,7 @@ public class DebugTabBodyTest extends AbstractDebugTabTest {
   }
 
   @Test
-  public void xml() throws Exception {
+  void xml() throws Exception {
     ODataResponse response = new ODataResponse();
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.APPLICATION_XML.toContentTypeString());
     response.setContent(new ByteArrayInputStream(
@@ -69,7 +70,7 @@ public class DebugTabBodyTest extends AbstractDebugTabTest {
   }
 
   @Test
-  public void text() throws Exception {
+  void text() throws Exception {
     ODataResponse response = new ODataResponse();
     response.setContent(new ByteArrayInputStream("testText\n12".getBytes(StandardCharsets.UTF_8)));
     assertEquals("\"testText\\n12\"", createJson(new DebugTabBody(response)));
@@ -79,7 +80,7 @@ public class DebugTabBodyTest extends AbstractDebugTabTest {
   }
 
   @Test
-  public void image() throws Exception {
+  void image() throws Exception {
     ODataResponse response = new ODataResponse();
     response.setHeader(HttpHeader.CONTENT_TYPE, "image/png");
     response.setContent(new ByteArrayInputStream(new byte[] { -1, -2, -3, -4 }));
@@ -90,7 +91,7 @@ public class DebugTabBodyTest extends AbstractDebugTabTest {
   }
 
   @Test
-  public void streamError() throws Exception {
+  void streamError() throws Exception {
     ODataResponse response = new ODataResponse();
     InputStream input = new InputStream() {
       @Override

@@ -17,10 +17,12 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Replaced bare RuntimeException with ODataRuntimeException
  */
 package org.sitenetsoft.olinguito.client.core.communication.util;
 
 import org.sitenetsoft.olinguito.client.core.ConfigurationImpl;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
 
 import java.io.IOException;
 
@@ -67,7 +69,7 @@ public class PipedOutputStream extends java.io.PipedOutputStream {
       try {
         connect(sink);
       } catch (IOException e) {
-        throw new RuntimeException(e);
+        throw new ODataRuntimeException(e);
       }
       sink.buffer = new byte[bufferSize];
     }

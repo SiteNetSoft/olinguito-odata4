@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.core.edm.annotations;
 
@@ -45,10 +47,10 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlLogical
 import org.sitenetsoft.olinguito.commons.core.edm.annotation.AbstractEdmExpression;
 import org.junit.jupiter.api.Test;
 
-public class EdmIfImplTest extends AbstractAnnotationTest {
+class EdmIfImplTest extends AbstractAnnotationTest {
 
   @Test
-  public void initialIf() {
+  void initialIf() {
     EdmExpression exp = AbstractEdmExpression.getExpression(mock(Edm.class), new CsdlIf());
 
     EdmDynamicExpression dynExp = assertDynamic(exp);
@@ -82,7 +84,7 @@ public class EdmIfImplTest extends AbstractAnnotationTest {
   }
 
   @Test
-  public void withAllExpressions() {
+  void withAllExpressions() {
     CsdlIf csdlIf = new CsdlIf();
     csdlIf.setGuard(new CsdlConstantExpression(ConstantExpressionType.Bool));
     csdlIf.setThen(new CsdlConstantExpression(ConstantExpressionType.String));

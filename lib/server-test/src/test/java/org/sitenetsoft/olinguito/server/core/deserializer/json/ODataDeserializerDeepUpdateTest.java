@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -42,10 +44,10 @@ import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandOption;
 import org.sitenetsoft.olinguito.server.core.deserializer.AbstractODataDeserializerTest;
 import org.junit.jupiter.api.Test;
 
-public class ODataDeserializerDeepUpdateTest extends AbstractODataDeserializerTest {
+class ODataDeserializerDeepUpdateTest extends AbstractODataDeserializerTest {
 
   @Test
-  public void unbalancedESAllPrim() throws Exception {
+  void unbalancedESAllPrim() throws Exception {
     final DeserializerResult result = deserializeWithResult("UnbalancedESAllPrimFeedUpdate.json");
     ExpandOption root = result.getExpandTree();
     assertEquals(1, root.getExpandItems().size());
@@ -67,7 +69,7 @@ public class ODataDeserializerDeepUpdateTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void esAllPrimExpandedToOne() throws Exception {
+  void esAllPrimExpandedToOne() throws Exception {
     final Entity entity = deserialize("EntityESAllPrimExpandedNavPropertyETTwoPrimOneUpdate.json");
 
     Link navigationLink = entity.getNavigationLink("NavPropertyETTwoPrimOne");
@@ -80,12 +82,12 @@ public class ODataDeserializerDeepUpdateTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void esAllPrimExpandedToOneWithODataAnnotations() throws Exception {
+  void esAllPrimExpandedToOneWithODataAnnotations() throws Exception {
     deserialize("EntityESAllPrimExpandedNavPropertyETTwoPrimOneWithODataAnnotationsUpdate.json");
   }
 
   @Test
-  public void esAllPrimExpandedToMany() throws Exception {
+  void esAllPrimExpandedToMany() throws Exception {
     final Entity entity = deserialize("EntityESAllPrimExpandedNavPropertyETTwoPrimManyUpdate.json");
 
     Link navigationLink = entity.getNavigationLink("NavPropertyETTwoPrimMany");
@@ -101,7 +103,7 @@ public class ODataDeserializerDeepUpdateTest extends AbstractODataDeserializerTe
   }
   
   @Test
-  public void esAllPrimExpandedToManyError() throws Exception {
+  void esAllPrimExpandedToManyError() throws Exception {
     try{
       deserialize("EntityESAllPrimExpandedNavPropertyETTwoPrimManyError.json");
       fail("Expected exception not thrown.");
@@ -111,7 +113,7 @@ public class ODataDeserializerDeepUpdateTest extends AbstractODataDeserializerTe
   }
   
   @Test
-  public void esAllPrimExpandedToManyDelta() throws Exception {
+  void esAllPrimExpandedToManyDelta() throws Exception {
     final Entity entity = deserialize("EntityESAllPrimExpandedNavPropertyETTwoPrimManyDelta.json");
 
     Link navigationLink = entity.getNavigationLink("NavPropertyETTwoPrimMany");
@@ -134,13 +136,13 @@ public class ODataDeserializerDeepUpdateTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void esAllPrimExpandedToManyWithODataAnnotations() throws Exception {
+  void esAllPrimExpandedToManyWithODataAnnotations() throws Exception {
     deserialize("EntityESAllPrimExpandedNavPropertyETTwoPrimManyWithODataAnnotationsUpdate.json");
   }
 
 
   @Test
-  public void expandedToOneInvalidNullValue() throws Exception {
+  void expandedToOneInvalidNullValue() throws Exception {
     ODataJsonDeserializerEntityTest.expectException(
         "{\"PropertyInt16\":32767,"
             + "\"NavPropertyETTwoPrimOne\":null"
@@ -150,7 +152,7 @@ public class ODataDeserializerDeepUpdateTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void expandedToOneValidNullValue() throws Exception {
+  void expandedToOneValidNullValue() throws Exception {
     final Entity entity = ODataJsonDeserializerEntityTest.deserialize(
         "{\"PropertyInt16\":32767,"
             + "\"NavPropertyETAllPrimOne\":null"
@@ -166,7 +168,7 @@ public class ODataDeserializerDeepUpdateTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void expandedToOneInvalidStringValue() throws Exception {
+  void expandedToOneInvalidStringValue() throws Exception {
     ODataJsonDeserializerEntityTest.expectException(
         "{\"PropertyInt16\":32767,"
             + "\"NavPropertyETTwoPrimOne\":\"First Resource - positive values\""
@@ -176,7 +178,7 @@ public class ODataDeserializerDeepUpdateTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void expandedToManyInvalidNullValue() throws Exception {
+  void expandedToManyInvalidNullValue() throws Exception {
     ODataJsonDeserializerEntityTest.expectException(
         "{\"PropertyInt16\":32767,"
             + "\"NavPropertyETTwoPrimMany\":null"
@@ -186,7 +188,7 @@ public class ODataDeserializerDeepUpdateTest extends AbstractODataDeserializerTe
   }
 
   @Test
-  public void expandedToManyInvalidStringValue() throws Exception {
+  void expandedToManyInvalidStringValue() throws Exception {
     ODataJsonDeserializerEntityTest.expectException(
         "{\"PropertyInt16\":32767,"
             + "\"NavPropertyETTwoPrimMany\":\"First Resource - positive values\""

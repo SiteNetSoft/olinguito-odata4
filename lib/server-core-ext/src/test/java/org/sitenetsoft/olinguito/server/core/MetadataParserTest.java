@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed resource leaks, replaced wildcard import
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -51,7 +52,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class MetadataParserTest {
+class MetadataParserTest {
   final String NS = "Microsoft.OData.SampleService.Models.TripPin";
   final FullQualifiedName NSF = new FullQualifiedName(NS);
   final FullQualifiedName EC = new FullQualifiedName(NS, "DefaultContainer");
@@ -70,7 +71,7 @@ public class MetadataParserTest {
   };
 
   @BeforeEach
-  public void setUp() throws Exception {
+  void setUp() throws Exception {
     MetadataParser parser = new MetadataParser();
     InputStream in = getClass().getClassLoader().getResourceAsStream("trippin.xml");
     assertNotNull(in);
@@ -78,7 +79,7 @@ public class MetadataParserTest {
   }
 
   @Test
-  public void testAction() throws ODataException {
+  void testAction() throws ODataException {
     // test action
     List<CsdlAction> actions = provider.getActions(new FullQualifiedName(NS, "ResetDataSource"));
     assertNotNull(actions);
@@ -86,7 +87,7 @@ public class MetadataParserTest {
   }
 
   @Test
-  public void testFunction() throws ODataException {
+  void testFunction() throws ODataException {
     // test function
     List<CsdlFunction> functions = provider
         .getFunctions(new FullQualifiedName(NS, "GetFavoriteAirline"));
@@ -113,7 +114,7 @@ public class MetadataParserTest {
   }
 
   @Test
-  public void testEnumType() throws ODataException {
+  void testEnumType() throws ODataException {
     // test enum type
     CsdlEnumType enumType = provider.getEnumType(new FullQualifiedName(NS, "PersonGender"));
     assertNotNull(enumType);
@@ -126,7 +127,7 @@ public class MetadataParserTest {
   }
 
   @Test
-  public void testEntityType() throws ODataException {
+  void testEntityType() throws ODataException {
     // test Entity Type
     CsdlEntityType et = provider.getEntityType(new FullQualifiedName(NS, "Photo"));
     assertNotNull(et);
@@ -140,7 +141,7 @@ public class MetadataParserTest {
   }
 
   @Test
-  public void testComplexType() throws ODataException {
+  void testComplexType() throws ODataException {
     // Test Complex Type
     CsdlComplexType ct = provider.getComplexType(new FullQualifiedName(NS, "City"));
     assertNotNull(ct);
@@ -158,7 +159,7 @@ public class MetadataParserTest {
   }
 
   @Test
-  public void testEntitySet() throws Exception {
+  void testEntitySet() throws Exception {
     CsdlEntitySet es = provider.getEntitySet(EC, "People");
     assertNotNull(es);
     assertEquals("Microsoft.OData.SampleService.Models.TripPin.Person",es.getType());
@@ -172,7 +173,7 @@ public class MetadataParserTest {
   }
 
   @Test
-  public void testFunctionImport() throws Exception {
+  void testFunctionImport() throws Exception {
     CsdlFunctionImport fi = provider.getFunctionImport(EC, "GetNearestAirport");
     assertNotNull(fi);
     assertEquals("Microsoft.OData.SampleService.Models.TripPin.GetNearestAirport", fi.getFunction());
@@ -181,7 +182,7 @@ public class MetadataParserTest {
   }
 
   @Test
-  public void testActionImport() throws Exception {
+  void testActionImport() throws Exception {
     CsdlActionImport ai = provider.getActionImport(EC, "ResetDataSource");
     assertNotNull(ai);
     assertEquals("Microsoft.OData.SampleService.Models.TripPin.ResetDataSource", ai.getAction());
@@ -189,7 +190,7 @@ public class MetadataParserTest {
   }
 
   @Test
-  public void testSingleton() throws Exception {
+  void testSingleton() throws Exception {
     CsdlSingleton single = this.provider.getSingleton(EC, "Me");
     assertNotNull(single);
 
@@ -203,7 +204,7 @@ public class MetadataParserTest {
   }
   
   @Test
-  public void testParsingWithNoFormat() throws Exception {
+  void testParsingWithNoFormat() throws Exception {
     MetadataParser parser = new MetadataParser();
     try (var reader = new java.io.InputStreamReader(
             java.nio.file.Files.newInputStream(java.nio.file.Path.of("src/test/resources/skip-annotation.xml")),
@@ -213,7 +214,7 @@ public class MetadataParserTest {
   }
 
   @Test
-  public void testReferenceLoad() throws Exception {
+  void testReferenceLoad() throws Exception {
     MetadataParser parser = new MetadataParser();
     parser.recursivelyLoadReferences(false);
     parser.referenceResolver(this.testReferenceResolver);
@@ -225,7 +226,7 @@ public class MetadataParserTest {
   }
 
   @Test
-  public void testReferenceLoadRecursively() throws Exception {
+  void testReferenceLoadRecursively() throws Exception {
     MetadataParser parser = new MetadataParser();
     parser.recursivelyLoadReferences(true);
     parser.referenceResolver(testReferenceResolver);
@@ -245,7 +246,7 @@ public class MetadataParserTest {
   }
 
   @Test
-  public void testCircleReferenceShouldNotStackOverflow() throws Exception {
+  void testCircleReferenceShouldNotStackOverflow() throws Exception {
     MetadataParser parser = new MetadataParser();
     parser.recursivelyLoadReferences(true);
     parser.referenceResolver(testReferenceResolver);
@@ -259,7 +260,7 @@ public class MetadataParserTest {
   }
 
   @Test
-  public void testLoadCoreVocabulary() throws Exception {
+  void testLoadCoreVocabulary() throws Exception {
     MetadataParser parser = new MetadataParser();
     parser.implicitlyLoadCoreVocabularies(true);
     parser.referenceResolver(testReferenceResolver);

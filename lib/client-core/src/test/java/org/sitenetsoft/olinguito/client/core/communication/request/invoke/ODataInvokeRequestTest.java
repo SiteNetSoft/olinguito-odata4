@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.invoke;
 
@@ -31,11 +33,11 @@ import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.junit.jupiter.api.Test;
 
-public class ODataInvokeRequestTest {
+class ODataInvokeRequestTest {
 
 
   @Test
-  public void testRequest() throws URISyntaxException {
+  void testRequest() throws URISyntaxException {
     ODataClient client = ODataClientFactory.getClient();
     Class<ClientInvokeResult> reference = ClientInvokeResult.class;
     HttpMethod method = HttpMethod.GET;

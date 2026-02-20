@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -49,10 +51,10 @@ import org.sitenetsoft.olinguito.server.core.uri.queryoption.SkipTokenOptionImpl
 import org.sitenetsoft.olinguito.server.core.uri.queryoption.TopOptionImpl;
 import org.junit.jupiter.api.Test;
 
-public class RequestUrlHierarchyVisitorTest {
+class RequestUrlHierarchyVisitorTest {
   
   @Test
-  public void visitorTest(){
+  void visitorTest(){
     RequestURLHierarchyVisitor visitor = new RequestURLHierarchyVisitor();
     assertNull(visitor.getUriInfo());
     UriInfoImpl info = new UriInfoImpl();

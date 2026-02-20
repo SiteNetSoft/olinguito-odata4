@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -55,7 +56,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class EdmAssistedJsonSerializerV401Test {
+class EdmAssistedJsonSerializerV401Test {
   private static final OData oData = OData.newInstance();
   private static final ServiceMetadata metadata = oData.createServiceMetadata(
       new EdmTechProvider(), Collections.emptyList(), null);
@@ -74,7 +75,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
 
   @Test
-  public void entityCollectionSimple() throws Exception {
+  void entityCollectionSimple() throws Exception {
     Entity entity = new Entity();
     entity.setId(null);
     entity.addProperty(new Property(null, "Property1", ValueType.PRIMITIVE, 1.25F));
@@ -86,7 +87,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
 
   @Test
-  public void entityCollectionWithEdm() throws Exception {
+  void entityCollectionWithEdm() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESTwoPrim");
     Entity entity = new Entity();
     entity.setId(null);
@@ -102,7 +103,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
 
   @Test
-  public void entityCollection() throws Exception {
+  void entityCollection() throws Exception {
     Entity entity = new Entity();
     entity.setId(null);
     entity.addProperty(new Property(null, "Property0", ValueType.PRIMITIVE, null))
@@ -132,7 +133,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
 
   @Test
-  public void entityCollectionIEEE754Compatible() throws Exception {
+  void entityCollectionIEEE754Compatible() throws Exception {
     EntityCollection entityCollection = new EntityCollection();
     entityCollection.getEntities().add(new Entity()
         .addProperty(new Property(null, "Property1", ValueType.PRIMITIVE, Long.MIN_VALUE))
@@ -168,7 +169,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
 
   @Test
-  public void entityCollectionWithComplexProperty() throws Exception {
+  void entityCollectionWithComplexProperty() throws Exception {
     Entity entity = new Entity();
     entity.setId(null);
     entity.addProperty(new Property(null, "Property1", ValueType.PRIMITIVE, 1L));
@@ -194,7 +195,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
 
   @Test
-  public void entityCollectionWithComplexCollection() throws Exception {
+  void entityCollectionWithComplexCollection() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESMixPrimCollComp");
     ComplexValue complexValue1 = new ComplexValue();
     complexValue1.getValue().add(new Property(null, "PropertyInt16", ValueType.PRIMITIVE, 1));
@@ -219,7 +220,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
 
   @Test
-  public void entityCollectionWithEmptyCollection() throws Exception {
+  void entityCollectionWithEmptyCollection() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESMixPrimCollComp");
     EntityCollection entityCollection = new EntityCollection();
     entityCollection.getEntities().add(new Entity()
@@ -232,7 +233,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
 
   @Test
-  public void expand() throws Exception {
+  void expand() throws Exception {
     final Entity relatedEntity1 = new Entity().addProperty(new Property(null, "Related1", ValueType.PRIMITIVE, 1.5));
     final Entity relatedEntity2 = new Entity().addProperty(new Property(null, "Related1", ValueType.PRIMITIVE, 2.75));
     EntityCollection target = new EntityCollection();
@@ -257,7 +258,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
 
   @Test
-  public void expandWithEdm() throws Exception {
+  void expandWithEdm() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESTwoPrim");
     Entity entity = new Entity()
         .addProperty(new Property(null, "PropertyInt16", ValueType.PRIMITIVE, (short) 42))
@@ -278,7 +279,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
 
   @Test
-  public void metadata() throws Exception {
+  void metadata() throws Exception {
     final ServiceMetadata metadata = oData.createServiceMetadata(null, Collections.emptyList(),
         new MetadataETagSupport("W/\"42\""));
     Entity entity = new Entity();
@@ -309,7 +310,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
 
   @Test
-  public void enumType() throws Exception {
+  void enumType() throws Exception {
       assertThrows(SerializerException.class, () -> {
           EntityCollection entityCollection = new EntityCollection();
           entityCollection.getEntities().add(
@@ -319,7 +320,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
 
   @Test
-  public void collectionEnumType() throws Exception {
+  void collectionEnumType() throws Exception {
       assertThrows(SerializerException.class, () -> {
           EntityCollection entityCollection = new EntityCollection();
           entityCollection.getEntities().add(
@@ -329,7 +330,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
 
   @Test
-  public void geoType() throws Exception {
+  void geoType() throws Exception {
       assertThrows(SerializerException.class, () -> {
           EntityCollection entityCollection = new EntityCollection();
           entityCollection.getEntities().add(
@@ -339,7 +340,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
 
   @Test
-  public void unsupportedType() throws Exception {
+  void unsupportedType() throws Exception {
       assertThrows(SerializerException.class, () -> {
           EntityCollection entityCollection = new EntityCollection();
           entityCollection.getEntities().add(
@@ -349,7 +350,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
 
   @Test
-  public void wrongValueForType() throws Exception {
+  void wrongValueForType() throws Exception {
       assertThrows(SerializerException.class, () -> {
           EntityCollection entityCollection = new EntityCollection();
           entityCollection.getEntities().add(
@@ -359,7 +360,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
 
   @Test
-  public void wrongValueForPropertyFacet() throws Exception {
+  void wrongValueForPropertyFacet() throws Exception {
       assertThrows(SerializerException.class, () -> {
           EntityCollection entityCollection = new EntityCollection();
           entityCollection.getEntities().add(
@@ -372,7 +373,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
 
   @Test
-  public void wrongValueForPropertyFacetInComplexProperty() throws Exception {
+  void wrongValueForPropertyFacetInComplexProperty() throws Exception {
       assertThrows(SerializerException.class, () -> {
           ComplexValue innerComplexValue = new ComplexValue();
           innerComplexValue.getValue().add(new Property(null, "PropertyDecimal", ValueType.PRIMITIVE,
@@ -421,7 +422,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
   
   @Test
-  public void entityCollectionSimpleMetadataMin() throws Exception {
+  void entityCollectionSimpleMetadataMin() throws Exception {
     Entity entity = new Entity();
     entity.setId(null);
     entity.addProperty(new Property(null, "Property1", ValueType.PRIMITIVE, 1.25F));
@@ -433,7 +434,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
   
   @Test
-  public void entityCollectionSimpleMetadataNone() throws Exception {
+  void entityCollectionSimpleMetadataNone() throws Exception {
     Entity entity = new Entity();
     entity.setId(null);
     entity.addProperty(new Property(null, "Property1", ValueType.PRIMITIVE, 1.25F));
@@ -444,7 +445,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
   
   @Test
-  public void entityCollectionMetadataMin() throws Exception {
+  void entityCollectionMetadataMin() throws Exception {
     Entity entity = new Entity();
     entity.setId(null);
     entity.addProperty(new Property(null, "Property0", ValueType.PRIMITIVE, null))
@@ -474,7 +475,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
   
   @Test
-  public void entityCollectionMetadataNone() throws Exception {
+  void entityCollectionMetadataNone() throws Exception {
     Entity entity = new Entity();
     entity.setId(null);
     entity.addProperty(new Property(null, "Property0", ValueType.PRIMITIVE, null))
@@ -504,7 +505,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
   
   @Test
-  public void entityCollectionWithComplexPropertyMetadataMin() throws Exception {
+  void entityCollectionWithComplexPropertyMetadataMin() throws Exception {
     Entity entity = new Entity();
     entity.setId(null);
     entity.addProperty(new Property(null, "Property1", ValueType.PRIMITIVE, 1L));
@@ -530,7 +531,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
   
   @Test
-  public void entityCollectionWithComplexPropertyMetadataNone() throws Exception {
+  void entityCollectionWithComplexPropertyMetadataNone() throws Exception {
     Entity entity = new Entity();
     entity.setId(null);
     entity.addProperty(new Property(null, "Property1", ValueType.PRIMITIVE, 1L));
@@ -556,7 +557,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
 
   @Test
-  public void entityCollectionWithComplexCollectionMin() throws Exception {
+  void entityCollectionWithComplexCollectionMin() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESMixPrimCollComp");
     ComplexValue complexValue1 = new ComplexValue();
     complexValue1.getValue().add(new Property(null, "PropertyInt16", ValueType.PRIMITIVE, 1));
@@ -581,7 +582,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
   
   @Test
-  public void entityCollectionWithComplexCollectionNone() throws Exception {
+  void entityCollectionWithComplexCollectionNone() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESMixPrimCollComp");
     ComplexValue complexValue1 = new ComplexValue();
     complexValue1.getValue().add(new Property(null, "PropertyInt16", ValueType.PRIMITIVE, 1));
@@ -606,7 +607,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
 
   @Test
-  public void entityCollectionWithEmptyCollectionMin() throws Exception {
+  void entityCollectionWithEmptyCollectionMin() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESMixPrimCollComp");
     EntityCollection entityCollection = new EntityCollection();
     entityCollection.getEntities().add(new Entity()
@@ -619,7 +620,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
   
   @Test
-  public void entityCollectionWithEmptyCollectionNone() throws Exception {
+  void entityCollectionWithEmptyCollectionNone() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESMixPrimCollComp");
     EntityCollection entityCollection = new EntityCollection();
     entityCollection.getEntities().add(new Entity()
@@ -632,7 +633,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
 
   @Test
-  public void expandMetadataMin() throws Exception {
+  void expandMetadataMin() throws Exception {
     final Entity relatedEntity1 = new Entity().addProperty(new Property(null, "Related1", ValueType.PRIMITIVE, 1.5));
     final Entity relatedEntity2 = new Entity().addProperty(new Property(null, "Related1", ValueType.PRIMITIVE, 2.75));
     EntityCollection target = new EntityCollection();
@@ -657,7 +658,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
 
   @Test
-  public void expandMetadataNone() throws Exception {
+  void expandMetadataNone() throws Exception {
     final Entity relatedEntity1 = new Entity().addProperty(new Property(null, "Related1", ValueType.PRIMITIVE, 1.5));
     final Entity relatedEntity2 = new Entity().addProperty(new Property(null, "Related1", ValueType.PRIMITIVE, 2.75));
     EntityCollection target = new EntityCollection();
@@ -682,7 +683,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
 
   @Test
-  public void metadataMin() throws Exception {
+  void metadataMin() throws Exception {
     final ServiceMetadata metadata = oData.createServiceMetadata(null, Collections.emptyList(),
         new MetadataETagSupport("W/\"42\""));
     Entity entity = new Entity();
@@ -707,7 +708,7 @@ public class EdmAssistedJsonSerializerV401Test {
   }
   
   @Test
-  public void entityCollectionWithBigDecimalProperty() throws Exception {
+  void entityCollectionWithBigDecimalProperty() throws Exception {
     EntityCollection entityCollection = new EntityCollection();
     BigDecimal b = new BigDecimal("1.666666666666666666666666666666667");
     entityCollection.getEntities().add(new Entity()

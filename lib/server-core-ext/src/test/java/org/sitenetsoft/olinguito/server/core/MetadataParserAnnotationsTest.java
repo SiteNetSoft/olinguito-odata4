@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -55,14 +56,14 @@ import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class MetadataParserAnnotationsTest {
+class MetadataParserAnnotationsTest {
   final String NS = "Org.OData.AnnoatationTest";
   final FullQualifiedName NSF = new FullQualifiedName(NS);
 
   CsdlEdmProvider provider = null;
 
   @BeforeEach
-  public void setUp() throws Exception {
+  void setUp() throws Exception {
     MetadataParser parser = new MetadataParser();
     parser.parseAnnotations(true);
     parser.useLocalCoreVocabularies(true);
@@ -79,7 +80,7 @@ public class MetadataParserAnnotationsTest {
   }
   
   @Test
-  public void testConstantExpressionAttribute() throws ODataException {
+  void testConstantExpressionAttribute() throws ODataException {
     CsdlAnnotation a = annotation("Core.Description");
     assertNotNull(a);
     assertTrue(a.getExpression() instanceof CsdlConstantExpression);
@@ -94,7 +95,7 @@ public class MetadataParserAnnotationsTest {
   }
 
   @Test
-  public void testCollection() throws ODataException {
+  void testCollection() throws ODataException {
     CsdlAnnotation a = annotation("UI.CollectionFacet");
     assertNotNull(a);
     assertTrue(a.getExpression() instanceof CsdlCollection);
@@ -106,7 +107,7 @@ public class MetadataParserAnnotationsTest {
   }
   
   @Test
-  public void testApply() throws ODataException {
+  void testApply() throws ODataException {
     CsdlAnnotation a = annotation("org.example.display.DisplayNameApply");
     assertNotNull(a);
     assertTrue(a.getExpression() instanceof CsdlApply);
@@ -122,7 +123,7 @@ public class MetadataParserAnnotationsTest {
   }  
   
   @Test
-  public void testCast() throws ODataException {
+  void testCast() throws ODataException {
     CsdlAnnotation a = annotation("org.example.display.Threshold");
     assertNotNull(a);
     assertTrue(a.getExpression() instanceof CsdlCast);
@@ -134,7 +135,7 @@ public class MetadataParserAnnotationsTest {
   }  
   
   @Test
-  public void testIf() throws ODataException {
+  void testIf() throws ODataException {
     CsdlAnnotation a = annotation("org.example.person.Gender");
     assertNotNull(a);
     assertTrue(a.getExpression() instanceof CsdlIf);
@@ -150,7 +151,7 @@ public class MetadataParserAnnotationsTest {
   }  
   
   @Test
-  public void testIsOf() throws ODataException {
+  void testIsOf() throws ODataException {
     CsdlAnnotation a = annotation("Self.IsPreferredCustomer");
     assertNotNull(a);
     assertTrue(a.getExpression() instanceof CsdlIsOf);
@@ -164,7 +165,7 @@ public class MetadataParserAnnotationsTest {
   }
   
   @Test
-  public void testLableledElement() throws ODataException {
+  void testLableledElement() throws ODataException {
     CsdlAnnotation a = annotation("org.example.display.DisplayNameLabel");
     assertNotNull(a);
     assertTrue(a.getExpression() instanceof CsdlLabeledElement);
@@ -174,7 +175,7 @@ public class MetadataParserAnnotationsTest {
   }
   
   @Test
-  public void testLableledReference() throws ODataException {
+  void testLableledReference() throws ODataException {
     CsdlAnnotation a = annotation("org.example.display.DisplayNameLabelReference");
     assertNotNull(a);
     assertTrue(a.getExpression() instanceof CsdlLabeledElementReference);
@@ -183,14 +184,14 @@ public class MetadataParserAnnotationsTest {
   }
   
   @Test
-  public void testNull() throws ODataException {
+  void testNull() throws ODataException {
     CsdlAnnotation a = annotation("org.example.display.DisplayNameNull");
     assertNotNull(a);
     assertTrue(a.getExpression() instanceof CsdlNull);
   }
   
   @Test
-  public void testRecord() throws ODataException {
+  void testRecord() throws ODataException {
     CsdlAnnotation a = annotation("Capabilities.UpdateRestrictions");
     assertNotNull(a);
     assertTrue(a.getExpression() instanceof CsdlRecord);
@@ -208,7 +209,7 @@ public class MetadataParserAnnotationsTest {
   }
   
   @Test
-  public void testUrlRef() throws ODataException {
+  void testUrlRef() throws ODataException {
     CsdlAnnotation a = annotation("Vocab.Supplier");
     assertNotNull(a);
     assertTrue(a.getExpression() instanceof CsdlUrlRef);
@@ -218,19 +219,19 @@ public class MetadataParserAnnotationsTest {
   }
   
   @Test
-  public void testTermAppliesTo() throws ODataException {
+  void testTermAppliesTo() throws ODataException {
     CsdlTerm term = this.provider.getTerm(new FullQualifiedName(NS, "IsURI"));
     assertEquals(List.of("Property", "PropertyPath"), term.getAppliesTo());
   }
   
   @Test
-  public void checkCoreVocabularies() throws ODataException {
+  void checkCoreVocabularies() throws ODataException {
     CsdlTerm term = this.provider.getTerm(new FullQualifiedName("Org.OData.Core.V1", "Description"));
     assertEquals("Edm.String", term.getType());
   }
   
   @Test
-  public void testAnnotationGroup() throws ODataException {
+  void testAnnotationGroup() throws ODataException {
     CsdlAnnotations annotations = this.provider.getAnnotationsGroup(
         new FullQualifiedName("Org.OData.AnnoatationTest.TagX"), null);
     assertEquals(3, annotations.getAnnotations().size());

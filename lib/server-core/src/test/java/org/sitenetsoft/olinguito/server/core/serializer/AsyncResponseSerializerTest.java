@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.serializer;
 
@@ -34,11 +35,11 @@ import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
 import org.sitenetsoft.olinguito.server.api.ODataResponse;
 import org.junit.jupiter.api.Test;
 
-public class AsyncResponseSerializerTest {
+class AsyncResponseSerializerTest {
   private static final String CRLF = "\r\n";
 
   @Test
-  public void simpleResponse() throws Exception {
+  void simpleResponse() throws Exception {
     ODataResponse response = new ODataResponse();
     response.setStatusCode(HttpStatusCode.OK.getStatusCode());
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.APPLICATION_JSON.toContentTypeString());
@@ -56,7 +57,7 @@ public class AsyncResponseSerializerTest {
   }
 
   @Test
-  public void biggerResponse() throws Exception {
+  void biggerResponse() throws Exception {
     ODataResponse response = new ODataResponse();
     response.setStatusCode(HttpStatusCode.ACCEPTED.getStatusCode());
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.APPLICATION_JSON.toContentTypeString());

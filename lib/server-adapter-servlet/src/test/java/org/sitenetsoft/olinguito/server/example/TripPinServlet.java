@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.example;
 
@@ -39,7 +41,7 @@ import org.sitenetsoft.olinguito.server.core.OData4Impl;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class TripPinServlet extends HttpServlet {
+class TripPinServlet extends HttpServlet {
   @Serial
   private static final long serialVersionUID = 2663595419366214401L;
   private TripPinDataModel dataModel;

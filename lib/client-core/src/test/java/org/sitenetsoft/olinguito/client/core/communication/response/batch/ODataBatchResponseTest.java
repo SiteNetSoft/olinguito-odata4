@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core.communication.response.batch;
 
@@ -46,10 +47,10 @@ import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataBa
 import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataChangesetResponseItem;
 import org.junit.jupiter.api.Test;
 
-public class ODataBatchResponseTest {
+class ODataBatchResponseTest {
 
   @Test
-  public void testBatchResponse() throws URISyntaxException {
+  void testBatchResponse() throws URISyntaxException {
 
     ODataChangesetResponseItem expectedResItem = new ODataChangesetResponseItem(true);
     List<ODataBatchResponseItem> resList = new ArrayList<>();
@@ -61,7 +62,7 @@ public class ODataBatchResponseTest {
    }
   
   @Test
-  public void testErrorBatchResponse() throws URISyntaxException {
+  void testErrorBatchResponse() throws URISyntaxException {
     Map<String, Collection<String>> header = new HashMap<>();
     List<String> list = new ArrayList<>();
     list.add("multipart/mixed;boundary=changeset_12ks93js84d");

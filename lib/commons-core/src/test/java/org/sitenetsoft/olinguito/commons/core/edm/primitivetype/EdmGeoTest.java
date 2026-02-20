@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
@@ -36,10 +38,10 @@ import org.sitenetsoft.olinguito.commons.api.edm.geo.Point;
 import org.sitenetsoft.olinguito.commons.api.edm.geo.Polygon;
 import org.junit.jupiter.api.Test;
 
-public class EdmGeoTest extends PrimitiveTypeBaseTest {
+class EdmGeoTest extends PrimitiveTypeBaseTest {
 
   @Test
-  public void point() throws EdmPrimitiveTypeException {
+  void point() throws EdmPrimitiveTypeException {
     final String input = "geometry'SRID=0;Point(142.1 64.1)'";
 
     expectContentErrorInValueOfString(EdmGeographyPoint.getInstance(), input);
@@ -54,7 +56,7 @@ public class EdmGeoTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void multiPoint() throws EdmPrimitiveTypeException {
+  void multiPoint() throws EdmPrimitiveTypeException {
     final String input = "geography'SRID=0;MultiPoint((142.1 64.1),(1.0 2.0))'";
 
     expectContentErrorInValueOfString(EdmGeometryMultiPoint.getInstance(), input);
@@ -74,7 +76,7 @@ public class EdmGeoTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void lineString() throws EdmPrimitiveTypeException {
+  void lineString() throws EdmPrimitiveTypeException {
     final String input = "geography'SRID=0;LineString(142.1 64.1,3.14 2.78)'";
 
     expectContentErrorInValueOfString(EdmGeographyPoint.getInstance(), input);
@@ -92,7 +94,7 @@ public class EdmGeoTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void multiLineString() throws EdmPrimitiveTypeException {
+  void multiLineString() throws EdmPrimitiveTypeException {
     final String input = "geography'SRID=0;MultiLineString((142.1 64.1,3.14 2.78),(142.1 64.7,3.14 2.78))'";
 
     expectContentErrorInValueOfString(EdmGeographyPoint.getInstance(), input);
@@ -111,7 +113,7 @@ public class EdmGeoTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void polygon() throws EdmPrimitiveTypeException {
+  void polygon() throws EdmPrimitiveTypeException {
     final String input = "geography'SRID=0;Polygon((1.0 1.0,1.0 1.0),(1.0 1.0,2.0 2.0,3.0 3.0,1.0 1.0))'";
 
     expectContentErrorInValueOfString(EdmGeometryPolygon.getInstance(), input);
@@ -132,7 +134,7 @@ public class EdmGeoTest extends PrimitiveTypeBaseTest {
   }
   
   @Test
-  public void polygonMultipleHoles() throws EdmPrimitiveTypeException {
+  void polygonMultipleHoles() throws EdmPrimitiveTypeException {
     final String input = "geography'SRID=4326;Polygon((1.0 1.0,1.0 1.0),(2.0 2.0,2.0 2.0)"
       + ",(1.0 1.0,2.0 2.0,3.0 3.0,1.0 1.0))'";
 
@@ -157,7 +159,7 @@ public class EdmGeoTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void multiPolygon() throws EdmPrimitiveTypeException {
+  void multiPolygon() throws EdmPrimitiveTypeException {
     final String input = "geometry'SRID=0;MultiPolygon("
         + "((1.0 1.0,1.0 1.0),(1.0 1.0,2.0 2.0,3.0 3.0,1.0 1.0)),"
         + "((1.0 1.0,1.0 1.0),(1.0 1.0,2.0 2.0,3.0 3.0,1.0 1.0))"
@@ -182,7 +184,7 @@ public class EdmGeoTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void collection() throws EdmPrimitiveTypeException {
+  void collection() throws EdmPrimitiveTypeException {
     final String input = "geometry'SRID=0;Collection(LineString(142.1 64.1,3.14 2.78))'";
 
     final GeospatialCollection collection = EdmGeometryCollection.getInstance().

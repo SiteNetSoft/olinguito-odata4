@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed code formatting
  */
 package org.sitenetsoft.olinguito.server.api;
 
@@ -130,7 +132,7 @@ public abstract class ODataLibraryException extends ODataException {
     } catch (MissingFormatArgumentException e) {
       return new ODataErrorMessage("Missing replacement for place holder in message '" + message +
           "' for following arguments '" + Arrays.toString(parameters) + "'!", DEFAULT_LOCALE);
-    }finally{
+    } finally {
       f.close();
     }
   }

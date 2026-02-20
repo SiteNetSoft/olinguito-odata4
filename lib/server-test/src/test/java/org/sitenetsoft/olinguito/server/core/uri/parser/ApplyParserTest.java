@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -76,21 +78,21 @@ import org.sitenetsoft.olinguito.server.tecsvc.provider.PropertyProvider;
 import org.junit.jupiter.api.Test;
 
 /** Tests of the $apply parser inspired by the ABNF test cases. */
-public class ApplyParserTest {
+class ApplyParserTest {
 
   private static final OData odata = OData.newInstance();
   private static final Edm edm = odata.createServiceMetadata(
       new EdmTechProvider(), Collections.emptyList()).getEdm();
 
   @Test
-  public void basic() throws Exception {
+  void basic() throws Exception {
     parseEx("ESTwoKeyNav", "").isExSyntax(UriParserSyntaxException.MessageKeys.SYNTAX);
     parseEx("ESAllPrim(0)/PropertyInt16", "identity")
         .isExValidation(UriValidationException.MessageKeys.SYSTEM_QUERY_OPTION_NOT_ALLOWED);
   }
 
   @Test
-  public void aggregate() throws Exception {
+  void aggregate() throws Exception {
     parse("ESTwoKeyNav", "aggregate(PropertyInt16 with sum as s)")
         .is(Aggregate.class)
         .goAggregate(0).isStandardMethod(StandardMethod.SUM).isAlias("s")
@@ -125,20 +127,20 @@ public class ApplyParserTest {
   }
 
   @Test
-  public void customAggregate() throws Exception {
+  void customAggregate() throws Exception {
     parse("ESTwoKeyNav", "aggregate(customAggregate)").is(Aggregate.class).goAggregate(0).noExpression()
         .noInlineAggregateExpression().goPath().first().isUriPathInfoKind(UriResourceKind.primitiveProperty);
   }
 
   @Test
-  public void customAggregateNamedAsProperty() throws Exception {
+  void customAggregateNamedAsProperty() throws Exception {
     parse("ESTwoKeyNav", "aggregate(PropertyInt16)").is(Aggregate.class).goAggregate(0).noExpression()
         .noInlineAggregateExpression().goPath().first()
         .isPrimitiveProperty("PropertyInt16", PropertyProvider.nameInt16, false);
   }
 
   @Test
-  public void filterByCustomAggregate() throws Exception {
+  void filterByCustomAggregate() throws Exception {
     ApplyValidator validator = parse("ESTwoKeyNav", "filter(aggregate(customAggregate) gt 5)");
     FilterValidator filter = validator.is(Filter.class).goFilter().isBinary(BinaryOperatorKind.GT);
     AggregateValidator aggregate = aggregate(filter.root().left());
@@ -147,7 +149,7 @@ public class ApplyParserTest {
   }
 
   @Test
-  public void filterByCountAggregate() throws Exception {
+  void filterByCountAggregate() throws Exception {
     ApplyValidator validator = parse("ESTwoKeyNav", "filter(aggregate($count) ge 9)");
     FilterValidator filter = validator.is(Filter.class).goFilter().isBinary(BinaryOperatorKind.GE);
     AggregateValidator aggregate = aggregate(filter.root().left());
@@ -156,7 +158,7 @@ public class ApplyParserTest {
   }
 
   @Test
-  public void filterByTransformationAggregate() throws Exception {
+  void filterByTransformationAggregate() throws Exception {
     ApplyValidator validator = parse("ESTwoKeyNav", "filter(aggregate(PropertyInt16 with min) ne 3)");
     FilterValidator filter = validator.is(Filter.class).goFilter().isBinary(BinaryOperatorKind.NE);
     AggregateValidator aggregate = aggregate(filter.root().left());
@@ -166,7 +168,7 @@ public class ApplyParserTest {
   }
   
   @Test
-  public void filterByCustomAggregateNamedAsProperty() throws Exception {
+  void filterByCustomAggregateNamedAsProperty() throws Exception {
     ApplyValidator validator = parse("ESTwoKeyNav", "filter(aggregate(PropertyString) eq 'Evgeny')");
     FilterValidator filter = validator.is(Filter.class).goFilter().isBinary(BinaryOperatorKind.EQ);
     AggregateValidator aggregate = aggregate(filter.root().left());
@@ -176,7 +178,7 @@ public class ApplyParserTest {
   }
 
   @Test
-  public void aggregateExpression() throws Exception {
+  void aggregateExpression() throws Exception {
     parse("ESTwoKeyNav", "aggregate(PropertyInt16 mul PropertyComp/PropertyInt16 with sum as s)")
         .is(Aggregate.class)
         .goAggregate(0).isStandardMethod(StandardMethod.SUM)
@@ -198,7 +200,7 @@ public class ApplyParserTest {
   }
 
   @Test
-  public void aggregateCount() throws Exception {
+  void aggregateCount() throws Exception {
     parse("ESTwoKeyNav", "aggregate($count as count)")
         .is(Aggregate.class)
         .goAggregate(0).goPath().first().isCount();
@@ -209,7 +211,7 @@ public class ApplyParserTest {
   }
 
   @Test
-  public void aggregateFrom() throws Exception {
+  void aggregateFrom() throws Exception {
     parse("ESTwoKeyNav", "aggregate(PropertyInt16 with sum as s from CollPropertyComp with average)")
         .goAggregate(0).isStandardMethod(StandardMethod.SUM)
         .goFrom(0).isStandardMethod(StandardMethod.AVERAGE)
@@ -230,7 +232,7 @@ public class ApplyParserTest {
   }
 
   @Test
-  public void identity() throws Exception {
+  void identity() throws Exception {
     parse("ESTwoKeyNav", "identity").is(Identity.class);
 
     parseEx("ESTwoKeyNav", "identity()")
@@ -238,7 +240,7 @@ public class ApplyParserTest {
   }
 
   @Test
-  public void compute() throws Exception {
+  void compute() throws Exception {
     parse("ESTwoKeyNav", "compute(PropertyInt16 mul NavPropertyETKeyNavOne/PropertyInt16 as p)")
         .is(Compute.class)
         .goCompute(0).isAlias("p").goExpression().isBinary(BinaryOperatorKind.MUL)
@@ -255,7 +257,7 @@ public class ApplyParserTest {
   }
 
   @Test
-  public void concat() throws Exception {
+  void concat() throws Exception {
     parse("ESTwoKeyNav", "concat(topcount(2,PropertyInt16),bottomcount(2,PropertyInt16))")
         .is(Concat.class)
         .goConcat(0).goBottomTop().isMethod(Method.TOP_COUNT)
@@ -290,7 +292,7 @@ public class ApplyParserTest {
   }
 
   @Test
-  public void expand() throws Exception {
+  void expand() throws Exception {
     parse("ESTwoKeyNav", "expand(NavPropertyETKeyNavMany,filter(PropertyInt16 gt 2))")
         .is(Expand.class).goExpand()
         .goPath().first().isNavProperty("NavPropertyETKeyNavMany", EntityTypeProvider.nameETKeyNav, true)
@@ -309,7 +311,7 @@ public class ApplyParserTest {
   }
 
   @Test
-  public void search() throws Exception {
+  void search() throws Exception {
     parse("ESTwoKeyNav", "search(String)").isSearch("'String'");
 
     parseEx("ESTwoKeyNav", "search()")
@@ -317,7 +319,7 @@ public class ApplyParserTest {
   }
 
   @Test
-  public void filter() throws Exception {
+  void filter() throws Exception {
     parse("ESTwoKeyNav", "filter(PropertyInt16 gt 3)")
         .is(Filter.class)
         .goFilter().isBinary(BinaryOperatorKind.GT)
@@ -327,7 +329,7 @@ public class ApplyParserTest {
   }
 
   @Test
-  public void bottomTop() throws Exception {
+  void bottomTop() throws Exception {
     parse("ESTwoKeyNav", "topcount(2,PropertyInt16)")
         .goBottomTop().isMethod(Method.TOP_COUNT)
         .goNumber().isLiteralType(odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.SByte))
@@ -348,7 +350,7 @@ public class ApplyParserTest {
   }
 
   @Test
-  public void customFunction() throws Exception {
+  void customFunction() throws Exception {
     parse("ESBaseTwoKeyNav", "Namespace1_Alias.BFCESBaseTwoKeyNavRTESBaseTwoKey()")
         .isCustomFunction(FunctionProvider.nameBFCESBaseTwoKeyNavRTESBaseTwoKey);
     parse("ESKeyNav(1)/CollPropertyComp", "Namespace1_Alias.BFCCollCTPrimCompRTESAllPrim()")
@@ -365,20 +367,20 @@ public class ApplyParserTest {
   }
   
   @Test
-  public void concat2aggregatesSameAlias() throws Exception {
+  void concat2aggregatesSameAlias() throws Exception {
     parse("ESTwoKeyNav",
         "concat(aggregate(PropertyInt16 with sum as s),aggregate(PropertyInt16 with max as s))")
         .is(Concat.class).goConcat(0).goAggregate(0).goUp().goUp().goConcat(1).goAggregate(0);
   }
 
   @Test
-  public void aggregate2expressionsSameAlias() throws Exception {
+  void aggregate2expressionsSameAlias() throws Exception {
     parseEx("ESTwoKeyNav", "aggregate(PropertyInt16 with sum as s,PropertyInt16 with max as s)")
     .isExSemantic(UriParserSemanticException.MessageKeys.IS_PROPERTY);
   }
 
   @Test
-  public void groupBy() throws Exception {
+  void groupBy() throws Exception {
     parse("ESTwoKeyNav", "groupby((PropertyString))")
         .is(GroupBy.class)
         .goGroupBy(0).goPath().first().isPrimitiveProperty("PropertyString", PropertyProvider.nameString, false);
@@ -415,7 +417,7 @@ public class ApplyParserTest {
   }
 
   @Test
-  public void groupByAggregate() throws Exception {
+  void groupByAggregate() throws Exception {
     parse("ESTwoKeyNav", "groupby((PropertyInt16),aggregate(PropertyInt16 with sum as s))")
         .goGroupByOption().goAggregate(0).isStandardMethod(StandardMethod.SUM)
         .goExpression().goPath().first().isPrimitiveProperty("PropertyInt16", PropertyProvider.nameInt16, false);
@@ -455,7 +457,7 @@ public class ApplyParserTest {
   }
 
   @Test
-  public void groupByRollUp() throws Exception {
+  void groupByRollUp() throws Exception {
     parse("ESTwoKeyNav",
         "groupby((rollup(NavPropertyETKeyNavOne/PropertyInt16,NavPropertyETKeyNavOne/PropertyString),"
         + "rollup(NavPropertyETKeyNavOne/NavPropertyETTwoKeyNavOne/PropertyInt16,"
@@ -479,7 +481,7 @@ public class ApplyParserTest {
   }
 
   @Test
-  public void groupBySpecial() throws Exception {
+  void groupBySpecial() throws Exception {
     parse("ESTwoKeyNav", "groupby((NavPropertyETTwoKeyNavOne/PropertyInt16),aggregate(customAggregate))")
         .is(GroupBy.class)
         .goGroupByOption().goAggregate(0)
@@ -519,7 +521,7 @@ public class ApplyParserTest {
   }
 
   @Test
-  public void sequence() throws Exception {
+  void sequence() throws Exception {
     parse("ESTwoKeyNav", "identity/identity/identity")
         .at(0).is(Identity.class).at(1).is(Identity.class).at(2).is(Identity.class);
 
@@ -569,7 +571,7 @@ public class ApplyParserTest {
   }
 
   @Test
-  public void otherQueryOptions() throws Exception {
+  void otherQueryOptions() throws Exception {
     new TestUriValidator().setEdm(edm).run("ESTwoKeyNav",
         "$apply=aggregate(PropertyInt16 with sum as s)&$filter=s gt 3&$select=s")
         .goSelectItemPath(0).first().isPrimitiveProperty("s", PropertyProvider.nameDecimal, false)
@@ -582,7 +584,7 @@ public class ApplyParserTest {
   }
 
   @Test
-  public void onCount() throws Exception {
+  void onCount() throws Exception {
     parse("ESTwoKeyNav/$count", "aggregate(PropertyInt16 with sum as s)")
         .goAggregate(0).isStandardMethod(StandardMethod.SUM).isAlias("s")
         .goExpression().goPath().first()

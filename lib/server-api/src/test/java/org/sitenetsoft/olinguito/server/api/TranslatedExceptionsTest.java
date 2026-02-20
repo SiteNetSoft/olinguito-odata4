@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.api;
 
@@ -29,7 +31,7 @@ import java.util.Locale;
 import org.sitenetsoft.olinguito.server.api.ODataLibraryException.ODataErrorMessage;
 import org.junit.jupiter.api.Test;
 
-public class TranslatedExceptionsTest {
+class TranslatedExceptionsTest {
 
   private static final String DEV = "devMessage";
 
@@ -56,7 +58,7 @@ public class TranslatedExceptionsTest {
   }
 
   @Test
-  public void basic() {
+  void basic() {
     TestException exp = new TestException(TestException.Keys.BASIC);
     assertEquals(DEV, exp.getMessage());
     assertEquals(DEV, exp.toString());
@@ -71,35 +73,35 @@ public class TranslatedExceptionsTest {
   }
 
   @Test
-  public void unusedParametersMustNotResultInAnException() {
+  void unusedParametersMustNotResultInAnException() {
     TestException exp = new TestException(TestException.Keys.BASIC, "unusedParam1", "unusedParam2");
     assertEquals(DEV, exp.getMessage());
     checkTranslatedMessage(exp.getTranslatedMessage(null), "Test Default", Locale.ENGLISH);
   }
 
   @Test
-  public void useOneParameter() {
+  void useOneParameter() {
     TestException exp = new TestException(TestException.Keys.ONEPARAM, "usedParam1");
     assertEquals(DEV, exp.getMessage());
     checkTranslatedMessage(exp.getTranslatedMessage(null), "Param1: usedParam1", Locale.ENGLISH);
   }
 
   @Test
-  public void useOneParameterExpectedButMultipleGiven() {
+  void useOneParameterExpectedButMultipleGiven() {
     TestException exp = new TestException(TestException.Keys.ONEPARAM, "usedParam1", "unusedParam2");
     assertEquals(DEV, exp.getMessage());
     checkTranslatedMessage(exp.getTranslatedMessage(null), "Param1: usedParam1", Locale.ENGLISH);
   }
 
   @Test
-  public void useTwoParameters() {
+  void useTwoParameters() {
     TestException exp = new TestException(TestException.Keys.TWOPARAM, "usedParam1", "usedParam2");
     assertEquals(DEV, exp.getMessage());
     checkTranslatedMessage(exp.getTranslatedMessage(null), "Param1: usedParam1 Param2: usedParam2", Locale.ENGLISH);
   }
 
   @Test
-  public void parametersNotGivenAlthoughNeeded() {
+  void parametersNotGivenAlthoughNeeded() {
     TestException exp = new TestException(TestException.Keys.ONEPARAM);
     assertEquals(DEV, exp.getMessage());
 
@@ -109,7 +111,7 @@ public class TranslatedExceptionsTest {
   }
 
   @Test
-  public void noMessageKey() {
+  void noMessageKey() {
     TestException exp = new TestException(null);
     assertEquals(DEV, exp.getMessage());
 
@@ -119,7 +121,7 @@ public class TranslatedExceptionsTest {
   }
 
   @Test
-  public void noMessageForKey() {
+  void noMessageForKey() {
     TestException exp = new TestException(TestException.Keys.NOMESSAGE);
     assertEquals(DEV, exp.getMessage());
 
@@ -129,7 +131,7 @@ public class TranslatedExceptionsTest {
   }
 
   @Test
-  public void keyForRootBundleButNotPresentInDerivedBundle() {
+  void keyForRootBundleButNotPresentInDerivedBundle() {
     TestException exp = new TestException(TestException.Keys.ONLY_ROOT);
     assertEquals(DEV, exp.getMessage());
 
@@ -138,7 +140,7 @@ public class TranslatedExceptionsTest {
   }
 
   @Test
-  public void defaultLocale() {
+  void defaultLocale() {
     TestException exp = new TestException(TestException.Keys.ONLY_GERMAN);
     assertEquals(DEV, exp.getMessage());
 
@@ -163,14 +165,14 @@ public class TranslatedExceptionsTest {
   }
   
   @Test
-  public void testODataApplicationException1() {
+  void testODataApplicationException1() {
     ODataApplicationException exp = new ODataApplicationException("Exception", 500,
         Locale.ENGLISH, new RuntimeException("Error"));
     assertNotNull(exp);
   }
   
   @Test
-  public void testODataApplicationException2() {
+  void testODataApplicationException2() {
     ODataApplicationException exp = new ODataApplicationException("Exception", 
         500, Locale.ENGLISH, new RuntimeException("Error"), "500");
     assertNotNull(exp);

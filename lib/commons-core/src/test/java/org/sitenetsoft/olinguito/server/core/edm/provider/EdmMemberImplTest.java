@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -26,10 +28,10 @@ import org.sitenetsoft.olinguito.commons.core.edm.EdmMemberImpl;
 import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
 import org.junit.jupiter.api.Test;
 
-public class EdmMemberImplTest {
+class EdmMemberImplTest {
 
   @Test
-  public void enumMember() {
+  void enumMember() {
     final CsdlEnumMember member = new CsdlEnumMember().setName("name").setValue("value");
     final EdmMemberImpl memberImpl = new EdmMemberImpl(mock(EdmProviderImpl.class), member);
 

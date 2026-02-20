@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.batch;
 
@@ -26,7 +28,7 @@ import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchDeserializer
 import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchDeserializerException.MessageKeys;
 import org.junit.jupiter.api.Test;
 
-public class HttpRequestStatusLineTest {
+class HttpRequestStatusLineTest {
 
   private static final String HTTP_VERSION = "HTTP/1.1";
   private static final String SPACE = " ";
@@ -34,7 +36,7 @@ public class HttpRequestStatusLineTest {
   private String serviceResolutionUri = "";
 
   @Test
-  public void absolute() throws BatchDeserializerException {
+  void absolute() throws BatchDeserializerException {
     final HttpRequestStatusLine line = parse("http://localhost/odata/ESAllPrim?$top=2");
     assertEquals("$top=2", line.getRawQueryPath());
     assertEquals("/ESAllPrim", line.getRawODataPath());
@@ -44,7 +46,7 @@ public class HttpRequestStatusLineTest {
   }
 
   @Test
-  public void absoluteWithRelativePath() throws BatchDeserializerException {
+  void absoluteWithRelativePath() throws BatchDeserializerException {
     final HttpRequestStatusLine line = parse("http://localhost/odata/../../ESAllPrim?$top=2");
     assertEquals("/../../ESAllPrim", line.getRawODataPath());
     assertEquals("$top=2", line.getRawQueryPath());
@@ -54,7 +56,7 @@ public class HttpRequestStatusLineTest {
   }
 
   @Test
-  public void absolutePath() throws BatchDeserializerException {
+  void absolutePath() throws BatchDeserializerException {
     final HttpRequestStatusLine line = parse("/odata/ESAllPrim");
     assertEquals("/ESAllPrim", line.getRawODataPath());
     assertEquals(baseUri + "/ESAllPrim", line.getRawRequestUri());
@@ -63,7 +65,7 @@ public class HttpRequestStatusLineTest {
   }
 
   @Test
-  public void relativeWithDots() throws BatchDeserializerException {
+  void relativeWithDots() throws BatchDeserializerException {
     final HttpRequestStatusLine line = parse("../../ESAllPrim?$top=2");
     assertEquals("/../../ESAllPrim", line.getRawODataPath());
     assertEquals("$top=2", line.getRawQueryPath());
@@ -73,7 +75,7 @@ public class HttpRequestStatusLineTest {
   }
 
   @Test
-  public void relative() throws BatchDeserializerException {
+  void relative() throws BatchDeserializerException {
     final HttpRequestStatusLine line = parse("ESAllPrim?$top=2");
     assertEquals("$top=2", line.getRawQueryPath());
     assertEquals("/ESAllPrim", line.getRawODataPath());
@@ -83,7 +85,7 @@ public class HttpRequestStatusLineTest {
   }
 
   @Test
-  public void relativeMultipleSegments() throws BatchDeserializerException {
+  void relativeMultipleSegments() throws BatchDeserializerException {
     final HttpRequestStatusLine line = parse("ESKeyNav(1)/NavPropertyETTwoKeyNavOne/PropertyComp");
     assertEquals("", line.getRawQueryPath());
     assertEquals("/ESKeyNav(1)/NavPropertyETTwoKeyNavOne/PropertyComp", line.getRawODataPath());
@@ -93,12 +95,12 @@ public class HttpRequestStatusLineTest {
   }
 
   @Test
-  public void otherBaseUri() throws BatchDeserializerException {
+  void otherBaseUri() throws BatchDeserializerException {
     parseFail("http://otherhost/odata/ESAllPrim", MessageKeys.INVALID_BASE_URI);
   }
 
   @Test
-  public void invalidRelative() throws BatchDeserializerException {
+  void invalidRelative() throws BatchDeserializerException {
     parseFail("/ESAllPrim", MessageKeys.INVALID_URI);
   }
 

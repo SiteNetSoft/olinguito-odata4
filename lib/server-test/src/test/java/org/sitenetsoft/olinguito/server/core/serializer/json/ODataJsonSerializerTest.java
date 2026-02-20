@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -100,7 +101,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class ODataJsonSerializerTest {
+class ODataJsonSerializerTest {
   private static final OData odata = OData.newInstance();
   private static final ServiceMetadata metadata = odata.createServiceMetadata(
       new EdmTechProvider(), Collections.emptyList(), new MetadataETagSupport("W/\"metadataETag\""));
@@ -120,7 +121,7 @@ public class ODataJsonSerializerTest {
   
 
   @Test
-  public void entitySimple() throws Exception {
+  void entitySimple() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     InputStream result = serializer.entity(metadata, edmEntitySet.getEntityType(), entity,
@@ -152,7 +153,7 @@ public class ODataJsonSerializerTest {
   }
   
   @Test
-  public void entitySimpleNewDateTimeAPI() throws Exception {
+  void entitySimpleNewDateTimeAPI() throws Exception {
 	  final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
 	  final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
 	  entity.getProperty("PropertyDate").setValue(ValueType.PRIMITIVE, LocalDate.parse("2012-12-03"));
@@ -188,7 +189,7 @@ public class ODataJsonSerializerTest {
   }
   
   @Test
-  public void entitySimpleMetadataFull() throws Exception {
+  void entitySimpleMetadataFull() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     InputStream result = serializerFullMetadata.entity(metadata, edmEntitySet.getEntityType(), entity,
@@ -240,7 +241,7 @@ public class ODataJsonSerializerTest {
   }
   
   @Test
-  public void entitySetMetadataFull() throws Exception {
+  void entitySetMetadataFull() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final EntityCollection entityCol = data.readAll(edmEntitySet);
     InputStream result = serializerFullMetadata.entityCollection(metadata, edmEntitySet.getEntityType(), entityCol,
@@ -307,7 +308,7 @@ public class ODataJsonSerializerTest {
   }  
   
   @Test
-  public void entitySetMetadataFullWithExpand() throws Exception {
+  void entitySetMetadataFullWithExpand() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final EntityCollection entityCol = data.readAll(edmEntitySet);
     final ExpandOption expand = ExpandSelectMock.mockExpandOption(Collections.singletonList(
@@ -401,7 +402,7 @@ public class ODataJsonSerializerTest {
   }  
   
   @Test
-  public void entityAllPrimAllNull() throws Exception {
+  void entityAllPrimAllNull() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     entity.getProperties().retainAll(Collections.singletonList(entity.getProperties().get(0)));
@@ -424,7 +425,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void entityAllPrimKeyNull() throws Exception {
+  void entityAllPrimKeyNull() throws Exception {
       assertThrows(SerializerException.class, () -> {
           final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
           Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
@@ -437,7 +438,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void entityWrongData() throws Exception {
+  void entityWrongData() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     entity.getProperties().get(0).setValue(ValueType.PRIMITIVE, false);
@@ -456,7 +457,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void entitySetCompAllPrim() throws Exception {
+  void entitySetCompAllPrim() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESCompAllPrim");
     EntityCollection entitySet = data.readAll(edmEntitySet);
     entitySet.setCount(entitySet.getEntities().size());
@@ -487,7 +488,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void entityCollectionStreamed() throws Exception {
+  void entityCollectionStreamed() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final EntityIterator entityIterator = new EntityIterator() {
       final EntityCollection entityCollection = data.readAll(edmEntitySet);
@@ -535,7 +536,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void entityCollectionStreamedWithError() throws Exception {
+  void entityCollectionStreamedWithError() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final EntityIterator entityIterator = new EntityIterator() {
       final EntityCollection entityCollection = data.readAll(edmEntitySet);
@@ -586,7 +587,7 @@ public class ODataJsonSerializerTest {
 
 
   @Test
-  public void entityCollAllPrim() throws Exception {
+  void entityCollAllPrim() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESCollAllPrim");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     InputStream result = serializer.entity(metadata, edmEntitySet.getEntityType(), entity,
@@ -623,7 +624,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void entityCompAllPrim() throws Exception {
+  void entityCompAllPrim() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESCompAllPrim");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     InputStream result = serializer.entity(metadata, edmEntitySet.getEntityType(), entity,
@@ -658,7 +659,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void entityMixPrimCollComp() throws Exception {
+  void entityMixPrimCollComp() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESMixPrimCollComp");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     InputStream result = serializer.entity(metadata, edmEntitySet.getEntityType(), entity,
@@ -682,7 +683,7 @@ public class ODataJsonSerializerTest {
   }
   
   @Test
-  public void derivedEntityESCompCollDerived() throws Exception {
+  void derivedEntityESCompCollDerived() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESCompCollDerived");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(1);
     InputStream result = serializer.entity(metadata, edmEntitySet.getEntityType(), entity,
@@ -708,7 +709,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void deriveEntityESAllPrimDerivedOne() throws Exception {
+  void deriveEntityESAllPrimDerivedOne() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrimDerived");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
    
@@ -737,7 +738,7 @@ public class ODataJsonSerializerTest {
   
 
   @Test
-  public void deriveEntityWithNull() throws Exception {
+  void deriveEntityWithNull() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrimDerived");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(1);
    
@@ -763,7 +764,7 @@ public class ODataJsonSerializerTest {
   }
   
   @Test
-  public void deriveEntityESAllPrimDerived() throws Exception {
+  void deriveEntityESAllPrimDerived() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrimDerived");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(2);
     final ExpandOption expand = ExpandSelectMock.mockExpandOption(Collections.singletonList(
@@ -794,7 +795,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void entityMixPrimCollCompAllNull() throws Exception {
+  void entityMixPrimCollCompAllNull() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESMixPrimCollComp");
     Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     entity.getProperties().retainAll(Collections.singletonList(entity.getProperties().get(0)));
@@ -810,7 +811,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void nullCollectionButInDataMap() throws Exception {
+  void nullCollectionButInDataMap() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESMixEnumDefCollComp");
     Entity entity = new Entity();
     entity.setId(URI.create("id"));
@@ -843,7 +844,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void nullComplexValueButInDataMapAndNullCollectionsNotInDataMap() throws Exception {
+  void nullComplexValueButInDataMapAndNullCollectionsNotInDataMap() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESMixEnumDefCollComp");
     Entity entity = new Entity();
     entity.setId(URI.create("id"));
@@ -866,7 +867,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void enumAndTypeDefinition() throws Exception {
+  void enumAndTypeDefinition() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESMixEnumDefCollComp");
     Entity entity = new Entity();
     entity.setId(URI.create("id"));
@@ -904,7 +905,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void entityTwoPrimNoMetadata() throws Exception {
+  void entityTwoPrimNoMetadata() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESTwoPrim");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     final String resultString = new String(serializerNoMetadata
@@ -915,7 +916,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void entityTwoPrimWithMetadataMinimal() throws Exception {
+  void entityTwoPrimWithMetadataMinimal() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESTwoPrim");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     InputStream result = serializer
@@ -930,7 +931,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void entitySetTwoPrimWithMetadataFull() throws Exception {
+  void entitySetTwoPrimWithMetadataFull() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESTwoPrim");
     final EntityCollection entitySet = data.readAll(edmEntitySet);
     InputStream result = serializerFullMetadata
@@ -1010,7 +1011,7 @@ public class ODataJsonSerializerTest {
   }
   
   @Test
-  public void entityWithStreamMetadataMinimal() throws Exception {
+  void entityWithStreamMetadataMinimal() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESWithStream");
     final EntityCollection collection = data.readAll(edmEntitySet);
     InputStream result = serializer.entityCollection(metadata, edmEntitySet.getEntityType(), collection,
@@ -1027,7 +1028,7 @@ public class ODataJsonSerializerTest {
   }
   
   @Test
-  public void entityWithStreamMetadataNone() throws Exception {
+  void entityWithStreamMetadataNone() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESWithStream");
     final EntityCollection collection = data.readAll(edmEntitySet);
     InputStream result = serializerNoMetadata.entityCollection(metadata, edmEntitySet.getEntityType(), collection,
@@ -1042,7 +1043,7 @@ public class ODataJsonSerializerTest {
   }  
 
   @Test
-  public void entityWithStreamMetadataFull() throws Exception {
+  void entityWithStreamMetadataFull() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESWithStream");
     final EntityCollection collection = data.readAll(edmEntitySet);
     InputStream result = serializerFullMetadata.entityCollection(metadata, edmEntitySet.getEntityType(), collection,
@@ -1073,7 +1074,7 @@ public class ODataJsonSerializerTest {
   }  
   
   @Test
-  public void entitySetTwoPrimNoMetadata() throws Exception {
+  void entitySetTwoPrimNoMetadata() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESTwoPrim");
     final EntityCollection entitySet = data.readAll(edmEntitySet);
     final String resultString = new String(serializerNoMetadata
@@ -1089,7 +1090,7 @@ public class ODataJsonSerializerTest {
     Assertions.assertEquals(expectedResult, resultString);
   }
   @Test
-  public void entityWithStreamExpand() throws Exception {
+  void entityWithStreamExpand() throws Exception {
       assertThrows(SerializerException.class, () -> {
           final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESWithStream");
           final EntityCollection collection = data.readAll(edmEntitySet);
@@ -1103,7 +1104,7 @@ public class ODataJsonSerializerTest {
   }
   
   @Test
-  public void entityMedia() throws Exception {
+  void entityMedia() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESMedia");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     final String resultString = new String(serializer.entity(metadata, edmEntitySet.getEntityType(),
@@ -1121,7 +1122,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void entitySetMedia() throws Exception {
+  void entitySetMedia() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESMedia");
     final EntityCollection entitySet = data.readAll(edmEntitySet);
     final String resultString = new String(serializer.entityCollection(metadata,
@@ -1144,7 +1145,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void entityMediaWithMetadataFull() throws Exception {
+  void entityMediaWithMetadataFull() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESMedia");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     entity.setMediaETag("W/\\\"08D25949E3BFB7AB\\\"");
@@ -1164,7 +1165,7 @@ public class ODataJsonSerializerTest {
   }
   
   @Test
-  public void primitiveValuesAllNull() throws Exception {
+  void primitiveValuesAllNull() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllNullable");
     final EntityCollection entitySet = data.readAll(edmEntitySet);
     final String resultString = new String(serializer.entityCollection(metadata,
@@ -1196,7 +1197,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void select() throws Exception {
+  void select() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final EdmEntityType entityType = edmEntitySet.getEntityType();
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
@@ -1222,7 +1223,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void selectAll() throws Exception {
+  void selectAll() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESTwoPrim");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     final SelectItem selectItem1 = ExpandSelectMock.mockSelectItem(edmEntitySet, "PropertyString");
@@ -1242,7 +1243,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void selectComplex() throws Exception {
+  void selectComplex() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESFourKeyAlias");
     final EdmEntityType entityType = edmEntitySet.getEntityType();
     final EntityCollection entitySet = data.readAll(edmEntitySet);
@@ -1277,7 +1278,7 @@ public class ODataJsonSerializerTest {
   }
   
   @Test
-  public void selectExtendedComplexType() throws Exception {
+  void selectExtendedComplexType() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESFourKeyAlias");
     final EdmEntityType entityType = edmEntitySet.getEntityType();
     final EntityCollection entitySet = data.readAll(edmEntitySet);
@@ -1309,7 +1310,7 @@ public class ODataJsonSerializerTest {
   }  
 
   @Test
-  public void selectComplexTwice() throws Exception {
+  void selectComplexTwice() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESFourKeyAlias");
     final EdmEntityType entityType = edmEntitySet.getEntityType();
     final EntityCollection entitySet = data.readAll(edmEntitySet);
@@ -1346,7 +1347,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void selectComplexNestedCollectionOfComplexWithMetadataFull() throws Exception{
+  void selectComplexNestedCollectionOfComplexWithMetadataFull() throws Exception{
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESCompCollComp");
     final EntityCollection entitySet = data.readAll(edmEntitySet);
     InputStream result = serializerFullMetadata
@@ -1409,7 +1410,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void selectComplexNestedCollectionOfComplexWithMetadataMinimal() throws Exception{
+  void selectComplexNestedCollectionOfComplexWithMetadataMinimal() throws Exception{
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESCompCollComp");
     final EntityCollection entitySet = data.readAll(edmEntitySet);
     InputStream result = serializer
@@ -1452,7 +1453,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void selectComplexNestedCollectionOfComplexWithMetadataNone() throws Exception{
+  void selectComplexNestedCollectionOfComplexWithMetadataNone() throws Exception{
     final String METADATA_TEXT = "@odata.";
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESCompCollComp");
     final EntityCollection entitySet = data.readAll(edmEntitySet);
@@ -1467,7 +1468,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void selectMissingId() throws Exception {
+  void selectMissingId() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final EdmEntityType entityType = edmEntitySet.getEntityType();
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
@@ -1493,7 +1494,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void expand() throws Exception {
+  void expand() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESTwoPrim");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(3);
     final ExpandOption expand = ExpandSelectMock.mockExpandOption(Collections.singletonList(
@@ -1528,7 +1529,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void expandSelect() throws Exception {
+  void expandSelect() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESTwoPrim");
     final EdmEntityType entityType = edmEntitySet.getEntityType();
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(3);
@@ -1556,7 +1557,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void expandAll() throws Exception {
+  void expandAll() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final EdmEntityType entityType = edmEntitySet.getEntityType();
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
@@ -1588,7 +1589,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void expandNoData() throws Exception {
+  void expandNoData() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final EdmEntityType entityType = edmEntitySet.getEntityType();
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(1);
@@ -1617,7 +1618,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void expandTwoLevels() throws Exception {
+  void expandTwoLevels() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESTwoPrim");
     final EdmEntityType entityType = edmEntitySet.getEntityType();
     final EdmEntitySet innerEntitySet = entityContainer.getEntitySet("ESAllPrim");
@@ -1659,7 +1660,7 @@ public class ODataJsonSerializerTest {
   }
   
   @Test
-  public void expandStarTwoLevels() throws Exception {
+  void expandStarTwoLevels() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESTwoPrim");
     final EdmEntityType entityType = edmEntitySet.getEntityType();
     final EdmEntitySet innerEntitySet = entityContainer.getEntitySet("ESAllPrim");
@@ -1709,7 +1710,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void expandWithNextLink() throws Exception {
+  void expandWithNextLink() throws Exception {
 
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESTwoPrim");
     final EdmEntityType entityType = edmEntitySet.getEntityType();
@@ -1748,7 +1749,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void primitiveProperty() throws Exception {
+  void primitiveProperty() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("PropertyString");
     final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty(edmProperty.getName());
@@ -1767,7 +1768,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void primitivePropertyNoMetadata() throws Exception {
+  void primitivePropertyNoMetadata() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("PropertyString");
     final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty(edmProperty.getName());
@@ -1778,7 +1779,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void primitivePropertyWithMetadataFull() throws Exception {
+  void primitivePropertyWithMetadataFull() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType()
         .getProperty("PropertyString");
@@ -1800,7 +1801,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void primitivePropertyNull() throws Exception {
+  void primitivePropertyNull() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("PropertyString");
     final Property property = new Property("Edm.String", edmProperty.getName(), ValueType.PRIMITIVE, null);
@@ -1818,7 +1819,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void primitiveCollectionProperty() throws Exception {
+  void primitiveCollectionProperty() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESCollAllPrim");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("CollPropertyString");
     final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty(edmProperty.getName());
@@ -1838,7 +1839,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void primitiveCollectionNoMetadata() throws Exception {
+  void primitiveCollectionNoMetadata() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESCollAllPrim");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("CollPropertyString");
     final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty(edmProperty.getName());
@@ -1851,7 +1852,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void primitiveCollectionPropertyWithMetadataFull() throws Exception {
+  void primitiveCollectionPropertyWithMetadataFull() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESCollAllPrim");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("CollPropertyString");
     final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty(edmProperty.getName());
@@ -1870,7 +1871,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void complexProperty() throws Exception {
+  void complexProperty() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESMixPrimCollComp");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("PropertyComp");
     final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty("PropertyComp");
@@ -1890,7 +1891,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void complexPropertyNoMetadata() throws Exception {
+  void complexPropertyNoMetadata() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESMixPrimCollComp");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("PropertyComp");
     final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty("PropertyComp");
@@ -1901,7 +1902,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void complexPropertyWithMetadataFull() throws Exception {
+  void complexPropertyWithMetadataFull() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESMixPrimCollComp");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("PropertyComp");
     final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty("PropertyComp");
@@ -1920,7 +1921,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void complexCollectionProperty() throws Exception {
+  void complexCollectionProperty() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESMixPrimCollComp");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("CollPropertyComp");
     final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty(edmProperty.getName());
@@ -1943,7 +1944,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void complexCollectionPropertyNoMetadata() throws Exception {
+  void complexCollectionPropertyNoMetadata() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESMixPrimCollComp");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("CollPropertyComp");
     final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty(edmProperty.getName());
@@ -1957,7 +1958,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void complexCollectionPropertyWithMetadataFull() throws Exception {
+  void complexCollectionPropertyWithMetadataFull() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESMixPrimCollComp");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("CollPropertyComp");
     final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty(edmProperty.getName());
@@ -1988,7 +1989,7 @@ public class ODataJsonSerializerTest {
   }
   
   @Test
-  public void entityReference() throws Exception {
+  void entityReference() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
 
@@ -2002,7 +2003,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void entityReferenceNoMetadata() throws Exception {
+  void entityReferenceNoMetadata() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     final String resultString = new String(
@@ -2012,7 +2013,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void entityCollectionReference() throws Exception {
+  void entityCollectionReference() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final EntityCollection entityCollection = data.readAll(edmEntitySet);
 
@@ -2033,7 +2034,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void entityCollectionReferenceEmpty() throws Exception {
+  void entityCollectionReferenceEmpty() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final EntityCollection entityCollection = new EntityCollection();
 
@@ -2050,7 +2051,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void entityCollectionReferenceEmptyNoMetadata() throws Exception {
+  void entityCollectionReferenceEmptyNoMetadata() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final EntityCollection entityCollection = new EntityCollection();
     final String resultString = new String(serializerNoMetadata
@@ -2060,7 +2061,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void entityIEE754Compatible() throws Exception {
+  void entityIEE754Compatible() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     InputStream result = serializerIEEECompatible.entity(metadata, edmEntitySet.getEntityType(), entity,
@@ -2092,7 +2093,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void entityCollAllPrimIEEE754Compatible() throws Exception {
+  void entityCollAllPrimIEEE754Compatible() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESCollAllPrim");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     InputStream result = serializerIEEECompatible.entity(metadata, edmEntitySet.getEntityType(), entity,
@@ -2129,7 +2130,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void primitiveCollectionPropertyIEEE754CompatibleInt64() throws Exception {
+  void primitiveCollectionPropertyIEEE754CompatibleInt64() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESCollAllPrim");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("CollPropertyInt64");
     final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty(edmProperty.getName());
@@ -2148,7 +2149,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void primitiveCollectionPropertyIEEE754CompatibleDecimal() throws Exception {
+  void primitiveCollectionPropertyIEEE754CompatibleDecimal() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESCollAllPrim");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("CollPropertyDecimal");
     final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty(edmProperty.getName());
@@ -2167,7 +2168,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void primitivePropertyIEEE754CompatibleInt64() throws Exception {
+  void primitivePropertyIEEE754CompatibleInt64() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("PropertyInt64");
     final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty(edmProperty.getName());
@@ -2185,7 +2186,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void primitivePropertyIEEE754CompatibleDecimal() throws Exception {
+  void primitivePropertyIEEE754CompatibleDecimal() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("PropertyDecimal");
     final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty(edmProperty.getName());
@@ -2203,7 +2204,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void entitySetAllPrimIEEE754CompatibleCount() throws Exception {
+  void entitySetAllPrimIEEE754CompatibleCount() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     EntityCollection entitySet = data.readAll(edmEntitySet);
     entitySet.setCount(entitySet.getEntities().size());
@@ -2233,7 +2234,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void entitySetAllPrimReferenceIEEE754CompatibleCount() throws Exception {
+  void entitySetAllPrimReferenceIEEE754CompatibleCount() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     EntityCollection entitySet = data.readAll(edmEntitySet);
     entitySet.setCount(entitySet.getEntities().size());
@@ -2262,7 +2263,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void geoPoint() throws Exception {
+  void geoPoint() throws Exception {
     final EdmEntityType entityType = mockEntityType(EdmPrimitiveTypeKind.GeometryPoint);
     Entity entity = new Entity()
         .addProperty(new Property(null, entityType.getPropertyNames().get(0), ValueType.GEOSPATIAL,
@@ -2283,7 +2284,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void geoMultiPoint() throws Exception {
+  void geoMultiPoint() throws Exception {
     final EdmEntityType entityType = mockEntityType(EdmPrimitiveTypeKind.GeometryMultiPoint);
     final Entity entity = new Entity()
         .addProperty(new Property(null, entityType.getPropertyNames().get(0), ValueType.GEOSPATIAL,
@@ -2296,7 +2297,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void geoLineString() throws Exception {
+  void geoLineString() throws Exception {
     final EdmEntityType entityType = mockEntityType(EdmPrimitiveTypeKind.GeometryLineString);
     final Entity entity = new Entity()
         .addProperty(new Property(null, entityType.getPropertyNames().get(0), ValueType.GEOSPATIAL,
@@ -2309,7 +2310,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void geoMultiLineString() throws Exception {
+  void geoMultiLineString() throws Exception {
     final EdmEntityType entityType = mockEntityType(EdmPrimitiveTypeKind.GeometryMultiLineString);
     final Entity entity = new Entity()
         .addProperty(new Property(null, entityType.getPropertyNames().get(0), ValueType.GEOSPATIAL,
@@ -2327,7 +2328,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void geoPolygon() throws Exception {
+  void geoPolygon() throws Exception {
     final EdmEntityType entityType = mockEntityType(EdmPrimitiveTypeKind.GeometryPolygon);
     Entity entity = new Entity()
         .addProperty(new Property(null, entityType.getPropertyNames().get(0), ValueType.GEOSPATIAL,
@@ -2356,7 +2357,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void geoMultiPolygon() throws Exception {
+  void geoMultiPolygon() throws Exception {
     final EdmEntityType entityType = mockEntityType(EdmPrimitiveTypeKind.GeometryMultiPolygon);
     final Entity entity = new Entity()
         .addProperty(new Property(null, entityType.getPropertyNames().get(0), ValueType.GEOSPATIAL,
@@ -2385,7 +2386,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void geoCollection() throws Exception {
+  void geoCollection() throws Exception {
     final EdmEntityType entityType = mockEntityType(EdmPrimitiveTypeKind.GeometryCollection);
     final Entity entity = new Entity()
         .addProperty(new Property(null, entityType.getPropertyNames().get(0), ValueType.GEOSPATIAL,
@@ -2413,7 +2414,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void geoNonstandardSRID() throws Exception {
+  void geoNonstandardSRID() throws Exception {
     final EdmEntityType entityType = mockEntityType(EdmPrimitiveTypeKind.GeometryPoint);
     final Entity entity = new Entity()
         .addProperty(new Property(null, entityType.getPropertyNames().get(0), ValueType.GEOSPATIAL,
@@ -2432,7 +2433,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void expandCycle() throws Exception {
+  void expandCycle() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESPeople");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(1);
     ExpandItem mockExpandItem = ExpandSelectMock.mockExpandItem(edmEntitySet, "friends");
@@ -2507,7 +2508,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void expandCycleWith3Level() throws Exception {
+  void expandCycleWith3Level() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESPeople");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(1);
     ExpandItem mockExpandItem = ExpandSelectMock.mockExpandItem(edmEntitySet, "friends");
@@ -2581,7 +2582,7 @@ public class ODataJsonSerializerTest {
   }
   
   @Test
-  public void deriveComplexProperty() throws Exception {
+  void deriveComplexProperty() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESMixPrimCollComp");
     EdmComplexType derivedComplexType = mockComplexType();
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("PropertyComp");
@@ -2644,7 +2645,7 @@ public class ODataJsonSerializerTest {
   }  
   
   @Test
-  public void entityESKeyNavContFullMetadata() throws Exception {
+  void entityESKeyNavContFullMetadata() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESKeyNavCont");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     InputStream result = serializerFullMetadata.entity(metadata, edmEntitySet.getEntityType(), entity,
@@ -2663,7 +2664,7 @@ public class ODataJsonSerializerTest {
   }
   
   @Test
-  public void entityESKeyNavContFullMetadataWithContNav() throws Exception {
+  void entityESKeyNavContFullMetadataWithContNav() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESKeyNavCont");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(1);
     Link link = entity.getNavigationLink("NavPropertyETContMany");
@@ -2721,7 +2722,7 @@ public class ODataJsonSerializerTest {
   }
   
   @Test
-  public void complexCollectionWithSelectProperty() throws Exception {
+  void complexCollectionWithSelectProperty() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESKeyNav");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("CollPropertyComp");
     final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty(edmProperty.getName());
@@ -2748,7 +2749,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void complexCollectionPropertyWithSelectNoMetadata() throws Exception {
+  void complexCollectionPropertyWithSelectNoMetadata() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESKeyNav");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("CollPropertyComp");
     final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty(edmProperty.getName());
@@ -2772,7 +2773,7 @@ public class ODataJsonSerializerTest {
   }
 
   @Test
-  public void complexCollectionPropertyWithSelectWithMetadataFull() throws Exception {
+  void complexCollectionPropertyWithSelectWithMetadataFull() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESKeyNav");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("CollPropertyComp");
     
@@ -2803,7 +2804,7 @@ public class ODataJsonSerializerTest {
   }
   
   @Test
-  public void selectNavigationProperty() throws Exception {
+  void selectNavigationProperty() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESTwoKeyNav");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     final SelectItem selectItem = ExpandSelectMock.mockSelectItem(edmEntitySet, 
@@ -2823,7 +2824,7 @@ public class ODataJsonSerializerTest {
   }
   
   @Test
-  public void entityWithExtendedComplexTypeWithMetadata() throws Exception {
+  void entityWithExtendedComplexTypeWithMetadata() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESCompMixPrimCollComp");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     final String resultString = new String(serializerFullMetadata
@@ -2865,7 +2866,7 @@ public class ODataJsonSerializerTest {
   }
   
   @Test
-  public void extendedcomplexPropertyWithNavWithMetadataFull() throws Exception {
+  void extendedcomplexPropertyWithNavWithMetadataFull() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESCompMixPrimCollComp");
     final EdmProperty edmComplexType = (EdmProperty) edmEntitySet.getEntityType().
         getProperty("PropertyMixedPrimCollComp");
@@ -2895,7 +2896,7 @@ public class ODataJsonSerializerTest {
   }
   
   @Test
-  public void expandStreamPropertyOnComplex() throws Exception {
+  void expandStreamPropertyOnComplex() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESStreamOnComplexProp");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(1);
     final ExpandItem expandItem = ExpandSelectMock.mockExpandItem(edmEntitySet, 
@@ -2919,7 +2920,7 @@ public class ODataJsonSerializerTest {
   }
   
   @Test
-  public void expandStreamPropertyOnComplexWithFullMetadata() throws Exception {
+  void expandStreamPropertyOnComplexWithFullMetadata() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESStreamOnComplexProp");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(1);
     final ExpandItem expandItem1 = ExpandSelectMock.mockExpandItem(edmEntitySet, 
@@ -2956,7 +2957,7 @@ public class ODataJsonSerializerTest {
   }
   
   @Test
-  public void expandStreamPropertyOnComplexWithNoMetadata() throws Exception {
+  void expandStreamPropertyOnComplexWithNoMetadata() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESStreamOnComplexProp");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(1);
     final ExpandItem expandItem = ExpandSelectMock.mockExpandItem(edmEntitySet, 

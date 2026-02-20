@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -46,7 +48,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-public class PreconditionsValidatorTest {
+class PreconditionsValidatorTest {
 
   private static final OData odata = OData.newInstance();
   private static final Edm edm = odata.createServiceMetadata(
@@ -55,91 +57,91 @@ public class PreconditionsValidatorTest {
   // -------------- POSITIVE TESTS --------------------------------------------------------------------------------
 
   @Test
-  public void simpleEntity() throws Exception {
+  void simpleEntity() throws Exception {
     assertTrue(mustValidate("ESAllPrim(1)", "ESAllPrim"));
   }
 
   @Test
-  public void simpleEntityValue() throws Exception {
+  void simpleEntityValue() throws Exception {
     assertTrue(mustValidate("ESMedia(1)/$value", "ESMedia"));
   }
 
   @Test
-  public void property() throws Exception {
+  void property() throws Exception {
     assertTrue(mustValidate("ESAllPrim(1)/PropertyInt16", "ESAllPrim"));
     assertTrue(mustValidate("ESMixPrimCollComp(0)/PropertyComp", "ESMixPrimCollComp"));
     assertTrue(mustValidate("ESMixPrimCollComp(0)/PropertyComp/PropertyString", "ESMixPrimCollComp"));
   }
 
   @Test
-  public void propertyValue() throws Exception {
+  void propertyValue() throws Exception {
     assertTrue(mustValidate("ESAllPrim(1)/PropertyInt16/$value", "ESAllPrim"));
     assertTrue(mustValidate("ESMixPrimCollComp(0)/PropertyComp/PropertyString/$value", "ESMixPrimCollComp"));
   }
 
   @Test
-  public void EntityAndToOneNavigation() throws Exception {
+  void EntityAndToOneNavigation() throws Exception {
     assertTrue(mustValidate("ESAllPrim(1)/NavPropertyETTwoPrimOne", "ESTwoPrim"));
   }
 
   @Test
-  public void EntityAndToManyNavigationWithKey() throws Exception {
+  void EntityAndToManyNavigationWithKey() throws Exception {
     assertTrue(mustValidate("ESAllPrim(1)/NavPropertyETTwoPrimMany(1)", "ESTwoPrim"));
   }
 
   @Test
-  public void EntityAndToOneNavigationValue() throws Exception {
+  void EntityAndToOneNavigationValue() throws Exception {
     assertTrue(mustValidate("ESKeyNav(1)/NavPropertyETMediaOne/$value", "ESMedia"));
   }
 
   @Test
-  public void navigationOnProperty() throws Exception {
+  void navigationOnProperty() throws Exception {
     assertTrue(mustValidate("ESAllPrim(1)/NavPropertyETTwoPrimOne/PropertyInt16", "ESTwoPrim"));
   }
 
   @Test
-  public void navigationOnFunction() throws Exception {
+  void navigationOnFunction() throws Exception {
     assertTrue(mustValidate("FICRTESTwoKeyNav()/NavPropertySINav", "SINav"));
   }
 
   @Test
-  public void boundActionOnEsKeyNav() throws Exception {
+  void boundActionOnEsKeyNav() throws Exception {
     assertTrue(mustValidate("ESKeyNav(1)/Namespace1_Alias.BA_RTETTwoKeyNav", "ESKeyNav"));
   }
 
   @Test
-  public void boundActionOnEsKeyNavWithNavigation() throws Exception {
+  void boundActionOnEsKeyNavWithNavigation() throws Exception {
     assertTrue(
         mustValidate("ESKeyNav(1)/NavPropertyETKeyNavOne/Namespace1_Alias.BA_RTETTwoKeyNav", "ESKeyNav"));
   }
 
   @Test
-  public void singleton() throws Exception {
+  void singleton() throws Exception {
     assertTrue(mustValidate("SI", "SI"));
   }
 
   @Test
-  public void singletonWithNavigation() throws Exception {
+  void singletonWithNavigation() throws Exception {
     assertTrue(mustValidate("SINav/NavPropertyETKeyNavOne", "ESKeyNav"));
   }
 
   @Test
-  public void singletonWithNavigationValue() throws Exception {
+  void singletonWithNavigationValue() throws Exception {
     assertTrue(mustValidate("SINav/NavPropertyETKeyNavOne/NavPropertyETMediaOne/$value", "ESMedia"));
   }
 
   @Test
-  public void singletonWithAction() throws Exception {
+  void singletonWithAction() throws Exception {
     assertTrue(mustValidate("SINav/Namespace1_Alias.BA_RTETTwoKeyNav", "SINav"));
   }
 
   @Test
-  public void singletonWithActionAndNavigation() throws Exception {
+  void singletonWithActionAndNavigation() throws Exception {
     assertTrue(mustValidate("SINav/NavPropertyETKeyNavOne/Namespace1_Alias.BA_RTETTwoKeyNav", "ESKeyNav"));
   }
 
   @Test
-  public void simpleEntityValueValidationNotActiveForMedia() throws Exception {
+  void simpleEntityValueValidationNotActiveForMedia() throws Exception {
     final UriInfo uriInfo = new Parser(edm, odata).parseUri("ESMedia(1)/$value", null, null, null);
 
     CustomETagSupport support = mock(CustomETagSupport.class);
@@ -152,41 +154,41 @@ public class PreconditionsValidatorTest {
   // -------------- IGNORE VALIDATION TESTS -----------------------------------------------------------------------
 
   @Test
-  public void entitySetMustBeIgnored() throws Exception {
+  void entitySetMustBeIgnored() throws Exception {
     assertFalse(mustValidate("ESAllPrim", "ESAllPrim"));
   }
 
   @Test
-  public void navigationToManyMustBeIgnored() throws Exception {
+  void navigationToManyMustBeIgnored() throws Exception {
     assertFalse(mustValidate("ESAllPrim(1)/NavPropertyETTwoPrimMany", "ESTwoPrim"));
   }
 
   @Test
-  public void navigationOnFunctionWithoutEntitySetMustBeIgnored() throws Exception {
+  void navigationOnFunctionWithoutEntitySetMustBeIgnored() throws Exception {
     assertFalse(mustValidate("FICRTETTwoKeyNavParam(ParameterInt16=1)/NavPropertyETKeyNavOne", null));
   }
 
   @Test
-  public void navigationToManyToActionMustBeIgnored() throws Exception {
+  void navigationToManyToActionMustBeIgnored() throws Exception {
     assertFalse(mustValidate("ESTwoPrim(1)/NavPropertyETAllPrimMany/Namespace1_Alias.BAESAllPrimRTETAllPrim", null));
   }
 
   @Test
-  public void navigationWithoutBindingMustBeIgnored() throws Exception {
+  void navigationWithoutBindingMustBeIgnored() throws Exception {
     assertFalse(mustValidate("ESTwoBaseTwoKeyNav(PropertyInt16=1,PropertyString='test')"
         + "/NavPropertyETBaseTwoKeyNavMany(PropertyInt16=1,PropertyString='test')",
         null));
   }
 
   @Test
-  public void referencesMustBeIgnored() throws Exception {
+  void referencesMustBeIgnored() throws Exception {
     assertFalse(mustValidate("ESAllPrim(1)/NavPropertyETTwoPrimOne/$ref", "ESTwoPrim"));
     assertFalse(mustValidate("ESAllPrim(1)/NavPropertyETTwoPrimMany(1)/$ref", "ESTwoPrim"));
     assertFalse(mustValidate("SINav/NavPropertyETKeyNavOne/$ref", "ESKeyNav"));
   }
 
   @Test
-  public void nonResourceMustBeIgnored() throws Exception {
+  void nonResourceMustBeIgnored() throws Exception {
     assertFalse(mustValidate("$all", null));
   }
 

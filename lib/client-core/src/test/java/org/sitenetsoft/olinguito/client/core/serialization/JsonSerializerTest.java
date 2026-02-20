@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -32,10 +33,10 @@ import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.junit.jupiter.api.Test;
 
-public class JsonSerializerTest {
+class JsonSerializerTest {
 
   @Test
-  public void testClientEntityJSONWithNull() throws ODataSerializerException {
+  void testClientEntityJSONWithNull() throws ODataSerializerException {
     String expectedJson = "{\"@odata.type\":\"#test.testClientEntity\","
         + "\"testInt32@odata.type\":\"Int32\","
         + "\"testInt32\":12,"
@@ -74,7 +75,7 @@ public class JsonSerializerTest {
     assertThat(writer.toString(), is(expectedJson));
   }
   @Test
-  public void testClientEntityJSONWithBigDecimal() throws ODataSerializerException {
+  void testClientEntityJSONWithBigDecimal() throws ODataSerializerException {
     String expectedJson = "{\"@odata.type\":\"#test.testClientEntity\","
             + "\"testLeadingZerosDecimal@odata.type\":\"Decimal\","
             + "\"testLeadingZerosDecimal\":0.01,"

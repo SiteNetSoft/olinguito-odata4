@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
@@ -28,12 +30,12 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.junit.jupiter.api.Test;
 
-public class EdmBinaryTest extends PrimitiveTypeBaseTest {
+class EdmBinaryTest extends PrimitiveTypeBaseTest {
 
   private final EdmPrimitiveType instance = EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Binary);
 
   @Test
-  public void validate() throws Exception {
+  void validate() throws Exception {
     assertTrue(instance.validate(null, null, null, null, null, null));
     assertTrue(instance.validate(null, true, null, null, null, null));
     assertFalse(instance.validate(null, false, null, null, null, null));
@@ -46,13 +48,13 @@ public class EdmBinaryTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void toUriLiteral() throws Exception {
+  void toUriLiteral() throws Exception {
     assertEquals("binary'+hKqoQ=='", instance.toUriLiteral("+hKqoQ=="));
     assertEquals("binary''", instance.toUriLiteral(""));
   }
 
   @Test
-  public void fromUriLiteral() throws Exception {
+  void fromUriLiteral() throws Exception {
     assertEquals("+hKqoQ==", instance.fromUriLiteral("binary'+hKqoQ=='"));
     assertEquals("", instance.fromUriLiteral("binary''"));
 
@@ -63,7 +65,7 @@ public class EdmBinaryTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void valueToString() throws Exception {
+  void valueToString() throws Exception {
     final byte[] binary = new byte[] { (byte) 0xAA, (byte) 0xBB, (byte) 0xCC, (byte) 0xDD, (byte) 0xEE, (byte) 0xFF };
 
     assertEquals("qrvM3e7/", instance.valueToString(binary, null, null, null, null, null));
@@ -79,7 +81,7 @@ public class EdmBinaryTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void valueOfString() throws Exception {
+  void valueOfString() throws Exception {
     final byte[] binary = new byte[] { (byte) 0xAA, (byte) 0xBB, (byte) 0xCC, (byte) 0xDD, (byte) 0xEE, (byte) 0xFF };
 
     assertTrue(Arrays.equals(binary, instance.valueOfString("qrvM3e7_", null, null, null, null, null, byte[].class)));

@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core;
 
@@ -34,7 +36,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class JsonDeserializerTest {
+class JsonDeserializerTest {
 
 
     /**
@@ -43,7 +45,7 @@ public class JsonDeserializerTest {
      * this is because the <streamproptitle>@odata.type key is incorrectly filtered by the previous implementation
      */
     @Test
-    public void testDeserializationStreamProperties() throws ODataDeserializerException {
+    void testDeserializationStreamProperties() throws ODataDeserializerException {
         try (InputStream inputStream = getClass().getResourceAsStream("Employee.json")) {
             ClientODataDeserializerImpl clientODataDeserializer =
                 new ClientODataDeserializerImpl(false, ContentType.JSON_FULL_METADATA);

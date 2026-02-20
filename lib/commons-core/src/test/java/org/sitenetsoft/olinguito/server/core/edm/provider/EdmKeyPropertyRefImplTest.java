@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -36,10 +38,10 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlPropertyRef;
 import org.sitenetsoft.olinguito.commons.core.edm.EdmKeyPropertyRefImpl;
 import org.junit.jupiter.api.Test;
 
-public class EdmKeyPropertyRefImplTest {
+class EdmKeyPropertyRefImplTest {
 
   @Test
-  public void noAlias() {
+  void noAlias() {
     CsdlPropertyRef providerRef = new CsdlPropertyRef().setName("Id");
     EdmEntityType etMock = mock(EdmEntityType.class);
     EdmProperty keyPropertyMock = mock(EdmProperty.class);
@@ -55,7 +57,7 @@ public class EdmKeyPropertyRefImplTest {
   }
 
   @Test
-  public void aliasForPropertyInComplexPropertyOneLevel() {
+  void aliasForPropertyInComplexPropertyOneLevel() {
     CsdlPropertyRef providerRef = new CsdlPropertyRef().setName("comp/Id").setAlias("alias");
     EdmEntityType etMock = mock(EdmEntityType.class);
     EdmProperty keyPropertyMock = mock(EdmProperty.class);
@@ -73,7 +75,7 @@ public class EdmKeyPropertyRefImplTest {
   }
 
   @Test
-  public void aliasForPropertyInComplexPropertyButWrongPath() {
+  void aliasForPropertyInComplexPropertyButWrongPath() {
       assertThrows(EdmException.class, () -> {
           CsdlPropertyRef providerRef = new CsdlPropertyRef().setName("comp/wrong").setAlias("alias");
           EdmEntityType etMock = mock(EdmEntityType.class);
@@ -88,7 +90,7 @@ public class EdmKeyPropertyRefImplTest {
   }
 
   @Test
-  public void aliasForPropertyInComplexPropertyButWrongPath2() {
+  void aliasForPropertyInComplexPropertyButWrongPath2() {
       assertThrows(EdmException.class, () -> {
           CsdlPropertyRef providerRef = new CsdlPropertyRef().setName("wrong/Id").setAlias("alias");
           EdmEntityType etMock = mock(EdmEntityType.class);
@@ -103,7 +105,7 @@ public class EdmKeyPropertyRefImplTest {
   }
 
   @Test
-  public void aliasForPropertyInComplexPropertyTwoLevels() {
+  void aliasForPropertyInComplexPropertyTwoLevels() {
     CsdlPropertyRef providerRef = new CsdlPropertyRef().setName("comp/comp2/Id").setAlias("alias");
     EdmEntityType etMock = mock(EdmEntityType.class);
     EdmProperty keyPropertyMock = mock(EdmProperty.class);
@@ -124,7 +126,7 @@ public class EdmKeyPropertyRefImplTest {
   }
 
   @Test
-  public void oneKeyNoAliasButInvalidProperty() {
+  void oneKeyNoAliasButInvalidProperty() {
       assertThrows(EdmException.class, () -> {
           CsdlPropertyRef providerRef = new CsdlPropertyRef().setName("Id");
           EdmKeyPropertyRef ref = new EdmKeyPropertyRefImpl(mock(EdmEntityType.class), providerRef);
@@ -133,7 +135,7 @@ public class EdmKeyPropertyRefImplTest {
   }
 
   @Test
-  public void aliasButNoPath() {
+  void aliasButNoPath() {
       assertThrows(EdmException.class, () -> {
           CsdlPropertyRef providerRef = new CsdlPropertyRef().setName("Id").setAlias("alias");
           EdmKeyPropertyRef ref = new EdmKeyPropertyRefImpl(mock(EdmEntityType.class), providerRef);
@@ -142,7 +144,7 @@ public class EdmKeyPropertyRefImplTest {
   }
 
   @Test
-  public void aliasButEmptyPath() {
+  void aliasButEmptyPath() {
       assertThrows(EdmException.class, () -> {
           CsdlPropertyRef providerRef = new CsdlPropertyRef().setName("").setAlias("alias");
           EdmKeyPropertyRef ref = new EdmKeyPropertyRefImpl(mock(EdmEntityType.class), providerRef);

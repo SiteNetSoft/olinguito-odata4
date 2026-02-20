@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -45,10 +47,10 @@ import org.sitenetsoft.olinguito.commons.core.edm.EdmPropertyImpl;
 import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
 import org.junit.jupiter.api.Test;
 
-public class EdmPropertyImplTest {
+class EdmPropertyImplTest {
 
   @Test
-  public void initialProperty() {
+  void initialProperty() {
     EdmProperty property = new EdmPropertyImpl(mock(Edm.class), new CsdlProperty());
 
     assertTrue(property.isNullable());
@@ -79,7 +81,7 @@ public class EdmPropertyImplTest {
   }
   
   @Test
-  public void getTypeReturnsPrimitiveType() {
+  void getTypeReturnsPrimitiveType() {
     EdmProviderImpl edm = new EdmProviderImpl(mock(CsdlEdmProvider.class));
     CsdlProperty propertyProvider = new CsdlProperty();
     propertyProvider.setType(EdmPrimitiveTypeKind.Binary.getFullQualifiedName());
@@ -92,7 +94,7 @@ public class EdmPropertyImplTest {
   }
 
   @Test
-  public void getTypeReturnsComplexType() throws Exception {
+  void getTypeReturnsComplexType() throws Exception {
     CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
     EdmProviderImpl edm = new EdmProviderImpl(provider);
     final FullQualifiedName complexTypeName = new FullQualifiedName("ns", "complex");
@@ -110,7 +112,7 @@ public class EdmPropertyImplTest {
   }
 
   @Test
-  public void getTypeReturnsEnumType() throws Exception {
+  void getTypeReturnsEnumType() throws Exception {
     CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
     EdmProviderImpl edm = new EdmProviderImpl(provider);
     final FullQualifiedName enumTypeName = new FullQualifiedName("ns", "enum");
@@ -128,7 +130,7 @@ public class EdmPropertyImplTest {
   }
 
   @Test
-  public void getTypeReturnsTypeDefinition() throws Exception {
+  void getTypeReturnsTypeDefinition() throws Exception {
     CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
     EdmProviderImpl edm = new EdmProviderImpl(provider);
     final FullQualifiedName typeName = new FullQualifiedName("ns", "definition");
@@ -146,7 +148,7 @@ public class EdmPropertyImplTest {
   }
 
   @Test
-  public void getTypeReturnsWrongType() throws Exception {
+  void getTypeReturnsWrongType() throws Exception {
       assertThrows(EdmException.class, () -> {
           CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
           EdmProviderImpl edm = new EdmProviderImpl(provider);
@@ -159,7 +161,7 @@ public class EdmPropertyImplTest {
   }
 
   @Test
-  public void getTypeReturnsNoTypeKind() throws Exception {
+  void getTypeReturnsNoTypeKind() throws Exception {
       assertThrows(EdmException.class, () -> {
           CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
           EdmProviderImpl edm = new EdmProviderImpl(provider);
@@ -172,7 +174,7 @@ public class EdmPropertyImplTest {
   }
 
   @Test
-  public void facets() {
+  void facets() {
     EdmProviderImpl edm = new EdmProviderImpl(mock(CsdlEdmProvider.class));
     CsdlProperty propertyProvider = new CsdlProperty();
     propertyProvider.setType(EdmPrimitiveTypeKind.String.getFullQualifiedName());

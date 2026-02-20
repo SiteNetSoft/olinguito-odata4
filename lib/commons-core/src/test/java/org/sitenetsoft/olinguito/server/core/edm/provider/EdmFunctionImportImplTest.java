@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -49,10 +50,10 @@ import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
 import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmPrimitiveTypeFactory;
 import org.junit.jupiter.api.Test;
 
-public class EdmFunctionImportImplTest {
+class EdmFunctionImportImplTest {
 
   @Test
-  public void functionImport() throws Exception {
+  void functionImport() throws Exception {
     CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
     EdmProviderImpl edm = new EdmProviderImpl(provider);
 

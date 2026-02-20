@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -30,10 +32,10 @@ import org.sitenetsoft.olinguito.commons.api.data.Entity;
 import org.sitenetsoft.olinguito.commons.api.data.EntityCollection;
 import org.junit.jupiter.api.Test;
 
-public class AtomDeserializerTest {
+class AtomDeserializerTest {
 
   @Test
-  public void emptyInlineEntityOlingo540() throws Exception {
+  void emptyInlineEntityOlingo540() throws Exception {
     final String content = "" +
         "<entry xmlns=\"http://www.w3.org/2005/Atom\" "
         + "xmlns:data=\"http://docs.oasis-open.org/odata/ns/data\" "
@@ -87,7 +89,7 @@ public class AtomDeserializerTest {
   }
 
   @Test
-  public void filledInlineEntity() throws Exception {
+  void filledInlineEntity() throws Exception {
     final String content = "" +
         "<entry xmlns=\"http://www.w3.org/2005/Atom\" "
         + "xmlns:data=\"http://docs.oasis-open.org/odata/ns/data\" "
@@ -179,7 +181,7 @@ public class AtomDeserializerTest {
   }
 
   @Test
-  public void emptyInlineEntityCollection() throws Exception {
+  void emptyInlineEntityCollection() throws Exception {
     final String content = "" +
         "<entry xmlns=\"http://www.w3.org/2005/Atom\" "
         + "xmlns:data=\"http://docs.oasis-open.org/odata/ns/data\" "
@@ -236,7 +238,7 @@ public class AtomDeserializerTest {
   }
 
   @Test
-  public void filledInlineEntityCollection() throws Exception {
+  void filledInlineEntityCollection() throws Exception {
     final String content = "" +
         "<entry xmlns=\"http://www.w3.org/2005/Atom\" "
         + "xmlns:data=\"http://docs.oasis-open.org/odata/ns/data\" "

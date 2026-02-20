@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.batch;
 
@@ -30,10 +32,10 @@ import java.io.BufferedReader;
 import org.sitenetsoft.olinguito.client.api.communication.request.batch.ODataBatchLineIterator;
 import org.junit.jupiter.api.Test;
 
-public class ODataBatchControllerTest {
+class ODataBatchControllerTest {
   
   @Test
-  public void testController(){
+  void testController(){
     final InputStream input = getClass().getResourceAsStream("batchResponse.batch");
     Reader reader = new InputStreamReader(input);
     ODataBatchLineIterator iterator = new ODataBatchLineIteratorImpl(new BufferedReader(reader));
@@ -49,7 +51,7 @@ public class ODataBatchControllerTest {
   }
   
   @Test
-  public void testControllerNeg(){
+  void testControllerNeg(){
       assertThrows(UnsupportedOperationException.class, () -> {
           final InputStream input = getClass().getResourceAsStream("batchResponse.batch");
           Reader reader = new InputStreamReader(input);

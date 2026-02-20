@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -45,7 +47,7 @@ import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class EdmProviderImplOverloadingTest {
+class EdmProviderImplOverloadingTest {
 
   private Edm edm;
   private final FullQualifiedName operationName1 = new FullQualifiedName("n", "o1");
@@ -55,7 +57,7 @@ public class EdmProviderImplOverloadingTest {
   private final FullQualifiedName badOperationName = new FullQualifiedName("bad", "bad");
 
   @BeforeEach
-  public void setup() throws Exception {
+  void setup() throws Exception {
     CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
 
     List<CsdlAction> actions = new ArrayList<>();
@@ -108,7 +110,7 @@ public class EdmProviderImplOverloadingTest {
   }
 
   @Test
-  public void simpleActionGet() {
+  void simpleActionGet() {
     EdmAction action = edm.getUnboundAction(operationName1);
     assertNotNull(action);
     assertEquals(operationName1.getNamespace(), action.getNamespace());
@@ -118,7 +120,7 @@ public class EdmProviderImplOverloadingTest {
   }
 
   @Test
-  public void boundActionOverloading() {
+  void boundActionOverloading() {
     EdmAction action = edm.getBoundAction(operationName1, operationType1, false);
     assertNotNull(action);
     assertEquals(operationName1.getNamespace(), action.getNamespace());
@@ -135,7 +137,7 @@ public class EdmProviderImplOverloadingTest {
   }
 
   @Test
-  public void simpleFunctionGet() {
+  void simpleFunctionGet() {
     EdmFunction function = edm.getUnboundFunction(operationName1, null);
     assertNotNull(function);
     assertEquals(operationName1.getNamespace(), function.getNamespace());
@@ -152,7 +154,7 @@ public class EdmProviderImplOverloadingTest {
   }
 
   @Test
-  public void functionOverloading() {
+  void functionOverloading() {
     ArrayList<String> parameter1Names = new ArrayList<>();
     parameter1Names.add("a");
     List<String> parameter2Names = new ArrayList<>();
@@ -196,7 +198,7 @@ public class EdmProviderImplOverloadingTest {
   }
 
   @Test
-  public void noParametersAtBoundFunctionReslutsInException() {
+  void noParametersAtBoundFunctionReslutsInException() {
       assertThrows(EdmException.class, () -> edm.getBoundFunction(badOperationName, operationType1, true, null));
   }
 

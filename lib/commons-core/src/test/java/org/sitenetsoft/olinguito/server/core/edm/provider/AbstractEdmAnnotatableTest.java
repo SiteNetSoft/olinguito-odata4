@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -44,7 +46,7 @@ public class AbstractEdmAnnotatableTest {
   private EdmTerm term;
   
   @BeforeEach
-  public void setupEdm(){
+  void setupEdm(){
     edm = mock(Edm.class);
     term = mock(EdmTerm.class);
     FullQualifiedName fullQualifiedName = new FullQualifiedName("namespace", "name");
@@ -53,7 +55,7 @@ public class AbstractEdmAnnotatableTest {
   }
   
   @Test
-  public void noAnnotations() {
+  void noAnnotations() {
     EdmAnnotatable anno = new EdmAnnotatableTester(null, new CsdlEntityContainer());
 
     assertNotNull(anno.getAnnotations());
@@ -68,7 +70,7 @@ public class AbstractEdmAnnotatableTest {
   }
 
   @Test
-  public void singleAnnotation() {
+  void singleAnnotation() {
     CsdlEntityContainer annotatable = new CsdlEntityContainer();
     CsdlAnnotation annotation = new CsdlAnnotation();
     annotation.setTerm("namespace.name");

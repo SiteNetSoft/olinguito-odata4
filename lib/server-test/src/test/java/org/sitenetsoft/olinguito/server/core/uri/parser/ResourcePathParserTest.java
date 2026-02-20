@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -38,7 +40,7 @@ import org.sitenetsoft.olinguito.server.tecsvc.provider.TypeDefinitionProvider;
 import org.junit.jupiter.api.Test;
 
 /** Tests of the parts of the URI parser that parse the resource path without query options. */
-public class ResourcePathParserTest {
+class ResourcePathParserTest {
 
   private static final Edm edm = OData.newInstance().createServiceMetadata(
       new EdmTechProvider(), Collections.emptyList()).getEdm();
@@ -47,7 +49,7 @@ public class ResourcePathParserTest {
   private final ResourceValidator testRes = new ResourceValidator().setEdm(edm);
 
   @Test
-  public void esName() throws Exception {
+  void esName() throws Exception {
     testRes.run("ESAllPrim")
         .isEntitySet("ESAllPrim")
         .isType(EntityTypeProvider.nameETAllPrim, true);
@@ -60,7 +62,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void esNameError() {
+  void esNameError() {
     testUri.runEx("ESAllPrim/$count/$ref").isExSyntax(UriParserSyntaxException.MessageKeys.MUST_BE_LAST_SEGMENT);
     testUri.runEx("ESAllPrim/$ref/$count").isExSyntax(UriParserSyntaxException.MessageKeys.MUST_BE_LAST_SEGMENT);
     testUri.runEx("ESAllPrim/$ref/invalid").isExSyntax(UriParserSyntaxException.MessageKeys.MUST_BE_LAST_SEGMENT);
@@ -101,7 +103,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void esNameCast() throws Exception {
+  void esNameCast() throws Exception {
     testRes.run("ESTwoPrim/olingo.odata.test1.ETBase")
         .isEntitySet("ESTwoPrim")
         .isType(EntityTypeProvider.nameETTwoPrim, true)
@@ -136,7 +138,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void esNamePpSpCast() throws Exception {
+  void esNamePpSpCast() throws Exception {
 
     testRes.run("ESTwoKeyNav(PropertyInt16=1,PropertyString='2')/olingo.odata.test1.ETBaseTwoKeyNav/PropertyDate")
         .isEntitySet("ESTwoKeyNav")
@@ -170,7 +172,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void esNameKey() throws Exception {
+  void esNameKey() throws Exception {
     testRes.run("ESKeyNav(1)")
         .isEntitySet("ESKeyNav")
         .isKeyPredicate(0, "PropertyInt16", "1");
@@ -195,7 +197,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void testPathVariables() {
+  void testPathVariables() {
     testRes.run("ESKeyAsSegmentString/thisIsAKey")
             .isEntitySet("ESKeyAsSegmentString")
             .isKeyPredicate(0, "PropertyString", "'thisIsAKey'");
@@ -209,7 +211,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void testPathVariablesNavigation() {
+  void testPathVariablesNavigation() {
     testRes.run("ESKeyAsSegmentStringNavKeyAsSegment/thisIsAKey/NavPropertyKeyAsSegment/navKey")
             .isEntitySet("ESKeyAsSegmentStringNavKeyAsSegment")
             .isKeyPredicate(0, "PropertyString", "'thisIsAKey'")
@@ -219,7 +221,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void esNameParaKeys() throws Exception {
+  void esNameParaKeys() throws Exception {
     testRes.run("ESAllKey(PropertyString='O''Neil',PropertyBoolean=true,PropertyByte=255,"
         + "PropertySByte=-128,PropertyInt16=-32768,PropertyInt32=-2147483648,"
         + "PropertyInt64=-9223372036854775808,PropertyDecimal=1,PropertyDate=2013-09-25,"
@@ -244,7 +246,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void esNameKeyCast() throws Exception {
+  void esNameKeyCast() throws Exception {
     testRes.run("ESTwoPrim(1)/olingo.odata.test1.ETBase")
         .isEntitySet("ESTwoPrim")
         .isType(EntityTypeProvider.nameETTwoPrim)
@@ -291,7 +293,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void esNameParaKeysCast() throws Exception {
+  void esNameParaKeysCast() throws Exception {
     testRes.run("ESTwoKeyNav(PropertyInt16=1,PropertyString='2')/olingo.odata.test1.ETBaseTwoKeyNav")
         .isEntitySet("ESTwoKeyNav")
         .isType(EntityTypeProvider.nameETTwoKeyNav)
@@ -317,7 +319,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void esNamePpCp() throws Exception {
+  void esNamePpCp() throws Exception {
     testRes.run("ESTwoKeyNav(PropertyInt16=1,PropertyString='2')/PropertyComp")
         .isEntitySet("ESTwoKeyNav")
         .isKeyPredicate(0, "PropertyInt16", "1")
@@ -357,7 +359,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void esNamePpCpColl() throws Exception {
+  void esNamePpCpColl() throws Exception {
     testRes.run("ESMixPrimCollComp(5)/CollPropertyComp")
         .isEntitySet("ESMixPrimCollComp")
         .isKeyPredicate(0, "PropertyInt16", "5")
@@ -393,7 +395,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void esNamePpCpCast() throws Exception {
+  void esNamePpCpCast() throws Exception {
     testRes.run("ESTwoKeyNav(PropertyInt16=1,PropertyString='2')/olingo.odata.test1.ETBaseTwoKeyNav/PropertyComp")
         .isEntitySet("ESTwoKeyNav")
         .isKeyPredicate(0, "PropertyInt16", "1")
@@ -441,7 +443,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void esNamePpNp() throws Exception {
+  void esNamePpNp() throws Exception {
     testRes.run("ESKeyNav(1)/NavPropertyETTwoKeyNavOne")
         .isEntitySet("ESKeyNav").isKeyPredicate(0, "PropertyInt16", "1")
         .n().isNavProperty("NavPropertyETTwoKeyNavOne", EntityTypeProvider.nameETTwoKeyNav, false);
@@ -609,7 +611,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void esNamePpNpCast() throws Exception {
+  void esNamePpNpCast() throws Exception {
     testRes.run("ESTwoKeyNav(PropertyInt16=1,PropertyString='2')/olingo.odata.test1.ETBaseTwoKeyNav"
         + "/NavPropertyETKeyNavMany")
         .isEntitySet("ESTwoKeyNav")
@@ -682,14 +684,14 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void navigationWithMoreThanOneKey() throws Exception {
+  void navigationWithMoreThanOneKey() throws Exception {
     testUri.runEx("ESKeyNav(1)/NavPropertyETTwoKeyNavMany(PropertyInt16=1,PropertyString='2')"
         + "(PropertyInt16=1,PropertyString='2')")
         .isExSyntax(UriParserSyntaxException.MessageKeys.SYNTAX);
   }
 
   @Test
-  public void referentialConstraints() throws Exception {
+  void referentialConstraints() throws Exception {
     // checks for using referential constraints to fill missing keys
     testRes.run("ESKeyNav(1)/NavPropertyETTwoKeyNavMany('2')")
         .isEntitySet("ESKeyNav")
@@ -709,7 +711,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void esNamePpSp() throws Exception {
+  void esNamePpSp() throws Exception {
     testRes.run("ESAllPrim(1)/PropertyByte")
         .isEntitySet("ESAllPrim")
         .isKeyPredicate(0, "PropertyInt16", "1")
@@ -734,7 +736,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void esNamePpSpColl() throws Exception {
+  void esNamePpSpColl() throws Exception {
     testRes.run("ESCollAllPrim(1)/CollPropertyString")
         .isEntitySet("ESCollAllPrim")
         .isKeyPredicate(0, "PropertyInt16", "1")
@@ -763,7 +765,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void esNameRef() throws Exception {
+  void esNameRef() throws Exception {
     testRes.run("ESAllPrim/$ref")
         .isEntitySet("ESAllPrim")
         .n().isRef();
@@ -794,14 +796,14 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void singletonEntityValue() throws Exception {
+  void singletonEntityValue() throws Exception {
     testRes.run("SIMedia/$value")
         .isSingleton("SIMedia")
         .n().isValue();
   }
 
   @Test
-  public void singletonPpNpCast() throws Exception {
+  void singletonPpNpCast() throws Exception {
     testRes.run("SINav/olingo.odata.test1.ETBaseTwoKeyNav/NavPropertyETKeyNavMany")
         .isSingleton("SINav")
         .isType(EntityTypeProvider.nameETTwoKeyNav)
@@ -819,7 +821,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void singletonPpCpCast() throws Exception {
+  void singletonPpCpCast() throws Exception {
     testRes.run("SINav/olingo.odata.test1.ETBaseTwoKeyNav/PropertyComp")
         .isSingleton("SINav")
         .isType(EntityTypeProvider.nameETTwoKeyNav)
@@ -846,7 +848,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void singletonPpSpCast() throws Exception {
+  void singletonPpSpCast() throws Exception {
     testRes.run("SINav/olingo.odata.test1.ETBaseTwoKeyNav/PropertyInt16")
         .isSingleton("SINav")
         .isType(EntityTypeProvider.nameETTwoKeyNav)
@@ -864,7 +866,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void singletonEntityPpNp() throws Exception {
+  void singletonEntityPpNp() throws Exception {
     testRes.run("SINav/NavPropertyETKeyNavMany")
         .isSingleton("SINav")
         .n().isNavProperty("NavPropertyETKeyNavMany", EntityTypeProvider.nameETKeyNav, true);
@@ -878,7 +880,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void singletonEntityPpCp() throws Exception {
+  void singletonEntityPpCp() throws Exception {
     testRes.run("SINav/PropertyComp")
         .isSingleton("SINav")
         .n().isComplexProperty("PropertyComp", ComplexTypeProvider.nameCTPrimComp, false);
@@ -895,7 +897,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void singletonEntityPpCpColl() throws Exception {
+  void singletonEntityPpCpColl() throws Exception {
     testRes.run("SINav/CollPropertyComp")
         .isSingleton("SINav")
         .n().isComplexProperty("CollPropertyComp", ComplexTypeProvider.nameCTPrimComp, true);
@@ -907,14 +909,14 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void singletonEntityPpSp() throws Exception {
+  void singletonEntityPpSp() throws Exception {
     testRes.run("SINav/PropertyString")
         .isSingleton("SINav")
         .n().isPrimitiveProperty("PropertyString", PropertyProvider.nameString, false);
   }
 
   @Test
-  public void singletonEntityPpSpColl() throws Exception {
+  void singletonEntityPpSpColl() throws Exception {
     testRes.run("SINav/CollPropertyString")
         .isSingleton("SINav")
         .n().isPrimitiveProperty("CollPropertyString", PropertyProvider.nameString, true);
@@ -926,7 +928,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void valueOnNonMediaEntity() throws Exception {
+  void valueOnNonMediaEntity() throws Exception {
     testUri.runEx("ESAllPrim/$value").isExSemantic(UriParserSemanticException.MessageKeys.ONLY_FOR_TYPED_PARTS);
     testUri.runEx("ESAllPrim(1)/NavPropertyETTwoPrimMany/$value").isExSemantic(
         UriParserSemanticException.MessageKeys.ONLY_FOR_TYPED_PARTS);
@@ -940,7 +942,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void functionBound_varReturnType() {
+  void functionBound_varReturnType() {
     // returning primitive
     testRes.run("ESTwoKeyNav/olingo.odata.test1.BFCESTwoKeyNavRTString()")
         .isUriPathInfoKind(UriResourceKind.entitySet)
@@ -993,7 +995,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void functionBound_varOverloading() throws Exception {
+  void functionBound_varOverloading() throws Exception {
     // on ESTwoKeyNav
     testRes.run("ESTwoKeyNav/olingo.odata.test1.BFC_RTESTwoKeyNav_()")
         .isUriPathInfoKind(UriResourceKind.entitySet)
@@ -1021,7 +1023,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void boundFuncBnCpropCastRtEs() throws Exception {
+  void boundFuncBnCpropCastRtEs() throws Exception {
 
     testRes.run("ESTwoKeyNav(PropertyInt16=1,PropertyString='2')/olingo.odata.test1.ETBaseTwoKeyNav"
         + "/PropertyComp/olingo.odata.test1.BFCCTPrimCompRTESBaseTwoKeyNav()")
@@ -1050,7 +1052,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void boundFuncBnCpropCollRtEs() throws Exception {
+  void boundFuncBnCpropCollRtEs() throws Exception {
     testRes.run("ESKeyNav(PropertyInt16=1)/CollPropertyComp/olingo.odata.test1.BFCCollCTPrimCompRTESAllPrim()")
         .isEntitySet("ESKeyNav")
         .isKeyPredicate(0, "PropertyInt16", "1")
@@ -1075,7 +1077,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void boundFuncBnCpropRtEs() throws Exception {
+  void boundFuncBnCpropRtEs() throws Exception {
     testRes.run("ESTwoKeyNav(PropertyInt16=1,PropertyString='2')"
         + "/PropertyComp/olingo.odata.test1.BFCCTPrimCompRTESTwoKeyNav()")
         .isEntitySet("ESTwoKeyNav")
@@ -1103,7 +1105,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void boundFuncBnEntityRtEs() throws Exception {
+  void boundFuncBnEntityRtEs() throws Exception {
     testRes.run("ESTwoKeyNav(PropertyInt16=1,PropertyString='2')/olingo.odata.test1.BFCETTwoKeyNavRTESTwoKeyNav()")
         .isEntitySet("ESTwoKeyNav")
         .isKeyPredicate(0, "PropertyInt16", "1")
@@ -1113,7 +1115,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void boundFuncBnEntityCastRtEs() throws Exception {
+  void boundFuncBnEntityCastRtEs() throws Exception {
     testRes
         .run("ESTwoKeyNav(PropertyInt16=1,PropertyString='2')/olingo.odata.test1.ETBaseTwoKeyNav"
             + "/olingo.odata.test1.BFCETBaseTwoKeyNavRTESTwoKeyNav()")
@@ -1138,7 +1140,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void boundFuncBnEsCastRtEs() throws Exception {
+  void boundFuncBnEsCastRtEs() throws Exception {
     testRes.run("ESTwoKeyNav/olingo.odata.test1.ETBaseTwoKeyNav"
         + "/olingo.odata.test1.BFCESBaseTwoKeyNavRTESBaseTwoKey()")
         .isEntitySet("ESTwoKeyNav")
@@ -1173,7 +1175,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void boundFuncBnEsRtCprop() throws Exception {
+  void boundFuncBnEsRtCprop() throws Exception {
     testRes.run("ESAllPrim/olingo.odata.test1.BFNESAllPrimRTCTAllPrim()")
         .isEntitySet("ESAllPrim")
         .n()
@@ -1189,7 +1191,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void boundFuncBnEsRtCpropColl() throws Exception {
+  void boundFuncBnEsRtCpropColl() throws Exception {
     testRes.run("ESTwoKeyNav/olingo.odata.test1.BFCESTwoKeyNavRTCollCTTwoPrim()")
         .isEntitySet("ESTwoKeyNav")
         .n()
@@ -1206,7 +1208,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void boundFuncBnEsRtEntityPpNp() throws Exception {
+  void boundFuncBnEsRtEntityPpNp() throws Exception {
     testRes.run("ESTwoKeyNav/olingo.odata.test1.BFCESTwoKeyNavRTTwoKeyNav()/NavPropertyETKeyNavOne")
         .isEntitySet("ESTwoKeyNav")
         .n()
@@ -1296,7 +1298,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void boundFuncBnEsRtEntyPpNpCast() throws Exception {
+  void boundFuncBnEsRtEntyPpNpCast() throws Exception {
     testRes.run("ESTwoKeyNav/olingo.odata.test1.BFCESTwoKeyNavRTTwoKeyNav()"
         + "/NavPropertyETTwoKeyNavOne/olingo.odata.test1.ETBaseTwoKeyNav")
         .isEntitySet("ESTwoKeyNav")
@@ -1323,7 +1325,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void boundFuncBnEsRtEntityPpCp() throws Exception {
+  void boundFuncBnEsRtEntityPpCp() throws Exception {
     testRes.run("ESKeyNav/olingo.odata.test1.BFCESKeyNavRTETKeyNav()/PropertyCompNav")
         .isEntitySet("ESKeyNav")
         .n()
@@ -1353,7 +1355,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void boundFuncBnEsRtEntyPpCpCast() throws Exception {
+  void boundFuncBnEsRtEntyPpCpCast() throws Exception {
 
     testRes.run("ESKeyNav/olingo.odata.test1.BFCESKeyNavRTETKeyNavParam(ParameterString='1')"
         + "/PropertyCompTwoPrim/olingo.odata.test1.CTTwoBase")
@@ -1382,7 +1384,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void boundFuncBnEsRtEntityPpSp() throws Exception {
+  void boundFuncBnEsRtEntityPpSp() throws Exception {
     testRes.run("ESKeyNav/olingo.odata.test1.BFCESKeyNavRTETKeyNav()/PropertyInt16")
         .isEntitySet("ESKeyNav")
         .n()
@@ -1401,7 +1403,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void boundFuncBnEsRtEs() throws Exception {
+  void boundFuncBnEsRtEs() throws Exception {
 
     testRes.run("ESTwoKeyNav/olingo.odata.test1.BFC_RTESTwoKeyNav_()")
         .isEntitySet("ESTwoKeyNav")
@@ -1446,7 +1448,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void boundFuncBnEsRtEsBa() throws Exception {
+  void boundFuncBnEsRtEsBa() throws Exception {
     testRes.run("ESKeyNav(PropertyInt16=1)/CollPropertyComp"
         + "/olingo.odata.test1.BFCCollCTPrimCompRTESAllPrim()/olingo.odata.test1.BAESAllPrimRTETAllPrim")
         .isEntitySet("ESKeyNav")
@@ -1457,7 +1459,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void boundFuncBnEsRtPrim() throws Exception {
+  void boundFuncBnEsRtPrim() throws Exception {
     testRes.run("ESTwoKeyNav/olingo.odata.test1.BFCESTwoKeyNavRTString()")
         .isEntitySet("ESTwoKeyNav")
         .n().isFunction("BFCESTwoKeyNavRTString");
@@ -1472,7 +1474,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void boundFuncBnEsRtPrimColl() throws Exception {
+  void boundFuncBnEsRtPrimColl() throws Exception {
     testRes.run("ESTwoKeyNav/olingo.odata.test1.BFCESTwoKeyNavRTCollString()")
         .isEntitySet("ESTwoKeyNav")
         .n()
@@ -1489,7 +1491,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void boundFuncBnPpropCollRtEs() throws Exception {
+  void boundFuncBnPpropCollRtEs() throws Exception {
     testRes.run("ESKeyNav(1)/CollPropertyString/olingo.odata.test1.BFCCollStringRTESTwoKeyNav()")
         .isEntitySet("ESKeyNav")
         .isKeyPredicate(0, "PropertyInt16", "1")
@@ -1512,7 +1514,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void boundFuncBnPpropRtEs() throws Exception {
+  void boundFuncBnPpropRtEs() throws Exception {
 
     testRes.run("ESKeyNav(1)/PropertyString/olingo.odata.test1.BFCStringRTESTwoKeyNav()")
         .isEntitySet("ESKeyNav")
@@ -1547,14 +1549,14 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void boundFuncBnSingleRtEs() throws Exception {
+  void boundFuncBnSingleRtEs() throws Exception {
     testRes.run("SINav/olingo.odata.test1.BFCSINavRTESTwoKeyNav()")
         .isSingleton("SINav").isType(EntityTypeProvider.nameETTwoKeyNav, false)
         .n().isFunction("BFCSINavRTESTwoKeyNav");
   }
 
   @Test
-  public void boundFuncBnSingleCastRtEs() throws Exception {
+  void boundFuncBnSingleCastRtEs() throws Exception {
     testRes.run("SINav/olingo.odata.test1.ETBaseTwoKeyNav/olingo.odata.test1.BFCETBaseTwoKeyNavRTESBaseTwoKey()")
         .isSingleton("SINav")
         .isType(EntityTypeProvider.nameETTwoKeyNav, false)
@@ -1564,7 +1566,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void actionBound_on_EntityEntry() throws Exception {
+  void actionBound_on_EntityEntry() throws Exception {
 
     testRes.run("ESTwoKeyNav(PropertyInt16=1,PropertyString='2')/olingo.odata.test1.BA_RTETTwoKeyNav")
         .isEntitySet("ESTwoKeyNav")
@@ -1581,7 +1583,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void actionBound_on_EntityCollection() throws Exception {
+  void actionBound_on_EntityCollection() throws Exception {
     testRes.run("ESTwoKeyNav/olingo.odata.test1.BAESTwoKeyNavRTESTwoKeyNav")
         .isEntitySet("ESTwoKeyNav")
         .n()
@@ -1589,7 +1591,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void functionBound_on_var_Types() throws Exception {
+  void functionBound_on_var_Types() throws Exception {
 
     // on primitive
     testRes.run("ESAllPrim(1)/PropertyString/olingo.odata.test1.BFCStringRTESTwoKeyNav()")
@@ -1644,7 +1646,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void actionBound_on_EntityCast() throws Exception {
+  void actionBound_on_EntityCast() throws Exception {
 
     testRes.run("ESTwoKeyNav(PropertyInt16=1,PropertyString='2')/olingo.odata.test1.ETBaseTwoKeyNav"
         + "/olingo.odata.test1.BAETBaseTwoKeyNavRTETBaseTwoKeyNav")
@@ -1667,7 +1669,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void functionImport_VarReturning() {
+  void functionImport_VarReturning() {
     // returning primitive
     testRes.run("FINRTInt16()")
         .isFunctionImport("FINRTInt16")
@@ -1706,7 +1708,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void functionsWithKeyPredicates() throws Exception {
+  void functionsWithKeyPredicates() throws Exception {
     testRes.run("FICRTCollETMixPrimCollCompTwoParam(ParameterString='1',ParameterInt16=1)")
         .isFunctionImport("FICRTCollETMixPrimCollCompTwoParam")
         .isFunction("UFCRTCollETMixPrimCollCompTwoParam")
@@ -1824,7 +1826,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void nonComposableFunctions() throws Exception {
+  void nonComposableFunctions() throws Exception {
     testUri.run("FICRTCollETMixPrimCollCompTwoParam(ParameterInt16=1,ParameterString='1')", "$skip=1");
     testUri.run("FICRTCollETMixPrimCollCompTwoParam(ParameterInt16=1,ParameterString='1')", "$top=1");
     testUri.run("FICRTCollETMixPrimCollCompTwoParam(ParameterInt16=1,ParameterString='1')",
@@ -1851,14 +1853,14 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void functionImpBf() throws Exception {
+  void functionImpBf() throws Exception {
     testRes.run("FICRTString()/olingo.odata.test1.BFCStringRTESTwoKeyNav()")
         .isFunctionImport("FICRTString").isFunction("UFCRTString")
         .n().isFunction("BFCStringRTESTwoKeyNav");
   }
 
   @Test
-  public void functionImpCastBf() throws Exception {
+  void functionImpCastBf() throws Exception {
 
     testRes.run("FICRTETTwoKeyNavParam(ParameterInt16=1)/olingo.odata.test1.ETBaseTwoKeyNav"
         + "/olingo.odata.test1.BFCETBaseTwoKeyNavRTETTwoKeyNav()")
@@ -1891,7 +1893,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void functionImpEntity() throws Exception {
+  void functionImpEntity() throws Exception {
 
     testRes.run("FICRTETKeyNav()")
         .isFunctionImport("FICRTETKeyNav")
@@ -1946,7 +1948,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void functionImpEs() throws Exception {
+  void functionImpEs() throws Exception {
     testRes.run("FICRTCollETMixPrimCollCompTwoParam(ParameterInt16=1,ParameterString='2')")
         .isFunctionImport("FICRTCollETMixPrimCollCompTwoParam")
         .isFunction("UFCRTCollETMixPrimCollCompTwoParam")
@@ -1984,7 +1986,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void functionImpError() {
+  void functionImpError() {
     testUri.runEx("FICRTCollCTTwoPrimTwoParam")
         .isExSyntax(UriParserSyntaxException.MessageKeys.SYNTAX);
     testUri.runEx("FICRTCollCTTwoPrimTwoParam()").isExSemantic(MessageKeys.FUNCTION_NOT_FOUND);
@@ -1992,7 +1994,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void functionImportCast() throws Exception {
+  void functionImportCast() throws Exception {
     testRes.run("FICRTCollCTTwoPrimTwoParam(ParameterInt16=1,ParameterString='2')/olingo.odata.test1.CTBase")
         .isFunctionImport("FICRTCollCTTwoPrimTwoParam")
         .isParameter(0, "ParameterInt16", "1")
@@ -2001,7 +2003,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void functionImpEsCast() throws Exception {
+  void functionImpEsCast() throws Exception {
 
     testRes.run("FICRTCollESTwoKeyNavParam(ParameterInt16=1)/olingo.odata.test1.ETBaseTwoKeyNav")
         .isFunctionImport("FICRTCollESTwoKeyNavParam")
@@ -2043,7 +2045,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void functionImportChain() {
+  void functionImportChain() {
     // test chain; returning single complex
     testRes.run("FICRTCTAllPrimTwoParam(ParameterString='ABC',ParameterInt16=1)/PropertyInt16")
     .at(0)
@@ -2089,7 +2091,7 @@ public class ResourcePathParserTest {
   }
 
   @Test
-  public void actionImport_VarReturnType() {
+  void actionImport_VarReturnType() {
     testRes.run(ContainerProvider.AIRT_STRING)
         .isActionImport(ContainerProvider.AIRT_STRING)
         .isAction(ActionProvider.nameUARTString.getName())

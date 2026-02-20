@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.core.edm.annotations;
 
@@ -29,10 +31,10 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlConstan
 import org.sitenetsoft.olinguito.commons.core.edm.annotation.AbstractEdmExpression;
 import org.junit.jupiter.api.Test;
 
-public class EdmConstantExpressionImplTest extends AbstractAnnotationTest {
+class EdmConstantExpressionImplTest extends AbstractAnnotationTest {
 
   @Test
-  public void binaryExpression() {
+  void binaryExpression() {
     CsdlConstantExpression csdlExp = new CsdlConstantExpression(ConstantExpressionType.Binary, "qrvM3e7_");
     EdmExpression exp = AbstractEdmExpression.getExpression(mock(Edm.class), csdlExp);
 
@@ -44,7 +46,7 @@ public class EdmConstantExpressionImplTest extends AbstractAnnotationTest {
   }
 
   @Test
-  public void boolExpression() {
+  void boolExpression() {
     CsdlConstantExpression csdlExp = new CsdlConstantExpression(ConstantExpressionType.Bool, "true");
     EdmExpression exp = AbstractEdmExpression.getExpression(mock(Edm.class), csdlExp);
 
@@ -56,7 +58,7 @@ public class EdmConstantExpressionImplTest extends AbstractAnnotationTest {
   }
 
   @Test
-  public void dateExpression() {
+  void dateExpression() {
     CsdlConstantExpression csdlExp = new CsdlConstantExpression(ConstantExpressionType.Date, "2012-02-29");
     EdmExpression exp = AbstractEdmExpression.getExpression(mock(Edm.class), csdlExp);
 
@@ -68,7 +70,7 @@ public class EdmConstantExpressionImplTest extends AbstractAnnotationTest {
   }
 
   @Test
-  public void dateTimeOffsetExpression() {
+  void dateTimeOffsetExpression() {
     CsdlConstantExpression csdlExp =
         new CsdlConstantExpression(ConstantExpressionType.DateTimeOffset, "2012-02-29T01:02:03Z");
     EdmExpression exp = AbstractEdmExpression.getExpression(mock(Edm.class), csdlExp);
@@ -81,7 +83,7 @@ public class EdmConstantExpressionImplTest extends AbstractAnnotationTest {
   }
 
   @Test
-  public void decimalExpression() {
+  void decimalExpression() {
     CsdlConstantExpression csdlExp =
         new CsdlConstantExpression(ConstantExpressionType.Decimal, "-123456789012345678901234567890");
     EdmExpression exp = AbstractEdmExpression.getExpression(mock(Edm.class), csdlExp);
@@ -94,7 +96,7 @@ public class EdmConstantExpressionImplTest extends AbstractAnnotationTest {
   }
 
   @Test
-  public void durationExpression() {
+  void durationExpression() {
     CsdlConstantExpression csdlExp = new CsdlConstantExpression(ConstantExpressionType.Duration, "PT10S");
     EdmExpression exp = AbstractEdmExpression.getExpression(mock(Edm.class), csdlExp);
 
@@ -106,7 +108,7 @@ public class EdmConstantExpressionImplTest extends AbstractAnnotationTest {
   }
 
   @Test
-  public void enumMemberExpression() {
+  void enumMemberExpression() {
     CsdlConstantExpression csdlExp = new CsdlConstantExpression(ConstantExpressionType.EnumMember, "Enum/enumMember");
     EdmExpression exp = AbstractEdmExpression.getExpression(mock(Edm.class), csdlExp);
 
@@ -118,7 +120,7 @@ public class EdmConstantExpressionImplTest extends AbstractAnnotationTest {
   }
 
   @Test
-  public void floatExpression() {
+  void floatExpression() {
     CsdlConstantExpression csdlExp = new CsdlConstantExpression(ConstantExpressionType.Float, "1.42");
     EdmExpression exp = AbstractEdmExpression.getExpression(mock(Edm.class), csdlExp);
 
@@ -130,7 +132,7 @@ public class EdmConstantExpressionImplTest extends AbstractAnnotationTest {
   }
 
   @Test
-  public void guidExpression() {
+  void guidExpression() {
     CsdlConstantExpression csdlExp =
         new CsdlConstantExpression(ConstantExpressionType.Guid, "aabbccdd-aabb-ccdd-eeff-aabbccddeeff");
     EdmExpression exp = AbstractEdmExpression.getExpression(mock(Edm.class), csdlExp);
@@ -143,7 +145,7 @@ public class EdmConstantExpressionImplTest extends AbstractAnnotationTest {
   }
 
   @Test
-  public void intExpression() {
+  void intExpression() {
     CsdlConstantExpression csdlExp = new CsdlConstantExpression(ConstantExpressionType.Int, "42");
     EdmExpression exp = AbstractEdmExpression.getExpression(mock(Edm.class), csdlExp);
 
@@ -155,7 +157,7 @@ public class EdmConstantExpressionImplTest extends AbstractAnnotationTest {
   }
 
   @Test
-  public void stringExpression() {
+  void stringExpression() {
     CsdlConstantExpression csdlExp = new CsdlConstantExpression(ConstantExpressionType.String, "ABCD");
     EdmExpression exp = AbstractEdmExpression.getExpression(mock(Edm.class), csdlExp);
 
@@ -167,7 +169,7 @@ public class EdmConstantExpressionImplTest extends AbstractAnnotationTest {
   }
 
   @Test
-  public void timeOfDayExpression() {
+  void timeOfDayExpression() {
     CsdlConstantExpression csdlExp = new CsdlConstantExpression(ConstantExpressionType.TimeOfDay, "00:00:00.999");
     EdmExpression exp = AbstractEdmExpression.getExpression(mock(Edm.class), csdlExp);
 

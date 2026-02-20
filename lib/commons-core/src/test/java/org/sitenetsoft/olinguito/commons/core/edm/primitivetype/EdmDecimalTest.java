@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
@@ -29,12 +31,12 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.junit.jupiter.api.Test;
 
-public class EdmDecimalTest extends PrimitiveTypeBaseTest {
+class EdmDecimalTest extends PrimitiveTypeBaseTest {
 
   private final EdmPrimitiveType instance = EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Decimal);
 
   @Test
-  public void compatibility() {
+  void compatibility() {
     assertTrue(instance.isCompatible(EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Byte)));
     assertTrue(instance.isCompatible(EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.SByte)));
     assertTrue(instance.isCompatible(EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Int16)));
@@ -45,13 +47,13 @@ public class EdmDecimalTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void uriLiteral() throws Exception {
+  void uriLiteral() throws Exception {
     assertEquals("12.34", instance.toUriLiteral("12.34"));
     assertEquals("12.34", instance.fromUriLiteral("12.34"));
   }
 
   @Test
-  public void valueToString() throws Exception {
+  void valueToString() throws Exception {
     assertEquals("0", instance.valueToString(0, null, null, null, null, null));
     assertEquals("8", instance.valueToString((byte) 8, null, null, null, null, null));
     assertEquals("16", instance.valueToString((short) 16, null, null, null, null, null));
@@ -84,7 +86,7 @@ public class EdmDecimalTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void valueOfString() throws Exception {
+  void valueOfString() throws Exception {
     assertEquals(BigDecimal.ONE, instance.valueOfString("1", null, null, null, null, null, BigDecimal.class));
     assertEquals(Byte.valueOf((byte) -2), instance.valueOfString("-2", null, null, null, null, null, Byte.class));
     assertEquals(new BigDecimal("-123456789012345678901234567890"), instance.valueOfString(
@@ -131,7 +133,7 @@ public class EdmDecimalTest extends PrimitiveTypeBaseTest {
   }
   
   @Test
-  public void validateDecimal() throws Exception {
+  void validateDecimal() throws Exception {
     assertFalse(EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Decimal).
         validate("3.1991163E7", null, null, 8, 7, null));
     assertTrue(EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Decimal).
@@ -175,7 +177,7 @@ public class EdmDecimalTest extends PrimitiveTypeBaseTest {
   }
   
   @Test
-  public void validateDecimalInV401() throws Exception {
+  void validateDecimalInV401() throws Exception {
     assertTrue(EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Decimal).
         validateDecimals("0.123", null, null, 3, "variable", null));
     assertTrue(EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Decimal).

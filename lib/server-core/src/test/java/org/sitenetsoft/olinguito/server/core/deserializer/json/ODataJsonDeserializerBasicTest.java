@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -32,7 +34,7 @@ import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
 import org.sitenetsoft.olinguito.server.api.deserializer.ODataDeserializer;
 import org.junit.jupiter.api.Test;
 
-public class ODataJsonDeserializerBasicTest {
+class ODataJsonDeserializerBasicTest {
 
   private final ODataDeserializer deserializer;
 
@@ -41,7 +43,7 @@ public class ODataJsonDeserializerBasicTest {
   }
 
   @Test
-  public void reference() throws Exception {
+  void reference() throws Exception {
     String entityString = "{"
         + "\"@odata.context\": \"$metadata#$ref\","
         + "\"@odata.id\": \"ESAllPrim(0)\""
@@ -54,7 +56,7 @@ public class ODataJsonDeserializerBasicTest {
   }
 
   @Test
-  public void references() throws Exception {
+  void references() throws Exception {
     String entityString = "{" +
         "  \"@odata.context\": \"$metadata#Collection($ref)\"," +
         "  \"value\": [" +
@@ -72,7 +74,7 @@ public class ODataJsonDeserializerBasicTest {
   }
 
   @Test
-  public void referencesWithOtherAnnotations() throws Exception {
+  void referencesWithOtherAnnotations() throws Exception {
     String entityString = "{" +
         "  \"@odata.context\": \"$metadata#Collection($ref)\"," +
         "  \"value\": [" +
@@ -89,7 +91,7 @@ public class ODataJsonDeserializerBasicTest {
   }
 
   @Test
-  public void referencesWithCustomAnnotation() throws Exception {
+  void referencesWithCustomAnnotation() throws Exception {
     String entityString = "{" +
         "  \"@odata.context\": \"$metadata#Collection($ref)\"," +
         "  \"value\": [" +
@@ -106,7 +108,7 @@ public class ODataJsonDeserializerBasicTest {
   }
 
   @Test
-  public void referenceEmpty() throws Exception {
+  void referenceEmpty() throws Exception {
     final String entityString = "{\"@odata.context\": \"$metadata#Collection($ref)\","
         + "  \"value\": [ ]"
         + "}";
@@ -117,7 +119,7 @@ public class ODataJsonDeserializerBasicTest {
   }
 
   @Test
-  public void referencesEmpty() throws Exception {
+  void referencesEmpty() throws Exception {
       assertThrows(DeserializerException.class, () -> {
           /*
           * See OData JSON Format chapter 13
@@ -129,19 +131,19 @@ public class ODataJsonDeserializerBasicTest {
   }
 
   @Test
-  public void referencesNoContent() throws Exception {
+  void referencesNoContent() throws Exception {
       assertThrows(DeserializerException.class,
           () -> deserializer.entityReferences(new ByteArrayInputStream(new byte[] {})));
   }
 
   @Test
-  public void referencesInvalidJson() throws Exception {
+  void referencesInvalidJson() throws Exception {
       assertThrows(DeserializerException.class,
           () -> deserializer.entityReferences(new ByteArrayInputStream(new byte[] { 'A' })));
   }
 
   @Test
-  public void referenceValueIsNotAnArray() throws Exception {
+  void referenceValueIsNotAnArray() throws Exception {
       assertThrows(DeserializerException.class, () -> {
           String entityString = "{" +
           "  \"@odata.context\": \"$metadata#Collection($ref)\"," +

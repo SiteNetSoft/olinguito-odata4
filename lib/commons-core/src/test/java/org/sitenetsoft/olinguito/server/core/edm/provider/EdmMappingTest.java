@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -40,10 +42,10 @@ import org.sitenetsoft.olinguito.commons.core.edm.EdmPropertyImpl;
 import org.sitenetsoft.olinguito.commons.core.edm.EdmSingletonImpl;
 import org.junit.jupiter.api.Test;
 
-public class EdmMappingTest {
+class EdmMappingTest {
 
   @Test
-  public void initialMappingMustBeNull() {
+  void initialMappingMustBeNull() {
     CsdlProperty property = new CsdlProperty().setType(EdmPrimitiveTypeKind.DateTimeOffset.getFullQualifiedName());
     EdmProperty edmProperty = new EdmPropertyImpl(null, property);
     assertNull(edmProperty.getMapping());
@@ -88,7 +90,7 @@ public class EdmMappingTest {
   }
 
   @Test
-  public void getDataClassForPrimTypeViaMapping() {
+  void getDataClassForPrimTypeViaMapping() {
     CsdlMapping mapping = new CsdlMapping().setMappedJavaClass(Date.class);
     CsdlProperty property = new CsdlProperty()
         .setType(EdmPrimitiveTypeKind.DateTimeOffset.getFullQualifiedName())

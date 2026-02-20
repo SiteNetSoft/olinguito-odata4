@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
@@ -26,13 +28,13 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmException;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.junit.jupiter.api.Test;
 
-public class ActionMapKeyTest {
+class ActionMapKeyTest {
 
   private final FullQualifiedName fqn = new FullQualifiedName("namespace", "name");
   private final FullQualifiedName fqnType = new FullQualifiedName("namespace2", "name2");
 
   @Test
-  public void invalidParametersTest() {
+  void invalidParametersTest() {
     createAndCheckForEdmException(null, null, null);
     createAndCheckForEdmException(fqn, null, null);
     createAndCheckForEdmException(fqn, fqnType, null);
@@ -54,7 +56,7 @@ public class ActionMapKeyTest {
   }
   
   @Test
-  public void testNotEquals() {
+  void testNotEquals() {
     ActionMapKey key;
     ActionMapKey someKey;
 
@@ -71,7 +73,7 @@ public class ActionMapKeyTest {
   }
 
   @Test
-  public void testEqualsMethod() {
+  void testEqualsMethod() {
     ActionMapKey key;
     ActionMapKey someKey;
 
@@ -95,7 +97,7 @@ public class ActionMapKeyTest {
   }
 
   @Test
-  public void testHashMethod() {
+  void testHashMethod() {
     ActionMapKey key;
     ActionMapKey someKey;
 

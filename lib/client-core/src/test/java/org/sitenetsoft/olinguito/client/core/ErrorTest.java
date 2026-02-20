@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core;
 
@@ -40,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ErrorTest extends AbstractTest {
+class ErrorTest extends AbstractTest {
 
   private ODataError error(final String name, final ContentType contentType) throws ODataDeserializerException {
     final ODataError error = client.getDeserializer(contentType).toError(
@@ -64,7 +65,7 @@ public class ErrorTest extends AbstractTest {
   }
 
   @Test
-  public void jsonSimple() throws Exception {
+  void jsonSimple() throws Exception {
     final ODataError error = simple(ContentType.JSON);
 
     // verify inner error dictionary
@@ -77,12 +78,12 @@ public class ErrorTest extends AbstractTest {
   }
 
   @Test
-  public void atomSimple() throws Exception {
+  void atomSimple() throws Exception {
     simple(ContentType.APPLICATION_ATOM_XML);
   }
 
   @Test
-  public void test1OLINGO1102() throws Exception {
+  void test1OLINGO1102() throws Exception {
     ODataClient odataClient = ODataClientFactory.getClient();
     InputStream entity = getClass().getResourceAsStream("500error." + getSuffix(ContentType.JSON));
 
@@ -101,7 +102,7 @@ public class ErrorTest extends AbstractTest {
   }
 
   @Test
-  public void test2OLINGO1102() throws Exception {
+  void test2OLINGO1102() throws Exception {
     ODataClient odataClient = ODataClientFactory.getClient();
     InputStream entity = getClass().getResourceAsStream("500error1." + getSuffix(ContentType.JSON));
 
@@ -111,7 +112,7 @@ public class ErrorTest extends AbstractTest {
   }
 
   @Test
-  public void testWithNull() throws Exception {
+  void testWithNull() throws Exception {
     ODataClient odataClient = ODataClientFactory.getClient();
 
     ODataRuntimeException exp = ODataErrorResponseChecker.
@@ -120,7 +121,7 @@ public class ErrorTest extends AbstractTest {
   }
 
   @Test
-  public void testExpTextMsg403() throws Exception {
+  void testExpTextMsg403() throws Exception {
     ODataClient odataClient = ODataClientFactory.getClient();
     InputStream entity = new ByteArrayInputStream("CSRF Validation Exception".getBytes());
 

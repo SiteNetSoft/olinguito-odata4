@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -53,14 +55,14 @@ import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class EdmProviderImplTest {
+class EdmProviderImplTest {
 
   private Edm edm;
   private final FullQualifiedName FQN = new FullQualifiedName("testNamespace", "testName");
   private final FullQualifiedName WRONG_FQN = new FullQualifiedName("wrong", "wrong");
 
   @BeforeEach
-  public void setup() throws Exception {
+  void setup() throws Exception {
     CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
     CsdlEntityContainerInfo containerInfo = new CsdlEntityContainerInfo().setContainerName(FQN);
     when(provider.getEntityContainerInfo(FQN)).thenReturn(containerInfo);
@@ -91,7 +93,7 @@ public class EdmProviderImplTest {
   }
 
   @Test
-  public void nothingSpecifiedMustNotResultInExceptions() throws Exception {
+  void nothingSpecifiedMustNotResultInExceptions() throws Exception {
     CsdlEdmProvider localProvider = mock(CsdlEdmProvider.class);
     when(localProvider.getActions(FQN)).thenReturn(null);
     when(localProvider.getFunctions(FQN)).thenReturn(null);
@@ -108,7 +110,7 @@ public class EdmProviderImplTest {
   }
 
   @Test
-  public void convertExceptionsTest() throws Exception {
+  void convertExceptionsTest() throws Exception {
     CsdlEdmProvider localProvider = mock(CsdlEdmProvider.class);
     FullQualifiedName fqn = new FullQualifiedName("namespace", "name");
     when(localProvider.getEntityContainerInfo(fqn)).thenThrow(new ODataException("msg"));
@@ -178,7 +180,7 @@ public class EdmProviderImplTest {
   }
 
   @Test
-  public void convertExceptionsAliasTest() throws Exception {
+  void convertExceptionsAliasTest() throws Exception {
       assertThrows(EdmException.class, () -> {
           CsdlEdmProvider localProvider = mock(CsdlEdmProvider.class);
           when(localProvider.getAliasInfos()).thenThrow(new ODataException("msg"));
@@ -188,7 +190,7 @@ public class EdmProviderImplTest {
   }
 
   @Test
-  public void getEntityContainer() {
+  void getEntityContainer() {
     EdmEntityContainer entityContainer = edm.getEntityContainer(FQN);
     assertNotNull(entityContainer);
     assertEquals(FQN.getNamespace(), entityContainer.getNamespace());
@@ -203,7 +205,7 @@ public class EdmProviderImplTest {
   }
 
   @Test
-  public void getEnumType() {
+  void getEnumType() {
     EdmEnumType enumType = edm.getEnumType(FQN);
     assertNotNull(enumType);
     assertEquals(FQN.getNamespace(), enumType.getNamespace());
@@ -213,7 +215,7 @@ public class EdmProviderImplTest {
   }
 
   @Test
-  public void getTypeDefinition() {
+  void getTypeDefinition() {
     EdmTypeDefinition typeDefinition = edm.getTypeDefinition(FQN);
     assertNotNull(typeDefinition);
     assertEquals(FQN.getNamespace(), typeDefinition.getNamespace());
@@ -223,7 +225,7 @@ public class EdmProviderImplTest {
   }
 
   @Test
-  public void getEntityType() {
+  void getEntityType() {
     EdmEntityType entityType = edm.getEntityType(FQN);
     assertNotNull(entityType);
     assertEquals(FQN.getNamespace(), entityType.getNamespace());
@@ -233,7 +235,7 @@ public class EdmProviderImplTest {
   }
 
   @Test
-  public void getComplexType() {
+  void getComplexType() {
     EdmComplexType complexType = edm.getComplexType(FQN);
     assertNotNull(complexType);
     assertEquals(FQN.getNamespace(), complexType.getNamespace());
@@ -243,7 +245,7 @@ public class EdmProviderImplTest {
   }
 
   @Test
-  public void getAnnotations() {
+  void getAnnotations() {
     EdmAnnotations annotationGroup = edm.getAnnotationGroup(FQN, null);
     assertNotNull(annotationGroup);
 

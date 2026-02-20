@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.api.prefer;
 
@@ -23,15 +25,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.sitenetsoft.olinguito.server.api.prefer.Preferences.Return;
 import org.junit.jupiter.api.Test;
 
-public class PreferencesAppliedTest {
+class PreferencesAppliedTest {
 
   @Test
-  public void empty() {
+  void empty() {
     assertEquals("", PreferencesApplied.with().build().toValueString());
   }
 
   @Test
-  public void all() {
+  void all() {
     assertEquals("odata.allow-entityreferences, odata.callback,"
         + " odata.continue-on-error, odata.include-annotations=\"*\", odata.maxpagesize=42,"
         + " odata.track-changes, return=representation, respond-async, wait=12345",
@@ -42,7 +44,7 @@ public class PreferencesAppliedTest {
   }
 
   @Test
-  public void caseSensitivity() {
+  void caseSensitivity() {
     assertEquals("odata.include-annotations=\"*\", odata.maxpagesize=255",
         PreferencesApplied.with()
         .preference("OData.Include-Annotations", "*").maxPageSize(0xFF)
@@ -50,7 +52,7 @@ public class PreferencesAppliedTest {
   }
 
   @Test
-  public void multipleValues() {
+  void multipleValues() {
     assertEquals("return=minimal, wait=1",
         PreferencesApplied.with()
         .returnRepresentation(Return.MINIMAL).returnRepresentation(Return.REPRESENTATION)
@@ -60,7 +62,7 @@ public class PreferencesAppliedTest {
   }
 
   @Test
-  public void quotedValue() {
+  void quotedValue() {
     assertEquals("strangepreference=\"x\\\\y,\\\"abc\\\"z\"",
         PreferencesApplied.with().preference("strangePreference", "x\\y,\"abc\"z").build().toValueString());
   }

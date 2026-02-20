@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.retrieve;
 
@@ -28,10 +30,10 @@ import org.sitenetsoft.olinguito.client.core.ODataClientImpl;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.junit.jupiter.api.Test;
 
-public class RetrieveRequestTest {
+class RetrieveRequestTest {
 
   @Test
-  public void testEdmMetadata() throws URISyntaxException {
+  void testEdmMetadata() throws URISyntaxException {
 
     ODataClientImpl client = (ODataClientImpl) ODataClientFactory.getClient();
     RetrieveRequestFactoryImpl factory = (RetrieveRequestFactoryImpl) client
@@ -47,7 +49,7 @@ public class RetrieveRequestTest {
   }
   
   @Test
-  public void testXmlMetadata() throws URISyntaxException {
+  void testXmlMetadata() throws URISyntaxException {
 
     ODataClientImpl client = (ODataClientImpl) ODataClientFactory.getClient();
     RetrieveRequestFactoryImpl factory = (RetrieveRequestFactoryImpl) client
@@ -59,7 +61,7 @@ public class RetrieveRequestTest {
   }
   
   @Test
-  public void testDeltaRequest() throws URISyntaxException {
+  void testDeltaRequest() throws URISyntaxException {
 
     ODataClientImpl client = (ODataClientImpl) ODataClientFactory.getClient();
     URI uri = new URI("localhost:8080");
@@ -73,7 +75,7 @@ public class RetrieveRequestTest {
    }
   
   @Test
-  public void testEntityRequest() throws URISyntaxException {
+  void testEntityRequest() throws URISyntaxException {
 
     ODataClientImpl client = (ODataClientImpl) ODataClientFactory.getClient();
     URI uri = new URI("localhost:8080");
@@ -87,7 +89,7 @@ public class RetrieveRequestTest {
    }
   
   @Test
-  public void testEntitySetIteratorRequest() throws URISyntaxException {
+  void testEntitySetIteratorRequest() throws URISyntaxException {
 
     ODataClientImpl client = (ODataClientImpl) ODataClientFactory.getClient();
     URI uri = new URI("localhost:8080");
@@ -101,7 +103,7 @@ public class RetrieveRequestTest {
    }
   
   @Test
-  public void testEntitySetRequest() throws URISyntaxException {
+  void testEntitySetRequest() throws URISyntaxException {
 
     ODataClientImpl client = (ODataClientImpl) ODataClientFactory.getClient();
     URI uri = new URI("localhost:8080");
@@ -115,7 +117,7 @@ public class RetrieveRequestTest {
    }
   
   @Test
-  public void testMediaRequest() throws URISyntaxException {
+  void testMediaRequest() throws URISyntaxException {
 
     ODataClientImpl client = (ODataClientImpl) ODataClientFactory.getClient();
     URI uri = new URI("localhost","8080","","","$value");
@@ -129,7 +131,7 @@ public class RetrieveRequestTest {
    }
   
   @Test
-  public void testPropertyRequest() throws URISyntaxException {
+  void testPropertyRequest() throws URISyntaxException {
 
     ODataClientImpl client = (ODataClientImpl) ODataClientFactory.getClient();
     URI uri = new URI("localhost:8080");
@@ -143,7 +145,7 @@ public class RetrieveRequestTest {
    }
   
   @Test
-  public void testRawRequest() throws URISyntaxException {
+  void testRawRequest() throws URISyntaxException {
 
     ODataClientImpl client = (ODataClientImpl) ODataClientFactory.getClient();
     URI uri = new URI("localhost:8080");
@@ -157,7 +159,7 @@ public class RetrieveRequestTest {
    }
   
   @Test
-  public void testServiceDocumentRequest() throws URISyntaxException {
+  void testServiceDocumentRequest() throws URISyntaxException {
 
     ODataClientImpl client = (ODataClientImpl) ODataClientFactory.getClient();
     RetrieveRequestFactoryImpl factory = (RetrieveRequestFactoryImpl) client
@@ -170,7 +172,7 @@ public class RetrieveRequestTest {
    }
   
   @Test
-  public void testValueRequest() throws URISyntaxException {
+  void testValueRequest() throws URISyntaxException {
 
     ODataClientImpl client = (ODataClientImpl) ODataClientFactory.getClient();
     URI uri = new URI("localhost:8080");

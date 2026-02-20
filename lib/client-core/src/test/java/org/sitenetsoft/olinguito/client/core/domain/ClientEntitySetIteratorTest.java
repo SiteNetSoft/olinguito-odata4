@@ -17,6 +17,8 @@ package org.sitenetsoft.olinguito.client.core.domain;
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -34,10 +36,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class ClientEntitySetIteratorTest {
+class ClientEntitySetIteratorTest {
   
     @Test
-    public void testGetEntitySetIterator1() throws IOException, URISyntaxException {
+    void testGetEntitySetIterator1() throws IOException, URISyntaxException {
         String str = "{ \"@odata.context\": \"http://providers"
             + "/CLOUD_DATA_INTEGRATION_TEST%3ABUG_CURLY_BRACKETS/$metadata#BUG_CURLY_BRACKETSResult/$delta\", "
             + "\"value\": [ "
@@ -77,7 +79,7 @@ public class ClientEntitySetIteratorTest {
     }
 
     @Test
-    public void testGetEntitySetIteratorWithInnerNav() throws IOException, URISyntaxException {
+    void testGetEntitySetIteratorWithInnerNav() throws IOException, URISyntaxException {
         String str = "{\"@odata.context\":\"$metadata#Cubes(Name)\","
             + "\"value\":[{\"@odata.etag\":\"W/\\\"c24af675e00a3f95ef63f223fb9c2cc8d6455459\\\"\","
             + "\"Name\":\"}Capabilities\","
@@ -101,7 +103,7 @@ public class ClientEntitySetIteratorTest {
     }
     
     @Test
-    public void testGetEntitySetIteratorWithInnerNavArray() throws IOException, URISyntaxException {
+    void testGetEntitySetIteratorWithInnerNavArray() throws IOException, URISyntaxException {
         String str = "{\"@odata.context\":\"$metadata#Cubes(Name)\","
             + "\"value\":[{\"@odata.etag\":\"W/\\\"c24af675e00a3f95ef63f223fb9c2cc8d6455459\\\"\","
             + "\"Name\":\"}Capabilities\","
@@ -127,7 +129,7 @@ public class ClientEntitySetIteratorTest {
         Assertions.assertEquals("}Capabilities", entities.get(0).getProperty("Name").getPrimitiveValue().toString());
     }
     @Test
-    public void testGetEntitySetIterator3() throws IOException, URISyntaxException {
+    void testGetEntitySetIterator3() throws IOException, URISyntaxException {
         String str = "{\"@odata.context\":\"$metadata#Cubes(Name)\","
             + "\"@odata.metadataEtag\": \"W/\\\"582997db-15b9-4a23-a8b0-c91bf45b4194\\\"\","
             + "\"value\":[{\"PropertyInt16\": 0,\"PropertyString\": \"\"}]}";
@@ -150,7 +152,7 @@ public class ClientEntitySetIteratorTest {
     }
     
     @Test
-    public void testEntitySetIteratorRemoveMethod() throws IOException, URISyntaxException {
+    void testEntitySetIteratorRemoveMethod() throws IOException, URISyntaxException {
         assertThrows(UnsupportedOperationException.class, () -> {
             String str = "{\"@odata.context\":\"$metadata#Cubes(Name)\","
             + "\"@odata.metadataEtag\": \"W/\\\"582997db-15b9-4a23-a8b0-c91bf45b4194\\\"\","
@@ -165,7 +167,7 @@ public class ClientEntitySetIteratorTest {
     }
     
     @Test
-    public void testEntitySetIteratorGetNextMethod() throws IOException, URISyntaxException {
+    void testEntitySetIteratorGetNextMethod() throws IOException, URISyntaxException {
         assertThrows(IllegalStateException.class, () -> {
             String str = "{\"@odata.context\":\"$metadata#Cubes(Name)\","
             + "\"@odata.metadataEtag\": \"W/\\\"582997db-15b9-4a23-a8b0-c91bf45b4194\\\"\","
@@ -180,7 +182,7 @@ public class ClientEntitySetIteratorTest {
     }
     
     @Test
-    public void testEntitySetIteratorNextLink() throws IOException, URISyntaxException {
+    void testEntitySetIteratorNextLink() throws IOException, URISyntaxException {
         String str = "{\"@odata.context\":\"$metadata#Cubes(Name)\","
             + "\"@odata.metadataEtag\": \"W/\\\"582997db-15b9-4a23-a8b0-c91bf45b4194\\\"\","
             + "\"@odata.nextLink\":\"http://localhost:8082/odata-server-tecsvc/odata.svc/"

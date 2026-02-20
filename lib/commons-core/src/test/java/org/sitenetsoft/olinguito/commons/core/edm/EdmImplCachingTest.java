@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
@@ -47,7 +49,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class EdmImplCachingTest {
+class EdmImplCachingTest {
 
   private final FullQualifiedName NAME1 = new FullQualifiedName("testNamespace1", "testName1");
 
@@ -56,7 +58,7 @@ public class EdmImplCachingTest {
   private Edm edm;
 
   @Test
-  public void cacheSchema() {
+  void cacheSchema() {
     List<EdmSchema> schemas = edm.getSchemas();
     assertNotNull(schemas);
 
@@ -67,7 +69,7 @@ public class EdmImplCachingTest {
   }
 
   @Test
-  public void cacheEntityContainer() {
+  void cacheEntityContainer() {
     EdmEntityContainer entityContainer = edm.getEntityContainer(null);
     assertNotNull(entityContainer);
 
@@ -90,7 +92,7 @@ public class EdmImplCachingTest {
   }
 
   @Test
-  public void cacheEnumType() {
+  void cacheEnumType() {
     EdmEnumType enumType = edm.getEnumType(NAME1);
     assertNotNull(enumType);
 
@@ -107,7 +109,7 @@ public class EdmImplCachingTest {
   }
 
   @Test
-  public void cacheTypeDefinition() {
+  void cacheTypeDefinition() {
     EdmTypeDefinition typeDefinition = edm.getTypeDefinition(NAME1);
     assertNotNull(typeDefinition);
 
@@ -124,7 +126,7 @@ public class EdmImplCachingTest {
   }
 
   @Test
-  public void cacheEntityType() {
+  void cacheEntityType() {
     EdmEntityType entityType = edm.getEntityType(NAME1);
     assertNotNull(entityType);
 
@@ -141,7 +143,7 @@ public class EdmImplCachingTest {
   }
 
   @Test
-  public void cacheComplexType() {
+  void cacheComplexType() {
     EdmComplexType complexType = edm.getComplexType(NAME1);
     assertNotNull(complexType);
 
@@ -158,7 +160,7 @@ public class EdmImplCachingTest {
   }
 
   @Test
-  public void cacheUnboundAction() {
+  void cacheUnboundAction() {
     EdmAction action = edm.getUnboundAction(NAME1);
     assertNotNull(action);
 
@@ -174,7 +176,7 @@ public class EdmImplCachingTest {
   }
 
   @Test
-  public void cacheBoundAction() {
+  void cacheBoundAction() {
     EdmAction action = edm.getBoundAction(NAME1, NAME2, true);
     assertNotNull(action);
 
@@ -191,7 +193,7 @@ public class EdmImplCachingTest {
   }
 
   @Test
-  public void cacheUnboundFunctionNoParameters() {
+  void cacheUnboundFunctionNoParameters() {
     EdmFunction function = edm.getUnboundFunction(NAME1, null);
     assertNotNull(function);
 
@@ -208,7 +210,7 @@ public class EdmImplCachingTest {
   }
 
   @Test
-  public void cacheBoundFunction() {
+  void cacheBoundFunction() {
     EdmFunction function = edm.getBoundFunction(NAME1, NAME2, true, new ArrayList<>());
     assertNotNull(function);
 
@@ -225,7 +227,7 @@ public class EdmImplCachingTest {
   }
 
   @Test
-  public void cacheUnboundFunctionWithParameters() {
+  void cacheUnboundFunctionWithParameters() {
     ArrayList<String> parameters1 = new ArrayList<>();
     parameters1.add("A");
     parameters1.add("B");
@@ -248,7 +250,7 @@ public class EdmImplCachingTest {
   }
 
   @Test
-  public void cacheTerm() {
+  void cacheTerm() {
     EdmTerm term1 = edm.getTerm(NAME1);
     assertNotNull(term1);
 
@@ -265,7 +267,7 @@ public class EdmImplCachingTest {
   }
 
   @Test
-  public void cacheAnnotationsGroup() {
+  void cacheAnnotationsGroup() {
     EdmAnnotations annotationGroup1 = edm.getAnnotationGroup(NAME1, null);
     assertNotNull(annotationGroup1);
 
@@ -282,7 +284,7 @@ public class EdmImplCachingTest {
   }
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     edm = new LocalEdm();
   }
 

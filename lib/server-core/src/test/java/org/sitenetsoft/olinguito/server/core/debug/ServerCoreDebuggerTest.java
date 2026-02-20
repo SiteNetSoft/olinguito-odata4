@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Restored debugger tests using servlet-free String API
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.debug;
 
@@ -41,13 +42,13 @@ import org.sitenetsoft.olinguito.server.api.debug.DefaultDebugSupport;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class ServerCoreDebuggerTest {
+class ServerCoreDebuggerTest {
 
   private final OData odata = OData.newInstance();
   private ServerCoreDebugger debugger;
 
   @BeforeEach
-  public void setupDebugger() {
+  void setupDebugger() {
     debugger = new ServerCoreDebugger(odata);
     DebugSupport processor = mock(DebugSupport.class);
     when(processor.isUserAuthorized()).thenReturn(true);
@@ -57,25 +58,25 @@ public class ServerCoreDebuggerTest {
   }
 
   @Test
-  public void standardIsDebugModeIsFalse() {
+  void standardIsDebugModeIsFalse() {
     assertFalse(debugger.isDebugMode());
   }
 
   @Test
-  public void resolveDebugModeNoDebugSupportProcessor() {
+  void resolveDebugModeNoDebugSupportProcessor() {
     ServerCoreDebugger localDebugger = new ServerCoreDebugger(odata);
     localDebugger.resolveDebugMode(DebugSupport.ODATA_DEBUG_JSON);
     assertFalse(localDebugger.isDebugMode());
   }
 
   @Test
-  public void resolveDebugModeNullParameter() {
+  void resolveDebugModeNullParameter() {
     debugger.resolveDebugMode((String) null);
     assertFalse(debugger.isDebugMode());
   }
 
   @Test
-  public void resolveDebugModeJsonNotAuthorized() {
+  void resolveDebugModeJsonNotAuthorized() {
     DebugSupport debugSupportMock = mock(DebugSupport.class);
     when(debugSupportMock.isUserAuthorized()).thenReturn(false);
 
@@ -87,7 +88,7 @@ public class ServerCoreDebuggerTest {
   }
 
   @Test
-  public void failResponse() throws Exception {
+  void failResponse() throws Exception {
     debugger.resolveDebugMode(DebugSupport.ODATA_DEBUG_JSON);
     ODataResponse debugResponse = debugger.createDebugResponse(null, null, null, null, null);
     assertEquals(HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode(), debugResponse.getStatusCode());
@@ -96,7 +97,7 @@ public class ServerCoreDebuggerTest {
   }
 
   @Test
-  public void noDebugModeCreateDebugResponseCallMustDoNothing() {
+  void noDebugModeCreateDebugResponseCallMustDoNothing() {
     ODataResponse odResponse = new ODataResponse();
     ODataResponse debugResponse = debugger.createDebugResponse(null, odResponse, null, null, null);
 
@@ -104,7 +105,7 @@ public class ServerCoreDebuggerTest {
   }
 
   @Test
-  public void runtimeMeasurement() throws Exception {
+  void runtimeMeasurement() throws Exception {
     ServerCoreDebugger defaultDebugger = new ServerCoreDebugger(odata);
     defaultDebugger.setDebugSupportProcessor(new DefaultDebugSupport());
     defaultDebugger.resolveDebugMode(DebugSupport.ODATA_DEBUG_JSON);

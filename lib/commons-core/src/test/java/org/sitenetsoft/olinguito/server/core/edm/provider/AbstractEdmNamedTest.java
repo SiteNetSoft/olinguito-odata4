@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -35,7 +36,7 @@ import org.junit.jupiter.api.Test;
 public class AbstractEdmNamedTest {
 
   @Test
-  public void getNameTest() {
+  void getNameTest() {
     EdmNamed obj = new EdmNamedImplTester("Name");
     assertEquals("Name", obj.getName());
     EdmAnnotatable an = (EdmAnnotatable) obj;

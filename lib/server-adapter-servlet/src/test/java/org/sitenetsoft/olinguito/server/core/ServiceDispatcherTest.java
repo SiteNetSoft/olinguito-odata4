@@ -21,6 +21,7 @@
  * Copyright 2026 SiteNetSoft - Fixed deprecated HC 5.x execute() calls
  * Copyright 2026 SiteNetSoft - Fixed HC 5.x resource leaks: shared HttpClient, close responses
  * Copyright 2026 SiteNetSoft - Replaced wildcard imports with explicit imports
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -74,7 +75,7 @@ import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class ServiceDispatcherTest {
+class ServiceDispatcherTest {
   private static final int TOMCAT_PORT = 9900;
   private Tomcat tomcat = new Tomcat();
   private CloseableHttpClient http;
@@ -125,7 +126,7 @@ public class ServiceDispatcherTest {
   }
 
   @AfterEach
-  public void afterTest() throws Exception {
+  void afterTest() throws Exception {
     if (http != null) {
       http.close();
     }
@@ -185,7 +186,7 @@ public class ServiceDispatcherTest {
   }
 
   @Test
-  public void testMetadata() throws Exception {
+  void testMetadata() throws Exception {
     final ServiceHandler handler = Mockito.mock(ServiceHandler.class);
     helpGETTest(handler, "trippin/$metadata", new TestResult() {
       @Override
@@ -198,7 +199,7 @@ public class ServiceDispatcherTest {
   }
 
   @Test
-  public void testEntitySet() throws Exception {
+  void testEntitySet() throws Exception {
     final ServiceHandler handler = Mockito.mock(ServiceHandler.class);
     helpGETTest(handler, "trippin/Airports", new TestResult() {
       @Override
@@ -218,7 +219,7 @@ public class ServiceDispatcherTest {
   }
 
   @Test
-  public void testEntitySetCount() throws Exception {
+  void testEntitySetCount() throws Exception {
     final ServiceHandler handler = Mockito.mock(ServiceHandler.class);
     helpGETTest(handler, "trippin/Airports/$count", new TestResult() {
       @Override
@@ -237,7 +238,7 @@ public class ServiceDispatcherTest {
   }
 
   @Test
-  public void testEntity() throws Exception {
+  void testEntity() throws Exception {
     final ServiceHandler handler = Mockito.mock(ServiceHandler.class);
     helpGETTest(handler, "trippin/Airports('0')", new TestResult() {
       @Override
@@ -255,7 +256,7 @@ public class ServiceDispatcherTest {
   }
 
   @Test
-  public void testReadProperty() throws Exception {
+  void testReadProperty() throws Exception {
     final ServiceHandler handler = Mockito.mock(ServiceHandler.class);
     helpGETTest(handler, "trippin/Airports('0')/IataCode", new TestResult() {
       @Override
@@ -275,7 +276,7 @@ public class ServiceDispatcherTest {
   }
 
   @Test
-  public void testReadComplexProperty() throws Exception {
+  void testReadComplexProperty() throws Exception {
     final ServiceHandler handler = Mockito.mock(ServiceHandler.class);
     helpGETTest(handler, "trippin/Airports('0')/Location", new TestResult() {
       @Override
@@ -315,7 +316,7 @@ public class ServiceDispatcherTest {
   }
 
   @Test
-  public void testReadPropertyRef() throws Exception {
+  void testReadPropertyRef() throws Exception {
     final ServiceHandler handler = Mockito.mock(ServiceHandler.class);
     helpGETTest(handler, "trippin/Airports('0')/IataCode/$value", new TestResult() {
       @Override
@@ -335,7 +336,7 @@ public class ServiceDispatcherTest {
   }
 
   @Test
-  public void testFunctionImport() throws Exception {
+  void testFunctionImport() throws Exception {
     final ServiceHandler handler = Mockito.mock(ServiceHandler.class);
     helpGETTest(handler, "trippin/GetNearestAirport(lat=12.11,lon=34.23)", new TestResult() {
       @Override
@@ -351,7 +352,7 @@ public class ServiceDispatcherTest {
   }
 
   @Test
-  public void testActionImport() throws Exception {
+  void testActionImport() throws Exception {
     final ServiceHandler handler = Mockito.mock(ServiceHandler.class);
     helpTest(handler, "trippin/ResetDataSource", "POST", "", new TestResult() {
       @Override
@@ -366,7 +367,7 @@ public class ServiceDispatcherTest {
   }
 
   @Test
-  public void testReadMedia() throws Exception {
+  void testReadMedia() throws Exception {
     final ServiceHandler handler = Mockito.mock(ServiceHandler.class);
     helpGETTest(handler, "trippin/Photos(1)/$value", new TestResult() {
       @Override
@@ -383,7 +384,7 @@ public class ServiceDispatcherTest {
   }
 
   @Test
-  public void testReadNavigation() throws Exception {
+  void testReadNavigation() throws Exception {
     final ServiceHandler handler = Mockito.mock(ServiceHandler.class);
     helpGETTest(handler, "trippin/People('russelwhyte')/Friends", new TestResult() {
       @Override
@@ -400,7 +401,7 @@ public class ServiceDispatcherTest {
   }
 
   @Test
-  public void testReadReference() throws Exception {
+  void testReadReference() throws Exception {
     final ServiceHandler handler = Mockito.mock(ServiceHandler.class);
     helpGETTest(handler, "trippin/People('russelwhyte')/Friends/$ref", new TestResult() {
       @Override
@@ -417,7 +418,7 @@ public class ServiceDispatcherTest {
   }
 
   @Test
-  public void testWriteReferenceCollection() throws Exception {
+  void testWriteReferenceCollection() throws Exception {
     String payload = "{\n" + "\"@odata.id\": \"/Photos(11)\"\n" + "}";
 
     final ServiceHandler handler = Mockito.mock(ServiceHandler.class);
@@ -441,7 +442,7 @@ public class ServiceDispatcherTest {
   }
 
   @Test
-  public void testWriteReference() throws Exception {
+  void testWriteReference() throws Exception {
     String payload = "{\n" + "\"@odata.id\": \"/Photos(11)\"\n" + "}";
 
     final ServiceHandler handler = Mockito.mock(ServiceHandler.class);

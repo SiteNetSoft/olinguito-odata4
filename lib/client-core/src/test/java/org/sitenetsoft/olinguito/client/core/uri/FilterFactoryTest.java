@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
@@ -35,7 +37,7 @@ import org.sitenetsoft.olinguito.commons.core.Encoder;
 import org.sitenetsoft.olinguito.commons.core.edm.EdmEnumTypeImpl;
 import org.junit.jupiter.api.Test;
 
-public class FilterFactoryTest extends AbstractTest {
+class FilterFactoryTest extends AbstractTest {
 
   private FilterFactory getFilterFactory() {
     return client.getFilterFactory();
@@ -46,7 +48,7 @@ public class FilterFactoryTest extends AbstractTest {
   }
 
   @Test
-  public void has() {
+  void has() {
     final EdmEnumType pattern =
         new EdmEnumTypeImpl(null, new FullQualifiedName("Sales", "Pattern"), new CsdlEnumType());
     final URIFilter filter = getFilterFactory().has(getFilterArgFactory().property("style"), pattern, "Yellow");
@@ -55,7 +57,7 @@ public class FilterFactoryTest extends AbstractTest {
   }
 
   @Test
-  public void contains() {
+  void contains() {
     final URIFilter filter = getFilterFactory().match(getFilterArgFactory().contains(
         getFilterArgFactory().property("CompanyName"), getFilterArgFactory().literal("Alfreds")));
 
@@ -63,7 +65,7 @@ public class FilterFactoryTest extends AbstractTest {
   }
 
   @Test
-  public void maxdatetime() {
+  void maxdatetime() {
     final URIFilter filter = getFilterFactory().eq(
         getFilterArgFactory().property("EndTime"),
         getFilterArgFactory().maxdatetime());
@@ -72,7 +74,7 @@ public class FilterFactoryTest extends AbstractTest {
   }
 
   @Test
-  public void any() {
+  void any() {
     final URIFilter filter = getFilterFactory().match(
         getFilterArgFactory().any(getFilterArgFactory().property("Items"),
             getFilterFactory().gt("d:d/Quantity", 100)));
@@ -81,7 +83,7 @@ public class FilterFactoryTest extends AbstractTest {
   }
 
   @Test
-  public void issueOLINGO357() throws UnsupportedEncodingException {
+  void issueOLINGO357() throws UnsupportedEncodingException {
     final Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT-8"));
     calendar.clear();
     calendar.set(2011, 2, 8, 14, 21, 12);
@@ -92,7 +94,7 @@ public class FilterFactoryTest extends AbstractTest {
   }
   
   @Test
-  public void issue1144Any() {
+  void issue1144Any() {
     URIFilter andFilExp = getFilterFactory().and(getFilterFactory().eq("d/Quantity", 100), 
         getFilterFactory().eq("d/Quantity", 50));
     final URIFilter filter = getFilterFactory().match(
@@ -101,7 +103,7 @@ public class FilterFactoryTest extends AbstractTest {
   }
 
   @Test
-  public void all() {
+  void all() {
     final URIFilter filter = getFilterFactory().match(
         getFilterArgFactory().all(getFilterArgFactory().property("Items"),
             getFilterFactory().gt("d:d/Quantity", 100)));
@@ -110,7 +112,7 @@ public class FilterFactoryTest extends AbstractTest {
   }
   
   @Test
-  public void issue1144All() {
+  void issue1144All() {
     URIFilter andFilExp = getFilterFactory().and(getFilterFactory().eq("d/Quantity", 100), 
         getFilterFactory().eq("d/Quantity", 50));
     final URIFilter filter = getFilterFactory().match(

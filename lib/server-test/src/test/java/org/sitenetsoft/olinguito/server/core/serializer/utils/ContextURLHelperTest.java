@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.serializer.utils;
 
@@ -48,14 +49,14 @@ import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class ContextURLHelperTest {
+class ContextURLHelperTest {
 
   private static final Edm edm = OData.newInstance().createServiceMetadata(
       new EdmTechProvider(), Collections.emptyList()).getEdm();
   private static final EdmEntityContainer entityContainer = edm.getEntityContainer();
 
   @Test
-  public void buildSelect() throws Exception {
+  void buildSelect() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESAllPrim");
     final SelectItem selectItem1 = ExpandSelectMock.mockSelectItem(entitySet, "PropertyString");
     final SelectItem selectItem2 = ExpandSelectMock.mockSelectItem(entitySet, "PropertyInt16");
@@ -68,7 +69,7 @@ public class ContextURLHelperTest {
   }
 
   @Test
-  public void buildSelectAll() throws Exception {
+  void buildSelectAll() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESAllPrim");
     final SelectItem selectItem1 = ExpandSelectMock.mockSelectItem(entitySet, "PropertyGuid");
     SelectItem selectItem2 = Mockito.mock(SelectItem.class);
@@ -80,7 +81,7 @@ public class ContextURLHelperTest {
   }
 
   @Test
-  public void buildSelectComplex() throws Exception {
+  void buildSelectComplex() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESCompMixPrimCollComp");
     final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(
         ExpandSelectMock.mockSelectItem(entitySet,
@@ -103,7 +104,7 @@ public class ContextURLHelperTest {
 
 
   @Test
-  public void buildEntity() throws Exception {
+  void buildEntity() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESTwoPrim");
     final ContextURL contextURL = ContextURL.with().entitySet(entitySet).suffix(ContextURL.Suffix.ENTITY).build();
     assertEquals("$metadata#ESTwoPrim/$entity", ContextURLBuilder.create(contextURL).toASCIIString());
@@ -113,7 +114,7 @@ public class ContextURLHelperTest {
   //                            NavPropertyETTwoPrimOne/NavPropertyETAllPrimOne/NavPropertyETTwoPrimOne
   // @odata.context: "../../../../../$metadata#ESTwoPrim/$entity"
   @Test
-  public void buildRelativeFiveNavigation() throws Exception {
+  void buildRelativeFiveNavigation() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESTwoPrim");
     String odataPath = "ESAllPrim(32767)/NavPropertyETTwoPrimOne/NavPropertyETAllPrimOne/" +
                         "NavPropertyETTwoPrimOne/NavPropertyETAllPrimOne/NavPropertyETTwoPrimOne";
@@ -132,7 +133,7 @@ public class ContextURLHelperTest {
   // odata.svc/ESAllPrim(32767)/NavPropertyETTwoPrimOne
   // @odata.context: "$metadata#ESTwoPrim/$entity",
   @Test
-  public void buildRelativeNavigation() throws Exception {
+  void buildRelativeNavigation() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESTwoPrim");
     final String oDataPath = "ESAllPrim(32767)/NavPropertyETTwoPrimOne";
     ContextURL contextURL = ContextURL.with().oDataPath("/" + oDataPath)
@@ -148,7 +149,7 @@ public class ContextURLHelperTest {
   // /odata.svc/ESAllPrim(32767)/NavPropertyETTwoPrimOne/NavPropertyETAllPrimOne
   // @odata.context: "$metadata#ESAllPrim/$entity",
   @Test
-  public void buildRelativeTwoNavigation() throws Exception {
+  void buildRelativeTwoNavigation() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESAllPrim");
     String oDataPath = "ESAllPrim(32767)/NavPropertyETTwoPrimOne/NavPropertyETAllPrimOne";
     ContextURL contextURL = ContextURL.with()
@@ -172,7 +173,7 @@ public class ContextURLHelperTest {
   }
 
   @Test
-  public void buildExpandAll() throws Exception {
+  void buildExpandAll() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESTwoPrim");
     ExpandItem expandItem = Mockito.mock(ExpandItem.class);
     Mockito.when(expandItem.isStar()).thenReturn(true);
@@ -184,7 +185,7 @@ public class ContextURLHelperTest {
   }
 
   @Test
-  public void buildExpandNoSelect() throws Exception {
+  void buildExpandNoSelect() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESTwoPrim");
     final ExpandOption expand = ExpandSelectMock.mockExpandOption(List.of(
         ExpandSelectMock.mockExpandItem(entitySet, "NavPropertyETAllPrimOne")));
@@ -195,7 +196,7 @@ public class ContextURLHelperTest {
   }
   
   @Test
-  public void buildExpandSelect() throws Exception {
+  void buildExpandSelect() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESTwoPrim");
     final ExpandItem expandItem1 = ExpandSelectMock.mockExpandItem(entitySet, "NavPropertyETAllPrimOne");
     final EdmEntitySet innerEntitySet = entityContainer.getEntitySet("ESAllPrim");
@@ -215,7 +216,7 @@ public class ContextURLHelperTest {
   }
 
   @Test
-  public void buildExpandTwoLevels() throws Exception {
+  void buildExpandTwoLevels() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESTwoPrim");
     final EdmEntitySet innerEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final ExpandOption innerExpand = ExpandSelectMock.mockExpandOption(List.of(
@@ -230,7 +231,7 @@ public class ContextURLHelperTest {
   }
 
   @Test
-  public void buildExpandTwoLevelsInnerAll() throws Exception {
+  void buildExpandTwoLevelsInnerAll() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESTwoPrim");
     ExpandItem expandItemInner = Mockito.mock(ExpandItem.class);
     Mockito.when(expandItemInner.isStar()).thenReturn(true);
@@ -245,7 +246,7 @@ public class ContextURLHelperTest {
   }
 
   @Test
-  public void buildExpandSelectTwoLevels() throws Exception {
+  void buildExpandSelectTwoLevels() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESTwoPrim");
     final EdmEntitySet innerEntitySet = entityContainer.getEntitySet("ESAllPrim");
     ExpandItem expandItemInner = ExpandSelectMock.mockExpandItem(innerEntitySet, "NavPropertyETTwoPrimOne");
@@ -264,7 +265,7 @@ public class ContextURLHelperTest {
   }
 
   @Test
-  public void buildSingleKey() throws Exception {
+  void buildSingleKey() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESTwoPrim");
     final EdmProperty edmProperty = entitySet.getEntityType().getStructuralProperty("PropertyInt16");
     UriParameter key = Mockito.mock(UriParameter.class);
@@ -278,7 +279,7 @@ public class ContextURLHelperTest {
   }
 
   @Test
-  public void buildCompoundKey() throws Exception {
+  void buildCompoundKey() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESTwoKeyNav");
     final EdmProperty edmProperty = entitySet.getEntityType().getStructuralProperty("PropertyInt16");
     UriParameter key1 = Mockito.mock(UriParameter.class);
@@ -295,7 +296,7 @@ public class ContextURLHelperTest {
   }
   
   @Test
-  public void buildKeyAlias() throws Exception {
+  void buildKeyAlias() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESFourKeyAlias");
     final EdmProperty edmProperty = entitySet.getEntityType().getStructuralProperty("PropertyComp");
     UriParameter key1 = Mockito.mock(UriParameter.class);
@@ -319,7 +320,7 @@ public class ContextURLHelperTest {
   }
   
   @Test
-  public void buildComplexDerivedTypeInSelect() throws Exception {
+  void buildComplexDerivedTypeInSelect() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESCompCollDerived");
     final EdmComplexType derivedComplexType = edm.getComplexType(
         new FullQualifiedName("olingo.odata.test1.CTBaseAno"));
@@ -334,7 +335,7 @@ public class ContextURLHelperTest {
   }
   
   @Test
-  public void buildMultiLevelComplexDerivedTypeInSelect() throws Exception {
+  void buildMultiLevelComplexDerivedTypeInSelect() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESCompCollComp");
     final EdmComplexType derivedComplexType = edm.getComplexType(
         new FullQualifiedName("olingo.odata.test1.CTBase"));
@@ -349,7 +350,7 @@ public class ContextURLHelperTest {
   }
   
   @Test
-  public void buildEntityTypeCastInSelect1() throws Exception {
+  void buildEntityTypeCastInSelect1() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESTwoKeyNav");
     final EdmEntityType derivedEntityType = edm.getEntityType(
         new FullQualifiedName("olingo.odata.test1.ETBaseTwoKeyNav"));
@@ -366,7 +367,7 @@ public class ContextURLHelperTest {
   }
   
   @Test
-  public void buildEntityTypeCastInSelect2() throws Exception {
+  void buildEntityTypeCastInSelect2() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESTwoKeyNav");
     final EdmEntityType derivedEntityType = edm.getEntityType(
         new FullQualifiedName("olingo.odata.test1.ETBaseTwoKeyNav"));
@@ -382,7 +383,7 @@ public class ContextURLHelperTest {
   }
   
   @Test
-  public void buildMultipleSelectWithEntityTypeCastInSelect() throws Exception {
+  void buildMultipleSelectWithEntityTypeCastInSelect() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESTwoKeyNav");
     final EdmEntityType derivedEntityType = edm.getEntityType(
         new FullQualifiedName("olingo.odata.test1.ETBaseTwoKeyNav"));
@@ -400,7 +401,7 @@ public class ContextURLHelperTest {
   }
   
   @Test
-  public void buildEntityTypeCastAndComplexTypeCastInSelect() throws Exception {
+  void buildEntityTypeCastAndComplexTypeCastInSelect() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESTwoKeyNav");
     final EdmEntityType derivedEntityType = edm.getEntityType(
         new FullQualifiedName("olingo.odata.test1.ETBaseTwoKeyNav"));
@@ -419,7 +420,7 @@ public class ContextURLHelperTest {
   }
   
   @Test
-  public void buildExpandWithSelectHavingDerivedEntityType() throws Exception {
+  void buildExpandWithSelectHavingDerivedEntityType() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESKeyNavCont");
     final EdmEntityType derivedEntityType = edm.getEntityType(
         new FullQualifiedName("olingo.odata.test1.ETBaseTwoKeyNav"));
@@ -440,7 +441,7 @@ public class ContextURLHelperTest {
   }
   
   @Test
-  public void buildSelectWithComplexPropertyWithNav() throws Exception {
+  void buildSelectWithComplexPropertyWithNav() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESTwoKeyNav");
     final SelectItem selectItem = ExpandSelectMock.mockSelectItemOnComplexTypesWithNav(
         entitySet, "CollPropertyCompNav", "NavPropertyETTwoKeyNavMany");
@@ -454,7 +455,7 @@ public class ContextURLHelperTest {
   }
   
   @Test
-  public void buildSelectWithAction() throws Exception {
+  void buildSelectWithAction() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESTwoKeyNav");
     final EdmAction action = edm.getBoundAction(
         new FullQualifiedName("olingo.odata.test1.BAESTwoKeyNavRTESTwoKeyNav"), 
@@ -471,7 +472,7 @@ public class ContextURLHelperTest {
   }
   
   @Test
-  public void buildSelectWithPropertyAndAction() throws Exception {
+  void buildSelectWithPropertyAndAction() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESTwoKeyNav");
     final EdmAction action = edm.getBoundAction(
         new FullQualifiedName("olingo.odata.test1.BAESTwoKeyNavRTESTwoKeyNav"), 
@@ -490,7 +491,7 @@ public class ContextURLHelperTest {
   }
   
   @Test
-  public void buildSelectWithFunction() throws Exception {
+  void buildSelectWithFunction() throws Exception {
     final EdmEntitySet entitySet = entityContainer.getEntitySet("ESTwoKeyNav");
     final EdmFunction function = edm.getBoundFunction(
         new FullQualifiedName("olingo.odata.test1.BFCESTwoKeyNavRTString"), 
