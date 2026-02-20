@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.core.edm.annotations;
 
@@ -42,10 +44,10 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlConstan
 import org.sitenetsoft.olinguito.commons.core.edm.annotation.AbstractEdmExpression;
 import org.junit.jupiter.api.Test;
 
-public class EdmCastImplTest extends AbstractAnnotationTest{
+class EdmCastImplTest extends AbstractAnnotationTest{
   
   @Test
-  public void initialCast() {
+  void initialCast() {
     EdmExpression cast = AbstractEdmExpression.getExpression(mock(Edm.class), new CsdlCast());
 
     EdmDynamicExpression dynExp = assertDynamic(cast);
@@ -79,7 +81,7 @@ public class EdmCastImplTest extends AbstractAnnotationTest{
   }
 
   @Test
-  public void castWithExpression() {
+  void castWithExpression() {
     CsdlCast csdlExp = new CsdlCast();
     csdlExp.setMaxLength(Integer.valueOf(1));
     csdlExp.setPrecision(Integer.valueOf(2));

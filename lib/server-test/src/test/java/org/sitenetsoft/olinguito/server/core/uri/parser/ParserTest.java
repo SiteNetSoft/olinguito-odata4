@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -41,10 +43,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * Tests of the <code>Parser</code> implementation that require mocking of the EDM.
  */
-public class ParserTest {
+class ParserTest {
 
   @Test
-  public void keyPropertyGuid() throws Exception {
+  void keyPropertyGuid() throws Exception {
     final String entitySetName = "ESGuid";
     final String keyPropertyName = "a";
     EdmProperty keyProperty = Mockito.mock(EdmProperty.class);
@@ -77,7 +79,7 @@ public class ParserTest {
   }
 
   @Test
-  public void keyPropertyGuidStartsWithNumber() throws Exception {
+  void keyPropertyGuidStartsWithNumber() throws Exception {
     final String entitySetName = "ESGuid";
     final String keyPropertyName = "a";
     EdmProperty keyProperty = Mockito.mock(EdmProperty.class);
@@ -103,7 +105,7 @@ public class ParserTest {
   }
 
   @Test
-  public void navPropertySameNameAsEntitySet() throws Exception {
+  void navPropertySameNameAsEntitySet() throws Exception {
     final String namespace = "namespace";
     final String entityTypeName = "ETNavProp";
     final FullQualifiedName nameETNavProp = new FullQualifiedName(namespace, entityTypeName);
@@ -148,7 +150,7 @@ public class ParserTest {
    * (related to Olingo issue OLINGO-741)
    */
   @Test
-  public void expandNavigationPropertyWithSameNameAsEntitySet() throws Exception {
+  void expandNavigationPropertyWithSameNameAsEntitySet() throws Exception {
     TestUriValidator testUri = new TestUriValidator();
 
     Edm mockEdm = Mockito.mock(Edm.class);
@@ -189,7 +191,7 @@ public class ParserTest {
    * (related to Olingo issue OLINGO-755)
    */
   @Test
-  public void entitySetWoNavigationButWithEntitySetWithSameName() throws Exception {
+  void entitySetWoNavigationButWithEntitySetWithSameName() throws Exception {
     TestUriValidator testUri = new TestUriValidator();
 
     Edm mockEdm = Mockito.mock(Edm.class);

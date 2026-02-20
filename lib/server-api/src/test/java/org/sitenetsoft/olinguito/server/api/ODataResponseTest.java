@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.api;
 
@@ -28,10 +30,10 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-public class ODataResponseTest {
+class ODataResponseTest {
 
   @Test
-  public void testResponse() {
+  void testResponse() {
     ODataResponse  r = new ODataResponse ();
     assertNotNull(r);
     r.addHeader("header", "value");
@@ -41,7 +43,7 @@ public class ODataResponseTest {
   }
   
   @Test
-  public void testError() {
+  void testError() {
     ODataServerError  r = new ODataServerError ();
     assertNotNull(r);
     assertNull(r.getLocale());

@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.uri;
 
@@ -38,7 +39,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class UriHelperTest {
+class UriHelperTest {
 
   private static final OData odata = OData.newInstance();
   private static final Edm edm = odata.createServiceMetadata(
@@ -48,14 +49,14 @@ public class UriHelperTest {
   private final DataProvider data = new DataProvider(odata, edm);
 
   @Test
-  public void canonicalURL() throws Exception {
+  void canonicalURL() throws Exception {
     final EdmEntitySet entitySet = container.getEntitySet("ESAllPrim");
     final Entity entity = data.readAll(entitySet).getEntities().get(0);
     Assertions.assertEquals("ESAllPrim(32767)", helper.buildCanonicalURL(entitySet, entity));
   }
 
   @Test
-  public void canonicalURLLong() throws Exception {
+  void canonicalURLLong() throws Exception {
     final EdmEntitySet entitySet = container.getEntitySet("ESAllKey");
     final Entity entity = data.readAll(entitySet).getEntities().get(0);
     Assertions.assertEquals("ESAllKey("
@@ -76,7 +77,7 @@ public class UriHelperTest {
   }
 
   @Test
-  public void canonicalURLWrong() throws Exception {
+  void canonicalURLWrong() throws Exception {
       assertThrows(SerializerException.class, () -> {
           final EdmEntitySet entitySet = container.getEntitySet("ESAllPrim");
           Entity entity = data.readAll(entitySet).getEntities().get(0);
@@ -86,7 +87,7 @@ public class UriHelperTest {
   }
 
   @Test
-  public void canonicalURLWithoutKeys() throws Exception {
+  void canonicalURLWithoutKeys() throws Exception {
       assertThrows(SerializerException.class, () -> {
           final EdmEntitySet entitySet = container.getEntitySet("ESAllPrim");
           Entity entity = data.readAll(entitySet).getEntities().get(0);
@@ -97,7 +98,7 @@ public class UriHelperTest {
   }
 
   @Test
-  public void canonicalURLWithKeyHavingNullValue() throws Exception {
+  void canonicalURLWithKeyHavingNullValue() throws Exception {
       assertThrows(SerializerException.class, () -> {
           final EdmEntitySet entitySet = container.getEntitySet("ESAllPrim");
           Entity entity = data.readAll(entitySet).getEntities().get(0);

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -43,7 +45,7 @@ import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider.DataProviderExc
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
 import org.junit.jupiter.api.Test;
 
-public class ActionDataProviderTest {
+class ActionDataProviderTest {
 
   private final OData oData = OData.newInstance();
   private final Edm edm =
@@ -52,7 +54,7 @@ public class ActionDataProviderTest {
   private final Map<String, EntityCollection> data = new DataCreator(oData, edm).getData();
 
   @Test
-  public void actionUARTString() throws Exception {
+  void actionUARTString() throws Exception {
     Property result = ActionData.primitiveAction("UARTString", null);
     assertNotNull(result);
     assertEquals("UARTString string value", result.asPrimitive());
@@ -63,12 +65,12 @@ public class ActionDataProviderTest {
   }
 
   @Test
-  public void actionUARTStringNegative() throws Exception {
+  void actionUARTStringNegative() throws Exception {
       assertThrows(DataProviderException.class, () -> ActionData.primitiveAction("Wrong", null));
   }
 
   @Test
-  public void actionUARTCollStringTwoParam() throws Exception {
+  void actionUARTCollStringTwoParam() throws Exception {
     Map<String, Parameter> parameters = new HashMap<>();
     Parameter paramInt16 = new Parameter();
     paramInt16.setName("ParameterInt16");
@@ -86,7 +88,7 @@ public class ActionDataProviderTest {
   }
 
   @Test
-  public void actionUARTCTTwoPrimParam() throws Exception {
+  void actionUARTCTTwoPrimParam() throws Exception {
     Parameter paramInt16 = new Parameter();
     paramInt16.setName("ParameterInt16");
     paramInt16.setValue(ValueType.PRIMITIVE, Short.valueOf((short) 3));
@@ -104,7 +106,7 @@ public class ActionDataProviderTest {
   }
 
   @Test
-  public void actionUARTCollCTTwoPrimParam() throws Exception {
+  void actionUARTCollCTTwoPrimParam() throws Exception {
     Parameter paramInt16 = new Parameter();
     paramInt16.setName("ParameterInt16");
     final Map<String, Parameter> parameters = Collections.singletonMap("ParameterInt16", paramInt16);
@@ -154,7 +156,7 @@ public class ActionDataProviderTest {
   }
 
   @Test
-  public void actionUARTETTwoKeyTwoPrimParam() throws Exception {
+  void actionUARTETTwoKeyTwoPrimParam() throws Exception {
     Parameter paramInt16 = new Parameter();
     paramInt16.setName("ParameterInt16");
     paramInt16.setValue(ValueType.PRIMITIVE, Short.valueOf((short) 32767));
@@ -167,7 +169,7 @@ public class ActionDataProviderTest {
   }
 
   @Test
-  public void actionUARTETTwoKeyTwoPrimParamNegative() throws Exception {
+  void actionUARTETTwoKeyTwoPrimParamNegative() throws Exception {
     Parameter paramInt16 = new Parameter();
     paramInt16.setName("ParameterInt16");
     paramInt16.setValue(ValueType.PRIMITIVE, Short.valueOf((short) 12345));
@@ -183,7 +185,7 @@ public class ActionDataProviderTest {
   }
 
   @Test
-  public void actionUARTETAllPrimParamWithoutParam() throws Exception {
+  void actionUARTETAllPrimParamWithoutParam() throws Exception {
     final EntityActionResult result = ActionData.entityAction("UARTETAllPrimParam",
         Collections.emptyMap(), data, oData, edm);
     assertNotNull(result);
@@ -192,7 +194,7 @@ public class ActionDataProviderTest {
   }
 
   @Test
-  public void actionUARTETAllPrimParamWithParam() throws Exception {
+  void actionUARTETAllPrimParamWithParam() throws Exception {
     Parameter paramDate = new Parameter();
     paramDate.setName("ParameterDate");
     paramDate.setValue(ValueType.PRIMITIVE, null);
@@ -205,7 +207,7 @@ public class ActionDataProviderTest {
   }
 
   @Test
-  public void actionUARTCollETKeyNavParam() throws Exception {
+  void actionUARTCollETKeyNavParam() throws Exception {
     Parameter paramInt16 = new Parameter();
     paramInt16.setName("ParameterInt16");
     paramInt16.setValue(ValueType.PRIMITIVE, Short.valueOf((short) 5));
@@ -217,7 +219,7 @@ public class ActionDataProviderTest {
   }
 
   @Test
-  public void actionUARTCollETAllPrimParam() throws Exception {
+  void actionUARTCollETAllPrimParam() throws Exception {
     Parameter paramTimeOfDay = new Parameter();
     paramTimeOfDay.setName("ParameterTimeOfDay");
     paramTimeOfDay.setValue(ValueType.PRIMITIVE, getTime(5, 0, 0));
@@ -229,7 +231,7 @@ public class ActionDataProviderTest {
   }
 
   @Test
-  public void actionUARTCollETAllPrimParamNoParam() throws Exception {
+  void actionUARTCollETAllPrimParamNoParam() throws Exception {
     final EntityCollection result = ActionData.entityCollectionAction("UARTCollETAllPrimParam",
         Collections.emptyMap(), oData, edm);
     assertNotNull(result);

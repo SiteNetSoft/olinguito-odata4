@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
@@ -28,24 +30,24 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.junit.jupiter.api.Test;
 
-public class EdmDateTest extends PrimitiveTypeBaseTest {
+class EdmDateTest extends PrimitiveTypeBaseTest {
 
   private final EdmPrimitiveType instance = EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Date);
 
   @Test
-  public void toUriLiteral() throws Exception {
+  void toUriLiteral() throws Exception {
     assertEquals("2009-12-26", instance.toUriLiteral("2009-12-26"));
     assertEquals("-2009-12-26", instance.toUriLiteral("-2009-12-26"));
   }
 
   @Test
-  public void fromUriLiteral() throws Exception {
+  void fromUriLiteral() throws Exception {
     assertEquals("2009-12-26", instance.fromUriLiteral("2009-12-26"));
     assertEquals("-2009-12-26", instance.fromUriLiteral("-2009-12-26"));
   }
 
   @Test
-  public void valueToString() throws Exception {
+  void valueToString() throws Exception {
     Calendar dateTime = Calendar.getInstance();
     dateTime.clear();
     setTimeZone(dateTime, "GMT-11:30");
@@ -70,7 +72,7 @@ public class EdmDateTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void valueOfString() throws Exception {
+  void valueOfString() throws Exception {
     Calendar dateTime = Calendar.getInstance();
     dateTime.clear();
     dateTime.set(2012, 1, 29);

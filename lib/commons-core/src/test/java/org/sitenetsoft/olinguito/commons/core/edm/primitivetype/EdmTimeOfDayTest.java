@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
@@ -34,24 +36,24 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.junit.jupiter.api.Test;
 
-public class EdmTimeOfDayTest extends PrimitiveTypeBaseTest {
+class EdmTimeOfDayTest extends PrimitiveTypeBaseTest {
 
   private final EdmPrimitiveType instance = EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.TimeOfDay);
 
   @Test
-  public void toUriLiteral() throws Exception {
+  void toUriLiteral() throws Exception {
     assertEquals("11:12", instance.toUriLiteral("11:12"));
     assertEquals("11:12:13.012", instance.toUriLiteral("11:12:13.012"));
   }
 
   @Test
-  public void fromUriLiteral() throws Exception {
+  void fromUriLiteral() throws Exception {
     assertEquals("11:12", instance.fromUriLiteral("11:12"));
     assertEquals("11:12:13.012", instance.fromUriLiteral("11:12:13.012"));
   }
 
   @Test
-  public void valueToString() throws Exception {
+  void valueToString() throws Exception {
     Calendar dateTime = Calendar.getInstance();
     dateTime.clear();
     setTimeZone(dateTime, "GMT+11:30");
@@ -82,7 +84,7 @@ public class EdmTimeOfDayTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void valueToStringFromJavaUtilDate() throws Exception {
+  void valueToStringFromJavaUtilDate() throws Exception {
     LocalTime time = LocalTime.parse("04:05:06");
     ZonedDateTime zdt = ZonedDateTime.of(LocalDate.ofEpochDay(0), time, ZoneId.systemDefault());
     long millis = zdt.toInstant().toEpochMilli();
@@ -95,19 +97,19 @@ public class EdmTimeOfDayTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void valueToStringFromLocalTime() throws Exception {
+  void valueToStringFromLocalTime() throws Exception {
     LocalTime time = LocalTime.parse("04:05:06");
     assertEquals("04:05:06", instance.valueToString(time, null, null, null, null, null));
   }
 
   @Test
-  public void valueToStringFromJavaSqlTime() throws Exception {
+  void valueToStringFromJavaSqlTime() throws Exception {
     java.sql.Time time = java.sql.Time.valueOf("04:05:06");
     assertEquals("04:05:06", instance.valueToString(time, null, null, null, null, null));
   }
 
   @Test
-  public void valueOfString() throws Exception {
+  void valueOfString() throws Exception {
     Calendar dateTime = Calendar.getInstance();
     dateTime.clear();
 
@@ -148,7 +150,7 @@ public class EdmTimeOfDayTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void valueOfStringToLocalTime() throws Exception {
+  void valueOfStringToLocalTime() throws Exception {
     LocalTime time = LocalTime.parse("04:05:06");
     assertEquals(time, instance.valueOfString("04:05:06", null, null, null, null, null, LocalTime.class));
 
@@ -160,13 +162,13 @@ public class EdmTimeOfDayTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void valueOfStringToJavaSqlTime() throws Exception {
+  void valueOfStringToJavaSqlTime() throws Exception {
     java.sql.Time time = java.sql.Time.valueOf("04:05:06");
     assertEquals(time, instance.valueOfString("04:05:06", null, null, null, null, null, java.sql.Time.class));
   }
 
   @Test
-  public void valueOfStringToJavaUtilDateTime() throws Exception {
+  void valueOfStringToJavaUtilDateTime() throws Exception {
     LocalTime time = LocalTime.parse("04:05:06");
     ZonedDateTime zdt = ZonedDateTime.of(LocalDate.ofEpochDay(0), time, ZoneId.systemDefault());
     long millis = zdt.toInstant().toEpochMilli();
@@ -175,14 +177,14 @@ public class EdmTimeOfDayTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void testRoundTripTime() throws Exception {
+  void testRoundTripTime() throws Exception {
     java.sql.Time time = instance.valueOfString("04:05:06.002", true, 4000, 3, 0, true, java.sql.Time.class);
     String val = instance.valueToString(time, true, 4000, 3, 0, true);
     assertEquals("04:05:06", val);
   }
 
   @Test
-  public void tests() throws Exception {
+  void tests() throws Exception {
     instance.validate("12:34:55", null, null, null, null, null);
   }
 

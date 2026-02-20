@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.uri;
 
@@ -50,13 +52,13 @@ import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EntityTypeProvider;
 import org.junit.jupiter.api.Test;
 
-public class UriResourceImplTest {
+class UriResourceImplTest {
 
   private static final Edm edm = OData.newInstance().createServiceMetadata(
       new EdmTechProvider(), Collections.emptyList()).getEdm();
 
   @Test
-  public void uriParameterImpl() {
+  void uriParameterImpl() {
     UriParameterImpl impl = new UriParameterImpl();
     Expression expression = new LiteralImpl("Expression", null);
 
@@ -72,7 +74,7 @@ public class UriResourceImplTest {
   }
 
   @Test
-  public void uriResourceActionImpl() {
+  void uriResourceActionImpl() {
     UriResourceActionImpl impl = new UriResourceActionImpl((EdmAction) null);
     assertEquals(UriResourceKind.action, impl.getKind());
     assertEquals("", impl.toString());
@@ -99,7 +101,7 @@ public class UriResourceImplTest {
   }
 
   @Test
-  public void uriResourceLambdaAllImpl() {
+  void uriResourceLambdaAllImpl() {
     Expression expression = new LiteralImpl("Expression", null);
     UriResourceLambdaAllImpl impl = new UriResourceLambdaAllImpl("A", expression);
     assertEquals(UriResourceKind.lambdaAll, impl.getKind());
@@ -111,7 +113,7 @@ public class UriResourceImplTest {
   }
 
   @Test
-  public void uriResourceLambdaAnyImpl() {
+  void uriResourceLambdaAnyImpl() {
     Expression expression = new LiteralImpl("Expression", null);
     UriResourceLambdaAnyImpl impl = new UriResourceLambdaAnyImpl("A", expression);
     assertEquals(UriResourceKind.lambdaAny, impl.getKind());
@@ -123,7 +125,7 @@ public class UriResourceImplTest {
   }
 
   @Test
-  public void uriResourceComplexPropertyImpl() {
+  void uriResourceComplexPropertyImpl() {
     EdmEntityType entityType = edm.getEntityType(EntityTypeProvider.nameETKeyNav);
     EdmProperty property = (EdmProperty) entityType.getProperty("PropertyCompNav");
     UriResourceComplexPropertyImpl impl = new UriResourceComplexPropertyImpl(property);
@@ -145,7 +147,7 @@ public class UriResourceImplTest {
   }
 
   @Test
-  public void uriResourcePrimitivePropertyImpl() {
+  void uriResourcePrimitivePropertyImpl() {
     EdmEntityType entityType = edm.getEntityType(EntityTypeProvider.nameETKeyNav);
     EdmProperty property = (EdmProperty) entityType.getProperty("PropertyInt16");
     UriResourcePrimitivePropertyImpl impl = new UriResourcePrimitivePropertyImpl(property);
@@ -157,14 +159,14 @@ public class UriResourceImplTest {
   }
 
   @Test
-  public void uriResourceCountImpl() {
+  void uriResourceCountImpl() {
     UriResourceCountImpl impl = new UriResourceCountImpl();
     assertEquals(UriResourceKind.count, impl.getKind());
     assertEquals("$count", impl.toString());
   }
 
   @Test
-  public void uriResourceEntitySetImpl() {
+  void uriResourceEntitySetImpl() {
     EdmEntitySet entitySet = edm.getEntityContainer().getEntitySet("ESAllPrim");
     UriResourceEntitySetImpl impl = new UriResourceEntitySetImpl(entitySet);
     assertEquals(UriResourceKind.entitySet, impl.getKind());
@@ -182,7 +184,7 @@ public class UriResourceImplTest {
   }
 
   @Test
-  public void uriResourceFunctionImpl() {
+  void uriResourceFunctionImpl() {
     UriResourceFunctionImpl impl = new UriResourceFunctionImpl(null, null, null);
     assertEquals(UriResourceKind.function, impl.getKind());
     assertEquals("", impl.toString());
@@ -222,7 +224,7 @@ public class UriResourceImplTest {
   }
 
   @Test
-  public void uriResourceImplKeyPred() {
+  void uriResourceImplKeyPred() {
     final EdmEntityType entityType = edm.getEntityType(EntityTypeProvider.nameETTwoKeyNav);
     class Mock extends UriResourceWithKeysImpl {
 
@@ -286,7 +288,7 @@ public class UriResourceImplTest {
   }
 
   @Test
-  public void uriResourceImplTyped() {
+  void uriResourceImplTyped() {
     final EdmEntityType entityType = edm.getEntityType(EntityTypeProvider.nameETTwoKeyNav);
     class Mock extends UriResourceTypedImpl {
 
@@ -324,7 +326,7 @@ public class UriResourceImplTest {
   }
 
   @Test
-  public void uriResourceItImpl() {
+  void uriResourceItImpl() {
     EdmEntityType entityType = edm.getEntityType(EntityTypeProvider.nameETTwoKeyNav);
     UriResourceItImpl impl = new UriResourceItImpl(entityType, false);
     assertEquals(UriResourceKind.it, impl.getKind());
@@ -340,7 +342,7 @@ public class UriResourceImplTest {
   }
 
   @Test
-  public void uriResourceNavigationPropertyImpl() {
+  void uriResourceNavigationPropertyImpl() {
     EdmEntityType entityType = edm.getEntityType(EntityTypeProvider.nameETTwoKeyNav);
     EdmNavigationProperty property = (EdmNavigationProperty) entityType.getProperty("NavPropertyETKeyNavMany");
     assertNotNull(property);
@@ -359,14 +361,14 @@ public class UriResourceImplTest {
   }
 
   @Test
-  public void uriResourceRefImpl() {
+  void uriResourceRefImpl() {
     UriResourceRefImpl impl = new UriResourceRefImpl();
     assertEquals(UriResourceKind.ref, impl.getKind());
     assertEquals("$ref", impl.toString());
   }
 
   @Test
-  public void uriResourceRootImpl() {
+  void uriResourceRootImpl() {
     EdmEntityType entityType = edm.getEntityType(EntityTypeProvider.nameETTwoKeyNav);
     UriResourceRootImpl impl = new UriResourceRootImpl(entityType, false);
     assertEquals(UriResourceKind.root, impl.getKind());
@@ -382,7 +384,7 @@ public class UriResourceImplTest {
   }
 
   @Test
-  public void uriResourceSingletonImpl() {
+  void uriResourceSingletonImpl() {
     EdmSingleton singleton = edm.getEntityContainer().getSingleton("SINav");
     EdmEntityType entityTypeBaseColl = edm.getEntityType(EntityTypeProvider.nameETBaseTwoKeyNav);
     UriResourceSingletonImpl impl = new UriResourceSingletonImpl(singleton);
@@ -402,14 +404,14 @@ public class UriResourceImplTest {
   }
 
   @Test
-  public void uriResourceValueImpl() {
+  void uriResourceValueImpl() {
     UriResourceValueImpl impl = new UriResourceValueImpl();
     assertEquals(UriResourceKind.value, impl.getKind());
     assertEquals("$value", impl.toString());
   }
 
   @Test
-  public void uriResourceLambdaVarImpl() {
+  void uriResourceLambdaVarImpl() {
     EdmEntityType entityType = edm.getEntityType(EntityTypeProvider.nameETTwoKeyNav);
     UriResourceLambdaVarImpl impl = new UriResourceLambdaVarImpl("A", entityType);
     assertEquals(UriResourceKind.lambdaVariable, impl.getKind());
@@ -420,7 +422,7 @@ public class UriResourceImplTest {
   }
 
   @Test
-  public void uriResourceStartingTypeFilterImpl() {
+  void uriResourceStartingTypeFilterImpl() {
     EdmEntityType entityType = edm.getEntityType(EntityTypeProvider.nameETTwoKeyNav);
 
     UriResourceStartingTypeFilterImpl impl = new UriResourceStartingTypeFilterImpl(entityType, false);

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
@@ -26,24 +28,24 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.junit.jupiter.api.Test;
 
-public class EdmGuidTest extends PrimitiveTypeBaseTest {
+class EdmGuidTest extends PrimitiveTypeBaseTest {
 
   private final EdmPrimitiveType instance = EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Guid);
 
   @Test
-  public void toUriLiteral() {
+  void toUriLiteral() {
     assertEquals("aabbccdd-aabb-ccdd-eeff-aabbccddeeff",
         instance.toUriLiteral("aabbccdd-aabb-ccdd-eeff-aabbccddeeff"));
   }
 
   @Test
-  public void fromUriLiteral() throws Exception {
+  void fromUriLiteral() throws Exception {
     assertEquals("aabbccdd-aabb-ccdd-eeff-aabbccddeeff",
         instance.fromUriLiteral("aabbccdd-aabb-ccdd-eeff-aabbccddeeff"));
   }
 
   @Test
-  public void valueToString() throws Exception {
+  void valueToString() throws Exception {
     final UUID uuid = UUID.randomUUID();
     assertEquals(uuid.toString(), instance.valueToString(uuid, null, null, null, null, null));
 
@@ -51,7 +53,7 @@ public class EdmGuidTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void valueOfString() throws Exception {
+  void valueOfString() throws Exception {
     final UUID uuid = UUID.fromString("aabbccdd-aabb-ccdd-eeff-aabbccddeeff");
 
     assertEquals(uuid, instance.valueOfString("aabbccdd-aabb-ccdd-eeff-aabbccddeeff", null, null, null, null, null,

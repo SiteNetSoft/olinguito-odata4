@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -45,10 +46,10 @@ import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
 import org.sitenetsoft.olinguito.commons.core.edm.EdmSingletonImpl;
 import org.junit.jupiter.api.Test;
 
-public class EdmSingletonImplTest {
+class EdmSingletonImplTest {
 
   @Test
-  public void singleton() throws Exception {
+  void singleton() throws Exception {
     CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
     EdmProviderImpl edm = new EdmProviderImpl(provider);
 
@@ -89,7 +90,7 @@ public class EdmSingletonImplTest {
   }
 
   @Test
-  public void wrongTarget() throws Exception {
+  void wrongTarget() throws Exception {
       assertThrows(EdmException.class, () -> {
           CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
           EdmProviderImpl edm = new EdmProviderImpl(provider);
@@ -108,7 +109,7 @@ public class EdmSingletonImplTest {
   }
 
   @Test
-  public void wrongTargetContainer() throws Exception {
+  void wrongTargetContainer() throws Exception {
       assertThrows(EdmException.class, () -> {
           CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
           EdmProviderImpl edm = new EdmProviderImpl(provider);
@@ -124,7 +125,7 @@ public class EdmSingletonImplTest {
   }
 
   @Test
-  public void nonExsistingEntityType() throws Exception {
+  void nonExsistingEntityType() throws Exception {
       assertThrows(EdmException.class, () -> {
           CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
           EdmProviderImpl edm = new EdmProviderImpl(provider);

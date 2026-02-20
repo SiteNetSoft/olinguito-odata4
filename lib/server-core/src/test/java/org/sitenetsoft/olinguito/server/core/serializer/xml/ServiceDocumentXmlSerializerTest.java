@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
@@ -41,16 +42,16 @@ import org.sitenetsoft.olinguito.server.core.ServiceMetadataImpl;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class ServiceDocumentXmlSerializerTest {
+class ServiceDocumentXmlSerializerTest {
   private static ODataSerializer serializer;
 
   @BeforeAll
-  public static void init() throws SerializerException {
+  static void init() throws SerializerException {
     serializer = OData.newInstance().createSerializer(ContentType.APPLICATION_ATOM_XML);
   }
 
   @Test
-  public void writeServiceWithEmptyMockedEdm() throws Exception {
+  void writeServiceWithEmptyMockedEdm() throws Exception {
     final Edm edm = mock(Edm.class);
     EdmEntityContainer container = mock(EdmEntityContainer.class);
     when(container.getFullQualifiedName()).thenReturn(new FullQualifiedName("service", "test"));
@@ -73,7 +74,7 @@ public class ServiceDocumentXmlSerializerTest {
   }
 
   @Test
-  public void writeServiceDocument() throws Exception {
+  void writeServiceDocument() throws Exception {
     CsdlEdmProvider provider = new MetadataDocumentXmlSerializerTest.LocalProvider();
     ServiceMetadata serviceMetadata = new ServiceMetadataImpl(provider,
         Collections.emptyList(), null);

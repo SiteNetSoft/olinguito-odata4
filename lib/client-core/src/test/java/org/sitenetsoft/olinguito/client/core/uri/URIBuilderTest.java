@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
@@ -41,19 +42,19 @@ import org.sitenetsoft.olinguito.client.core.AbstractTest;
 import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
 import org.junit.jupiter.api.Test;
 
-public class URIBuilderTest extends AbstractTest {
+class URIBuilderTest extends AbstractTest {
 
   private static final String SERVICE_ROOT = "http://host/service";
 
   @Test
-  public void metadata() throws URISyntaxException {
+  void metadata() throws URISyntaxException {
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendMetadataSegment().build();
 
     assertEquals(new org.apache.hc.core5.net.URIBuilder(SERVICE_ROOT + "/$metadata").build(), uri);
   }
 
   @Test
-  public void entity() throws URISyntaxException {
+  void entity() throws URISyntaxException {
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("AnEntitySet").
         appendKeySegment(11).build();
 
@@ -83,7 +84,7 @@ public class URIBuilderTest extends AbstractTest {
   }
 
   @Test
-  public void expandWithOptions() throws URISyntaxException {
+  void expandWithOptions() throws URISyntaxException {
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("Products").appendKeySegment(5).
         expandWithOptions("ProductDetails", new LinkedHashMap<>() {
           @Serial
@@ -100,7 +101,7 @@ public class URIBuilderTest extends AbstractTest {
   }
   
   @Test
-  public void expandWithOptionsCount() throws URISyntaxException {
+  void expandWithOptionsCount() throws URISyntaxException {
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("Products").appendKeySegment(5).
         expandWithOptions("ProductDetails", false, true, new LinkedHashMap<>() {
           @Serial
@@ -125,7 +126,7 @@ public class URIBuilderTest extends AbstractTest {
   }
 
   @Test
-  public void count() throws URISyntaxException {
+  void count() throws URISyntaxException {
     URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("Products").count().build();
 
     assertEquals(new org.apache.hc.core5.net.URIBuilder(SERVICE_ROOT + "/Products/$count").build(), uri);
@@ -137,7 +138,7 @@ public class URIBuilderTest extends AbstractTest {
   }
 
   @Test
-  public void filter() throws URISyntaxException {
+  void filter() throws URISyntaxException {
     final URIBuilder uriBuilder = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("AnEntitySet").
         filter(client.getFilterFactory().lt("VIN", 16));
 
@@ -149,7 +150,7 @@ public class URIBuilderTest extends AbstractTest {
   }
 
   @Test
-  public void filterWithParameter() throws URISyntaxException {
+  void filterWithParameter() throws URISyntaxException {
     // http://host/service.svc/Employees?$filter=Region eq @p1&@p1='WA'
     final URIBuilder uriBuilder = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("Employees").
         filter(client.getFilterFactory().eq("Region", new ParameterAlias("p1"))).
@@ -164,7 +165,7 @@ public class URIBuilderTest extends AbstractTest {
   }
 
   @Test
-  public void expandMoreThenOnce() throws URISyntaxException {
+  void expandMoreThenOnce() throws URISyntaxException {
     URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("Products").appendKeySegment(5).
         expand("Orders", "Customers").expand("Info").build();
 
@@ -173,7 +174,7 @@ public class URIBuilderTest extends AbstractTest {
   }
 
   @Test
-  public void selectMoreThenOnce() throws URISyntaxException {
+  void selectMoreThenOnce() throws URISyntaxException {
     URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("Customers").appendKeySegment(5).
         select("Name", "Surname").expand("Info").select("Gender").build();
 
@@ -182,7 +183,7 @@ public class URIBuilderTest extends AbstractTest {
   }
 
   @Test
-  public void singleton() throws URISyntaxException {
+  void singleton() throws URISyntaxException {
     final URIBuilder uriBuilder = client.newURIBuilder(SERVICE_ROOT).
         appendSingletonSegment("BestProductEverCreated");
 
@@ -191,7 +192,7 @@ public class URIBuilderTest extends AbstractTest {
   }
 
   @Test
-  public void entityId() throws URISyntaxException {
+  void entityId() throws URISyntaxException {
     final URIBuilder uriBuilder = client.newURIBuilder(SERVICE_ROOT).
         appendEntityIdSegment("Products(0)");
 
@@ -200,7 +201,7 @@ public class URIBuilderTest extends AbstractTest {
   }
 
   @Test
-  public void boundAction() throws URISyntaxException {
+  void boundAction() throws URISyntaxException {
     final URIBuilder uriBuilder = client.newURIBuilder(SERVICE_ROOT).
         appendEntitySetSegment("Categories").appendKeySegment(1).
         appendNavigationSegment("Products").
@@ -211,7 +212,7 @@ public class URIBuilderTest extends AbstractTest {
   }
 
   @Test
-  public void boundOperation() throws URISyntaxException {
+  void boundOperation() throws URISyntaxException {
     final URIBuilder uriBuilder = client.newURIBuilder(SERVICE_ROOT).
         appendEntitySetSegment("Categories").appendKeySegment(1).
         appendNavigationSegment("Products").
@@ -222,7 +223,7 @@ public class URIBuilderTest extends AbstractTest {
   }
 
   @Test
-  public void ref() throws URISyntaxException {
+  void ref() throws URISyntaxException {
     URIBuilder uriBuilder = client.newURIBuilder(SERVICE_ROOT).
         appendEntitySetSegment("Categories").appendKeySegment(1).
         appendNavigationSegment("Products").appendRefSegment();
@@ -240,7 +241,7 @@ public class URIBuilderTest extends AbstractTest {
   }
 
   @Test
-  public void derived() throws URISyntaxException {
+  void derived() throws URISyntaxException {
     final URIBuilder uriBuilder = client.newURIBuilder(SERVICE_ROOT).
         appendEntitySetSegment("Customers").appendDerivedEntityTypeSegment("Model.VipCustomer").appendKeySegment(1);
 
@@ -249,7 +250,7 @@ public class URIBuilderTest extends AbstractTest {
   }
 
   @Test
-  public void crossjoin() throws URISyntaxException {
+  void crossjoin() throws URISyntaxException {
     final URIBuilder uriBuilder = client.newURIBuilder(SERVICE_ROOT).
         appendCrossjoinSegment("Products", "Sales");
 
@@ -258,7 +259,7 @@ public class URIBuilderTest extends AbstractTest {
   }
 
   @Test
-  public void all() throws URISyntaxException {
+  void all() throws URISyntaxException {
     final URIBuilder uriBuilder = client.newURIBuilder(SERVICE_ROOT).appendAllSegment();
 
     assertEquals(new org.apache.hc.core5.net.URIBuilder(
@@ -266,7 +267,7 @@ public class URIBuilderTest extends AbstractTest {
   }
 
   @Test
-  public void search() throws URISyntaxException {
+  void search() throws URISyntaxException {
     final URIBuilder uriBuilder = client.newURIBuilder(SERVICE_ROOT).
         appendEntitySetSegment("Products").search("blue OR green");
 
@@ -274,7 +275,7 @@ public class URIBuilderTest extends AbstractTest {
   }
   
   @Test
-  public void test1OLINGO753() throws ODataDeserializerException {
+  void test1OLINGO753() throws ODataDeserializerException {
     final ODataClient client = ODataClientFactory.getClient();
     final URI uri = client.newURIBuilder(SERVICE_ROOT).
         appendOperationCallSegment("functionName").count().build();
@@ -289,7 +290,7 @@ public class URIBuilderTest extends AbstractTest {
   }
   
   @Test
-  public void test2OLINGO753() throws ODataDeserializerException {
+  void test2OLINGO753() throws ODataDeserializerException {
     final ODataClient client = ODataClientFactory.getClient();
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendOperationCallSegment("functionName").
         filter("paramName eq 1").format("json").count().build();
@@ -304,7 +305,7 @@ public class URIBuilderTest extends AbstractTest {
   }
   
   @Test
-  public void test3OLINGO753() throws ODataDeserializerException {
+  void test3OLINGO753() throws ODataDeserializerException {
     final ODataClient client = ODataClientFactory.getClient();
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendOperationCallSegment("functionName").
         filter("paramName eq 1").format("json").build();
@@ -319,7 +320,7 @@ public class URIBuilderTest extends AbstractTest {
   }
   
   @Test
-  public void test4OLINGO753() throws ODataDeserializerException {
+  void test4OLINGO753() throws ODataDeserializerException {
     final ODataClient client = ODataClientFactory.getClient();
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("EntitySet").
         appendOperationCallSegment("functionName").count().build();
@@ -334,7 +335,7 @@ public class URIBuilderTest extends AbstractTest {
   }
   
   @Test
-  public void test5OLINGO753() throws ODataDeserializerException {
+  void test5OLINGO753() throws ODataDeserializerException {
     final ODataClient client = ODataClientFactory.getClient();
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("EntitySet").
         appendOperationCallSegment("functionName").count().filter("PropertyString eq '1'").build();
@@ -349,7 +350,7 @@ public class URIBuilderTest extends AbstractTest {
   }
   
   @Test
-  public void test6OLINGO753() throws ODataDeserializerException {
+  void test6OLINGO753() throws ODataDeserializerException {
     final ODataClient client = ODataClientFactory.getClient();
     final URI uri = client.newURIBuilder(SERVICE_ROOT).
         appendOperationCallSegment("functionName").count().filter("PropertyString eq '1'").build();
@@ -361,7 +362,7 @@ public class URIBuilderTest extends AbstractTest {
   }
   
   @Test
-  public void test7OLINGO753() throws ODataDeserializerException {
+  void test7OLINGO753() throws ODataDeserializerException {
     final ODataClient client = ODataClientFactory.getClient();
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("EntitySet").
         appendOperationCallSegment("functionName").filter("PropertyString eq '1'").
@@ -377,7 +378,7 @@ public class URIBuilderTest extends AbstractTest {
   }
   
   @Test
-  public void test8OLINGO753() throws ODataDeserializerException {
+  void test8OLINGO753() throws ODataDeserializerException {
     final ODataClient client = ODataClientFactory.getClient();
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("EntitySet").
         appendOperationCallSegment("functionName").filter("PropertyString eq '1'").
@@ -393,7 +394,7 @@ public class URIBuilderTest extends AbstractTest {
   }
   
   @Test
-  public void test9OLINGO753() throws ODataDeserializerException {
+  void test9OLINGO753() throws ODataDeserializerException {
     final ODataClient client = ODataClientFactory.getClient();
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("EntitySet").
         appendOperationCallSegment("functionName").
@@ -409,7 +410,7 @@ public class URIBuilderTest extends AbstractTest {
   }
   
   @Test
-  public void test10OLINGO753() throws ODataDeserializerException {
+  void test10OLINGO753() throws ODataDeserializerException {
     final ODataClient client = ODataClientFactory.getClient();
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("EntitySet").
         appendOperationCallSegment("functionName").
@@ -425,7 +426,7 @@ public class URIBuilderTest extends AbstractTest {
   }
   
   @Test
-  public void test11OLINGO753() throws ODataDeserializerException {
+  void test11OLINGO753() throws ODataDeserializerException {
     final ODataClient client = ODataClientFactory.getClient();
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("EntitySet").
         appendOperationCallSegment("functionName").
@@ -441,7 +442,7 @@ public class URIBuilderTest extends AbstractTest {
   }
   
   @Test
-  public void testCustomQueryOption() throws ODataDeserializerException {
+  void testCustomQueryOption() throws ODataDeserializerException {
     final ODataClient client = ODataClientFactory.getClient();
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("EntitySet").
         addCustomQueryOption("x", "y").build();
@@ -449,7 +450,7 @@ public class URIBuilderTest extends AbstractTest {
   }
   
   @Test
-  public void testCustomQueryOptionWithFilter() throws ODataDeserializerException {
+  void testCustomQueryOptionWithFilter() throws ODataDeserializerException {
     final ODataClient client = ODataClientFactory.getClient();
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("EntitySet").
         filter("PropertyString eq '1'").
@@ -459,7 +460,7 @@ public class URIBuilderTest extends AbstractTest {
   }
   
   @Test
-  public void testDuplicateCustomQueryOption() throws ODataDeserializerException {
+  void testDuplicateCustomQueryOption() throws ODataDeserializerException {
     final ODataClient client = ODataClientFactory.getClient();
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("EntitySet").
         addCustomQueryOption("x", "z").
@@ -468,7 +469,7 @@ public class URIBuilderTest extends AbstractTest {
   }
   
   @Test
-  public void testCustomQueryOptionWithFilterAndFunction() throws ODataDeserializerException {
+  void testCustomQueryOptionWithFilterAndFunction() throws ODataDeserializerException {
     final ODataClient client = ODataClientFactory.getClient();
     final URI uri = client.newURIBuilder(SERVICE_ROOT).
         appendOperationCallSegment("functionName").count().filter("PropertyString eq '1'").
@@ -481,7 +482,7 @@ public class URIBuilderTest extends AbstractTest {
   }
   
   @Test
-  public void testCustomQueryOptionWithFunctionWithNavAndRef() throws ODataDeserializerException {
+  void testCustomQueryOptionWithFunctionWithNavAndRef() throws ODataDeserializerException {
     final ODataClient client = ODataClientFactory.getClient();
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("EntitySet").
         appendOperationCallSegment("functionName").
@@ -497,7 +498,7 @@ public class URIBuilderTest extends AbstractTest {
   }
   
   @Test
-  public void testCustomQueryOptionOnRoot() throws ODataDeserializerException {
+  void testCustomQueryOptionOnRoot() throws ODataDeserializerException {
     final ODataClient client = ODataClientFactory.getClient();
     final URI uri = client.newURIBuilder(SERVICE_ROOT).
         addCustomQueryOption("x", "y").build();
@@ -505,7 +506,7 @@ public class URIBuilderTest extends AbstractTest {
   }
   
   @Test
-  public void testTwoCustomQueryOption() throws ODataDeserializerException {
+  void testTwoCustomQueryOption() throws ODataDeserializerException {
     final ODataClient client = ODataClientFactory.getClient();
     final URI uri = client.newURIBuilder(SERVICE_ROOT).
         addCustomQueryOption("x", "y").
@@ -514,7 +515,7 @@ public class URIBuilderTest extends AbstractTest {
   }
   
   @Test
-  public void testCustomQueryOptionWithEncodedNameValue() throws ODataDeserializerException {
+  void testCustomQueryOptionWithEncodedNameValue() throws ODataDeserializerException {
     final ODataClient client = ODataClientFactory.getClient();
     final URI uri = client.newURIBuilder(SERVICE_ROOT).
         addCustomQueryOption("x!/?", "@?$").build();

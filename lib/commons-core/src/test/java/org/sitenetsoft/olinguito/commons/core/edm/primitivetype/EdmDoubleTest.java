@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
@@ -28,12 +30,12 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.junit.jupiter.api.Test;
 
-public class EdmDoubleTest extends PrimitiveTypeBaseTest {
+class EdmDoubleTest extends PrimitiveTypeBaseTest {
 
   private final EdmPrimitiveType instance = EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Double);
 
   @Test
-  public void compatibility() {
+  void compatibility() {
     assertTrue(instance.isCompatible(EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Byte)));
     assertTrue(instance.isCompatible(EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.SByte)));
     assertTrue(instance.isCompatible(EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Int16)));
@@ -43,17 +45,17 @@ public class EdmDoubleTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void toUriLiteral() {
+  void toUriLiteral() {
     assertEquals("127E42", instance.toUriLiteral("127E42"));
   }
 
   @Test
-  public void fromUriLiteral() throws Exception {
+  void fromUriLiteral() throws Exception {
     assertEquals("127E42", instance.fromUriLiteral("127E42"));
   }
 
   @Test
-  public void valueToString() throws Exception {
+  void valueToString() throws Exception {
     assertEquals("0", instance.valueToString(0, null, null, null, null, null));
     assertEquals("8", instance.valueToString((byte) 8, null, null, null, null, null));
     assertEquals("16", instance.valueToString((short) 16, null, null, null, null, null));
@@ -80,7 +82,7 @@ public class EdmDoubleTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void valueOfString() throws Exception {
+  void valueOfString() throws Exception {
     assertEquals(Double.valueOf(1.42), instance.valueOfString("1.42", null, null, null, null, null, Double.class));
     assertEquals(Float.valueOf(-42.25F), instance.valueOfString("-42.25", null, null, null, null, null, Float.class));
     assertEquals(Double.valueOf(42.0), instance.valueOfString("42", null, null, null, null, null, Double.class));

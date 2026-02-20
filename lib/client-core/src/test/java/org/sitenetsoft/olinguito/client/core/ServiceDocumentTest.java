@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core;
 
@@ -31,7 +33,7 @@ import org.sitenetsoft.olinguito.client.api.serialization.ODataDeserializerExcep
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.junit.jupiter.api.Test;
 
-public class ServiceDocumentTest extends AbstractTest {
+class ServiceDocumentTest extends AbstractTest {
 
   private ClientServiceDocument parse(final ContentType contentType) throws ODataDeserializerException {
     ResWrap<ServiceDocument> service = client.getDeserializer(contentType).toServiceDocument(
@@ -53,12 +55,12 @@ public class ServiceDocumentTest extends AbstractTest {
   }
 
   @Test
-  public void json() throws Exception {
+  void json() throws Exception {
     parse(ContentType.JSON);
   }
 
   @Test
-  public void xml() throws Exception {
+  void xml() throws Exception {
     parse(ContentType.APPLICATION_XML);
   }
 }

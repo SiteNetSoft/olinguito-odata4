@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.debug;
 
@@ -27,10 +29,10 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-public class DebugTabServerTest extends AbstractDebugTabTest {
+class DebugTabServerTest extends AbstractDebugTabTest {
 
   @Test
-  public void nullServerInformationMustNotleadToException() throws Exception {
+  void nullServerInformationMustNotleadToException() throws Exception {
     DebugTabServer serverTab = new DebugTabServer(null);
 
     assertEquals("null", createJson(serverTab));
@@ -40,7 +42,7 @@ public class DebugTabServerTest extends AbstractDebugTabTest {
   }
 
   @Test
-  public void initialServerInformationMustNotleadToException() throws Exception {
+  void initialServerInformationMustNotleadToException() throws Exception {
     DebugTabServer serverTab = new DebugTabServer(Collections.emptyMap());
 
     assertEquals("null", createJson(serverTab));
@@ -50,7 +52,7 @@ public class DebugTabServerTest extends AbstractDebugTabTest {
   }
 
   @Test
-  public void twoParametersNoNull() throws Exception {
+  void twoParametersNoNull() throws Exception {
     Map<String, String> env = new LinkedHashMap<>();
     env.put("key1", "value1");
     env.put("key2", "value2");
@@ -66,7 +68,7 @@ public class DebugTabServerTest extends AbstractDebugTabTest {
   }
 
   @Test
-  public void twoParametersWithNull() throws Exception {
+  void twoParametersWithNull() throws Exception {
     Map<String, String> env = new LinkedHashMap<>();
     env.put("key1", null);
     env.put("key2", null);

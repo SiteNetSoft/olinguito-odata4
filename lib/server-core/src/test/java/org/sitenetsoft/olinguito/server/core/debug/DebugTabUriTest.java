@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.debug;
 
@@ -83,10 +84,10 @@ import org.sitenetsoft.olinguito.server.core.uri.queryoption.expression.MemberIm
 import org.sitenetsoft.olinguito.server.core.uri.queryoption.expression.MethodImpl;
 import org.junit.jupiter.api.Test;
 
-public class DebugTabUriTest extends AbstractDebugTabTest {
+class DebugTabUriTest extends AbstractDebugTabTest {
 
   @Test
-  public void resourceEntitySet() throws Exception {
+  void resourceEntitySet() throws Exception {
     EdmEntitySet edmEntitySet = mock(EdmEntitySet.class);
     final DebugTabUri tab = new DebugTabUri(new UriInfoImpl().setKind(UriInfoKind.resource)
         .addResourcePart(new UriResourceEntitySetImpl(edmEntitySet)));
@@ -108,7 +109,7 @@ public class DebugTabUriTest extends AbstractDebugTabTest {
   }
 
   @Test
-  public void resourceFunction() throws Exception {
+  void resourceFunction() throws Exception {
     EdmReturnType returnType = mock(EdmReturnType.class);
     EdmFunction edmFunction = mock(EdmFunction.class);
     when(edmFunction.getReturnType()).thenReturn(returnType);
@@ -136,7 +137,7 @@ public class DebugTabUriTest extends AbstractDebugTabTest {
   }
 
   @Test
-  public void crossjoin() throws Exception {
+  void crossjoin() throws Exception {
     final DebugTabUri tab = new DebugTabUri(new UriInfoImpl().setKind(UriInfoKind.crossjoin)
         .addEntitySetName("ES1").addEntitySetName("ES2"));
 
@@ -151,7 +152,7 @@ public class DebugTabUriTest extends AbstractDebugTabTest {
   }
 
   @Test
-  public void entityId() throws Exception {
+  void entityId() throws Exception {
     EdmEntityType edmEntityType = mock(EdmEntityType.class);
     when(edmEntityType.getFullQualifiedName()).thenReturn(new FullQualifiedName("ns", "entityType"));
     final DebugTabUri tab = new DebugTabUri(new UriInfoImpl().setKind(UriInfoKind.entityId)
@@ -167,7 +168,7 @@ public class DebugTabUriTest extends AbstractDebugTabTest {
   }
 
   @Test
-  public void simpleQueryOptions() throws Exception {
+  void simpleQueryOptions() throws Exception {
     final DebugTabUri tab = new DebugTabUri(new UriInfoImpl().setKind(UriInfoKind.all)
         .setQueryOption(new FormatOptionImpl().setFormat("json"))
         .setQueryOption(new IdOptionImpl().setValue("ES(42)").setText("ES(42)"))
@@ -236,7 +237,7 @@ public class DebugTabUriTest extends AbstractDebugTabTest {
   }
 
   @Test
-  public void select() throws Exception {
+  void select() throws Exception {
     EdmProperty edmProperty = mock(EdmProperty.class);
     when(edmProperty.getName()).thenReturn("property");
     final DebugTabUri tab = new DebugTabUri(new UriInfoImpl().setKind(UriInfoKind.all)
@@ -258,7 +259,7 @@ public class DebugTabUriTest extends AbstractDebugTabTest {
   }
 
   @Test
-  public void expand() throws Exception {
+  void expand() throws Exception {
     EdmNavigationProperty edmProperty = mock(EdmNavigationProperty.class);
     when(edmProperty.getName()).thenReturn("property");
     final DebugTabUri tab = new DebugTabUri(new UriInfoImpl().setKind(UriInfoKind.all)
@@ -285,7 +286,7 @@ public class DebugTabUriTest extends AbstractDebugTabTest {
   }
 
   @Test
-  public void filter() throws Exception {
+  void filter() throws Exception {
     final DebugTabUri tab = new DebugTabUri(new UriInfoImpl().setKind(UriInfoKind.all)
         .setSystemQueryOption(new FilterOptionImpl().setExpression(
             new BinaryImpl(new LiteralImpl("1", EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Int64)),
@@ -335,7 +336,7 @@ public class DebugTabUriTest extends AbstractDebugTabTest {
   }
 
   @Test
-  public void orderby() throws Exception {
+  void orderby() throws Exception {
     final DebugTabUri tab = new DebugTabUri(new UriInfoImpl().setKind(UriInfoKind.all)
         .setSystemQueryOption(new OrderByOptionImpl().addOrder(
             new OrderByItemImpl().setExpression(
@@ -363,7 +364,7 @@ public class DebugTabUriTest extends AbstractDebugTabTest {
   }
 
   @Test
-  public void apply() throws Exception {
+  void apply() throws Exception {
     EdmProperty edmProperty = mock(EdmProperty.class);
     when(edmProperty.getName()).thenReturn("property");
     final DebugTabUri tab = new DebugTabUri(new UriInfoImpl().setKind(UriInfoKind.all)

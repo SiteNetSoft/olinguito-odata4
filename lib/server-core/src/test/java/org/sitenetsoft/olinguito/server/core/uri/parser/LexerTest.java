@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -27,18 +29,18 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests originally written for the ANTLR lexer.
  */
-public class LexerTest {
+class LexerTest {
 
   private TokenValidator test = new TokenValidator();
 
   @Test
-  public void unary() {
+  void unary() {
     test.run("-a eq a").has(TokenKind.MinusOperator, TokenKind.ODataIdentifier, TokenKind.EqualsOperator,
         TokenKind.ODataIdentifier).isInput();
   }
 
   @Test
-  public void uriTokens() {
+  void uriTokens() {
 //    test.run("#").isType(TokenKind.FRAGMENT).isInput();
     test.run("$count").has(TokenKind.COUNT).isInput();
     test.run("$ref").has(TokenKind.REF).isInput();
@@ -46,7 +48,7 @@ public class LexerTest {
   }
 
   @Test
-  public void queryOptionsTokens() {
+  void queryOptionsTokens() {
     test.run("$skip=1").has(TokenKind.SKIP, TokenKind.EQ, TokenKind.IntegerValue).isInput();
     test.run("$skip=2").has(TokenKind.SKIP, TokenKind.EQ, TokenKind.IntegerValue).isInput();
     test.run("$skip=123").has(TokenKind.SKIP, TokenKind.EQ, TokenKind.IntegerValue).isInput();
@@ -81,7 +83,7 @@ public class LexerTest {
   }
 
   @Test
-  public void queryOptionsDefaultMode() {
+  void queryOptionsDefaultMode() {
     test.run("$expand=ABC($skip=1)").has(TokenKind.EXPAND, TokenKind.EQ, TokenKind.ODataIdentifier,
         TokenKind.OPEN, TokenKind.SKIP, TokenKind.EQ, TokenKind.IntegerValue, TokenKind.CLOSE).isInput();
     test.run("$expand=ABC($skip=123)").has(TokenKind.EXPAND, TokenKind.EQ, TokenKind.ODataIdentifier,
@@ -137,7 +139,7 @@ public class LexerTest {
   }
 
   @Test
-  public void queryExpressions() {
+  void queryExpressions() {
     test.run("$it").has(TokenKind.IT).isText("$it");
 
     test.run("$filter=contains(").has(TokenKind.FILTER, TokenKind.EQ, TokenKind.ContainsMethod).isText("contains(");
@@ -158,7 +160,7 @@ public class LexerTest {
   }
 
   @Test
-  public void literalDataValues() {
+  void literalDataValues() {
     // null
     test.run("null").has(TokenKind.NULL).isInput();
 
@@ -257,7 +259,7 @@ public class LexerTest {
   }
 
   @Test
-  public void delims() {
+  void delims() {
     // The last two chars are not in cPCT_ENCODED_UNESCAPED.
 //    final String cPCT_ENCODED = "%45%46%47" + "%22" + "%5C";
 //    final String cUNRESERVED = "ABCabc123-._~";

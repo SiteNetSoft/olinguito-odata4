@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
+ * Copyright 2026 SiteNetSoft - Replaced bare RuntimeException with ODataRuntimeException
  */
 package org.sitenetsoft.olinguito.client.core.metadatavalidator;
 
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.sitenetsoft.olinguito.client.api.edm.xml.XMLMetadata;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAction;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlActionImport;
@@ -113,10 +115,10 @@ public class CsdlTypeValidator {
           }
           if (baseEntityType != null && (baseEntityType.getKey() == null || 
               baseEntityType.getKey().isEmpty())) {
-            throw new RuntimeException("Missing key for EntityType " + baseEntityType.getName());
+            throw new ODataRuntimeException("Missing key for EntityType " + baseEntityType.getName());
           }
         } else if (entityType.getKey() == null || entityType.getKey().isEmpty()) {
-          throw new RuntimeException("Missing key for EntityType " + entityType.getName());
+          throw new ODataRuntimeException("Missing key for EntityType " + entityType.getName());
         }
       }
     }
@@ -171,7 +173,7 @@ public class CsdlTypeValidator {
       }
     }
     if (baseEntityType == null) {
-      throw new RuntimeException("Entity Type is null with fully qualified name:" + baseTypeFQName);
+      throw new ODataRuntimeException("Entity Type is null with fully qualified name:" + baseTypeFQName);
     }
     return baseEntityType.getNavigationProperty(navBindingProperty);
   }
@@ -185,7 +187,7 @@ public class CsdlTypeValidator {
     String namespace = aliasNamespaceMap.get(fQName.getNamespace());
     FullQualifiedName fqName = new FullQualifiedName(namespace, fQName.getName());
     if (!csdlEntityTypesMap.containsKey(fqName)) {
-      throw new RuntimeException("Invalid Entity Type " + fQName);
+      throw new ODataRuntimeException("Invalid Entity Type " + fQName);
     }
     return fqName;
   }
@@ -230,7 +232,7 @@ public class CsdlTypeValidator {
     String namespace = aliasNamespaceMap.get(aliasName.getNamespace());
     FullQualifiedName fqName = new FullQualifiedName(namespace, aliasName.getName());
     if (!csdlComplexTypesMap.containsKey(fqName)) {
-      throw new RuntimeException("Invalid Complex BaseType " + aliasName);
+      throw new ODataRuntimeException("Invalid Complex BaseType " + aliasName);
     }
     return fqName;
   }
@@ -290,9 +292,9 @@ public class CsdlTypeValidator {
         } else {
           if (container.getValue().getEntitySet(navBindingTarget) == null) {
             if (container.getValue().getSingleton(navBindingTarget) != null) {
-              throw new RuntimeException("Validations of Singletons are not supported: "+ navBindingTarget);
+              throw new ODataRuntimeException("Validations of Singletons are not supported: "+ navBindingTarget);
             } else {
-              throw new RuntimeException("Navigation Property Target " + navBindingTarget + 
+              throw new ODataRuntimeException("Navigation Property Target " + navBindingTarget + 
                   " is not part of the same container " + container.getKey());
             }
           }
@@ -309,7 +311,7 @@ public class CsdlTypeValidator {
             && !(csdlEntityTypesMap.get(navFQName).getBaseTypeFQN() != null &&
                 fetchCorrectNamespaceFromAlias(csdlEntityTypesMap.get(navFQName).
                     getBaseTypeFQN()).getFullQualifiedNameAsString().equals(targetType))) {
-          throw new RuntimeException("Navigation Property Type " +  
+          throw new ODataRuntimeException("Navigation Property Type " +  
               navFQName +" does not match "
                   + "the binding target type " + targetType);
         }
@@ -327,11 +329,11 @@ public class CsdlTypeValidator {
     if (!navProperty.getReferentialConstraints().isEmpty()) {
       String propertyName = navProperty.getReferentialConstraints().get(0).getProperty();
       if (sourceEntityType.getProperty(propertyName) == null) {
-        throw new RuntimeException("Property name " + propertyName + " not part of the source entity.");
+        throw new ODataRuntimeException("Property name " + propertyName + " not part of the source entity.");
       }
       String referencedPropertyName = navProperty.getReferentialConstraints().get(0).getReferencedProperty();
       if (targetEntityType.getProperty(referencedPropertyName) == null) {
-        throw new RuntimeException("Property name " + referencedPropertyName + " not part of the target entity.");
+        throw new ODataRuntimeException("Property name " + referencedPropertyName + " not part of the target entity.");
       }
     }
   }
@@ -349,12 +351,12 @@ public class CsdlTypeValidator {
       csdlContainersMap.get(new FullQualifiedName(targetPaths[0])) : 
         csdlContainersMap.get(fetchCorrectNamespaceFromAlias(new FullQualifiedName(targetPaths[0])));
     if (csdlContainer == null) {
-      throw new RuntimeException("Container with FullyQualifiedName " + targetPaths[0] + " not found.");
+      throw new ODataRuntimeException("Container with FullyQualifiedName " + targetPaths[0] + " not found.");
     }
     String targetEntitySetName = targetPaths[1];
     CsdlEntitySet csdlEntitySet = csdlContainer.getEntitySet(targetEntitySetName);
     if (csdlEntitySet == null) {
-      throw new RuntimeException("Target Entity Set mentioned in navigationBindingProperty "
+      throw new ODataRuntimeException("Target Entity Set mentioned in navigationBindingProperty "
           + "not found in the container " + csdlContainer.getName());
     }
     FullQualifiedName fqName = csdlEntitySet.getTypeFQN();
@@ -400,7 +402,7 @@ public class CsdlTypeValidator {
           csdlComplexTypesMap.get(new FullQualifiedName(lastFullQualifiedName)) : 
             csdlComplexTypesMap.get(fetchCorrectNamespaceFromAlias(new FullQualifiedName(lastFullQualifiedName)));
       if (sourceComplexTypeHavingNavProp == null) {
-        throw new RuntimeException("The fully Qualified type " + lastFullQualifiedName + 
+        throw new ODataRuntimeException("The fully Qualified type " + lastFullQualifiedName + 
             " mentioned in navigation binding path not found ");
       }
       navProperty = !remainingPath.isEmpty() ? fetchNavigationProperty(remainingPath, strNavProperty, 
@@ -466,7 +468,7 @@ public class CsdlTypeValidator {
     String namespace = aliasNamespaceMap.get(aliasName.getNamespace());
     FullQualifiedName fqName = new FullQualifiedName(namespace, aliasName.getName());
     if (!csdlActionsMap.containsKey(fqName)) {
-      throw new RuntimeException("Invalid Action " + aliasName);
+      throw new ODataRuntimeException("Invalid Action " + aliasName);
     }
     return fqName;
   }
@@ -497,7 +499,7 @@ public class CsdlTypeValidator {
     String namespace = aliasNamespaceMap.get(aliasName.getNamespace());
     FullQualifiedName fqName = new FullQualifiedName(namespace, aliasName.getName());
     if (!csdlFunctionsMap.containsKey(fqName)) {
-      throw new RuntimeException("Invalid Function " + aliasName);
+      throw new ODataRuntimeException("Invalid Function " + aliasName);
     }
     return fqName;
   }

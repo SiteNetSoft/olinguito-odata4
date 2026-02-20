@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -50,12 +52,12 @@ import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class EdmEntityContainerImplTest {
+class EdmEntityContainerImplTest {
 
   EdmEntityContainer container;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     CsdlEdmProvider provider = new CustomProvider();
     EdmProviderImpl edm = new EdmProviderImpl(provider);
     CsdlEntityContainerInfo entityContainerInfo =
@@ -64,14 +66,14 @@ public class EdmEntityContainerImplTest {
   }
 
   @Test
-  public void getAllEntitySetInitial() {
+  void getAllEntitySetInitial() {
     List<EdmEntitySet> entitySets = container.getEntitySets();
     assertNotNull(entitySets);
     assertEquals(2, entitySets.size());
   }
 
   @Test
-  public void getAllEntitySetsAfterOneWasAlreadyLoaded() {
+  void getAllEntitySetsAfterOneWasAlreadyLoaded() {
     container.getEntitySet("entitySetName");
     List<EdmEntitySet> entitySets = container.getEntitySets();
     assertNotNull(entitySets);
@@ -79,14 +81,14 @@ public class EdmEntityContainerImplTest {
   }
 
   @Test
-  public void getAllSingletonsInitial() {
+  void getAllSingletonsInitial() {
     List<EdmSingleton> singletons = container.getSingletons();
     assertNotNull(singletons);
     assertEquals(2, singletons.size());
   }
 
   @Test
-  public void getAllSingletonsAfterOneWasAlreadyLoaded() {
+  void getAllSingletonsAfterOneWasAlreadyLoaded() {
     container.getSingleton("singletonName");
     List<EdmSingleton> singletons = container.getSingletons();
     assertNotNull(singletons);
@@ -94,14 +96,14 @@ public class EdmEntityContainerImplTest {
   }
 
   @Test
-  public void getAllActionImportsInitial() {
+  void getAllActionImportsInitial() {
     List<EdmActionImport> actionImports = container.getActionImports();
     assertNotNull(actionImports);
     assertEquals(2, actionImports.size());
   }
 
   @Test
-  public void getAllActionImportsAfterOneWasAlreadyLoaded() {
+  void getAllActionImportsAfterOneWasAlreadyLoaded() {
     container.getActionImport("actionImportName");
     List<EdmActionImport> actionImports = container.getActionImports();
     assertNotNull(actionImports);
@@ -109,14 +111,14 @@ public class EdmEntityContainerImplTest {
   }
 
   @Test
-  public void getAllFunctionImportsInitial() {
+  void getAllFunctionImportsInitial() {
     List<EdmFunctionImport> functionImports = container.getFunctionImports();
     assertNotNull(functionImports);
     assertEquals(2, functionImports.size());
   }
 
   @Test
-  public void getAllFunctionImportsAfterOneWasAlreadyLoaded() {
+  void getAllFunctionImportsAfterOneWasAlreadyLoaded() {
     container.getFunctionImport("functionImportName");
     List<EdmFunctionImport> functionImports = container.getFunctionImports();
     assertNotNull(functionImports);
@@ -124,7 +126,7 @@ public class EdmEntityContainerImplTest {
   }
 
   @Test
-  public void checkEdmExceptionConversion() throws Exception {
+  void checkEdmExceptionConversion() throws Exception {
     CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
     FullQualifiedName containerName = new FullQualifiedName("space", "name");
     when(provider.getEntitySet(containerName, null)).thenThrow(new ODataException("msg"));
@@ -142,14 +144,14 @@ public class EdmEntityContainerImplTest {
   }
 
   @Test
-  public void simpleContainerGetter() {
+  void simpleContainerGetter() {
     assertEquals("name", container.getName());
     assertEquals("space", container.getNamespace());
     assertEquals(new FullQualifiedName("space.name"), container.getFullQualifiedName());
   }
 
   @Test
-  public void getExistingFunctionImport() {
+  void getExistingFunctionImport() {
     EdmFunctionImport functionImport = container.getFunctionImport("functionImportName");
     assertNotNull(functionImport);
     assertEquals("functionImportName", functionImport.getName());
@@ -158,12 +160,12 @@ public class EdmEntityContainerImplTest {
   }
 
   @Test
-  public void getNonExistingFunctionImport() {
+  void getNonExistingFunctionImport() {
     assertNull(container.getFunctionImport(null));
   }
 
   @Test
-  public void getExistingActionImport() {
+  void getExistingActionImport() {
     EdmActionImport actionImport = container.getActionImport("actionImportName");
     assertNotNull(actionImport);
     assertEquals("actionImportName", actionImport.getName());
@@ -172,12 +174,12 @@ public class EdmEntityContainerImplTest {
   }
 
   @Test
-  public void getNonExistingActionImport() {
+  void getNonExistingActionImport() {
     assertNull(container.getActionImport(null));
   }
 
   @Test
-  public void getExistingSingleton() {
+  void getExistingSingleton() {
     EdmSingleton singleton = container.getSingleton("singletonName");
     assertNotNull(singleton);
     assertEquals("singletonName", singleton.getName());
@@ -186,12 +188,12 @@ public class EdmEntityContainerImplTest {
   }
 
   @Test
-  public void getNonExistingSingleton() {
+  void getNonExistingSingleton() {
     assertNull(container.getSingleton(null));
   }
 
   @Test
-  public void getExistingEntitySet() {
+  void getExistingEntitySet() {
     EdmEntitySet entitySet = container.getEntitySet("entitySetName");
     assertNotNull(entitySet);
     assertEquals("entitySetName", entitySet.getName());
@@ -200,7 +202,7 @@ public class EdmEntityContainerImplTest {
   }
 
   @Test
-  public void getNonExistingEntitySet() {
+  void getNonExistingEntitySet() {
     assertNull(container.getEntitySet(null));
   }
 

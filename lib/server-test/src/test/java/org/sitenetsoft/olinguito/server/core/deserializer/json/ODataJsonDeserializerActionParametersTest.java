@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Improved test assertions
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -45,17 +46,17 @@ import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException.M
 import org.sitenetsoft.olinguito.server.core.deserializer.AbstractODataDeserializerTest;
 import org.junit.jupiter.api.Test;
 
-public class ODataJsonDeserializerActionParametersTest extends AbstractODataDeserializerTest {
+class ODataJsonDeserializerActionParametersTest extends AbstractODataDeserializerTest {
 
   @Test
-  public void empty() throws Exception {
+  void empty() throws Exception {
     final Map<String, Parameter> parameters = deserialize("{}", "UART", null);
     assertNotNull(parameters);
     assertTrue(parameters.isEmpty());
   }
 
   @Test
-  public void primitive() throws Exception {
+  void primitive() throws Exception {
     final Map<String, Parameter> parameters = deserialize(
         "{\"ParameterDuration\":\"P42DT11H22M33S\",\"ParameterInt16\":42}",
         "UARTTwoParam", null);
@@ -72,7 +73,7 @@ public class ODataJsonDeserializerActionParametersTest extends AbstractODataDese
   }
 
   @Test
-  public void primitiveCollection() throws Exception {
+  void primitiveCollection() throws Exception {
     final Parameter parameter = deserializeUARTByteNineParam("CollParameterByte", "[1,42]");
     assertTrue(parameter.isPrimitive());
     assertTrue(parameter.isCollection());
@@ -81,7 +82,7 @@ public class ODataJsonDeserializerActionParametersTest extends AbstractODataDese
   }
 
   @Test
-  public void enumeration() throws Exception {
+  void enumeration() throws Exception {
     final Parameter parameter = deserializeUARTByteNineParam("ParameterEnum", "\"String3,String1\"");
     assertTrue(parameter.isEnum());
     assertFalse(parameter.isCollection());
@@ -89,7 +90,7 @@ public class ODataJsonDeserializerActionParametersTest extends AbstractODataDese
   }
 
   @Test
-  public void enumCollection() throws Exception {
+  void enumCollection() throws Exception {
     final Parameter parameter = deserializeUARTByteNineParam("CollParameterEnum",
         "[ \"String1,String2\", \"String3,String3,String3\" ]");
     assertTrue(parameter.isEnum());
@@ -99,7 +100,7 @@ public class ODataJsonDeserializerActionParametersTest extends AbstractODataDese
   }
 
   @Test
-  public void typeDefinition() throws Exception {
+  void typeDefinition() throws Exception {
     final Parameter parameter = deserializeUARTByteNineParam("ParameterDef", "\"Test String\"");
     assertTrue(parameter.isPrimitive());
     assertFalse(parameter.isCollection());
@@ -107,7 +108,7 @@ public class ODataJsonDeserializerActionParametersTest extends AbstractODataDese
   }
 
   @Test
-  public void typeDefinitionCollection() throws Exception {
+  void typeDefinitionCollection() throws Exception {
     final Parameter parameter = deserializeUARTByteNineParam("CollParameterDef",
         "[ \"Test String\", \"Another String\" ]");
     assertTrue(parameter.isPrimitive());
@@ -117,7 +118,7 @@ public class ODataJsonDeserializerActionParametersTest extends AbstractODataDese
   }
 
   @Test
-  public void complex() throws Exception {
+  void complex() throws Exception {
     final Parameter parameter = deserializeUARTByteNineParam("ParameterComp",
         "{ \"PropertyString\": \"Yes\", \"PropertyInt16\": 42 }");
     assertTrue(parameter.isComplex());
@@ -128,7 +129,7 @@ public class ODataJsonDeserializerActionParametersTest extends AbstractODataDese
   }
 
   @Test
-  public void complexCollection() throws Exception {
+  void complexCollection() throws Exception {
     final Parameter parameter = deserializeUARTByteNineParam("CollParameterComp",
         "[ { \"PropertyInt16\": 9999, \"PropertyString\": \"One\" },"
         + "  { \"PropertyInt16\": -123, \"PropertyString\": \"Two\" }]");
@@ -144,7 +145,7 @@ public class ODataJsonDeserializerActionParametersTest extends AbstractODataDese
   }
 
   @Test
-  public void entity() throws Exception {
+  void entity() throws Exception {
     final Parameter parameter = deserializeUARTByteNineParam("ParameterETTwoPrim",
         "{ \"PropertyInt16\": 42, \"PropertyString\": \"Yes\" }");
     assertTrue(parameter.isEntity());
@@ -155,7 +156,7 @@ public class ODataJsonDeserializerActionParametersTest extends AbstractODataDese
   }
 
   @Test
-  public void entityCollection() throws Exception {
+  void entityCollection() throws Exception {
     final Parameter parameter = deserializeUARTByteNineParam("CollParameterETTwoPrim",
         "[ { \"PropertyInt16\": 1234, \"PropertyString\": \"One\" },"
         + "  { \"PropertyInt16\": -321, \"PropertyString\": \"Two\" }]");
@@ -171,14 +172,14 @@ public class ODataJsonDeserializerActionParametersTest extends AbstractODataDese
   }
 
   @Test
-  public void boundEmpty() throws Exception {
+  void boundEmpty() throws Exception {
     final Map<String, Parameter> parameters = deserialize("{}", "BAETAllPrimRT", "ETAllPrim");
     assertNotNull(parameters);
     assertTrue(parameters.isEmpty());
   }
 
   @Test
-  public void ignoreODataAnnotations() throws Exception {
+  void ignoreODataAnnotations() throws Exception {
     final String input =
         "{\"ParameterDuration@odata.type\":\"Edm.Duration\","
             + "\"ParameterDuration\":\"P42DT11H22M33S\",\"ParameterInt16\":42}";
@@ -194,7 +195,7 @@ public class ODataJsonDeserializerActionParametersTest extends AbstractODataDese
   }
 
   @Test
-  public void parameterWithNullLiteral() throws Exception {
+  void parameterWithNullLiteral() throws Exception {
     final Map<String, Parameter> parameters = deserialize("{\"ParameterInt16\":1,\"ParameterDuration\":null}",
         "UARTCollStringTwoParam", null);
     assertNotNull(parameters);
@@ -208,7 +209,7 @@ public class ODataJsonDeserializerActionParametersTest extends AbstractODataDese
   }
 
   @Test
-  public void noContent() throws Exception {
+  void noContent() throws Exception {
 	  Map<String, Parameter> parameters = deserialize("", "UARTTwoParam", null);
 	  assertNotNull(parameters);
 	  parameters = deserialize("", "BAETAllPrimRT", "ETAllPrim");
@@ -216,24 +217,24 @@ public class ODataJsonDeserializerActionParametersTest extends AbstractODataDese
   }
 
   @Test
-  public void bindingParameter() throws Exception {
+  void bindingParameter() throws Exception {
     expectException("{\"ParameterETAllPrim\":{\"PropertyInt16\":42}}", "BAETAllPrimRT", "ETAllPrim",
         MessageKeys.UNKNOWN_CONTENT);
   }
 
   @Test
-  public void missingParameter() throws Exception {
+  void missingParameter() throws Exception {
     expectException("{\"ParameterWrong\":null}", "UARTParam", null, MessageKeys.UNKNOWN_CONTENT);
     expectException("{}", "UARTCTTwoPrimParam", null, MessageKeys.INVALID_NULL_PARAMETER);
   }
 
   @Test
-  public void parameterTwice() throws Exception {
+  void parameterTwice() throws Exception {
     expectException("{\"ParameterInt16\":1,\"ParameterInt16\":2}", "UARTParam", null, MessageKeys.DUPLICATE_PROPERTY);
   }
 
   @Test
-  public void wrongType() throws Exception {
+  void wrongType() throws Exception {
     expectException("{\"ParameterInt16\":null}", "UARTCTTwoPrimParam", null, MessageKeys.INVALID_NULL_PARAMETER);
     expectException("{\"ParameterInt16\":\"42\"}", "UARTParam", null, MessageKeys.INVALID_VALUE_FOR_PROPERTY);
     expectException("{\"ParameterInt16\":123456}", "UARTParam", null, MessageKeys.INVALID_VALUE_FOR_PROPERTY);

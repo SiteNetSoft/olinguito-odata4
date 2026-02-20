@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
  * Copyright 2026 SiteNetSoft - Use direct stream read instead of URIUtils.readInputStreamBytes
  * Copyright 2026 SiteNetSoft - Replaced wildcard imports with explicit imports
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core;
 
@@ -369,7 +370,7 @@ public class JSONTest extends AbstractTest {
   }
   
   @Test
-  public void entitySets() throws Exception {
+  void entitySets() throws Exception {
     entitySet("Customers", getODataPubFormat());
 	entitySetInServerMode("Customers", getODataPubFormat());
     entitySet("collectionOfEntityReferences", getODataPubFormat());
@@ -377,18 +378,18 @@ public class JSONTest extends AbstractTest {
   }
   
   @Test
-  public void entitySetsWithFullMetadata() throws Exception {
+  void entitySetsWithFullMetadata() throws Exception {
     entitySetWithFullMetadata("Customers", getODataMetadataFullFormat());
     entitySetWithFullMetadata("collectionOfEntityReferences", getODataMetadataFullFormat());
   }
   
   @Test
-  public void entitySetsWithFullMetadataInServerMode() throws Exception {
+  void entitySetsWithFullMetadataInServerMode() throws Exception {
     entitySetInServerModeWithFullMetadata(getODataMetadataFullFormat());
   }
   
   @Test
-  public void entitySetsWithNoMetadata() throws Exception {
+  void entitySetsWithNoMetadata() throws Exception {
     entitySetWithNoMetadata("Customers", getODataMetadataFullFormat());
     entitySetInServerModeWithNoMetadata("Customers", getODataMetadataFullFormat());
     entitySetWithNoMetadata("collectionOfEntityReferences", getODataMetadataFullFormat());
@@ -445,7 +446,7 @@ public class JSONTest extends AbstractTest {
   }
   
   @Test
-  public void additionalEntities() throws Exception {
+  void additionalEntities() throws Exception {
     entity("entity.minimal", getODataPubFormat());
     entity("entity.primitive", getODataPubFormat());
     entity("entity.complex", getODataPubFormat());
@@ -454,7 +455,7 @@ public class JSONTest extends AbstractTest {
   }
 
   @Test
-  public void entities() throws Exception {
+  void entities() throws Exception {
     entity("Products_5", getODataPubFormat());
     entityInServerMode("Products_5", getODataPubFormat());
     entity("VipCustomer", getODataPubFormat());
@@ -470,7 +471,7 @@ public class JSONTest extends AbstractTest {
   }
   
   @Test
-  public void entitiesWithMetadataFull() throws Exception {
+  void entitiesWithMetadataFull() throws Exception {
     entityWithFullMetadata("Products_5", getODataMetadataFullFormat());
     entityWithFullMetadata("VipCustomer", getODataMetadataFullFormat());
     entityWithFullMetadata("Advertisements_f89dee73-af9f-4cd4-b330-db93c25ff3c7", 
@@ -481,12 +482,12 @@ public class JSONTest extends AbstractTest {
   }
   
   @Test
-  public void entitiesWithMetadataFullInServerMode() throws Exception {
+  void entitiesWithMetadataFullInServerMode() throws Exception {
     entityWithFullMetadataInServerMode(getODataMetadataFullFormat());
   }
   
   @Test
-  public void entitiesWithMetadataNone() throws Exception {
+  void entitiesWithMetadataNone() throws Exception {
     entityWithNoMetadata("Products_5", getODataMetadataNoneFormat());
     entityWithNoMetadataInServerMode("Products_5", getODataMetadataNoneFormat());
     entityWithNoMetadata("VipCustomer", getODataMetadataNoneFormat());
@@ -565,7 +566,7 @@ public class JSONTest extends AbstractTest {
   }
   
   @Test
-  public void properties() throws Exception {
+  void properties() throws Exception {
     property("Products_5_SkinColor", getODataFormat());
     propertyInServerMode("Products_5_SkinColor", getODataFormat());
     property("Products_5_CoverColors", getODataFormat());
@@ -575,7 +576,7 @@ public class JSONTest extends AbstractTest {
   }
   
   @Test
-  public void propertiesWithNoMetadata() throws Exception {
+  void propertiesWithNoMetadata() throws Exception {
     propertyWithNoMetadata("Products_5_SkinColor", getODataMetadataNoneFormat());
     propertyInServerModeWithNoMetadata("Products_5_SkinColor", getODataMetadataNoneFormat());
     propertyWithNoMetadata("Products_5_CoverColors", getODataMetadataNoneFormat());
@@ -585,7 +586,7 @@ public class JSONTest extends AbstractTest {
   }
   
   @Test
-  public void propertiesWithFullMetadata() throws Exception {
+  void propertiesWithFullMetadata() throws Exception {
     propertyWithFullMetadata("Products_5_SkinColor", getODataMetadataFullFormat());    
     propertyWithFullMetadata("Products_5_CoverColors", getODataMetadataFullFormat());
     propertyInServerModeWithFullMetadata("Products_5_CoverColors", getODataMetadataFullFormat());
@@ -593,7 +594,7 @@ public class JSONTest extends AbstractTest {
   }
   
   @Test
-  public void propertiesWithFullMetadataInServerMode() throws Exception {
+  void propertiesWithFullMetadataInServerMode() throws Exception {
     propertyInServerModeWithFullMetadata("Employees_3_HomeAddress_InServerMode", getODataMetadataFullFormat());
     propertyInServerModeWithFullMetadata("Products_5_SkinColor_Null", getODataMetadataFullFormat());
     propertyInServerModeWithFullMetadata("Products_5_SkinColor_NullType", getODataMetadataFullFormat());
@@ -601,7 +602,7 @@ public class JSONTest extends AbstractTest {
   }
 
   @Test
-  public void crossjoin() throws Exception {
+  void crossjoin() throws Exception {
     assertNotNull(client.getDeserializer(ContentType.JSON_FULL_METADATA).toEntitySet(
         getClass().getResourceAsStream("crossjoin.json")));
   }
@@ -634,12 +635,12 @@ public class JSONTest extends AbstractTest {
   }
 
   @Test
-  public void deltas() throws Exception {
+  void deltas() throws Exception {
     delta(getODataPubFormat());
   }
 
   @Test
-  public void issueOLINGO390() throws Exception {
+  void issueOLINGO390() throws Exception {
     final ClientEntity message = client.getObjectFactory().
         newEntity(new FullQualifiedName("Microsoft.Exchange.Services.OData.Model.Message"));
 
@@ -690,7 +691,7 @@ public class JSONTest extends AbstractTest {
   }
 
   @Test
-  public void issue1OLINGO1073() throws Exception {
+  void issue1OLINGO1073() throws Exception {
     final ClientEntity message = client.getObjectFactory().
         newEntity(new FullQualifiedName("Microsoft.Exchange.Services.OData.Model.Entity"));
     
@@ -740,7 +741,7 @@ public class JSONTest extends AbstractTest {
   }
   
   @Test
-  public void issue2OLINGO1073() throws Exception {
+  void issue2OLINGO1073() throws Exception {
     final ClientEntity message = client.getObjectFactory().
         newEntity(new FullQualifiedName("Microsoft.OData.SampleService.Models.TripPin.Person"));
     
@@ -839,7 +840,7 @@ public class JSONTest extends AbstractTest {
   }
   
   @Test
-  public void issue3OLINGO1073() throws Exception {
+  void issue3OLINGO1073() throws Exception {
     final ClientEntity message = client.getObjectFactory().
         newEntity(new FullQualifiedName("Microsoft.OData.SampleService.Models.TripPin.Person"));
     
@@ -912,7 +913,7 @@ public class JSONTest extends AbstractTest {
   }
   
   @Test
-  public void issue4OLINGO1073_WithAnnotations() throws Exception {
+  void issue4OLINGO1073_WithAnnotations() throws Exception {
     InputStream inputStream = getClass().getResourceAsStream(
         "olingo1073_2" + "." + getSuffix(ContentType.APPLICATION_JSON));
     ClientEntity entity = client.getReader().readEntity(inputStream, ContentType.APPLICATION_JSON);
@@ -954,7 +955,7 @@ public class JSONTest extends AbstractTest {
   }
 
   @Test
-  public void testOLINGO1114() throws Exception {
+  void testOLINGO1114() throws Exception {
     ClientEntity entityIncNullValue = client.getObjectFactory()
             .newEntity(new FullQualifiedName("Microsoft.Dynamics.CRM", "account"));
     List<ClientProperty> properties = entityIncNullValue.getProperties();
@@ -1024,7 +1025,7 @@ public class JSONTest extends AbstractTest {
 
   
   @Test
-  public void issueOLINGO1152() throws Exception {
+  void issueOLINGO1152() throws Exception {
     InputStream inputStream = getClass().getResourceAsStream(
         "olingo1152" + "." + getSuffix(ContentType.APPLICATION_JSON));
     ClientEntity entity = client.getReader().readEntity(inputStream, ContentType.APPLICATION_JSON);
@@ -1037,7 +1038,7 @@ public class JSONTest extends AbstractTest {
   }
   
   @Test
-  public void issue2OLINGO1073_WithEntitySet() throws Exception {
+  void issue2OLINGO1073_WithEntitySet() throws Exception {
     final ClientEntity message = createClientEntity();
     
     InputStream inputStream = client.getWriter().writeEntity(message, ContentType.APPLICATION_JSON);
@@ -1314,7 +1315,7 @@ public class JSONTest extends AbstractTest {
   }
 
   @Test
-  public void properties1() throws Exception {
+  void properties1() throws Exception {
     property1("Products_5_SkinColor");
     property1("Products_5_CoverColors");
     property1("Employees_3_HomeAddress");
@@ -1330,7 +1331,7 @@ public class JSONTest extends AbstractTest {
   }
 
   @Test
-  public void additionalEntities1() throws Exception {
+  void additionalEntities1() throws Exception {
     entity1("entity.minimal");
     entity1("entity.primitive");
     entity1("entity.complex");
@@ -1339,7 +1340,7 @@ public class JSONTest extends AbstractTest {
   }
 
   @Test
-  public void entities1() throws Exception {
+  void entities1() throws Exception {
     entity1("Products_5");
     entity1("VipCustomer");
     entity1("Advertisements_f89dee73-af9f-4cd4-b330-db93c25ff3c7");
@@ -1358,7 +1359,7 @@ public class JSONTest extends AbstractTest {
   }
 
   @Test
-  public void entitySets1() throws Exception {
+  void entitySets1() throws Exception {
     entitySet1("Customers");
     entitySet1("collectionOfEntityReferences");
   }

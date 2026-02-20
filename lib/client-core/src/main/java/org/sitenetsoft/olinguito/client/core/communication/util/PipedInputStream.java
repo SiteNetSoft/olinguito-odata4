@@ -17,10 +17,12 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed array index out of bounds in read()
+ * Copyright 2026 SiteNetSoft - Replaced bare RuntimeException with ODataRuntimeException
  */
 package org.sitenetsoft.olinguito.client.core.communication.util;
 
 import org.sitenetsoft.olinguito.client.core.ConfigurationImpl;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
 
 import java.io.IOException;
 
@@ -74,7 +76,7 @@ public class PipedInputStream extends java.io.PipedInputStream {
       try {
         connect(source);
       } catch (IOException e) {
-        throw new RuntimeException(e);
+        throw new ODataRuntimeException(e);
       }
     }
 

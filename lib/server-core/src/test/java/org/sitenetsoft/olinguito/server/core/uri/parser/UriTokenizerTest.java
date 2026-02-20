@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -27,16 +29,16 @@ import java.util.Locale;
 import org.sitenetsoft.olinguito.server.core.uri.parser.UriTokenizer.TokenKind;
 import org.junit.jupiter.api.Test;
 
-public class UriTokenizerTest {
+class UriTokenizerTest {
 
   @Test
-  public void nullOK() {
+  void nullOK() {
     assertFalse(new UriTokenizer(null).next(null));
     assertTrue(new UriTokenizer(null).next(TokenKind.EOF));
   }
 
   @Test
-  public void constants() {
+  void constants() {
     final UriTokenizer tokenizer = new UriTokenizer("$ref");
     assertTrue(tokenizer.next(TokenKind.REF));
     assertEquals("$ref", tokenizer.getText());
@@ -54,7 +56,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void sequence() {
+  void sequence() {
     UriTokenizer tokenizer = new UriTokenizer("(A=1,B=2);.*/+-");
     assertTrue(tokenizer.next(TokenKind.OPEN));
     assertFalse(tokenizer.next(TokenKind.OPEN));
@@ -97,7 +99,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void saveState() {
+  void saveState() {
     UriTokenizer tokenizer = new UriTokenizer("a*");
     assertTrue(tokenizer.next(TokenKind.ODataIdentifier));
     tokenizer.saveState();
@@ -109,7 +111,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void systemQueryOptions() {
+  void systemQueryOptions() {
     UriTokenizer tokenizer = new UriTokenizer("$expand=*;$filter=true;$levels=max;$orderby=false");
     assertTrue(tokenizer.next(TokenKind.EXPAND));
     assertTrue(tokenizer.next(TokenKind.EQ));
@@ -148,7 +150,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void identifier() {
+  void identifier() {
     assertTrue(new UriTokenizer("name").next(TokenKind.ODataIdentifier));
     assertTrue(new UriTokenizer("_name").next(TokenKind.ODataIdentifier));
     assertFalse(new UriTokenizer("1name").next(TokenKind.ODataIdentifier));
@@ -173,7 +175,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void qualifiedName() {
+  void qualifiedName() {
     assertTrue(new UriTokenizer("namespace.name").next(TokenKind.QualifiedName));
 
     final UriTokenizer tokenizer = new UriTokenizer("multi.part.namespace.name.1");
@@ -189,7 +191,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void alias() {
+  void alias() {
     assertTrue(new UriTokenizer("@name").next(TokenKind.ParameterAliasName));
     assertTrue(new UriTokenizer("@_name").next(TokenKind.ParameterAliasName));
     assertFalse(new UriTokenizer("name").next(TokenKind.ParameterAliasName));
@@ -198,7 +200,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void booleanValue() {
+  void booleanValue() {
     assertTrue(new UriTokenizer("true").next(TokenKind.BooleanValue));
     assertTrue(new UriTokenizer("tRuE").next(TokenKind.BooleanValue));
     assertTrue(new UriTokenizer("false").next(TokenKind.BooleanValue));
@@ -208,7 +210,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void string() {
+  void string() {
     assertTrue(new UriTokenizer("'ABC'").next(TokenKind.StringValue));
     assertTrue(new UriTokenizer("'€\uFDFC'").next(TokenKind.StringValue));
     assertTrue(new UriTokenizer('\'' + String.valueOf(Character.toChars(0x1F603)) + '\'')
@@ -225,7 +227,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void integer() {
+  void integer() {
     assertTrue(new UriTokenizer("1").next(TokenKind.IntegerValue));
     assertTrue(new UriTokenizer("1.").next(TokenKind.IntegerValue));
     assertFalse(new UriTokenizer(".1").next(TokenKind.IntegerValue));
@@ -234,13 +236,13 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void guid() {
+  void guid() {
     assertTrue(new UriTokenizer("12345678-abcd-ef12-1234-567890ABCDEF").next(TokenKind.GuidValue));
     wrongToken(TokenKind.GuidValue, "12345678-1234-1234-1234-123456789ABC", 'G');
   }
 
   @Test
-  public void date() {
+  void date() {
     assertTrue(new UriTokenizer("12345-12-25").next(TokenKind.DateValue));
     assertTrue(new UriTokenizer("-0001-12-24").next(TokenKind.DateValue));
     assertFalse(new UriTokenizer("1234-13-01").next(TokenKind.DateValue));
@@ -254,7 +256,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void dateTimeOffset() {
+  void dateTimeOffset() {
     assertTrue(new UriTokenizer("1234-12-25T11:12:13.456Z").next(TokenKind.DateTimeOffsetValue));
     assertTrue(new UriTokenizer("-1234-12-25t01:12z").next(TokenKind.DateTimeOffsetValue));
     assertTrue(new UriTokenizer("-1234-12-25T21:22:23+01:00").next(TokenKind.DateTimeOffsetValue));
@@ -264,7 +266,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void timeOfDay() {
+  void timeOfDay() {
     assertTrue(new UriTokenizer("11:12:13").next(TokenKind.TimeOfDayValue));
     assertTrue(new UriTokenizer("11:12:13.456").next(TokenKind.TimeOfDayValue));
     assertFalse(new UriTokenizer("24:00:00").next(TokenKind.TimeOfDayValue));
@@ -278,7 +280,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void decimal() {
+  void decimal() {
     assertTrue(new UriTokenizer("1.2").next(TokenKind.DecimalValue));
     assertFalse(new UriTokenizer(".1").next(TokenKind.DecimalValue));
     assertTrue(new UriTokenizer("-12.34").next(TokenKind.DecimalValue));
@@ -288,7 +290,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void doubleValue() {
+  void doubleValue() {
     assertTrue(new UriTokenizer("NaN").next(TokenKind.DoubleValue));
     assertTrue(new UriTokenizer("-INF").next(TokenKind.DoubleValue));
     assertTrue(new UriTokenizer("INF").next(TokenKind.DoubleValue));
@@ -301,7 +303,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void duration() {
+  void duration() {
     assertTrue(new UriTokenizer("duration'P'").next(TokenKind.DurationValue));
     assertTrue(new UriTokenizer("DURATION'P1D'").next(TokenKind.DurationValue));
     assertTrue(new UriTokenizer("duration'PT'").next(TokenKind.DurationValue));
@@ -317,7 +319,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void binary() {
+  void binary() {
     assertTrue(new UriTokenizer("binary''").next(TokenKind.BinaryValue));
     assertTrue(new UriTokenizer("Binary'bm93'").next(TokenKind.BinaryValue));
 
@@ -356,7 +358,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void enumValue() {
+  void enumValue() {
     assertTrue(new UriTokenizer("namespace.name'value'").next(TokenKind.EnumValue));
     assertTrue(new UriTokenizer("namespace.name'flag1,flag2,-3'").next(TokenKind.EnumValue));
     assertFalse(new UriTokenizer("namespace.name'1flag'").next(TokenKind.EnumValue));
@@ -370,7 +372,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void json() {
+  void json() {
     // Empty string or JSON values are not allowed.
     assertFalse(new UriTokenizer("").next(TokenKind.jsonArrayOrObject));
     assertFalse(new UriTokenizer("1").next(TokenKind.jsonArrayOrObject));
@@ -436,7 +438,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void operators() {
+  void operators() {
     UriTokenizer tokenizer = new UriTokenizer("1 ne 2");
     assertTrue(tokenizer.next(TokenKind.IntegerValue));
     assertFalse(tokenizer.next(TokenKind.EqualsOperator));
@@ -507,7 +509,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void methods() {
+  void methods() {
     UriTokenizer tokenizer = new UriTokenizer("now()");
     assertTrue(tokenizer.next(TokenKind.NowMethod));
     assertTrue(tokenizer.next(TokenKind.CLOSE));
@@ -531,7 +533,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void suffixes() {
+  void suffixes() {
     UriTokenizer tokenizer = new UriTokenizer("p1 asc,p2 desc");
     assertTrue(tokenizer.next(TokenKind.ODataIdentifier));
     assertTrue(tokenizer.next(TokenKind.AscSuffix));
@@ -544,7 +546,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void search() {
+  void search() {
     UriTokenizer tokenizer = new UriTokenizer("a AND b OR NOT \"c\" d");
     assertTrue(tokenizer.next(TokenKind.Word));
     assertTrue(tokenizer.next(TokenKind.AndOperatorSearch));
@@ -576,7 +578,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void geoPoint() {
+  void geoPoint() {
     assertTrue(new UriTokenizer("geography'SRID=4326;Point(1.23 4.56)'").next(TokenKind.GeographyPoint));
     assertTrue(new UriTokenizer("GeOgRaPhY'SrId=4326;pOiNt(1 2)'").next(TokenKind.GeographyPoint));
     assertTrue(new UriTokenizer("geography'srid=4326;point(1.2E3 4.5E-6)'").next(TokenKind.GeographyPoint));
@@ -589,7 +591,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void geoLineString() {
+  void geoLineString() {
     assertTrue(new UriTokenizer("geography'SRID=4326;LineString(1.23 4.56,7 8)'")
         .next(TokenKind.GeographyLineString));
     wrongToken(TokenKind.GeographyLineString, "geography'SRID=4326;LineString(1.23 4.56,7 8)'", '{');
@@ -600,7 +602,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void geoPolygon() {
+  void geoPolygon() {
     assertTrue(new UriTokenizer("geography'SRID=4326;Polygon((0 0,1 0,0 1,0 0))'").next(TokenKind.GeographyPolygon));
     assertTrue(new UriTokenizer("geometry'SRID=0;Polygon((0 0,1 0,0 1,0 0))'").next(TokenKind.GeometryPolygon));
     assertTrue(new UriTokenizer("geometry'SRID=0;Polygon((1 1,2 1,2 2,1 2,1 1),(0 0,4 0,4 4,0 4,0 0))'")
@@ -614,7 +616,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void geoMultiPoint() {
+  void geoMultiPoint() {
     assertTrue(new UriTokenizer("geography'SRID=4326;MultiPoint()'").next(TokenKind.GeographyMultiPoint));
     assertTrue(new UriTokenizer("geography'SRID=4326;MultiPoint((0 0))'").next(TokenKind.GeographyMultiPoint));
     assertTrue(new UriTokenizer("geometry'SRID=0;MultiPoint((0 0),(1 1))'").next(TokenKind.GeometryMultiPoint));
@@ -622,7 +624,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void geoMultiLineString() {
+  void geoMultiLineString() {
     assertTrue(new UriTokenizer("geography'SRID=4326;MultiLineString()'").next(TokenKind.GeographyMultiLineString));
     assertTrue(new UriTokenizer("geography'SRID=4326;MultiLineString((1 2,3 4))'")
         .next(TokenKind.GeographyMultiLineString));
@@ -633,7 +635,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void geoMultiPolygon() {
+  void geoMultiPolygon() {
     assertTrue(new UriTokenizer("geography'SRID=4326;MultiPolygon()'").next(TokenKind.GeographyMultiPolygon));
     assertTrue(new UriTokenizer("geography'SRID=4326;MultiPolygon(((0 0,1 0,0 1,0 0)))'")
         .next(TokenKind.GeographyMultiPolygon));
@@ -645,7 +647,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void geoCollection() {
+  void geoCollection() {
     assertTrue(new UriTokenizer("geography'SRID=4326;Collection(Point(1 2))'").next(TokenKind.GeographyCollection));
     assertTrue(new UriTokenizer("geography'SRID=4326;Collection(Collection(Point(1 2),Point(3 4)))'")
         .next(TokenKind.GeographyCollection));
@@ -660,7 +662,7 @@ public class UriTokenizerTest {
   }
 
   @Test
-  public void aggregation() {
+  void aggregation() {
     UriTokenizer tokenizer = new UriTokenizer("$apply=aggregate(a with sum as s from x with average)");
     assertTrue(tokenizer.next(TokenKind.APPLY));
     assertTrue(tokenizer.next(TokenKind.EQ));

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.debug;
 
@@ -24,10 +26,10 @@ import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
 import org.sitenetsoft.olinguito.server.api.ODataResponse;
 import org.junit.jupiter.api.Test;
 
-public class DebugTabResponseTest extends AbstractDebugTabTest {
+class DebugTabResponseTest extends AbstractDebugTabTest {
 
   @Test
-  public void nullResponseMustNotLeadToException() throws Exception {
+  void nullResponseMustNotLeadToException() throws Exception {
     DebugTabResponse tab = new DebugTabResponse(null);
 
     String expectedJson = "{\"status\":{\"code\":\"500\",\"info\":\"Internal Server Error\"},\"body\":null}";
@@ -49,7 +51,7 @@ public class DebugTabResponseTest extends AbstractDebugTabTest {
   }
 
   @Test
-  public void withInformationNoBody() throws Exception {
+  void withInformationNoBody() throws Exception {
     ODataResponse response = new ODataResponse();
     response.setStatusCode(HttpStatusCode.NO_CONTENT.getStatusCode());
     response.setHeader("headername", "headervalue");

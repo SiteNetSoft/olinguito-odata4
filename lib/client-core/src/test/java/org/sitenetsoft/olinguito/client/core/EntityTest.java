@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Improved test assertions
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core;
 
@@ -53,7 +54,7 @@ import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmDuration;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-public class EntityTest extends AbstractTest {
+class EntityTest extends AbstractTest {
   
   private static final String SERVICE_URI = "http://services.odata.org/V4/"
       + "(S(jf0ernw5hgyg1ekhqmzrdsch))/TripPinServiceRW/";
@@ -151,12 +152,12 @@ public class EntityTest extends AbstractTest {
   }
 
   @Test
-  public void atomSingleton() throws Exception {
+  void atomSingleton() throws Exception {
     singleton(ContentType.APPLICATION_ATOM_XML);
   }
 
   @Test
-  public void jsonSingleton() throws Exception {
+  void jsonSingleton() throws Exception {
     singleton(ContentType.JSON_FULL_METADATA);
   }
 
@@ -187,12 +188,12 @@ public class EntityTest extends AbstractTest {
   }
 
   @Test
-  public void atomWithEnums() throws Exception {
+  void atomWithEnums() throws Exception {
     withEnums(ContentType.APPLICATION_ATOM_XML);
   }
 
   @Test
-  public void jsonWithEnums() throws Exception {
+  void jsonWithEnums() throws Exception {
     withEnums(ContentType.JSON_FULL_METADATA);
   }
 
@@ -222,12 +223,12 @@ public class EntityTest extends AbstractTest {
   }
 
   @Test
-  public void atomWithInlineEntitySet() throws Exception {
+  void atomWithInlineEntitySet() throws Exception {
     withInlineEntitySet(ContentType.APPLICATION_ATOM_XML);
   }
 
   @Test
-  public void jsonWithInlineEntitySet() throws Exception {
+  void jsonWithInlineEntitySet() throws Exception {
     withInlineEntitySet(ContentType.JSON_FULL_METADATA);
   }
 
@@ -249,12 +250,12 @@ public class EntityTest extends AbstractTest {
   }
 
   @Test
-  public void atomMediaEntity() throws Exception {
+  void atomMediaEntity() throws Exception {
     mediaEntity(ContentType.APPLICATION_ATOM_XML);
   }
 
   @Test
-  public void jsonMediaEntity() throws Exception {
+  void jsonMediaEntity() throws Exception {
     mediaEntity(ContentType.JSON_FULL_METADATA);
   }
 
@@ -276,12 +277,12 @@ public class EntityTest extends AbstractTest {
   }
 
   @Test
-  public void atomWithStream() throws Exception {
+  void atomWithStream() throws Exception {
     withStream(ContentType.APPLICATION_ATOM_XML);
   }
 
   @Test
-  public void jsonWithStream() throws Exception {
+  void jsonWithStream() throws Exception {
     withStream(ContentType.JSON_FULL_METADATA);
   }
 
@@ -300,12 +301,12 @@ public class EntityTest extends AbstractTest {
   }
 
   @Test
-  public void atomRef() throws Exception {
+  void atomRef() throws Exception {
     ref(ContentType.APPLICATION_ATOM_XML);
   }
 
   @Test
-  public void jsonRef() throws Exception {
+  void jsonRef() throws Exception {
     ref(ContentType.JSON);
   }
 
@@ -328,12 +329,12 @@ public class EntityTest extends AbstractTest {
   }
 
   @Test
-  public void atomComplexNavigationProperties() throws Exception {
+  void atomComplexNavigationProperties() throws Exception {
     complexNavigationProperties(ContentType.APPLICATION_ATOM_XML);
   }
 
   @Test
-  public void jsonComplexNavigationProperties() throws Exception {
+  void jsonComplexNavigationProperties() throws Exception {
     complexNavigationProperties(ContentType.JSON);
   }
 
@@ -375,13 +376,13 @@ public class EntityTest extends AbstractTest {
 
   @Test
   @Disabled
-  public void atomAnnotated() throws Exception {
+  void atomAnnotated() throws Exception {
     annotated(ContentType.APPLICATION_ATOM_XML);
   }
 
   @Test
   @Disabled
-  public void jsonAnnotated() throws Exception {
+  void jsonAnnotated() throws Exception {
     annotated(ContentType.JSON);
   }
 
@@ -397,22 +398,22 @@ public class EntityTest extends AbstractTest {
   }
 
   @Test
-  public void derivedFromAtom() throws Exception {
+  void derivedFromAtom() throws Exception {
     derived(client, ContentType.APPLICATION_ATOM_XML);
   }
 
   @Test
-  public void derivedFromJSON() throws Exception {
+  void derivedFromJSON() throws Exception {
     derived(getEdmEnabledClient(), ContentType.JSON);
   }
 
   @Test
-  public void derivedFromFullJSON() throws Exception {
+  void derivedFromFullJSON() throws Exception {
     derived(client, ContentType.JSON_FULL_METADATA);
   }
   
   @Test
-  public void testNullValuesForPrimitiveTypes() throws Exception {
+  void testNullValuesForPrimitiveTypes() throws Exception {
     final InputStream input = getClass().getResourceAsStream("ESTwoKeyNav.json");
     final ClientEntity entity = client.getBinder().getODataEntity(
         client.getDeserializer(ContentType.APPLICATION_JSON).toEntity(input));
@@ -429,7 +430,7 @@ public class EntityTest extends AbstractTest {
   }
   
   @Test
-  public void testContainmentNav() throws Exception {
+  void testContainmentNav() throws Exception {
     final InputStream input = getClass().getResourceAsStream(
 	"containmentNav." + getSuffix(ContentType.JSON_FULL_METADATA));
     final ClientEntity entity = getEdmEnabledClient1().getBinder().getODataEntity(
@@ -439,7 +440,7 @@ public class EntityTest extends AbstractTest {
   }
   
   @Test
-  public void testContainmentNavOnComplexType() throws Exception {
+  void testContainmentNavOnComplexType() throws Exception {
     final InputStream input = getClass().getResourceAsStream(
   "containmentNav2." + getSuffix(ContentType.JSON_FULL_METADATA));
     final ClientEntity entity = getEdmEnabledClient1().getBinder().getODataEntity(
@@ -449,7 +450,7 @@ public class EntityTest extends AbstractTest {
   }
   
   @Test
-  public void testContainmentNavOnSingleton() throws Exception {
+  void testContainmentNavOnSingleton() throws Exception {
     final InputStream input = getClass().getResourceAsStream(
   "containmentNav3." + getSuffix(ContentType.JSON_FULL_METADATA));
     final ClientEntity entity = getEdmEnabledClient1().getBinder().getODataEntity(

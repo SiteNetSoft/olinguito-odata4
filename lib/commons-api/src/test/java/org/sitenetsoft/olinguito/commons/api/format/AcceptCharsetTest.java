@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.api.format;
 
@@ -27,20 +29,20 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-public class AcceptCharsetTest {
+class AcceptCharsetTest {
   @Test
-  public void wildcard() {
+  void wildcard() {
     List<AcceptCharset> charsets = AcceptCharset.create("*");
     assertEquals("*", charsets.get(0).getCharset());
   }
   
   @Test
-  public void illegalCharset() {
+  void illegalCharset() {
     expectCreateError("abc");
   }
   
   @Test
-  public void illegalCharsetWithDelimiters() {
+  void illegalCharsetWithDelimiters() {
     expectCreateError("utf<8");
     expectCreateError(",,,,");
     expectCreateError(", , , ");
@@ -61,18 +63,18 @@ public class AcceptCharsetTest {
   }
   
   @Test
-  public void unsupportedCharset() {
+  void unsupportedCharset() {
     expectCreateError("iso-8859-1");
   }
   
   @Test
-  public void correctCharset() {
+  void correctCharset() {
     List<AcceptCharset> charsets = AcceptCharset.create("utf-8");
     assertEquals("utf-8", charsets.get(0).getCharset());
   }
   
   @Test
-  public void correctCharsetWithQParams() {
+  void correctCharsetWithQParams() {
     List<AcceptCharset> charsets = AcceptCharset.create("utf-8;q=0.8");
     assertEquals("utf-8", charsets.get(0).getCharset());
     assertEquals(1, charsets.get(0).getParameters().size());
@@ -82,7 +84,7 @@ public class AcceptCharsetTest {
   }
   
   @Test
-  public void multipleCharsetsWithQParams() {
+  void multipleCharsetsWithQParams() {
     List<AcceptCharset> charsets = AcceptCharset.create("utf-8;q=0.1, utf8;q=0.8");
     assertEquals("utf8", charsets.get(0).getCharset());
     assertEquals("utf-8", charsets.get(1).getCharset());
@@ -93,7 +95,7 @@ public class AcceptCharsetTest {
   }
   
   @Test
-  public void multipleCharsetsWithQParamsAndUnsupportedCharsets() {
+  void multipleCharsetsWithQParamsAndUnsupportedCharsets() {
     List<AcceptCharset> charsets = AcceptCharset.create("utf-8;q=0.1, utf8;q=0.8, iso-8859-1, abc");
     assertEquals("utf8", charsets.get(0).getCharset());
     assertEquals("utf-8", charsets.get(1).getCharset());
@@ -105,7 +107,7 @@ public class AcceptCharsetTest {
   }
   
   @Test
-  public void multipleCharsetsWithSameQParams() {
+  void multipleCharsetsWithSameQParams() {
     List<AcceptCharset> charsets = AcceptCharset.create("utf-8;q=0.1, utf8;q=0.1");
     assertEquals("utf-8", charsets.get(0).getCharset());
     assertEquals("utf8", charsets.get(1).getCharset());
@@ -117,7 +119,7 @@ public class AcceptCharsetTest {
   }
   
   @Test
-  public void multipleCharsetsFail() {
+  void multipleCharsetsFail() {
     expectCreateError("iso-8859-5, unicode-1-1;q=0.8");
   }
   
@@ -133,22 +135,22 @@ public class AcceptCharsetTest {
   }
   
   @Test
-  public void illegalQParam() {
+  void illegalQParam() {
     expectCreateError("utf-8;q=12");
   }
   
   @Test
-  public void emptyCharset() {
+  void emptyCharset() {
     expectCreateError("");
   }
   
   @Test
-  public void nullCharset() {
+  void nullCharset() {
     expectCreateError(null);
   }
   
   @Test
-  public void trailingSemicolon() {
+  void trailingSemicolon() {
     expectCreateError("utf-8;");
   }
 }

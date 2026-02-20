@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.etag;
 
@@ -29,12 +31,12 @@ import org.sitenetsoft.olinguito.server.api.etag.ETagHelper;
 import org.sitenetsoft.olinguito.server.api.etag.PreconditionException;
 import org.junit.jupiter.api.Test;
 
-public class ETagHelperTest {
+class ETagHelperTest {
 
   private static final ETagHelper eTagHelper = OData.newInstance().createETagHelper();
 
   @Test
-  public void readPrecondition() throws Exception {
+  void readPrecondition() throws Exception {
     assertFalse(eTagHelper.checkReadPreconditions(null, null, null));
     assertFalse(eTagHelper.checkReadPreconditions("\"ETag\"", null, null));
     assertFalse(eTagHelper.checkReadPreconditions(null, Collections.singleton("\"ETag\""), null));
@@ -47,13 +49,13 @@ public class ETagHelperTest {
   }
 
   @Test
-  public void readPreconditionFail() throws Exception {
+  void readPreconditionFail() throws Exception {
       assertThrows(PreconditionException.class,
           () -> eTagHelper.checkReadPreconditions("\"ETag\"", Collections.singleton("\"ETag2\""), null));
   }
 
   @Test
-  public void changePrecondition() throws Exception {
+  void changePrecondition() throws Exception {
     eTagHelper.checkChangePreconditions(null, null, null);
     eTagHelper.checkChangePreconditions("\"ETag\"", null, null);
     eTagHelper.checkChangePreconditions(null, Collections.singleton("\"ETag\""), null);
@@ -65,21 +67,21 @@ public class ETagHelperTest {
   }
 
   @Test
-  public void changePreconditionFailIfMatch() throws Exception {
+  void changePreconditionFailIfMatch() throws Exception {
       assertThrows(PreconditionException.class,
           () -> eTagHelper.checkChangePreconditions("\"ETag\"",
               Collections.singleton("\"ETag2\""), null));
   }
 
   @Test
-  public void changePreconditionFailIfNoneMatch() throws Exception {
+  void changePreconditionFailIfNoneMatch() throws Exception {
       assertThrows(PreconditionException.class,
           () -> eTagHelper.checkChangePreconditions("\"ETag\"",
               null, Collections.singleton("\"ETag\"")));
   }
 
   @Test
-  public void changePreconditionFailIfNoneMatchAll() throws Exception {
+  void changePreconditionFailIfNoneMatchAll() throws Exception {
       assertThrows(PreconditionException.class,
           () -> eTagHelper.checkChangePreconditions("\"ETag\"",
               null, Collections.singleton("*")));

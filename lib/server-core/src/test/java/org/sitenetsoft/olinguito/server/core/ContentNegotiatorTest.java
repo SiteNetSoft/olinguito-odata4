@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced wildcard imports with explicit imports; Arrays.asList with List.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -41,7 +42,7 @@ import org.sitenetsoft.olinguito.server.api.uri.queryoption.FormatOption;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 
-public class ContentNegotiatorTest {
+class ContentNegotiatorTest {
 
   static final private String ACCEPT_CASE_MIN = ContentType.JSON.toContentTypeString();
   static final private String ACCEPT_CASE_MIN_UTF8 = "application/json;charset=UTF-8;odata.metadata=minimal";
@@ -178,39 +179,39 @@ public class ContentNegotiatorTest {
   //@formatter:on
 
   @Test
-  public void serviceDocumentSingleCase() throws Exception {
+  void serviceDocumentSingleCase() throws Exception {
     testContentNegotiation(
         new String[] { ACCEPT_CASE_MIN_UTF8, null, ACCEPT_CASE_MIN_UTF8, null },
         RepresentationType.SERVICE);
   }
 
   @Test
-  public void serviceDocument() throws Exception {
+  void serviceDocument() throws Exception {
     for (String[] useCase : casesServiceDocument) {
       testContentNegotiation(useCase, RepresentationType.SERVICE);
     }
   }
 
   @Test
-  public void metadataSingleCase() throws Exception {
+  void metadataSingleCase() throws Exception {
     testContentNegotiation(new String[] { ACCEPT_CASE_XML, null, null, null }, RepresentationType.METADATA);
   }
 
   @Test
-  public void metadataJson() throws Exception {
+  void metadataJson() throws Exception {
     testContentNegotiation(new String[] { ACCEPT_CASE_JSON, 
         "application/json", null, null }, RepresentationType.METADATA);
   }
 
   @Test
-  public void metadata() throws Exception {
+  void metadata() throws Exception {
     for (String[] useCase : casesMetadata) {
       testContentNegotiation(useCase, RepresentationType.METADATA);
     }
   }
 
   @Test
-  public void entityCollectionFail() throws Exception {
+  void entityCollectionFail() throws Exception {
     for (String[] useCase : casesFail) {
       try {
         testContentNegotiation(useCase, RepresentationType.COLLECTION_ENTITY);
@@ -226,7 +227,7 @@ public class ContentNegotiatorTest {
   }
   
   @Test
-  public void metadataFail() throws Exception {
+  void metadataFail() throws Exception {
     for (String[] useCase : casesMetadataFail) {
       try {
         testContentNegotiation(useCase, RepresentationType.METADATA);
@@ -238,7 +239,7 @@ public class ContentNegotiatorTest {
   }
 
   @Test
-  public void checkSupport() throws Exception {
+  void checkSupport() throws Exception {
     ContentNegotiator.checkSupport(ContentType.JSON, null, RepresentationType.ENTITY);
     ContentNegotiator.checkSupport(ContentType.TEXT_PLAIN, null, RepresentationType.VALUE);
     try {
@@ -308,14 +309,14 @@ public class ContentNegotiatorTest {
   }
   
   @Test
-  public void testAcceptCharset() throws Exception {
+  void testAcceptCharset() throws Exception {
     for (String[] useCase : casesAcceptCharset) {
       testContentNegotiation(useCase, RepresentationType.ENTITY);
     }
   }
   
   @Test
-  public void testAcceptCharsetFail() throws Exception {
+  void testAcceptCharsetFail() throws Exception {
     for (String[] useCase : casesAcceptCharsetFail) {
       try {
         testContentNegotiation(useCase, RepresentationType.ENTITY);
@@ -331,7 +332,7 @@ public class ContentNegotiatorTest {
   }
   
   @Test
-  public void testSupportedTypes() throws ContentNegotiatorException, IllegalArgumentException {
+  void testSupportedTypes() throws ContentNegotiatorException, IllegalArgumentException {
     assertTrue(ContentNegotiator.isSupported(ContentType.create("a/b"), 
         createCustomContentTypeSupport("a/b"), RepresentationType.ENTITY));
     assertFalse(ContentNegotiator.isSupported(ContentType.create("a/b"), 
@@ -343,7 +344,7 @@ public class ContentNegotiatorTest {
   }
   
   @Test
-  public void checBatchkSupport() throws Exception {
+  void checBatchkSupport() throws Exception {
     testContentNegotiation(new String[] { ACCEPT_CASE_MULTIPART_MIXED, null, ACCEPT_CASE_MULTIPART_MIXED, null },
         RepresentationType.BATCH);
   }

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.batch;
 
@@ -33,7 +35,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-public class BatchLineReaderTest {
+class BatchLineReaderTest {
 
   private static final String TEXT_COMBINED = "Test\r" +
       "Test2\r\n" +
@@ -50,7 +52,7 @@ public class BatchLineReaderTest {
   private static final String TEXT_EMPTY = "";
 
   @Test
-  public void simpleText() throws Exception {
+  void simpleText() throws Exception {
     final String TEXT = "Test";
     BatchLineReader reader = create(TEXT);
 
@@ -61,7 +63,7 @@ public class BatchLineReaderTest {
   }
 
   @Test
-  public void noText() throws Exception {
+  void noText() throws Exception {
     BatchLineReader reader = create(TEXT_EMPTY);
 
     assertNull(reader.readLine());
@@ -70,7 +72,7 @@ public class BatchLineReaderTest {
   }
 
   @Test
-  public void noBytes() throws Exception {
+  void noBytes() throws Exception {
     BatchLineReader reader = new BatchLineReader(new ByteArrayInputStream(new byte[0]));
 
     assertNull(reader.readLine());
@@ -79,7 +81,7 @@ public class BatchLineReaderTest {
   }
 
   @Test
-  public void CRLF() throws Exception {
+  void CRLF() throws Exception {
     final String TEXT = "Test\r\n" +
         "Test2";
 
@@ -93,7 +95,7 @@ public class BatchLineReaderTest {
   }
 
   @Test
-  public void LF() throws Exception {
+  void LF() throws Exception {
     final String TEXT = "Test\n" +
         "Test2";
 
@@ -107,7 +109,7 @@ public class BatchLineReaderTest {
   }
 
   @Test
-  public void CR() throws Exception {
+  void CR() throws Exception {
     final String TEXT = "Test\r" +
         "Test2";
 
@@ -121,7 +123,7 @@ public class BatchLineReaderTest {
   }
 
   @Test
-  public void combined() throws Exception {
+  void combined() throws Exception {
     BatchLineReader reader = create(TEXT_COMBINED);
 
     assertEquals("Test\r", reader.readLine());
@@ -141,7 +143,7 @@ public class BatchLineReaderTest {
   }
 
   @Test
-  public void combinedBufferSizeTwo() throws Exception {
+  void combinedBufferSizeTwo() throws Exception {
     BatchLineReader reader = create(TEXT_COMBINED, 2);
 
     assertEquals("Test\r", reader.readLine());
@@ -161,7 +163,7 @@ public class BatchLineReaderTest {
   }
 
   @Test
-  public void combinedBufferSizeOne() throws Exception {
+  void combinedBufferSizeOne() throws Exception {
     BatchLineReader reader = create(TEXT_COMBINED, 1);
 
     assertEquals("Test\r", reader.readLine());
@@ -182,7 +184,7 @@ public class BatchLineReaderTest {
   }
 
   @Test
-  public void doubleCR() throws Exception {
+  void doubleCR() throws Exception {
     final String TEXT = "Test\r" +
         "\r";
 
@@ -194,7 +196,7 @@ public class BatchLineReaderTest {
   }
 
   @Test
-  public void lineEqualsAndHashCode() {
+  void lineEqualsAndHashCode() {
     Line l1 = new Line("The first line", 1);
     Line l2 = new Line("The first line", 1);
     Line l3 = new Line("The second line", 2);
@@ -205,7 +207,7 @@ public class BatchLineReaderTest {
   }
 
   @Test
-  public void failBufferSizeZero() throws Exception {
+  void failBufferSizeZero() throws Exception {
       assertThrows(IllegalArgumentException.class, () -> {
           BatchLineReader reader = create(TEXT_EMPTY, 0);
           reader.close();
@@ -213,7 +215,7 @@ public class BatchLineReaderTest {
   }
 
   @Test
-  public void failBufferSizeNegative() throws Exception {
+  void failBufferSizeNegative() throws Exception {
       assertThrows(IllegalArgumentException.class, () -> {
           BatchLineReader reader = create(TEXT_EMPTY, -1);
           reader.close();
@@ -221,7 +223,7 @@ public class BatchLineReaderTest {
   }
 
   @Test
-  public void toList() throws Exception {
+  void toList() throws Exception {
     BatchLineReader reader = create(TEXT_COMBINED);
     List<Line> stringList = reader.toLineList();
 
@@ -241,7 +243,7 @@ public class BatchLineReaderTest {
   }
 
   @Test
-  public void specialCharacters() throws Exception {
+  void specialCharacters() throws Exception {
     final String text = "\r\n"
         + "Content-Type: text/plain; charset=UTF-8\r\n"
         + "\r\n"
@@ -262,7 +264,7 @@ public class BatchLineReaderTest {
   }
 
   @Test
-  public void specialCharactersInJsonWithNewline() throws Exception {
+  void specialCharactersInJsonWithNewline() throws Exception {
     final String text = "\n"
         + "Content-Type: application/json\n"
         + "\n"
@@ -277,7 +279,7 @@ public class BatchLineReaderTest {
   }
 
   @Test
-  public void specialCharactersInJsonWithLowercaseContentType() throws Exception {
+  void specialCharactersInJsonWithLowercaseContentType() throws Exception {
     final String text = "\n"
         + "content-type: application/json\n"
         + "\n"
@@ -292,7 +294,7 @@ public class BatchLineReaderTest {
   }
 
   @Test
-  public void rawBytes() throws Exception {
+  void rawBytes() throws Exception {
     byte[] content = new byte[Byte.MAX_VALUE - Byte.MIN_VALUE + 1];
     // binary content, not a valid UTF-8 representation of a string
     for (int i = Byte.MIN_VALUE; i <= Byte.MAX_VALUE; i++) {

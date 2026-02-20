@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.core.edm.annotations;
 
@@ -42,10 +44,10 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlIsOf;
 import org.sitenetsoft.olinguito.commons.core.edm.annotation.AbstractEdmExpression;
 import org.junit.jupiter.api.Test;
 
-public class EdmIsOfImplTest extends AbstractAnnotationTest {
+class EdmIsOfImplTest extends AbstractAnnotationTest {
 
   @Test
-  public void initialIsOf() {
+  void initialIsOf() {
     EdmExpression isOf = AbstractEdmExpression.getExpression(mock(Edm.class), new CsdlIsOf());
 
     EdmDynamicExpression dynExp = assertDynamic(isOf);
@@ -79,7 +81,7 @@ public class EdmIsOfImplTest extends AbstractAnnotationTest {
   }
 
   @Test
-  public void isOfWithExpression() {
+  void isOfWithExpression() {
     CsdlIsOf csdlExp = new CsdlIsOf();
     csdlExp.setMaxLength(Integer.valueOf(1));
     csdlExp.setPrecision(Integer.valueOf(2));

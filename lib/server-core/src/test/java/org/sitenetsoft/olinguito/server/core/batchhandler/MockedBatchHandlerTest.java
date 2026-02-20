@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.batchhandler;
 
@@ -63,7 +64,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-public class MockedBatchHandlerTest {
+class MockedBatchHandlerTest {
 
   private static final String BATCH_CONTENT_TYPE = "multipart/mixed;boundary=batch_12345";
   private static final String BATCH_ODATA_PATH = "/$batch";
@@ -75,7 +76,7 @@ public class MockedBatchHandlerTest {
   private int entityCounter = 1;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     final BatchProcessor batchProcessor = new BatchTestProcessorImpl();
     batchProcessor.init(OData.newInstance(), null);
 
@@ -85,7 +86,7 @@ public class MockedBatchHandlerTest {
   }
 
   @Test
-  public void test() throws Exception {
+  void test() throws Exception {
     final String content = "--batch_12345" + CRLF
             + "Content-Type: multipart/mixed; boundary=changeset_12345" + CRLF
             + CRLF
@@ -206,7 +207,7 @@ public class MockedBatchHandlerTest {
   }
 
   @Test
-  public void testGetRequest() throws Exception {
+  void testGetRequest() throws Exception {
     final String content = ""
             + "--batch_12345" + CRLF
             + "Content-Type: application/http" + CRLF
@@ -246,7 +247,7 @@ public class MockedBatchHandlerTest {
   }
 
   @Test
-  public void testMultipleChangeSets() throws Exception {
+  void testMultipleChangeSets() throws Exception {
     final String content = ""
             + "--batch_12345" + CRLF
             + "Content-Type: multipart/mixed; boundary=changeset_12345" + CRLF
@@ -368,7 +369,7 @@ public class MockedBatchHandlerTest {
   }
 
   @Test
-  public void mimeBodyPartTransitive() throws Exception {
+  void mimeBodyPartTransitive() throws Exception {
     final String content = ""
             + "--batch_12345" + CRLF
             + "Content-Type: multipart/mixed; boundary=changeset_12345" + CRLF
@@ -469,7 +470,7 @@ public class MockedBatchHandlerTest {
   }
 
   @Test
-  public void testInvalidMethod() throws Exception {
+  void testInvalidMethod() throws Exception {
       assertThrows(BatchDeserializerException.class, () -> {
           final String content = ""
           + "--batch_12345" + CRLF
@@ -496,7 +497,7 @@ public class MockedBatchHandlerTest {
   }
 
   @Test
-  public void testInvalidContentType() throws Exception {
+  void testInvalidContentType() throws Exception {
       assertThrows(BatchDeserializerException.class, () -> {
           final String content = ""
           + "--batch_12345" + CRLF

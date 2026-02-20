@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -28,10 +30,10 @@ import java.net.URI;
 import org.sitenetsoft.olinguito.commons.api.data.ContextURL;
 import org.junit.jupiter.api.Test;
 
-public class ContextURLParserTest {
+class ContextURLParserTest {
 
   @Test
-  public void collectionOfEntities() {
+  void collectionOfEntities() {
     ContextURL contextURL = ContextURLParser.parse(URI.create("http://host/service/$metadata#Customers"));
 
     assertEquals(URI.create("http://host/service/"), contextURL.getServiceRoot());
@@ -56,7 +58,7 @@ public class ContextURLParserTest {
   }
 
   @Test
-  public void entity() {
+  void entity() {
     ContextURL contextURL = ContextURLParser.parse(URI.create("http://host/service/$metadata#Customers/$entity"));
 
     assertEquals("Customers", contextURL.getEntitySetOrSingletonOrType());
@@ -93,7 +95,7 @@ public class ContextURLParserTest {
   }
 
   @Test
-  public void singleton() {
+  void singleton() {
     ContextURL contextURL = ContextURLParser.parse(URI.create("http://host/service/$metadata#Contoso"));
 
     assertEquals("Contoso", contextURL.getEntitySetOrSingletonOrType());
@@ -104,7 +106,7 @@ public class ContextURLParserTest {
   }
 
   @Test
-  public void collectionOfDerivedEntities() {
+  void collectionOfDerivedEntities() {
     final ContextURL contextURL = ContextURLParser.parse(
         URI.create("http://host/service/$metadata#Customers/Model.VipCustomer"));
 
@@ -116,7 +118,7 @@ public class ContextURLParserTest {
   }
 
   @Test
-  public void derivedEntity() {
+  void derivedEntity() {
     final ContextURL contextURL = ContextURLParser.parse(
         URI.create("http://host/service/$metadata#Customers/Model.VipCustomer/$entity"));
 
@@ -128,7 +130,7 @@ public class ContextURLParserTest {
   }
 
   @Test
-  public void collectionOfProjectedEntities() {
+  void collectionOfProjectedEntities() {
     final ContextURL contextURL = ContextURLParser.parse(
         URI.create("http://host/service/$metadata#Customers(Address,Orders)"));
 
@@ -140,7 +142,7 @@ public class ContextURLParserTest {
   }
 
   @Test
-  public void projectedEntity() {
+  void projectedEntity() {
     ContextURL contextURL = ContextURLParser.parse(
         URI.create("http://host/service/$metadata#Customers(Name,Rating)/$entity"));
 
@@ -161,7 +163,7 @@ public class ContextURLParserTest {
   }
 
   @Test
-  public void collectionOfProjectedExpandedEntities() {
+  void collectionOfProjectedExpandedEntities() {
     final ContextURL contextURL = ContextURLParser.parse(
         URI.create("http://host/service/$metadata#Employees/"
             + "Sales.Manager(DirectReports,DirectReports+(FirstName,LastName))"));
@@ -174,7 +176,7 @@ public class ContextURLParserTest {
   }
 
   @Test
-  public void propertyValue() {
+  void propertyValue() {
     final ContextURL contextURL = ContextURLParser.parse(
         URI.create("http://host/service/$metadata#Customers(1)/Addresses"));
 
@@ -186,7 +188,7 @@ public class ContextURLParserTest {
   }
 
   @Test
-  public void CollectionOfComplexOrPrimitiveTypes() {
+  void CollectionOfComplexOrPrimitiveTypes() {
     final ContextURL contextURL = ContextURLParser.parse(
         URI.create("http://host/service/$metadata#Collection(Edm.String)"));
 
@@ -198,7 +200,7 @@ public class ContextURLParserTest {
   }
 
   @Test
-  public void complexOrPrimitiveType() {
+  void complexOrPrimitiveType() {
     ContextURL contextURL = ContextURLParser.parse(URI.create("http://host/service/$metadata#Edm.String"));
 
     assertEquals("Edm.String", contextURL.getEntitySetOrSingletonOrType());
@@ -217,7 +219,7 @@ public class ContextURLParserTest {
   }
 
   @Test
-  public void reference() {
+  void reference() {
     ContextURL contextURL = ContextURLParser.parse(URI.create("http://host/service/$metadata#Customers/$ref"));
     assertTrue(contextURL.isReference());
     assertNull(contextURL.getSelectList());
@@ -227,7 +229,7 @@ public class ContextURLParserTest {
   }
 
   @Test
-  public void delta() {
+  void delta() {
     ContextURL contextURL = ContextURLParser.parse(URI.create("http://host/service/$metadata#Customers/$delta"));
     assertTrue(contextURL.isDelta());
     assertNull(contextURL.getSelectList());

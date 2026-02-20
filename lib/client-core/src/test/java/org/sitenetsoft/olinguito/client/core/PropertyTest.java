@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core;
 
@@ -34,7 +36,7 @@ import org.sitenetsoft.olinguito.client.api.serialization.ODataSerializerExcepti
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.junit.jupiter.api.Test;
 
-public class PropertyTest extends AbstractTest {
+class PropertyTest extends AbstractTest {
 
   private void _enum(final ContentType contentType) throws ODataDeserializerException, ODataSerializerException {
     final InputStream input = getClass().getResourceAsStream("Products_5_SkinColor." + getSuffix(contentType));
@@ -55,12 +57,12 @@ public class PropertyTest extends AbstractTest {
   }
 
   @Test
-  public void xmlEnum() throws Exception {
+  void xmlEnum() throws Exception {
     _enum(ContentType.APPLICATION_XML);
   }
 
   @Test
-  public void jsonEnum() throws Exception {
+  void jsonEnum() throws Exception {
     _enum(ContentType.JSON);
   }
 
@@ -87,12 +89,12 @@ public class PropertyTest extends AbstractTest {
   }
 
   @Test
-  public void xmlComplex() throws Exception {
+  void xmlComplex() throws Exception {
     complex(ContentType.APPLICATION_XML);
   }
 
   @Test
-  public void jsonComplex() throws Exception {
+  void jsonComplex() throws Exception {
     complex(ContentType.JSON);
   }
 
@@ -121,12 +123,12 @@ public class PropertyTest extends AbstractTest {
   }
 
   @Test
-  public void xmlCollection() throws Exception {
+  void xmlCollection() throws Exception {
     collection(ContentType.APPLICATION_XML);
   }
 
   @Test
-  public void jsonCollection() throws Exception {
+  void jsonCollection() throws Exception {
     collection(ContentType.JSON);
   }
 }

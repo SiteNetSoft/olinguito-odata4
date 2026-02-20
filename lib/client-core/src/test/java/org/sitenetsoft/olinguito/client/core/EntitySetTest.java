@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core;
 
@@ -36,7 +38,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.junit.jupiter.api.Test;
 
-public class EntitySetTest extends AbstractTest {
+class EntitySetTest extends AbstractTest {
 
 private EdmEnabledODataClient getEdmEnabledClient1() {
     return new EdmEnabledODataClientImpl(null, null, null) {
@@ -75,7 +77,7 @@ private EdmEnabledODataClient getEdmEnabledClient1() {
   }
 
   @Test
-  public void testOperations() throws Exception {
+  void testOperations() throws Exception {
     final InputStream input = getClass().
         getResourceAsStream("CustomersWithOperations." + getSuffix(ContentType.APPLICATION_JSON));
     final ClientEntitySet entitySet = client.getBinder().getODataEntitySet(
@@ -90,12 +92,12 @@ private EdmEnabledODataClient getEdmEnabledClient1() {
   }
 
   @Test
-  public void fromAtom() throws Exception {
+  void fromAtom() throws Exception {
     read(ContentType.APPLICATION_ATOM_XML);
   }
 
   @Test
-  public void fromJSON() throws Exception {
+  void fromJSON() throws Exception {
     read(ContentType.JSON);
   }
 
@@ -117,17 +119,17 @@ private EdmEnabledODataClient getEdmEnabledClient1() {
   }
 
   @Test
-  public void atomRef() throws Exception {
+  void atomRef() throws Exception {
     ref(ContentType.APPLICATION_ATOM_XML);
   }
 
   @Test
-  public void jsonRef() throws Exception {
+  void jsonRef() throws Exception {
     ref(ContentType.JSON);
   }
   
   @Test
-  public void testContainmentNav() throws Exception {
+  void testContainmentNav() throws Exception {
     final InputStream input = getClass().getResourceAsStream("containmentNav1." + 
 	getSuffix(ContentType.JSON_FULL_METADATA));
     final ClientEntitySet entity = getEdmEnabledClient1().getBinder().
@@ -141,7 +143,7 @@ private EdmEnabledODataClient getEdmEnabledClient1() {
   }
   
   @Test
-  public void testClientEntitySet() throws Exception {
+  void testClientEntitySet() throws Exception {
     final EdmEnabledODataClientImpl client = new EdmEnabledODataClientImpl(null, 
         getEdmEnabledClient1().getCachedEdm(), null);
     assertNotNull(client);
@@ -153,7 +155,7 @@ private EdmEnabledODataClient getEdmEnabledClient1() {
   }
   
   @Test
-  public void testContainmentNavOnSingleton() throws Exception {
+  void testContainmentNavOnSingleton() throws Exception {
     final InputStream input = getClass().getResourceAsStream("containmentNav4." + 
   getSuffix(ContentType.JSON_FULL_METADATA));
     final ClientEntitySet entity = getEdmEnabledClient1().getBinder().

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.netty.server.core;
 
@@ -26,12 +28,12 @@ import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
 import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
 import org.junit.jupiter.api.Test;
 
-public class ODataNettyImplTest {
+class ODataNettyImplTest {
 
   private final ODataNetty odata = ODataNetty.newInstance();
 
   @Test
-  public void serializerSupportedFormats() throws SerializerException {
+  void serializerSupportedFormats() throws SerializerException {
     assertNotNull(odata.createSerializer(ContentType.JSON_NO_METADATA));
     assertNotNull(odata.createSerializer(ContentType.JSON));
     assertNotNull(odata.createSerializer(ContentType.APPLICATION_JSON));
@@ -40,7 +42,7 @@ public class ODataNettyImplTest {
   }
 
   @Test
-  public void deserializerSupportedFormats() throws DeserializerException {
+  void deserializerSupportedFormats() throws DeserializerException {
     assertNotNull(odata.createDeserializer(ContentType.JSON_NO_METADATA));
     assertNotNull(odata.createDeserializer(ContentType.JSON));
     assertNotNull(odata.createDeserializer(ContentType.JSON_FULL_METADATA));
@@ -48,27 +50,27 @@ public class ODataNettyImplTest {
   }
 
   @Test
-  public void serializerFixedFormat() throws DeserializerException {
+  void serializerFixedFormat() throws DeserializerException {
     assertNotNull(odata.createFixedFormatSerializer());
   }
   
   @Test
-  public void deserializerFixedFormat() throws DeserializerException {
+  void deserializerFixedFormat() throws DeserializerException {
     assertNotNull(odata.createFixedFormatDeserializer());
   }
   
   @Test
-  public void testCreateETagHelper() {
+  void testCreateETagHelper() {
     assertNotNull(odata.createETagHelper());
   }
   
   @Test
-  public void testCreateUriHelper() {
+  void testCreateUriHelper() {
     assertNotNull(odata.createUriHelper());
   }
   
   @Test
-  public void testCreateDebugResponseHelper() {
+  void testCreateDebugResponseHelper() {
     assertNotNull(odata.createDebugResponseHelper("json"));
   }
 }

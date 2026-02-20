@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.api.format;
 
@@ -27,10 +29,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class ContentTypeTest {
+class ContentTypeTest {
 
   @Test
-  public void create() {
+  void create() {
     assertEquals("a/b", ContentType.create("a/b").toContentTypeString());
     assertEquals(ContentType.create("a/b;c=d;x=y"), ContentType.create("a/b;x=y;c=d"));
     assertEquals(ContentType.create("a/b;c=d;x=y"), ContentType.create("a/b; x=y; c=d"));
@@ -38,7 +40,7 @@ public class ContentTypeTest {
   }
 
   @Test
-  public void createFail() {
+  void createFail() {
     createWrong("a");
     createWrong(" a / b ");
     createWrong("a/b;");
@@ -59,7 +61,7 @@ public class ContentTypeTest {
   }
 
   @Test
-  public void createWithParameter() {
+  void createWithParameter() {
     assertEquals(ContentType.create("a/b;c=d"), ContentType.create(ContentType.create("a/b"), "c", "d"));
     assertEquals(ContentType.create("a/b;e=f;c=d"), ContentType.create(
         ContentType.create(ContentType.create("a/b"), "c", "d"), "e", "f"));
@@ -68,7 +70,7 @@ public class ContentTypeTest {
   }
 
   @Test
-  public void createAndModify() {
+  void createAndModify() {
     ContentType ct1 = ContentType.create("a/b");
     assertEquals(ContentType.create("a/b;c=d"), ContentType.create(ct1, "c", "d"));
 
@@ -80,7 +82,7 @@ public class ContentTypeTest {
   }
 
   @Test
-  public void parse() {
+  void parse() {
     assertEquals(ContentType.APPLICATION_OCTET_STREAM, ContentType.parse("application/octet-stream"));
 
     assertNull(ContentType.parse("a"));
@@ -90,7 +92,7 @@ public class ContentTypeTest {
   }
 
   @Test
-  public void charsetUtf8() {
+  void charsetUtf8() {
     ContentType ct1 = ContentType.create("a/b;charset=utf8");
     ContentType ct2 = ContentType.create("a/b;charset=utf-8");
 
@@ -105,7 +107,7 @@ public class ContentTypeTest {
   }
 
   @Test
-  public void toContentTypeString() {
+  void toContentTypeString() {
     assertEquals("application/json;a=b;c=d",
         ContentType.create(ContentType.create(ContentType.APPLICATION_JSON, "a", "b"), "c", "d")
             .toContentTypeString());
@@ -121,7 +123,7 @@ public class ContentTypeTest {
   }
 
   @Test
-  public void firstFromValidMultiAcceptHeader() {
+  void firstFromValidMultiAcceptHeader() {
 
     ContentType contentType = ContentType.fromAcceptHeader("application/xml ; q=0.9, application/xhtml+xml,*/*;q=0.8 ");
 
@@ -130,7 +132,7 @@ public class ContentTypeTest {
   }
 
   @Test
-  public void missingMimeTypefromAcceptHeaderDefaultsToJson() {
+  void missingMimeTypefromAcceptHeaderDefaultsToJson() {
 
     ContentType contentType = ContentType.fromAcceptHeader(";q=0.9");
 
@@ -139,7 +141,7 @@ public class ContentTypeTest {
   }
 
   @Test
-  public void fromValidSingleAcceptHeader() {
+  void fromValidSingleAcceptHeader() {
 
     ContentType contentType = ContentType.fromAcceptHeader("application/xml");
 
@@ -148,7 +150,7 @@ public class ContentTypeTest {
   }
 
   @Test
-  public void fromAcceptHeaderDefaultsToJsonIfNull() {
+  void fromAcceptHeaderDefaultsToJsonIfNull() {
 
     ContentType contentType = ContentType.fromAcceptHeader(null);
 
@@ -157,7 +159,7 @@ public class ContentTypeTest {
   }
 
   @Test
-  public void fromAcceptHeaderDefaultsToJsonIfEmpty() {
+  void fromAcceptHeaderDefaultsToJsonIfEmpty() {
 
     ContentType contentType = ContentType.fromAcceptHeader("");
 
@@ -166,7 +168,7 @@ public class ContentTypeTest {
   }
 
   @Test
-  public void fromAcceptHeaderDefaultsToJsonIfBlank() {
+  void fromAcceptHeaderDefaultsToJsonIfBlank() {
 
     ContentType contentType = ContentType.fromAcceptHeader(" ");
 
@@ -175,7 +177,7 @@ public class ContentTypeTest {
   }
 
   @Test
-  public void fromAcceptHeaderDefaultsToJsonIfInvalid() {
+  void fromAcceptHeaderDefaultsToJsonIfInvalid() {
 
     ContentType contentType = ContentType.fromAcceptHeader("invalid");
 
@@ -184,7 +186,7 @@ public class ContentTypeTest {
   }
 
   @Test
-  public void fromAcceptHeaderDefaultsToJsonIfFirstValueBlank() {
+  void fromAcceptHeaderDefaultsToJsonIfFirstValueBlank() {
 
     ContentType contentType = ContentType.fromAcceptHeader("  ,text/plain ");
 

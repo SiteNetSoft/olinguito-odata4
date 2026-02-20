@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Improved test assertions
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
@@ -28,24 +29,24 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.junit.jupiter.api.Test;
 
-public class EdmBooleanTest extends PrimitiveTypeBaseTest {
+class EdmBooleanTest extends PrimitiveTypeBaseTest {
 
   private final EdmPrimitiveType instance = EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Boolean);
 
   @Test
-  public void toUriLiteral() throws Exception {
+  void toUriLiteral() throws Exception {
     assertEquals("true", instance.toUriLiteral("true"));
     assertEquals("false", instance.toUriLiteral("false"));
   }
 
   @Test
-  public void fromUriLiteral() throws Exception {
+  void fromUriLiteral() throws Exception {
     assertEquals("true", instance.fromUriLiteral("true"));
     assertEquals("false", instance.fromUriLiteral("false"));
   }
 
   @Test
-  public void valueToString() throws Exception {
+  void valueToString() throws Exception {
     assertEquals("true", instance.valueToString(true, null, null, null, null, null));
     assertEquals("false", instance.valueToString(Boolean.FALSE, null, null, null, null, null));
     
@@ -53,7 +54,7 @@ public class EdmBooleanTest extends PrimitiveTypeBaseTest {
   }
   
   @Test
-  public void valueOfString() throws Exception {
+  void valueOfString() throws Exception {
     assertTrue(instance.valueOfString("true", null, null, null, null, null, Boolean.class));
     assertFalse(instance.valueOfString("false", null, null, null, null, null, Boolean.class));
 

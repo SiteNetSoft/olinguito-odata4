@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Improved test assertions; Replaced Arrays.asList with List.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.uri.queryoption.expression;
 
@@ -53,13 +54,13 @@ import org.sitenetsoft.olinguito.server.tecsvc.provider.EnumTypeProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.FunctionProvider;
 import org.junit.jupiter.api.Test;
 
-public class ExpressionTest {
+class ExpressionTest {
   private static final OData odata = OData.newInstance();
   private static final Edm edm = odata.createServiceMetadata(
       new EdmTechProvider(), Collections.emptyList()).getEdm();
 
   @Test
-  public void supportedOperators() {
+  void supportedOperators() {
     assertEquals(UnaryOperatorKind.MINUS, UnaryOperatorKind.get("-"));
     assertNull(UnaryOperatorKind.get("XXX"));
 
@@ -71,7 +72,7 @@ public class ExpressionTest {
   }
 
   @Test
-  public void aliasExpression() throws Exception {
+  void aliasExpression() throws Exception {
     AliasImpl expression = new AliasImpl("@Test", null);
 
     assertEquals("@Test", expression.getParameterName());
@@ -81,7 +82,7 @@ public class ExpressionTest {
   }
 
   @Test
-  public void binaryExpression() throws Exception {
+  void binaryExpression() throws Exception {
     Expression expressionLeft = new LiteralImpl("2", odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Byte));
     Expression expressionRight = new LiteralImpl("-1", odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.SByte));
 
@@ -98,7 +99,7 @@ public class ExpressionTest {
   }
 
   @Test
-  public void enumerationExpression() throws Exception {
+  void enumerationExpression() throws Exception {
     EdmEnumType type = edm.getEnumType(EnumTypeProvider.nameENString);
     assertNotNull(type);
     EnumerationImpl expression = new EnumerationImpl(type, List.of("String1", "String2"));
@@ -109,14 +110,14 @@ public class ExpressionTest {
   }
 
   @Test
-  public void lambdaRefExpression() throws Exception {
+  void lambdaRefExpression() throws Exception {
     LambdaRefImpl expression = new LambdaRefImpl("A");
     assertEquals("A", expression.getVariableName());
     assertEquals("<A>", expression.accept(new FilterTreeToText()));
   }
 
   @Test
-  public void literalExpression() throws Exception {
+  void literalExpression() throws Exception {
     LiteralImpl expression = new LiteralImpl("'A'", odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.String));
     assertEquals("'A'", expression.getText());
     assertEquals("<'A'>", expression.accept(new FilterTreeToText()));
@@ -124,7 +125,7 @@ public class ExpressionTest {
   }
 
   @Test
-  public void memberExpression() throws Exception {
+  void memberExpression() throws Exception {
     EdmEntityType entityType = edm.getEntityType(EntityTypeProvider.nameETKeyNav);
 
     // UriResourceImpl
@@ -194,7 +195,7 @@ public class ExpressionTest {
   }
 
   @Test
-  public void methodCallExpression() throws Exception {
+  void methodCallExpression() throws Exception {
     Expression p0 = new LiteralImpl("'A'", odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.String));
     Expression p1 = new LiteralImpl("'B'", odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.String));
     MethodImpl expression = new MethodImpl(MethodKind.CONCAT, List.of(p0, p1));
@@ -208,7 +209,7 @@ public class ExpressionTest {
   }
 
   @Test
-  public void typeLiteralExpression() throws Exception {
+  void typeLiteralExpression() throws Exception {
     EdmEntityType entityBaseType = edm.getEntityType(EntityTypeProvider.nameETBaseTwoKeyNav);
     TypeLiteralImpl expression = new TypeLiteralImpl(entityBaseType);
 
@@ -217,7 +218,7 @@ public class ExpressionTest {
   }
 
   @Test
-  public void unaryExpression() throws Exception {
+  void unaryExpression() throws Exception {
     Expression operand = new LiteralImpl("1.2", odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Decimal));
     UnaryImpl expression = new UnaryImpl(UnaryOperatorKind.MINUS, operand,
         odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Decimal));

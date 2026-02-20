@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
+ * Copyright 2026 SiteNetSoft - Cached compiled regex pattern for split()
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -102,6 +103,7 @@ import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
  */
 public class MetadataParser {
   private boolean parseAnnotations = false;
+  private static final java.util.regex.Pattern WHITESPACE = java.util.regex.Pattern.compile("\\s+");
   private static final String XML_LINK_NS = "http://www.w3.org/1999/xlink";
   private ReferenceResolver referenceResolver = new DefaultReferenceResolver();
   private boolean useLocalCoreVocabularies = true;
@@ -585,7 +587,7 @@ public class MetadataParser {
       term.setDefaultValue(attr(element, "DefaultValue"));
     }
     if (attr(element, "AppliesTo") != null) {
-      String[] appliesTo = attr(element, "AppliesTo").split("\\s+");
+      String[] appliesTo = WHITESPACE.split(attr(element, "AppliesTo"));
       term.setAppliesTo(List.of(appliesTo));
     }
     term.setNullable(Boolean.parseBoolean(attr(element, "Nullable")));

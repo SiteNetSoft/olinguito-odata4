@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
@@ -26,24 +28,24 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmException;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.junit.jupiter.api.Test;
 
-public class TargetQualifierMapKeyTest {
+class TargetQualifierMapKeyTest {
 
   private static final FullQualifiedName TARGET_NAME_1 = new FullQualifiedName("namespace", "name");
 
   @Test
-  public void invalidParametersTest() {
+  void invalidParametersTest() {
     createAndCheckForEdmException(null, null);
     createAndCheckForEdmException(null, "qualifier");
   }
 
   @Test
-  public void validParametersTest() {
+  void validParametersTest() {
     new TargetQualifierMapKey(TARGET_NAME_1, null);
     new TargetQualifierMapKey(TARGET_NAME_1, "qualifier");
   }
 
   @Test
-  public void testEqualsMethod() {
+  void testEqualsMethod() {
     TargetQualifierMapKey key1 = new TargetQualifierMapKey(TARGET_NAME_1, "qualifier");
     TargetQualifierMapKey key2 = new TargetQualifierMapKey(new FullQualifiedName("namespace", "name"), "qualifier");
     assertEquals(key1, key1);
@@ -70,7 +72,7 @@ public class TargetQualifierMapKeyTest {
   }
 
   @Test
-  public void testHashMethod() {
+  void testHashMethod() {
     TargetQualifierMapKey key1 = new TargetQualifierMapKey(TARGET_NAME_1, "qualifier");
     TargetQualifierMapKey key2 = new TargetQualifierMapKey(new FullQualifiedName("namespace", "name"), "qualifier");
     assertEquals(key1.hashCode(), key1.hashCode());

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -28,10 +30,10 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlReferentialConstra
 import org.sitenetsoft.olinguito.commons.core.edm.EdmReferentialConstraintImpl;
 import org.junit.jupiter.api.Test;
 
-public class EdmReferentialConstraintTest {
+class EdmReferentialConstraintTest {
 
   @Test
-  public void initialConstraint() {
+  void initialConstraint() {
     CsdlReferentialConstraint constraint = new CsdlReferentialConstraint();
     EdmReferentialConstraint edmConstraint = new EdmReferentialConstraintImpl(mock(Edm.class), constraint);
 
@@ -40,7 +42,7 @@ public class EdmReferentialConstraintTest {
   }
 
   @Test
-  public void basicConstraint() {
+  void basicConstraint() {
     CsdlReferentialConstraint constraint = new CsdlReferentialConstraint();
     constraint.setProperty("PropertyName");
     constraint.setReferencedProperty("referencedProperty");

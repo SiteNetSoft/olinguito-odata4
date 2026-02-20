@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.core;
 
@@ -29,7 +31,7 @@ import org.junit.jupiter.api.Test;
  * Tests for percent-encoding.
  *
  */
-public class EncoderTest {
+class EncoderTest {
 
   private final static String RFC3986_UNRESERVED = "-._~"; // + ALPHA + DIGIT
   private final static String RFC3986_GEN_DELIMS = ":/?#[]@";
@@ -37,51 +39,51 @@ public class EncoderTest {
   private final static String RFC3986_RESERVED = RFC3986_GEN_DELIMS + RFC3986_SUB_DELIMS;
 
   @Test
-  public void asciiCharacters() {
+  void asciiCharacters() {
     final String s = "azAZ019";
     assertEquals(s, Encoder.encode(s));
     assertEquals(s, Encoder.encode(s));
   }
 
   @Test
-  public void asciiControl() {
+  void asciiControl() {
     assertEquals("%08%09%0A%0D", Encoder.encode("\b\t\n\r"));
   }
 
   @Test
-  public void unsafe() {
+  void unsafe() {
     assertEquals("%3C%3E%25%26", Encoder.encode("<>%&"));
     assertEquals("%22%5C%60%7B%7D%7C", Encoder.encode("\"\\`{}|"));
   }
 
   @Test
-  public void rfc3986Unreserved() {
+  void rfc3986Unreserved() {
     assertEquals(RFC3986_UNRESERVED, Encoder.encode(RFC3986_UNRESERVED));
   }
 
   @Test
-  public void rfc3986GenDelims() {
+  void rfc3986GenDelims() {
     assertEquals("%3A%2F%3F%23%5B%5D%40", Encoder.encode(RFC3986_GEN_DELIMS));
   }
 
   @Test
-  public void rfc3986SubDelims() {
+  void rfc3986SubDelims() {
     assertEquals("%21%24%26'%28%29%2A%2B%2C%3B%3D", Encoder.encode(RFC3986_SUB_DELIMS));
   }
 
   @Test
-  public void rfc3986Reserved() {
+  void rfc3986Reserved() {
     assertEquals("%3A%2F%3F%23%5B%5D%40%21%24%26'%28%29%2A%2B%2C%3B%3D", Encoder.encode(RFC3986_RESERVED));
   }
 
   @Test
-  public void unicodeCharacters() {
+  void unicodeCharacters() {
     assertEquals("%E2%82%AC", Encoder.encode("€"));
     assertEquals("%EF%B7%BC", Encoder.encode("\uFDFC")); // RIAL SIGN
   }
 
   @Test
-  public void charactersOutsideBmp() {
+  void charactersOutsideBmp() {
     // Unicode characters outside the Basic Multilingual Plane are stored
     // in a Java String in two surrogate characters.
     final String s = String.valueOf(Character.toChars(0x1F603));
@@ -89,7 +91,7 @@ public class EncoderTest {
   }
 
   @Test
-  public void uriDecoding() throws URISyntaxException {
+  void uriDecoding() throws URISyntaxException {
     final String decodedValue = RFC3986_UNRESERVED + RFC3986_RESERVED + "0..1..a..z..A..Z..@"
         + "\u2323\uFDFC" + String.valueOf(Character.toChars(0x1F603));
 

@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -39,7 +40,7 @@ import org.sitenetsoft.olinguito.server.tecsvc.provider.PropertyProvider;
 import org.junit.jupiter.api.Test;
 
 /** Tests of the URI parser as a whole - please put more specific tests elsewhere. */
-public class UriParserTest {
+class UriParserTest {
 
   private static final Edm edm = OData.newInstance().createServiceMetadata(
       new EdmTechProvider(), Collections.emptyList()).getEdm();
@@ -50,7 +51,7 @@ public class UriParserTest {
 
 
   @Test
-  public void misc() throws Exception {
+  void misc() throws Exception {
     testUri.run("")
         .isKind(UriInfoKind.service);
     testUri.run("/")
@@ -130,7 +131,7 @@ public class UriParserTest {
   }
 
   @Test
-  public void enumAndTypeDefAsKey() throws Exception {
+  void enumAndTypeDefAsKey() throws Exception {
     testRes
         .run("ESMixEnumDefCollComp(PropertyEnumString=olingo.odata.test1.ENString'String1',PropertyDefString='abc')")
         .isEntitySet("ESMixEnumDefCollComp")
@@ -148,7 +149,7 @@ public class UriParserTest {
   }
 
   @Test
-  public void crossjoin() throws Exception {
+  void crossjoin() throws Exception {
     testUri.run("$crossjoin(ESKeyNav)")
         .isKind(UriInfoKind.crossjoin)
         .isCrossJoinEntityList(List.of("ESKeyNav"));
@@ -159,7 +160,7 @@ public class UriParserTest {
   }
 
   @Test
-  public void crossjoinFilter() throws Exception {
+  void crossjoinFilter() throws Exception {
     testUri.run("$crossjoin(ESTwoPrim,ESMixPrimCollComp)",
         "$filter=ESTwoPrim/PropertyString eq ESMixPrimCollComp/PropertyComp/PropertyString")
         .goFilter()
@@ -168,7 +169,7 @@ public class UriParserTest {
   }
 
   @Test
-  public void crossjoinExpand() throws Exception {
+  void crossjoinExpand() throws Exception {
     testUri.run("$crossjoin(ESTwoPrim,ESAllPrim)",
         "$expand=ESTwoPrim")
         .goExpand()
@@ -189,7 +190,7 @@ public class UriParserTest {
   }
 
   @Test
-  public void crossjoinError() throws Exception {
+  void crossjoinError() throws Exception {
     testUri.runEx("$crossjoin").isExSyntax(UriParserSyntaxException.MessageKeys.SYNTAX);
     testUri.runEx("$crossjoin/error").isExSyntax(UriParserSyntaxException.MessageKeys.MUST_BE_LAST_SEGMENT);
     testUri.runEx("$crossjoin()").isExSyntax(UriParserSyntaxException.MessageKeys.SYNTAX);
@@ -200,7 +201,7 @@ public class UriParserTest {
   }
 
   @Test
-  public void entityId() throws Exception {
+  void entityId() throws Exception {
     // simple entity set
     testUri.run("$entity", "$id=ESAllPrim(1)").isKind(UriInfoKind.entityId)
         .isKind(UriInfoKind.entityId)
@@ -339,13 +340,13 @@ public class UriParserTest {
   }
 
   @Test
-  public void entityIdFailOnValidation() throws Exception {
+  void entityIdFailOnValidation() throws Exception {
     testUri.runEx("$entity/olingo.odata.test1.ETTwoPrim", "$filter=PropertyInt16 eq 123&$id=ESAllPrim(1)")
         .isExValidation(UriValidationException.MessageKeys.SYSTEM_QUERY_OPTION_NOT_ALLOWED);
   }
 
   @Test
-  public void resourcePathWithApostrophe() throws Exception {
+  void resourcePathWithApostrophe() throws Exception {
     testUri.runEx("ESAllPrim'").isExSyntax(UriParserSyntaxException.MessageKeys.SYNTAX);
     testUri.runEx("ESAllPrim'InvalidStuff").isExSyntax(UriParserSyntaxException.MessageKeys.SYNTAX);
     testFilter.runOnETKeyNavEx("PropertyInt16' eq 0").isExSemantic(MessageKeys.TYPES_NOT_COMPATIBLE);
@@ -357,7 +358,7 @@ public class UriParserTest {
   }
 
   @Test
-  public void metaData() throws Exception {
+  void metaData() throws Exception {
     // Parsing the fragment may be used if a uri has to be parsed on the consumer side.
     // On the producer side this feature is currently not supported, so the context fragment
     // part is only available as text.
@@ -519,7 +520,7 @@ public class UriParserTest {
   }
 
   @Test
-  public void top() throws Exception {
+  void top() throws Exception {
     testUri.run("ESKeyNav", "$top=1")
         .isKind(UriInfoKind.resource)
         .goPath().isEntitySet("ESKeyNav")
@@ -539,7 +540,7 @@ public class UriParserTest {
   }
 
   @Test
-  public void format() throws Exception {
+  void format() throws Exception {
     testUri.run("ESKeyNav(1)", "$format=atom")
         .isKind(UriInfoKind.resource)
         .isFormatText("atom");
@@ -571,7 +572,7 @@ public class UriParserTest {
   }
 
   @Test
-  public void count() throws Exception {
+  void count() throws Exception {
     testUri.run("ESAllPrim", "$count=true")
         .isKind(UriInfoKind.resource)
         .isInlineCount(true);
@@ -585,7 +586,7 @@ public class UriParserTest {
   }
 
   @Test
-  public void skip() throws Exception {
+  void skip() throws Exception {
     testUri.run("ESAllPrim", "$skip=3")
         .isKind(UriInfoKind.resource)
         .isSkip(3);
@@ -602,7 +603,7 @@ public class UriParserTest {
   }
 
   @Test
-  public void skiptoken() throws Exception {
+  void skiptoken() throws Exception {
     testUri.run("ESAllPrim", "$skiptoken=foo")
         .isKind(UriInfoKind.resource)
         .isSkipTokenText("foo");
@@ -612,13 +613,13 @@ public class UriParserTest {
   }
 
   @Test
-  public void notExistingSystemQueryOption() throws Exception {
+  void notExistingSystemQueryOption() throws Exception {
     testUri.runEx("ESAllPrim", "$wrong=error")
         .isExSyntax(UriParserSyntaxException.MessageKeys.UNKNOWN_SYSTEM_QUERY_OPTION);
   }
 
   @Test
-  public void errors() {
+  void errors() {
     testUri.runEx("FICRTString(wrong1='ABC')/olingo.odata.test1.BFCStringRTESTwoKeyNav()")
         .isExSemantic(MessageKeys.FUNCTION_NOT_FOUND);
     testUri.runEx("FICRTString(wrong1='ABC',wrong2=1)/olingo.odata.test1.BFCStringRTESTwoKeyNav()")
@@ -679,18 +680,18 @@ public class UriParserTest {
   }
 
   @Test
-  public void doublePercentDecoding() throws Exception {
+  void doublePercentDecoding() throws Exception {
     testUri.runEx("ESAllPrim%252832767%29").isExSyntax(UriParserSyntaxException.MessageKeys.SYNTAX);
   }
 
   @Test
-  public void multipleKeysInResourcePath() throws Exception {
+  void multipleKeysInResourcePath() throws Exception {
     // See OLINGO-730
     testUri.runEx("ESAllPrim(32767)(1)(2)").isExSyntax(UriParserSyntaxException.MessageKeys.SYNTAX);
   }
 
   @Test
-  public void startElementsInsteadOfNavigationProperties() {
+  void startElementsInsteadOfNavigationProperties() {
     testUri.runEx("ESAllPrim(0)/ESAllPrim(0)/ESAllPrim(0)").isExSemantic(MessageKeys.PROPERTY_NOT_IN_TYPE);
     testUri.runEx("ESAllPrim(0)/SINav").isExSemantic(MessageKeys.PROPERTY_NOT_IN_TYPE);
     testUri.runEx("ESAllPrim(0)/FICRTString()").isExSemantic(MessageKeys.PROPERTY_NOT_IN_TYPE);
@@ -714,7 +715,7 @@ public class UriParserTest {
   }
 
   @Test
-  public void firstResourcePathWithNamespace() {
+  void firstResourcePathWithNamespace() {
     testUri.runEx("olingo.odata.test1.ESAllPrim").isExSemantic(MessageKeys.NAMESPACE_NOT_ALLOWED_AT_FIRST_ELEMENT);
     testUri.runEx("olingo.odata.test1.ESAllPrim(0)").isExSemantic(MessageKeys.NAMESPACE_NOT_ALLOWED_AT_FIRST_ELEMENT);
     testUri.runEx("olingo.odata.test1.FINRTInt16()").isExSemantic(MessageKeys.NAMESPACE_NOT_ALLOWED_AT_FIRST_ELEMENT);
@@ -723,7 +724,7 @@ public class UriParserTest {
   }
 
   @Test
-  public void alias() throws Exception {
+  void alias() throws Exception {
     testUri.run("ESTwoKeyNav(PropertyInt16=1,PropertyString=@A)", "@A='2'").goPath()
         .isKeyPredicate(0, "PropertyInt16", "1")
         .isKeyPredicateAlias(1, "PropertyString", "@A")
@@ -755,7 +756,7 @@ public class UriParserTest {
   }
 
   @Test
-  public void functionImportParameterAlias() throws Exception {
+  void functionImportParameterAlias() throws Exception {
     testUri.run("FICRTCollESTwoKeyNavParam(ParameterInt16=@parameterAlias)", "@parameterAlias=1");
     testUri.run("FICRTCollESTwoKeyNavParam(ParameterInt16=@parameterAlias)/$count", "@parameterAlias=1");
     testUri.runEx("FICRTCollESTwoKeyNavParam(ParameterInt16=@invalidAlias)", "@validAlias=1")
@@ -763,7 +764,7 @@ public class UriParserTest {
   }
 
   @Test
-  public void functionsWithComplexParameters() throws Exception {
+  void functionsWithComplexParameters() throws Exception {
     testUri.run("ESTwoKeyNav/olingo.odata.test1.BFCESTwoKeyNavRTStringParam"
         + "(ParameterComp=@p1)", "@p1={\"PropertyInt16\":1,\"PropertyString\":\"1\"}")
         .goPath()
@@ -876,7 +877,7 @@ public class UriParserTest {
   }
 
   @Test
-  public void allowedSystemQueryOptionsOnAll() throws Exception {
+  void allowedSystemQueryOptionsOnAll() throws Exception {
     testUri.run("$all", "$count=true&$format=json&$search=abc&$skip=5&$top=5&$skiptoken=abc")
         .isKind(UriInfoKind.all)
         .isInlineCount(true)
@@ -888,7 +889,7 @@ public class UriParserTest {
   }
 
   @Test
-  public void allowedSystemQueryOptionsOnCrossjoin() throws Exception {
+  void allowedSystemQueryOptionsOnCrossjoin() throws Exception {
     testUri.run("$crossjoin(ESAllPrim,ESTwoPrim)", "$count=true&$expand=ESAllPrim"
         + "&$filter=ESAllPrim/PropertyInt16 eq 2&$format=json&$orderby=ESAllPrim/PropertyInt16"
         + "&$search=abc&$skip=5&$top=5&$skiptoken=abc")
@@ -907,7 +908,7 @@ public class UriParserTest {
   }
 
   @Test
-  public void trimQueryOptionsValue() throws Exception {
+  void trimQueryOptionsValue() throws Exception {
     // OLINGO-846 trim query option value
     testUri.run("ESAllPrim", "$filter= PropertyInt16 eq 12 ")
         .isKind(UriInfoKind.resource).goPath()
@@ -921,7 +922,7 @@ public class UriParserTest {
   }
 
   @Test
-  public void customQueryOption() throws Exception {
+  void customQueryOption() throws Exception {
     testUri.run("ESTwoKeyNav", "custom")
         .isCustomParameter(0, "custom", "");
     testUri.run("ESTwoKeyNav", "custom=ABC")
@@ -929,7 +930,7 @@ public class UriParserTest {
   }
   
   @Test
-  public void testValidationOnFunctions() throws Exception {
+  void testValidationOnFunctions() throws Exception {
     testUri.runEx("FICRTETTwoKeyNavParam(ParameterInt16='32')")
     .isExValidation(UriValidationException.MessageKeys.INVALID_VALUE_FOR_PROPERTY);
   

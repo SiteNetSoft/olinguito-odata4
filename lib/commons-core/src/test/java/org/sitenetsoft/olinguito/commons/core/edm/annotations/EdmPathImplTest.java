@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.core.edm.annotations;
 
@@ -32,9 +34,9 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlPath;
 import org.sitenetsoft.olinguito.commons.core.edm.annotation.AbstractEdmExpression;
 import org.junit.jupiter.api.Test;
 
-public class EdmPathImplTest extends AbstractAnnotationTest{
+class EdmPathImplTest extends AbstractAnnotationTest{
   @Test
-  public void initialPropertyPath() {
+  void initialPropertyPath() {
     EdmExpression path = AbstractEdmExpression.getExpression(mock(Edm.class), new CsdlPath());
 
     EdmDynamicExpression dynExp = assertDynamic(path);
@@ -49,7 +51,7 @@ public class EdmPathImplTest extends AbstractAnnotationTest{
   }
 
   @Test
-  public void annotationPathWithValue() {
+  void annotationPathWithValue() {
     EdmExpression exp =
         AbstractEdmExpression.getExpression(mock(Edm.class), new CsdlPath().setValue("value"));
     assertEquals("value", exp.asDynamic().asPath().getValue());

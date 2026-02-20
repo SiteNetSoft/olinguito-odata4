@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -57,10 +58,10 @@ import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.junit.jupiter.api.Test;
 
-public class AsyncRequestWrapperTest {
+class AsyncRequestWrapperTest {
 
   @Test
-  public void testBatchReq() throws URISyntaxException {
+  void testBatchReq() throws URISyntaxException {
 
     ODataClient client = ODataClientFactory.getClient();
     URI uri = new URI("localhost:8080");
@@ -78,7 +79,7 @@ public class AsyncRequestWrapperTest {
   }
 
   @Test
-  public void testReq() throws URISyntaxException {
+  void testReq() throws URISyntaxException {
 
     ODataClient client = ODataClientFactory.getClient();
     URI uri = new URI("localhost:8080");
@@ -126,7 +127,7 @@ public class AsyncRequestWrapperTest {
   }
 
   @Test
-  public void testTooBigRetryAfter() throws IOException, URISyntaxException {
+  void testTooBigRetryAfter() throws IOException, URISyntaxException {
 
     AsyncRequestWrapperImpl<ODataResponse> req = createAsyncRequestWrapperImplWithRetryAfter(Integer.MAX_VALUE);
     AsyncResponseWrapper<ODataResponse> wrappedResponse = req.execute();
@@ -136,7 +137,7 @@ public class AsyncRequestWrapperTest {
   }
 
   @Test
-  public void testZeroRetryAfter() throws IOException, URISyntaxException {
+  void testZeroRetryAfter() throws IOException, URISyntaxException {
 
     AsyncRequestWrapperImpl<ODataResponse> req = createAsyncRequestWrapperImplWithRetryAfter(0);
     AsyncResponseWrapper<ODataResponse> wrappedResponse = req.execute();
@@ -146,7 +147,7 @@ public class AsyncRequestWrapperTest {
   }
 
   @Test
-  public void testNegativeRetryAfter() throws IOException, URISyntaxException {
+  void testNegativeRetryAfter() throws IOException, URISyntaxException {
 
     AsyncRequestWrapperImpl<ODataResponse> req = createAsyncRequestWrapperImplWithRetryAfter(-1);
     AsyncResponseWrapper<ODataResponse> wrappedResponse = req.execute();
@@ -156,7 +157,7 @@ public class AsyncRequestWrapperTest {
   }
 
   @Test
-  public void testRetryAfter() throws IOException, URISyntaxException {
+  void testRetryAfter() throws IOException, URISyntaxException {
 
     int retryAfter = 7;
     assertNotEquals(retryAfter, AsyncResponseWrapperImpl.DEFAULT_RETRY_AFTER);
@@ -168,7 +169,7 @@ public class AsyncRequestWrapperTest {
   }
 
   @Test
-  public void testWrapper() {
+  void testWrapper() {
 
     Wrapper<String> wrap = new Wrapper<>();
     wrap.setWrapped("test");
@@ -176,7 +177,7 @@ public class AsyncRequestWrapperTest {
   }
 
   @Test
-  public void testException() {
+  void testException() {
 
     AsyncRequestException ex = new AsyncRequestException("Exception");
     assertEquals("Exception", ex.getMessage());
@@ -218,7 +219,7 @@ public class AsyncRequestWrapperTest {
   }
 
   @Test
-  public void testLocationWithInvalidScheme() throws IOException, URISyntaxException {
+  void testLocationWithInvalidScheme() throws IOException, URISyntaxException {
       assertThrows(AsyncRequestException.class, () -> {
           String target = "https://server/path";
           String location = "http://server/path";
@@ -227,7 +228,7 @@ public class AsyncRequestWrapperTest {
   }
 
   @Test
-  public void testLocationWithInvalidHost() throws IOException, URISyntaxException {
+  void testLocationWithInvalidHost() throws IOException, URISyntaxException {
       assertThrows(AsyncRequestException.class, () -> {
           String target = "http://server/path";
           String location = "http://something.else/path";
@@ -236,7 +237,7 @@ public class AsyncRequestWrapperTest {
   }
 
   @Test
-  public void testLocationWithInvalidPort() throws IOException, URISyntaxException {
+  void testLocationWithInvalidPort() throws IOException, URISyntaxException {
       assertThrows(AsyncRequestException.class, () -> {
           String target = "http://server/path";
           String location = "http://server:8080/path";
@@ -245,7 +246,7 @@ public class AsyncRequestWrapperTest {
   }
 
   @Test
-  public void testLocationWithDifferentPaths() throws IOException, URISyntaxException {
+  void testLocationWithDifferentPaths() throws IOException, URISyntaxException {
     String target = "http://server/path";
     String location = "http://server/monitor";
     AsyncRequestWrapperImpl<ODataResponse>.AsyncResponseWrapperImpl wrapper =

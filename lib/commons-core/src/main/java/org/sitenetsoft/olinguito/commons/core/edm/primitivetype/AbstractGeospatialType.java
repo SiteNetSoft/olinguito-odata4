@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Use Locale.ROOT for case conversion
+ * Copyright 2026 SiteNetSoft - Cached compiled regex patterns for split()
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
@@ -49,6 +50,9 @@ public abstract class AbstractGeospatialType<T extends Geospatial> extends Singl
 
   private static final Pattern COLLECTION_PATTERN =
       Pattern.compile("([a-z]+)'SRID=([0-9]+);Collection\\(([a-zA-Z]+)\\((.*)\\)\\)'");
+
+  private static final Pattern POLYGON_SEPARATOR = Pattern.compile("\\),\\(");
+  private static final Pattern MULTI_POLYGON_SEPARATOR = Pattern.compile("\\)\\),\\(\\(");
 
   private final Class<T> reference;
 
@@ -158,7 +162,7 @@ public abstract class AbstractGeospatialType<T extends Geospatial> extends Singl
 
     final List<LineString> lineStrings = new ArrayList<>();
     for (String coo : matcher.group(4).contains("),(")
-        ? matcher.group(4).split("\\),\\(") : new String[] { matcher.group(4) }) {
+        ? POLYGON_SEPARATOR.split(matcher.group(4)) : new String[] { matcher.group(4) }) {
 
       String lineString = coo;
       if (lineString.charAt(0) == '(') {
@@ -178,7 +182,7 @@ public abstract class AbstractGeospatialType<T extends Geospatial> extends Singl
       final Integer maxLength, final Integer precision, final Integer scale, final Boolean isUnicode)
           throws EdmPrimitiveTypeException {
 
-    final String[] first = polygon.split("\\),\\(");
+    final String[] first = POLYGON_SEPARATOR.split(polygon);
 
     final List<LineString> interiorRings = new ArrayList<>();
     for (int i = 0; i < first.length -1; i++) {
@@ -212,7 +216,7 @@ public abstract class AbstractGeospatialType<T extends Geospatial> extends Singl
 
     final List<Polygon> polygons = new ArrayList<>();
     for (String coo : matcher.group(4).contains(")),((") ?
-        matcher.group(4).split("\\)\\),\\(\\(") :
+        MULTI_POLYGON_SEPARATOR.split(matcher.group(4)) :
         new String[] { matcher.group(4) }) {
 
       String polygon = coo;

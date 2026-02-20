@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -43,10 +45,10 @@ import org.sitenetsoft.olinguito.commons.core.edm.EdmReturnTypeImpl;
 import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmPrimitiveTypeFactory;
 import org.junit.jupiter.api.Test;
 
-public class EdmReturnTypeImplTest {
+class EdmReturnTypeImplTest {
 
   @Test
-  public void initialReturnType() {
+  void initialReturnType() {
     EdmReturnType returnType = new EdmReturnTypeImpl(mock(Edm.class), new CsdlReturnType());
 
     assertTrue(returnType.isNullable());
@@ -64,7 +66,7 @@ public class EdmReturnTypeImplTest {
   }
   
   @Test
-  public void primitiveReturnType() {
+  void primitiveReturnType() {
     CsdlReturnType providerType = new CsdlReturnType().setType(new FullQualifiedName("Edm", "String"));
 
     EdmReturnType typeImpl = new EdmReturnTypeImpl(mock(EdmProviderImpl.class), providerType);
@@ -80,7 +82,7 @@ public class EdmReturnTypeImplTest {
   }
 
   @Test
-  public void primitiveCollectionReturnType() {
+  void primitiveCollectionReturnType() {
     CsdlReturnType providerType = new CsdlReturnType().setType(
         new FullQualifiedName("Edm", "String")).setCollection(true);
 
@@ -93,7 +95,7 @@ public class EdmReturnTypeImplTest {
   }
 
   @Test
-  public void invalidPrimitiveType() {
+  void invalidPrimitiveType() {
       assertThrows(EdmException.class, () -> {
           CsdlReturnType providerType = new CsdlReturnType().setType(
           new FullQualifiedName("Edm", "wrong")).setCollection(true);
@@ -103,7 +105,7 @@ public class EdmReturnTypeImplTest {
   }
 
   @Test
-  public void complexType() {
+  void complexType() {
     EdmProviderImpl mock = mock(EdmProviderImpl.class);
     FullQualifiedName baseType = new FullQualifiedName("namespace", "type");
     EdmComplexType edmType = mock(EdmComplexType.class);
@@ -115,7 +117,7 @@ public class EdmReturnTypeImplTest {
   }
 
   @Test
-  public void entityType() {
+  void entityType() {
     EdmProviderImpl mock = mock(EdmProviderImpl.class);
     FullQualifiedName baseType = new FullQualifiedName("namespace", "type");
     EdmEntityType edmType = mock(EdmEntityType.class);
@@ -127,7 +129,7 @@ public class EdmReturnTypeImplTest {
   }
 
   @Test
-  public void enumType() {
+  void enumType() {
     EdmProviderImpl mock = mock(EdmProviderImpl.class);
     FullQualifiedName baseType = new FullQualifiedName("namespace", "type");
     EdmEnumType edmType = mock(EdmEnumType.class);
@@ -139,7 +141,7 @@ public class EdmReturnTypeImplTest {
   }
 
   @Test
-  public void typeDefinition() {
+  void typeDefinition() {
     EdmProviderImpl mock = mock(EdmProviderImpl.class);
     FullQualifiedName baseType = new FullQualifiedName("namespace", "type");
     EdmTypeDefinition edmType = mock(EdmTypeDefinition.class);
@@ -151,7 +153,7 @@ public class EdmReturnTypeImplTest {
   }
 
   @Test
-  public void invalidType() {
+  void invalidType() {
       assertThrows(EdmException.class, () -> {
           CsdlReturnType providerType = new CsdlReturnType().setType(new FullQualifiedName("wrong", "wrong"));
           EdmReturnType typeImpl = new EdmReturnTypeImpl(mock(EdmProviderImpl.class), providerType);

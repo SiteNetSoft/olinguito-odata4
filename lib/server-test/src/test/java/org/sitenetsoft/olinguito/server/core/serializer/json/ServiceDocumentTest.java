@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -36,7 +37,7 @@ import org.sitenetsoft.olinguito.server.api.serializer.ODataSerializer;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
 import org.junit.jupiter.api.Test;
 
-public class ServiceDocumentTest {
+class ServiceDocumentTest {
 
   private static final String serviceRoot = "http://localhost:8080/odata.svc";
   private static final ServiceMetadata metadata = OData.newInstance().createServiceMetadata(
@@ -53,7 +54,7 @@ public class ServiceDocumentTest {
       });
 
   @Test
-  public void writeServiceDocumentJson() throws Exception {
+  void writeServiceDocumentJson() throws Exception {
     OData server = OData.newInstance();
     assertNotNull(server);
 
@@ -88,7 +89,7 @@ public class ServiceDocumentTest {
   }
 
   @Test
-  public void serviceDocumentNoMetadata() throws Exception {
+  void serviceDocumentNoMetadata() throws Exception {
     final String result = new String(
         OData.newInstance().createSerializer(ContentType.JSON_NO_METADATA)
             .serviceDocument(metadata, serviceRoot).getContent().readAllBytes(), StandardCharsets.UTF_8);

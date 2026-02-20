@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -41,7 +42,7 @@ import org.sitenetsoft.olinguito.server.tecsvc.provider.TypeDefinitionProvider;
 import org.junit.jupiter.api.Test;
 
 /** Tests of the parts of the URI parser that parse the sytem query options $filter and $orderby. */
-public class ExpressionParserTest {
+class ExpressionParserTest {
 
   private static final OData oData = OData.newInstance();
   private static final Edm edm = oData.createServiceMetadata(
@@ -50,7 +51,7 @@ public class ExpressionParserTest {
   private final FilterValidator testFilter = new FilterValidator().setEdm(edm);
 
   @Test
-  public void filter() throws Exception {
+  void filter() throws Exception {
     testFilter.runOnESCompCollComp("PropertyComp/CollPropertyComp/any"
         + "(f:f/olingo.odata.test1.CTBase/AdditionalPropString eq 'ADD TEST')")
     .is("<PropertyComp/CollPropertyComp/<ANY;<<f/olingo.odata.test1.CTBase/AdditionalPropString> eq <'ADD TEST'>>>>")
@@ -193,7 +194,7 @@ public class ExpressionParserTest {
   }
 
   @Test
-  public void filterUnaryOperators() throws Exception {
+  void filterUnaryOperators() throws Exception {
     testFilter.runOnETAllPrim("not PropertyBoolean").is("<not <PropertyBoolean>>");
     testFilter.runOnETAllPrim("not (PropertyBoolean)").is("<not <PropertyBoolean>>");
     testFilter.runOnETAllPrim("-PropertyInt16 eq PropertyInt16").is("<<- <PropertyInt16>> eq <PropertyInt16>>");
@@ -201,7 +202,7 @@ public class ExpressionParserTest {
   }
 
   @Test
-  public void filterBinaryOperators() throws Exception {
+  void filterBinaryOperators() throws Exception {
     testFilter.runOnETAllPrim("PropertySByte eq PropertySByte")
         .is("<<PropertySByte> eq <PropertySByte>>")
         .isBinary(BinaryOperatorKind.EQ)
@@ -496,7 +497,7 @@ public class ExpressionParserTest {
   }
 
   @Test
-  public void filterProperties() throws Exception {
+  void filterProperties() throws Exception {
     testFilter.runOnETAllPrim("PropertyBoolean eq true")
         .is("<<PropertyBoolean> eq <true>>")
         .isBinary(BinaryOperatorKind.EQ)
@@ -650,7 +651,7 @@ public class ExpressionParserTest {
   }
 
   @Test
-  public void filterFunctions() throws Exception {
+  void filterFunctions() throws Exception {
     testFilter.runOnETAllPrim(
         "olingo.odata.test1.UFCRTETTwoKeyNavParamCTTwoPrim(ParameterCTTwoPrim=@ParamAlias) eq null"
             + "&@ParamAlias={}")
@@ -801,7 +802,7 @@ public class ExpressionParserTest {
   }
 
   @Test
-  public void methods() throws Exception {
+  void methods() throws Exception {
     testFilter.runOnETKeyNav("indexof(PropertyString,'47') eq 5")
         .is("<<indexof(<PropertyString>,<'47'>)> eq <5>>")
         .left()
@@ -1357,7 +1358,7 @@ public class ExpressionParserTest {
   }
 
   @Test
-  public void castMethod() throws Exception {
+  void castMethod() throws Exception {
     testFilter.runOnETKeyNav("cast(olingo.odata.test1.ETBaseTwoKeyNav) ne null")
         .is("<<cast(<olingo.odata.test1.ETBaseTwoKeyNav>)> ne <null>>")
         .left()
@@ -1519,7 +1520,7 @@ public class ExpressionParserTest {
   }
 
   @Test
-  public void lambdaFunctions() throws Exception {
+  void lambdaFunctions() throws Exception {
 
     testFilter.runOnETTwoKeyNav("CollPropertyComp/all(l:true)")
         .is("<CollPropertyComp/<ALL;<true>>>");
@@ -1670,7 +1671,7 @@ public class ExpressionParserTest {
   }
 
   @Test
-  public void isOfMethod() throws Exception {
+  void isOfMethod() throws Exception {
     testFilter.runOnETKeyNav("isof(olingo.odata.test1.ETTwoKeyNav)")
         .is("<isof(<olingo.odata.test1.ETTwoKeyNav>)>")
         .root()
@@ -1817,7 +1818,7 @@ public class ExpressionParserTest {
   }
 
   @Test
-  public void has() throws Exception {
+  void has() throws Exception {
 
     testFilter.runOnETMixEnumDefCollComp("PropertyEnumString has olingo.odata.test1.ENString'String1'")
         .is("<<PropertyEnumString> has <olingo.odata.test1.ENString<String1>>>")
@@ -1877,7 +1878,7 @@ public class ExpressionParserTest {
   }
 
   @Test
-  public void orderby() throws Exception {
+  void orderby() throws Exception {
     testFilter.runOrderByOnETTwoKeyNav("PropertyString")
         .isSortOrder(0, false)
         .goOrder(0).goPath()
@@ -2243,7 +2244,7 @@ public class ExpressionParserTest {
   }
 
   @Test
-  public void filterLiteralTypes() throws Exception {
+  void filterLiteralTypes() throws Exception {
     testFilter.runOnETAllPrim("-1000 eq 42")
         .isBinary(BinaryOperatorKind.EQ)
         .left().isLiteral("-1000").isLiteralType(oData.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Int16))
@@ -2346,7 +2347,7 @@ public class ExpressionParserTest {
   }
 
   @Test
-  public void filterComplexMixedPriority() throws Exception {
+  void filterComplexMixedPriority() throws Exception {
     testFilter.runOnETAllPrim("PropertyBoolean or true and false")
         .is("<<PropertyBoolean> or <<true> and <false>>>");
     testFilter.runOnETAllPrim("PropertyBoolean or true and PropertyInt64 eq PropertyByte")
@@ -2371,7 +2372,7 @@ public class ExpressionParserTest {
   }
 
   @Test
-  public void filterSimpleSameBinaryBinaryBinaryPriority() throws Exception {
+  void filterSimpleSameBinaryBinaryBinaryPriority() throws Exception {
     testFilter.runOnETAllPrim("1 add 2 add 3 add 4 ge 0").isCompr("<<<< <1> add   <2>> add  <3>>  add <4>> ge <0>>");
     testFilter.runOnETAllPrim("1 add 2 add 3 div 4 ge 0").isCompr("<<<  <1> add   <2>> add <<3>   div <4>>> ge <0>>");
     testFilter.runOnETAllPrim("1 add 2 div 3 add 4 ge 0").isCompr("<<<  <1> add  <<2>  div  <3>>> add <4>> ge <0>>");
@@ -2383,19 +2384,19 @@ public class ExpressionParserTest {
   }
 
   @Test
-  public void filterSystemQueryOptionManyWithKeyAny() throws Exception {
+  void filterSystemQueryOptionManyWithKeyAny() throws Exception {
     testFilter.runUriEx("ESAllPrim", "$filter=NavPropertyETTwoPrimMany(1)/any(d:d/PropertyInt16 eq 0)")
         .isExSemantic(MessageKeys.EXPRESSION_PROPERTY_NOT_IN_TYPE);
   }
 
   @Test
-  public void filterSystemQueryOptionManyWithKeyAll() throws Exception {
+  void filterSystemQueryOptionManyWithKeyAll() throws Exception {
     testFilter.runUriEx("ESAllPrim", "$filter=NavPropertyETTwoPrimMany(1)/all(d:d/PropertyInt16 eq 0)")
         .isExSemantic(MessageKeys.EXPRESSION_PROPERTY_NOT_IN_TYPE);
   }
 
   @Test
-  public void filterOnCountAndRef() throws Exception {
+  void filterOnCountAndRef() throws Exception {
     testFilter.runUri("ESKeyNav/$count", "$filter=PropertyInt16 ge 0")
         .isBinary(BinaryOperatorKind.GE)
         .left().goPath().first().isPrimitiveProperty("PropertyInt16", PropertyProvider.nameInt16, false)
@@ -2408,7 +2409,7 @@ public class ExpressionParserTest {
   }
 
   @Test
-  public void keyPredicatesInExpressions() throws Exception {
+  void keyPredicatesInExpressions() throws Exception {
     testFilter.runOnETTwoKeyNav("NavPropertyETTwoKeyNavMany(PropertyString='1',PropertyInt16=1)"
         + "/PropertyInt16 eq 1");
 
@@ -2417,7 +2418,7 @@ public class ExpressionParserTest {
   }
 
   @Test
-  public void geo() throws Exception {
+  void geo() throws Exception {
     testFilter.runOnETAllPrim("geo.distance(geometry'SRID=0;Point(0 0)',geometry'SRID=0;Point(1 1)') lt 1.5")
         .left().isMethod(MethodKind.GEODISTANCE, 2)
         .goParameter(0).isLiteralType(oData.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.GeometryPoint))

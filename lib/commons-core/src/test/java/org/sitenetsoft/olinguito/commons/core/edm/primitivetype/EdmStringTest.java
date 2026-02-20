@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
@@ -24,19 +26,19 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.junit.jupiter.api.Test;
 
-public class EdmStringTest extends PrimitiveTypeBaseTest {
+class EdmStringTest extends PrimitiveTypeBaseTest {
 
   private final EdmPrimitiveType instance = EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.String);
 
   @Test
-  public void toUriLiteral() throws Exception {
+  void toUriLiteral() throws Exception {
     assertEquals("'StringValue'", instance.toUriLiteral("StringValue"));
     assertEquals("'String''Value'", instance.toUriLiteral("String'Value"));
     assertEquals("'String''''''Value'", instance.toUriLiteral("String'''Value"));
   }
 
   @Test
-  public void fromUriLiteral() throws Exception {
+  void fromUriLiteral() throws Exception {
     assertEquals("String''Value", instance.fromUriLiteral("'String''''Value'"));
     assertEquals("null", instance.fromUriLiteral("null"));
 
@@ -46,7 +48,7 @@ public class EdmStringTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void valueToString() throws Exception {
+  void valueToString() throws Exception {
     assertEquals("text", instance.valueToString("text", null, null, null, null, null));
     assertEquals("a\nb", instance.valueToString("a\nb", null, null, null, null, null));
     assertEquals("true", instance.valueToString(true, null, null, null, null, null));
@@ -61,7 +63,7 @@ public class EdmStringTest extends PrimitiveTypeBaseTest {
   }
 
   @Test
-  public void valueOfString() throws Exception {
+  void valueOfString() throws Exception {
     assertEquals("text", instance.valueOfString("text", null, null, null, null, null, String.class));
     assertEquals("a\nb", instance.valueOfString("a\nb", null, null, null, null, null, String.class));
     assertEquals("true", instance.valueOfString("true", null, null, null, null, null, String.class));

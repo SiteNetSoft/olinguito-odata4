@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.batch;
 
@@ -45,10 +47,10 @@ import org.sitenetsoft.olinguito.client.core.communication.request.invoke.ODataI
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.junit.jupiter.api.Test;
 
-public class ODataBatchUtilitiesTest {
+class ODataBatchUtilitiesTest {
   
   @Test
-  public void testBatchRequest(){
+  void testBatchRequest(){
     ODataBatchUtilities util = new ODataBatchUtilities();
     Map<String, Collection<String>> value = new HashMap<>();
     util.addHeaderLine("header:name", value );
@@ -57,7 +59,7 @@ public class ODataBatchUtilitiesTest {
   }
   
   @Test
-  public void testBatchConstants(){
+  void testBatchConstants(){
     assertEquals("boundary", ODataBatchConstants.BOUNDARY);
     assertEquals("application/http", ODataBatchConstants.ITEM_CONTENT_TYPE );
     assertEquals("Content-Type: application/http", ODataBatchConstants.ITEM_CONTENT_TYPE_LINE );
@@ -68,7 +70,7 @@ public class ODataBatchUtilitiesTest {
   
  
   @Test
-  public void testChangeSet() throws URISyntaxException{
+  void testChangeSet() throws URISyntaxException{
     ODataClient client = ODataClientBuilder.createClient();
     URI uri = new URI("test");
     final InputStream input = getClass().getResourceAsStream("batchResponse.batch");
@@ -93,7 +95,7 @@ public class ODataBatchUtilitiesTest {
   }
   
   @Test
-  public void testChangeSetNeg() throws URISyntaxException{
+  void testChangeSetNeg() throws URISyntaxException{
       assertThrows(IllegalArgumentException.class, () -> {
           ODataClient client = ODataClientBuilder.createClient();
           URI uri = new URI("test");
@@ -111,7 +113,7 @@ public class ODataBatchUtilitiesTest {
   }
   
   @Test
-  public void testChangeSetCloseNeg() throws URISyntaxException{
+  void testChangeSetCloseNeg() throws URISyntaxException{
       assertThrows(IllegalStateException.class, () -> {
           ODataClient client = ODataClientBuilder.createClient();
           URI uri = new URI("test");
@@ -129,7 +131,7 @@ public class ODataBatchUtilitiesTest {
   }
   
   @Test
-  public void testChangeSetResponse() throws URISyntaxException{
+  void testChangeSetResponse() throws URISyntaxException{
     ODataChangesetResponseItem expectedResItem = new ODataChangesetResponseItem(true);
     expectedResItem.setUnexpected();
     assertNotNull(expectedResItem);

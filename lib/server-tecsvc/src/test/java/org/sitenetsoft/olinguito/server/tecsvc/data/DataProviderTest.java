@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -37,7 +38,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class DataProviderTest {
+class DataProviderTest {
 
   private final OData oData = OData.newInstance();
   private final Edm edm =
@@ -53,7 +54,7 @@ public class DataProviderTest {
   private final EdmEntitySet esMedia = entityContainer.getEntitySet("ESMedia");
 
   @Test
-  public void esAllPrimEntity() throws Exception {
+  void esAllPrimEntity() throws Exception {
     final DataProvider dataProvider = new DataProvider(oData, edm);
     final Entity entity = dataProvider.readAll(esAllPrim).getEntities().get(2);
     Assertions.assertEquals(16, entity.getProperties().size());
@@ -63,7 +64,7 @@ public class DataProviderTest {
   }
 
   @Test
-  public void esAllKeyEntity() throws Exception {
+  void esAllKeyEntity() throws Exception {
     final DataProvider dataProvider = new DataProvider(oData, edm);
     final Entity entity = dataProvider.readAll(esAllKey).getEntities().get(0);
     Assertions.assertEquals(13, entity.getProperties().size());
@@ -86,7 +87,7 @@ public class DataProviderTest {
   }
 
   @Test
-  public void esAllPrim() throws Exception {
+  void esAllPrim() throws Exception {
     final DataProvider data = new DataProvider(oData, edm);
     EntityCollection outSet = data.readAll(esAllPrim);
 
@@ -106,7 +107,7 @@ public class DataProviderTest {
   }
 
   @Test
-  public void esCollAllPrim() throws Exception {
+  void esCollAllPrim() throws Exception {
     final DataProvider dataProvider = new DataProvider(oData, edm);
     EntityCollection outSet = dataProvider.readAll(esCollAllPrim);
 
@@ -120,7 +121,7 @@ public class DataProviderTest {
   }
 
   @Test
-  public void esCompAllPrim() throws Exception {
+  void esCompAllPrim() throws Exception {
     final DataProvider dataProvider = new DataProvider(oData, edm);
     
     EntityCollection outSet = dataProvider.readAll(esCompAllPrim);
@@ -135,7 +136,7 @@ public class DataProviderTest {
   }
 
   @Test
-  public void esMixPrimCollComp() throws Exception {
+  void esMixPrimCollComp() throws Exception {
     final DataProvider dataProvider = new DataProvider(oData, edm);
     
     EntityCollection outSet = dataProvider.readAll(esMixPrimCollComp);
@@ -160,7 +161,7 @@ public class DataProviderTest {
   }
 
   @Test
-  public void esMedia() throws Exception {
+  void esMedia() throws Exception {
     DataProvider dataProvider = new DataProvider(oData, edm);
 
     Entity entity = dataProvider.read(esMedia, List.of(mockParameter("PropertyInt16", "3")));

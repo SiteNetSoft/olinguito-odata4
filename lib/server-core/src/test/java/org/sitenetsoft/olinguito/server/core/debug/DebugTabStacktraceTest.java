@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.debug;
 
@@ -22,10 +24,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class DebugTabStacktraceTest extends AbstractDebugTabTest {
+class DebugTabStacktraceTest extends AbstractDebugTabTest {
 
   @Test
-  public void stacktrace() throws Exception {
+  void stacktrace() throws Exception {
     Exception cause = new Exception("innerError");
     cause.setStackTrace(new StackTraceElement[] {
         new StackTraceElement("inner.class", "inner.method", "inner/filename", 99) });

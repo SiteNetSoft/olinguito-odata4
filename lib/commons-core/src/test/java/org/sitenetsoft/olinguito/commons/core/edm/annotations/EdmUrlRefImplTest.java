@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.core.edm.annotations;
 
@@ -41,10 +43,10 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlUrlRef;
 import org.sitenetsoft.olinguito.commons.core.edm.annotation.AbstractEdmExpression;
 import org.junit.jupiter.api.Test;
 
-public class EdmUrlRefImplTest extends AbstractAnnotationTest {
+class EdmUrlRefImplTest extends AbstractAnnotationTest {
 
   @Test
-  public void initialUrlRef() {
+  void initialUrlRef() {
     EdmExpression exp = AbstractEdmExpression.getExpression(mock(Edm.class), new CsdlUrlRef());
 
     EdmDynamicExpression dynExp = assertDynamic(exp);
@@ -68,7 +70,7 @@ public class EdmUrlRefImplTest extends AbstractAnnotationTest {
   }
 
   @Test
-  public void urlRefWithValue() {
+  void urlRefWithValue() {
     CsdlUrlRef csdlUrlRef = new CsdlUrlRef();
     csdlUrlRef.setValue(new CsdlConstantExpression(ConstantExpressionType.String));
     List<CsdlAnnotation> csdlAnnotations = new ArrayList<>();
@@ -84,7 +86,7 @@ public class EdmUrlRefImplTest extends AbstractAnnotationTest {
   }
 
   @Test
-  public void urlRefWithInvalidValue() {
+  void urlRefWithInvalidValue() {
     CsdlUrlRef csdlUrlRef = new CsdlUrlRef();
     csdlUrlRef.setValue(new CsdlConstantExpression(ConstantExpressionType.Bool));
     EdmExpression exp = AbstractEdmExpression.getExpression(mock(Edm.class), csdlUrlRef);

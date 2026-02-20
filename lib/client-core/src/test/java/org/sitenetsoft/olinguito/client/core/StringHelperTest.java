@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Tests for StringHelper utility class
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core;
 
@@ -25,42 +26,42 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class StringHelperTest {
+class StringHelperTest {
 
   // --- substringBefore ---
 
   @Test
-  public void substringBeforeNullInput() {
+  void substringBeforeNullInput() {
     assertNull(StringHelper.substringBefore(null, "/"));
   }
 
   @Test
-  public void substringBeforeNullSeparator() {
+  void substringBeforeNullSeparator() {
     assertEquals("abc", StringHelper.substringBefore("abc", null));
   }
 
   @Test
-  public void substringBeforeNotFound() {
+  void substringBeforeNotFound() {
     assertEquals("abc", StringHelper.substringBefore("abc", "/"));
   }
 
   @Test
-  public void substringBeforeFound() {
+  void substringBeforeFound() {
     assertEquals("abc", StringHelper.substringBefore("abc/def", "/"));
   }
 
   @Test
-  public void substringBeforeFirstOccurrence() {
+  void substringBeforeFirstOccurrence() {
     assertEquals("abc", StringHelper.substringBefore("abc/def/ghi", "/"));
   }
 
   @Test
-  public void substringBeforeEmptyResult() {
+  void substringBeforeEmptyResult() {
     assertEquals("", StringHelper.substringBefore("/abc", "/"));
   }
 
   @Test
-  public void substringBeforeMultiCharSeparator() {
+  void substringBeforeMultiCharSeparator() {
     assertEquals("http://example.com", StringHelper.substringBefore(
         "http://example.com/$metadata#Customers", "/$metadata"));
   }
@@ -68,37 +69,37 @@ public class StringHelperTest {
   // --- substringAfter ---
 
   @Test
-  public void substringAfterNullInput() {
+  void substringAfterNullInput() {
     assertNull(StringHelper.substringAfter(null, "/"));
   }
 
   @Test
-  public void substringAfterNullSeparator() {
+  void substringAfterNullSeparator() {
     assertEquals("", StringHelper.substringAfter("abc", null));
   }
 
   @Test
-  public void substringAfterNotFound() {
+  void substringAfterNotFound() {
     assertEquals("", StringHelper.substringAfter("abc", "/"));
   }
 
   @Test
-  public void substringAfterFound() {
+  void substringAfterFound() {
     assertEquals("def", StringHelper.substringAfter("abc/def", "/"));
   }
 
   @Test
-  public void substringAfterFirstOccurrence() {
+  void substringAfterFirstOccurrence() {
     assertEquals("def/ghi", StringHelper.substringAfter("abc/def/ghi", "/"));
   }
 
   @Test
-  public void substringAfterEmptyResult() {
+  void substringAfterEmptyResult() {
     assertEquals("", StringHelper.substringAfter("abc/", "/"));
   }
 
   @Test
-  public void substringAfterMultiCharSeparator() {
+  void substringAfterMultiCharSeparator() {
     assertEquals("#Customers", StringHelper.substringAfter(
         "http://example.com/$metadata#Customers", "/$metadata"));
   }
@@ -106,69 +107,69 @@ public class StringHelperTest {
   // --- substringBeforeLast ---
 
   @Test
-  public void substringBeforeLastNullInput() {
+  void substringBeforeLastNullInput() {
     assertNull(StringHelper.substringBeforeLast(null, "/"));
   }
 
   @Test
-  public void substringBeforeLastNullSeparator() {
+  void substringBeforeLastNullSeparator() {
     assertEquals("abc", StringHelper.substringBeforeLast("abc", null));
   }
 
   @Test
-  public void substringBeforeLastNotFound() {
+  void substringBeforeLastNotFound() {
     assertEquals("abc", StringHelper.substringBeforeLast("abc", "/"));
   }
 
   @Test
-  public void substringBeforeLastFound() {
+  void substringBeforeLastFound() {
     assertEquals("abc", StringHelper.substringBeforeLast("abc/def", "/"));
   }
 
   @Test
-  public void substringBeforeLastMultipleOccurrences() {
+  void substringBeforeLastMultipleOccurrences() {
     assertEquals("abc/def", StringHelper.substringBeforeLast("abc/def/ghi", "/"));
   }
 
   @Test
-  public void substringBeforeLastDottedName() {
+  void substringBeforeLastDottedName() {
     assertEquals("org.example", StringHelper.substringBeforeLast("org.example.Term", "."));
   }
 
   // --- substringAfterLast ---
 
   @Test
-  public void substringAfterLastNullInput() {
+  void substringAfterLastNullInput() {
     assertNull(StringHelper.substringAfterLast(null, "/"));
   }
 
   @Test
-  public void substringAfterLastNullSeparator() {
+  void substringAfterLastNullSeparator() {
     assertEquals("", StringHelper.substringAfterLast("abc", null));
   }
 
   @Test
-  public void substringAfterLastNotFound() {
+  void substringAfterLastNotFound() {
     assertEquals("", StringHelper.substringAfterLast("abc", "/"));
   }
 
   @Test
-  public void substringAfterLastFound() {
+  void substringAfterLastFound() {
     assertEquals("def", StringHelper.substringAfterLast("abc/def", "/"));
   }
 
   @Test
-  public void substringAfterLastMultipleOccurrences() {
+  void substringAfterLastMultipleOccurrences() {
     assertEquals("ghi", StringHelper.substringAfterLast("abc/def/ghi", "/"));
   }
 
   @Test
-  public void substringAfterLastEmptyResult() {
+  void substringAfterLastEmptyResult() {
     assertEquals("", StringHelper.substringAfterLast("abc/", "/"));
   }
 
   @Test
-  public void substringAfterLastContextUrl() {
+  void substringAfterLastContextUrl() {
     assertEquals("4326", StringHelper.substringAfterLast(
         "http://www.opengis.net/def/crs/EPSG/0/4326", "/"));
   }
@@ -176,7 +177,7 @@ public class StringHelperTest {
   // --- edge cases ---
 
   @Test
-  public void emptyStringInput() {
+  void emptyStringInput() {
     assertEquals("", StringHelper.substringBefore("", "/"));
     assertEquals("", StringHelper.substringAfter("", "/"));
     assertEquals("", StringHelper.substringBeforeLast("", "/"));
@@ -184,7 +185,7 @@ public class StringHelperTest {
   }
 
   @Test
-  public void emptySeparator() {
+  void emptySeparator() {
     assertEquals("", StringHelper.substringBefore("abc", ""));
     assertEquals("abc", StringHelper.substringAfter("abc", ""));
     assertEquals("abc", StringHelper.substringBeforeLast("abc", ""));

@@ -18,6 +18,7 @@ package org.sitenetsoft.olinguito.commons.core.edm;
   * under the License.
   *
   * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
   */
  
  import java.util.Collections;
@@ -149,7 +150,7 @@ package org.sitenetsoft.olinguito.commons.core.edm;
   }
 
   @Test
-  public void entityType() throws Exception {
+  void entityType() throws Exception {
     final FullQualifiedName typeName = new FullQualifiedName("Namespace.One", "EntityTypeOne");
     final EdmEntityType entityType = edm1.getEntityType(typeName);
     Assertions.assertNotNull(entityType);
@@ -187,7 +188,7 @@ package org.sitenetsoft.olinguito.commons.core.edm;
   }
 
   @Test
-  public void entityContainer() throws Exception {
+  void entityContainer() throws Exception {
     Assertions.assertNotNull(edm1.getEntityContainer());
     Assertions.assertNotNull(edm1.getEntityContainer(new FullQualifiedName("Namespace.One", "ContainerOne")));
     Assertions.assertEquals(edm1.getEntityContainer(),
@@ -202,7 +203,7 @@ package org.sitenetsoft.olinguito.commons.core.edm;
   }
 
   @Test
-  public void entitySet() throws Exception {
+  void entitySet() throws Exception {
     final EdmEntitySet entitySet = edm1.getEntityContainer(new FullQualifiedName("AliasTwo", "ContainerTwo"))
         .getEntitySet("EntitySetTwo");
     Assertions.assertNotNull(entitySet);
@@ -217,7 +218,7 @@ package org.sitenetsoft.olinguito.commons.core.edm;
   }
 
   @Test
-  public void schema() throws Exception {
+  void schema() throws Exception {
     Assertions.assertNotNull(edm1.getSchemas());
     Assertions.assertEquals(1, edm1.getSchemas().size());
     Assertions.assertEquals("AliasOne", edm1.getSchemas().get(0).getAlias());
@@ -228,7 +229,7 @@ package org.sitenetsoft.olinguito.commons.core.edm;
   }
 
   @Test
-  public void entitySets() throws Exception {
+  void entitySets() throws Exception {
     Assertions.assertNotNull(edm1.getEntityContainer());
     Assertions.assertNotNull(edm1.getEntityContainer().getEntitySets());
     Assertions.assertEquals(1, edm1.getEntityContainer().getEntitySets().size());

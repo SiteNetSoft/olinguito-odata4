@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser.search;
 
@@ -33,10 +35,10 @@ import static org.sitenetsoft.olinguito.server.core.uri.parser.search.SearchQuer
 import static org.sitenetsoft.olinguito.server.core.uri.parser.search.SearchQueryToken.Token.PHRASE;
 import static org.sitenetsoft.olinguito.server.core.uri.parser.search.SearchQueryToken.Token.WORD;
 
-public class SearchTokenizerTest {
+class SearchTokenizerTest {
 
   @Test
-  public void parseBasics() throws Exception {
+  void parseBasics() throws Exception {
     assertQuery("abd").resultsIn(WORD);
     assertQuery("NOT abc").resultsIn(NOT, WORD);
     assertQuery("(abc)").resultsIn(OPEN, WORD, CLOSE);
@@ -44,7 +46,7 @@ public class SearchTokenizerTest {
   }
 
   @Test
-  public void parseWords() throws Exception {
+  void parseWords() throws Exception {
     assertQuery("C++%20=$@:,*!/?'%27}#^.|").resultsIn(WORD);
     assertQuery("[]|{`").resultsIn(WORD);
     assertQuery(">").resultsIn(WORD);
@@ -78,7 +80,7 @@ public class SearchTokenizerTest {
   }
 
   @Test
-  public void parsePhrase() throws Exception {
+  void parsePhrase() throws Exception {
     SearchTokenizer tokenizer = new SearchTokenizer();
     List<SearchQueryToken> result;
 
@@ -108,14 +110,14 @@ public class SearchTokenizerTest {
   }
 
   @Test
-  public void parsePhrase_decoded() throws Exception {
+  void parsePhrase_decoded() throws Exception {
     assertQuery("\"a & b\"").resultsIn(PHRASE);
     assertQuery("\" ! # $ % & ' ( ) * + , / : ; = ? @ [ ] \"").resultsIn(PHRASE);
     assertQuery("\" - . < > ^ _ ` { | } ~ \"").resultsIn(PHRASE);
   }
 
   @Test
-  public void parseNot() throws Exception {
+  void parseNot() throws Exception {
     assertQuery("NOT").resultsIn(NOT);
     assertQuery(" NOT ").resultsIn(NOT);
     assertQuery("NOT abc").resultsIn(NOT, WORD);
@@ -128,7 +130,7 @@ public class SearchTokenizerTest {
   }
 
   @Test
-  public void parseOr() throws Exception {
+  void parseOr() throws Exception {
     assertQuery("OR").resultsIn(OR);
     assertQuery(" OR ").resultsIn(OR);
     assertQuery("OR xyz").resultsIn(OR, WORD);
@@ -138,7 +140,7 @@ public class SearchTokenizerTest {
   }
 
   @Test
-  public void parseImplicitAnd() throws SearchTokenizerException {
+  void parseImplicitAnd() throws SearchTokenizerException {
     assertQuery("a b").resultsIn(WORD, WORD);
     assertQuery("a b OR c").resultsIn(WORD, WORD, OR, WORD);
     assertQuery("a bc OR c").resultsIn(WORD, WORD, OR, WORD);
@@ -147,7 +149,7 @@ public class SearchTokenizerTest {
   }
 
   @Test
-  public void parseAnd() throws Exception {
+  void parseAnd() throws Exception {
     assertQuery("AND").resultsIn(AND);
     assertQuery(" AND ").resultsIn(AND);
 
@@ -162,14 +164,14 @@ public class SearchTokenizerTest {
   }
 
   @Test
-  public void parseAndOr() throws Exception {
+  void parseAndOr() throws Exception {
     assertQuery("OR AND ").resultsIn(OR, AND);
     assertQuery("abc AND xyz OR olingo").resultsIn(WORD, AND, WORD, OR, WORD);
     assertQuery("abc AND ANDsomething").addExpected(WORD, AND, WORD);
   }
 
   @Test
-  public void parseCombinations() throws Exception {
+  void parseCombinations() throws Exception {
     assertQuery("word O NO").resultsIn(word("word"), word("O"), word("NO"));
     assertQuery("O AN NO").resultsIn(word("O"), word("AN"), word("NO"));
     assertQuery("NO AN O").resultsIn(word("NO"), word("AN"), word("O"));
@@ -197,7 +199,7 @@ public class SearchTokenizerTest {
   }
 
   @Test
-  public void parseSpecial() throws Exception {
+  void parseSpecial() throws Exception {
     assertQuery("NOT abc AND nothing").resultsIn(NOT, WORD, AND, WORD);
     assertQuery("abc AND andsomething").resultsIn(WORD, AND, WORD);
     assertQuery("abc AND ANDsomething").resultsIn(WORD, AND, WORD);
@@ -208,7 +210,7 @@ public class SearchTokenizerTest {
   }
 
   @Test
-  public void unicodeInWords() throws Exception {
+  void unicodeInWords() throws Exception {
     // Ll, Lm, Lo, Lt, Lu, Nl
     assertQuery("abc OR Ll\u01E3Lm\u02B5Lo\u00AALt\u01F2Lu\u03D3Nl\u216F")
     .resultsIn(WORD, OR, WORD);
@@ -233,7 +235,7 @@ public class SearchTokenizerTest {
    * @throws Exception
    */
   @Test
-  public void characterInPhrase() throws Exception {
+  void characterInPhrase() throws Exception {
     assertQuery("\"123\" OR \"ALPHA-._~\"").resultsIn(PHRASE, OR, PHRASE);
     assertQuery("\"100%Olingo\"").resultsIn(new Validator.Tuple(PHRASE, "\"100%Olingo\""));
     assertQuery("\"100'Olingo\"").resultsIn(new Validator.Tuple(PHRASE, "\"100'Olingo\""));
@@ -248,7 +250,7 @@ public class SearchTokenizerTest {
   }
 
   @Test
-  public void moreMixedTests() throws SearchTokenizerException {
+  void moreMixedTests() throws SearchTokenizerException {
     validate("abc");
     validate("NOT abc");
 
@@ -283,7 +285,7 @@ public class SearchTokenizerTest {
   }
 
   @Test
-  public void tokenizeInvalid() throws SearchTokenizerException {
+  void tokenizeInvalid() throws SearchTokenizerException {
     //
     assertQuery("(  abc AND) OR something").resultsIn(SearchTokenizerException.MessageKeys.FORBIDDEN_CHARACTER);
 
@@ -296,7 +298,7 @@ public class SearchTokenizerTest {
   }
 
   @Test
-  public void tokenizeInvalidQueryForParser() throws SearchTokenizerException {
+  void tokenizeInvalidQueryForParser() throws SearchTokenizerException {
     assertQuery("AND").resultsIn(AND);
     assertQuery("OR").resultsIn(OR);
     assertQuery("NOT").resultsIn(NOT);

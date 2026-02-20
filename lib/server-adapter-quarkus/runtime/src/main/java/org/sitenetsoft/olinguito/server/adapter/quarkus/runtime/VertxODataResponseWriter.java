@@ -12,12 +12,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced bare RuntimeException with ODataRuntimeException
  */
 package org.sitenetsoft.olinguito.server.adapter.quarkus.runtime;
 
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerResponse;
 
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
 import org.sitenetsoft.olinguito.server.api.ODataContent;
 
 import java.io.ByteArrayOutputStream;
@@ -56,7 +59,7 @@ public final class VertxODataResponseWriter {
 
             response.end(vertxBuffer);
         } catch (IOException e) {
-            throw new RuntimeException("Error writing response content", e);
+            throw new ODataRuntimeException("Error writing response content", e);
         }
     }
 
@@ -77,7 +80,7 @@ public final class VertxODataResponseWriter {
             byte[] bytes = baos.toByteArray();
             response.end(Buffer.buffer(bytes));
         } catch (IOException e) {
-            throw new RuntimeException("Error writing OData content", e);
+            throw new ODataRuntimeException("Error writing OData content", e);
         }
     }
 }

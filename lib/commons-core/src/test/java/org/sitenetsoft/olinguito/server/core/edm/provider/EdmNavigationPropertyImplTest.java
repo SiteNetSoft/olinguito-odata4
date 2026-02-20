@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -46,10 +48,10 @@ import org.sitenetsoft.olinguito.commons.core.edm.EdmNavigationPropertyImpl;
 import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
 import org.junit.jupiter.api.Test;
 
-public class EdmNavigationPropertyImplTest {
+class EdmNavigationPropertyImplTest {
 
   @Test
-  public void navigationProperty() throws Exception {
+  void navigationProperty() throws Exception {
     CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
     EdmProviderImpl edm = new EdmProviderImpl(provider);
     final FullQualifiedName entityTypeName = new FullQualifiedName("ns", "entity");
@@ -76,7 +78,7 @@ public class EdmNavigationPropertyImplTest {
   }
 
   @Test
-  public void navigationPropertyWithReferntialConstraint() throws Exception {
+  void navigationPropertyWithReferntialConstraint() throws Exception {
     CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
     EdmProviderImpl edm = new EdmProviderImpl(provider);
     final FullQualifiedName entityTypeName = new FullQualifiedName("ns", "entity");
@@ -105,7 +107,7 @@ public class EdmNavigationPropertyImplTest {
   }
 
   @Test
-  public void navigationPropertyWithPartner() throws Exception {
+  void navigationPropertyWithPartner() throws Exception {
     CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
     EdmProviderImpl edm = new EdmProviderImpl(provider);
     final FullQualifiedName entityTypeName = new FullQualifiedName("ns", "entity");
@@ -129,7 +131,7 @@ public class EdmNavigationPropertyImplTest {
   }
 
   @Test
-  public void navigationPropertyWithNonexistentPartner() throws Exception {
+  void navigationPropertyWithNonexistentPartner() throws Exception {
       assertThrows(EdmException.class, () -> {
           CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
           EdmProviderImpl edm = new EdmProviderImpl(provider);
@@ -150,7 +152,7 @@ public class EdmNavigationPropertyImplTest {
   }
 
   @Test
-  public void navigationPropertyWithNonExistentType() throws Exception {
+  void navigationPropertyWithNonExistentType() throws Exception {
       assertThrows(EdmException.class, () -> {
           EdmProviderImpl edm = mock(EdmProviderImpl.class);
           CsdlNavigationProperty propertyProvider = new CsdlNavigationProperty();

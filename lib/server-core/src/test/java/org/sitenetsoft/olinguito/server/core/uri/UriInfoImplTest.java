@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.uri;
 
@@ -52,16 +54,16 @@ import org.sitenetsoft.olinguito.server.core.uri.queryoption.TopOptionImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class UriInfoImplTest {
+class UriInfoImplTest {
 
   @Test
-  public void kind() {
+  void kind() {
     final UriInfo uriInfo = new UriInfoImpl().setKind(UriInfoKind.all);
     assertEquals(UriInfoKind.all, uriInfo.getKind());
   }
 
   @Test
-  public void casts() {
+  void casts() {
     final UriInfo uriInfo = new UriInfoImpl();
 
     assertEquals(uriInfo, uriInfo.asUriInfoAll());
@@ -74,7 +76,7 @@ public class UriInfoImplTest {
   }
 
   @Test
-  public void entityNames() {
+  void entityNames() {
     final UriInfo uriInfo = new UriInfoImpl()
         .addEntitySetName("A")
         .addEntitySetName("B");
@@ -82,7 +84,7 @@ public class UriInfoImplTest {
   }
 
   @Test
-  public void resourceParts() {
+  void resourceParts() {
     UriInfoImpl uriInfo = new UriInfoImpl();
 
     final UriResourceAction action = new UriResourceActionImpl((EdmAction) null);
@@ -102,7 +104,7 @@ public class UriInfoImplTest {
   }
 
   @Test
-  public void doubleSystemQueryOptions() {
+  void doubleSystemQueryOptions() {
       assertThrows(ODataRuntimeException.class, () -> {
           new UriInfoImpl()
           .setSystemQueryOption(new FormatOptionImpl())
@@ -111,7 +113,7 @@ public class UriInfoImplTest {
   }
 
   @Test
-  public void customQueryOption() {
+  void customQueryOption() {
     final QueryOption apply = new ApplyOptionImpl().setName("");
     final QueryOption expand = new ExpandOptionImpl().setName("");
     final QueryOption filter = new FilterOptionImpl().setName("");
@@ -177,13 +179,13 @@ public class UriInfoImplTest {
   }
 
   @Test
-  public void fragment() {
+  void fragment() {
     final UriInfo uriInfo = new UriInfoImpl().setFragment("F");
     assertEquals("F", uriInfo.getFragment());
   }
 
   @Test
-  public void entityTypeCast() {
+  void entityTypeCast() {
     final EdmEntityType entityType = Mockito.mock(EdmEntityType.class);
     final UriInfo uriInfo = new UriInfoImpl()
         .setEntityTypeCast(entityType);
@@ -191,7 +193,7 @@ public class UriInfoImplTest {
   }
 
   @Test
-  public void alias() {
+  void alias() {
     final UriInfo uriInfo = new UriInfoImpl()
         .addAlias((AliasQueryOption) new AliasQueryOptionImpl().setName("A").setText("X"))
         .addAlias((AliasQueryOption) new AliasQueryOptionImpl().setName("B").setText("Y"))
@@ -208,7 +210,7 @@ public class UriInfoImplTest {
   }
 
   @Test
-  public void doubleAlias() {
+  void doubleAlias() {
       assertThrows(ODataRuntimeException.class, () -> {
           final AliasQueryOption alias = (AliasQueryOption) new AliasQueryOptionImpl().setName("A");
           new UriInfoImpl()

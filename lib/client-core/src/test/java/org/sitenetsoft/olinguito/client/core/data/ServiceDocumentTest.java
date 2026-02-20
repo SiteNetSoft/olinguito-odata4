@@ -15,6 +15,9 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed unused hashCode() test assertions
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core.data;
 
@@ -29,10 +32,10 @@ import java.util.List;
 import org.sitenetsoft.olinguito.client.api.data.ServiceDocumentItem;
 import org.junit.jupiter.api.Test;
 
-public class ServiceDocumentTest {
+class ServiceDocumentTest {
 
   @Test
-  public void testServiceDocument() {
+  void testServiceDocument() {
     ServiceDocumentImpl sd = new ServiceDocumentImpl();
     assertNull(sd.getTitle());
     assertEquals(0,sd.getEntitySets().size());
@@ -44,15 +47,15 @@ public class ServiceDocumentTest {
     ServiceDocumentImpl sd2 = new ServiceDocumentImpl();
     assertTrue(sd.equals(sd2));
     assertNotNull(sd.toString());
-    sd.hashCode();
+    assertEquals(sd.hashCode(), sd2.hashCode());
   }
 
   @Test
-  public void testServiceDocumentItem() {
+  void testServiceDocumentItem() {
     ServiceDocumentItemImpl sd = new ServiceDocumentItemImpl();
     ServiceDocumentItemImpl sd2 = new ServiceDocumentItemImpl();
     assertTrue(sd.equals(sd2));
     assertNotNull(sd.toString());
-    sd.hashCode();
+    assertEquals(sd.hashCode(), sd2.hashCode());
   }
 }

@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Replaced bare RuntimeException with ODataRuntimeException
  */
 package org.sitenetsoft.olinguito.client.core.metadatavalidator;
 
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.sitenetsoft.olinguito.commons.api.edm.EdmBindingTarget;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmComplexType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
@@ -87,10 +89,10 @@ public class EdmTypeValidator {
           EdmEntityType baseEntityType = edmEntityTypesMap.get(baseTypeFQName);
           
           if (baseEntityType != null && baseEntityType.getKeyPredicateNames().isEmpty()) {
-            throw new RuntimeException("Missing key for EntityType " + baseEntityType.getName());
+            throw new ODataRuntimeException("Missing key for EntityType " + baseEntityType.getName());
           }
         } else if (entityType.getKeyPredicateNames().isEmpty()) {
-          throw new RuntimeException("Missing key for EntityType " + entityType.getName());
+          throw new ODataRuntimeException("Missing key for EntityType " + entityType.getName());
         }
       }
     }
@@ -126,7 +128,7 @@ public class EdmTypeValidator {
         EdmEntityType sourceEntityType = edmEntityTypesMap.get(entitySet.getEntityType().getFullQualifiedName());
         
         if (edmBindingTarget instanceof EdmSingleton) {
-          throw new RuntimeException("Validations of Singletons are not supported: " + edmBindingTarget.getName());
+          throw new ODataRuntimeException("Validations of Singletons are not supported: " + edmBindingTarget.getName());
         }
         
         EdmEntityType targetEntityType = edmBindingTarget.getEntityType();
@@ -141,7 +143,7 @@ public class EdmTypeValidator {
         String targetType = targetEntityType.getFullQualifiedName().getFullQualifiedNameAsString();
         if (!(navFQName.getFullQualifiedNameAsString().equals(targetType)) 
             && !(navProperty.getType().compatibleTo(targetEntityType))) {
-          throw new RuntimeException("Navigation Property Type " +  
+          throw new ODataRuntimeException("Navigation Property Type " +  
             navProperty.getType().getFullQualifiedName() +" does not match "
                 + "the binding target type " + targetType);
         }
@@ -161,11 +163,11 @@ public class EdmTypeValidator {
     if (!navProperty.getReferentialConstraints().isEmpty()) {
       String propertyName = navProperty.getReferentialConstraints().get(0).getPropertyName();
       if (sourceEntityType.getProperty(propertyName) == null) {
-        throw new RuntimeException("Property name "+ propertyName + " not part of the source entity.");
+        throw new ODataRuntimeException("Property name "+ propertyName + " not part of the source entity.");
       }
       String referencedPropertyName = navProperty.getReferentialConstraints().get(0).getReferencedPropertyName();
       if (targetEntityType.getProperty(referencedPropertyName) == null) {
-        throw new RuntimeException("Property name " + referencedPropertyName + " not part of the target entity.");
+        throw new ODataRuntimeException("Property name " + referencedPropertyName + " not part of the target entity.");
       }
     }
   }
@@ -207,7 +209,7 @@ public class EdmTypeValidator {
           edmComplexTypesMap.get(new FullQualifiedName(lastFullQualifiedName)) : 
             edmComplexTypesMap.get(fetchCorrectNamespaceFromAlias(new FullQualifiedName(lastFullQualifiedName)));
       if (sourceComplexTypeHavingNavProp == null) {
-        throw new RuntimeException("The fully Qualified type " + lastFullQualifiedName + 
+        throw new ODataRuntimeException("The fully Qualified type " + lastFullQualifiedName + 
             " mentioned in navigation binding path not found ");
       }
       navProperty = !remainingPath.isEmpty() ? fetchNavigationProperty(remainingPath, strNavProperty,
@@ -288,7 +290,7 @@ public class EdmTypeValidator {
     String namespace = aliasNamespaceMap.get(aliasName.getNamespace());
     FullQualifiedName fqName = new FullQualifiedName(namespace, aliasName.getName());
     if (!edmFunctionsMap.containsKey(fqName)) {
-      throw new RuntimeException("Invalid Function " + aliasName);
+      throw new ODataRuntimeException("Invalid Function " + aliasName);
     }
     return fqName;
   }

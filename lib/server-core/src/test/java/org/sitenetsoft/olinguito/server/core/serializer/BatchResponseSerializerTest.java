@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.serializer;
 
@@ -53,14 +54,14 @@ import org.sitenetsoft.olinguito.server.api.serializer.SerializerStreamResult;
 import org.sitenetsoft.olinguito.server.core.deserializer.batch.BatchLineReader;
 import org.junit.jupiter.api.Test;
 
-public class BatchResponseSerializerTest {
+class BatchResponseSerializerTest {
   private static final String CRLF = "\r\n";
   private static final String BOUNDARY = "batch_" + UUID.randomUUID();
 
   private static final Charset CS_ISO_8859_1 = StandardCharsets.ISO_8859_1;
 
   @Test
-  public void batchResponse() throws Exception {
+  void batchResponse() throws Exception {
     final List<ODataResponsePart> parts = new ArrayList<>();
     ODataResponse response = new ODataResponse();
     response.setStatusCode(HttpStatusCode.OK.getStatusCode());
@@ -109,7 +110,7 @@ public class BatchResponseSerializerTest {
   }
 
   @Test
-  public void batchResponseUmlautsUtf8() throws Exception {
+  void batchResponseUmlautsUtf8() throws Exception {
     List<ODataResponsePart> parts = new ArrayList<>();
 
     ODataResponse response = new ODataResponse();
@@ -160,7 +161,7 @@ public class BatchResponseSerializerTest {
   }
 
   @Test
-  public void batchResponseUmlautsUtf8BodyIsoHeader() throws Exception {
+  void batchResponseUmlautsUtf8BodyIsoHeader() throws Exception {
     List<ODataResponsePart> parts = new ArrayList<>();
 
     ODataResponse response = new ODataResponse();
@@ -213,7 +214,7 @@ public class BatchResponseSerializerTest {
   }
 
   @Test
-  public void batchResponseUmlautsUtf8BodyAndHeader() throws Exception {
+  void batchResponseUmlautsUtf8BodyAndHeader() throws Exception {
     List<ODataResponsePart> parts = new ArrayList<>();
 
     ODataResponse response = new ODataResponse();
@@ -242,7 +243,7 @@ public class BatchResponseSerializerTest {
   }
 
   @Test
-  public void batchResponseUmlautsIso() throws Exception {
+  void batchResponseUmlautsIso() throws Exception {
     List<ODataResponsePart> parts = new ArrayList<>();
 
     ODataResponse response = new ODataResponse();
@@ -294,7 +295,7 @@ public class BatchResponseSerializerTest {
   }
 
   @Test
-  public void batchResponseWithEndingCRLF() throws Exception {
+  void batchResponseWithEndingCRLF() throws Exception {
     List<ODataResponsePart> parts = new ArrayList<>();
 
     ODataResponse response = new ODataResponse();
@@ -343,7 +344,7 @@ public class BatchResponseSerializerTest {
   }
 
   @Test
-  public void response() throws Exception {
+  void response() throws Exception {
     List<ODataResponsePart> parts = new ArrayList<>();
 
     ODataResponse response = new ODataResponse();
@@ -375,7 +376,7 @@ public class BatchResponseSerializerTest {
   }
 
   @Test
-  public void bigResponse() throws Exception {
+  void bigResponse() throws Exception {
     List<ODataResponsePart> parts = new ArrayList<>();
 
     ODataResponse response = new ODataResponse();
@@ -408,7 +409,7 @@ public class BatchResponseSerializerTest {
   }
 
   @Test
-  public void changeSetResponse() throws Exception {
+  void changeSetResponse() throws Exception {
     List<ODataResponsePart> parts = new ArrayList<>();
 
     ODataResponse response = new ODataResponse();
@@ -444,7 +445,7 @@ public class BatchResponseSerializerTest {
   }
 
   @Test
-  public void binaryResponse() throws Exception {
+  void binaryResponse() throws Exception {
     ODataResponse response = new ODataResponse();
     response.setStatusCode(HttpStatusCode.OK.getStatusCode());
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.APPLICATION_OCTET_STREAM.toContentTypeString());
@@ -503,7 +504,7 @@ public class BatchResponseSerializerTest {
   }
   
   @Test
-  public void testODataContentResponse() throws Exception {
+  void testODataContentResponse() throws Exception {
     List<ODataResponsePart> parts = new ArrayList<>();
     ServiceMetadata serviceMetadata = mock(ServiceMetadata.class);
     final EdmEntityType edmEntityType = mock(EdmEntityType.class);
@@ -555,7 +556,7 @@ public class BatchResponseSerializerTest {
   }
   
   @Test
-  public void changeSetODataContentResponse() throws Exception {
+  void changeSetODataContentResponse() throws Exception {
     List<ODataResponsePart> parts = new ArrayList<>();
     ServiceMetadata serviceMetadata = mock(ServiceMetadata.class);
     final EdmEntityType edmEntityType = mock(EdmEntityType.class);
@@ -613,7 +614,7 @@ public class BatchResponseSerializerTest {
   }
   
   @Test
-  public void testODataContentWithODataResponse() throws Exception {
+  void testODataContentWithODataResponse() throws Exception {
     List<ODataResponsePart> parts = new ArrayList<>();
     
     ODataResponse response = new ODataResponse();

@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Improved test assertions
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
@@ -48,7 +49,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class EdmImplCallCreateTest {
+class EdmImplCallCreateTest {
 
   private final FullQualifiedName FQN = new FullQualifiedName("testNamespace", "testName");
 
@@ -57,13 +58,13 @@ public class EdmImplCallCreateTest {
   private Edm edm;
 
   @Test
-  public void callCreateSchemas() {
+  void callCreateSchemas() {
     List<EdmSchema> schemas = edm.getSchemas();
     assertNotNull(schemas);
   }
 
   @Test
-  public void callCreateEntityContainer() {
+  void callCreateEntityContainer() {
     EdmEntityContainer entityContainer = edm.getEntityContainer(FQN);
     assertNotNull(entityContainer);
     assertEquals(FQN.getNamespace(), entityContainer.getNamespace());
@@ -78,7 +79,7 @@ public class EdmImplCallCreateTest {
   }
 
   @Test
-  public void callCreateEnumType() {
+  void callCreateEnumType() {
     EdmEnumType enumType = edm.getEnumType(FQN);
     assertNotNull(enumType);
     assertEquals(FQN.getNamespace(), enumType.getNamespace());
@@ -88,7 +89,7 @@ public class EdmImplCallCreateTest {
   }
 
   @Test
-  public void callCreateTypeDefinition() {
+  void callCreateTypeDefinition() {
     EdmTypeDefinition typeDefinition = edm.getTypeDefinition(FQN);
     assertNotNull(typeDefinition);
     assertEquals(FQN.getNamespace(), typeDefinition.getNamespace());
@@ -98,7 +99,7 @@ public class EdmImplCallCreateTest {
   }
 
   @Test
-  public void callCreateEntityType() {
+  void callCreateEntityType() {
     EdmEntityType entityType = edm.getEntityType(FQN);
     assertNotNull(entityType);
     assertEquals(FQN.getNamespace(), entityType.getNamespace());
@@ -108,7 +109,7 @@ public class EdmImplCallCreateTest {
   }
 
   @Test
-  public void callCreateComplexType() {
+  void callCreateComplexType() {
     EdmComplexType complexType = edm.getComplexType(FQN);
     assertNotNull(complexType);
     assertEquals(FQN.getNamespace(), complexType.getNamespace());
@@ -118,7 +119,7 @@ public class EdmImplCallCreateTest {
   }
 
   @Test
-  public void callCreateAction() {
+  void callCreateAction() {
     EdmAction action = edm.getUnboundAction(FQN);
     assertNotNull(action);
     assertEquals(FQN.getNamespace(), action.getNamespace());
@@ -135,7 +136,7 @@ public class EdmImplCallCreateTest {
   }
 
   @Test
-  public void callCreateFunction() {
+  void callCreateFunction() {
     EdmFunction function = edm.getUnboundFunction(FQN, null);
     assertNotNull(function);
     assertEquals(FQN.getNamespace(), function.getNamespace());
@@ -152,7 +153,7 @@ public class EdmImplCallCreateTest {
   }
 
   @Test
-  public void callCreateTerm() {
+  void callCreateTerm() {
     EdmTerm term = edm.getTerm(FQN);
     assertNotNull(term);
 
@@ -162,7 +163,7 @@ public class EdmImplCallCreateTest {
   }
 
   @Test
-  public void callCreateAnnotationGroup() {
+  void callCreateAnnotationGroup() {
     EdmAnnotations annotationGroup = edm.getAnnotationGroup(FQN, null);
     assertNotNull(annotationGroup);
 
@@ -172,7 +173,7 @@ public class EdmImplCallCreateTest {
   }
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     edm = new LocalEdm();
   }
 
@@ -322,7 +323,7 @@ public class EdmImplCallCreateTest {
     }
   }
   @Test
-  public void callCreateComplexTypeWithAnnotations() {
+  void callCreateComplexTypeWithAnnotations() {
     EdmComplexType complexType = edm.getComplexTypeWithAnnotations(FQN);
     assertNotNull(complexType);
     assertEquals(FQN.getNamespace(), complexType.getNamespace());
@@ -332,7 +333,7 @@ public class EdmImplCallCreateTest {
   }
   
   @Test
-  public void callCreateComplexTypeWithAnnotationsDerivedFromES() {
+  void callCreateComplexTypeWithAnnotationsDerivedFromES() {
     EdmComplexType complexType = ((AbstractEdm)edm).
         getComplexTypeWithAnnotations(FQN, true);
     assertNotNull(complexType);
@@ -343,7 +344,7 @@ public class EdmImplCallCreateTest {
   }
   
   @Test
-  public void callCreateEntityTypeWithAnnotation() {
+  void callCreateEntityTypeWithAnnotation() {
     EdmEntityType entityType = edm.getEntityTypeWithAnnotations(FQN);
     assertNotNull(entityType);
     assertEquals(FQN.getNamespace(), entityType.getNamespace());
@@ -353,7 +354,7 @@ public class EdmImplCallCreateTest {
   }
   
   @Test
-  public void callCreateEntityTypeWithAnnotationDerivedFromES() {
+  void callCreateEntityTypeWithAnnotationDerivedFromES() {
     EdmEntityType entityType = ((AbstractEdm)edm).
         getEntityTypeWithAnnotations(FQN, true);
     assertNotNull(entityType);

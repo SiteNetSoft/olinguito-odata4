@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -37,7 +39,7 @@ import org.sitenetsoft.olinguito.server.tecsvc.provider.TypeDefinitionProvider;
 import org.junit.jupiter.api.Test;
 
 /** Tests of the parts of the URI parser that parse the sytem query option $select. */
-public class SelectParserTest {
+class SelectParserTest {
 
   private static final Edm edm = OData.newInstance().createServiceMetadata(
       new EdmTechProvider(), Collections.emptyList()).getEdm();
@@ -45,7 +47,7 @@ public class SelectParserTest {
   private final TestUriValidator testUri = new TestUriValidator().setEdm(edm);
 
   @Test
-  public void select() throws Exception {
+  void select() throws Exception {
     testUri.run("ESTwoKeyNav", "$select=*")
         .isSelectItemStar(0);
 

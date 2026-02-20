@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Improved test assertions
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core;
 
@@ -31,17 +32,17 @@ import org.sitenetsoft.olinguito.commons.api.edm.constants.ODataServiceVersion;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.junit.jupiter.api.Test;
 
-public class ODataClientTest {
+class ODataClientTest {
 
   @Test
-  public void before() {
+  void before() {
     ODataClient client = ODataClientFactory.getClient();
     assertNotNull(client);
     assertEquals(ODataServiceVersion.V40, client.getServiceVersion());
   }
   
   @Test
-  public void clientImplTest() {
+  void clientImplTest() {
     ODataClientImpl client = (ODataClientImpl) ODataClientFactory.getClient();
     assertNotNull(client);
     assertNotNull(client.newPreferences());
@@ -54,7 +55,7 @@ public class ODataClientTest {
   }
   
   @Test
-  public void clientFactoryTest() {
+  void clientFactoryTest() {
     assertNotNull(ODataClientFactory.getClient());
     assertNotNull(ODataClientFactory.getEdmEnabledClient(null));
     assertNotNull(ODataClientFactory.getEdmEnabledClient(null, null));
@@ -63,7 +64,7 @@ public class ODataClientTest {
   }
   
   @Test
-  public void searchTest() {
+  void searchTest() {
     ODataClient client = ODataClientFactory.getClient();
     assertNotNull(client);
     SearchFactory searchFactory = client.getSearchFactory();
@@ -83,7 +84,7 @@ public class ODataClientTest {
   }
   
   @Test
-  public void configurationTest() {
+  void configurationTest() {
     ODataClient client = ODataClientFactory.getClient();
     assertNotNull(client);
     ConfigurationImpl config = (ConfigurationImpl) client.getConfiguration();

@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core;
 
@@ -28,10 +30,10 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.junit.jupiter.api.Test;
 
-public class PrimitiveValueTest extends AbstractTest {
+class PrimitiveValueTest extends AbstractTest {
 
   @Test
-  public void timeOfDay() throws EdmPrimitiveTypeException {
+  void timeOfDay() throws EdmPrimitiveTypeException {
     final Calendar expected = Calendar.getInstance();
     expected.clear();
     expected.set(2013, 0, 10, 21, 45, 17);
@@ -49,7 +51,7 @@ public class PrimitiveValueTest extends AbstractTest {
   }
 
   @Test
-  public void Date() throws EdmPrimitiveTypeException {
+  void Date() throws EdmPrimitiveTypeException {
     final Calendar expected = Calendar.getInstance();
     expected.clear();
     expected.set(2013, 0, 10);
@@ -67,7 +69,7 @@ public class PrimitiveValueTest extends AbstractTest {
   }
 
   @Test
-  public void testBigDecimalToStringConversion() throws EdmPrimitiveTypeException {
+  void testBigDecimalToStringConversion() throws EdmPrimitiveTypeException {
     final ClientValue leadingZerosDecimalValue = client.getObjectFactory().newPrimitiveValueBuilder()
             .setType(EdmPrimitiveTypeKind.Decimal).setValue(new BigDecimal("0.01")).build();
     final ClientValue arbitraryPrecisionDecimalValue = client.getObjectFactory().newPrimitiveValueBuilder()

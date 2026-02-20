@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
  * Copyright 2026 SiteNetSoft - Replaced wildcard import with explicit imports
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core.domain;
 
@@ -48,10 +49,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ClientObjectImplTest {
+class ClientObjectImplTest {
 
   @Test
-  public void testFactory() throws URISyntaxException {
+  void testFactory() throws URISyntaxException {
     
     ODataClientImpl client = (ODataClientImpl) ODataClientFactory.getClient();
     ClientObjectFactory factory = client.getObjectFactory();
@@ -70,7 +71,7 @@ public class ClientObjectImplTest {
   }
   
   @Test
-  public void testAnnotation(){
+  void testAnnotation(){
     ClientValue val = new ClientCollectionValueImpl<ClientValue>("test");
     ClientAnnotationImpl annotation = new ClientAnnotationImpl("term", val);
     assertFalse(annotation.hasNullValue());
@@ -80,7 +81,7 @@ public class ClientObjectImplTest {
   }
   
   @Test
-  public void testCollection(){
+  void testCollection(){
     ClientCollectionValueImpl<ClientValue> val = new ClientCollectionValueImpl<ClientValue>("test");
     assertNull(val.asEnum());
     ClientCollectionValueImpl<ClientValue> val2 = new ClientCollectionValueImpl<ClientValue>("test");
@@ -91,7 +92,7 @@ public class ClientObjectImplTest {
   }
   
   @Test
-  public void testComplex() throws URISyntaxException{
+  void testComplex() throws URISyntaxException{
     ClientComplexValueImpl val = new ClientComplexValueImpl("test");
     ClientEntity entity = new ClientEntityImpl(new FullQualifiedName("name.test"));
     ClientLink link = new ClientInlineEntity(new URI("test"), ClientLinkType.ASSOCIATION,
@@ -105,7 +106,7 @@ public class ClientObjectImplTest {
   }  
   
   @Test
-  public void testDeletedEntity() throws URISyntaxException {
+  void testDeletedEntity() throws URISyntaxException {
     ClientDeletedEntityImpl val = new ClientDeletedEntityImpl();
     assertNotNull(val);
     val.setId(new URI("Id"));
@@ -118,7 +119,7 @@ public class ClientObjectImplTest {
   }
   
   @Test
-  public void testDelta() throws URISyntaxException {
+  void testDelta() throws URISyntaxException {
     ClientDeltaImpl val = new ClientDeltaImpl();
     ClientDeltaImpl val2 = new ClientDeltaImpl(new URI("Id"));
     assertNotNull(val);
@@ -138,7 +139,7 @@ public class ClientObjectImplTest {
   }
   
   @Test
-  public void testDeltaLink() throws URISyntaxException {
+  void testDeltaLink() throws URISyntaxException {
     ClientDeltaLinkImpl val = new ClientDeltaLinkImpl();
     ClientDeltaLinkImpl val2 = new ClientDeltaLinkImpl();
     assertNotNull(val);
@@ -157,7 +158,7 @@ public class ClientObjectImplTest {
   }
   
   @Test
-  public void testClientEntity() throws URISyntaxException {
+  void testClientEntity() throws URISyntaxException {
     FullQualifiedName name = new FullQualifiedName("test.name");
     ClientEntityImpl val = new ClientEntityImpl(name );
     URI uri = new URI("test");
@@ -179,7 +180,7 @@ public class ClientObjectImplTest {
   }
   
   @Test
-  public void testClientEntitySet() throws URISyntaxException {
+  void testClientEntitySet() throws URISyntaxException {
     ClientEntitySetImpl val = new ClientEntitySetImpl();
     URI uri = new URI("test");
     ClientEntitySetImpl val2 = new ClientEntitySetImpl(uri);
@@ -192,7 +193,7 @@ public class ClientObjectImplTest {
   }  
   
   @Test
-  public void testClientEnumValue() {
+  void testClientEnumValue() {
     ClientEnumValueImpl val = new ClientEnumValueImpl("type", "value");
     ClientEnumValueImpl val2 = new ClientEnumValueImpl("type", "value");
     assertNotNull(val.toString());
@@ -200,7 +201,7 @@ public class ClientObjectImplTest {
   }
   
   @Test
-  public void testClientPrimitiveValue() {
+  void testClientPrimitiveValue() {
     ClientPrimitiveValueImpl val = new ClientPrimitiveValueImpl();
     ClientPrimitiveValueImpl val2 = new ClientPrimitiveValueImpl();
     BuilderImpl builder = new BuilderImpl();
@@ -222,7 +223,7 @@ public class ClientObjectImplTest {
   }
   
   @Test
-  public void testClientProperty() {
+  void testClientProperty() {
     ClientValue value = new ClientCollectionValueImpl<ClientValue>("type");
     ClientPropertyImpl val = new ClientPropertyImpl("type", value );
     ClientPropertyImpl val2 = new ClientPropertyImpl("type", value);
@@ -233,7 +234,7 @@ public class ClientObjectImplTest {
   }
   
   @Test
-  public void testClientValuable() {
+  void testClientValuable() {
     ClientValue value = new ClientCollectionValueImpl<ClientValue>("type");
     ClientValuableImpl val = new ClientValuableImpl(value);
     ClientValuableImpl val2 = new ClientValuableImpl(value);

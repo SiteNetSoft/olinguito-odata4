@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.deserializer;
 
@@ -34,19 +35,19 @@ import org.sitenetsoft.olinguito.server.api.deserializer.FixedFormatDeserializer
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class FixedFormatDeserializerTest {
+class FixedFormatDeserializerTest {
 
   private static final OData oData = OData.newInstance();
   private final FixedFormatDeserializer deserializer = oData.createFixedFormatDeserializer();
 
   @Test
-  public void binary() throws Exception {
+  void binary() throws Exception {
     assertArrayEquals(new byte[] { 0x41, 0x42, 0x43 },
         deserializer.binary(new ByteArrayInputStream("ABC".getBytes(StandardCharsets.UTF_8))));
   }
 
   @Test
-  public void binaryLong() throws Exception {
+  void binaryLong() throws Exception {
     assertEquals(4 * 3 * 26,
         deserializer.binary(new ByteArrayInputStream((
             "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -57,7 +58,7 @@ public class FixedFormatDeserializerTest {
   }
 
   @Test
-  public void primitiveValue() throws Exception {
+  void primitiveValue() throws Exception {
     EdmProperty property = Mockito.mock(EdmProperty.class);
     Mockito.when(property.getType()).thenReturn(oData.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Int64));
     Mockito.when(property.isPrimitive()).thenReturn(true);
@@ -66,7 +67,7 @@ public class FixedFormatDeserializerTest {
   }
 
   @Test
-  public void primitiveValueLong() throws Exception {
+  void primitiveValueLong() throws Exception {
     EdmProperty property = Mockito.mock(EdmProperty.class);
     Mockito.when(property.getType()).thenReturn(oData.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.String));
     Mockito.when(property.isPrimitive()).thenReturn(true);

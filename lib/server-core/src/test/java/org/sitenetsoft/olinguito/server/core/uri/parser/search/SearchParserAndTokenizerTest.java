@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser.search;
 
@@ -23,12 +25,12 @@ import org.sitenetsoft.olinguito.server.api.uri.queryoption.search.SearchExpress
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class SearchParserAndTokenizerTest {
+class SearchParserAndTokenizerTest {
 
   private static final String EOF = "<EOF>";
 
   @Test
-  public void basicParsing() throws Exception {
+  void basicParsing() throws Exception {
     assertQuery("99").resultsIn("'99'");
     assertQuery("\"99\"").resultsIn("'99'");
     assertQuery("a").resultsIn("'a'");
@@ -44,19 +46,19 @@ public class SearchParserAndTokenizerTest {
   }
 
   @Test
-  public void mixedParsing() throws Exception {
+  void mixedParsing() throws Exception {
     assertQuery("a AND b OR c").resultsIn("{{'a' AND 'b'} OR 'c'}");
     assertQuery("a OR b AND c").resultsIn("{'a' OR {'b' AND 'c'}}");
   }
 
   @Test
-  public void notParsing() throws Exception {
+  void notParsing() throws Exception {
     assertQuery("NOT a AND b OR c").resultsIn("{{{NOT 'a'} AND 'b'} OR 'c'}");
     assertQuery("a OR b AND NOT c").resultsIn("{'a' OR {'b' AND {NOT 'c'}}}");
   }
 
   @Test
-  public void parenthesesParsing() throws Exception {
+  void parenthesesParsing() throws Exception {
     assertQuery("a AND (b OR c)").resultsIn("{'a' AND {'b' OR 'c'}}");
     assertQuery("(a OR b) AND NOT c").resultsIn("{{'a' OR 'b'} AND {NOT 'c'}}");
     assertQuery("(a OR B) AND (c OR d AND NOT e OR (f))")
@@ -71,7 +73,7 @@ public class SearchParserAndTokenizerTest {
   }
 
   @Test
-  public void parseImplicitAnd() throws Exception {
+  void parseImplicitAnd() throws Exception {
     assertQuery("a b").resultsIn("{'a' AND 'b'}");
     assertQuery("a b c").resultsIn("{{'a' AND 'b'} AND 'c'}");
     assertQuery("a and b").resultsIn("{{'a' AND 'and'} AND 'b'}");
@@ -83,7 +85,7 @@ public class SearchParserAndTokenizerTest {
   }
 
   @Test
-  public void invalidSearchQuery() throws Exception {
+  void invalidSearchQuery() throws Exception {
     assertQuery("NOT").resultsIn(SearchParserException.MessageKeys.INVALID_NOT_OPERAND);
     assertQuery("AND").resultsInExpectedTerm(SearchQueryToken.Token.AND.name());
     assertQuery("OR").resultsInExpectedTerm(SearchQueryToken.Token.OR.name());
@@ -118,7 +120,7 @@ public class SearchParserAndTokenizerTest {
    * @throws Exception
    */
   @Test
-  public void searchQueryPhraseAbnfTestcases() throws Exception {
+  void searchQueryPhraseAbnfTestcases() throws Exception {
     // <TestCase Name="5.1.7 Search - simple phrase" Rule="queryOptions">
     assertQuery("\"blue green\"").resultsIn("'blue green'");
     // <TestCase Name="5.1.7 Search - simple phrase" Rule="queryOptions">

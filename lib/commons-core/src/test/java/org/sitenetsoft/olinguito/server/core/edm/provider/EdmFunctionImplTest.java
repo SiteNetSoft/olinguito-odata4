@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -37,13 +39,13 @@ import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class EdmFunctionImplTest {
+class EdmFunctionImplTest {
 
   private EdmFunction functionImpl1;
   private EdmFunction functionImpl2;
 
   @BeforeEach
-  public void setupFunctions() {
+  void setupFunctions() {
     EdmProviderImpl provider = mock(EdmProviderImpl.class);
 
     CsdlFunction function1 = new CsdlFunction().setReturnType(
@@ -54,24 +56,24 @@ public class EdmFunctionImplTest {
   }
 
   @Test
-  public void isComposableDefaultFalse() {
+  void isComposableDefaultFalse() {
     assertFalse(functionImpl1.isComposable());
   }
 
   @Test
-  public void isComposableSetToTrue() {
+  void isComposableSetToTrue() {
     assertTrue(functionImpl2.isComposable());
   }
 
   @Test
-  public void existingReturnTypeGetsReturned() {
+  void existingReturnTypeGetsReturned() {
     EdmReturnType returnType = functionImpl1.getReturnType();
     assertNotNull(returnType);
     assertEquals("String", returnType.getType().getName());
   }
 
   @Test
-  public void nonExistingReturnTypeResultsInException() {
+  void nonExistingReturnTypeResultsInException() {
       assertThrows(EdmException.class, () -> {
           functionImpl2.getReturnType();
           fail();

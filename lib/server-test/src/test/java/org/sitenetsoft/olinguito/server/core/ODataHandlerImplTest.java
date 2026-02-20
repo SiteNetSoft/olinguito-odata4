@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Improved test assertions
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -92,12 +93,12 @@ import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.verification.VerificationModeFactory;
 
-public class ODataHandlerImplTest {
+class ODataHandlerImplTest {
 
   private static final String BASE_URI = "http://localhost/odata";
 
   @Test
-  public void serviceDocumentNonDefault() throws Exception {
+  void serviceDocumentNonDefault() throws Exception {
     final ServiceDocumentProcessor processor = mock(ServiceDocumentProcessor.class);
     doThrow(new ODataApplicationException("msg", 100, Locale.ENGLISH)).when(processor)
         .readServiceDocument(any(ODataRequest.class), any(ODataResponse.class), any(UriInfo.class),
@@ -126,7 +127,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void serviceDocumentDefault() throws Exception {
+  void serviceDocumentDefault() throws Exception {
     final ODataResponse response = dispatch(HttpMethod.GET, "/", null);
     assertEquals(HttpStatusCode.OK.getStatusCode(), response.getStatusCode());
 
@@ -147,7 +148,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void serviceDocumentRedirect() throws Exception {
+  void serviceDocumentRedirect() throws Exception {
     final ODataResponse response = dispatch(HttpMethod.GET, "", null);
     assertEquals(HttpStatusCode.TEMPORARY_REDIRECT.getStatusCode(), response.getStatusCode());
     assertEquals(BASE_URI + "/", response.getHeader(HttpHeader.LOCATION));
@@ -158,7 +159,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void metadataNonDefault() throws Exception {
+  void metadataNonDefault() throws Exception {
     final MetadataProcessor processor = mock(MetadataProcessor.class);
     doThrow(new ODataApplicationException("msg", 100, Locale.ENGLISH)).when(processor)
     .readMetadata(
@@ -187,7 +188,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void metadataDefault() throws Exception {
+  void metadataDefault() throws Exception {
     final ODataResponse response = dispatch(HttpMethod.GET, "$metadata", null);
     assertEquals(HttpStatusCode.OK.getStatusCode(), response.getStatusCode());
     assertEquals(ContentType.APPLICATION_XML.toContentTypeString(), response.getHeader(HttpHeader.CONTENT_TYPE));
@@ -203,20 +204,20 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void maxVersionNone() {
+  void maxVersionNone() {
     final ODataResponse response = dispatch(HttpMethod.GET, "$metadata", null);
     assertEquals(ODataServiceVersion.V40.toString(), response.getHeader(HttpHeader.ODATA_VERSION));
   }
 
   @Test
-  public void maxVersionSupported() {
+  void maxVersionSupported() {
     final ODataResponse response = dispatch(HttpMethod.GET, "$metadata", null,
         HttpHeader.ODATA_MAX_VERSION, ODataServiceVersion.V40.toString(), null);
     assertEquals(ODataServiceVersion.V40.toString(), response.getHeader(HttpHeader.ODATA_VERSION));
   }
 
   @Test
-  public void maxVersionNotSupported() {
+  void maxVersionNotSupported() {
     final ODataResponse response = dispatch(HttpMethod.GET, "$metadata", null,
         HttpHeader.ODATA_MAX_VERSION, ODataServiceVersion.V30.toString(), null);
 
@@ -225,43 +226,43 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void contentNegotiationSupported() {
+  void contentNegotiationSupported() {
     final ODataResponse response = dispatch(HttpMethod.GET, "$metadata", "$format=xml", null, null, null);
     assertEquals(HttpStatusCode.OK.getStatusCode(), response.getStatusCode());
   }
 
   @Test
-  public void contentNegotiationNotSupported() {
+  void contentNegotiationNotSupported() {
     final ODataResponse response = dispatch(HttpMethod.GET, "$metadata", "$format=not/Supported", null, null, null);
     assertEquals(HttpStatusCode.NOT_ACCEPTABLE.getStatusCode(), response.getStatusCode());
   }
 
   @Test
-  public void contentNegotiationNotSupported2() {
+  void contentNegotiationNotSupported2() {
     final ODataResponse response = dispatch(HttpMethod.GET, "$metadata", "$format=notSupported", null, null, null);
     assertEquals(HttpStatusCode.NOT_ACCEPTABLE.getStatusCode(), response.getStatusCode());
   }
 
   @Test
-  public void unregisteredProcessor() {
+  void unregisteredProcessor() {
     final ODataResponse response = dispatch(HttpMethod.GET, "ESAllPrim", null);
     assertEquals(HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), response.getStatusCode());
   }
 
   @Test
-  public void uriParserExceptionResultsInRightResponseNotFound() throws Exception {
+  void uriParserExceptionResultsInRightResponseNotFound() throws Exception {
     final ODataResponse response = dispatch(HttpMethod.GET, "NotFound", null);
     assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), response.getStatusCode());
   }
 
   @Test
-  public void uriParserExceptionResultsInRightResponseBadRequest() throws Exception {
+  void uriParserExceptionResultsInRightResponseBadRequest() throws Exception {
     final ODataResponse response = dispatch(HttpMethod.GET, "ESAllPrim('122')", null);
     assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), response.getStatusCode());
   }
 
   @Test
-  public void uriParserExceptionWithFormatQueryJson() throws Exception {
+  void uriParserExceptionWithFormatQueryJson() throws Exception {
     final ODataResponse response = dispatch(HttpMethod.GET, "ESAllPrims", "$format=json", "", "", null);
     assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), response.getStatusCode());
     assertEquals("application/json;odata.metadata=minimal",
@@ -269,7 +270,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void uriParserExceptionWithFormatQueryJsonAndMore() throws Exception {
+  void uriParserExceptionWithFormatQueryJsonAndMore() throws Exception {
     final ODataResponse response = dispatch(HttpMethod.GET, "ESAllPrims", "$format=json&$top=3", "", "", null);
     assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), response.getStatusCode());
     assertEquals("application/json;odata.metadata=minimal",
@@ -277,7 +278,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void uriParserExceptionWithFormatJsonAcceptAtom() throws Exception {
+  void uriParserExceptionWithFormatJsonAcceptAtom() throws Exception {
     final ODataResponse response = dispatch(HttpMethod.GET, "ESAllPrims", "$format=json",
         HttpHeader.ACCEPT, ContentType.APPLICATION_ATOM_XML.toContentTypeString(), null);
     assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), response.getStatusCode());
@@ -286,7 +287,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void uriParserExceptionWithFormatQueryAtom() throws Exception {
+  void uriParserExceptionWithFormatQueryAtom() throws Exception {
     final ODataResponse response = dispatch(HttpMethod.GET, "ESAllPrims", "$format=atom", "", "", null);
     assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), response.getStatusCode());
     assertEquals("application/json;odata.metadata=minimal",
@@ -294,7 +295,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void uriParserExceptionWithFormatQueryAtomAndTop() throws Exception {
+  void uriParserExceptionWithFormatQueryAtomAndTop() throws Exception {
     final ODataResponse response = dispatch(HttpMethod.GET, "ESAllPrims", "$format=atom&$top=19", "", "", null);
     assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), response.getStatusCode());
     assertEquals("application/json;odata.metadata=minimal",
@@ -302,7 +303,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void uriParserExceptionWithFormatAtomAcceptJson() throws Exception {
+  void uriParserExceptionWithFormatAtomAcceptJson() throws Exception {
     final ODataResponse response = dispatch(HttpMethod.GET, "ESAllPrims", "$format=atom",
         HttpHeader.ACCEPT, ContentType.APPLICATION_JSON.toContentTypeString(), null);
     assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), response.getStatusCode());
@@ -311,7 +312,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void uriParserExceptionWithFormatQueryInvali() throws Exception {
+  void uriParserExceptionWithFormatQueryInvali() throws Exception {
     final ODataResponse response = dispatch(HttpMethod.GET, "ESAllPrims", "$format=somenotvalid", "", "", null);
     assertEquals(HttpStatusCode.NOT_ACCEPTABLE.getStatusCode(), response.getStatusCode());
     assertEquals("application/json;odata.metadata=minimal",
@@ -319,7 +320,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void applicationExceptionInProcessorMessage() throws Exception {
+  void applicationExceptionInProcessorMessage() throws Exception {
     final String ODATA_ERRORCODE = "425";
     final String ORIGINAL_MESSAGE = "original message";
     final String LOCALIZED_MESSAGE = "localized message";
@@ -351,7 +352,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void applicationExceptionInProcessor() throws Exception {
+  void applicationExceptionInProcessor() throws Exception {
     MetadataProcessor processor = mock(MetadataProcessor.class);
     doThrow(new ODataApplicationException("msg", 425, Locale.ENGLISH)).when(processor).readMetadata(
         any(ODataRequest.class), any(ODataResponse.class), any(UriInfo.class), any(ContentType.class));
@@ -360,7 +361,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void uriParserExceptionResultsInRightResponseEdmCause() throws Exception {
+  void uriParserExceptionResultsInRightResponseEdmCause() throws Exception {
     final OData odata = OData.newInstance();
     final ServiceMetadata serviceMetadata = odata.createServiceMetadata(
         new CsdlAbstractEdmProvider() {
@@ -383,7 +384,7 @@ public class ODataHandlerImplTest {
   }
   
   @Test
-  public void handlerExtTest() throws Exception {
+  void handlerExtTest() throws Exception {
     final OData odata = OData.newInstance();
     final ServiceMetadata serviceMetadata = odata.createServiceMetadata(
         new CsdlAbstractEdmProvider() {
@@ -406,7 +407,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void dispatchBatch() throws Exception {
+  void dispatchBatch() throws Exception {
     final String uri = "$batch";
     final BatchProcessor processor = mock(BatchProcessor.class);
 
@@ -422,7 +423,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void dispatchEntitySet() throws Exception {
+  void dispatchEntitySet() throws Exception {
     final String uri = "ESAllPrim";
     final EntityCollectionProcessor processor = mock(EntityCollectionProcessor.class);
 
@@ -437,7 +438,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void dispatchEntitySetCount() throws Exception {
+  void dispatchEntitySetCount() throws Exception {
     final String uri = "ESAllPrim/$count";
     final CountEntityCollectionProcessor processor = mock(CountEntityCollectionProcessor.class);
 
@@ -453,7 +454,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void dispatchCountWithNavigation() throws Exception {
+  void dispatchCountWithNavigation() throws Exception {
     final CountEntityCollectionProcessor processor = mock(CountEntityCollectionProcessor.class);
     String uri = "ESAllPrim(0)/NavPropertyETTwoPrimMany/$count";
     dispatch(HttpMethod.GET, uri, processor);
@@ -468,7 +469,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void dispatchFunction() throws Exception {
+  void dispatchFunction() throws Exception {
     EntityProcessor entityProcessor = mock(EntityProcessor.class);
     dispatch(HttpMethod.GET, "FICRTETKeyNav()", entityProcessor);
     verify(entityProcessor).readEntity(
@@ -561,7 +562,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void dispatchAction() throws Exception {
+  void dispatchAction() throws Exception {
     final ActionPrimitiveProcessor primitiveProcessor = mock(ActionPrimitiveProcessor.class);
     dispatch(HttpMethod.POST, ContainerProvider.AIRT_STRING, primitiveProcessor);
     verify(primitiveProcessor).processActionPrimitive(
@@ -627,7 +628,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void dispatchEntity() throws Exception {
+  void dispatchEntity() throws Exception {
     final String uri = "ESAllPrim(0)";
     final EntityProcessor processor = mock(EntityProcessor.class);
 
@@ -658,7 +659,7 @@ public class ODataHandlerImplTest {
 
 
   @Test
-  public void dispatchSingleton() throws Exception {
+  void dispatchSingleton() throws Exception {
     final String uri = "SI";
     final EntityProcessor processor = mock(EntityProcessor.class);
     
@@ -681,7 +682,7 @@ public class ODataHandlerImplTest {
   }
   
   @Test
-  public void dispatchSingletonMedia() throws Exception {
+  void dispatchSingletonMedia() throws Exception {
     final String uri = "SIMedia/$value";
     final MediaEntityProcessor processor = mock(MediaEntityProcessor.class);
     
@@ -700,7 +701,7 @@ public class ODataHandlerImplTest {
   }
   
   @Test
-  public void dispatchSingletonNavigation() throws Exception {
+  void dispatchSingletonNavigation() throws Exception {
     final String uri = "SINav/NavPropertyETTwoKeyNavOne";
     final String sigletonNavUri = "ESTwoKeyNav(PropertyInt16=1,PropertyString='1')/NavPropertySINav";
     final String sigletonManyNavUri = "SINav/NavPropertyETTwoKeyNavMany";
@@ -763,7 +764,7 @@ public class ODataHandlerImplTest {
   }
   
   @Test
-  public void dispatchMedia() throws Exception {
+  void dispatchMedia() throws Exception {
     final String uri = "ESMedia(1)/$value";
     final MediaEntityProcessor processor = mock(MediaEntityProcessor.class);
 
@@ -788,7 +789,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void dispatchValueOnNoMedia() throws Exception {
+  void dispatchValueOnNoMedia() throws Exception {
     final String uri = "ESAllPrim(1)/$value";
     final MediaEntityProcessor processor = mock(MediaEntityProcessor.class);
 
@@ -809,7 +810,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void dispatchMediaWithNavigation() throws Exception {
+  void dispatchMediaWithNavigation() throws Exception {
     /*
      * In Java we decided that any kind of navigation will be accepted. This means that a $value on a media resource
      * must be dispatched as well
@@ -838,7 +839,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void dispatchMediaDeleteIndirect() throws Exception {
+  void dispatchMediaDeleteIndirect() throws Exception {
     final MediaEntityProcessor processor = mock(MediaEntityProcessor.class);
     dispatch(HttpMethod.DELETE, "ESMedia(1)", processor);
 
@@ -847,7 +848,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void dispatchPrimitiveProperty() throws Exception {
+  void dispatchPrimitiveProperty() throws Exception {
     final String uri = "ESAllPrim(0)/PropertyString";
     final PrimitiveProcessor processor = mock(PrimitiveProcessor.class);
 
@@ -873,7 +874,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void dispatchPrimitivePropertyValue() throws Exception {
+  void dispatchPrimitivePropertyValue() throws Exception {
     final String uri = "ESAllPrim(0)/PropertyString/$value";
     final PrimitiveValueProcessor processor = mock(PrimitiveValueProcessor.class);
 
@@ -896,7 +897,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void dispatchPrimitiveCollectionProperty() throws Exception {
+  void dispatchPrimitiveCollectionProperty() throws Exception {
     final String uri = "ESMixPrimCollComp(7)/CollPropertyString";
     final PrimitiveCollectionProcessor processor = mock(PrimitiveCollectionProcessor.class);
 
@@ -921,7 +922,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void dispatchPrimitiveCollectionPropertyCount() throws Exception {
+  void dispatchPrimitiveCollectionPropertyCount() throws Exception {
     final String uri = "ESMixPrimCollComp(7)/CollPropertyString/$count";
     final CountPrimitiveCollectionProcessor processor = mock(CountPrimitiveCollectionProcessor.class);
 
@@ -936,7 +937,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void dispatchComplexProperty() throws Exception {
+  void dispatchComplexProperty() throws Exception {
     final String uri = "ESMixPrimCollComp(7)/PropertyComp";
     final ComplexProcessor processor = mock(ComplexProcessor.class);
 
@@ -962,7 +963,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void dispatchComplexCollectionProperty() throws Exception {
+  void dispatchComplexCollectionProperty() throws Exception {
     final String uri = "ESMixPrimCollComp(7)/CollPropertyComp";
     final ComplexCollectionProcessor processor = mock(ComplexCollectionProcessor.class);
 
@@ -986,7 +987,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void dispatchComplexCollectionPropertyCount() throws Exception {
+  void dispatchComplexCollectionPropertyCount() throws Exception {
     final String uri = "ESMixPrimCollComp(7)/CollPropertyComp/$count";
     final CountComplexCollectionProcessor processor = mock(CountComplexCollectionProcessor.class);
 
@@ -1001,7 +1002,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void dispatchReference() throws Exception {
+  void dispatchReference() throws Exception {
     final String uri = "ESAllPrim(0)/NavPropertyETTwoPrimOne/$ref";
     final String uriMany = "ESAllPrim(0)/NavPropertyETTwoPrimMany/$ref";
     final String singletonUri = "SINav/NavPropertyETKeyNavOne/$ref";
@@ -1073,7 +1074,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void dispatchReferenceCollection() throws Exception {
+  void dispatchReferenceCollection() throws Exception {
     final String uri = "ESAllPrim(0)/NavPropertyETTwoPrimMany/$ref";
     final String singletonUri = "SINav/NavPropertyETTwoKeyNavMany/$ref";
     final ReferenceCollectionProcessor processor = mock(ReferenceCollectionProcessor.class);
@@ -1098,7 +1099,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void noRequestContentType() throws Exception {
+  void noRequestContentType() throws Exception {
     EntityProcessor processor = mock(EntityProcessor.class);
     final ODataResponse response = dispatch(HttpMethod.POST, "ESAllPrim", null,
         HttpHeader.CONTENT_TYPE, null, processor);
@@ -1106,7 +1107,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void illegalRequestContentType() throws Exception {
+  void illegalRequestContentType() throws Exception {
     EntityProcessor processor = mock(EntityProcessor.class);
     final ODataResponse response = dispatch(HttpMethod.POST, "ESAllPrim", null,
         HttpHeader.CONTENT_TYPE, "*/*", processor);
@@ -1115,7 +1116,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void unsupportedRequestContentType() throws Exception {
+  void unsupportedRequestContentType() throws Exception {
     EntityProcessor processor = mock(EntityProcessor.class);
     ErrorProcessor errorProcessor = mock(ErrorProcessor.class);
     dispatch(HttpMethod.POST, "ESAllPrim", null, HttpHeader.CONTENT_TYPE, "some/unsupported", errorProcessor);
@@ -1161,7 +1162,7 @@ public class ODataHandlerImplTest {
   }
 
   @Test
-  public void dispatchEmptyContentWithoutContentType() {
+  void dispatchEmptyContentWithoutContentType() {
     final String path = "ESAllPrim";
     final EntityCollectionProcessor processor = mock(EntityCollectionProcessor.class);
     
@@ -1204,7 +1205,7 @@ public class ODataHandlerImplTest {
   }
   
   @Test
-  public void validateInvalidOdataVersion1() throws Exception {
+  void validateInvalidOdataVersion1() throws Exception {
     final String uri = "ESAllPrim(0)";
     final EntityProcessor processor = mock(EntityProcessor.class);
 
@@ -1220,7 +1221,7 @@ public class ODataHandlerImplTest {
   }
   
   @Test
-  public void validateInvalidOdataVersion2() throws Exception {
+  void validateInvalidOdataVersion2() throws Exception {
     final String uri = "ESAllPrim(0)";
     final EntityProcessor processor = mock(EntityProcessor.class);
 
@@ -1237,7 +1238,7 @@ public class ODataHandlerImplTest {
   }
   
   @Test
-  public void validateInvalidOdataMaxVersion1() throws Exception {
+  void validateInvalidOdataMaxVersion1() throws Exception {
     final String uri = "ESAllPrim(0)";
     final EntityProcessor processor = mock(EntityProcessor.class);
 
@@ -1254,7 +1255,7 @@ public class ODataHandlerImplTest {
   }
   
   @Test
-  public void validateValidOdataMaxVersion2() throws Exception {
+  void validateValidOdataMaxVersion2() throws Exception {
     final String uri = "ESAllPrim(0)";
     final EntityProcessor processor = mock(EntityProcessor.class);
 
@@ -1267,7 +1268,7 @@ public class ODataHandlerImplTest {
   }
   
   @Test
-  public void validateValidOdataVersionAndMaxVersion1() throws Exception {
+  void validateValidOdataVersionAndMaxVersion1() throws Exception {
     final String uri = "ESAllPrim(0)";
     final EntityProcessor processor = mock(EntityProcessor.class);
 
@@ -1281,7 +1282,7 @@ public class ODataHandlerImplTest {
   }
   
   @Test
-  public void validateInvalidOdataVersionAndMaxVersion2() throws Exception {
+  void validateInvalidOdataVersionAndMaxVersion2() throws Exception {
     final String uri = "ESAllPrim(0)";
     final EntityProcessor processor = mock(EntityProcessor.class);
 
@@ -1299,7 +1300,7 @@ public class ODataHandlerImplTest {
   }
   
   @Test
-  public void validateInvalidOdataVersionAndMaxVersion3() throws Exception {
+  void validateInvalidOdataVersionAndMaxVersion3() throws Exception {
     final String uri = "ESAllPrim(0)";
     final EntityProcessor processor = mock(EntityProcessor.class);
 
@@ -1317,7 +1318,7 @@ public class ODataHandlerImplTest {
   }
   
   @Test
-  public void validateValidOdataVersionAndMaxVersion2() throws Exception {
+  void validateValidOdataVersionAndMaxVersion2() throws Exception {
     final String uri = "ESAllPrim(0)";
     final EntityProcessor processor = mock(EntityProcessor.class);
 
@@ -1331,7 +1332,7 @@ public class ODataHandlerImplTest {
   }
   
   @Test
-  public void validateValidOdataVersionAndMaxVersion3() throws Exception {
+  void validateValidOdataVersionAndMaxVersion3() throws Exception {
     final String uri = "ESAllPrim(0)";
     final EntityProcessor processor = mock(EntityProcessor.class);
 

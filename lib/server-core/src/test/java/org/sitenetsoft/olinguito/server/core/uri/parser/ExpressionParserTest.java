@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -54,12 +55,12 @@ import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidationExceptio
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class ExpressionParserTest {
+class ExpressionParserTest {
 
   private final OData odata = OData.newInstance();
 
   @Test
-  public void equality() throws Exception {
+  void equality() throws Exception {
     Expression expression = parseExpression("5 eq 5");
     assertEquals("{5 EQ 5}", expression.toString());
 
@@ -75,7 +76,7 @@ public class ExpressionParserTest {
   }
 
   @Test
-  public void testIntegerTypes() throws Exception {
+  void testIntegerTypes() throws Exception {
     Expression expression = parseExpression("5 ne 545678979");
     assertEquals("{5 NE 545678979}", expression.toString());
     
@@ -93,7 +94,7 @@ public class ExpressionParserTest {
   }
   
   @Test
-  public void relational() throws Exception {
+  void relational() throws Exception {
     Expression expression = parseExpression("5 gt 5");
     assertEquals("{5 GT 5}", expression.toString());
 
@@ -116,7 +117,7 @@ public class ExpressionParserTest {
   }
 
   @Test
-  public void additive() throws Exception {
+  void additive() throws Exception {
     Expression expression = parseExpression("5 add 5");
     assertEquals("{5 ADD 5}", expression.toString());
 
@@ -154,7 +155,7 @@ public class ExpressionParserTest {
   }
 
   @Test
-  public void multiplicative() throws Exception {
+  void multiplicative() throws Exception {
     Expression expression = parseExpression("5 mul 5");
     assertEquals("{5 MUL 5}", expression.toString());
 
@@ -168,7 +169,7 @@ public class ExpressionParserTest {
   }
 
   @Test
-  public void unary() throws Exception {
+  void unary() throws Exception {
     Expression expression = parseExpression("-5");
     assertEquals("-5", expression.toString());
 
@@ -182,7 +183,7 @@ public class ExpressionParserTest {
   }
 
   @Test
-  public void grouping() throws Exception {
+  void grouping() throws Exception {
     Expression expression = parseExpression("-5 add 5");
     assertEquals("{-5 ADD 5}", expression.toString());
 
@@ -195,13 +196,13 @@ public class ExpressionParserTest {
   }
 
   @Test
-  public void precedence() throws Exception {
+  void precedence() throws Exception {
     assertEquals("{-1 ADD {2 DIV 3}}", parseExpression("-1 add 2 div 3").toString());
     assertEquals("{true OR {{NOT false} AND true}}", parseExpression("true or not false and true").toString());
   }
 
   @Test
-  public void noParameterMethods() throws Exception {
+  void noParameterMethods() throws Exception {
     parseMethod(TokenKind.NowMethod);
     parseMethod(TokenKind.MaxdatetimeMethod);
     parseMethod(TokenKind.MindatetimeMethod);
@@ -210,7 +211,7 @@ public class ExpressionParserTest {
   }
 
   @Test
-  public void oneParameterMethods() throws Exception {
+  void oneParameterMethods() throws Exception {
     final String stringValue = "'abc'";
     final String dateValue = "1234-12-25";
     final String dateTimeOffsetValue = "1234-12-25T11:12:13.456Z";
@@ -239,7 +240,7 @@ public class ExpressionParserTest {
   }
 
   @Test
-  public void twoParameterMethods() throws Exception {
+  void twoParameterMethods() throws Exception {
     parseMethod(TokenKind.ContainsMethod, "'a'", "'b'");
     parseMethod(TokenKind.EndswithMethod, "'a'", "'b'");
     parseMethod(TokenKind.StartswithMethod, "'a'", "'b'");
@@ -265,7 +266,7 @@ public class ExpressionParserTest {
 }
 
   @Test
-  public void variableParameterNumberMethods() throws Exception {
+  void variableParameterNumberMethods() throws Exception {
     parseMethod(TokenKind.SubstringMethod, "'abc'", "1", "2");
     parseMethod(TokenKind.SubstringMethod, "'abc'", "1");
 
@@ -285,7 +286,7 @@ public class ExpressionParserTest {
   }
 
   @Test
-  public void twoParameterAliasMethods() throws Exception {
+  void twoParameterAliasMethods() throws Exception {
     parseMethodWithParametersWithAlias(TokenKind.SubstringofMethod, "'a'", "'b'");
     parseMethodWithParametersWithoutAlias(TokenKind.SubstringofMethod, "'a'", "'b'");
   }
@@ -381,7 +382,7 @@ public class ExpressionParserTest {
   }
   
   @Test
-  public void testPropertyPathExp() throws Exception {
+  void testPropertyPathExp() throws Exception {
     final String entitySetName = "ESName";
     final String keyPropertyName = "a";
     EdmProperty keyProperty = mockProperty(keyPropertyName,
@@ -452,7 +453,7 @@ public class ExpressionParserTest {
   }
   
   @Test
-  public void testPropertyPathExpWithoutType() throws Exception {
+  void testPropertyPathExpWithoutType() throws Exception {
       assertThrows(UriParserSemanticException.class, () -> {
           final String entitySetName = "ESName";
           final String keyPropertyName = "a";
@@ -472,7 +473,7 @@ public class ExpressionParserTest {
   }
   
   @Test
-  public void testPropertyPathExpWithoutProperty() throws Exception {
+  void testPropertyPathExpWithoutProperty() throws Exception {
       assertThrows(UriParserSemanticException.class, () -> {
           final String entitySetName = "ESName";
           final String keyPropertyName = "a";
@@ -514,7 +515,7 @@ public class ExpressionParserTest {
   }
   
   @Test
-  public void testComplexPropertyPathExp() throws Exception {
+  void testComplexPropertyPathExp() throws Exception {
     final String entitySetName = "ESName";
     final String keyPropertyName = "a";
     final String complexPropertyName = "comp";
@@ -575,7 +576,7 @@ public class ExpressionParserTest {
   }
   
   @Test
-  public void testLambdaPropertyPathExp() throws Exception {
+  void testLambdaPropertyPathExp() throws Exception {
     final String entitySetName = "ESName";
     final String keyPropertyName = "a";
     final String complexPropertyName = "comp";
@@ -614,7 +615,7 @@ public class ExpressionParserTest {
   }
   
   @Test
-  public void testNavigationPropertyPathExp() throws Exception {
+  void testNavigationPropertyPathExp() throws Exception {
     final String entitySetName = "ESName";
     final String keyPropertyName = "a";
     final String complexPropertyName = "comp";
@@ -661,7 +662,7 @@ public class ExpressionParserTest {
   }
   
   @Test
-  public void testDerivedPathExp() throws Exception {
+  void testDerivedPathExp() throws Exception {
     final String derivedEntitySetName = "ESName";
     final String keyPropertyName = "a";
     final String propertyName = "navProp";

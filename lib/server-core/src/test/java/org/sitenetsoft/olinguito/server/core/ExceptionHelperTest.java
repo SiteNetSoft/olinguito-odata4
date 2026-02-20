@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -35,12 +37,12 @@ import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserSemanticExcepti
 import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidationException;
 import org.junit.jupiter.api.Test;
 
-public class ExceptionHelperTest {
+class ExceptionHelperTest {
 
   private static final String DEV_MSG = "devMsg";
 
   @Test
-  public void withRuntimeException() {
+  void withRuntimeException() {
     final Exception e = new NullPointerException();
     ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(e);
     assertEquals(HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode(), serverError.getStatusCode());
@@ -49,7 +51,7 @@ public class ExceptionHelperTest {
   }
 
   @Test
-  public void withRuntimeExceptionAndText() {
+  void withRuntimeExceptionAndText() {
     final Exception e = new NullPointerException("Text");
     ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(e);
     assertEquals(HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode(), serverError.getStatusCode());
@@ -58,7 +60,7 @@ public class ExceptionHelperTest {
   }
 
   @Test
-  public void uriValidatorExceptionMustLeadToBadRequest() {
+  void uriValidatorExceptionMustLeadToBadRequest() {
     for (MessageKey key : UriValidationException.MessageKeys.values()) {
       final UriValidationException e = new UriValidationException(DEV_MSG, key);
       ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(e, null);
@@ -67,7 +69,7 @@ public class ExceptionHelperTest {
   }
 
   @Test
-  public void deserializerExceptionMustLeadToBadRequest() {
+  void deserializerExceptionMustLeadToBadRequest() {
     for (MessageKey key : DeserializerException.MessageKeys.values()) {
       final DeserializerException e = new DeserializerException(DEV_MSG, key);
       ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(e, null);
@@ -76,7 +78,7 @@ public class ExceptionHelperTest {
   }
 
   @Test
-  public void serializerExceptionMustLeadToBadRequest() {
+  void serializerExceptionMustLeadToBadRequest() {
     for (MessageKey key : SerializerException.MessageKeys.values()) {
       final SerializerException e = new SerializerException(DEV_MSG, key);
       ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(e, null);
@@ -85,7 +87,7 @@ public class ExceptionHelperTest {
   }
   
   @Test
-  public void libraryExceptionLeadToBadRequest() {
+  void libraryExceptionLeadToBadRequest() {
       ODataLibraryException e = new SerializerException(DEV_MSG, SerializerException.MessageKeys.MISSING_PROPERTY);
       ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(e, null);
       checkStatusCode(serverError, HttpStatusCode.BAD_REQUEST, e);
@@ -95,7 +97,7 @@ public class ExceptionHelperTest {
   }
 
   @Test
-  public void contentNegotiatorExceptionMustLeadToNotAcceptable() {
+  void contentNegotiatorExceptionMustLeadToNotAcceptable() {
     for (MessageKey key : ContentNegotiatorException.MessageKeys.values()) {
       final ContentNegotiatorException e = new ContentNegotiatorException(DEV_MSG, key);
       ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(e, null);
@@ -104,7 +106,7 @@ public class ExceptionHelperTest {
   }
 
   @Test
-  public void preconditionRequiredTesting() {
+  void preconditionRequiredTesting() {
     for (MessageKey key : PreconditionException.MessageKeys.values()) {
       final PreconditionException e = new PreconditionException(DEV_MSG, key);
       ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(e, null);
@@ -121,7 +123,7 @@ public class ExceptionHelperTest {
   }
 
   @Test
-  public void httpHandlerExceptions() {
+  void httpHandlerExceptions() {
     for (MessageKey key : ODataHandlerException.MessageKeys.values()) {
       final ODataHandlerException e = new ODataHandlerException(DEV_MSG, key);
       ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(e, null);
@@ -138,7 +140,7 @@ public class ExceptionHelperTest {
   }
 
   @Test
-  public void withNotImplementedException() {
+  void withNotImplementedException() {
     final UriParserSemanticException  e = new UriParserSemanticException("Exception", 
         UriParserSemanticException.MessageKeys.NOT_IMPLEMENTED, "Method");
     ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(e, Locale.ENGLISH);
@@ -148,7 +150,7 @@ public class ExceptionHelperTest {
   }
   
   @Test
-  public void uriParserException() {
+  void uriParserException() {
     final UriParserException  e = new UriParserSemanticException("Exception", 
         UriParserSemanticException.MessageKeys.NOT_IMPLEMENTED, "Method");
     ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(e, Locale.ENGLISH);
@@ -158,7 +160,7 @@ public class ExceptionHelperTest {
   }
   
   @Test
-  public void acceptHeaderException() {
+  void acceptHeaderException() {
     final AcceptHeaderContentNegotiatorException   e = new AcceptHeaderContentNegotiatorException ("Exception", 
         UriParserSemanticException.MessageKeys.INVALID_KEY_VALUE, "Method");
     ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(e, Locale.ENGLISH);

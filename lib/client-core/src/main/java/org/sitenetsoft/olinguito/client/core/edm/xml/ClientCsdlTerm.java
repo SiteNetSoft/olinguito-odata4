@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
+ * Copyright 2026 SiteNetSoft - Cached compiled regex pattern for split()
  */
 package org.sitenetsoft.olinguito.client.core.edm.xml;
 
@@ -36,12 +37,14 @@ import java.io.IOException;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @JsonDeserialize(using = ClientCsdlTerm.TermDeserializer.class)
 class ClientCsdlTerm extends CsdlTerm implements Serializable {
 
   @Serial
   private static final long serialVersionUID = -8350072064720586186L;
+  private static final Pattern WHITESPACE = Pattern.compile("\\s+");
 
   static class TermDeserializer extends AbstractClientCsdlEdmDeserializer<ClientCsdlTerm> {
     @Override
@@ -79,7 +82,7 @@ class ClientCsdlTerm extends CsdlTerm implements Serializable {
           } else if ("AppliesTo".equals(jp.currentName())) {
             String text = jp.nextTextValue();
             term.getAppliesTo().addAll(List.of(
-                text != null ? text.trim().split("\\s+") : new String[0]));
+                text != null ? WHITESPACE.split(text.trim()) : new String[0]));
           } else if ("Annotation".equals(jp.currentName())) {
             jp.nextToken();
             term.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));

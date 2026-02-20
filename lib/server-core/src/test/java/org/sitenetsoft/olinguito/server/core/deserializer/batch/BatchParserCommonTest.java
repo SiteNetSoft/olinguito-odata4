@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.batch;
 
@@ -31,13 +33,13 @@ import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchDeserializer
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class BatchParserCommonTest {
+class BatchParserCommonTest {
 
   private static final String CRLF = "\r\n";
   private static final String MULTIPART_MIXED = "multipart/mixed";
 
   @Test
-  public void multipleHeaders() throws Exception {
+  void multipleHeaders() throws Exception {
     final Header header = BatchParserCommon.consumeHeaders(toLineList(
         "Content-Id: 1" + CRLF,
         "Content-Id: 2" + CRLF,
@@ -53,7 +55,7 @@ public class BatchParserCommonTest {
   }
 
   @Test
-  public void multipleHeadersSameValue() throws Exception {
+  void multipleHeadersSameValue() throws Exception {
     final Header header = BatchParserCommon.consumeHeaders(toLineList(
         "Content-Id: 1" + CRLF,
         "Content-Id: 1" + CRLF,
@@ -68,7 +70,7 @@ public class BatchParserCommonTest {
   }
 
   @Test
-  public void headersSeparatedByComma() throws Exception {
+  void headersSeparatedByComma() throws Exception {
     final Header header = BatchParserCommon.consumeHeaders(toLineList(
         "Content-Id: 1" + CRLF,
         "Upgrade: HTTP/2.0, SHTTP/1.3, IRC/6.9, RTA/x11" + CRLF,
@@ -86,7 +88,7 @@ public class BatchParserCommonTest {
   }
 
   @Test
-  public void multipleAcceptHeaders() throws Exception {
+  void multipleAcceptHeaders() throws Exception {
     final Header header = BatchParserCommon.consumeHeaders(toLineList(
         "Accept: application/atomsvc+xml;q=0.8, application/json;odata=verbose;q=0.5, */*;q=0.1" + CRLF,
         "Accept: text/plain;q=0.3" + CRLF,
@@ -101,7 +103,7 @@ public class BatchParserCommonTest {
   }
 
   @Test
-  public void multipleAcceptHeadersSameValue() throws Exception {
+  void multipleAcceptHeadersSameValue() throws Exception {
     final Header header = BatchParserCommon.consumeHeaders(toLineList(
         "Accept: application/atomsvc+xml;q=0.8, application/json;odata=verbose;q=0.5, */*;q=0.1" + CRLF,
         "Accept: application/atomsvc+xml;q=0.8" + CRLF,
@@ -116,7 +118,7 @@ public class BatchParserCommonTest {
   }
 
   @Test
-  public void multipleAcceptLanguageHeaders() throws Exception {
+  void multipleAcceptLanguageHeaders() throws Exception {
     final Header header = BatchParserCommon.consumeHeaders(toLineList(
         "Accept-Language:en-US,en;q=0.7,en-UK;q=0.9" + CRLF,
         "Accept-Language: de-DE;q=0.3" + CRLF,
@@ -130,7 +132,7 @@ public class BatchParserCommonTest {
   }
 
   @Test
-  public void multipleAcceptLanguageHeadersSameValue() throws Exception {
+  void multipleAcceptLanguageHeadersSameValue() throws Exception {
     final Header header = BatchParserCommon.consumeHeaders(toLineList(
         "Accept-Language:en-US,en;q=0.7,en-UK;q=0.9" + CRLF,
         "Accept-Language:en-US,en;q=0.7" + CRLF,
@@ -144,7 +146,7 @@ public class BatchParserCommonTest {
   }
 
   @Test
-  public void headersWithSpecialNames() throws Exception {
+  void headersWithSpecialNames() throws Exception {
     final Header header = BatchParserCommon.consumeHeaders(toLineList(
         "Test0123456789: 42" + CRLF,
         "a_b: c/d" + CRLF,
@@ -157,110 +159,110 @@ public class BatchParserCommonTest {
   }
 
   @Test
-  public void headerWithWrongName() throws Exception {
+  void headerWithWrongName() throws Exception {
     final Header header = BatchParserCommon.consumeHeaders(toLineList("a,b: c/d" + CRLF));
     assertNotNull(header);
     assertFalse(header.iterator().hasNext());
   }
 
   @Test
-  public void boundaryParameter() throws Exception {
+  void boundaryParameter() throws Exception {
     final String boundary = "boundary";
     final String contentType = MULTIPART_MIXED + "; boundary=" + boundary + "  ";
     Assertions.assertEquals(boundary, BatchParserCommon.getBoundary(contentType, 0));
   }
 
   @Test
-  public void boundaryParameterWithQuotes() throws Exception {
+  void boundaryParameterWithQuotes() throws Exception {
     final String boundary = "batch_1.2+34:2j)0?";
     final String contentType = MULTIPART_MIXED + "; boundary=\"" + boundary + "\"";
     Assertions.assertEquals(boundary, BatchParserCommon.getBoundary(contentType, 0));
   }
 
   @Test
-  public void boundaryParameterWithSpaces() throws Exception {
+  void boundaryParameterWithSpaces() throws Exception {
     final String boundary = "        boundary";
     final String contentType = MULTIPART_MIXED + "; boundary=\"" + boundary + "\"  ";
     Assertions.assertEquals(boundary, BatchParserCommon.getBoundary(contentType, 0));
   }
 
   @Test
-  public void invalidContentType() throws Exception {
+  void invalidContentType() throws Exception {
     invalidBoundary("multipart;boundary=BOUNDARY", BatchDeserializerException.MessageKeys.INVALID_CONTENT_TYPE);
   }
 
   @Test
-  public void contentTypeCharset() throws Exception {
+  void contentTypeCharset() throws Exception {
     final String contentType = MULTIPART_MIXED + "; charset=UTF-8;boundary=" + BatchParserCommon.BOUNDARY;
     final String boundary = BatchParserCommon.getBoundary(contentType, 0);
     Assertions.assertEquals(BatchParserCommon.BOUNDARY, boundary);
   }
 
   @Test
-  public void withoutBoundaryParameter() throws Exception {
+  void withoutBoundaryParameter() throws Exception {
     invalidBoundary(MULTIPART_MIXED, BatchDeserializerException.MessageKeys.MISSING_BOUNDARY_DELIMITER);
   }
 
   @Test
-  public void boundaryParameterWithoutQuote() throws Exception {
+  void boundaryParameterWithoutQuote() throws Exception {
     invalidBoundary(MULTIPART_MIXED + ";boundary=batch_1740-bb:84-2f7f",
         BatchDeserializerException.MessageKeys.INVALID_BOUNDARY);
   }
 
   @Test
-  public void boundaryEmpty() throws Exception {
+  void boundaryEmpty() throws Exception {
     invalidBoundary(MULTIPART_MIXED + ";boundary=\"\"", BatchDeserializerException.MessageKeys.INVALID_BOUNDARY);
   }
 
   @Test
-  public void boundarySpace() throws Exception {
+  void boundarySpace() throws Exception {
     invalidBoundary(MULTIPART_MIXED + ";boundary=\" \"", BatchDeserializerException.MessageKeys.INVALID_BOUNDARY);
   }
 
   @Test
-  public void removeEndingCRLF() {
+  void removeEndingCRLF() {
     String line = "Test" + CRLF;
     assertEquals("Test", BatchParserCommon.removeEndingCRLF(new Line(line, 1)).toString());
   }
 
   @Test
-  public void removeLastEndingCRLF() {
+  void removeLastEndingCRLF() {
     String line = "Test" + CRLF + CRLF;
     assertEquals("Test" + CRLF, BatchParserCommon.removeEndingCRLF(new Line(line, 1)).toString());
   }
 
   @Test
-  public void removeEndingCRLFWithWS() {
+  void removeEndingCRLFWithWS() {
     String line = "Test" + CRLF + "            ";
     assertEquals("Test", BatchParserCommon.removeEndingCRLF(new Line(line, 1)).toString());
   }
 
   @Test
-  public void removeEndingCRLFNothingToRemove() {
+  void removeEndingCRLFNothingToRemove() {
     String line = "Hallo" + CRLF + "Bla";
     assertEquals(line, BatchParserCommon.removeEndingCRLF(new Line(line, 1)).toString());
   }
 
   @Test
-  public void removeEndingCRLFAll() {
+  void removeEndingCRLFAll() {
     String line = CRLF;
     assertEquals("", BatchParserCommon.removeEndingCRLF(new Line(line, 1)).toString());
   }
 
   @Test
-  public void removeEndingCRLFSpace() {
+  void removeEndingCRLFSpace() {
     String line = CRLF + "                      ";
     assertEquals("", BatchParserCommon.removeEndingCRLF(new Line(line, 1)).toString());
   }
 
   @Test
-  public void removeLastEndingCRLFWithWS() {
+  void removeLastEndingCRLFWithWS() {
     String line = "Test            " + CRLF;
     assertEquals("Test            ", BatchParserCommon.removeEndingCRLF(new Line(line, 1)).toString());
   }
 
   @Test
-  public void removeLastEndingCRLFWithWSLong() {
+  void removeLastEndingCRLFWithWSLong() {
     String line = "Test            " + CRLF + "Test2    " + CRLF;
     assertEquals("Test            " + CRLF + "Test2    ",
         BatchParserCommon.removeEndingCRLF(new Line(line, 1)).toString());

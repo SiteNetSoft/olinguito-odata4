@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core;
 
@@ -37,10 +39,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Furthermore the <code>client-core</code> must have the dependency to the <code>client-api</code>
  * so that is ensured that the ODataClientBuilder is available.
  */
-public class ODataClientBuilderTest {
+class ODataClientBuilderTest {
 
   @Test
-  public void testDefault() {
+  void testDefault() {
     ODataClient client = ODataClientBuilder.createClient();
     assertNotNull(client);
     assertTrue(client instanceof ODataClientImpl);
@@ -53,7 +55,7 @@ public class ODataClientBuilderTest {
   }
 
   @Test
-  public void testSystemProperty() {
+  void testSystemProperty() {
     //CHECKSTYLE:OFF
     System.setProperty(ODataClientBuilder.ODATA_CLIENT_IMPL_SYS_PROPERTY, MyODataClient.class.getName());
     ODataClient client = ODataClientBuilder.createClient();

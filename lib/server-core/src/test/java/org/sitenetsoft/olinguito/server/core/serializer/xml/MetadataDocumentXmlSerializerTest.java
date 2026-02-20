@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
@@ -109,17 +110,17 @@ import org.sitenetsoft.olinguito.server.core.ServiceMetadataImpl;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class MetadataDocumentXmlSerializerTest {
+class MetadataDocumentXmlSerializerTest {
 
   private static ODataSerializer serializer;
 
   @BeforeAll
-  public static void init() throws SerializerException {
+  static void init() throws SerializerException {
     serializer = OData.newInstance().createSerializer(ContentType.APPLICATION_XML);
   }
 
   @Test
-  public void writeMetadataWithEmptyMockedEdm() throws Exception {
+  void writeMetadataWithEmptyMockedEdm() throws Exception {
     final Edm edm = mock(Edm.class);
     ServiceMetadata metadata = mock(ServiceMetadata.class);
     when(metadata.getEdm()).thenReturn(edm);
@@ -132,7 +133,7 @@ public class MetadataDocumentXmlSerializerTest {
 
   /** Writes simplest (empty) Schema. */
   @Test
-  public void writeMetadataWithEmptySchema() throws Exception {
+  void writeMetadataWithEmptySchema() throws Exception {
     EdmSchema schema = mock(EdmSchema.class);
     when(schema.getNamespace()).thenReturn("MyNamespace");
     Edm edm = mock(Edm.class);
@@ -155,7 +156,7 @@ public class MetadataDocumentXmlSerializerTest {
    *  in compliance with OData v4.0, part 3: CSDL, section 14.3
    */
   @Test
-  public void testAnnotationsNestedInEnumMembers() throws Exception {
+  void testAnnotationsNestedInEnumMembers() throws Exception {
     // Create mock schema
     EdmSchema schema = mock(EdmSchema.class);
     when(schema.getNamespace()).thenReturn("MyNamespace");
@@ -209,7 +210,7 @@ public class MetadataDocumentXmlSerializerTest {
 
 
   @Test
-  public void writeEdmxWithLocalTestEdm() throws Exception {
+  void writeEdmxWithLocalTestEdm() throws Exception {
     List<EdmxReference> edmxReferences = new ArrayList<>();
     EdmxReference reference = new EdmxReference(URI.create("http://example.com"));
     edmxReferences.add(reference);
@@ -310,7 +311,7 @@ public class MetadataDocumentXmlSerializerTest {
   }
 
   @Test
-  public void aliasTest() throws Exception {
+  void aliasTest() throws Exception {
     String metadata = localMetadata();
 
     assertTrue(metadata.contains("<EnumType Name=\"ENString\" IsFlags=\"true\" UnderlyingType=\"Edm.Int16\">"));
@@ -336,7 +337,7 @@ public class MetadataDocumentXmlSerializerTest {
   }
 
   @Test
-  public void terms() throws Exception {
+  void terms() throws Exception {
     String metadata = localMetadata();
     assertTrue(metadata.contains("<Term Name=\"Term1\" Type=\"Edm.String\"></Term>"));
     assertTrue(metadata
@@ -348,14 +349,14 @@ public class MetadataDocumentXmlSerializerTest {
   }
   
   @Test
-  public void entityTypeProperties() throws Exception {
+  void entityTypeProperties() throws Exception {
     String metadata = localMetadata();
     assertTrue(metadata.contains("<Property Name=\"PropertyDecimal\" " +
       "Type=\"Edm.Decimal\" Scale=\"variable\"></Property>"));
   }
 
   @Test
-  public void annotationsTest() throws Exception {
+  void annotationsTest() throws Exception {
     String metadata = localMetadata();
     // All constant expressions
     assertTrue(metadata.contains("<Annotations Target=\"Alias.ETAbstract\" Qualifier=\"Tablett\">"));
@@ -441,7 +442,7 @@ public class MetadataDocumentXmlSerializerTest {
   }
 
   @Test
-  public void writeAbstractComplexType() throws Exception {
+  void writeAbstractComplexType() throws Exception {
     EdmSchema schema = mock(EdmSchema.class);
     when(schema.getNamespace()).thenReturn("MyNamespace");
     Edm edm = mock(Edm.class);

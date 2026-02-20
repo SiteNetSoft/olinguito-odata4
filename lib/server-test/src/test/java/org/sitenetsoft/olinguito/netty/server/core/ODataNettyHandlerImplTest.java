@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.netty.server.core;
 
@@ -48,10 +50,10 @@ import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 
-public class ODataNettyHandlerImplTest {
+class ODataNettyHandlerImplTest {
 
   @Test
-  public void testNettyReqResp_GetMethod() {
+  void testNettyReqResp_GetMethod() {
     MetadataProcessor processor = mock(MetadataProcessor.class);
     final ODataNetty odata = ODataNetty.newInstance();
     final ServiceMetadata metadata = odata.createServiceMetadata(
@@ -91,7 +93,7 @@ public class ODataNettyHandlerImplTest {
   }
   
   @Test
-  public void testNettyReqResp_POSTMethod() {
+  void testNettyReqResp_POSTMethod() {
     EntityProcessor processor = mock(EntityProcessor.class);
     final ODataNetty odata = ODataNetty.newInstance();
     final ServiceMetadata metadata = odata.createServiceMetadata(

@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -48,7 +49,7 @@ import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class ODataJsonSerializerWithInstanceAnnotationsTest {
+class ODataJsonSerializerWithInstanceAnnotationsTest {
   private static final OData odata = OData.newInstance();
   private static final ServiceMetadata metadata = odata.createServiceMetadata(
       new EdmTechProvider(), Collections.emptyList(), new MetadataETagSupport("W/\"metadataETag\""));
@@ -62,7 +63,7 @@ public class ODataJsonSerializerWithInstanceAnnotationsTest {
   private final UriHelper helper = odata.createUriHelper();
   
   @Test
-  public void entityWithInstanceAnnotations() throws Exception {
+  void entityWithInstanceAnnotations() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     Annotation annotation = new Annotation();
@@ -107,7 +108,7 @@ public class ODataJsonSerializerWithInstanceAnnotationsTest {
   }
   
   @Test
-  public void entityPropertyWithInstanceAnnotations() throws Exception {
+  void entityPropertyWithInstanceAnnotations() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     Annotation annotation = new Annotation();
@@ -181,7 +182,7 @@ public class ODataJsonSerializerWithInstanceAnnotationsTest {
   }
   
   @Test
-  public void entityComplexPropertyWithInstanceAnnotations() throws Exception {
+  void entityComplexPropertyWithInstanceAnnotations() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESMixPrimCollComp");
     final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
     Annotation annotation = new Annotation();

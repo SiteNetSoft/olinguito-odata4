@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.serializer.utils;
 
@@ -32,12 +34,12 @@ import org.junit.jupiter.api.Test;
 /**
  *
  */
-public class CircleStreamBufferTest {
+class CircleStreamBufferTest {
 
   private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
   @Test
-  public void testSimpleWriteReadSignBySign() throws Exception {
+  void testSimpleWriteReadSignBySign() throws Exception {
     CircleStreamBuffer csb = new CircleStreamBuffer();
 
     OutputStream write = csb.getOutputStream();
@@ -58,7 +60,7 @@ public class CircleStreamBufferTest {
   }
 
   @Test
-  public void testSimpleWriteReadSignBySignMoreThenBufferSize() throws Exception {
+  void testSimpleWriteReadSignBySignMoreThenBufferSize() throws Exception {
     CircleStreamBuffer csb = new CircleStreamBuffer(128);
 
     OutputStream write = csb.getOutputStream();
@@ -80,7 +82,7 @@ public class CircleStreamBufferTest {
   }
 
   @Test
-  public void testSimpleWriteReadOnce() throws Exception {
+  void testSimpleWriteReadOnce() throws Exception {
     CircleStreamBuffer csb = new CircleStreamBuffer();
 
     OutputStream write = csb.getOutputStream();
@@ -94,7 +96,7 @@ public class CircleStreamBufferTest {
   }
 
   @Test
-  public void testSimpleWriteReadTwice() throws Exception {
+  void testSimpleWriteReadTwice() throws Exception {
     CircleStreamBuffer csb = new CircleStreamBuffer();
 
     OutputStream outStream = csb.getOutputStream();
@@ -112,7 +114,7 @@ public class CircleStreamBufferTest {
   }
 
   @Test
-  public void testSimpleWriteReadOnce8k() throws Exception {
+  void testSimpleWriteReadOnce8k() throws Exception {
     CircleStreamBuffer csb = new CircleStreamBuffer();
 
     OutputStream outStream = csb.getOutputStream();
@@ -128,7 +130,7 @@ public class CircleStreamBufferTest {
   }
 
   @Test
-  public void testSimpleWriteExactOneCharacterMoreThenBufferSize() throws Exception {
+  void testSimpleWriteExactOneCharacterMoreThenBufferSize() throws Exception {
     int bufferSize = 4096;
     CircleStreamBuffer csb = new CircleStreamBuffer(bufferSize);
 
@@ -145,7 +147,7 @@ public class CircleStreamBufferTest {
   }
 
   @Test
-  public void testSimpleWriteReadOneCharacterMoreThenBufferSize() throws Exception {
+  void testSimpleWriteReadOneCharacterMoreThenBufferSize() throws Exception {
     int bufferSize = 4096;
     CircleStreamBuffer csb = new CircleStreamBuffer(bufferSize);
 
@@ -162,7 +164,7 @@ public class CircleStreamBufferTest {
   }
 
   @Test
-  public void testSimpleWriteMoreThenDefaultBufferSize() throws Exception {
+  void testSimpleWriteMoreThenDefaultBufferSize() throws Exception {
     CircleStreamBuffer csb = new CircleStreamBuffer();
 
     OutputStream outStream = csb.getOutputStream();
@@ -178,7 +180,7 @@ public class CircleStreamBufferTest {
   }
 
   @Test
-  public void testSimpleWriteMoreThenBufferSize() throws Exception {
+  void testSimpleWriteMoreThenBufferSize() throws Exception {
     int bufferSize = 4096;
     CircleStreamBuffer csb = new CircleStreamBuffer(bufferSize);
 
@@ -195,7 +197,7 @@ public class CircleStreamBufferTest {
   }
 
   @Test
-  public void testSimpleWriteMoreThenBufferSizeAndUmlauts() throws Exception {
+  void testSimpleWriteMoreThenBufferSizeAndUmlauts() throws Exception {
     int bufferSize = 4096;
     CircleStreamBuffer csb = new CircleStreamBuffer(bufferSize);
 
@@ -213,7 +215,7 @@ public class CircleStreamBufferTest {
   }
 
   @Test
-  public void testSimpleWriteMoreThenBufferSizeAndUmlautsIso() throws Exception {
+  void testSimpleWriteMoreThenBufferSizeAndUmlautsIso() throws Exception {
     int bufferSize = 4096;
     CircleStreamBuffer csb = new CircleStreamBuffer(bufferSize);
 
@@ -231,7 +233,7 @@ public class CircleStreamBufferTest {
   }
 
   @Test
-  public void testSimpleWriteALotMoreThenBufferSize() throws Exception {
+  void testSimpleWriteALotMoreThenBufferSize() throws Exception {
     int bufferSize = 4096;
     CircleStreamBuffer csb = new CircleStreamBuffer(bufferSize);
 
@@ -248,7 +250,7 @@ public class CircleStreamBufferTest {
   }
 
   @Test
-  public void testCloseInputStream() throws Exception {
+  void testCloseInputStream() throws Exception {
       assertThrows(IOException.class, () -> {
           CircleStreamBuffer csb = new CircleStreamBuffer();
           OutputStream write = csb.getOutputStream();
@@ -262,7 +264,7 @@ public class CircleStreamBufferTest {
   }
 
   @Test
-  public void testCloseOutputStream() throws Exception {
+  void testCloseOutputStream() throws Exception {
       assertThrows(IOException.class, () -> {
           CircleStreamBuffer csb = new CircleStreamBuffer();
           OutputStream write = csb.getOutputStream();

@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
  * Copyright 2026 SiteNetSoft - Migrated XMLUnit 1.6 to 2.11.0
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.client.core;
 
@@ -70,7 +71,7 @@ import org.xmlunit.diff.DefaultNodeMatcher;
 import org.xmlunit.diff.ElementSelector;
 import org.xmlunit.diff.ElementSelectors;
 
-public class AtomTest extends JSONTest {
+class AtomTest extends JSONTest {
 
   private static final ElementSelector atomLinksSelector = (control, test) -> {
     if (Constants.ATOM_ELEM_LINK.equals(control.getLocalName())
@@ -129,7 +130,7 @@ public class AtomTest extends JSONTest {
   }
 
   @Test
-  public void issue1OLINGO1073() throws Exception {
+  void issue1OLINGO1073() throws Exception {
     final ClientEntity message = client.getObjectFactory().
         newEntity(new FullQualifiedName("Microsoft.OData.SampleService.Models.TripPin.Person"));
     
@@ -216,7 +217,7 @@ public class AtomTest extends JSONTest {
   }
   
   @Test
-  public void issue2OLINGO1073() throws Exception {
+  void issue2OLINGO1073() throws Exception {
     final ClientEntity message = client.getObjectFactory().
         newEntity(new FullQualifiedName("Microsoft.OData.SampleService.Models.TripPin.Person"));
     
@@ -289,7 +290,7 @@ public class AtomTest extends JSONTest {
   }
   
   @Test
-  public void issue3OLINGO1073_WithAnnotations() throws Exception {
+  void issue3OLINGO1073_WithAnnotations() throws Exception {
     InputStream inputStream = getClass().getResourceAsStream(
         "olingo1073_2" + "." + getSuffix(ContentType.APPLICATION_ATOM_XML));
     ClientEntity entity = client.getReader().readEntity(inputStream, ContentType.APPLICATION_ATOM_XML);
@@ -329,7 +330,7 @@ public class AtomTest extends JSONTest {
   }
   
   @Test
-  public void issue2OLINGO1073_WithEntitySet() throws Exception {
+  void issue2OLINGO1073_WithEntitySet() throws Exception {
     final ClientEntity message = createClientEntity();
     
     InputStream inputStream = client.getWriter().writeEntity(message, ContentType.APPLICATION_ATOM_XML);
@@ -612,7 +613,7 @@ public class AtomTest extends JSONTest {
   }
   
   @Test
-  public void testEntitySet() throws Exception {
+  void testEntitySet() throws Exception {
     final StringWriter writer = new StringWriter();
     client.getSerializer(ContentType.APPLICATION_ATOM_XML).write(writer, 
         client.getDeserializer(ContentType.APPLICATION_ATOM_XML).toEntitySet(
@@ -631,7 +632,7 @@ public class AtomTest extends JSONTest {
   }
   
   @Test
-  public void testProperties() throws Exception {
+  void testProperties() throws Exception {
     property("Products_5_SkinColor.xml");
     property("Products_5_CoverColors.xml");
     property("Employees_3_HomeAddress.xml");
@@ -668,7 +669,7 @@ public class AtomTest extends JSONTest {
   }
 
   @Test
-  public void deltas() throws Exception {
+  void deltas() throws Exception {
     delta();
   }
 }

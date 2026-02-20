@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Improved test assertions
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -40,10 +41,10 @@ import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
 import org.sitenetsoft.olinguito.server.core.deserializer.AbstractODataDeserializerTest;
 import org.junit.jupiter.api.Test;
 
-public class ODataDeserializerEntityCollectionTest extends AbstractODataDeserializerTest {
+class ODataDeserializerEntityCollectionTest extends AbstractODataDeserializerTest {
 
   @Test
-  public void esAllPrim() throws Exception {
+  void esAllPrim() throws Exception {
     final EntityCollection entitySet = deserialize(getFileAsStream("ESAllPrim.json"), "ETAllPrim");
     assertNotNull(entitySet);
     assertEquals(3, entitySet.getEntities().size());
@@ -73,7 +74,7 @@ public class ODataDeserializerEntityCollectionTest extends AbstractODataDeserial
   }
 
   @Test
-  public void eSCompCollComp() throws Exception {
+  void eSCompCollComp() throws Exception {
     final EntityCollection entitySet = deserialize(getFileAsStream("ESCompCollComp.json"), "ETCompCollComp");
     assertNotNull(entitySet);
     assertEquals(2, entitySet.getEntities().size());
@@ -82,12 +83,12 @@ public class ODataDeserializerEntityCollectionTest extends AbstractODataDeserial
   }
 
   @Test
-  public void esAllPrimODataAnnotationsAreIgnored() throws Exception {
+  void esAllPrimODataAnnotationsAreIgnored() throws Exception {
     deserialize(getFileAsStream("ESAllPrimWithODataAnnotations.json"), "ETAllPrim");
   }
 
   @Test
-  public void emptyETAllPrim() throws Exception {
+  void emptyETAllPrim() throws Exception {
     String entityCollectionString = "{\"value\" : []}";
     final EntityCollection entityCollection = deserialize(entityCollectionString, "ETAllPrim");
     assertNotNull(entityCollection.getEntities());
@@ -95,72 +96,72 @@ public class ODataDeserializerEntityCollectionTest extends AbstractODataDeserial
   }
 
   @Test
-  public void esAllPrimCustomAnnotationsLeadToNotImplemented() throws Exception {
+  void esAllPrimCustomAnnotationsLeadToNotImplemented() throws Exception {
     expectException(getFileAsStream("ESAllPrimWithCustomAnnotations.json"), "ETAllPrim",
         DeserializerException.MessageKeys.NOT_IMPLEMENTED);
   }
 
   @Test
-  public void esAllPrimDoubleKeysLeadToException() throws Exception {
+  void esAllPrimDoubleKeysLeadToException() throws Exception {
     expectException(getFileAsStream("ESAllPrimWithDoubleKey.json"), "ETAllPrim",
         DeserializerException.MessageKeys.DUPLICATE_PROPERTY);
   }
 
   @Test
-  public void wrongValueTagJsonValueNull() throws Exception {
+  void wrongValueTagJsonValueNull() throws Exception {
     expectException("{\"value\" : null}", "ETAllPrim",
         DeserializerException.MessageKeys.VALUE_TAG_MUST_BE_AN_ARRAY);
   }
 
   @Test
-  public void wrongValueTagJsonValueNumber() throws Exception {
+  void wrongValueTagJsonValueNumber() throws Exception {
     expectException("{\"value\" : 1234}", "ETAllPrim",
         DeserializerException.MessageKeys.VALUE_TAG_MUST_BE_AN_ARRAY);
   }
 
   @Test
-  public void wrongValueTagJsonValueObject() throws Exception {
+  void wrongValueTagJsonValueObject() throws Exception {
     expectException("{\"value\" : {}}", "ETAllPrim",
         DeserializerException.MessageKeys.VALUE_TAG_MUST_BE_AN_ARRAY);
   }
 
   @Test
-  public void valueTagMissing() throws Exception {
+  void valueTagMissing() throws Exception {
     expectException("{}", "ETAllPrim",
         DeserializerException.MessageKeys.VALUE_ARRAY_NOT_PRESENT);
   }
 
   @Test
-  public void wrongValueInValueArrayNumber() throws Exception {
+  void wrongValueInValueArrayNumber() throws Exception {
     expectException("{\"value\" : [1234,123]}", "ETAllPrim",
         DeserializerException.MessageKeys.INVALID_ENTITY);
   }
 
   @Test
-  public void wrongValueInValueArrayNestedArray() throws Exception {
+  void wrongValueInValueArrayNestedArray() throws Exception {
     expectException("{\"value\" : [[],[]]}", "ETAllPrim",
         DeserializerException.MessageKeys.INVALID_ENTITY);
   }
 
   @Test
-  public void invalidJsonSyntax() throws Exception {
+  void invalidJsonSyntax() throws Exception {
     expectException("{\"value\" : }", "ETAllPrim",
         DeserializerException.MessageKeys.JSON_SYNTAX_EXCEPTION);
   }
 
   @Test
-  public void emptyInput() throws Exception {
+  void emptyInput() throws Exception {
     expectException("", "ETAllPrim", DeserializerException.MessageKeys.JSON_SYNTAX_EXCEPTION);
   }
 
   @Test
-  public void unknownContentInCollection() throws Exception {
+  void unknownContentInCollection() throws Exception {
     expectException("{\"value\":[],\"unknown\":null}", "ETAllPrim",
         DeserializerException.MessageKeys.UNKNOWN_CONTENT);
   }
 
   @Test
-  public void customAnnotationNotSupportedYet() throws Exception {
+  void customAnnotationNotSupportedYet() throws Exception {
     expectException("{\"value\": [], \"@custom.annotation\": null}", "ETAllPrim",
         DeserializerException.MessageKeys.NOT_IMPLEMENTED);
   }
