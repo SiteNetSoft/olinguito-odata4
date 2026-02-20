@@ -15,10 +15,14 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced manual hashCode with Objects.hash()
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */package org.sitenetsoft.olinguito.commons.api.edm.provider.annotation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotatable;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
@@ -78,38 +82,13 @@ public class CsdlLabeledElement extends CsdlDynamicExpression implements CsdlAnn
     if (!(obj instanceof CsdlLabeledElement csdlLabelledEle)) {
       return false;
     }
-    return (this.getName() == null ? csdlLabelledEle.getName() == null :
-      this.getName().equals(csdlLabelledEle.getName()))
-        && (this.getValue() == null ? csdlLabelledEle.getValue() == null :
-          this.getValue().equals(csdlLabelledEle.getValue()))
-        && (this.getAnnotations() == null ? csdlLabelledEle.getAnnotations() == null :
-            checkAnnotations(csdlLabelledEle.getAnnotations()));
-  }
-  
-  private boolean checkAnnotations(List<CsdlAnnotation> csdlLabelledEleAnnotations) {
-    if (csdlLabelledEleAnnotations == null) {
-      return false;
-    }
-    if (this.getAnnotations().size() == csdlLabelledEleAnnotations.size()) {
-      for (int i = 0; i < this.getAnnotations().size() ; i++) {
-        if (!this.getAnnotations().get(i).equals(
-            csdlLabelledEleAnnotations.get(i))) {
-          return false;
-        }
-      }
-    } else {
-      return false;
-    }
-    return true;
+    return Objects.equals(this.getName(), csdlLabelledEle.getName())
+        && Objects.equals(this.getValue(), csdlLabelledEle.getValue())
+        && Objects.equals(this.getAnnotations(), csdlLabelledEle.getAnnotations());
   }
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((name == null) ? 0 : name.hashCode());
-    result = prime * result + ((value == null) ? 0 : value.hashCode());
-    result = prime * result + ((annotations == null) ? 0 : annotations.hashCode());
-    return result;
+    return Objects.hash(name, value, annotations);
   }
 }

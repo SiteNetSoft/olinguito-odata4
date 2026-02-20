@@ -17,8 +17,12 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Replaced manual hashCode with Objects.hash()
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.client.core.domain;
+
+import java.util.Objects;
 
 import org.sitenetsoft.olinguito.client.api.domain.AbstractClientValue;
 import org.sitenetsoft.olinguito.client.api.domain.ClientEnumValue;
@@ -60,10 +64,7 @@ public class ClientEnumValueImpl extends AbstractClientValue implements ClientEn
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = super.hashCode();
-    result = prime * result + ((value == null) ? 0 : value.hashCode());
-    return result;
+    return Objects.hash(super.hashCode(), value);
   }
 
   @Override
@@ -77,10 +78,6 @@ public class ClientEnumValueImpl extends AbstractClientValue implements ClientEn
     if (!(obj instanceof ClientEnumValueImpl other)) {
       return false;
     }
-      if (value == null) {
-          return other.value == null;
-    } else {
-      return value.equals(other.value);
-    }
+    return Objects.equals(value, other.value);
   }
 }

@@ -17,10 +17,13 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Replaced manual hashCode with Objects.hash()
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.client.core.domain;
 
 import java.net.URI;
+import java.util.Objects;
 
 import org.sitenetsoft.olinguito.client.api.domain.ClientDeletedEntity;
 import org.sitenetsoft.olinguito.client.api.domain.ClientItem;
@@ -55,11 +58,7 @@ public class ClientDeletedEntityImpl extends ClientItem implements ClientDeleted
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = super.hashCode();
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
-    result = prime * result + ((reason == null) ? 0 : reason.hashCode());
-    return result;
+    return Objects.hash(super.hashCode(), id, reason);
   }
 
   @Override
@@ -73,14 +72,8 @@ public class ClientDeletedEntityImpl extends ClientItem implements ClientDeleted
     if (!(obj instanceof ClientDeletedEntityImpl other)) {
       return false;
     }
-      if (id == null) {
-      if (other.id != null) {
-        return false;
-      }
-    } else if (!id.equals(other.id)) {
-      return false;
-    }
-      return reason == other.reason;
+    return Objects.equals(id, other.id)
+        && reason == other.reason;
   }
 
   @Override

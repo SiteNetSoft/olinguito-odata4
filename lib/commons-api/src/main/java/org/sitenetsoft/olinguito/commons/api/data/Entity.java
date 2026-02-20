@@ -15,12 +15,15 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.commons.api.data;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Data representation for a single entity.
@@ -235,21 +238,18 @@ public class Entity extends Linked {
 
   @Override
   public boolean equals(final Object o) {
+    final Entity other = (Entity) o;
     return super.equals(o)
-        && (eTag == null ? ((Entity) o).eTag == null : eTag.equals(((Entity) o).eTag))
-        && (type == null ? ((Entity) o).type == null : type.equals(((Entity) o).type))
-        && (readLink == null ? ((Entity) o).readLink == null : readLink.equals(((Entity) o).readLink))
-        && (editLink == null ? ((Entity) o).editLink == null : editLink.equals(((Entity) o).editLink))
-        && mediaEditLinks.equals(((Entity) o).mediaEditLinks)
-        && operations.equals(((Entity) o).operations)
-        && properties.equals(((Entity) o).properties)
-        && (mediaContentSource == null ?
-            ((Entity) o).mediaContentSource == null :
-            mediaContentSource.equals(((Entity) o).mediaContentSource))
-        && (mediaContentType == null ?
-            ((Entity) o).mediaContentType == null :
-            mediaContentType.equals(((Entity) o).mediaContentType))
-        && (mediaETag == null ? ((Entity) o).mediaETag == null : mediaETag.equals(((Entity) o).mediaETag));
+        && Objects.equals(eTag, other.eTag)
+        && Objects.equals(type, other.type)
+        && Objects.equals(readLink, other.readLink)
+        && Objects.equals(editLink, other.editLink)
+        && mediaEditLinks.equals(other.mediaEditLinks)
+        && operations.equals(other.operations)
+        && properties.equals(other.properties)
+        && Objects.equals(mediaContentSource, other.mediaContentSource)
+        && Objects.equals(mediaContentType, other.mediaContentType)
+        && Objects.equals(mediaETag, other.mediaETag);
   }
 
   @Override

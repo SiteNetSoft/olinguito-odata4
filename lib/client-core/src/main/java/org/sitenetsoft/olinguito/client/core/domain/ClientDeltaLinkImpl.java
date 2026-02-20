@@ -17,12 +17,15 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Replaced manual hashCode with Objects.hash()
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.client.core.domain;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.sitenetsoft.olinguito.client.api.domain.ClientAnnotation;
 import org.sitenetsoft.olinguito.client.api.domain.ClientDeltaLink;
@@ -79,13 +82,7 @@ public class ClientDeltaLinkImpl extends ClientItem implements ClientDeltaLink {
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = super.hashCode();
-    result = prime * result + annotations.hashCode();
-    result = prime * result + ((relationship == null) ? 0 : relationship.hashCode());
-    result = prime * result + ((source == null) ? 0 : source.hashCode());
-    result = prime * result + ((target == null) ? 0 : target.hashCode());
-    return result;
+    return Objects.hash(super.hashCode(), annotations, relationship, source, target);
   }
 
   @Override
@@ -99,28 +96,10 @@ public class ClientDeltaLinkImpl extends ClientItem implements ClientDeltaLink {
     if (!(obj instanceof ClientDeltaLinkImpl other)) {
       return false;
     }
-      if (!annotations.equals(other.annotations)) {
-        return false;
-      }
-    if (relationship == null) {
-      if (other.relationship != null) {
-        return false;
-      }
-    } else if (!relationship.equals(other.relationship)) {
-      return false;
-    }
-    if (source == null) {
-      if (other.source != null) {
-        return false;
-      }
-    } else if (!source.equals(other.source)) {
-      return false;
-    }
-    if (target == null) {
-        return other.target == null;
-    } else {
-      return target.equals(other.target);
-    }
+    return annotations.equals(other.annotations)
+        && Objects.equals(relationship, other.relationship)
+        && Objects.equals(source, other.source)
+        && Objects.equals(target, other.target);
   }
 
   @Override

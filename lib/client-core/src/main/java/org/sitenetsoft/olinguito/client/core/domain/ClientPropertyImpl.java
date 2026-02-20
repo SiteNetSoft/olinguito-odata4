@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Replaced manual hashCode with Objects.hash()
  */
 package org.sitenetsoft.olinguito.client.core.domain;
 
@@ -99,12 +100,7 @@ public final class ClientPropertyImpl extends ClientValuableImpl implements Clie
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + annotations.hashCode();
-    result = prime * result + ((name == null) ? 0 : name.hashCode());
-    result = prime * result + ((value == null) ? 0 : value.hashCode());
-    return result;
+    return Objects.hash(annotations, name, value);
   }
 
   @Override

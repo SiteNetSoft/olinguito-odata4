@@ -17,8 +17,11 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Double boxing with Double.hashCode() static method
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.commons.api.edm.geo;
+
+import java.util.Objects;
 
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 
@@ -119,7 +122,7 @@ public class Point extends Geospatial {
 
     final Point point = (Point) o;
     return dimension == point.dimension
-        && (srid == null ? point.srid == null : srid.equals(point.srid))
+        && Objects.equals(srid, point.srid)
         && x == point.x
         && y == point.y
         && z == point.z;

@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Replaced manual hashCode with Objects.hash()
  */
 package org.sitenetsoft.olinguito.client.core.domain;
 
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import org.sitenetsoft.olinguito.client.api.domain.AbstractClientValue;
 import org.sitenetsoft.olinguito.client.api.domain.ClientCollectionValue;
@@ -124,10 +126,7 @@ public class ClientCollectionValueImpl<OV extends ClientValue> extends AbstractC
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = super.hashCode();
-    result = prime * result + (values.hashCode());
-    return result;
+    return Objects.hash(super.hashCode(), values);
   }
 
   @Override

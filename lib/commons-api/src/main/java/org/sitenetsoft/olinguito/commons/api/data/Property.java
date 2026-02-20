@@ -15,11 +15,14 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.commons.api.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Data representation for a property.
@@ -96,7 +99,7 @@ public class Property extends Valuable {
   @Override
   public boolean equals(final Object o) {
     return super.equals(o)
-        && (name == null ? ((Property) o).name == null : name.equals(((Property) o).name));
+        && Objects.equals(name, ((Property) o).name);
   }
 
   @Override

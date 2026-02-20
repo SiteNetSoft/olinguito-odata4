@@ -15,11 +15,15 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced manual hashCode with Objects.hash()
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.commons.api.edm.provider;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlExpression;
 
@@ -112,41 +116,14 @@ public class CsdlAnnotation extends CsdlAbstractEdmItem implements CsdlAnnotatab
     if (!(obj instanceof CsdlAnnotation csdlAnnot)) {
       return false;
     }
-    return (this.getTerm() == null ? csdlAnnot.getTerm() == null : 
-      this.getTerm().equals(csdlAnnot.getTerm()))
-        && (this.getQualifier() == null ? csdlAnnot.getQualifier() == null :
-          this.getQualifier().equals(csdlAnnot.getQualifier()))
-        && (this.getExpression() == null ? csdlAnnot.getExpression() == null :
-          this.getExpression().equals(csdlAnnot.getExpression()))
-        && (this.getAnnotations() == null ? csdlAnnot.getAnnotations() == null : 
-          checkAnnotations(csdlAnnot.getAnnotations()));
-  }
-  
-  private boolean checkAnnotations(List<CsdlAnnotation> csdlAnnots) {
-    if (csdlAnnots == null) {
-      return false;
-    }
-    if (this.getAnnotations().size() == csdlAnnots.size()) {
-      for (int i = 0; i < this.getAnnotations().size(); i++) {
-        if (!this.getAnnotations().get(i).equals(csdlAnnots.get(i))) {
-          return false;
-        }
-      }
-    } else {
-      return false;
-    }
-    return true;
+    return Objects.equals(this.getTerm(), csdlAnnot.getTerm())
+        && Objects.equals(this.getQualifier(), csdlAnnot.getQualifier())
+        && Objects.equals(this.getExpression(), csdlAnnot.getExpression())
+        && Objects.equals(this.getAnnotations(), csdlAnnot.getAnnotations());
   }
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((term == null) ? 0 : term.hashCode());
-    result = prime * result + ((qualifier == null) ? 0 : qualifier.hashCode());
-    result = prime * result + ((annotationExpression == null) ? 0 : 
-      annotationExpression.hashCode());
-    result = prime * result + ((annotations == null) ? 0 : annotations.hashCode());
-    return result;
+    return Objects.hash(term, qualifier, annotationExpression, annotations);
   }
 }

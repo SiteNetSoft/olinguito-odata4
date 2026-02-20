@@ -100,7 +100,7 @@ public class TechnicalAsyncServletService {
   }
 
   private void writeToResponse(HttpServletResponse response, String content) {
-    writeToResponse(response, content.getBytes());
+    writeToResponse(response, content.getBytes(java.nio.charset.StandardCharsets.UTF_8));
   }
 
   private static void writeToResponse(HttpServletResponse response, byte[] content) {

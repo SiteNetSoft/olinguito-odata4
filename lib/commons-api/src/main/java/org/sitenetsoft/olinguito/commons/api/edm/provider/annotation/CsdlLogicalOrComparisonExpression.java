@@ -15,11 +15,15 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced manual hashCode with Objects.hash()
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.commons.api.edm.provider.annotation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotatable;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
@@ -154,41 +158,14 @@ public class CsdlLogicalOrComparisonExpression extends CsdlDynamicExpression imp
     if (!(obj instanceof CsdlLogicalOrComparisonExpression csdlLogComp)) {
       return false;
     }
-    return (this.getLeft() == null ? csdlLogComp.getLeft() == null :
-      this.getLeft().equals(csdlLogComp.getLeft()))
-        && (this.getRight() == null ? csdlLogComp.getRight() == null : 
-          this.getRight().equals(csdlLogComp.getRight()))
-        && (this.getType() == null ? csdlLogComp.getType() == null : 
-          this.getType().equals(csdlLogComp.getType()))
-        && (this.getAnnotations() == null ? csdlLogComp.getAnnotations() == null : 
-            checkAnnotations(csdlLogComp.getAnnotations()));
-  }
-  
-  private boolean checkAnnotations(List<CsdlAnnotation> csdlLogCompAnnot) {
-    if (csdlLogCompAnnot == null) {
-      return false;
-    }
-    if (this.getAnnotations().size() == csdlLogCompAnnot.size()) {
-      for (int i = 0; i < this.getAnnotations().size() ; i++) {
-        if (!this.getAnnotations().get(i).equals(csdlLogCompAnnot.get(i))) {
-          return false;
-        }
-      }
-    } else {
-      return false;
-    }
-    return true;
+    return Objects.equals(this.getLeft(), csdlLogComp.getLeft())
+        && Objects.equals(this.getRight(), csdlLogComp.getRight())
+        && Objects.equals(this.getType(), csdlLogComp.getType())
+        && Objects.equals(this.getAnnotations(), csdlLogComp.getAnnotations());
   }
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((type == null) ? 0 : type.hashCode());
-    result = prime * result + ((left == null) ? 0 : left.hashCode());
-    result = prime * result + ((right == null) ? 0 : right.hashCode());
-    result = prime * result + ((annotations == null) ? 0 : 
-      annotations.hashCode());
-    return result;
+    return Objects.hash(type, left, right, annotations);
   }
 }

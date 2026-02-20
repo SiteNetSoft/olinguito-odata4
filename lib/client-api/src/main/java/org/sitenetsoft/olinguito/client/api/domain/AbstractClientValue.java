@@ -17,8 +17,12 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
+ * Copyright 2026 SiteNetSoft - Replaced manual hashCode with Objects.hash()
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.client.api.domain;
+
+import java.util.Objects;
 
 /**
  * Abstract representation of an OData entity property value.
@@ -113,22 +117,12 @@ public abstract class AbstractClientValue implements ClientValue {
     if (!(obj instanceof AbstractClientValue other)) {
       return false;
     }
-    if (typeName == null) {
-      if (other.typeName != null) {
-        return false;
-      }
-    } else if (!typeName.equals(other.typeName)) {
-      return false;
-    }
-    return true;
+    return Objects.equals(typeName, other.typeName);
   }
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((typeName == null) ? 0 : typeName.hashCode());
-    return result;
+    return Objects.hash(typeName);
   }
 
   @Override

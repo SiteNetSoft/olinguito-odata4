@@ -15,10 +15,14 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced manual hashCode with Objects.hash()
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.client.api.domain;
 
 import java.net.URI;
+import java.util.Objects;
 
 /**
  * OData entity.
@@ -50,10 +54,7 @@ public abstract class AbstractClientPayload extends ClientItem {
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = super.hashCode();
-    result = prime * result + ((contextURL == null) ? 0 : contextURL.hashCode());
-    return result;
+    return Objects.hash(super.hashCode(), contextURL);
   }
 
   @Override
@@ -67,14 +68,7 @@ public abstract class AbstractClientPayload extends ClientItem {
     if (!(obj instanceof AbstractClientPayload other)) {
       return false;
     }
-    if (contextURL == null) {
-      if (other.contextURL != null) {
-        return false;
-      }
-    } else if (!contextURL.equals(other.contextURL)) {
-      return false;
-    }
-    return true;
+    return Objects.equals(contextURL, other.contextURL);
   }
 
   @Override

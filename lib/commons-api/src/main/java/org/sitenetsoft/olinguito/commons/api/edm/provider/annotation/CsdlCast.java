@@ -15,11 +15,15 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced manual hashCode with Objects.hash()
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.commons.api.edm.provider.annotation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.sitenetsoft.olinguito.commons.api.edm.geo.SRID;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotatable;
@@ -135,49 +139,17 @@ public class CsdlCast extends CsdlDynamicExpression implements CsdlAnnotatable {
     if (!(obj instanceof CsdlCast csdlCast)) {
       return false;
     }
-    return (this.getValue() == null ? csdlCast.getValue() == null :
-      this.getValue().equals(csdlCast.getValue()))
-        && (this.getType() == null ? csdlCast.getType() == null :
-        this.getType().equals(csdlCast.getType()))
-        && (this.getMaxLength() == null ? csdlCast.getMaxLength() == null :
-          this.getMaxLength().equals(csdlCast.getMaxLength()))
-        && (this.getPrecision() == null ? csdlCast.getPrecision() == null :
-          this.getPrecision().equals(csdlCast.getPrecision()))
-        && (this.getScale() == null ? csdlCast.getScale() == null :
-         this.getScale().equals(csdlCast.getScale()))
-        && (this.getSrid() == null ? csdlCast.getSrid() == null :
-          String.valueOf(this.getSrid()).equals(String.valueOf(csdlCast.getSrid())))
-        && (this.getAnnotations() == null ? csdlCast.getAnnotations() == null :
-          checkAnnotations(csdlCast.getAnnotations()));
-  }
-  
-  private boolean checkAnnotations(List<CsdlAnnotation> csdlCastAnnotations) {
-    if (csdlCastAnnotations == null) {
-      return false;
-    }
-    if (this.getAnnotations().size() == csdlCastAnnotations.size()) {
-      for (int i = 0; i < this.getAnnotations().size(); i++) {
-        if (!this.getAnnotations().get(i).equals(csdlCastAnnotations.get(i))) {
-          return false;
-        }
-      }
-    } else {
-      return false;
-    }
-    return true;
+    return Objects.equals(this.getValue(), csdlCast.getValue())
+        && Objects.equals(this.getType(), csdlCast.getType())
+        && Objects.equals(this.getMaxLength(), csdlCast.getMaxLength())
+        && Objects.equals(this.getPrecision(), csdlCast.getPrecision())
+        && Objects.equals(this.getScale(), csdlCast.getScale())
+        && Objects.equals(String.valueOf(this.getSrid()), String.valueOf(csdlCast.getSrid()))
+        && Objects.equals(this.getAnnotations(), csdlCast.getAnnotations());
   }
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((type == null) ? 0 : type.hashCode());
-    result = prime * result + ((maxLength == null) ? 0 : maxLength.hashCode());
-    result = prime * result + ((precision == null) ? 0 : precision.hashCode());
-    result = prime * result + ((scale == null) ? 0 : scale.hashCode());
-    result = prime * result + ((srid == null) ? 0 : srid.hashCode());
-    result = prime * result + ((value == null) ? 0 : value.hashCode());
-    result = prime * result + ((annotations == null) ? 0 : annotations.hashCode());
-    return result;
+    return Objects.hash(type, maxLength, precision, scale, srid, value, annotations);
   }
 }

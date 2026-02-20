@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed addLink bug and code quality improvements
+ * Copyright 2026 SiteNetSoft - Replaced manual hashCode with Objects.hash()
  */
 package org.sitenetsoft.olinguito.client.core.domain;
 
@@ -25,6 +26,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.sitenetsoft.olinguito.client.api.domain.AbstractClientValue;
 import org.sitenetsoft.olinguito.client.api.domain.ClientAnnotation;
@@ -207,13 +209,7 @@ public class ClientComplexValueImpl extends AbstractClientValue implements Clien
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = super.hashCode();
-    result = prime * result + (annotations.hashCode());
-    result = prime * result + (associationLinks.hashCode());
-    result = prime * result + (fields.hashCode());
-    result = prime * result + (navigationLinks.hashCode());
-    return result;
+    return Objects.hash(super.hashCode(), annotations, associationLinks, fields, navigationLinks);
   }
 
   @Override

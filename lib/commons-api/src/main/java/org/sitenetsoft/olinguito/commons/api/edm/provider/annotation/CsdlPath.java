@@ -15,8 +15,12 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced manual hashCode with Objects.hash()
  */
 package org.sitenetsoft.olinguito.commons.api.edm.provider.annotation;
+
+import java.util.Objects;
 
 /**
  *  The edm:Path expression enables a value to be obtained by traversing an object graph. 
@@ -55,9 +59,6 @@ public class CsdlPath extends CsdlDynamicExpression {
   
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((value == null) ? 0 : value.hashCode());
-    return result;
+    return Objects.hash(value);
   }
 }

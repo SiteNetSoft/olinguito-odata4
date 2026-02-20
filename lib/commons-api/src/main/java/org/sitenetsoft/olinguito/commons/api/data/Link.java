@@ -15,11 +15,14 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.commons.api.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Data representation for a link.
@@ -205,14 +208,14 @@ public class Link extends Annotatable {
 
     final Link other = (Link) o;
     return getAnnotations().equals(other.getAnnotations())
-        && (title == null ? other.title == null : title.equals(other.title))
-        && (rel == null ? other.rel == null : rel.equals(other.rel))
-        && (href == null ? other.href == null : href.equals(other.href))
-        && (type == null ? other.type == null : type.equals(other.type))
-        && (mediaETag == null ? other.mediaETag == null : mediaETag.equals(other.mediaETag))
-        && (entity == null ? other.entity == null : entity.equals(other.entity))
-        && (entitySet == null ? other.entitySet == null : entitySet.equals(other.entitySet))
-        && (bindingLink == null ? other.bindingLink == null : bindingLink.equals(other.bindingLink))
+        && Objects.equals(title, other.title)
+        && Objects.equals(rel, other.rel)
+        && Objects.equals(href, other.href)
+        && Objects.equals(type, other.type)
+        && Objects.equals(mediaETag, other.mediaETag)
+        && Objects.equals(entity, other.entity)
+        && Objects.equals(entitySet, other.entitySet)
+        && Objects.equals(bindingLink, other.bindingLink)
         && bindingLinks.equals(other.bindingLinks);
   }
 

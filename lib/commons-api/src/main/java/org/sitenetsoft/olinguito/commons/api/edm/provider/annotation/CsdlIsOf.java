@@ -15,11 +15,15 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced manual hashCode with Objects.hash()
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.commons.api.edm.provider.annotation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.sitenetsoft.olinguito.commons.api.edm.geo.SRID;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotatable;
@@ -134,49 +138,17 @@ return this;
     if (!(obj instanceof CsdlIsOf csdlIsOf)) {
       return false;
     }
-    return (this.getType() == null ? csdlIsOf.getType() == null :
-      this.getType().equals(csdlIsOf.getType()))
-        && (this.getMaxLength() == null ? csdlIsOf.getMaxLength() == null :
-          this.getMaxLength().equals(csdlIsOf.getMaxLength()))
-        && (this.getPrecision() == null ? csdlIsOf.getPrecision() == null : 
-          this.getPrecision().equals(csdlIsOf.getPrecision()))
-        && (this.getScale() == null ? csdlIsOf.getScale() == null :
-          this.getScale().equals(csdlIsOf.getScale()))
-        && (this.getSrid() == null ? csdlIsOf.getSrid() == null :
-          this.getSrid().equals(csdlIsOf.getSrid()))
-        && (this.getValue() == null ? csdlIsOf.getValue() == null :
-          this.getValue().equals(csdlIsOf.getValue()))
-        && (this.getAnnotations() == null ? csdlIsOf.getAnnotations() == null :
-            checkAnnotations(csdlIsOf.getAnnotations()));
-  }
-  
-  private boolean checkAnnotations(List<CsdlAnnotation> csdlIsOfannot) {
-    if (csdlIsOfannot == null) {
-      return false;
-    }
-    if (this.getAnnotations().size() == csdlIsOfannot.size()) {
-      for (int i = 0; i < this.getAnnotations().size(); i++) {
-        if (!this.getAnnotations().get(i).equals(csdlIsOfannot.get(i))) {
-          return false;
-        }
-      }
-    } else {
-      return false;
-    }
-    return true;
+    return Objects.equals(this.getType(), csdlIsOf.getType())
+        && Objects.equals(this.getMaxLength(), csdlIsOf.getMaxLength())
+        && Objects.equals(this.getPrecision(), csdlIsOf.getPrecision())
+        && Objects.equals(this.getScale(), csdlIsOf.getScale())
+        && Objects.equals(this.getSrid(), csdlIsOf.getSrid())
+        && Objects.equals(this.getValue(), csdlIsOf.getValue())
+        && Objects.equals(this.getAnnotations(), csdlIsOf.getAnnotations());
   }
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((type == null) ? 0 : type.hashCode());
-    result = prime * result + ((maxLength == null) ? 0 : maxLength.hashCode());
-    result = prime * result + ((precision == null) ? 0 : precision.hashCode());
-    result = prime * result + ((scale == null) ? 0 : scale.hashCode());
-    result = prime * result + ((srid == null) ? 0 : srid.hashCode());
-    result = prime * result + ((value == null) ? 0 : value.hashCode());
-    result = prime * result + ((annotations == null) ? 0 : annotations.hashCode());
-    return result;
+    return Objects.hash(type, maxLength, precision, scale, srid, value, annotations);
   }
 }

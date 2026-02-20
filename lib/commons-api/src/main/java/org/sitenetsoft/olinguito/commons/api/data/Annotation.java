@@ -15,8 +15,12 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.commons.api.data;
+
+import java.util.Objects;
 
 /**
  * Represents an instance annotation.
@@ -44,7 +48,7 @@ public class Annotation extends Valuable {
   @Override
   public boolean equals(final Object o) {
     return super.equals(o)
-        && (term == null ? ((Annotation) o).term == null : term.equals(((Annotation) o).term));
+        && Objects.equals(term, ((Annotation) o).term);
   }
 
   @Override

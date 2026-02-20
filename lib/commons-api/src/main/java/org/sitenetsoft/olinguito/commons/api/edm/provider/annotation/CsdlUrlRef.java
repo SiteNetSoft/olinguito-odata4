@@ -15,11 +15,15 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced manual hashCode with Objects.hash()
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.commons.api.edm.provider.annotation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotatable;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
@@ -64,34 +68,12 @@ public class CsdlUrlRef extends CsdlDynamicExpression implements CsdlAnnotatable
     if (!(obj instanceof CsdlUrlRef csdlUrlRef)) {
       return false;
     }
-    return (this.getValue() == null ? csdlUrlRef.getValue() == null :
-      this.getValue().equals(csdlUrlRef.getValue()))
-        && (this.getAnnotations() == null ? csdlUrlRef.getAnnotations() == null :
-            checkAnnotations(csdlUrlRef.getAnnotations()));
-  }
-  
-  private boolean checkAnnotations(List<CsdlAnnotation> csdlUrlRefAnnot) {
-    if (csdlUrlRefAnnot == null) {
-      return false;
-    }
-    if (this.getAnnotations().size() == csdlUrlRefAnnot.size()) {
-      for (int i = 0; i < this.getAnnotations().size() ; i++) {
-        if (!this.getAnnotations().get(i).equals(csdlUrlRefAnnot.get(i))) {
-          return false;
-        }
-      }
-    } else {
-      return false;
-    }
-    return true;
+    return Objects.equals(this.getValue(), csdlUrlRef.getValue())
+        && Objects.equals(this.getAnnotations(), csdlUrlRef.getAnnotations());
   }
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((value == null) ? 0 : value.hashCode());
-    result = prime * result + ((annotations == null) ? 0 : annotations.hashCode());
-    return result;
+    return Objects.hash(value, annotations);
   }
 }
