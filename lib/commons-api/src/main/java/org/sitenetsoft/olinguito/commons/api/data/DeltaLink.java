@@ -15,10 +15,13 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.commons.api.data;
 
 import java.net.URI;
+import java.util.Objects;
 
 /**
  * A delta link.
@@ -88,9 +91,9 @@ public class DeltaLink extends Annotatable {
 
     final DeltaLink other = (DeltaLink) o;
     return getAnnotations().equals(other.getAnnotations())
-        && (source == null ? other.source == null : source.equals(other.source))
-        && (relationship == null ? other.relationship == null : relationship.equals(other.relationship))
-        && (target == null ? other.target == null : target.equals(other.target));
+        && Objects.equals(source, other.source)
+        && Objects.equals(relationship, other.relationship)
+        && Objects.equals(target, other.target);
   }
 
   @Override

@@ -15,11 +15,15 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced manual hashCode with Objects.hash()
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.commons.api.edm.provider.annotation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotatable;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
@@ -99,40 +103,14 @@ public class CsdlIf extends CsdlDynamicExpression implements CsdlAnnotatable {
     if (!(obj instanceof CsdlIf csdlIf)) {
       return false;
     }
-    return (this.getGuard() == null ? csdlIf.getGuard() == null :
-      this.getGuard().equals(csdlIf.getGuard()))
-        && (this.getThen() == null ? csdlIf.getThen() == null :
-          this.getThen().equals(csdlIf.getThen()))
-        && (this.getElse() == null ? csdlIf.getElse() == null :
-          this.getElse().equals(csdlIf.getElse()))
-        && (this.getAnnotations() == null ? csdlIf.getAnnotations() == null :
-            checkAnnotations(csdlIf.getAnnotations()));
-  }
-  
-  private boolean checkAnnotations(List<CsdlAnnotation> csdlIfAnnotations) {
-    if (csdlIfAnnotations == null) {
-      return false;
-    }
-    if (this.getAnnotations().size() == csdlIfAnnotations.size()) {
-      for (int i = 0; i < this.getAnnotations().size(); i++) {
-        if (!this.getAnnotations().get(i).equals(csdlIfAnnotations.get(i))) {
-          return false;
-        }
-      }
-    } else {
-      return false;
-    }
-    return true;
+    return Objects.equals(this.getGuard(), csdlIf.getGuard())
+        && Objects.equals(this.getThen(), csdlIf.getThen())
+        && Objects.equals(this.getElse(), csdlIf.getElse())
+        && Objects.equals(this.getAnnotations(), csdlIf.getAnnotations());
   }
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((guard == null) ? 0 : guard.hashCode());
-    result = prime * result + ((_then == null) ? 0 : _then.hashCode());
-    result = prime * result + ((_else == null) ? 0 : _else.hashCode());
-    result = prime * result + ((annotations == null) ? 0 : annotations.hashCode());
-    return result;
+    return Objects.hash(guard, _then, _else, annotations);
   }
 }

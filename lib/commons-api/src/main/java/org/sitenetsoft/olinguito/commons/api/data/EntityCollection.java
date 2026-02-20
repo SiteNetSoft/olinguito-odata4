@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.commons.api.data;
 
@@ -22,6 +24,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Data representation for a collection of single entities.
@@ -122,9 +125,9 @@ public class EntityCollection extends AbstractEntityCollection {
     }
     final EntityCollection other = (EntityCollection) o;
     return entities.equals(other.entities)
-        && (count == null ? other.count == null : count.equals(other.count))
-        && (next == null ? other.next == null : next.equals(other.next))
-        && (deltaLink == null ? other.deltaLink == null : deltaLink.equals(other.deltaLink));
+        && Objects.equals(count, other.count)
+        && Objects.equals(next, other.next)
+        && Objects.equals(deltaLink, other.deltaLink);
   }
 
   @Override

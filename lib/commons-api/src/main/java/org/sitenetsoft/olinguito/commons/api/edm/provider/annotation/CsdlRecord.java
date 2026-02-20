@@ -15,11 +15,15 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced manual hashCode with Objects.hash()
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.commons.api.edm.provider.annotation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotatable;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
@@ -78,56 +82,13 @@ public class CsdlRecord extends CsdlDynamicExpression implements CsdlAnnotatable
     if (!(obj instanceof CsdlRecord csdlRecord)) {
       return false;
     }
-    return (this.getType() == null ? csdlRecord.getType() == null :
-      this.getType().equals(csdlRecord.getType()))
-        && (this.getAnnotations() == null ? csdlRecord.getAnnotations() == null :
-            checkAnnotations(csdlRecord.getAnnotations()))
-        && (this.getPropertyValues() == null ? csdlRecord.getPropertyValues() == null :
-            checkPropertyValues(csdlRecord.getPropertyValues()));
-  }
-  
-  private boolean checkPropertyValues(List<CsdlPropertyValue> csdlRecordpropertyValues) {
-    if (csdlRecordpropertyValues == null) {
-      return false;
-    }
-    if (this.getPropertyValues().size() == csdlRecordpropertyValues.size()) {
-      for (int i = 0; i < this.getPropertyValues().size(); i++) {
-        if (!this.getPropertyValues().get(i).equals(
-            csdlRecordpropertyValues.get(i))) {
-          return false;
-        }
-      }
-    } else {
-      return false;
-    }
-    return true;
-  }
-
-  private boolean checkAnnotations(List<CsdlAnnotation> csdlRecordAnnot) {
-    if (csdlRecordAnnot == null) {
-      return false;
-    }
-    if (this.getAnnotations().size() == csdlRecordAnnot.size()) {
-      for (int i = 0; i < this.getAnnotations().size() ; i++) {
-        if (!this.getAnnotations().get(i).equals(csdlRecordAnnot.get(i))) {
-          return false;
-        }
-      }
-    } else {
-      return false;
-    }
-    return true;
+    return Objects.equals(this.getType(), csdlRecord.getType())
+        && Objects.equals(this.getAnnotations(), csdlRecord.getAnnotations())
+        && Objects.equals(this.getPropertyValues(), csdlRecord.getPropertyValues());
   }
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((type == null) ? 0 : type.hashCode());
-    result = prime * result + ((propertyValues == null) ? 0 : 
-      propertyValues.hashCode());
-    result = prime * result + ((annotations == null) ? 0 : 
-      annotations.hashCode());
-    return result;
+    return Objects.hash(type, propertyValues, annotations);
   }
 }

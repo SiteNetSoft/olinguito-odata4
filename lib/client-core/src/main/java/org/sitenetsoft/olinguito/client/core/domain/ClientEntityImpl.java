@@ -17,13 +17,15 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Replaced manual hashCode with Objects.hash()
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.client.core.domain;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Objects;
 
 import org.sitenetsoft.olinguito.client.api.domain.AbstractClientPayload;
 import org.sitenetsoft.olinguito.client.api.domain.ClientAnnotation;
@@ -301,23 +303,9 @@ public class ClientEntityImpl extends AbstractClientPayload implements ClientEnt
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = super.hashCode();
-    result = prime * result + annotations.hashCode();
-    result = prime * result + associationLinks.hashCode();
-    result = prime * result + ((eTag == null) ? 0 : eTag.hashCode());
-    result = prime * result + ((editLink == null) ? 0 : editLink.hashCode());
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
-    result = prime * result + ((mediaContentSource == null) ? 0 : mediaContentSource.hashCode());
-    result = prime * result + ((mediaContentType == null) ? 0 : mediaContentType.hashCode());
-    result = prime * result + ((mediaETag == null) ? 0 : mediaETag.hashCode());
-    result = prime * result + mediaEditLinks.hashCode();
-    result = prime * result + (mediaEntity ? 1231 : 1237);
-    result = prime * result + navigationLinks.hashCode();
-    result = prime * result + operations.hashCode();
-    result = prime * result + properties.hashCode();
-    result = prime * result + ((typeName == null) ? 0 : typeName.hashCode());
-    return result;
+    return Objects.hash(super.hashCode(), annotations, associationLinks, eTag, editLink, id,
+        mediaContentSource, mediaContentType, mediaETag, mediaEditLinks, mediaEntity,
+        navigationLinks, operations, properties, typeName);
   }
 
   @Override
@@ -331,74 +319,20 @@ public class ClientEntityImpl extends AbstractClientPayload implements ClientEnt
     if (!(obj instanceof ClientEntityImpl other)) {
       return false;
     }
-      if (!annotations.equals(other.annotations)) {
-        return false;
-      }
-      if (!associationLinks.equals(other.associationLinks)) {
-        return false;
-      }
-    if (eTag == null) {
-      if (other.eTag != null) {
-        return false;
-      }
-    } else if (!eTag.equals(other.eTag)) {
-      return false;
-    }
-    if (editLink == null) {
-      if (other.editLink != null) {
-        return false;
-      }
-    } else if (!editLink.equals(other.editLink)) {
-      return false;
-    }
-    if (id == null) {
-      if (other.id != null) {
-        return false;
-      }
-    } else if (!id.equals(other.id)) {
-      return false;
-    }
-    if (mediaContentSource == null) {
-      if (other.mediaContentSource != null) {
-        return false;
-      }
-    } else if (!mediaContentSource.equals(other.mediaContentSource)) {
-      return false;
-    }
-    if (mediaContentType == null) {
-      if (other.mediaContentType != null) {
-        return false;
-      }
-    } else if (!mediaContentType.equals(other.mediaContentType)) {
-      return false;
-    }
-    if (mediaETag == null) {
-      if (other.mediaETag != null) {
-        return false;
-      }
-    } else if (!mediaETag.equals(other.mediaETag)) {
-      return false;
-    }
-      if (!mediaEditLinks.equals(other.mediaEditLinks)) {
-        return false;
-      }
-    if (mediaEntity != other.mediaEntity) {
-      return false;
-    }
-      if (!navigationLinks.equals(other.navigationLinks)) {
-        return false;
-      }
-      if (!operations.equals(other.operations)) {
-        return false;
-      }
-      if (!properties.equals(other.properties)) {
-        return false;
-      }
-    if (typeName == null) {
-        return other.typeName == null;
-    } else {
-      return typeName.equals(other.typeName);
-    }
+    return annotations.equals(other.annotations)
+        && associationLinks.equals(other.associationLinks)
+        && Objects.equals(eTag, other.eTag)
+        && Objects.equals(editLink, other.editLink)
+        && Objects.equals(id, other.id)
+        && Objects.equals(mediaContentSource, other.mediaContentSource)
+        && Objects.equals(mediaContentType, other.mediaContentType)
+        && Objects.equals(mediaETag, other.mediaETag)
+        && mediaEditLinks.equals(other.mediaEditLinks)
+        && mediaEntity == other.mediaEntity
+        && navigationLinks.equals(other.navigationLinks)
+        && operations.equals(other.operations)
+        && properties.equals(other.properties)
+        && Objects.equals(typeName, other.typeName);
   }
 
   @Override

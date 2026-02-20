@@ -175,7 +175,7 @@ public class BatchRequest extends ServiceRequest {
     final ContentType contentType = getRequestContentType();
     if (contentType == null || !contentType.isCompatible(ContentType.MULTIPART_MIXED)) {
       throw new ODataApplicationException("Invalid content type",
-          HttpStatusCode.BAD_REQUEST.getStatusCode(), Locale.getDefault());
+          HttpStatusCode.BAD_REQUEST.getStatusCode(), Locale.ROOT);
     }
   }
 

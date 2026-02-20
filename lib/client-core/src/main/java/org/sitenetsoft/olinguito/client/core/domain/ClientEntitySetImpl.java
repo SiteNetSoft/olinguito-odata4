@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Replaced manual hashCode with Objects.hash()
  */
 package org.sitenetsoft.olinguito.client.core.domain;
 
@@ -123,14 +124,7 @@ public class ClientEntitySetImpl extends AbstractClientPayload implements Client
   
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = super.hashCode();
-    result = prime * result + ((count == null) ? 0 : count.hashCode());
-    result = prime * result + ((next == null) ? 0 : next.hashCode());
-    result = prime * result + annotations.hashCode();
-    result = prime * result + ((deltaLink == null) ? 0 : deltaLink.hashCode());
-    result = prime * result + entities.hashCode();
-    return result;
+    return Objects.hash(super.hashCode(), count, next, annotations, deltaLink, entities);
   }
 
   @Override

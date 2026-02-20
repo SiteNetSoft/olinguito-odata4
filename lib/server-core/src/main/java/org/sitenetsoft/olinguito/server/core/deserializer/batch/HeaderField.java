@@ -17,11 +17,14 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
+ * Copyright 2026 SiteNetSoft - Replaced manual hashCode with Objects.hash()
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.batch;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class HeaderField implements Cloneable {
   private final String fieldName;
@@ -75,12 +78,7 @@ public class HeaderField implements Cloneable {
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((fieldName == null) ? 0 : fieldName.hashCode());
-    result = prime * result + lineNumber;
-    result = prime * result + ((values == null) ? 0 : values.hashCode());
-    return result;
+    return Objects.hash(fieldName, lineNumber, values);
   }
 
   @Override
@@ -95,23 +93,8 @@ public class HeaderField implements Cloneable {
       return false;
     }
     HeaderField other = (HeaderField) obj;
-    if (fieldName == null) {
-      if (other.fieldName != null) {
-        return false;
-      }
-    } else if (!fieldName.equals(other.fieldName)) {
-      return false;
-    }
-    if (lineNumber != other.lineNumber) {
-      return false;
-    }
-    if (values == null) {
-      if (other.values != null) {
-        return false;
-      }
-    } else if (!values.equals(other.values)) {
-      return false;
-    }
-    return true;
+    return Objects.equals(fieldName, other.fieldName)
+        && lineNumber == other.lineNumber
+        && Objects.equals(values, other.values);
   }
 }

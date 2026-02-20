@@ -15,11 +15,14 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced manual hashCode with Objects.hash()
  */
 package org.sitenetsoft.olinguito.commons.api.edm.provider.annotation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The edm:Collection expression enables a value to be obtained from zero or more child expressions.
@@ -77,9 +80,6 @@ public class CsdlCollection extends CsdlDynamicExpression {
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((items == null) ? 0 : items.hashCode());
-    return result;
+    return Objects.hash(items);
   }
 }

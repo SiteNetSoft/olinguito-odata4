@@ -17,12 +17,14 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Replaced manual hashCode with Objects.hash()
  */
 package org.sitenetsoft.olinguito.client.core.domain;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.sitenetsoft.olinguito.client.api.domain.ClientDeletedEntity;
 import org.sitenetsoft.olinguito.client.api.domain.ClientDelta;
@@ -61,12 +63,7 @@ public class ClientDeltaImpl extends ClientEntitySetImpl implements ClientDelta 
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = super.hashCode();
-    result = prime * result + (addedLinks.hashCode());
-    result = prime * result + (deletedEntities.hashCode());
-    result = prime * result + (deletedLinks.hashCode());
-    return result;
+    return Objects.hash(super.hashCode(), addedLinks, deletedEntities, deletedLinks);
   }
 
   @Override

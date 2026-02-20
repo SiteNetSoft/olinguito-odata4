@@ -17,10 +17,12 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.commons.api.edm.geo;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 
@@ -134,9 +136,9 @@ public class Polygon extends Geospatial {
 
     final Polygon polygon = (Polygon) o;
     return dimension == polygon.dimension
-        && (srid == null ? polygon.srid == null : srid.equals(polygon.srid))
-        && (interiorRings == null ? polygon.interiorRings == null : interiorRings.equals(polygon.interiorRings))
-        && (exterior == null ? polygon.exterior == null : exterior.equals(polygon.exterior));
+        && Objects.equals(srid, polygon.srid)
+        && Objects.equals(interiorRings, polygon.interiorRings)
+        && Objects.equals(exterior, polygon.exterior);
   }
 
   @Override

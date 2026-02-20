@@ -15,11 +15,14 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.commons.api.edm;
 
 import java.io.Serializable;
 import java.io.Serial;
+import java.util.Objects;
 
 /**
  * A full qualified name of any element in the EDM consists of a name and a namespace.
@@ -93,8 +96,8 @@ public final class FullQualifiedName implements Serializable {
     }
 
     final FullQualifiedName that = (FullQualifiedName) o;
-    return (namespace == null ? that.namespace == null : namespace.equals(that.namespace))
-        && (name == null ? that.name == null : name.equals(that.name));
+    return Objects.equals(namespace, that.namespace)
+        && Objects.equals(name, that.name);
   }
 
   @Override

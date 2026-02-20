@@ -15,11 +15,15 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced manual hashCode with Objects.hash()
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.commons.api.edm.provider.annotation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmRecord;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAbstractEdmItem;
@@ -81,40 +85,15 @@ public class CsdlPropertyValue extends CsdlAbstractEdmItem implements CsdlAnnota
     if (!(obj instanceof CsdlPropertyValue csdlPropertyValue)) {
       return false;
     }
-    
+
     return (this.getProperty() == null ? csdlPropertyValue.getProperty() == null :
       this.getProperty().equalsIgnoreCase(csdlPropertyValue.getProperty()))
-        && (this.getValue() == null ? csdlPropertyValue.getValue() == null :
-          this.getValue().equals(csdlPropertyValue.getValue()))
-        && (this.getAnnotations() == null ? csdlPropertyValue.getAnnotations() == null :
-            checkAnnotations(csdlPropertyValue.getAnnotations()));
-  }
-  
-  private boolean checkAnnotations(List<CsdlAnnotation> csdlPropertyValueAnnot) {
-    if (csdlPropertyValueAnnot == null) {
-      return false;
-    }
-    if (this.getAnnotations().size() == csdlPropertyValueAnnot.size()) {
-      for (int i = 0; i < this.getAnnotations().size() ; i++) {
-        if (!this.getAnnotations().get(i).equals(
-            csdlPropertyValueAnnot.get(i))) {
-          return false;
-        }
-      }
-    } else {
-      return false;
-    }
-    return true;
+        && Objects.equals(this.getValue(), csdlPropertyValue.getValue())
+        && Objects.equals(this.getAnnotations(), csdlPropertyValue.getAnnotations());
   }
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((property == null) ? 0 : property.hashCode());
-    result = prime * result + ((value == null) ? 0 : value.hashCode());
-    result = prime * result + ((annotations == null) ? 0 : 
-      annotations.hashCode());
-    return result;
+    return Objects.hash(property, value, annotations);
   }
 }

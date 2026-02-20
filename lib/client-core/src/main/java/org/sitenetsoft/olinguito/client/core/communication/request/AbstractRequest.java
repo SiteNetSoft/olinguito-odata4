@@ -43,7 +43,7 @@ public abstract class AbstractRequest {
             && !request.getURI().toASCIIString().startsWith(edmClient.getServiceRoot())) {
 
       throw new IllegalArgumentException(
-              String.format("The current request URI %s does not match the configured service root %s",
+              "The current request URI %s does not match the configured service root %s".formatted(
                       request.getURI().toASCIIString(),
                       edmClient.getServiceRoot()));
     }

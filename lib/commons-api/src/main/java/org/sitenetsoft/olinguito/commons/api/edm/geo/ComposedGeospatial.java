@@ -15,12 +15,15 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.commons.api.edm.geo;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Abstract base class for all Geometries that are composed out of other geospatial elements.
@@ -66,7 +69,7 @@ public abstract class ComposedGeospatial<T extends Geospatial> extends Geospatia
 
     final ComposedGeospatial<?> other = (ComposedGeospatial<?>) o;
     return dimension == other.dimension
-        && (srid == null ? other.srid == null : srid.equals(other.srid))
+        && Objects.equals(srid, other.srid)
         && geospatials.equals(other.geospatials);
   }
 

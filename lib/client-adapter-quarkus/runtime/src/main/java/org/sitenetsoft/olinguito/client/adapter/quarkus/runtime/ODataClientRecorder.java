@@ -215,7 +215,7 @@ public class ODataClientRecorder {
     }
 
     static ContentType resolveContentType(String format) {
-        return switch (format.toUpperCase()) {
+        return switch (format.toUpperCase(java.util.Locale.ROOT)) {
             case "JSON" -> ContentType.JSON;
             case "JSON_NO_METADATA" -> ContentType.JSON_NO_METADATA;
             case "JSON_FULL_METADATA" -> ContentType.JSON_FULL_METADATA;

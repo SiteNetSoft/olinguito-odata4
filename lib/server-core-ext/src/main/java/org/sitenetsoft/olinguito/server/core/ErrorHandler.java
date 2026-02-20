@@ -101,7 +101,7 @@ public class ErrorHandler {
       // to prevent sending a stacktrace to a client.
       String responseContent = "{\"error\":{\"code\":null,\"message\":\"An unexpected exception occurred during "
           + "error processing with message: " + e.getMessage() + "\"}}"; //$NON-NLS-1$ //$NON-NLS-2$
-      response.setContent(new ByteArrayInputStream(responseContent.getBytes()));
+      response.setContent(new ByteArrayInputStream(responseContent.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
       response.setStatusCode(HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode());
       response.setHeader(HttpHeader.CONTENT_TYPE,
           ContentType.APPLICATION_JSON.toContentTypeString());

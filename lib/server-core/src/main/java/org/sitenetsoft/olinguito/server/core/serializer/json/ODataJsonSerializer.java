@@ -632,7 +632,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       byte[] decodedBytes = value instanceof byte[]
           ? decodeLenientUrlSafeBase64((byte[]) value)
           : Base64.getUrlDecoder().decode((String) value);
-      json.writeStringField(propertyName, new String(decodedBytes));     
+      json.writeStringField(propertyName, new String(decodedBytes, java.nio.charset.StandardCharsets.UTF_8));
     }
   }
 

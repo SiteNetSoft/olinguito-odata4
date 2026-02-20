@@ -15,8 +15,13 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced manual hashCode with Objects.hash()
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.batch;
+
+import java.util.Objects;
 
 public class Line {
   private final int lineNumber;
@@ -38,11 +43,7 @@ public class Line {
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((content == null) ? 0 : content.hashCode());
-    result = prime * result + lineNumber;
-    return result;
+    return Objects.hash(content, lineNumber);
   }
 
   @Override
@@ -57,16 +58,7 @@ public class Line {
       return false;
     }
     Line other = (Line) obj;
-    if (content == null) {
-      if (other.content != null) {
-        return false;
-      }
-    } else if (!content.equals(other.content)) {
-      return false;
-    }
-    if (lineNumber != other.lineNumber) {
-      return false;
-    }
-    return true;
+    return Objects.equals(content, other.content)
+        && lineNumber == other.lineNumber;
   }
 }

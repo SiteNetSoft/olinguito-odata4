@@ -179,7 +179,7 @@ public class TechnicalODataHandler implements Handler<RoutingContext> {
         copyHeaders(odRequest, vertxRequest);
 
         // Set body
-        if (body != null && !body.isEmpty()) {
+        if (body != null && body.length() > 0) {
             odRequest.setBody(new ByteArrayInputStream(body.getBytes()));
         }
 

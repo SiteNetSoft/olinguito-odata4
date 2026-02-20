@@ -17,10 +17,13 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Replaced manual hashCode with Objects.hash()
+ * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  */
 package org.sitenetsoft.olinguito.client.core.domain;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.sitenetsoft.olinguito.client.api.domain.AbstractClientValue;
@@ -49,7 +52,7 @@ public class ClientPrimitiveValueImpl extends AbstractClientValue implements Cli
       EdmPrimitiveTypeKind primitiveTypeKind = null;
       if (type != null) {
         if (type.getKind() != EdmTypeKind.PRIMITIVE) {
-          throw new IllegalArgumentException(String.format("Provided type %s is not primitive", type));
+          throw new IllegalArgumentException("Provided type %s is not primitive".formatted(type));
         }
         primitiveTypeKind = EdmPrimitiveTypeKind.valueOf(type.getName());
       }
@@ -59,8 +62,8 @@ public class ClientPrimitiveValueImpl extends AbstractClientValue implements Cli
     @Override
     public BuilderImpl setType(final EdmPrimitiveTypeKind type) {
       if (type == EdmPrimitiveTypeKind.Stream) {
-        throw new IllegalArgumentException(String.format(
-                "Cannot build a primitive value for %s", EdmPrimitiveTypeKind.Stream));
+        throw new IllegalArgumentException(
+                "Cannot build a primitive value for %s".formatted(EdmPrimitiveTypeKind.Stream));
       }
       if (type == EdmPrimitiveTypeKind.Geography || type == EdmPrimitiveTypeKind.Geometry) {
         throw new IllegalArgumentException(
@@ -243,12 +246,7 @@ public class ClientPrimitiveValueImpl extends AbstractClientValue implements Cli
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = super.hashCode();
-    result = prime * result + ((type == null) ? 0 : type.hashCode());
-    result = prime * result + ((typeKind == null) ? 0 : typeKind.hashCode());
-    result = prime * result + ((value == null) ? 0 : value.hashCode());
-    return result;
+    return Objects.hash(super.hashCode(), type, typeKind, value);
   }
 
   @Override
@@ -262,21 +260,9 @@ public class ClientPrimitiveValueImpl extends AbstractClientValue implements Cli
     if (!(obj instanceof ClientPrimitiveValueImpl other)) {
       return false;
     }
-      if (type == null) {
-      if (other.type != null) {
-        return false;
-      }
-    } else if (!type.equals(other.type)) {
-      return false;
-    }
-    if (typeKind != other.typeKind) {
-      return false;
-    }
-    if (value == null) {
-        return other.value == null;
-    } else {
-      return value.equals(other.value);
-    }
+    return Objects.equals(type, other.type)
+        && typeKind == other.typeKind
+        && Objects.equals(value, other.value);
   }
 
 }
