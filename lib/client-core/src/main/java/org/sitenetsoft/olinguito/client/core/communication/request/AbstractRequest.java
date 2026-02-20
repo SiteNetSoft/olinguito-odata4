@@ -15,6 +15,7 @@
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
+ * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -38,14 +39,13 @@ public abstract class AbstractRequest {
 
   protected void checkRequest(final ODataClient odataClient, final ODataHttpRequest request) {
     // If using an Edm enabled client, checks that the cached service root matches the request URI
-    if (odataClient instanceof EdmEnabledODataClient
-            && !request.getURI().toASCIIString().startsWith(
-                    ((EdmEnabledODataClient) odataClient).getServiceRoot())) {
+    if (odataClient instanceof EdmEnabledODataClient edmClient
+            && !request.getURI().toASCIIString().startsWith(edmClient.getServiceRoot())) {
 
       throw new IllegalArgumentException(
               String.format("The current request URI %s does not match the configured service root %s",
                       request.getURI().toASCIIString(),
-                      ((EdmEnabledODataClient) odataClient).getServiceRoot()));
+                      edmClient.getServiceRoot()));
     }
   }
 

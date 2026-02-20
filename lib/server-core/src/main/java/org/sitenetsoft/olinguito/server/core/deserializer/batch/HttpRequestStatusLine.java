@@ -15,13 +15,14 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.batch;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,12 +34,12 @@ import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchDeserializer
 public class HttpRequestStatusLine {
   private static final Pattern PATTERN_RELATIVE_URI = Pattern.compile("([^/][^?]*)(?:\\?(.*))?");
 
-  private static final Set<HttpMethod> HTTP_CHANGE_SET_METHODS = new HashSet<>(Arrays.asList(
-      new HttpMethod[] { HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE, HttpMethod.PATCH }));
+  private static final Set<HttpMethod> HTTP_CHANGE_SET_METHODS = Set.of(
+      HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE, HttpMethod.PATCH);
   private static final String HTTP_VERSION = "HTTP/1.1";
 
-  final private Line statusLine;
-  final private String requestBaseUri;
+  private final Line statusLine;
+  private final String requestBaseUri;
 
   private HttpMethod method;
   private String httpVersion;
@@ -102,7 +103,7 @@ public class HttpRequestStatusLine {
   }
 
   private String removeLeadingSlash(final String value) {
-    return (value.length() > 0 && value.charAt(0) == '/') ? value.substring(1) : value;
+    return (!value.isEmpty() && value.charAt(0) == '/') ? value.substring(1) : value;
   }
 
   private void parseRelativeUri(final String rawUri) throws BatchDeserializerException {

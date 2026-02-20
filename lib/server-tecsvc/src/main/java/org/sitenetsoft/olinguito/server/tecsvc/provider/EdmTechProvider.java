@@ -15,10 +15,11 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
@@ -66,7 +67,7 @@ public class EdmTechProvider extends CsdlAbstractEdmProvider {
 
   @Override
   public List<CsdlAliasInfo> getAliasInfos() throws ODataException {
-    return Arrays.asList(
+    return List.of(
         new CsdlAliasInfo().setAlias(SchemaProvider.NAMESPACE_ALIAS).setNamespace(SchemaProvider.NAMESPACE),
         new CsdlAliasInfo().setAlias("Core").setNamespace(TermProvider.CORE_VOCABULARY_NAMESPACE));
   }

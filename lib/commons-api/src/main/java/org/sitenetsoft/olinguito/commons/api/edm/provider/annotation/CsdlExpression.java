@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  */
 package org.sitenetsoft.olinguito.commons.api.edm.provider.annotation;
 
@@ -35,7 +37,7 @@ public abstract class CsdlExpression extends CsdlAbstractEdmItem {
    * @return Constant Expression
    */
   public CsdlConstantExpression asConstant() {
-    return isConstant() ? (CsdlConstantExpression) this : null;
+    return this instanceof CsdlConstantExpression c ? c : null;
   }
 
   /**
@@ -51,6 +53,6 @@ public abstract class CsdlExpression extends CsdlAbstractEdmItem {
    * @return Dynamic Expression
    */
   public CsdlDynamicExpression asDynamic() {
-    return isDynamic() ? (CsdlDynamicExpression) this : null;
+    return this instanceof CsdlDynamicExpression d ? d : null;
   }
 }

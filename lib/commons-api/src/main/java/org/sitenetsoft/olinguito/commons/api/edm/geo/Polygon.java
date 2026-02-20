@@ -15,10 +15,11 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.commons.api.edm.geo;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
@@ -46,7 +47,7 @@ public class Polygon extends Geospatial {
     super(dimension, Type.POLYGON, srid);
     if (interior != null) {
 		LineString lineString = new LineString(dimension, srid, interior);
-		this.interiorRings = new MultiLineString(dimension, srid, Arrays.asList(lineString));
+		this.interiorRings = new MultiLineString(dimension, srid, List.of(lineString));
     } else {
     	this.interiorRings = null;
     }

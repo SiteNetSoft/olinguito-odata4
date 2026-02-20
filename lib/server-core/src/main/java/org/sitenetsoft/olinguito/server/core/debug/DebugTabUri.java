@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced redundant close() with flush() in try-with-resources blocks
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  */
 package org.sitenetsoft.olinguito.server.core.debug;
 
@@ -331,7 +332,7 @@ public class DebugTabUri implements DebugTab {
     } else {
       final StringBuilder tmp = new StringBuilder();
       for (UriResource resourcePart : selectItem.getResourcePath().getUriResourceParts()) {
-        if (tmp.length() > 0) {
+        if (!tmp.isEmpty()) {
           tmp.append('/');
         }
         tmp.append(resourcePart.toString());

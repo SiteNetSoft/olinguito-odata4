@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.core.uri.queryoption;
 
@@ -23,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
@@ -254,7 +255,7 @@ public class QueryOptionTest {
 
     SelectItem item0 = new SelectItemImpl();
     SelectItem item1 = new SelectItemImpl();
-    option.setSelectItems(Arrays.asList(item0, item1));
+    option.setSelectItems(List.of(item0, item1));
 
     assertEquals(item0, option.getSelectItems().get(0));
     assertEquals(item1, option.getSelectItems().get(1));

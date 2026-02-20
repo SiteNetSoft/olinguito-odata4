@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -32,7 +33,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -607,20 +608,20 @@ public class MetadataDocumentJsonSerializerTest {
       } else if (entityTypeName.equals(nameET)) {
         return new CsdlEntityType()
             .setName("ET")
-            .setKey(Arrays.asList(new CsdlPropertyRef().setAlias("EntityInfoID").setName("Info/ID"), 
+            .setKey(List.of(new CsdlPropertyRef().setAlias("EntityInfoID").setName("Info/ID"), 
                 new CsdlPropertyRef().setName("name")))
-            .setNavigationProperties(Arrays.asList(
+            .setNavigationProperties(List.of(
                 new CsdlNavigationProperty().setName("NavPropertyETOne").setType(nameETOne), navProperty))
-            .setProperties(Arrays.asList(nameProperty, infoProperty));
+            .setProperties(List.of(nameProperty, infoProperty));
       } else if (entityTypeName.equals(nameETTwoKeyNav)) {
         return new CsdlEntityType()
             .setName("ETTwoKeyNav")
-            .setKey(Arrays.asList(new CsdlPropertyRef().setName("PropertyInt16"), 
+            .setKey(List.of(new CsdlPropertyRef().setName("PropertyInt16"), 
                 new CsdlPropertyRef().setName("PropertyString")))
-            .setNavigationProperties(Arrays.asList(
+            .setNavigationProperties(List.of(
                 new CsdlNavigationProperty().setName("NavPropertyETTwoKeyNavOne").setType(nameETTwoKeyNavOne),
                 new CsdlNavigationProperty().setName("NavPropertyETOne").setType(nameETOne)))
-            .setProperties(Arrays.asList(propertyInt16_NotNullable, propertyString));
+            .setProperties(List.of(propertyInt16_NotNullable, propertyString));
       } else if (entityTypeName.equals(nameETOne)) {
         return new CsdlEntityType()
             .setName("ETOne")
@@ -656,7 +657,7 @@ public class MetadataDocumentJsonSerializerTest {
         return new CsdlComplexType()
         .setName("CTTwoPrim")
         .setAbstract(true)
-        .setProperties(Arrays.asList(propertyInt16_NotNullable, propertyString));
+        .setProperties(List.of(propertyInt16_NotNullable, propertyString));
 
       }
       if (complexTypeName.equals(nameCTTwoPrimBase)) {
@@ -668,13 +669,13 @@ public class MetadataDocumentJsonSerializerTest {
         return new CsdlComplexType()
         .setName("CTTwoPrimBase")
         .setBaseType(nameCTTwoPrim)
-        .setProperties(Arrays.asList(propertyInt16_NotNullable, propertyString))
+        .setProperties(List.of(propertyInt16_NotNullable, propertyString))
         .setAnnotations(Collections.singletonList(annotation));
       }
       if (complexTypeName.equals(nameCTEntityInfo)) {
         return new CsdlComplexType()
             .setName("CTEntityInfo")
-            .setProperties(Arrays.asList(idProperty, createdProperty));
+            .setProperties(List.of(idProperty, createdProperty));
       }
       if (complexTypeName.equals(nameCTPrimComp)) {
         return new CsdlComplexType()
@@ -695,9 +696,9 @@ public class MetadataDocumentJsonSerializerTest {
                 .setReturnType(new CsdlReturnType().setType(nameString)));
       }
       if (actionName.equals(nameBAETTwoKeyNavRTETTwoKeyNavParam)) {
-        return Arrays.asList(
+        return List.of(
             new CsdlAction().setName("BAETTwoKeyNavRTETTwoKeyNavParam")
-            .setParameters(Arrays.asList(
+            .setParameters(List.of(
                 new CsdlParameter().setName("BindingParam").setType(nameETTwoKeyNav),
                 new CsdlParameter().setName("PropertyComp").setType(nameCTPrimComp)))
             .setReturnType(new CsdlReturnType().setType(nameETTwoKeyNav).setCollection(true))
@@ -716,7 +717,7 @@ public class MetadataDocumentJsonSerializerTest {
       }
       if (actionName.equals(nameBAProp)) {
         return Collections.singletonList(new CsdlAction().setName("BAProp")
-        .setParameters(Arrays.asList(
+        .setParameters(List.of(
             new CsdlParameter().setName("BindingParam").setType(nameET),
             new CsdlParameter().setName("PropertyInt").setType(nameInt16).
             setPrecision(10).setScale(3).setMaxLength(10).setNullable(false).setCollection(true)))
@@ -738,9 +739,9 @@ public class MetadataDocumentJsonSerializerTest {
             .setReturnType(new CsdlReturnType().setType(nameInt16)));
       }
       if (functionName.equals(nameBFETTwoKeyNavRTETTwoKeyNavParam)) {
-        return Arrays.asList(
+        return List.of(
             new CsdlFunction().setName("BFETTwoKeyNavRTETTwoKeyNavParam")
-            .setParameters(Arrays.asList(
+            .setParameters(List.of(
                 new CsdlParameter().setName("BindingParam").setType(nameETTwoKeyNav),
                 new CsdlParameter().setName("PropertyComp").setType(nameCTPrimComp)))
             .setReturnType(new CsdlReturnType().setType(nameETTwoKeyNav).setCollection(true))
@@ -769,7 +770,7 @@ public class MetadataDocumentJsonSerializerTest {
             case "ESTwoKeyNav" -> new CsdlEntitySet()
                     .setName("ESTwoKeyNav")
                     .setType(nameETTwoKeyNav)
-                    .setNavigationPropertyBindings(Arrays.asList(new CsdlNavigationPropertyBinding()
+                    .setNavigationPropertyBindings(List.of(new CsdlNavigationPropertyBinding()
                                     .setPath("NavPropertyETTwoKeyNavOne/namespace.ETOne/NavPropertyET")
                                     .setTarget("ES"),
                             new CsdlNavigationPropertyBinding()
@@ -870,7 +871,7 @@ public class MetadataDocumentJsonSerializerTest {
       schema.setEnumTypes(Collections.singletonList(getEnumType(nameENString)));
 
       // EntityTypes
-      schema.setEntityTypes(Arrays.asList(
+      schema.setEntityTypes(List.of(
           getEntityType(nameETAbstract),
           getEntityType(nameETAbstractBase),
           getEntityType(nameET),
@@ -879,7 +880,7 @@ public class MetadataDocumentJsonSerializerTest {
           getEntityType(nameETTwoKeyNavOne)));
 
       // ComplexTypes
-      schema.setComplexTypes(Arrays.asList(
+      schema.setComplexTypes(List.of(
           getComplexType(nameCTTwoPrim),
           getComplexType(nameCTTwoPrimBase),
           getComplexType(nameCTEntityInfo),
@@ -911,7 +912,7 @@ public class MetadataDocumentJsonSerializerTest {
       schema.setEntityContainer(getEntityContainer());
 
       // Terms
-      schema.setTerms(Arrays.asList(
+      schema.setTerms(List.of(
           getTerm(new FullQualifiedName("ns", "term")),
           getTerm(new FullQualifiedName("namespace", "Term1")),
           getTerm(new FullQualifiedName("ns", "Term2")),
@@ -919,7 +920,7 @@ public class MetadataDocumentJsonSerializerTest {
           getTerm(new FullQualifiedName("ns", "Term4"))));
 
       // Annotationgroups
-      schema.setAnnotationsGroup(Arrays.asList(
+      schema.setAnnotationsGroup(List.of(
           getAnnotationsGroup(new FullQualifiedName("Alias", "ETAbstract"), "Tablett"),
           getAnnotationsGroup(new FullQualifiedName("Alias", "ET"), "T")));
       
@@ -958,21 +959,21 @@ public class MetadataDocumentJsonSerializerTest {
       container.setName("container");
 
       // EntitySets
-      container.setEntitySets(Arrays.asList(getEntitySet(nameContainer, "ESAllPrim"),
+      container.setEntitySets(List.of(getEntitySet(nameContainer, "ESAllPrim"),
           getEntitySet(nameContainer, "ES"),
           getEntitySet(nameContainer, "ESOne"),
           getEntitySet(nameContainer, "ESTwoKeyNav"),
           getEntitySet(nameContainer, "ESTwoKeyNavOne")));
 
       // Singletons
-      container.setSingletons(Arrays.asList(getSingleton(nameContainer, "SI"),
+      container.setSingletons(List.of(getSingleton(nameContainer, "SI"),
           getSingleton(nameContainer, "SIBinding")));
 
       // ActionImports
       container.setActionImports(Collections.singletonList(getActionImport(nameContainer, "AIRTPrimParam")));
 
       // FunctionImports
-      container.setFunctionImports(Arrays.asList(getFunctionImport(nameContainer, "FINRTInt16"),
+      container.setFunctionImports(List.of(getFunctionImport(nameContainer, "FINRTInt16"),
           getFunctionImport(null, "FINRTInt161")));
       
       container.setExtendsContainer(new FullQualifiedName(nameSpace1, "container1").getFullQualifiedNameAsString());
@@ -999,7 +1000,7 @@ public class MetadataDocumentJsonSerializerTest {
 
       } else if (new FullQualifiedName("ns", "Term3").equals(termName)) {
         return new CsdlTerm().setType("Edm.String").setName("Term3")
-            .setAppliesTo(Arrays.asList("Property", "EntitySet", "Schema"));
+            .setAppliesTo(List.of("Property", "EntitySet", "Schema"));
 
       } else if (new FullQualifiedName("ns", "Term4").equals(termName)) {
         return new CsdlTerm().setType("Edm.String").setName("Term4").setBaseTerm("namespace.Term1");

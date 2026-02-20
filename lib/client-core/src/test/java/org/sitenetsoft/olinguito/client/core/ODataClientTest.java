@@ -15,12 +15,15 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Improved test assertions
  */
 package org.sitenetsoft.olinguito.client.core;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.uri.SearchFactory;
@@ -94,19 +97,19 @@ public class ODataClientTest {
     assertNotNull(config.getHttpClientFactory());
     assertNotNull(config.getHttpUriRequestFactory());
     config.setAddressingDerivedTypes(true);
-    assertEquals(true, config.isAddressingDerivedTypes());
+    assertTrue(config.isAddressingDerivedTypes());
     config.setContinueOnError(true);
-    assertEquals(true, config.isContinueOnError());
+    assertTrue(config.isContinueOnError());
     config.setGzipCompression(true);
-    assertEquals(true, config.isGzipCompression());
+    assertTrue(config.isGzipCompression());
     config.setKeyAsSegment(true);
-    assertEquals(true, config.isKeyAsSegment());
+    assertTrue(config.isKeyAsSegment());
     config.setUseChuncked(true);
-    assertEquals(true, config.isUseChuncked());
+    assertTrue(config.isUseChuncked());
     config.setUseUrlOperationFQN(true);
-    assertEquals(true, config.isUseUrlOperationFQN());
+    assertTrue(config.isUseUrlOperationFQN());
     config.setUseXHTTPMethod(true);
-    assertEquals(true, config.isUseXHTTPMethod());
+    assertTrue(config.isUseXHTTPMethod());
     config.setDefaultBatchAcceptFormat(ContentType.APPLICATION_ATOM_SVC);
     assertEquals(ContentType.APPLICATION_ATOM_SVC, config.getDefaultBatchAcceptFormat());
     config.setDefaultMediaFormat(ContentType.APPLICATION_ATOM_SVC);

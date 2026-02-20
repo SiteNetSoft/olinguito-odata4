@@ -15,11 +15,12 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
@@ -184,7 +185,7 @@ public class ContainerProvider {
             .setName("ESAllPrimDefaultValues")
             .setType(EntityTypeProvider.nameETAllPrimDefaultValues)
             .setTitle("All PropertyTypes EntitySet with default values")
-            .setAnnotations(Arrays.asList(new CsdlAnnotation().setTerm("Core.Description").setExpression(
+            .setAnnotations(List.of(new CsdlAnnotation().setTerm("Core.Description").setExpression(
                 new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String,
                     "Contains entities with all primitive types with default values")),
                 new CsdlAnnotation().setTerm(TermProvider.TERM_DATA.getFullQualifiedNameAsString()).setExpression(
@@ -196,10 +197,10 @@ public class ContainerProvider {
             .setName("ESAllPrim")
             .setType(EntityTypeProvider.nameETAllPrim)
             .setTitle("All PropertyTypes EntitySet")
-            .setNavigationPropertyBindings(Arrays.asList(
+            .setNavigationPropertyBindings(List.of(
                 new CsdlNavigationPropertyBinding().setPath("NavPropertyETTwoPrimOne").setTarget("ESTwoPrim"),
                 new CsdlNavigationPropertyBinding().setPath("NavPropertyETTwoPrimMany").setTarget("ESTwoPrim")))
-            .setAnnotations(Arrays.asList(new CsdlAnnotation().setTerm("Core.Description").setExpression(
+            .setAnnotations(List.of(new CsdlAnnotation().setTerm("Core.Description").setExpression(
                 new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String,
                     "Contains entities with all primitive types")),
                 new CsdlAnnotation().setTerm(TermProvider.TERM_DATA.getFullQualifiedNameAsString()).setExpression(
@@ -211,7 +212,7 @@ public class ContainerProvider {
             .setName("ESCollAllPrim")
             .setType(EntityTypeProvider.nameETCollAllPrim)
             .setAnnotations(
-                Arrays.asList(
+                List.of(
                     new CsdlAnnotation().setTerm(TermProvider.TERM_DESCRIPTION.getFullQualifiedNameAsString())
                         .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                             .setValue("Contains entities with collection of each primitive type")),
@@ -222,14 +223,14 @@ public class ContainerProvider {
         return new CsdlEntitySet()
             .setName("ESTwoPrim")
             .setType(EntityTypeProvider.nameETTwoPrim)
-            .setNavigationPropertyBindings(Arrays.asList(
+            .setNavigationPropertyBindings(List.of(
                 new CsdlNavigationPropertyBinding()
                     .setPath("NavPropertyETAllPrimOne")
                     .setTarget("ESAllPrim"),
                 new CsdlNavigationPropertyBinding()
                     .setPath("NavPropertyETAllPrimMany")
                     .setTarget("ESAllPrim")))
-            .setAnnotations(Arrays.asList(
+            .setAnnotations(List.of(
                 new CsdlAnnotation().setTerm("Core.Description")
                     .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                         .setValue("Contains entities with two primitive types")),
@@ -239,7 +240,7 @@ public class ContainerProvider {
         return new CsdlEntitySet()
             .setName("ESMixPrimCollComp")
             .setType(EntityTypeProvider.nameETMixPrimCollComp)
-            .setAnnotations(Arrays.asList(
+            .setAnnotations(List.of(
                 new CsdlAnnotation().setTerm("Core.Description")
                     .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                         .setValue("Contains entities with various properties of type primitive, collection "
@@ -251,7 +252,7 @@ public class ContainerProvider {
         return new CsdlEntitySet()
             .setName("ESBase")
             .setType(EntityTypeProvider.nameETBase)
-            .setAnnotations(Arrays.asList(
+            .setAnnotations(List.of(
                 new CsdlAnnotation().setTerm("Core.Description")
                     .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                         .setValue("Contains entities with single inheritance")),
@@ -262,7 +263,7 @@ public class ContainerProvider {
         return new CsdlEntitySet()
             .setName("ESTwoBase")
             .setType(EntityTypeProvider.nameETTwoBase)
-            .setAnnotations(Arrays.asList(
+            .setAnnotations(List.of(
                 new CsdlAnnotation().setTerm("Core.Description")
                     .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                         .setValue("Contains entities with double inheritance")),
@@ -273,7 +274,7 @@ public class ContainerProvider {
         return new CsdlEntitySet()
             .setName("ESTwoKeyTwoPrim")
             .setType(EntityTypeProvider.nameETTwoKeyTwoPrim)
-            .setAnnotations(Arrays.asList(
+            .setAnnotations(List.of(
                 new CsdlAnnotation().setTerm("Core.Description")
                     .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                         .setValue("Contains entities with two primitive types with two keys")),
@@ -284,7 +285,7 @@ public class ContainerProvider {
         return new CsdlEntitySet()
             .setName("ESAllKey")
             .setType(EntityTypeProvider.nameETAllKey)
-            .setAnnotations(Arrays.asList(
+            .setAnnotations(List.of(
                 new CsdlAnnotation().setTerm("Core.Description")
                     .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                         .setValue("Contains entities all primitive keys")),
@@ -295,7 +296,7 @@ public class ContainerProvider {
         return new CsdlEntitySet()
             .setName("ESCompAllPrim")
             .setType(EntityTypeProvider.nameETCompAllPrim)
-            .setAnnotations(Arrays.asList(
+            .setAnnotations(List.of(
                 new CsdlAnnotation().setTerm("Core.Description")
                     .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                         .setValue("Contains entities with a complex type containing all primitive types")),
@@ -306,7 +307,7 @@ public class ContainerProvider {
         return new CsdlEntitySet()
             .setName("ESCompCollAllPrim")
             .setType(EntityTypeProvider.nameETCompCollAllPrim)
-            .setAnnotations(Arrays.asList(
+            .setAnnotations(List.of(
                 new CsdlAnnotation().setTerm("Core.Description")
                     .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                         .setValue("Contains entities with a complex type containing all collection primitive types")),
@@ -317,7 +318,7 @@ public class ContainerProvider {
         return new CsdlEntitySet()
             .setName("ESCompComp")
             .setType(EntityTypeProvider.nameETCompComp)
-            .setAnnotations(Arrays.asList(
+            .setAnnotations(List.of(
                 new CsdlAnnotation().setTerm("Core.Description")
                     .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                         .setValue("Contains entities with complex type nested in complex type")),
@@ -328,7 +329,7 @@ public class ContainerProvider {
         return new CsdlEntitySet()
             .setName("ESCompCollComp")
             .setType(EntityTypeProvider.nameETCompCollComp)
-            .setAnnotations(Arrays.asList(
+            .setAnnotations(List.of(
                 new CsdlAnnotation().setTerm("Core.Description")
                     .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                         .setValue("Contains entities with collection of complex type nested in complex type")),
@@ -344,7 +345,7 @@ public class ContainerProvider {
             .setName("ESMedia")
             .setType(EntityTypeProvider.nameETMedia)
             .setIncludeInServiceDocument(true)
-            .setAnnotations(Arrays.asList(
+            .setAnnotations(List.of(
                 new CsdlAnnotation().setTerm("Core.Description")
                     .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                         .setValue("Contains media entities")),
@@ -356,7 +357,7 @@ public class ContainerProvider {
           .setName("ESMediaStream")
           .setType(EntityTypeProvider.nameETMedia)
           .setIncludeInServiceDocument(true)
-          .setAnnotations(Arrays.asList(
+          .setAnnotations(List.of(
               new CsdlAnnotation().setTerm("Core.Description")
                   .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                       .setValue("Contains media entities")),
@@ -368,7 +369,7 @@ public class ContainerProvider {
             .setName("ESInvisible")
             .setIncludeInServiceDocument(false)
             .setType(EntityTypeProvider.nameETAllPrim)
-            .setAnnotations(Arrays.asList(
+            .setAnnotations(List.of(
                 new CsdlAnnotation().setTerm("Core.Description")
                     .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                         .setValue("To test the invisibility within the service document")),
@@ -379,7 +380,7 @@ public class ContainerProvider {
         return new CsdlEntitySet()
             .setName("ESServerSidePaging")
             .setType(EntityTypeProvider.nameETServerSidePaging)
-            .setAnnotations(Arrays.asList(
+            .setAnnotations(List.of(
                 new CsdlAnnotation().setTerm("Core.Description")
                     .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                         .setValue("Divides the response to several pages using $skiptoken and providing a nextLink")),
@@ -390,7 +391,7 @@ public class ContainerProvider {
         return new CsdlEntitySet()
           .setName(ES_STREAM_SERVER_PAGINATION)
           .setType(EntityTypeProvider.nameETStreamServerSidePaging)
-          .setAnnotations(Arrays.asList(
+          .setAnnotations(List.of(
               new CsdlAnnotation().setTerm("Core.Description")
                   .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                       .setValue("Divides the stream response to several pages using $skiptoken and providing a nextLink"
@@ -403,7 +404,7 @@ public class ContainerProvider {
         return new CsdlEntitySet()
             .setName("ESAllNullable")
             .setType(EntityTypeProvider.nameETAllNullable)
-            .setAnnotations(Arrays.asList(
+            .setAnnotations(List.of(
                 new CsdlAnnotation().setTerm("Core.Description")
                     .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                         .setValue("Contains entities with initial values")),
@@ -414,7 +415,7 @@ public class ContainerProvider {
         return new CsdlEntitySet()
             .setName("ESKeyNav")
             .setType(EntityTypeProvider.nameETKeyNav)
-            .setNavigationPropertyBindings(Arrays.asList(
+            .setNavigationPropertyBindings(List.of(
                 new CsdlNavigationPropertyBinding()
                     .setPath("NavPropertyETKeyNavOne")
                     .setTarget("ESKeyNav"),
@@ -467,7 +468,7 @@ public class ContainerProvider {
                     .setPath("PropertyCompNav/com.corp.odata.test1.CTNavFiveProp/NavPropertyETTwoKeyNavMany")
                     .setTarget("ESTwoKeyNav")))
             .setAnnotations(
-                Arrays.asList(
+                List.of(
                     new CsdlAnnotation().setTerm("Core.Description")
                         .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                             .setValue("Contains entities with various navigation "
@@ -480,7 +481,7 @@ public class ContainerProvider {
         return new CsdlEntitySet()
             .setName("ESTwoKeyNav")
             .setType(EntityTypeProvider.nameETTwoKeyNav)
-            .setNavigationPropertyBindings(Arrays.asList(
+            .setNavigationPropertyBindings(List.of(
                 new CsdlNavigationPropertyBinding()
                     .setPath("NavPropertyETKeyNavOne")
                     .setTarget("ESKeyNav"),
@@ -523,7 +524,7 @@ public class ContainerProvider {
                 new CsdlNavigationPropertyBinding()
                     .setPath("NavPropertySINav")
                     .setTarget("SINav")))
-            .setAnnotations(Arrays.asList(
+            .setAnnotations(List.of(
                 new CsdlAnnotation().setTerm("Core.Description")
                     .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                         .setValue("Contains entities with various navigation properties "
@@ -535,7 +536,7 @@ public class ContainerProvider {
         return new CsdlEntitySet()
             .setName("ESKeyNavCont")
             .setType(EntityTypeProvider.nameETKeyNavCont)
-            .setNavigationPropertyBindings(Arrays.asList(
+            .setNavigationPropertyBindings(List.of(
                 new CsdlNavigationPropertyBinding()
                     .setPath("NavPropertyETTwoKeyNavOne/NavPropertyETKeyNavOne")
                     .setTarget("ESKeyNav"),
@@ -560,7 +561,7 @@ public class ContainerProvider {
                 new CsdlNavigationPropertyBinding()
                     .setPath("PropertyCompNavCont/NavPropertyETTwoKeyNavMany/NavPropertyETKeyNavOne")
                     .setTarget("ESKeyNav")))
-            .setAnnotations(Arrays.asList(
+            .setAnnotations(List.of(
                 new CsdlAnnotation().setTerm("Core.Description")
                     .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                         .setValue("Contains entities with containment navigation properties")),
@@ -571,7 +572,7 @@ public class ContainerProvider {
         return new CsdlEntitySet()
             .setName("ESTwoKeyNavCont")
             .setType(EntityTypeProvider.nameETTwoKeyNavCont)
-            .setNavigationPropertyBindings(Arrays.asList(
+            .setNavigationPropertyBindings(List.of(
                 new CsdlNavigationPropertyBinding()
                     .setPath("NavPropertyETKeyNavContOne/NavPropertyETTwoKeyNavContOne")
                     .setTarget("ESTwoKeyNavCont"),
@@ -584,7 +585,7 @@ public class ContainerProvider {
                 new CsdlNavigationPropertyBinding()
                     .setPath("NavPropertyETKeyNavContMany/NavPropertyETTwoKeyNavMany/NavPropertyETKeyNavOne")
                     .setTarget("ESKeyNav")))
-            .setAnnotations(Arrays.asList(
+            .setAnnotations(List.of(
                 new CsdlAnnotation().setTerm("Core.Description")
                     .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                         .setValue("Contains entities with containment navigation properties")),
@@ -595,11 +596,11 @@ public class ContainerProvider {
         return new CsdlEntitySet()
             .setName("ESBaseTwoKeyNav")
             .setType(EntityTypeProvider.nameETBaseTwoKeyNav)
-            .setNavigationPropertyBindings(Arrays.asList(
+            .setNavigationPropertyBindings(List.of(
                 new CsdlNavigationPropertyBinding()
                     .setPath("NavPropertyETKeyNavMany")
                     .setTarget("ESKeyNav")))
-            .setAnnotations(Arrays.asList(
+            .setAnnotations(List.of(
                 new CsdlAnnotation().setTerm("Core.Description")
                     .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                         .setValue("Contains entities with single inheritance and navigation properties")),
@@ -610,7 +611,7 @@ public class ContainerProvider {
         return new CsdlEntitySet()
             .setName("ESTwoBaseTwoKeyNav")
             .setType(EntityTypeProvider.nameETTwoBaseTwoKeyNav)
-            .setAnnotations(Arrays.asList(
+            .setAnnotations(List.of(
                 new CsdlAnnotation().setTerm("Core.Description")
                     .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                         .setValue("Contains entities with double inheritance and navigation properties")),
@@ -621,7 +622,7 @@ public class ContainerProvider {
         return new CsdlEntitySet()
             .setName("ESCompMixPrimCollComp")
             .setType(EntityTypeProvider.nameETCompMixPrimCollComp)
-            .setAnnotations(Arrays.asList(
+            .setAnnotations(List.of(
                 new CsdlAnnotation().setTerm("Core.Description")
                     .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                         .setValue("Contains entities with a complex type, "
@@ -633,7 +634,7 @@ public class ContainerProvider {
         return new CsdlEntitySet()
             .setName("ESFourKeyAlias")
             .setType(EntityTypeProvider.nameETFourKeyAlias)
-            .setAnnotations(Arrays.asList(
+            .setAnnotations(List.of(
                 new CsdlAnnotation().setTerm("Core.Description")
                     .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                         .setValue("Contains entities with compound key (four properties with key aliases")),
@@ -643,7 +644,7 @@ public class ContainerProvider {
       } else if (name.equals("ESMixEnumDefCollComp")) {
         return new CsdlEntitySet().setName("ESMixEnumDefCollComp")
             .setType(EntityTypeProvider.nameETMixEnumDefCollComp)
-            .setAnnotations(Arrays.asList(
+            .setAnnotations(List.of(
                 new CsdlAnnotation().setTerm("Core.Description")
                     .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                         .setValue("Contains entities with properties of enum type, collection of enum type, type "
@@ -654,7 +655,7 @@ public class ContainerProvider {
         return new CsdlEntitySet()
             .setName(ES_STREAM)
             .setType(EntityTypeProvider.nameETMixPrimCollComp)
-            .setAnnotations(Arrays.asList(
+            .setAnnotations(List.of(
                 new CsdlAnnotation().setTerm("Core.Description")
                     .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                         .setValue("Entity set will be streamed and it contains entities with various properties of " +
@@ -665,7 +666,7 @@ public class ContainerProvider {
         return new CsdlEntitySet()
             .setName("ESWithStream")
             .setType(EntityTypeProvider.nameETStream)
-            .setAnnotations(Arrays.asList(
+            .setAnnotations(List.of(
             new CsdlAnnotation().setTerm("Core.Description")
                 .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                     .setValue("Entity set with a stream type")),
@@ -675,20 +676,20 @@ public class ContainerProvider {
         return new CsdlEntitySet()
           .setName("ESPeople")
           .setType(EntityTypeProvider.nameETPeople)
-          .setNavigationPropertyBindings(Arrays.asList(new CsdlNavigationPropertyBinding().setPath("friends")
+          .setNavigationPropertyBindings(List.of(new CsdlNavigationPropertyBinding().setPath("friends")
             .setTarget("ESPeople")));
       } else if (name.equals("ESTwoPrimDerived")) {
         return new CsdlEntitySet()
             .setName("ESTwoPrimDerived")
             .setType(EntityTypeProvider.nameETTwoPrim)
-            .setNavigationPropertyBindings(Arrays.asList(
+            .setNavigationPropertyBindings(List.of(
                 new CsdlNavigationPropertyBinding()
                     .setPath("NavPropertyETAllPrimOne")
                     .setTarget("ESAllPrimDerived"),
                 new CsdlNavigationPropertyBinding()
                     .setPath("NavPropertyETAllPrimMany")
                     .setTarget("ESAllPrimDerived")))
-            .setAnnotations(Arrays.asList(
+            .setAnnotations(List.of(
                 new CsdlAnnotation().setTerm("Core.Description")
                     .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
                         .setValue("Contains entities with two primitive types")),
@@ -700,10 +701,10 @@ public class ContainerProvider {
           .setName("ESAllPrimDerived")
           .setType(EntityTypeProvider.nameETAllPrim)
           .setTitle("All PropertyTypes EntitySet")
-          .setNavigationPropertyBindings(Arrays.asList(
+          .setNavigationPropertyBindings(List.of(
               new CsdlNavigationPropertyBinding().setPath("NavPropertyETTwoPrimOne").setTarget("ESTwoPrimDerived"),
               new CsdlNavigationPropertyBinding().setPath("NavPropertyETTwoPrimMany").setTarget("ESTwoPrimDerived")))
-          .setAnnotations(Arrays.asList(new CsdlAnnotation().setTerm("Core.Description").setExpression(
+          .setAnnotations(List.of(new CsdlAnnotation().setTerm("Core.Description").setExpression(
               new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String,
                   "Contains entities with all primitive types")),
               new CsdlAnnotation().setTerm(TermProvider.TERM_DATA.getFullQualifiedNameAsString()).setExpression(
@@ -713,7 +714,7 @@ public class ContainerProvider {
       return new CsdlEntitySet()
           .setName("ESDelta")
           .setType(EntityTypeProvider.nameETDelta)
-          .setNavigationPropertyBindings(Arrays.asList(
+          .setNavigationPropertyBindings(List.of(
               new CsdlNavigationPropertyBinding()
                   .setPath("NavPropertyETAllPrimOne")
                   .setTarget("ESAllPrim"),
@@ -751,7 +752,7 @@ public class ContainerProvider {
           .setName("ESKeyAsSegmentStringNavKeyAsSegment")
           .setType(EntityTypeProvider.nameETKeyAsSegmentStringNavKeyAsSegment)
           .setKeyAsSegmentAllowed(true)
-          .setNavigationPropertyBindings(Arrays.asList(new CsdlNavigationPropertyBinding()
+          .setNavigationPropertyBindings(List.of(new CsdlNavigationPropertyBinding()
             .setPath(PropertyProvider.navPropertyKeyAsSegment.getName())
             .setTarget("ESKeyAsSegmentString")
           ));
@@ -767,7 +768,7 @@ public class ContainerProvider {
         return new CsdlActionImport()
             .setName(AIRT_STRING)
             .setAction(ActionProvider.nameUARTString)
-            .setAnnotations(Arrays.asList(new CsdlAnnotation().setTerm("Core.Description").setExpression(
+            .setAnnotations(List.of(new CsdlAnnotation().setTerm("Core.Description").setExpression(
                 new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String,
                     "Action Import returns a simple String")),
                 new CsdlAnnotation().setTerm(TermProvider.TERM_DATA.getFullQualifiedNameAsString()).setExpression(
@@ -835,7 +836,7 @@ public class ContainerProvider {
            return new CsdlActionImport()
             .setName(AI_RT_TIME_OF_DAY)
             .setAction(ActionProvider.name_A_RTTimeOfDay_)
-            .setAnnotations(Arrays.asList(new CsdlAnnotation().setTerm("Core.Description").setExpression(
+            .setAnnotations(List.of(new CsdlAnnotation().setTerm("Core.Description").setExpression(
                 new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String,
                     "Action Import returns the given time of day")),
                 new CsdlAnnotation().setTerm(TermProvider.TERM_DATA.getFullQualifiedNameAsString()).setExpression(
@@ -854,7 +855,7 @@ public class ContainerProvider {
       if (name.equals("FIC_RTTimeOfDay_")){
            return new CsdlFunctionImport()
             .setName(name)
-            .setAnnotations(Arrays.asList(new CsdlAnnotation().setTerm(
+            .setAnnotations(List.of(new CsdlAnnotation().setTerm(
                     TermProvider.TERM_DESCRIPTION.getFullQualifiedNameAsString()).setExpression(
                 new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String,
                     "Overload with same unbound parameter name and different "
@@ -1023,7 +1024,7 @@ public class ContainerProvider {
         return new CsdlSingleton()
             .setName("SINav")
             .setType(EntityTypeProvider.nameETTwoKeyNav)
-            .setNavigationPropertyBindings(Arrays.asList(
+            .setNavigationPropertyBindings(List.of(
                 new CsdlNavigationPropertyBinding()
                     .setPath("NavPropertyETTwoKeyNavMany")
                     .setTarget("ESTwoKeyNav"),

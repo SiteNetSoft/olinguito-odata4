@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
+ * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -98,7 +99,7 @@ public class AtomSerializer implements ODataSerializer {
   private void value(final XMLStreamWriter writer,
       final ValueType valueType, final EdmPrimitiveTypeKind kind, final Object value)
           throws XMLStreamException, EdmPrimitiveTypeException {
-    if (value == null || (valueType == ValueType.COMPLEX && ((ComplexValue) value).getValue().isEmpty())) {
+    if (value == null || (valueType == ValueType.COMPLEX && value instanceof ComplexValue cv0 && cv0.getValue().isEmpty())) {
       writer.writeAttribute(Constants.PREFIX_METADATA, Constants.NS_METADATA,
           Constants.ATTR_NULL, Boolean.TRUE.toString());
       return;
@@ -132,14 +133,16 @@ public class AtomSerializer implements ODataSerializer {
       collection(writer, valueType.getBaseType(), kind, (List<?>) value);
       break;
     case COMPLEX:
-      if (((ComplexValue) value).getTypeName() != null) {
-        EdmTypeInfo typeInfo = new EdmTypeInfo.Builder().
-            setTypeExpression(((ComplexValue) value).getTypeName()).build();
-        writer.writeAttribute(Constants.PREFIX_METADATA, Constants.NS_METADATA,
-            Constants.ATTR_TYPE, typeInfo.external());
-      }
-      for (Property property : ((ComplexValue) value).getValue()) {
-        property(writer, property, false);
+      if (value instanceof ComplexValue cv) {
+        if (cv.getTypeName() != null) {
+          EdmTypeInfo typeInfo = new EdmTypeInfo.Builder().
+              setTypeExpression(cv.getTypeName()).build();
+          writer.writeAttribute(Constants.PREFIX_METADATA, Constants.NS_METADATA,
+              Constants.ATTR_TYPE, typeInfo.external());
+        }
+        for (Property property : cv.getValue()) {
+          property(writer, property, false);
+        }
       }
       break;
     case ENTITY:

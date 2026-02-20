@@ -15,6 +15,9 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
+ * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -96,7 +99,7 @@ public class RequestValidator {
     final StringBuilder builder = new StringBuilder();
 
     for (final String segment : path) {
-      if (builder.length() > 0) {
+      if (!builder.isEmpty()) {
         builder.append("/");
       }
 
@@ -199,18 +202,18 @@ public class RequestValidator {
     newPath.add(edmProperty.getName());
 
     if (edmProperty.isCollection()) {
-      if (edmProperty.getType() instanceof EdmComplexType && property != null) {
+      if (edmProperty.getType() instanceof EdmComplexType edmComplexType && property != null) {
         for (final Object value : property.asCollection()) {
           validateComplexValue((ComplexValue) value,
               edmBindingTarget,
-              (EdmComplexType) edmProperty.getType(),
+              edmComplexType,
               newPath);
         }
       }
-    } else if (edmProperty.getType() instanceof EdmComplexType) {
+    } else if (edmProperty.getType() instanceof EdmComplexType edmComplexType) {
       validateComplexValue((property == null) ? null : property.asComplex(),
           edmBindingTarget,
-          (EdmComplexType) edmProperty.getType(),
+          edmComplexType,
           newPath);
     }
   }

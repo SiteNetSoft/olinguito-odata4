@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Improved test assertions
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
@@ -164,7 +166,7 @@ public class EdmImplCallCreateTest {
     EdmAnnotations annotationGroup = edm.getAnnotationGroup(FQN, null);
     assertNotNull(annotationGroup);
 
-    assertEquals(null, annotationGroup.getQualifier());
+    assertNull(annotationGroup.getQualifier());
 
     assertNull(edm.getAnnotationGroup(WRONG_FQN, null));
   }

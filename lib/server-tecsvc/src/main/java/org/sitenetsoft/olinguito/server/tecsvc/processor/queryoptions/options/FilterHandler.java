@@ -36,9 +36,10 @@ import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression
 import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operand.TypedOperand;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operand.VisitorOperand;
 
-public class FilterHandler {
+public final class FilterHandler {
+  private FilterHandler() {}
 
-  protected static final EdmPrimitiveType primBoolean =
+  private static final EdmPrimitiveType primBoolean =
       OData.newInstance().createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Boolean);
 
   public static void applyFilterSystemQuery(final FilterOption filterOption, final EntityCollection entitySet,

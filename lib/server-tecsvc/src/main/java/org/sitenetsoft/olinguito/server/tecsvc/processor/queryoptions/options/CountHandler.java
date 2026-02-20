@@ -21,7 +21,9 @@ package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.options;
 import org.sitenetsoft.olinguito.commons.api.data.EntityCollection;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.CountOption;
 
-public class CountHandler {
+public final class CountHandler {
+  private CountHandler() {}
+
   public static void applyCountSystemQueryOption(final CountOption countOption, final EntityCollection entitySet) {
     if (countOption != null && countOption.getValue()) {
       entitySet.setCount(entitySet.getEntities().size());

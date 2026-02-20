@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * Copyright 2026 SiteNetSoft - Replaced wildcard imports with explicit imports
+ * Copyright 2026 SiteNetSoft - Replaced wildcard imports with explicit imports; Arrays.asList with List.of
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -30,7 +30,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
@@ -274,12 +273,12 @@ public class ContentNegotiatorTest {
 
     ODataRequest request = new ODataRequest();
     if (useCase[2] != null) {
-      request.addHeader(HttpHeader.ACCEPT, Arrays.asList(useCase[2]));
+      request.addHeader(HttpHeader.ACCEPT, List.of(useCase[2]));
     }
 	
 	if (useCase.length > 4) {
       if (useCase[4] != null) {
-        request.addHeader(HttpHeader.ACCEPT_CHARSET, Arrays.asList(useCase[4]));
+        request.addHeader(HttpHeader.ACCEPT_CHARSET, List.of(useCase[4]));
       }
     }
 

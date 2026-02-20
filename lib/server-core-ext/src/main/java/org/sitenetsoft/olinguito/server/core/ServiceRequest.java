@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  */
 
 package org.sitenetsoft.olinguito.server.core;
@@ -145,7 +147,7 @@ public abstract class ServiceRequest {
     
     StringBuilder sb = new StringBuilder();
     for (HttpMethod method:allowed) {
-      if (sb.length() > 0) {
+      if (!sb.isEmpty()) {
         sb.append(",");
       }
       sb.append(method.name());

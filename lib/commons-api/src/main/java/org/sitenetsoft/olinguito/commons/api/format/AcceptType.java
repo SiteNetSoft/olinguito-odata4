@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  */
 package org.sitenetsoft.olinguito.commons.api.format;
 
@@ -81,7 +82,7 @@ public final class AcceptType {
     if (q == null) {
       quality = 1F;
     } else if (Q_PATTERN.matcher(q).matches()) {
-        quality = Float.valueOf(q);
+        quality = Float.parseFloat(q);
     } else {
       throw new IllegalArgumentException("Illegal quality parameter '" + q + "' in accept header:" + type);
     }

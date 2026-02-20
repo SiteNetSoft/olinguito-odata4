@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  */
 package org.sitenetsoft.olinguito.netty.server.core;
 
@@ -135,7 +137,7 @@ public class ODataNettyHandlerImplTest {
       HttpRequest hr = mock(HttpRequest.class);
 
       String requestUrl = p[0] + p[1] + p[2];
-      if (!p[3].equals("") || p[3].length() > 0) {
+      if (!p[3].isEmpty()) {
     	  requestUrl += "?$" + p[3];
       }
 

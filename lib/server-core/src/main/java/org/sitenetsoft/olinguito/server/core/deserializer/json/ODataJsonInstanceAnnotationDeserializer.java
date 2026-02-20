@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -89,11 +91,11 @@ public class ODataJsonInstanceAnnotationDeserializer {
 			break;
 
 		case COMPLEX:
-			if (node.has(Constants.JSON_TYPE)) {
+			if (node.has(Constants.JSON_TYPE) && node instanceof ObjectNode objNode0) {
 				valuable.setType(node.get(Constants.JSON_TYPE).asText());
-				((ObjectNode) node).remove(Constants.JSON_TYPE);
+				objNode0.remove(Constants.JSON_TYPE);
 			}
-			final Object value = fromComplex((ObjectNode) node);
+			final Object value = node instanceof ObjectNode objNode1 ? fromComplex(objNode1) : null;
 			if (value instanceof ComplexValue complexVal) {
 				complexVal.setTypeName(valuable.getType());
 			}
@@ -176,15 +178,15 @@ public class ODataJsonInstanceAnnotationDeserializer {
 				}
 			} else if (child.isContainerNode()) {
 				EdmTypeInfo childType = null;
-				if (child.has(Constants.JSON_TYPE)) {
+				if (child.has(Constants.JSON_TYPE) && child instanceof ObjectNode childObjNode) {
 					String typeName = child.get(Constants.JSON_TYPE).asText();
 					childType = typeName == null ? null : new EdmTypeInfo.Builder()
 							.setTypeExpression(typeName).build();
-					((ObjectNode) child).remove(Constants.JSON_TYPE);
+					childObjNode.remove(Constants.JSON_TYPE);
 				}
-				final Object value = fromComplex((ObjectNode) child);
-				if (childType != null) {
-					((ComplexValue) value).setTypeName(childType.external());
+				final Object value = child instanceof ObjectNode childObj ? fromComplex(childObj) : null;
+				if (childType != null && value instanceof ComplexValue cv) {
+					cv.setTypeName(childType.external());
 				}
 				valueType = ValueType.COLLECTION_COMPLEX;
 				values.add(value);

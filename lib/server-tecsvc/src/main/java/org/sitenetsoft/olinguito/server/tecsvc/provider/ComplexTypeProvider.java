@@ -15,11 +15,13 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
@@ -66,13 +68,13 @@ public class ComplexTypeProvider {
     if (complexTypeName.equals(nameCTPrim)) {
       return new CsdlComplexType()
           .setName("CTPrim")
-          .setProperties(Arrays.asList(PropertyProvider.propertyInt16));
+          .setProperties(List.of(PropertyProvider.propertyInt16));
 
     } else if (complexTypeName.equals(nameCTAllPrim)) {
       return new CsdlComplexType()
           .setName("CTAllPrim")
           .setProperties(
-              Arrays.asList(PropertyProvider.propertyString, PropertyProvider.propertyBinary,
+              List.of(PropertyProvider.propertyString, PropertyProvider.propertyBinary,
                   PropertyProvider.propertyBoolean, PropertyProvider.propertyByte, PropertyProvider.propertyDate,
                   PropertyProvider.propertyDateTimeOffset_Precision, PropertyProvider.propertyDecimal_Scale_Precision,
                   PropertyProvider.propertySingle, PropertyProvider.propertyDouble, PropertyProvider.propertyDuration,
@@ -83,7 +85,7 @@ public class ComplexTypeProvider {
       return new CsdlComplexType()
           .setName("CTCollAllPrim")
           .setProperties(
-              Arrays.asList(
+              List.of(
                   PropertyProvider.collPropertyString, PropertyProvider.collPropertyBoolean,
                   PropertyProvider.collPropertyByte, PropertyProvider.collPropertySByte,
                   PropertyProvider.collPropertyInt16, PropertyProvider.collPropertyInt32,
@@ -97,28 +99,28 @@ public class ComplexTypeProvider {
     } else if (complexTypeName.equals(nameCTTwoPrimAno)) {
       return new CsdlComplexType()
           .setName("CTTwoPrimAno")
-          .setProperties(Arrays.asList(PropertyProvider.propertyString))
+          .setProperties(List.of(PropertyProvider.propertyString))
           .setAbstract(true);
 
     } else if (complexTypeName.equals(nameCTBaseAno)) {
       return new CsdlComplexType()
           .setName("CTBaseAno")
           .setBaseType(nameCTTwoPrimAno)
-          .setProperties(Arrays.asList(
+          .setProperties(List.of(
               new CsdlProperty()
                   .setName("AdditionalPropString")
                   .setType(PropertyProvider.nameString)));
     }else if (complexTypeName.equals(nameCTCompCollCompAno)) {
       return new CsdlComplexType()
           .setName("CTCompCollCompAno")
-          .setProperties(Arrays.asList(PropertyProvider.collPropertyComp_CTTwoPrim_Ano));
+          .setProperties(List.of(PropertyProvider.collPropertyComp_CTTwoPrim_Ano));
 
     } else if (complexTypeName.equals(nameCTTwoPrim)) {
       return new CsdlComplexType()
           .setName("CTTwoPrim")
-          .setProperties(Arrays.asList(PropertyProvider.propertyInt16_NotNullable,
+          .setProperties(List.of(PropertyProvider.propertyInt16_NotNullable,
               PropertyProvider.propertyString_NotNullable))
-          .setNavigationProperties((Arrays.asList(
+          .setNavigationProperties((List.of(
               PropertyProvider.collectionNavPropertyETTwoKeyNavOne_ETTwoKeyNav,
               new CsdlNavigationProperty()
                   .setName("NavPropertyETMediaOne")
@@ -126,16 +128,16 @@ public class ComplexTypeProvider {
     } else if (complexTypeName.equals(nameCTCompNav)) {
       return new CsdlComplexType()
           .setName("CTCompNav")
-          .setProperties(Arrays.asList(PropertyProvider.propertyString,
+          .setProperties(List.of(PropertyProvider.propertyString,
               PropertyProvider.propertyCompNav_CTNavFiveProp));
 
     } else if (complexTypeName.equals(nameCTMixPrimCollComp)) {
       return new CsdlComplexType()
           .setName("CTMixPrimCollComp")
           .setProperties(
-              Arrays.asList(PropertyProvider.propertyInt16, PropertyProvider.collPropertyString,
+              List.of(PropertyProvider.propertyInt16, PropertyProvider.collPropertyString,
                   PropertyProvider.propertyComp_CTTwoPrim, PropertyProvider.collPropertyComp_CTTwoPrim))
-          .setNavigationProperties((Arrays.asList(
+          .setNavigationProperties((List.of(
               PropertyProvider.collectionNavPropertyETTwoKeyNavOne_ETTwoKeyNav,
               PropertyProvider.collectionNavPropertyETTwoKeyNavMany_ETTwoKeyNav)));
 
@@ -143,7 +145,7 @@ public class ComplexTypeProvider {
       return new CsdlComplexType()
           .setName("CTBase")
           .setBaseType(nameCTTwoPrim)
-          .setProperties(Arrays.asList(
+          .setProperties(List.of(
               new CsdlProperty()
                   .setName("AdditionalPropString")
                   .setType(PropertyProvider.nameString)));
@@ -156,23 +158,23 @@ public class ComplexTypeProvider {
     } else if (complexTypeName.equals(nameCTCompComp)) {
       return new CsdlComplexType()
           .setName("CTCompComp")
-          .setProperties(Arrays.asList(PropertyProvider.propertyComp_CTTwoPrim));
+          .setProperties(List.of(PropertyProvider.propertyComp_CTTwoPrim));
       
     } else if (complexTypeName.equals(nameCTCompCollComp)) {
       return new CsdlComplexType()
           .setName("CTCompCollComp")
-          .setProperties(Arrays.asList(PropertyProvider.collPropertyComp_CTTwoPrim));
+          .setProperties(List.of(PropertyProvider.collPropertyComp_CTTwoPrim));
 
     } else if (complexTypeName.equals(nameCTPrimComp)) {
       return new CsdlComplexType()
           .setName("CTPrimComp")
-          .setProperties(Arrays.asList(PropertyProvider.propertyInt16, PropertyProvider.propertyComp_CTAllPrim));
+          .setProperties(List.of(PropertyProvider.propertyInt16, PropertyProvider.propertyComp_CTAllPrim));
 
     } else if (complexTypeName.equals(nameCTNavFiveProp)) {
       return new CsdlComplexType()
           .setName("CTNavFiveProp")
-          .setProperties(Arrays.asList(PropertyProvider.propertyInt16))
-          .setNavigationProperties((Arrays.asList(
+          .setProperties(List.of(PropertyProvider.propertyInt16))
+          .setNavigationProperties((List.of(
               PropertyProvider.collectionNavPropertyETTwoKeyNavOne_ETTwoKeyNav,
               PropertyProvider.collectionNavPropertyETTwoKeyNavMany_ETTwoKeyNav,
               new CsdlNavigationProperty()
@@ -187,7 +189,7 @@ public class ComplexTypeProvider {
       return new CsdlComplexType()
           .setName("CTNavCont")
           .setProperties(new ArrayList<>())
-          .setNavigationProperties(Arrays.asList(
+          .setNavigationProperties(List.of(
               PropertyProvider.navPropertyETKeyNavOne_CT_ETeyNav,
               PropertyProvider.collectionNavPropertyETKeyNavMany_CT_ETKeyNav,
               PropertyProvider.navPropertyETTwoKeyNavOne_CT_ETTwoKeyNav,
@@ -200,7 +202,7 @@ public class ComplexTypeProvider {
       return new CsdlComplexType()
           .setName("CTBasePrimCompNav")
           .setBaseType(nameCTPrimComp)
-          .setNavigationProperties(Arrays.asList(
+          .setNavigationProperties(List.of(
               PropertyProvider.collectionNavPropertyETTwoKeyNavOne_ETTwoKeyNav,
               PropertyProvider.collectionNavPropertyETTwoKeyNavMany_ETTwoKeyNav,
               PropertyProvider.navPropertyETKeyNavOne_ETKeyNav,
@@ -214,7 +216,7 @@ public class ComplexTypeProvider {
     } else if (complexTypeName.equals(nameCTMixEnumDef)) {
       return new CsdlComplexType()
           .setName(nameCTMixEnumDef.getName())
-          .setProperties(Arrays.asList(
+          .setProperties(List.of(
               PropertyProvider.propertyEnumString_ENString,
               PropertyProvider.collPropertyEnumString_ENString,
               PropertyProvider.propertyTypeDefinition_TDString,
@@ -222,10 +224,10 @@ public class ComplexTypeProvider {
     } else if (complexTypeName.equals(nameCTWithStreamProp)) {
       return new CsdlComplexType()
           .setName("CTWithStreamProp")
-          .setProperties(Arrays.asList(
+          .setProperties(List.of(
               PropertyProvider.propertyStream,
               PropertyProvider.propertyComp_CTTwoPrim))
-          .setNavigationProperties(Arrays.asList(PropertyProvider.navPropertyETStreamOnComplexProp_ETStreamNav,
+          .setNavigationProperties(List.of(PropertyProvider.navPropertyETStreamOnComplexProp_ETStreamNav,
               PropertyProvider.navPropertyETStreamOnComplexPropMany_ETStreamNav));
     }
 

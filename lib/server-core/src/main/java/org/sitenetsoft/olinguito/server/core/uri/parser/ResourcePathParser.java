@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -188,7 +190,8 @@ public class ResourcePathParser {
   private UriResource ref(final UriResource previous) throws UriParserException {
     ParserHelper.requireTokenEnd(tokenizer);
     requireTyped(previous, "$ref");
-    if (((UriResourcePartTyped) previous).getType() instanceof EdmEntityType) {
+    if (previous instanceof UriResourcePartTyped prevTyped
+        && prevTyped.getType() instanceof EdmEntityType) {
       return new UriResourceRefImpl();
     } else {
       throw new UriParserSemanticException("$ref is only allowed on entity types.",
@@ -199,7 +202,7 @@ public class ResourcePathParser {
   private UriResource value(final UriResource previous) throws UriParserException {
     ParserHelper.requireTokenEnd(tokenizer);
     requireTyped(previous, "$value");
-    if (!((UriResourcePartTyped) previous).isCollection()) {
+    if (previous instanceof UriResourcePartTyped prevTyped && !prevTyped.isCollection()) {
       requireMediaResourceInCaseOfEntity(previous);
       return new UriResourceValueImpl();
     } else {
@@ -212,7 +215,7 @@ public class ResourcePathParser {
     // If the resource is an entity or navigatio
     if (resource instanceof UriResourceEntitySet resEntitySet && !resEntitySet.getEntityType().hasStream()
         || resource instanceof UriResourceNavigation resNav
-        && !((EdmEntityType) resNav.getType()).hasStream()) {
+        && resNav.getType() instanceof EdmEntityType navEntityType && !navEntityType.hasStream()) {
       throw new UriParserSemanticException("$value on entity is only allowed on media resources.",
           UriParserSemanticException.MessageKeys.NOT_A_MEDIA_RESOURCE, resource.getSegmentValue());
     }
@@ -231,7 +234,7 @@ public class ResourcePathParser {
   private UriResource count(final UriResource previous) throws UriParserException {
     ParserHelper.requireTokenEnd(tokenizer);
     requireTyped(previous, "$count");
-    if (((UriResourcePartTyped) previous).isCollection()) {
+    if (previous instanceof UriResourcePartTyped prevTyped && prevTyped.isCollection()) {
       return new UriResourceCountImpl();
     } else {
       throw new UriParserSemanticException("$count is only allowed on collections.",
@@ -289,10 +292,10 @@ public class ResourcePathParser {
     UriResourcePartTyped previousTyped = null;
     EdmStructuredType structType = null;
     requireTyped(previous, name);
-    if (previous instanceof UriResourcePartTyped prevTyped && prevTyped.getType() instanceof EdmStructuredType) {
+    if (previous instanceof UriResourcePartTyped prevTyped && prevTyped.getType() instanceof EdmStructuredType prevStructType) {
       previousTyped = prevTyped;
       final EdmType previousTypeFilter = getPreviousTypeFilter(previousTyped);
-      structType = (EdmStructuredType) (previousTypeFilter == null ? previousTyped.getType() : previousTypeFilter);
+      structType = previousTypeFilter instanceof EdmStructuredType filterStructType ? filterStructType : prevStructType;
     } else {
       throw new UriParserSemanticException(
           "Cannot parse '" + name + "'; previous path segment is not a structural type.",
@@ -421,8 +424,10 @@ public class ResourcePathParser {
       return withKeysImpl.getTypeFilterOnEntry() == null ?
           withKeysImpl.getTypeFilterOnCollection() :
           withKeysImpl.getTypeFilterOnEntry();
+    } else if (previousTyped instanceof UriResourceTypedImpl typedImpl) {
+      return typedImpl.getTypeFilter();
     } else {
-      return ((UriResourceTypedImpl) previousTyped).getTypeFilter();
+      return null;
     }
   }
 

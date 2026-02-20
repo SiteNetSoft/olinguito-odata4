@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * Copyright 2026 SiteNetSoft - Migrated XMLUnit 1.6 to 2.11.0
+ * Copyright 2026 SiteNetSoft - Migrated XMLUnit 1.6 to 2.11.0; Replaced Arrays.asList with List.of
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.xml;
 
@@ -28,7 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -375,7 +374,7 @@ public class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
     Assertions.assertEquals(4, result.getProperties().size());
     Assertions.assertEquals(0, result.getNavigationLinks().size());
 
-    Assertions.assertEquals(Arrays.asList("Employee1@company.example", "Employee2@company.example",
+    Assertions.assertEquals(List.of("Employee1@company.example", "Employee2@company.example",
         "Employee3@company.example"), result.getProperty("CollPropertyString").getValue());
 
     Property comp = result.getProperty("PropertyComp");
@@ -452,7 +451,7 @@ public class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
     Assertions.assertEquals(4, result.getProperties().size());
     Assertions.assertEquals(0, result.getNavigationLinks().size());
 
-    Assertions.assertEquals(Arrays.asList("Employee1@company.example", "Employee2@company.example",
+    Assertions.assertEquals(List.of("Employee1@company.example", "Employee2@company.example",
         "Employee3@company.example"), result.getProperty("CollPropertyString").getValue());
 
     Property comp = result.getProperty("PropertyComp");
@@ -860,7 +859,7 @@ public class ODataXmlDeserializerTest extends AbstractODataDeserializerTest {
         + "<metadata:element>Employee3@company.example</metadata:element>"
         + "</metadata:value>";
     Property result = deserializer.property(new ByteArrayInputStream(payload.getBytes()), edmProperty).getProperty();
-    Assertions.assertEquals(Arrays.asList("Employee1@company.example", "Employee2@company.example",
+    Assertions.assertEquals(List.of("Employee1@company.example", "Employee2@company.example",
         "Employee3@company.example"), result.getValue());
   }
 

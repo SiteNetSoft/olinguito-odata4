@@ -15,6 +15,9 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Converted switch statements to switch expressions
+ * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  */
 package org.sitenetsoft.olinguito.commons.core.edm.annotation;
 
@@ -48,7 +51,7 @@ public abstract class AbstractEdmExpression implements EdmExpression {
 
   @Override
   public EdmConstantExpression asConstant() {
-    return isConstant() ? (EdmConstantExpression) this : null;
+    return this instanceof EdmConstantExpression c ? c : null;
   }
 
   @Override
@@ -58,7 +61,7 @@ public abstract class AbstractEdmExpression implements EdmExpression {
 
   @Override
   public EdmDynamicExpression asDynamic() {
-    return isDynamic() ? (EdmDynamicExpression) this : null;
+    return this instanceof EdmDynamicExpression d ? d : null;
   }
   
   public static EdmExpression getExpression(Edm edm, final CsdlExpression exp) {
@@ -79,44 +82,17 @@ public abstract class AbstractEdmExpression implements EdmExpression {
 
     if (exp.isLogicalOrComparison()) {
       CsdlLogicalOrComparisonExpression expLocal = exp.asLogicalOrComparison();
-      switch (exp.asLogicalOrComparison().getType()) {
-      case Not:
-        _expression = new EdmNotImpl(edm, expLocal);
-        break;
-      case And:
-        _expression = new EdmAndImpl(edm, expLocal);
-        break;
-
-      case Or:
-        _expression = new EdmOrImpl(edm, expLocal);
-        break;
-
-      case Eq:
-        _expression = new EdmEqImpl(edm, expLocal);
-        break;
-
-      case Ne:
-        _expression = new EdmNeImpl(edm, expLocal);
-        break;
-
-      case Ge:
-        _expression = new EdmGeImpl(edm, expLocal);
-        break;
-
-      case Gt:
-        _expression = new EdmGtImpl(edm, expLocal);
-        break;
-
-      case Le:
-        _expression = new EdmLeImpl(edm, expLocal);
-        break;
-
-      case Lt:
-        _expression = new EdmLtImpl(edm, expLocal);
-        break;
-
-      default:
-      }
+      _expression = switch (exp.asLogicalOrComparison().getType()) {
+        case Not -> new EdmNotImpl(edm, expLocal);
+        case And -> new EdmAndImpl(edm, expLocal);
+        case Or -> new EdmOrImpl(edm, expLocal);
+        case Eq -> new EdmEqImpl(edm, expLocal);
+        case Ne -> new EdmNeImpl(edm, expLocal);
+        case Ge -> new EdmGeImpl(edm, expLocal);
+        case Gt -> new EdmGtImpl(edm, expLocal);
+        case Le -> new EdmLeImpl(edm, expLocal);
+        case Lt -> new EdmLtImpl(edm, expLocal);
+      };
     } else if (exp.isAnnotationPath()) {
       _expression = new EdmAnnotationPathImpl(edm, exp.asAnnotationPath());
     } else if (exp.isApply()) {

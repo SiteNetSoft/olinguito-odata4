@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Improved test assertions
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -343,7 +345,7 @@ public class ODataHandlerImplTest {
     // does the response contain the localized message and the status code?
     boolean isMessage = responseContent.contains(LOCALIZED_MESSAGE) && responseContent.contains(ODATA_ERRORCODE);
     // test if message is localized
-    assertEquals(true, isMessage);
+    assertTrue(isMessage);
     // test if the original is hold
     assertEquals(ORIGINAL_MESSAGE, oDataApplicationException.getMessage());
   }

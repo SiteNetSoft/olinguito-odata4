@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.core.prefer;
 
@@ -27,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.sitenetsoft.olinguito.server.api.prefer.Preferences;
@@ -135,7 +138,7 @@ public class PreferencesTest {
 
   @Test
   public void wrongContent() {
-    final Preferences preferences = new PreferencesImpl(Arrays.asList(
+    final Preferences preferences = new PreferencesImpl(List.of(
         "odata.callback;url=\":\"",
         "odata.maxpagesize=12345678901234567890",
         "return=something",
@@ -152,7 +155,7 @@ public class PreferencesTest {
 
   @Test
   public void wrongFormat() {
-    final Preferences preferences = new PreferencesImpl(Arrays.asList(
+    final Preferences preferences = new PreferencesImpl(List.of(
         "return=, wait=1",
         "return=;, wait=2",
         "return=representation=, wait=3",

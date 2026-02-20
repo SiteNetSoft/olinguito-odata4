@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Improved test assertions
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -54,7 +56,7 @@ public class ODataDeserializerEntityCollectionTest extends AbstractODataDeserial
 
     assertEquals(Short.valueOf((short) 32767), entity.getProperty("PropertyInt16").getValue());
     assertEquals("First Resource - positive values", entity.getProperty("PropertyString").getValue());
-    assertEquals(Boolean.TRUE, entity.getProperty("PropertyBoolean").getValue());
+    assertTrue((Boolean) entity.getProperty("PropertyBoolean").getValue());
     assertEquals(Short.valueOf((short) 255), entity.getProperty("PropertyByte").getValue());
     assertEquals(Byte.valueOf((byte) 127), entity.getProperty("PropertySByte").getValue());
     assertEquals(Integer.valueOf(2147483647), entity.getProperty("PropertyInt32").getValue());

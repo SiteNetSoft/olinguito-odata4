@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  * Copyright 2026 SiteNetSoft - Named/multi-service support for Quarkus OData server extension
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  */
 package org.sitenetsoft.olinguito.server.adapter.quarkus.deployment;
 

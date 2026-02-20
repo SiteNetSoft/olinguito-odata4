@@ -15,12 +15,15 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Improved test assertions
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -201,7 +204,7 @@ public class ODataJsonDeserializerActionParametersTest extends AbstractODataDese
     assertEquals((short) 1, parameter.getValue());
     parameter = parameters.get("ParameterDuration");
     assertNotNull(parameter);
-    assertEquals(null, parameter.getValue());
+    assertNull(parameter.getValue());
   }
 
   @Test

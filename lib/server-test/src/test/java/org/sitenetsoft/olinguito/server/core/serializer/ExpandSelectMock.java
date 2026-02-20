@@ -15,11 +15,12 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.core.serializer;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.edm.EdmAction;
@@ -50,7 +51,7 @@ public final class ExpandSelectMock {
   private static UriInfoResource mockResource(final EdmEntitySet edmEntitySet, final String... names) {
     EdmStructuredType type = edmEntitySet.getEntityType();
     List<UriResource> elements = new ArrayList<>();
-    for (final String name : Arrays.asList(names)) {
+    for (final String name : List.of(names)) {
       final EdmElement edmElement = type.getProperty(name);
       if (edmElement.getType().getKind() == EdmTypeKind.ENTITY) {
         UriResourceNavigation element = Mockito.mock(UriResourceNavigation.class);

@@ -17,11 +17,11 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed heap pollution warning with @SafeVarargs
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.core.responses;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.Constants;
@@ -38,7 +38,7 @@ public class ResponseUtil {
   }
 
   public static Property createPrimitiveCollection(final String name, final Object... values) {
-    return new Property(null, name, ValueType.COLLECTION_PRIMITIVE, Arrays.asList(values));
+    return new Property(null, name, ValueType.COLLECTION_PRIMITIVE, List.of(values));
   }
 
   public static Property createComplex(final String name, final String type, final Property... properties) {
@@ -79,11 +79,11 @@ public class ResponseUtil {
       link.setType(Constants.ENTITY_SET_NAVIGATION_LINK_TYPE);
       link.setTitle(navigationPropertyName);
       EntityCollection target = new EntityCollection();
-      target.getEntities().addAll(Arrays.asList(targets));
+      target.getEntities().addAll(List.of(targets));
       link.setInlineEntitySet(target);
       entity.getNavigationLinks().add(link);
     } else {
-      link.getInlineEntitySet().getEntities().addAll(Arrays.asList(targets));
+      link.getInlineEntitySet().getEntities().addAll(List.of(targets));
     }
   }
 }

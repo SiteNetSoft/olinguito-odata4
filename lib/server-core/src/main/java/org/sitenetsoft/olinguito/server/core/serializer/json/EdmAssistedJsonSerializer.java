@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -408,7 +410,7 @@ public class EdmAssistedJsonSerializer implements EdmAssistedSerializer {
       }
     }
 
-    for (final Annotation annotation : ((Annotatable) valuable).getAnnotations()) {
+    for (final Annotation annotation : valuable.getAnnotations()) {
       valuable(json, annotation, name + '@' + annotation.getTerm(), null, null);
     }
 

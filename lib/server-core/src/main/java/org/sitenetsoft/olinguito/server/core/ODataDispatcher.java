@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -150,8 +152,10 @@ public class ODataDispatcher {
 
     case entitySet:
     case navigationProperty:
-      handleEntityDispatching(request, response,
-          ((UriResourcePartTyped) lastPathSegment).isCollection(), isEntityOrNavigationMedia(lastPathSegment));
+      if (lastPathSegment instanceof UriResourcePartTyped typedSegment) {
+        handleEntityDispatching(request, response,
+            typedSegment.isCollection(), isEntityOrNavigationMedia(lastPathSegment));
+      }
       break;
       
     case singleton:
@@ -164,13 +168,15 @@ public class ODataDispatcher {
       break;
 
     case primitiveProperty:
-      handlePrimitiveDispatching(request, response,
-          ((UriResourceProperty) lastPathSegment).isCollection());
+      if (lastPathSegment instanceof UriResourceProperty primProp) {
+        handlePrimitiveDispatching(request, response, primProp.isCollection());
+      }
       break;
 
     case complexProperty:
-      handleComplexDispatching(request, response,
-          ((UriResourceProperty) lastPathSegment).isCollection());
+      if (lastPathSegment instanceof UriResourceProperty complexProp) {
+        handleComplexDispatching(request, response, complexProp.isCollection());
+      }
       break;
 
     case value:
@@ -366,8 +372,9 @@ public class ODataDispatcher {
   ODataApplicationException, ODataLibraryException,
       ODataHandlerException, PreconditionException {
     final HttpMethod method = request.getMethod();
-    final EdmType type = resource instanceof UriResourceProperty uriResProp ?
-        uriResProp.getType() : ((UriResourceFunction) resource).getType();
+    final EdmType type = resource instanceof UriResourceProperty uriResProp
+        ? uriResProp.getType()
+        : (resource instanceof UriResourceFunction uriResFunc ? uriResFunc.getType() : null);
     final RepresentationType valueRepresentationType =
         type == EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Binary) ?
             RepresentationType.BINARY : RepresentationType.VALUE;

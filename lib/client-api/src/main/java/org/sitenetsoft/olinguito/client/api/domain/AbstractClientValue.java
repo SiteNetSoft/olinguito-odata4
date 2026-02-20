@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  */
 package org.sitenetsoft.olinguito.client.api.domain;
 
@@ -54,7 +56,7 @@ public abstract class AbstractClientValue implements ClientValue {
    */
   @Override
   public ClientPrimitiveValue asPrimitive() {
-    return isPrimitive() ? (ClientPrimitiveValue) this : null;
+    return this instanceof ClientPrimitiveValue p ? p : null;
   }
 
   /**
@@ -74,7 +76,7 @@ public abstract class AbstractClientValue implements ClientValue {
    */
   @Override
   public ClientComplexValue asComplex() {
-    return isComplex() ? (ClientComplexValue) this : null;
+    return this instanceof ClientComplexValue c ? c : null;
   }
 
   /**
@@ -95,7 +97,7 @@ public abstract class AbstractClientValue implements ClientValue {
   @SuppressWarnings("unchecked")
   @Override
   public <OV extends ClientValue> ClientCollectionValue<OV> asCollection() {
-    return isCollection() ? (ClientCollectionValue<OV>) this : null;
+    return this instanceof ClientCollectionValue<?> cv ? (ClientCollectionValue<OV>) cv : null;
   }
 
   

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.core.debug;
 
@@ -27,7 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
@@ -113,7 +115,7 @@ public class DebugTabUriTest extends AbstractDebugTabTest {
     EdmFunctionImport edmFunctionImport = mock(EdmFunctionImport.class);
     final DebugTabUri tab = new DebugTabUri(new UriInfoImpl().setKind(UriInfoKind.resource)
         .addResourcePart(new UriResourceFunctionImpl(edmFunctionImport, edmFunction,
-            Arrays.asList((UriParameter) new UriParameterImpl().setName("parameter1")))));
+            List.of((UriParameter) new UriParameterImpl().setName("parameter1")))));
 
     assertEquals("{\"kind\":\"resource\",\"uriResourceParts\":["
         + "{\"uriResourceKind\":\"function\",\"segment\":null,\"isCollection\":false,"
@@ -238,7 +240,7 @@ public class DebugTabUriTest extends AbstractDebugTabTest {
     EdmProperty edmProperty = mock(EdmProperty.class);
     when(edmProperty.getName()).thenReturn("property");
     final DebugTabUri tab = new DebugTabUri(new UriInfoImpl().setKind(UriInfoKind.all)
-        .setSystemQueryOption(new SelectOptionImpl().setSelectItems(Arrays.asList(
+        .setSystemQueryOption(new SelectOptionImpl().setSelectItems(List.of(
             (SelectItem) new SelectItemImpl().setStar(true),
             new SelectItemImpl().setResourcePath(
                 new UriInfoImpl().setKind(UriInfoKind.resource)
@@ -314,7 +316,7 @@ public class DebugTabUriTest extends AbstractDebugTabTest {
         + "\"parameters\":[{\"nodeType\":\"literal\",\"type\":\"Edm.Decimal\",\"value\":\"1.5\"}]}}",
         createJson(new DebugTabUri(new UriInfoImpl().setKind(UriInfoKind.all)
             .setSystemQueryOption(new FilterOptionImpl().setExpression(
-                new MethodImpl(MethodKind.CEILING, Arrays.asList(
+                new MethodImpl(MethodKind.CEILING, List.of(
                     (Expression) new LiteralImpl("1.5",
                         EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Decimal)))))))));
 

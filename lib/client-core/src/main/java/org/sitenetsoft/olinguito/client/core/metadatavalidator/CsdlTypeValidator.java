@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  */
 package org.sitenetsoft.olinguito.client.core.metadatavalidator;
 
@@ -384,7 +386,7 @@ public class CsdlTypeValidator {
     String remainingPath = navBindingPath.substring(navBindingPath.indexOf(lastFullQualifiedName) 
         + lastFullQualifiedName.length() + (lastFullQualifiedName.isEmpty() ? 0 : 1),
         navBindingPath.lastIndexOf(strNavProperty));
-    if (remainingPath.length() > 0) {
+    if (!remainingPath.isEmpty()) {
       remainingPath = remainingPath.substring(0, remainingPath.length() - 1);
     }
     CsdlNavigationProperty navProperty = null;
@@ -401,10 +403,10 @@ public class CsdlTypeValidator {
         throw new RuntimeException("The fully Qualified type " + lastFullQualifiedName + 
             " mentioned in navigation binding path not found ");
       }
-      navProperty = remainingPath.length() > 0 ? fetchNavigationProperty(remainingPath, strNavProperty, 
+      navProperty = !remainingPath.isEmpty() ? fetchNavigationProperty(remainingPath, strNavProperty, 
           sourceComplexTypeHavingNavProp) : sourceComplexTypeHavingNavProp.getNavigationProperty(strNavProperty);
     } else {
-      navProperty = remainingPath.length() > 0 ? fetchNavigationProperty(remainingPath, strNavProperty, 
+      navProperty = !remainingPath.isEmpty() ? fetchNavigationProperty(remainingPath, strNavProperty, 
           sourceEntityTypeHavingNavProp) : sourceEntityTypeHavingNavProp.getNavigationProperty(strNavProperty);
     }
     return navProperty;

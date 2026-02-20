@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  */
 package org.sitenetsoft.olinguito.client.core.edm.xml;
 
@@ -69,7 +70,7 @@ class ClientCsdlProperty extends CsdlProperty implements Serializable {
             final String maxLenght = jp.nextTextValue();
             property.setMaxLength("max".equalsIgnoreCase(maxLenght) ? Integer.MAX_VALUE : Integer.parseInt(maxLenght));
           } else if ("Precision".equals(jp.currentName())) {
-            property.setPrecision(Integer.valueOf(jp.nextTextValue()));
+            property.setPrecision(Integer.parseInt(jp.nextTextValue()));
           } else if ("Scale".equals(jp.currentName())) {
             final String scale = jp.nextTextValue();
             property.setScale("variable".equalsIgnoreCase(scale) || "floating".equalsIgnoreCase(scale) ?

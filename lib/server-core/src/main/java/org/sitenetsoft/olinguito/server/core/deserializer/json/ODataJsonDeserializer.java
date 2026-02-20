@@ -17,6 +17,8 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -28,7 +30,7 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -746,7 +748,7 @@ public class ODataJsonDeserializer implements ODataDeserializer {
     Iterator<JsonNode> iterator;
     List<Object> valueArray = new ArrayList<>();
     if (!jsonNode.isArray()) {
-      iterator = Arrays.asList(jsonNode).iterator();
+      iterator = List.of(jsonNode).iterator();
     } else {
       iterator = jsonNode.iterator();
     }
@@ -809,7 +811,9 @@ public class ODataJsonDeserializer implements ODataDeserializer {
             edmProperty.isUnicode(), edmProperty.getMapping(),
             subNode);
         complexValue.getValue().add(property);
-        ((ObjectNode) jsonNode).remove(propertyName);
+        if (jsonNode instanceof ObjectNode objNode) {
+          objNode.remove(propertyName);
+        }
       }
     }
     complexValue.setTypeName(edmType.getFullQualifiedName().getFullQualifiedNameAsString());
@@ -993,8 +997,8 @@ public class ODataJsonDeserializer implements ODataDeserializer {
    */
   private Class<?> getJavaClassForPrimitiveType(final EdmMapping mapping, final EdmPrimitiveType type) {
     final EdmPrimitiveType edmPrimitiveType =
-        type.getKind() == EdmTypeKind.ENUM ? ((EdmEnumType) type).getUnderlyingType() : type
-            .getKind() == EdmTypeKind.DEFINITION ? ((EdmTypeDefinition) type).getUnderlyingType() : type;
+        type instanceof EdmEnumType enumType ? enumType.getUnderlyingType()
+            : type instanceof EdmTypeDefinition typeDef ? typeDef.getUnderlyingType() : type;
     return mapping == null || mapping.getMappedJavaClass() == null ? edmPrimitiveType.getDefaultType() : mapping
         .getMappedJavaClass();
   }
@@ -1051,9 +1055,9 @@ public class ODataJsonDeserializer implements ODataDeserializer {
   private void checkJsonTypeBasedOnPrimitiveType(final String propertyName, final EdmPrimitiveType edmPrimitiveType,
       final JsonNode jsonNode) throws DeserializerException {
     boolean valid = true;
-    if (edmPrimitiveType.getKind() == EdmTypeKind.DEFINITION) {
+    if (edmPrimitiveType instanceof EdmTypeDefinition typeDef) {
       checkJsonTypeBasedOnPrimitiveType(propertyName,
-          ((EdmTypeDefinition) edmPrimitiveType).getUnderlyingType(), jsonNode);
+          typeDef.getUnderlyingType(), jsonNode);
     } else if (edmPrimitiveType.getKind() == EdmTypeKind.ENUM) {
       // Enum values must be strings.
       valid = jsonNode.isTextual();

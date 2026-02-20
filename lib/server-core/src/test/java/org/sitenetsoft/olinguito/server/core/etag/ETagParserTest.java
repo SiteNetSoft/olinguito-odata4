@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.core.etag;
 
@@ -25,8 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -52,7 +54,7 @@ public class ETagParserTest {
 
   @Test
   public void starWins() {
-    final ETagInformation eTagInformation = eTagHelper.createETagInformation(Arrays.asList("\"ETag\"", "*"));
+    final ETagInformation eTagInformation = eTagHelper.createETagInformation(List.of("\"ETag\"", "*"));
     assertTrue(eTagInformation.isAll());
     assertNotNull(eTagInformation.getETags());
     assertTrue(eTagInformation.getETags().isEmpty());
@@ -71,7 +73,7 @@ public class ETagParserTest {
   @Test
   public void severalEtags() {
     final ETagInformation eTagInformation = eTagHelper.createETagInformation(
-        Arrays.asList("\"ETag1\"", "\"ETag2\",, , ,W/\"ETag3\", ,"));
+        List.of("\"ETag1\"", "\"ETag2\",, , ,W/\"ETag3\", ,"));
     assertFalse(eTagInformation.isAll());
     assertNotNull(eTagInformation.getETags());
     assertThat(eTagInformation.getETags().size(), equalTo(3));
@@ -81,7 +83,7 @@ public class ETagParserTest {
   @Test
   public void duplicateEtagValues() {
     final ETagInformation eTagInformation = eTagHelper.createETagInformation(
-        Arrays.asList("\"ETag1\"", "\"ETag2\", W/\"ETag1\", \"ETag1\""));
+        List.of("\"ETag1\"", "\"ETag2\", W/\"ETag1\", \"ETag1\""));
     assertFalse(eTagInformation.isAll());
     assertNotNull(eTagInformation.getETags());
     assertThat(eTagInformation.getETags().size(), equalTo(3));
@@ -102,7 +104,7 @@ public class ETagParserTest {
   @Test
   public void wrongFormat() {
     final ETagInformation eTagInformation = eTagHelper.createETagInformation(
-        Arrays.asList("\"ETag1\", ETag2", "w/\"ETag3\"", "W//\"ETag4\"", "W/ETag5",
+        List.of("\"ETag1\", ETag2", "w/\"ETag3\"", "W//\"ETag4\"", "W/ETag5",
             "\"\"ETag6\"\"", " \"ETag7\"\"ETag7\" ", "\"ETag8\" \"ETag8\"",
             "\"ETag 9\"", "\"ETag10\""));
     assertFalse(eTagInformation.isAll());
@@ -121,9 +123,9 @@ public class ETagParserTest {
     assertTrue(eTagHelper.createETagInformation(Collections.singleton("W/\"ETag\"")).isMatchedBy("\"ETag\""));
     assertFalse(eTagHelper.createETagInformation(Collections.singleton("\"ETag\"")).isMatchedBy("W/\"ETag2\""));
     assertFalse(eTagHelper.createETagInformation(Collections.singleton("W/\"ETag\"")).isMatchedBy("\"ETag2\""));
-    assertTrue(eTagHelper.createETagInformation(Arrays.asList("\"ETag1\",\"ETag2\"", "\"ETag3\",\"ETag4\""))
+    assertTrue(eTagHelper.createETagInformation(List.of("\"ETag1\",\"ETag2\"", "\"ETag3\",\"ETag4\""))
         .isMatchedBy("\"ETag4\""));
-    assertFalse(eTagHelper.createETagInformation(Arrays.asList("\"ETag1\",\"ETag2\"", "\"ETag3\",\"ETag4\""))
+    assertFalse(eTagHelper.createETagInformation(List.of("\"ETag1\",\"ETag2\"", "\"ETag3\",\"ETag4\""))
         .isMatchedBy("\"ETag5\""));
   }
 }

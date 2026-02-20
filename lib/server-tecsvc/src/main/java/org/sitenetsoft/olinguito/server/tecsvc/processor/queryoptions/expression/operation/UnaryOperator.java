@@ -42,7 +42,7 @@ public class UnaryOperator {
     primDuration = oData.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Duration);
   }
 
-  final private TypedOperand operand;
+  private final TypedOperand operand;
 
   public UnaryOperator(final VisitorOperand operand) throws ODataApplicationException {
     this.operand = operand.asTypedOperand();

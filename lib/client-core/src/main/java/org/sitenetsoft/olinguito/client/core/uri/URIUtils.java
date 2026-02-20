@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements; replaced commons-codec Hex with HexFormat
  * Copyright 2026 SiteNetSoft - Removed HttpComponents dependency; pure Java URI construction
+ * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
@@ -184,10 +185,10 @@ public final class URIUtils {
     try {
       if (obj == null) {
         value = Constants.ATTR_NULL;
-      } else if (obj instanceof Collection) {
+      } else if (obj instanceof Collection<?> collection) {
         final StringBuilder buffer = new StringBuilder("[");
         for (@SuppressWarnings("unchecked")
-        final Iterator<Object> itor = ((Collection<Object>) obj).iterator(); itor.hasNext();) {
+        final Iterator<Object> itor = ((Collection<Object>) collection).iterator(); itor.hasNext();) {
           buffer.append(escape(itor.next(), false));
           if (itor.hasNext()) {
             buffer.append(',');
@@ -196,11 +197,11 @@ public final class URIUtils {
         buffer.append(']');
 
         value = buffer.toString();
-      } else if (obj instanceof Map) {
+      } else if (obj instanceof Map<?, ?> map) {
         final StringBuilder buffer = new StringBuilder("{");
         for (@SuppressWarnings("unchecked")
         final Iterator<Map.Entry<String, Object>> itor =
-            ((Map<String, Object>) obj).entrySet().iterator(); itor.hasNext();) {
+            ((Map<String, Object>) map).entrySet().iterator(); itor.hasNext();) {
 
           final Map.Entry<String, Object> entry = itor.next();
           buffer.append("\"").append(entry.getKey()).append("\"");
@@ -227,17 +228,17 @@ public final class URIUtils {
         value = calendar(cal);
       } else if (obj instanceof Duration dur) {
         value = duration(dur);
-      } else if (obj instanceof BigDecimal) {
-        value = EdmDecimal.getInstance().valueToString(obj, null, null,
+      } else if (obj instanceof BigDecimal bd) {
+        value = EdmDecimal.getInstance().valueToString(bd, null, null,
             Constants.DEFAULT_PRECISION, Constants.DEFAULT_SCALE, null);
-      } else if (obj instanceof Double) {
-        value = EdmDouble.getInstance().valueToString(obj, null, null,
+      } else if (obj instanceof Double d) {
+        value = EdmDouble.getInstance().valueToString(d, null, null,
             Constants.DEFAULT_PRECISION, Constants.DEFAULT_SCALE, null);
-      } else if (obj instanceof Float) {
-        value = EdmSingle.getInstance().valueToString(obj, null, null,
+      } else if (obj instanceof Float f) {
+        value = EdmSingle.getInstance().valueToString(f, null, null,
             Constants.DEFAULT_PRECISION, Constants.DEFAULT_SCALE, null);
-      } else if (obj instanceof Long) {
-        value = EdmInt64.getInstance().valueToString(obj, null, null,
+      } else if (obj instanceof Long l) {
+        value = EdmInt64.getInstance().valueToString(l, null, null,
             Constants.DEFAULT_PRECISION, Constants.DEFAULT_SCALE, null);
       } else if (obj instanceof Geospatial geo) {
         value = Encoder.encode(EdmPrimitiveTypeFactory.getInstance(

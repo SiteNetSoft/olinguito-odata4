@@ -12,6 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  */
 package org.sitenetsoft.olinguito.server.adapter.quarkus.runtime;
 
@@ -101,7 +103,7 @@ public class VertxODataHandler implements Handler<RoutingContext> {
         copyHeaders(odRequest, vertxRequest);
 
         // Set body
-        if (body != null && body.length() > 0) {
+        if (body != null && !body.isEmpty()) {
             odRequest.setBody(new ByteArrayInputStream(body.getBytes()));
         }
 

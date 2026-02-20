@@ -15,11 +15,15 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Improved test assertions
  */
 package org.sitenetsoft.olinguito.client.core;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
@@ -707,7 +711,7 @@ public class MetadataValidationTest extends AbstractTest {
     assertNotNull(metadata);
     ODataMetadataValidation metadataValidator = client.metadataValidation();
     try {
-		assertEquals(true,metadataValidator.isV4Metadata(metadata));
+		assertTrue(metadataValidator.isV4Metadata(metadata));
 	} catch (Exception e) {
 		fail("Unexpected exception during V4 metadata validation: " + e.getMessage());
 	}
@@ -723,13 +727,13 @@ public class MetadataValidationTest extends AbstractTest {
             toMetadata(stream);
         assertNotNull(metadata);
         ODataMetadataValidation metadataValidator = client.metadataValidation();
-        assertEquals(false,metadataValidator.isV4Metadata(metadata));
-        
+        assertFalse(metadataValidator.isV4Metadata(metadata));
+
       } catch (Exception e) {
       	checkException = true;
-      	 
-      } 
-      assertEquals(false,checkException);
+
+      }
+      assertFalse(checkException);
   }
   
   @Test
@@ -748,7 +752,7 @@ public class MetadataValidationTest extends AbstractTest {
     	 assertEquals(e.getMessage(), "Cannot determine if v4 metadata," 
  				+ "No schemanamespaces found in XMLMetadata");
     } 
-    assertEquals(true,checkException);
+    assertTrue(checkException);
   }
   
   
@@ -761,13 +765,13 @@ public class MetadataValidationTest extends AbstractTest {
           toMetadata(stream);
       assertNotNull(metadata);
       ODataMetadataValidation metadataValidator = client.metadataValidation();
-      assertEquals(true,metadataValidator.isV4Metadata(metadata));
-      
+      assertTrue(metadataValidator.isV4Metadata(metadata));
+
     } catch (Exception e) {
     	checkException = true;
-    	 
-    } 
-    assertEquals(false,checkException);
+
+    }
+    assertFalse(checkException);
   }
   
   @Test
@@ -779,12 +783,12 @@ public class MetadataValidationTest extends AbstractTest {
           toMetadata(stream);
       assertNotNull(metadata);
       ODataMetadataValidation metadataValidator = client.metadataValidation();
-      assertEquals(false,metadataValidator.isV4Metadata(metadata));
-      
+      assertFalse(metadataValidator.isV4Metadata(metadata));
+
     } catch (Exception e) {
-    
-    	assertEquals(false, true);
-    } 
+
+    	fail("Unexpected exception: " + e.getMessage());
+    }
   }
   
   
@@ -795,7 +799,7 @@ public class MetadataValidationTest extends AbstractTest {
         toMetadata(getClass().getResourceAsStream("northwind-metadata.xml"));
     assertNotNull(metadata);
     ODataMetadataValidation metadataValidator = client.metadataValidation();
-    assertEquals(true,metadataValidator.isServiceDocument(metadata));
+    assertTrue(metadataValidator.isServiceDocument(metadata));
   }
 
   @Test
@@ -807,11 +811,11 @@ public class MetadataValidationTest extends AbstractTest {
 	      assertNotNull(metadata);
 	    ODataMetadataValidation metadataValidator = client.metadataValidation();
 	    boolean isservice = metadataValidator.isServiceDocument(metadata);
-	    assertEquals(false,isservice);
+	    assertFalse(isservice);
 	  }catch (Exception e) {
-		    
-	    	assertEquals(false, true);
-	    } 
+
+	    	fail("Unexpected exception: " + e.getMessage());
+	    }
 
   }
   @Test

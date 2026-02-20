@@ -15,13 +15,14 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.edm.EdmAnnotatable;
@@ -53,7 +54,7 @@ public class AbstractEdmNamedTest {
     public List<CsdlAnnotation> getAnnotations() {
       CsdlAnnotation annotation = new CsdlAnnotation();
       annotation.setTerm("NS.SimpleTerm");
-      return Arrays.asList(annotation);
+      return List.of(annotation);
     }
   }
 }

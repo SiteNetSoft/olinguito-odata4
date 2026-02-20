@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
+ * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -237,10 +238,12 @@ public class ApplyParser {
   }
   
   private void addPropertyToRefType(EdmStructuredType referencedType, String alias) {
-      ((DynamicStructuredType) referencedType).addProperty(
-              createDynamicProperty(alias,
-                  // The OData standard mandates Edm.Decimal (with no decimals), although counts are always integer.
-                  odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Decimal)));
+      if (referencedType instanceof DynamicStructuredType dynamicType) {
+        dynamicType.addProperty(
+                createDynamicProperty(alias,
+                    // The OData standard mandates Edm.Decimal (with no decimals), although counts are always integer.
+                    odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Decimal)));
+      }
   }
   
   public AggregateExpression parseAggregateMethodCallExpr(UriTokenizer tokenizer, EdmStructuredType referringType)
@@ -344,9 +347,11 @@ public class ApplyParser {
     aggregateExpression.setPath(uriInfo);
     aggregateExpression.setAlias(alias);
     aggregateExpression.setExpression(null);
-    ((DynamicStructuredType) referencedType).addProperty(createDynamicProperty(alias, edmType));
+    if (referencedType instanceof DynamicStructuredType dynamicType) {
+      dynamicType.addProperty(createDynamicProperty(alias, edmType));
+    }
   }
-	  
+
   private void parseAggregateWith(AggregateExpressionImpl aggregateExpression) throws UriParserException {
     if (tokenizer.next(TokenKind.WithOperator)) {
       final TokenKind kind = ParserHelper.next(tokenizer,
@@ -427,7 +432,9 @@ public class ApplyParser {
             UriParserSemanticException.MessageKeys.ONLY_FOR_PRIMITIVE_TYPES, "compute");
       }
       final String alias = parseAsAlias(referencedType, Set.of(), Requirement.REQUIRED);
-      ((DynamicStructuredType) referencedType).addProperty(createDynamicProperty(alias, expressionType));
+      if (referencedType instanceof DynamicStructuredType dynamicType) {
+        dynamicType.addProperty(createDynamicProperty(alias, expressionType));
+      }
       compute.addExpression(new ComputeExpressionImpl()
           .setExpression(expression)
           .setAlias(alias));
@@ -595,9 +602,11 @@ public class ApplyParser {
       if (typeCast != null) {
         ParserHelper.requireNext(tokenizer, TokenKind.SLASH);
       }
-      return property.getType().getKind() == EdmTypeKind.COMPLEX ?
-          new UriResourceComplexPropertyImpl((EdmProperty) property).setTypeFilter(typeCast) :
-          new UriResourceNavigationPropertyImpl((EdmNavigationProperty) property).setCollectionTypeFilter(typeCast);
+      if (property instanceof EdmNavigationProperty navProp) {
+        return new UriResourceNavigationPropertyImpl(navProp).setCollectionTypeFilter(typeCast);
+      } else {
+        return new UriResourceComplexPropertyImpl((EdmProperty) property).setTypeFilter(typeCast);
+      }
     } else {
       return null;
     }

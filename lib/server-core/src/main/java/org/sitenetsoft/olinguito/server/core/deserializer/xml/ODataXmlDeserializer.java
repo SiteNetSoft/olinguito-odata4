@@ -15,6 +15,9 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
+ * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.xml;
 
@@ -212,12 +215,12 @@ public class ODataXmlDeserializer implements ODataDeserializer {
     
     EdmType resolvedType = edmType;
     final Attribute attrType = start.getAttributeByName(typeQName);
-    if (attrType != null && (edmType instanceof EdmComplexType)) {
+    if (attrType != null && edmType instanceof EdmComplexType edmComplexType) {
       String type = new EdmTypeInfo.Builder().setTypeExpression(attrType.getValue()).build().internal();
       if (type.startsWith("Collection(") && type.endsWith(")")) {
         type = type.substring(11, type.length()-1);
       }
-      resolvedType = getDerivedType((EdmComplexType)edmType, type);
+      resolvedType = getDerivedType(edmComplexType, type);
     }
     valuable(property, reader, start, resolvedType, isNullable, maxLength, precision, scale, isUnicode, isCollection);
     return property;
@@ -619,7 +622,7 @@ public class ODataXmlDeserializer implements ODataDeserializer {
     while (reader.hasNext() && !foundEndElement) {
       final XMLEvent event = reader.nextEvent();
       if (event.isCharacters() && !event.asCharacters().isWhiteSpace()) {
-        entitySet.setCount(Integer.valueOf(event.asCharacters().getData()));
+        entitySet.setCount(Integer.parseInt(event.asCharacters().getData()));
       }
       if (event.isEndElement() && start.getName().equals(event.asEndElement().getName())) {
         foundEndElement = true;

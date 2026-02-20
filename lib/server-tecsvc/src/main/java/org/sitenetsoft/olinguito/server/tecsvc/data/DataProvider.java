@@ -17,6 +17,8 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
+ * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -146,7 +148,9 @@ public class DataProvider {
                 HttpStatusCode.NOT_IMPLEMENTED);
           }
           Object keyValue = null;
-          final String text = key.getAlias() == null ? key.getText() : ((Literal) key.getExpression()).getText();
+          final String text = key.getAlias() == null
+              ? key.getText()
+              : (key.getExpression() instanceof Literal literal ? literal.getText() : null);
           if (Calendar.class.isAssignableFrom(value.getClass())) {
             keyValue = type.valueOfString(type.fromUriLiteral(text),
                 property.isNullable(), property.getMaxLength(), property.getPrecision(), property.getScale(),
@@ -501,11 +505,11 @@ public class DataProvider {
           ((List<Object>) property.asCollection()).addAll(newProperty.asCollection());
         }
       }
-    } else if (type.getKind() == EdmTypeKind.COMPLEX) {
-      for (final String propertyName : ((EdmComplexType) type).getPropertyNames()) {
+    } else if (type instanceof EdmComplexType complexType) {
+      for (final String propertyName : complexType.getPropertyNames()) {
         final List<Property> newProperties = newProperty == null || newProperty.asComplex() == null ? null :
             newProperty.asComplex().getValue();
-        updateProperty(((EdmComplexType) type).getStructuralProperty(propertyName),
+        updateProperty(complexType.getStructuralProperty(propertyName),
             findProperty(propertyName, property.asComplex().getValue()),
             newProperties == null ? null : findProperty(propertyName, newProperties),
             patch);
@@ -902,7 +906,7 @@ public class DataProvider {
           link.setType(Constants.ENTITY_NAVIGATION_LINK_TYPE);
           link.setTitle(navPropertyName);
           link.setHref(entity.getId().toASCIIString() + 
-              (navPropertyName != null && navPropertyName.length() > 0 ? "/" + navPropertyName: ""));
+              (navPropertyName != null && !navPropertyName.isEmpty() ? "/" + navPropertyName: ""));
           entity.getNavigationLinks().add(link);
         }
         if (link.getInlineEntitySet() != null) {
@@ -966,7 +970,9 @@ public class DataProvider {
             throw new DataProviderException("Expression in key value is not supported yet!",
                 HttpStatusCode.NOT_IMPLEMENTED);
           }
-          final String text = key.getAlias() == null ? key.getText() : ((Literal) key.getExpression()).getText();
+          final String text = key.getAlias() == null
+              ? key.getText()
+              : (key.getExpression() instanceof Literal literal ? literal.getText() : null);
           Object keyValue = null;
           if (Calendar.class.isAssignableFrom(value.getClass())) {
             keyValue = type.valueOfString(type.fromUriLiteral(text),

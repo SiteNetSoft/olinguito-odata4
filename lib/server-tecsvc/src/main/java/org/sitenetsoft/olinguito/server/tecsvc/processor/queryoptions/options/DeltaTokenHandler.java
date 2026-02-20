@@ -26,8 +26,9 @@ import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
 import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.SystemQueryOptionKind;
 
-public class DeltaTokenHandler {
-  
+public final class DeltaTokenHandler {
+  private DeltaTokenHandler() {}
+
   public static URI createDeltaLink(final String rawRequestUri, String deltaToken)
       throws ODataApplicationException {
     // Remove a maybe existing skiptoken, making sure that the query part is not empty.

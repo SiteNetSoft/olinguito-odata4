@@ -15,11 +15,13 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
@@ -606,14 +608,14 @@ public class ExpressionParserTest {
         .isBinary(BinaryOperatorKind.EQ)
         .root().left().goPath().isPrimitiveProperty("PropertyEnumString", EnumTypeProvider.nameENString, false)
         .goUpFilterValidator()
-        .root().right().isEnum(EnumTypeProvider.nameENString, Arrays.asList("String1"));
+        .root().right().isEnum(EnumTypeProvider.nameENString, List.of("String1"));
 
     testFilter.runOnETMixEnumDefCollComp("PropertyEnumString eq olingo.odata.test1.ENString'String2'")
         .is("<<PropertyEnumString> eq <olingo.odata.test1.ENString<String2>>>")
         .isBinary(BinaryOperatorKind.EQ)
         .root().left().goPath().isPrimitiveProperty("PropertyEnumString", EnumTypeProvider.nameENString, false)
         .goUpFilterValidator()
-        .root().right().isEnum(EnumTypeProvider.nameENString, Arrays.asList("String2"));
+        .root().right().isEnum(EnumTypeProvider.nameENString, List.of("String2"));
 
     testFilter.runOnETMixEnumDefCollComp(
         "PropertyCompMixedEnumDef/PropertyEnumString eq olingo.odata.test1.ENString'String3'")
@@ -623,7 +625,7 @@ public class ExpressionParserTest {
         .first().isComplexProperty("PropertyCompMixedEnumDef", ComplexTypeProvider.nameCTMixEnumDef, false)
         .n().isPrimitiveProperty("PropertyEnumString", EnumTypeProvider.nameENString, false)
         .goUpFilterValidator()
-        .root().right().isEnum(EnumTypeProvider.nameENString, Arrays.asList("String3"));
+        .root().right().isEnum(EnumTypeProvider.nameENString, List.of("String3"));
 
     testFilter
         .runOnETMixEnumDefCollComp(
@@ -1822,7 +1824,7 @@ public class ExpressionParserTest {
         .isBinary(BinaryOperatorKind.HAS)
         .root().left().goPath().isPrimitiveProperty("PropertyEnumString", EnumTypeProvider.nameENString, false)
         .goUpFilterValidator()
-        .root().right().isEnum(EnumTypeProvider.nameENString, Arrays.asList("String1"));
+        .root().right().isEnum(EnumTypeProvider.nameENString, List.of("String1"));
 
     testFilter.runOnETMixEnumDefCollComp(
         "PropertyCompMixedEnumDef/PropertyEnumString has olingo.odata.test1.ENString'String2'")
@@ -1832,7 +1834,7 @@ public class ExpressionParserTest {
         .first().isComplexProperty("PropertyCompMixedEnumDef", ComplexTypeProvider.nameCTMixEnumDef, false)
         .n().isPrimitiveProperty("PropertyEnumString", EnumTypeProvider.nameENString, false)
         .goUpFilterValidator()
-        .root().right().isEnum(EnumTypeProvider.nameENString, Arrays.asList("String2"));
+        .root().right().isEnum(EnumTypeProvider.nameENString, List.of("String2"));
 
     testFilter
         .runOnETMixEnumDefCollComp(
@@ -1846,7 +1848,7 @@ public class ExpressionParserTest {
         .first().isComplexProperty("PropertyCompMixedEnumDef", ComplexTypeProvider.nameCTMixEnumDef, false)
         .n().isPrimitiveProperty("PropertyEnumString", EnumTypeProvider.nameENString, false)
         .goUpFilterValidator()
-        .root().left().right().isEnum(EnumTypeProvider.nameENString, Arrays.asList("String2"));
+        .root().left().right().isEnum(EnumTypeProvider.nameENString, List.of("String2"));
 
     testFilter.runOnETMixEnumDefCollComp("PropertyEnumString has olingo.odata.test1.ENString'String3'")
         .is("<<PropertyEnumString> has <olingo.odata.test1.ENString<String3>>>")
@@ -1854,7 +1856,7 @@ public class ExpressionParserTest {
         .root().left().goPath()
         .first().isPrimitiveProperty("PropertyEnumString", EnumTypeProvider.nameENString, false)
         .goUpFilterValidator()
-        .root().right().isEnum(EnumTypeProvider.nameENString, Arrays.asList("String3"));
+        .root().right().isEnum(EnumTypeProvider.nameENString, List.of("String3"));
 
     testFilter.runOnETMixEnumDefCollComp("PropertyEnumString has olingo.odata.test1.ENString'String1,String3'")
         .is("<<PropertyEnumString> has <olingo.odata.test1.ENString<String1,String3>>>")
@@ -1862,7 +1864,7 @@ public class ExpressionParserTest {
         .root().left().goPath()
         .first().isPrimitiveProperty("PropertyEnumString", EnumTypeProvider.nameENString, false)
         .goUpFilterValidator()
-        .root().right().isEnum(EnumTypeProvider.nameENString, Arrays.asList("String1", "String3"));
+        .root().right().isEnum(EnumTypeProvider.nameENString, List.of("String1", "String3"));
 
     testFilter.runUriEx("ESMixEnumDefCollComp", "$filter=PropertyEnumString has null")
         .isExSyntax(UriParserSyntaxException.MessageKeys.SYNTAX);
@@ -2216,13 +2218,13 @@ public class ExpressionParserTest {
         .isSortOrder(0, false)
         .goOrder(0).left().goPath().isPrimitiveProperty("PropertyEnumString", EnumTypeProvider.nameENString, false)
         .goUpFilterValidator()
-        .goOrder(0).right().isEnum(EnumTypeProvider.nameENString, Arrays.asList("String1"));
+        .goOrder(0).right().isEnum(EnumTypeProvider.nameENString, List.of("String1"));
 
     testFilter.runOrderByOnETMixEnumDefCollComp("PropertyEnumString eq olingo.odata.test1.ENString'String1' desc")
         .isSortOrder(0, true)
         .goOrder(0).left().goPath().isPrimitiveProperty("PropertyEnumString", EnumTypeProvider.nameENString, false)
         .goUpFilterValidator()
-        .goOrder(0).right().isEnum(EnumTypeProvider.nameENString, Arrays.asList("String1"));
+        .goOrder(0).right().isEnum(EnumTypeProvider.nameENString, List.of("String1"));
 
     testFilter.runOrderByOnETTwoKeyNavEx("PropertyInt16 1")
         .isExSyntax(UriParserSyntaxException.MessageKeys.WRONG_VALUE_FOR_SYSTEM_QUERY_OPTION);

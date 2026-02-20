@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  */
 package org.sitenetsoft.olinguito.server.tecsvc.quarkus;
 
@@ -178,7 +179,7 @@ public class TechnicalODataHandler implements Handler<RoutingContext> {
         copyHeaders(odRequest, vertxRequest);
 
         // Set body
-        if (body != null && body.length() > 0) {
+        if (body != null && !body.isEmpty()) {
             odRequest.setBody(new ByteArrayInputStream(body.getBytes()));
         }
 

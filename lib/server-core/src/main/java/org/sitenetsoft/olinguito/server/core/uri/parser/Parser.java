@@ -102,10 +102,13 @@ public class Parser {
     // System query options that can only be parsed with context from the resource path will be post-processed later.
     final List<QueryOption> options =
         query == null ? List.of() : UriDecoder.splitAndDecodeOptions(query);
+    final boolean formEncoding = options.stream()
+        .anyMatch(o -> UriDecoder.ACCEPT_FORM_ENCODING.equals(o.getName())
+            && Boolean.parseBoolean(o.getText()));
     for (final QueryOption option : options) {
       final String optionName = option.getName();
       String value = option.getText();
-      if(UriDecoder.isFormEncoding()){
+      if (formEncoding) {
         value = getFormEncodedValue(value);
       }
       // Parse the untyped option and retrieve a system-option or alias-option instance (or null for a custom option).

@@ -21,6 +21,7 @@
 package org.sitenetsoft.olinguito.client.core;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -108,7 +109,7 @@ class ODataClientFactoryBuilderTest {
     assertTrue(config.isKeyAsSegment());
     assertTrue(config.isUseXHTTPMethod());
     assertTrue(config.isContinueOnError());
-    assertEquals(false, config.isUseChuncked());
+    assertFalse(config.isUseChuncked());
     assertEquals(ContentType.JSON, config.getDefaultPubFormat());
   }
 

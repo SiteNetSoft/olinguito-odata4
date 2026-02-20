@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Converted switch statements to switch expressions
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operation;
 
@@ -330,40 +332,29 @@ public class BinaryOperator {
     final BigDecimal left = this.left.getTypedValue(BigDecimal.class);
     final BigDecimal right = this.right.getTypedValue(BigDecimal.class);
 
-    switch (operator) {
-    case ADD:
-      return left.add(right);
-    case DIV:
-      return left.divide(left);
-    case MUL:
-      return left.multiply(right);
-    case SUB:
-      return left.subtract(right);
-    default:
-      throw new ODataApplicationException("Operator not valid", HttpStatusCode.BAD_REQUEST.getStatusCode(),
+    return switch (operator) {
+      case ADD -> left.add(right);
+      case DIV -> left.divide(left);
+      case MUL -> left.multiply(right);
+      case SUB -> left.subtract(right);
+      default -> throw new ODataApplicationException("Operator not valid", HttpStatusCode.BAD_REQUEST.getStatusCode(),
           Locale.ROOT);
-    }
+    };
   }
 
   private BigInteger integerArithmeticOperation(final BinaryOperatorKind operator) throws ODataApplicationException {
     final BigInteger left = this.left.getTypedValue(BigInteger.class);
     final BigInteger right = this.right.getTypedValue(BigInteger.class);
 
-    switch (operator) {
-    case ADD:
-      return left.add(right);
-    case DIV:
-      return left.divide(right);
-    case MUL:
-      return left.multiply(right);
-    case SUB:
-      return left.subtract(right);
-    case MOD:
-      return left.mod(right);
-    default:
-      throw new ODataApplicationException("Operator not valid", HttpStatusCode.BAD_REQUEST.getStatusCode(),
+    return switch (operator) {
+      case ADD -> left.add(right);
+      case DIV -> left.divide(right);
+      case MUL -> left.multiply(right);
+      case SUB -> left.subtract(right);
+      case MOD -> left.mod(right);
+      default -> throw new ODataApplicationException("Operator not valid", HttpStatusCode.BAD_REQUEST.getStatusCode(),
           Locale.ROOT);
-    }
+    };
   }
 
   @SuppressWarnings("unchecked")

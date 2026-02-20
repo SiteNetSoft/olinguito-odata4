@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  */
 package org.sitenetsoft.olinguito.server.core.prefer;
 
@@ -108,7 +110,7 @@ public class PreferencesImpl implements Preferences {
   private Integer getNonNegativeIntegerPreference(final String name) {
     if (preferences.containsKey(name) && preferences.get(name).getValue() != null) {
       try {
-        final Integer result = Integer.valueOf(preferences.get(name).getValue());
+        final int result = Integer.parseInt(preferences.get(name).getValue());
         return result < 0 ? null : result;
       } catch (final NumberFormatException e) {
         return null;

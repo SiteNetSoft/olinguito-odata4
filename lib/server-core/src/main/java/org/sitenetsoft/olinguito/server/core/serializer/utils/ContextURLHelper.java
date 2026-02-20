@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  */
 package org.sitenetsoft.olinguito.server.core.serializer.utils;
 
@@ -109,7 +111,7 @@ public final class ContextURLHelper {
               getFullQualifiedNameAsString();
           if (type.getFullQualifiedName().getFullQualifiedNameAsString().
               equalsIgnoreCase(actionBindingParamType)) {
-            if (result.length() > 0) {
+            if (!result.isEmpty()) {
               result.append(',');
             }
             result.append(Encoder.encode(action.getFullQualifiedName().getFullQualifiedNameAsString()));
@@ -122,7 +124,7 @@ public final class ContextURLHelper {
               getFullQualifiedNameAsString();
           if (type.getFullQualifiedName().getFullQualifiedNameAsString().
               equalsIgnoreCase(functionBindingParamType)) {
-            if (result.length() > 0) {
+            if (!result.isEmpty()) {
               result.append(',');
             }
             result.append(Encoder.encode(function.getFullQualifiedName().getFullQualifiedNameAsString()));
@@ -159,7 +161,7 @@ public final class ContextURLHelper {
   private static void constructSelectItemList(final EdmStructuredType type, final StringBuilder result,
       final List<SelectItem> selectItems, final Set<String> selectedPropertyNames, final String propertyName) {
     if (selectedPropertyNames.contains(propertyName)) {
-      if (result.length() > 0) {
+      if (!result.isEmpty()) {
         result.append(',');
       }
       final EdmProperty edmProperty = type.getStructuralProperty(propertyName);
@@ -205,7 +207,7 @@ public final class ContextURLHelper {
       if (type instanceof EdmEntityType edmEntityType) {
         final List<String> keyNames = edmEntityType.getKeyPredicateNames();
         if (keyNames.contains(propertyName)) {
-          if (result.length() > 0) {
+          if (!result.isEmpty()) {
             result.append(',');
           }
           result.append(Encoder.encode(propertyName));
@@ -278,7 +280,7 @@ public final class ContextURLHelper {
           final String innerSelectList = buildSelectList(type.getNavigationProperty(propertyName).getType(),
               expandItem.getExpandOption(), expandItem.getSelectOption());
           if (innerSelectList != null) {
-            if (result.length() > 0) {
+            if (!result.isEmpty()) {
               result.append(',');
             }
             result.append(Encoder.encode(propertyName)).append('(').append(innerSelectList).append(')');
@@ -286,7 +288,7 @@ public final class ContextURLHelper {
         } else {
           final List<UriResource> resourceParts = expandItem.getResourcePath().getUriResourceParts();
           if (resourceParts.size() > 1) {
-            if (result.length() > 0) {
+            if (!result.isEmpty()) {
               result.append(',');
             }
             final List<String> path = getPropertyPath(resourceParts);
@@ -312,7 +314,7 @@ public final class ContextURLHelper {
 
   private static void appendExpandedProperty(StringBuilder result, String propertyName)
       throws SerializerException {
-    if (result.length() > 0) {
+    if (!result.isEmpty()) {
       result.append(',');
     }
     result.append(Encoder.encode(propertyName) + "()");
@@ -391,7 +393,7 @@ public final class ContextURLHelper {
     } else {
       StringBuilder result = new StringBuilder();
       for (final UriParameter key : keys) {
-        if (result.length() > 0) {
+        if (!result.isEmpty()) {
           result.append(',');
         }
         result.append(Encoder.encode(key.getName())).append('=').append(Encoder.encode(key.getText()));

@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -25,7 +26,6 @@ import java.io.Writer;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +55,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 
 public class JsonSerializer implements ODataSerializer {
 
-  private static final List<EdmPrimitiveTypeKind> NUMBER_TYPES = Arrays.asList(
+  private static final List<EdmPrimitiveTypeKind> NUMBER_TYPES = List.of(
     EdmPrimitiveTypeKind.Byte, EdmPrimitiveTypeKind.SByte,
     EdmPrimitiveTypeKind.Single, EdmPrimitiveTypeKind.Double,
     EdmPrimitiveTypeKind.Int16, EdmPrimitiveTypeKind.Int32, EdmPrimitiveTypeKind.Int64,

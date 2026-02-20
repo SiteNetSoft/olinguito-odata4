@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -825,7 +827,7 @@ public class MetadataDocumentJsonSerializer {
         if (annotation.getQualifier() != null) {
           termName += "#" + annotation.getQualifier();
         } 
-        if (annotation.getExpression() == null && termName.length() > 0) {
+        if (annotation.getExpression() == null && !termName.isEmpty()) {
           json.writeBooleanField(termName, true);
         } else {
           appendExpression(json, annotation.getExpression(), termName);
@@ -1108,14 +1110,14 @@ public class MetadataDocumentJsonSerializer {
       json.writeEndObject();
       break;
     case Bool:
-      if (termName != null && termName.length() > 0) {
-        json.writeBooleanField(termName, Boolean.valueOf(constExp.getValueAsString()));
+      if (termName != null && !termName.isEmpty()) {
+        json.writeBooleanField(termName, Boolean.parseBoolean(constExp.getValueAsString()));
       } else {
-        json.writeBoolean(Boolean.valueOf(constExp.getValueAsString()));
+        json.writeBoolean(Boolean.parseBoolean(constExp.getValueAsString()));
       }
       break;
     case String:
-      if (termName != null && termName.length() > 0) {
+      if (termName != null && !termName.isEmpty()) {
         json.writeStringField(termName, constExp.getValueAsString());
       } else {
         json.writeString(constExp.getValueAsString());

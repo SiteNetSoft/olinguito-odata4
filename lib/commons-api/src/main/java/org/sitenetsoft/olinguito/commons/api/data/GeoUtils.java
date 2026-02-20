@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Converted switch statements to switch expressions
  */
 package org.sitenetsoft.olinguito.commons.api.data;
 
@@ -34,25 +36,12 @@ public final class GeoUtils {
    * @return dimension according to given geography / geometry type
    */
   public static Geospatial.Dimension getDimension(final EdmPrimitiveTypeKind type) {
-    Geospatial.Dimension dimension;
-
-    switch (type) {
-    case Geography:
-    case GeographyCollection:
-    case GeographyLineString:
-    case GeographyMultiLineString:
-    case GeographyPoint:
-    case GeographyMultiPoint:
-    case GeographyPolygon:
-    case GeographyMultiPolygon:
-      dimension = Geospatial.Dimension.GEOGRAPHY;
-      break;
-
-    default:
-      dimension = Geospatial.Dimension.GEOMETRY;
-    }
-
-    return dimension;
+    return switch (type) {
+      case Geography, GeographyCollection, GeographyLineString, GeographyMultiLineString,
+           GeographyPoint, GeographyMultiPoint, GeographyPolygon, GeographyMultiPolygon ->
+          Geospatial.Dimension.GEOGRAPHY;
+      default -> Geospatial.Dimension.GEOMETRY;
+    };
   }
 
   /**

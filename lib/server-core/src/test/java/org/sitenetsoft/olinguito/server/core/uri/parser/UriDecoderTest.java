@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -22,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.QueryOption;
@@ -32,19 +33,19 @@ public class UriDecoderTest {
 
   @Test
   public void split() throws Exception {
-    assertEquals(Arrays.asList(""), UriDecoder.splitAndDecodePath(""));
-    assertEquals(Arrays.asList("", ""), UriDecoder.splitAndDecodePath("/"));
-    assertEquals(Arrays.asList("a"), UriDecoder.splitAndDecodePath("a"));
-    assertEquals(Arrays.asList("a", ""), UriDecoder.splitAndDecodePath("a/"));
-    assertEquals(Arrays.asList("", "a"), UriDecoder.splitAndDecodePath("/a"));
-    assertEquals(Arrays.asList("a", "b"), UriDecoder.splitAndDecodePath("a/b"));
-    assertEquals(Arrays.asList("", "a", "b"), UriDecoder.splitAndDecodePath("/a/b"));
-    assertEquals(Arrays.asList("", "a", "", "", "b", ""), UriDecoder.splitAndDecodePath("/a///b/"));
+    assertEquals(List.of(""), UriDecoder.splitAndDecodePath(""));
+    assertEquals(List.of("", ""), UriDecoder.splitAndDecodePath("/"));
+    assertEquals(List.of("a"), UriDecoder.splitAndDecodePath("a"));
+    assertEquals(List.of("a", ""), UriDecoder.splitAndDecodePath("a/"));
+    assertEquals(List.of("", "a"), UriDecoder.splitAndDecodePath("/a"));
+    assertEquals(List.of("a", "b"), UriDecoder.splitAndDecodePath("a/b"));
+    assertEquals(List.of("", "a", "b"), UriDecoder.splitAndDecodePath("/a/b"));
+    assertEquals(List.of("", "a", "", "", "b", ""), UriDecoder.splitAndDecodePath("/a///b/"));
   }
 
   @Test
   public void path() throws Exception {
-    assertEquals(Arrays.asList("a", "entitySet('/')", "bcd"),
+    assertEquals(List.of("a", "entitySet('/')", "bcd"),
         UriDecoder.splitAndDecodePath("a/entitySet('%2F')/b%63d"));
   }
 
