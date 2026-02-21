@@ -244,7 +244,7 @@ public class JsonDeserializer implements ODataDeserializer {
 
     String type = null;
     Annotation annotation = null;
-    for (final Iterator<Map.Entry<String, JsonNode>> itor = tree.fields(); itor.hasNext();) {
+    for (final Iterator<Map.Entry<String, JsonNode>> itor = tree.properties().iterator(); itor.hasNext();) {
       final Map.Entry<String, JsonNode> field = itor.next();
       final Matcher customAnnotation = CUSTOM_ANNOTATION.matcher(field.getKey());
 
@@ -307,7 +307,7 @@ public class JsonDeserializer implements ODataDeserializer {
 
     final ComplexValue complexValue = new ComplexValue();
     final Set<String> toRemove = new HashSet<>();
-    for (final Iterator<Map.Entry<String, JsonNode>> itor = node.fields(); itor.hasNext();) {
+    for (final Iterator<Map.Entry<String, JsonNode>> itor = node.properties().iterator(); itor.hasNext();) {
       final Map.Entry<String, JsonNode> field = itor.next();
 
       links(field, complexValue, toRemove, node, codec);

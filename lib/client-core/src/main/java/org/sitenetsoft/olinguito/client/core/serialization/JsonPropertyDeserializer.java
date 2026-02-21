@@ -100,7 +100,7 @@ public class JsonPropertyDeserializer extends JsonDeserializer {
 
     Set<String> toRemove = new HashSet<>();
     // any remaining entry is supposed to be an annotation or is ignored
-    for (final Iterator<Map.Entry<String, JsonNode>> itor = tree.fields(); itor.hasNext();) {
+    for (final Iterator<Map.Entry<String, JsonNode>> itor = tree.properties().iterator(); itor.hasNext();) {
       final Map.Entry<String, JsonNode> field = itor.next();
       if (field.getKey().charAt(0) == '@') {
         final Annotation annotation = new Annotation();

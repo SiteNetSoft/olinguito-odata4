@@ -454,7 +454,7 @@ public class ODataJsonDeserializer implements ODataDeserializer {
   private void consumeRemainingJsonNodeFields(final EdmEntityType edmEntityType, final ObjectNode node,
       final Entity entity) throws DeserializerException {
     final List<String> toRemove = new ArrayList<>();
-    Iterator<Entry<String, JsonNode>> fieldsIterator = node.fields();
+    Iterator<Entry<String, JsonNode>> fieldsIterator = node.properties().iterator();
     while (fieldsIterator.hasNext()) {
       Entry<String, JsonNode> field = fieldsIterator.next();
 
@@ -1017,7 +1017,7 @@ public class ODataJsonDeserializer implements ODataDeserializer {
 
   private void removeAnnotations(final ObjectNode tree) throws DeserializerException {
     List<String> toRemove = new ArrayList<>();
-    Iterator<Entry<String, JsonNode>> fieldsIterator = tree.fields();
+    Iterator<Entry<String, JsonNode>> fieldsIterator = tree.properties().iterator();
     while (fieldsIterator.hasNext()) {
       Map.Entry<String, JsonNode> field = fieldsIterator.next();
 

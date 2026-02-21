@@ -242,7 +242,7 @@ public abstract class Commons {
       toBeRemoved.add(Constants.get(ConstantKey.JSON_ID_NAME));
       toBeRemoved.add(Constants.get(ConstantKey.JSON_TYPE_NAME));
 
-      final Iterator<Map.Entry<String, JsonNode>> fields = node.fields();
+      final Iterator<Map.Entry<String, JsonNode>> fields = node.properties().iterator();
       while (fields.hasNext()) {
         final Map.Entry<String, JsonNode> field = fields.next();
         if (field.getKey().endsWith(Constants.get(ConstantKey.JSON_MEDIA_SUFFIX))
