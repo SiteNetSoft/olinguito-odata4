@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - Added derived-type-only nav property expand tests (OLINGO-1221)
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -371,6 +372,17 @@ class ExpandParserTest {
         .goSelectItem(0)
         .isComplexProperty("PropertyCompNav", ComplexTypeProvider.nameCTNavFiveProp, false)
         .n().isPrimitiveProperty("PropertyInt16", PropertyProvider.nameInt16, false);
+
+    // Derived-type-only navigation properties (OLINGO-1221)
+    runOnETTwoKeyNav("olingo.odata.test1.ETBaseTwoKeyNav/NavPropertyETBaseTwoKeyNavOne")
+        .isExpandStartType(EntityTypeProvider.nameETBaseTwoKeyNav)
+        .goPath()
+        .isNavProperty("NavPropertyETBaseTwoKeyNavOne", EntityTypeProvider.nameETBaseTwoKeyNav, false);
+
+    runOnETTwoKeyNav("olingo.odata.test1.ETBaseTwoKeyNav/NavPropertyETTwoBaseTwoKeyNavOne")
+        .isExpandStartType(EntityTypeProvider.nameETBaseTwoKeyNav)
+        .goPath()
+        .isNavProperty("NavPropertyETTwoBaseTwoKeyNavOne", EntityTypeProvider.nameETTwoBaseTwoKeyNav, false);
 
     runOnETKeyNavEx("undefined").isExSemantic(MessageKeys.EXPRESSION_PROPERTY_NOT_IN_TYPE);
     runOnETTwoKeyNavEx("PropertyCompNav/undefined").isExSemantic(MessageKeys.EXPRESSION_PROPERTY_NOT_IN_TYPE);

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed $expand on derived type navigation properties (OLINGO-1221)
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -190,7 +192,9 @@ public class ExpandParser {
       final EdmStructuredType referencedType, ExpandItemImpl item) throws UriParserException {
     UriInfoImpl resource = new UriInfoImpl().setKind(UriInfoKind.resource);
 
-    EdmStructuredType type = referencedType;
+    EdmStructuredType type = item.getStartTypeFilter() != null
+        ? (EdmStructuredType) item.getStartTypeFilter()
+        : referencedType;
     String name = null;
     while (tokenizer.next(TokenKind.ODataIdentifier)) {
       name = tokenizer.getText();
