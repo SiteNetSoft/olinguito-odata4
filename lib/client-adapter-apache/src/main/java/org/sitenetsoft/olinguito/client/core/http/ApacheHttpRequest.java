@@ -122,7 +122,7 @@ public class ApacheHttpRequest implements ODataHttpRequest {
    * @return the wrapped HttpUriRequestBase instance
    * @deprecated Use the transport-agnostic {@link ODataHttpRequest} interface methods instead.
    */
-  @Deprecated
+  @Deprecated(forRemoval = true)
   public HttpUriRequestBase unwrap() {
     return delegate;
   }
@@ -135,7 +135,7 @@ public class ApacheHttpRequest implements ODataHttpRequest {
    * @throws IllegalArgumentException if request is not an ApacheHttpRequest
    * @deprecated Use the transport-agnostic {@link ODataHttpRequest} interface methods instead.
    */
-  @Deprecated
+  @Deprecated(forRemoval = true)
   public static HttpUriRequestBase unwrap(final ODataHttpRequest request) {
     if (request instanceof ApacheHttpRequest apacheRequest) {
       return apacheRequest.delegate;

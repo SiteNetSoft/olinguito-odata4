@@ -27,6 +27,8 @@
                 <include>org.sitenetsoft.olinguito:odata-commons-core</include>
                 <include>org.sitenetsoft.olinguito:odata-server-api</include>
                 <include>org.sitenetsoft.olinguito:odata-server-core</include>
+                <include>org.sitenetsoft.olinguito:odata-server-core-ext</include>
+                <include>org.sitenetsoft.olinguito:server-adapter-servlet</include>
             </includes>
         </dependencySet>
     </dependencySets>

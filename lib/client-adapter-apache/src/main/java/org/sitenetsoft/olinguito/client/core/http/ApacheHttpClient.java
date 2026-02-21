@@ -66,7 +66,7 @@ public class ApacheHttpClient implements ODataHttpClient {
    * @return the wrapped HttpClient instance
    * @deprecated Use the transport-agnostic {@link ODataHttpClient#execute(ODataHttpRequest)} method instead.
    */
-  @Deprecated
+  @Deprecated(forRemoval = true)
   public HttpClient unwrap() {
     return delegate;
   }
@@ -79,7 +79,7 @@ public class ApacheHttpClient implements ODataHttpClient {
    * @throws IllegalArgumentException if client is not an ApacheHttpClient
    * @deprecated Use the transport-agnostic {@link ODataHttpClient#execute(ODataHttpRequest)} method instead.
    */
-  @Deprecated
+  @Deprecated(forRemoval = true)
   public static HttpClient unwrap(final ODataHttpClient client) {
     if (client instanceof ApacheHttpClient apacheClient) {
       return apacheClient.delegate;

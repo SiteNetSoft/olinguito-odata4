@@ -18,6 +18,7 @@
 
       Copyright 2026 SiteNetSoft - Updated for module restructuring (servlet adapter, HTTP client adapter)
       Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
+      Copyright 2026 SiteNetSoft - Added Netty and OkHttp adapter features
 -->
 <features xmlns="http://karaf.apache.org/xmlns/features/v1.0.0" name="olinguito-${project.version}">
 
@@ -55,5 +56,15 @@
     <bundle>mvn:org.sitenetsoft.olinguito/odata-client-api/${project.version}</bundle>
     <bundle>mvn:org.sitenetsoft.olinguito/odata-client-core/${project.version}</bundle>
     <bundle>mvn:org.sitenetsoft.olinguito/odata-client-adapter-apache/${project.version}</bundle>
+  </feature>
+
+  <feature name="olinguito-server-netty" version="${project.version}" resolver="(obr)" start-level="50">
+    <feature>olinguito-server</feature>
+    <bundle>mvn:org.sitenetsoft.olinguito/server-adapter-netty/${project.version}</bundle>
+  </feature>
+
+  <feature name="olinguito-client-okhttp" version="${project.version}" resolver="(obr)" start-level="50">
+    <feature>olinguito-client</feature>
+    <bundle>mvn:org.sitenetsoft.olinguito/odata-client-adapter-okhttp/${project.version}</bundle>
   </feature>
 </features>
