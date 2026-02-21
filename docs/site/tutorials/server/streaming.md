@@ -242,7 +242,7 @@ Based on this the *OData-v4.0 Part1 Protocol* describes in chapter *9.4 In-Strea
 
 For *exception/error handling* in Olinguito exists the `ODataContentWriteErrorCallback` interface which must be implemented and then can be set as an option at the `EntityCollectionSerializerOptions` with the `writeContentErrorCallback(...)` method.
 
-If during processing (*write*) of the `ODataContent` object (normally serialization into an according `OutputStream`, like the `javax.servlet.ServletOutputStream` in a JEE servlet environment) an exception occurs the `ODataContentWriteErrorCallback` `handleError` method is called.
+If during processing (*write*) of the `ODataContent` object (normally serialization into an according `OutputStream`, like the `jakarta.servlet.ServletOutputStream` in a Jakarta EE servlet environment) an exception occurs the `ODataContentWriteErrorCallback` `handleError` method is called.
 This method get as parameter the `ODataContentWriteErrorContext` which contains at least the thrown and to be handled `Exception` and the `WritableByteChannel` in which the payload of the response was written before the error occurred.
 Based on the requirements of the OData specification that *the service MUST generate an error within the payload, which may leave the response malformed* the `WritableByteChannel` is still open and the service developer can write additional data to ensure that the response payload is malformed.
 
@@ -276,7 +276,7 @@ And could be set in the [read collection tutorial][re_co_tu] at the `EntityColle
 # Run sample service
 After building and deploying your service to your server, you can try a requests to the entity set via: [http://localhost:8080/DemoService/DemoService.svc/Products?$format=json](http://localhost:8080/DemoService/DemoService.svc/Products?$format=json)
 
-The response is exactly the same response as in the none streaming request. So unfortunaly here is no difference beside of the technical fact that the response is serialized at the very end of the request chain and directly written into the response output stream (`javax.servlet.ServletOutputStream`)
+The response is exactly the same response as in the none streaming request. So unfortunaly here is no difference beside of the technical fact that the response is serialized at the very end of the request chain and directly written into the response output stream (`jakarta.servlet.ServletOutputStream`)
 
 ```json
     {
