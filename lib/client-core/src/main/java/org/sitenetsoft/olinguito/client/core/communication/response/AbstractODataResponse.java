@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Fixed logger class, deprecated API usages, and code quality improvements
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  * Copyright 2026 SiteNetSoft - Fixed resource leak in initFromEnclosedPart
+ * Copyright 2026 SiteNetSoft - Drain response body on close to prevent connection leaks (OLINGO-1621/1622)
  */
 package org.sitenetsoft.olinguito.client.core.communication.response;
 
@@ -28,6 +29,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashSet;
@@ -245,6 +247,15 @@ public abstract class AbstractODataResponse implements ODataResponse {
 
   @Override
   public void close() {
+    if (payload != null) {
+      try {
+        payload.transferTo(OutputStream.nullOutputStream());
+      } catch (IOException e) {
+        LOG.debug("Error draining response body", e);
+      } finally {
+        try { payload.close(); } catch (IOException e) { LOG.debug("Error closing payload", e); }
+      }
+    }
     if (res != null) {
       try {
         res.close();
