@@ -31,7 +31,6 @@ import org.sitenetsoft.olinguito.commons.api.IConstants;
 import org.sitenetsoft.olinguito.commons.api.constants.Constantsv00;
 import org.sitenetsoft.olinguito.commons.api.data.AbstractEntityCollection;
 import org.sitenetsoft.olinguito.commons.api.data.AbstractODataObject;
-import org.sitenetsoft.olinguito.commons.api.data.Annotatable;
 import org.sitenetsoft.olinguito.commons.api.data.Annotation;
 import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
 import org.sitenetsoft.olinguito.commons.api.data.ContextURL;

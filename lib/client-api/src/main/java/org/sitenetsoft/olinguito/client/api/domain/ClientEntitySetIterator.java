@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Code quality improvements
  * Copyright 2026 SiteNetSoft - Replace commons-io with Java standard library
  * Copyright 2026 SiteNetSoft - Use Locale.ROOT for case conversion
+ * Copyright 2026 SiteNetSoft - Narrowed catch(Exception) to specific exception types
  */
 package org.sitenetsoft.olinguito.client.api.domain;
 
@@ -235,7 +236,7 @@ public class ClientEntitySetIterator<T extends ClientEntitySet, E extends Client
           osEntitySet.write(c);
         }
       }
-    } catch (Exception e) {
+    } catch (IOException | ODataDeserializerException e) {
       LOG.error("Error retrieving entities from EntitySet", e);
     }
 
@@ -260,7 +261,7 @@ public class ClientEntitySetIterator<T extends ClientEntitySet, E extends Client
                   toEntity(new ByteArrayInputStream(entity.toByteArray()));
         }
       }
-    } catch (Exception e) {
+    } catch (IOException | ODataDeserializerException e) {
       LOG.error("Error retrieving entities from EntitySet", e);
     }
 
@@ -283,7 +284,7 @@ public class ClientEntitySetIterator<T extends ClientEntitySet, E extends Client
       }
 
       res = attrsDeclaration == null ? "" : new String(attrsDeclaration, StandardCharsets.UTF_8).trim();
-    } catch (Exception e) {
+    } catch (IOException e) {
       LOG.error("Error retrieving entities from EntitySet", e);
       res = "";
     }

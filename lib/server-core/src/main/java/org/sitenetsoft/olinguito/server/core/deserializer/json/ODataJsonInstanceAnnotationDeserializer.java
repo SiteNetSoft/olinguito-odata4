@@ -184,7 +184,8 @@ public class ODataJsonInstanceAnnotationDeserializer {
 							.setTypeExpression(typeName).build();
 					childObjNode.remove(Constants.JSON_TYPE);
 				}
-				final Object value = child instanceof ObjectNode childObj ? fromComplex(childObj) : null;
+				final Object value = child instanceof ObjectNode childObj
+						? fromComplex(childObj) : null;
 				if (childType != null && value instanceof ComplexValue cv) {
 					cv.setTypeName(childType.external());
 				}

@@ -231,9 +231,11 @@ public class UriValidator {
     final EdmTypeKind typeKind = uriFunction.getFunction().getReturnType().getType().getKind();
     return switch (typeKind) {
       case ENTITY -> isCollection ? UriType.entitySet : UriType.entity;
-      case PRIMITIVE, ENUM, DEFINITION -> isCollection ? UriType.propertyPrimitiveCollection : UriType.propertyPrimitive;
+      case PRIMITIVE, ENUM, DEFINITION ->
+          isCollection ? UriType.propertyPrimitiveCollection : UriType.propertyPrimitive;
       case COMPLEX -> isCollection ? UriType.propertyComplexCollection : UriType.propertyComplex;
-      default -> throw new UriValidationException("Unsupported function return type: " + typeKind,
+      default -> throw new UriValidationException(
+          "Unsupported function return type: " + typeKind,
           UriValidationException.MessageKeys.UNSUPPORTED_FUNCTION_RETURN_TYPE, typeKind.toString());
     };
   }
@@ -253,10 +255,13 @@ public class UriValidator {
     }
     return switch (rt.getType().getKind()) {
       case ENTITY -> rt.isCollection() ? UriType.entitySet : UriType.entity;
-      case PRIMITIVE, ENUM, DEFINITION -> rt.isCollection() ? UriType.propertyPrimitiveCollection : UriType.propertyPrimitive;
+      case PRIMITIVE, ENUM, DEFINITION ->
+          rt.isCollection() ? UriType.propertyPrimitiveCollection : UriType.propertyPrimitive;
       case COMPLEX -> rt.isCollection() ? UriType.propertyComplexCollection : UriType.propertyComplex;
-      default -> throw new UriValidationException("Unsupported action return type: " + rt.getType().getKind(),
-          UriValidationException.MessageKeys.UNSUPPORTED_ACTION_RETURN_TYPE, rt.getType().getKind().toString());
+      default -> throw new UriValidationException(
+          "Unsupported action return type: " + rt.getType().getKind(),
+          UriValidationException.MessageKeys.UNSUPPORTED_ACTION_RETURN_TYPE,
+          rt.getType().getKind().toString());
     };
   }
 
@@ -273,12 +278,16 @@ public class UriValidator {
           case ENTITY -> UriType.entitySetCount;
           case COMPLEX -> UriType.propertyComplexCollectionCount;
           case PRIMITIVE, ENUM, DEFINITION -> UriType.propertyPrimitiveCollectionCount;
-          default -> throw new UriValidationException("Unsupported return type: " + returnType.getKind(),
-              UriValidationException.MessageKeys.UNSUPPORTED_FUNCTION_RETURN_TYPE, returnType.getKind().toString());
+          default -> throw new UriValidationException(
+              "Unsupported return type: " + returnType.getKind(),
+              UriValidationException.MessageKeys.UNSUPPORTED_FUNCTION_RETURN_TYPE,
+              returnType.getKind().toString());
         };
       }
-      default -> throw new UriValidationException("Illegal path part kind before $count: " + secondLastPathSegment.getKind(),
-          UriValidationException.MessageKeys.UNALLOWED_KIND_BEFORE_COUNT, secondLastPathSegment.toString());
+      default -> throw new UriValidationException(
+          "Illegal path part kind before $count: " + secondLastPathSegment.getKind(),
+          UriValidationException.MessageKeys.UNALLOWED_KIND_BEFORE_COUNT,
+          secondLastPathSegment.toString());
     };
   }
 

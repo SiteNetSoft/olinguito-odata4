@@ -253,7 +253,11 @@ public abstract class AbstractODataResponse implements ODataResponse {
       } catch (IOException e) {
         LOG.debug("Error draining response body", e);
       } finally {
-        try { payload.close(); } catch (IOException e) { LOG.debug("Error closing payload", e); }
+        try {
+          payload.close();
+        } catch (IOException e) {
+          LOG.debug("Error closing payload", e);
+        }
       }
     }
     if (res != null) {

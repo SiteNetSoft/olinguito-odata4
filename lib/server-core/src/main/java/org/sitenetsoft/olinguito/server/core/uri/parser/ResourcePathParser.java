@@ -292,7 +292,8 @@ public class ResourcePathParser {
     UriResourcePartTyped previousTyped = null;
     EdmStructuredType structType = null;
     requireTyped(previous, name);
-    if (previous instanceof UriResourcePartTyped prevTyped && prevTyped.getType() instanceof EdmStructuredType prevStructType) {
+    if (previous instanceof UriResourcePartTyped prevTyped
+        && prevTyped.getType() instanceof EdmStructuredType prevStructType) {
       previousTyped = prevTyped;
       final EdmType previousTypeFilter = getPreviousTypeFilter(previousTyped);
       structType = previousTypeFilter instanceof EdmStructuredType filterStructType ? filterStructType : prevStructType;
