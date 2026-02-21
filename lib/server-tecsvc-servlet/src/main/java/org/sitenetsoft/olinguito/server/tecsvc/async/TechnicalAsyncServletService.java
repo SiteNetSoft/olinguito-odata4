@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Servlet-dependent async methods extracted from TechnicalAsyncService
  * Copyright 2026 SiteNetSoft - Replaced bare RuntimeException with ODataRuntimeException
+ * Copyright 2026 SiteNetSoft - Removed invalid Content-Encoding: binary header (HC5 5.6 compatibility)
  */
 package org.sitenetsoft.olinguito.server.tecsvc.async;
 
@@ -122,7 +123,6 @@ public class TechnicalAsyncServletService {
     InputStream odResponseStream = odata.createFixedFormatSerializer().asyncResponse(odResponse);
 
     response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.APPLICATION_HTTP.toContentTypeString());
-    response.setHeader(HttpHeader.CONTENT_ENCODING, "binary");
     response.setStatus(HttpStatusCode.OK.getStatusCode());
 
     writeToResponse(response, odResponseStream);
