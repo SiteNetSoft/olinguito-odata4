@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Fixed odata.bind validation to use endsWith (OLINGO-1620)
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
@@ -460,7 +461,7 @@ public class ODataJsonDeserializer implements ODataDeserializer {
     while (fieldsIterator.hasNext()) {
       Entry<String, JsonNode> field = fieldsIterator.next();
 
-      if (field.getKey().contains(constants.getBind())) {
+      if (field.getKey().endsWith(constants.getBind())) {
         Link bindingLink = consumeBindingLink(field.getKey(), field.getValue(), edmEntityType);
         entity.getNavigationBindings().add(bindingLink);
         toRemove.add(field.getKey());

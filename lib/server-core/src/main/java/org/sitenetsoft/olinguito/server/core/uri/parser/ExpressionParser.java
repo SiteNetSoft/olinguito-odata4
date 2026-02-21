@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
+ * Copyright 2026 SiteNetSoft - Fixed in operator bidirectional type compatibility (OLINGO-1628)
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -367,11 +368,17 @@ public class ExpressionParser {
       throws UriParserException, UriParserSemanticException {
     for (Expression expr : expressionList) {
       EdmType inExprType = getType(expr);
-      
-      if (!(((EdmPrimitiveType) leftExprType).isCompatible((EdmPrimitiveType) inExprType))) {
+
+      if (inExprType == null || leftExprType.equals(inExprType)) {
+        continue;
+      }
+
+      if (!(leftExprType instanceof EdmPrimitiveType leftPrim)
+          || !(inExprType instanceof EdmPrimitiveType inPrim)
+          || !(leftPrim.isCompatible(inPrim) || inPrim.isCompatible(leftPrim))) {
         throw new UriParserSemanticException("Incompatible types.",
             UriParserSemanticException.MessageKeys.TYPES_NOT_COMPATIBLE,
-            inExprType == null ? "" : inExprType.getFullQualifiedName().getFullQualifiedNameAsString(),
+            inExprType.getFullQualifiedName().getFullQualifiedNameAsString(),
             leftExprType.getFullQualifiedName().getFullQualifiedNameAsString());
       }
     }

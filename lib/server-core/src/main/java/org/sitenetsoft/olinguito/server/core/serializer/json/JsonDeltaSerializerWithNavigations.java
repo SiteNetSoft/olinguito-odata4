@@ -15,14 +15,18 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced O(N²) property lookup with HashMap (OLINGO-1625)
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.sitenetsoft.olinguito.commons.api.Constants;
@@ -255,15 +259,6 @@ public class JsonDeltaSerializerWithNavigations implements EdmDeltaSerializer {
 
   }
 
-  private Property findProperty(final String propertyName, final List<Property> properties) {
-    for (final Property property : properties) {
-      if (propertyName.equals(property.getName())) {
-        return property;
-      }
-    }
-    return null;
-  }
-
   protected void writeProperty(final ServiceMetadata metadata,
       final EdmProperty edmProperty, final Property property,
       final Set<List<String>> selectedPaths, final JsonGenerator json)
@@ -474,8 +469,12 @@ public class JsonDeltaSerializerWithNavigations implements EdmDeltaSerializer {
       final Set<List<String>> selectedPaths, final JsonGenerator json)
       throws IOException, SerializerException {
 
+    final Map<String, Property> propertyMap = new HashMap<>();
+    for (final Property p : properties) {
+      propertyMap.put(p.getName(), p);
+    }
     for (final String propertyName : type.getPropertyNames()) {
-      final Property property = findProperty(propertyName, properties);
+      final Property property = propertyMap.get(propertyName);
       if (selectedPaths == null || ExpandSelectHelper.isSelected(selectedPaths, propertyName)) {
         writeProperty(metadata, (EdmProperty) type.getProperty(propertyName), property,
             selectedPaths == null ? null : ExpandSelectHelper.getReducedSelectedPaths(selectedPaths, propertyName),
@@ -491,10 +490,14 @@ public class JsonDeltaSerializerWithNavigations implements EdmDeltaSerializer {
     final boolean all = ExpandSelectHelper.isAll(select);
     final Set<String> selected = all ? new HashSet<>() : ExpandSelectHelper.getSelectedPropertyNames(select
         .getSelectItems());
+    final Map<String, Property> propertyMap = new HashMap<>();
+    for (final Property p : properties) {
+      propertyMap.put(p.getName(), p);
+    }
     for (final String propertyName : type.getPropertyNames()) {
       if ((all || selected.contains(propertyName)) && !properties.isEmpty()) {
         final EdmProperty edmProperty = type.getStructuralProperty(propertyName);
-        final Property property = findProperty(propertyName, properties);
+        final Property property = propertyMap.get(propertyName);
         final Set<List<String>> selectedPaths = all || edmProperty.isPrimitive() ? null : ExpandSelectHelper
             .getSelectedPaths(select.getSelectItems(), propertyName);
         writeProperty(metadata, edmProperty, property, selectedPaths, json);

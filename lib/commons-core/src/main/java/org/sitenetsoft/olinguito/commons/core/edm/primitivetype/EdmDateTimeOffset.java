@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed date/time conversions for pre-Julian dates (OLINGO-1646)
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
@@ -94,17 +96,17 @@ public final class EdmDateTimeOffset extends SingletonPrimitiveType {
       return (T) zdt;
     } else if (returnType == Instant.class) {
       return (T) zdt.toInstant();
-    } else if (returnType.isAssignableFrom(Timestamp.class)) {
+    } else if (Timestamp.class.isAssignableFrom(returnType)) {
       return (T) Timestamp.from(zdt.toInstant());
-    } else if (returnType.isAssignableFrom(java.util.Date.class)) {
-      return (T) java.util.Date.from(zdt.toInstant());
-    } else if (returnType.isAssignableFrom(java.sql.Time.class)) {
-      return (T) new java.sql.Time(zdt.toInstant().truncatedTo(ChronoUnit.SECONDS).toEpochMilli());
-    } else if (returnType.isAssignableFrom(java.sql.Date.class)) {
+    } else if (java.sql.Date.class.isAssignableFrom(returnType)) {
       return (T) new java.sql.Date(zdt.toInstant().truncatedTo(ChronoUnit.SECONDS).toEpochMilli());
-    } else if (returnType.isAssignableFrom(Long.class)) {
+    } else if (java.sql.Time.class.isAssignableFrom(returnType)) {
+      return (T) new java.sql.Time(zdt.toInstant().truncatedTo(ChronoUnit.SECONDS).toEpochMilli());
+    } else if (java.util.Date.class.isAssignableFrom(returnType)) {
+      return (T) java.util.Date.from(zdt.toInstant());
+    } else if (Long.class.isAssignableFrom(returnType)) {
       return (T) Long.valueOf(zdt.toInstant().toEpochMilli());
-    } else if (returnType.isAssignableFrom(Calendar.class)) {
+    } else if (Calendar.class.isAssignableFrom(returnType)) {
       return (T) GregorianCalendar.from(zdt);
     } else {
       throw new ClassCastException("Unsupported return type " + returnType.getSimpleName());

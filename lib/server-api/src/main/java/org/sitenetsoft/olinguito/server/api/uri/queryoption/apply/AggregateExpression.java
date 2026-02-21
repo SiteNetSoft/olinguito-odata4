@@ -15,10 +15,13 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Dynamic property options for aggregate expressions (OLINGO PR#171)
  */
 package org.sitenetsoft.olinguito.server.api.uri.queryoption.apply;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
@@ -90,4 +93,17 @@ public interface AggregateExpression extends Expression {
    * @param name an identifier
    */
   void addDynamicProperty(String name);
+
+  /**
+   * Gets the dynamic properties with their options for aggregation expression.
+   * @return an unmodifiable map of property names to their options
+   */
+  Map<String, AggregateExpressionDynamicPropertyOptions> getDynamicPropertiesWithOptions();
+
+  /**
+   * Adds the dynamic property with options for aggregation expression.
+   * @param name an identifier
+   * @param options the options for this dynamic property
+   */
+  void addDynamicProperty(String name, AggregateExpressionDynamicPropertyOptions options);
 }

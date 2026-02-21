@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced O(N²) property lookup with HashMap (OLINGO-1625)
  */
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
@@ -23,8 +25,10 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -622,21 +626,25 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
   }
 
   protected void writeProperties(final ServiceMetadata metadata, final EdmStructuredType type,
-      final List<Property> properties, final SelectOption select, final String xml10InvalidCharReplacement, 
-      final XMLStreamWriter writer, Linked linked, ExpandOption expand) 
+      final List<Property> properties, final SelectOption select, final String xml10InvalidCharReplacement,
+      final XMLStreamWriter writer, Linked linked, ExpandOption expand)
           throws XMLStreamException, SerializerException {
     final boolean all = ExpandSelectHelper.isAll(select);
     final Set<String> selected = all ? new HashSet<>() :
         ExpandSelectHelper.getSelectedPropertyNames(select.getSelectItems());
     addKeyPropertiesToSelected(selected, type);
     Set<List<String>> expandedPaths = ExpandSelectHelper.getExpandedItemsPath(expand);
+    final Map<String, Property> propertyMap = new HashMap<>();
+    for (final Property p : properties) {
+      propertyMap.put(p.getName(), p);
+    }
     for (final String propertyName : type.getPropertyNames()) {
       if (all || selected.contains(propertyName)) {
         final EdmProperty edmProperty = type.getStructuralProperty(propertyName);
-        final Property property = findProperty(propertyName, properties);
+        final Property property = propertyMap.get(propertyName);
         final Set<List<String>> selectedPaths = all || edmProperty.isPrimitive() ? null :
             ExpandSelectHelper.getSelectedPaths(select.getSelectItems(), propertyName);
-        writeProperty(metadata, edmProperty, property, selectedPaths, 
+        writeProperty(metadata, edmProperty, property, selectedPaths,
             xml10InvalidCharReplacement, writer, expandedPaths, linked, expand);
       }
     }
@@ -1001,11 +1009,11 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
   }
 
   protected void writeComplexValue(final ServiceMetadata metadata,
-      final EdmComplexType type, final List<Property> properties, 
-      final Set<List<String>> selectedPaths, final String xml10InvalidCharReplacement, 
-      final XMLStreamWriter writer, Set<List<String>> expandedPaths, 
-      Linked linked, ExpandOption expand, String complexPropName) throws XMLStreamException, SerializerException {   
-    
+      final EdmComplexType type, final List<Property> properties,
+      final Set<List<String>> selectedPaths, final String xml10InvalidCharReplacement,
+      final XMLStreamWriter writer, Set<List<String>> expandedPaths,
+      Linked linked, ExpandOption expand, String complexPropName) throws XMLStreamException, SerializerException {
+
     if (null != expandedPaths) {
       for(List<String> paths : expandedPaths) {
         if (!paths.isEmpty() && paths.size() == 1) {
@@ -1013,26 +1021,21 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
         }
       }
     }
-    
+
+    final Map<String, Property> propertyMap = new HashMap<>();
+    for (final Property p : properties) {
+      propertyMap.put(p.getName(), p);
+    }
     for (final String propertyName : type.getPropertyNames()) {
-      final Property property = findProperty(propertyName, properties);
+      final Property property = propertyMap.get(propertyName);
       if (selectedPaths == null || ExpandSelectHelper.isSelected(selectedPaths, propertyName)) {
         writeProperty(metadata, (EdmProperty) type.getProperty(propertyName), property,
             selectedPaths == null ? null : ExpandSelectHelper.getReducedSelectedPaths(selectedPaths, propertyName),
             xml10InvalidCharReplacement, writer, expandedPaths, linked, expand);
       }
     }
-    writeNavigationProperties(metadata, type, linked, 
+    writeNavigationProperties(metadata, type, linked,
         expand, null, xml10InvalidCharReplacement, null, complexPropName, writer);
-  }
-
-  private Property findProperty(final String propertyName, final List<Property> properties) {
-    for (final Property property : properties) {
-      if (propertyName.equals(property.getName())) {
-        return property;
-      }
-    }
-    return null;
   }
 
   @Override

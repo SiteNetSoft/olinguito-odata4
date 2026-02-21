@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed addHeader to append instead of replace (OLINGO PR#174)
  */
 package org.sitenetsoft.olinguito.server.api;
 
@@ -70,7 +72,7 @@ public class ODataResponse {
    * @see <a href="http://ietf.org/rfc/rfc7230.txt">RFC 7230, section 3.2.2</a>
    */
   public void addHeader(final String name, final String value) {
-    headers.setHeader(name, value);
+    headers.addHeader(name, value);
   }
 
   /**

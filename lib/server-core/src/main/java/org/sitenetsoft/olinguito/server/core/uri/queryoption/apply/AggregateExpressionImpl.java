@@ -18,13 +18,15 @@
  *
  * Copyright 2026 SiteNetSoft - Implemented accept() method
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
+ * Copyright 2026 SiteNetSoft - Dynamic property options for aggregate expressions (OLINGO PR#171)
  */
 package org.sitenetsoft.olinguito.server.core.uri.queryoption.apply;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
@@ -32,6 +34,7 @@ import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
 import org.sitenetsoft.olinguito.server.api.uri.UriInfo;
 import org.sitenetsoft.olinguito.server.api.uri.UriResource;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.apply.AggregateExpression;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.apply.AggregateExpressionDynamicPropertyOptions;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Expression;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.ExpressionVisitException;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.ExpressionVisitor;
@@ -48,7 +51,7 @@ public class AggregateExpressionImpl implements AggregateExpression {
   private String alias;
   private AggregateExpression inlineAggregateExpression;
   private List<AggregateExpression> from = new ArrayList<>();
-  private Set<String> dynamicProperties = new HashSet<>();
+  private Map<String, AggregateExpressionDynamicPropertyOptions> dynamicProperties = new HashMap<>();
 
   @Override
   public List<UriResource> getPath() {
@@ -127,11 +130,21 @@ public class AggregateExpressionImpl implements AggregateExpression {
   
   @Override
   public Set<String> getDynamicProperties() {
-    return Collections.unmodifiableSet(dynamicProperties);
+    return Collections.unmodifiableSet(dynamicProperties.keySet());
   }
 
   @Override
   public void addDynamicProperty(String name) {
-    dynamicProperties.add(name);
+    dynamicProperties.put(name, new AggregateExpressionDynamicPropertyOptions());
+  }
+
+  @Override
+  public Map<String, AggregateExpressionDynamicPropertyOptions> getDynamicPropertiesWithOptions() {
+    return Collections.unmodifiableMap(dynamicProperties);
+  }
+
+  @Override
+  public void addDynamicProperty(String name, AggregateExpressionDynamicPropertyOptions options) {
+    dynamicProperties.put(name, options);
   }
 }

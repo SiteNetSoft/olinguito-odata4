@@ -18,13 +18,14 @@
  *
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
+ * Copyright 2026 SiteNetSoft - Dynamic property options for aggregate expressions (OLINGO PR#171)
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,6 +58,7 @@ import org.sitenetsoft.olinguito.server.api.uri.queryoption.SystemQueryOptionKin
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.apply.Aggregate;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.apply.AggregateExpression;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.apply.AggregateExpression.StandardMethod;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.apply.AggregateExpressionDynamicPropertyOptions;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.apply.BottomTop;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.apply.Compute;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.apply.Concat;
@@ -226,13 +228,13 @@ public class ApplyParser {
   private Aggregate parseAggregateTrafo(EdmStructuredType referencedType)
       throws UriParserException, UriValidationException {
     AggregateImpl aggregate = new AggregateImpl();
-    Set<String> dynamicProps = new HashSet<>();
+    Map<String, AggregateExpressionDynamicPropertyOptions> dynamicProps = new HashMap<>();
     do {
     	AggregateExpression aggregateExpr = parseAggregateExpr(referencedType, dynamicProps, Requirement.REQUIRED);
         aggregate.addExpression(aggregateExpr);
-        dynamicProps.addAll(aggregateExpr.getDynamicProperties());
+        dynamicProps.putAll(aggregateExpr.getDynamicPropertiesWithOptions());
     } while (tokenizer.next(TokenKind.COMMA));
-    dynamicProps.forEach(dp -> addPropertyToRefType(referencedType, dp));
+    dynamicProps.forEach((dp, options) -> addPropertyToRefType(referencedType, dp));
     ParserHelper.requireNext(tokenizer, TokenKind.CLOSE);
     return aggregate;
   }
@@ -250,10 +252,11 @@ public class ApplyParser {
 	      throws UriParserException, UriValidationException {
 	    this.tokenizer = tokenizer;
 
-	    return parseAggregateExpr(referringType, Set.of(), Requirement.FORBIDDEN);
+	    return parseAggregateExpr(referringType, Map.of(), Requirement.FORBIDDEN);
 	  }
 
-  private AggregateExpression parseAggregateExpr(EdmStructuredType referencedType, Set<String> dynamicProps,
+  private AggregateExpression parseAggregateExpr(EdmStructuredType referencedType,
+		  Map<String, AggregateExpressionDynamicPropertyOptions> dynamicProps,
 		  Requirement aliasRequired)
       throws UriParserException, UriValidationException {
 	    AggregateExpressionImpl aggregateExpression = new AggregateExpressionImpl();
@@ -273,13 +276,13 @@ public class ApplyParser {
 	      aggregateExpression.setPath(uriInfo);
 	      DynamicStructuredType inlineType = new DynamicStructuredType((EdmStructuredType)
 	          ParserHelper.getTypeInformation((UriResourcePartTyped) lastResourcePart));
-	      aggregateExpression.setInlineAggregateExpression(parseAggregateExpr(inlineType, 
+	      aggregateExpression.setInlineAggregateExpression(parseAggregateExpr(inlineType,
 	    		  dynamicProps, aliasRequired));
 	      ParserHelper.requireNext(tokenizer, TokenKind.CLOSE);
 	    } else if (tokenizer.next(TokenKind.COUNT)) {
 	      uriInfo.addResourcePart(new UriResourceCountImpl());
 	      aggregateExpression.setPath(uriInfo);
-	      final String alias = parseAsAlias(referencedType, dynamicProps, aliasRequired);
+	      final String alias = parseAsAlias(referencedType, dynamicProps.keySet(), aliasRequired);
 	      if (alias != null) {
 	        aggregateExpression.setAlias(alias);
 	        aggregateExpression.addDynamicProperty(alias);
@@ -297,15 +300,22 @@ public class ApplyParser {
 				if (tokenizer.next(TokenKind.AsOperator)) {
 					throw new UriParserSyntaxException("Invalid 'aggregateExpr' syntax.",
 							UriParserSyntaxException.MessageKeys.SYNTAX);
-				} 
+				}
 				customAggregateNamedAsProperty(referencedType, aggregateExpression, uriInfo);
-				
+
 				return aggregateExpression;
 		      }
-	      final String alias = parseAsAlias(referencedType, dynamicProps, aliasRequired);
+	      final String alias = parseAsAlias(referencedType, dynamicProps.keySet(), aliasRequired);
 	      if(alias != null) {
 	        aggregateExpression.setAlias(alias);
-	        aggregateExpression.addDynamicProperty(alias);
+	        final StandardMethod method = aggregateExpression.getStandardMethod();
+	        if (method == StandardMethod.SUM || method == StandardMethod.AVERAGE) {
+	          AggregateExpressionDynamicPropertyOptions options = new AggregateExpressionDynamicPropertyOptions();
+	          options.scale = Integer.MAX_VALUE;
+	          aggregateExpression.addDynamicProperty(alias, options);
+	        } else {
+	          aggregateExpression.addDynamicProperty(alias);
+	        }
 	      }
 	      parseAggregateFrom(aggregateExpression, referencedType);
 	    }

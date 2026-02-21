@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
+ * Copyright 2026 SiteNetSoft - Fixed contains(null) NPE with List.of() collections
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
@@ -25,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import org.sitenetsoft.olinguito.commons.api.data.ContextURL;
 import org.sitenetsoft.olinguito.commons.api.data.ContextURL.Builder;
@@ -119,7 +121,7 @@ public class TechnicalActionProcessor extends TechnicalProcessor
     // Collections must never be null.
     // Not nullable return types must not contain a null value.
     if (collection == null
-        || collection.getEntities().contains(null) && !action.getReturnType().isNullable()) {
+        || collection.getEntities().stream().anyMatch(Objects::isNull) && !action.getReturnType().isNullable()) {
       throw new ODataApplicationException("The action could not be executed.",
           HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode(), Locale.ROOT);
     }
@@ -286,7 +288,7 @@ public class TechnicalActionProcessor extends TechnicalProcessor
       // Collection Propertys must never be null
       throw new ODataApplicationException("The action could not be executed.",
           HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode(), Locale.ROOT);
-    } else if (property.asCollection().contains(null) && !action.getReturnType().isNullable()) {
+    } else if (property.asCollection().stream().anyMatch(Objects::isNull) && !action.getReturnType().isNullable()) {
       // Not nullable return type but array contains a null value
       throw new ODataApplicationException("The action could not be executed.",
           HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode(), Locale.ROOT);
@@ -392,7 +394,7 @@ public class TechnicalActionProcessor extends TechnicalProcessor
       // Collection Propertys must never be null
       throw new ODataApplicationException("The action could not be executed.",
           HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode(), Locale.ROOT);
-    } else if (property.asCollection().contains(null) && !action.getReturnType().isNullable()) {
+    } else if (property.asCollection().stream().anyMatch(Objects::isNull) && !action.getReturnType().isNullable()) {
       // Not nullable return type but array contains a null value
       throw new ODataApplicationException("The action could not be executed.",
           HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode(), Locale.ROOT);
