@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed date/time conversions for pre-Julian dates (OLINGO-1646)
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
@@ -59,23 +61,22 @@ public final class EdmDate extends SingletonPrimitiveType {
     }
 
     // appropriate types
-    if (returnType.isAssignableFrom(LocalDate.class)) {
+    if (LocalDate.class.isAssignableFrom(returnType)) {
       return (T) date;
-    } else if (returnType.isAssignableFrom(java.sql.Date.class)) {
-      return (T) java.sql.Date.valueOf(date);
+    } else if (java.sql.Date.class.isAssignableFrom(returnType)) {
+      return (T) new java.sql.Date(LocalDateTime.of(date, LocalTime.MIDNIGHT)
+          .atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
     }
 
     // inappropriate types, which need to be supported for backward compatibility
     ZonedDateTime zdt = LocalDateTime.of(date, LocalTime.MIDNIGHT).atZone(ZoneId.systemDefault());
-    if (returnType.isAssignableFrom(Calendar.class)) {
+    if (Calendar.class.isAssignableFrom(returnType)) {
       return (T) GregorianCalendar.from(zdt);
-    } else if (returnType.isAssignableFrom(Long.class)) {
+    } else if (Long.class.isAssignableFrom(returnType)) {
       return (T) Long.valueOf(zdt.toInstant().toEpochMilli());
-    } else if (returnType.isAssignableFrom(java.sql.Date.class)) {
-      throw new EdmPrimitiveTypeException("The value type " + returnType + " is not supported.");
-    } else if (returnType.isAssignableFrom(java.sql.Timestamp.class)) {
+    } else if (java.sql.Timestamp.class.isAssignableFrom(returnType)) {
       return (T) java.sql.Timestamp.from(zdt.toInstant());
-    } else if (returnType.isAssignableFrom(java.util.Date.class)) {
+    } else if (java.util.Date.class.isAssignableFrom(returnType)) {
       return (T) java.util.Date.from(zdt.toInstant());
     } else {
       throw new EdmPrimitiveTypeException("The value type " + returnType + " is not supported.");
@@ -88,8 +89,9 @@ public final class EdmDate extends SingletonPrimitiveType {
     // appropriate types
     if (value instanceof LocalDate) {
       return value.toString();
-    } else if (value instanceof java.sql.Date) {
-      return value.toString();
+    } else if (value instanceof java.sql.Date sqlDate) {
+      return Instant.ofEpochMilli(sqlDate.getTime())
+          .atZone(ZoneId.systemDefault()).toLocalDate().toString();
     }
 
     // inappropriate types, which need to be supported for backward compatibility
@@ -106,8 +108,6 @@ public final class EdmDate extends SingletonPrimitiveType {
       throw new EdmPrimitiveTypeException("The value type " + value.getClass() + " is not supported.");
     }
 
-    ZonedDateTime zdt = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault());
-
-    return zdt.toLocalDate().toString();
+    return Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate().toString();
   }
 }

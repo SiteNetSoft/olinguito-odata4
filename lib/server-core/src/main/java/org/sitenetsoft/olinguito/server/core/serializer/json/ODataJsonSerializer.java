@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
+ * Copyright 2026 SiteNetSoft - Replaced O(N²) property lookup with HashMap (OLINGO-1625)
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -27,6 +28,7 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -520,10 +522,14 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
         ExpandSelectHelper.getSelectedPropertyNames(select.getSelectItems());
     addKeyPropertiesToSelected(selected, type);
     Set<List<String>> expandedPaths = ExpandSelectHelper.getExpandedItemsPath(expand);
+    final Map<String, Property> propertyMap = new HashMap<>();
+    for (final Property p : properties) {
+      propertyMap.put(p.getName(), p);
+    }
     for (final String propertyName : type.getPropertyNames()) {
       if (all || selected.contains(propertyName)) {
         final EdmProperty edmProperty = type.getStructuralProperty(propertyName);
-        final Property property = findProperty(propertyName, properties);
+        final Property property = propertyMap.get(propertyName);
         final Set<List<String>> selectedPaths = all || edmProperty.isPrimitive() ? null :
             ExpandSelectHelper.getSelectedPaths(select.getSelectItems(), propertyName);
         writeProperty(metadata, edmProperty, property, selectedPaths, json, expandedPaths, linked, expand);
@@ -1078,7 +1084,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
 
   protected void writeComplexValue(final ServiceMetadata metadata,
       final EdmComplexType type, final List<Property> properties,
-      final Set<List<String>> selectedPaths, final JsonGenerator json, 
+      final Set<List<String>> selectedPaths, final JsonGenerator json,
       Set<List<String>> expandedPaths, Linked linked, ExpandOption expand, String complexPropName)
       throws IOException, SerializerException, IllegalArgumentException {
 
@@ -1089,9 +1095,13 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
         }
       }
     }
-    
+
+    final Map<String, Property> propertyMap = new HashMap<>();
+    for (final Property p : properties) {
+      propertyMap.put(p.getName(), p);
+    }
     for (final String propertyName : type.getPropertyNames()) {
-      final Property property = findProperty(propertyName, properties);
+      final Property property = propertyMap.get(propertyName);
       if (selectedPaths == null || ExpandSelectHelper.isSelected(selectedPaths, propertyName)) {
         writeProperty(metadata, (EdmProperty) type.getProperty(propertyName), property,
             selectedPaths == null ? null : ExpandSelectHelper.getReducedSelectedPaths(selectedPaths, propertyName),
@@ -1105,15 +1115,6 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
     }
   }
     
-
-  private Property findProperty(final String propertyName, final List<Property> properties) {
-    for (final Property property : properties) {
-      if (propertyName.equals(property.getName())) {
-        return property;
-      }
-    }
-    return null;
-  }
 
   @Override
   public SerializerResult primitive(final ServiceMetadata metadata, final EdmPrimitiveType type,

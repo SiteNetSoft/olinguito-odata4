@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced exception-based type detection with HashMap lookup (OLINGO-1624)
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
@@ -109,14 +111,10 @@ public class EdmTypeInfo {
 
     fullQualifiedName = new FullQualifiedName(namespace, typeName);
 
-    try {
-      if (namespace.equals("Edm")) {
-        primitiveType = EdmPrimitiveTypeKind.valueOf(typeName);
-      } else {
-        primitiveType = EdmPrimitiveTypeKind.valueOf(namespace + "." + typeName);
-      }
-    } catch (final IllegalArgumentException e) {
-      primitiveType = null;
+    if (namespace.equals("Edm")) {
+      primitiveType = EdmPrimitiveTypeKind.getByName(typeName);
+    } else {
+      primitiveType = EdmPrimitiveTypeKind.getByName(namespace + "." + typeName);
     }
 
     if (primitiveType == null && edm != null) {

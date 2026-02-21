@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed contains(null) NPE with List.of() collections
  */
 package myservice.mynamespace.service;
 
@@ -22,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import org.sitenetsoft.olinguito.commons.api.data.ContextURL;
 import org.sitenetsoft.olinguito.commons.api.data.ContextURL.Builder;
@@ -215,7 +218,7 @@ public class DemoActionProcessor implements ActionVoidProcessor, ActionEntityCol
     // Collections must never be null.
     // Not nullable return types must not contain a null value.
     if (collection == null
-        || collection.getEntities().contains(null) && !action.getReturnType().isNullable()) {
+        || collection.getEntities().stream().anyMatch(Objects::isNull) && !action.getReturnType().isNullable()) {
       throw new ODataApplicationException("The action could not be executed.",
           HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode(), Locale.ROOT);
     }

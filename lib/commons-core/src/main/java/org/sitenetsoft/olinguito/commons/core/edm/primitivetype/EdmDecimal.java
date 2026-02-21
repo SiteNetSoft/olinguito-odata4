@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed precision check for negative-scale BigDecimals (OLINGO-1642)
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
@@ -241,7 +243,7 @@ public final class EdmDecimal extends SingletonPrimitiveType {
 
       final int digits = bigDecimalValue.scale() >= 0
           ? Math.max(bigDecimalValue.precision(), bigDecimalValue.scale())
-              : bigDecimalValue.precision() - bigDecimalValue.scale();
+              : bigDecimalValue.precision();
           if ((precision == null || precision >= digits) && (bigDecimalValue.scale() <= (scale == null ? 0 : scale))) {
             result = bigDecimalValue.toPlainString();
           } else {
@@ -257,7 +259,7 @@ public final class EdmDecimal extends SingletonPrimitiveType {
 
       final int digits = bigDecimalValue.scale() >= 0
           ? Math.max(bigDecimalValue.precision(), bigDecimalValue.scale())
-              : bigDecimalValue.precision() - bigDecimalValue.scale();
+              : bigDecimalValue.precision();
           if ((precision == null || precision >= digits) && (bigDecimalValue.scale() <= (scale == null ? 0 : scale))) {
             result = bigDecimalValue.toPlainString();
           } else {
@@ -266,7 +268,7 @@ public final class EdmDecimal extends SingletonPrimitiveType {
     } else if (value instanceof BigDecimal bigDecimalValue) {
       final int digits = bigDecimalValue.scale() >= 0
           ? Math.max(bigDecimalValue.precision(), bigDecimalValue.scale())
-              : bigDecimalValue.precision() - bigDecimalValue.scale();
+              : bigDecimalValue.precision();
           if ((precision == null || precision >= digits) && (bigDecimalValue.scale() <= (scale == null ? 0 : scale))) {
             result = bigDecimalValue.toPlainString();
           } else {

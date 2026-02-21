@@ -17,9 +17,11 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - Enhanced addHeader test for multi-value verification
  */
 package org.sitenetsoft.olinguito.server.api;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -36,7 +38,13 @@ class ODataResponseTest {
   void testResponse() {
     ODataResponse  r = new ODataResponse ();
     assertNotNull(r);
-    r.addHeader("header", "value");
+    r.addHeader("header", "value1");
+    r.addHeader("header", "value2");
+    List<String> header = r.getAllHeaders().get("header");
+    assertNotNull(header);
+    assertEquals(2, header.size());
+    assertEquals("value1", header.get(0));
+    assertEquals("value2", header.get(1));
     List<String> list = new ArrayList<>();
     r.addHeader("headerList", list );
     assertNotNull(r.getAllHeaders());
