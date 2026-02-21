@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Narrowed catch(Exception) to specific exception types
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -145,7 +146,7 @@ public class ClientODataDeserializerImpl implements ClientODataDeserializer {
     	List<List<String>> schemaNameSpaces = getAllSchemaNameSpace(inputStream2);
  
       return new ClientCsdlXMLMetadata(edmx,schemaNameSpaces);
-    } catch (Exception e) {
+    } catch (IOException | SAXException | ParserConfigurationException e) {
       throw new IllegalArgumentException("Could not parse as Edmx document", e);
     }
   }
@@ -239,7 +240,7 @@ public class ClientODataDeserializerImpl implements ClientODataDeserializer {
                 i++;
             }
             return schemas;
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new IllegalArgumentException("Could not parse Term definition", e);
         }
     }

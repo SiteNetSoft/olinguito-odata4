@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Fixed NPE in finalizeBody when bodyStreamWriter is null
  * Copyright 2026 SiteNetSoft - Replaced Apache HttpResponse with ODataHttpResponse
+ * Copyright 2026 SiteNetSoft - Narrowed catch(Exception) to specific concurrency exceptions
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -135,7 +136,7 @@ public abstract class AbstractODataStreamManager<T extends ODataResponse> extend
   protected ODataHttpResponse getHttpResponse(final long timeout, final TimeUnit unit) {
     try {
       return futureWrap.getWrapped().get(timeout, unit);
-    } catch (Exception e) {
+    } catch (InterruptedException | ExecutionException | TimeoutException e) {
       LOG.error("Failure executing request");
       throw new HttpClientException(e);
     }

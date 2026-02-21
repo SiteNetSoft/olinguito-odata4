@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Replaced deprecated DecompressingHttpClient
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  * Copyright 2026 SiteNetSoft - Refactored doExecute() to use transport-agnostic interfaces
+ * Copyright 2026 SiteNetSoft - Narrowed catch(Exception) to ReflectiveOperationException
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -349,7 +350,7 @@ public abstract class AbstractODataRequest extends AbstractRequest implements OD
               this.getClass(), ODataClient.class, ODataHttpClient.class, ODataHttpResponse.class);
           constructor.setAccessible(true);
           return (V) constructor.newInstance(this, odataClient, httpClient, null);
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
           LOG.error("Error retrieving response class template instance", e);
         }
       }

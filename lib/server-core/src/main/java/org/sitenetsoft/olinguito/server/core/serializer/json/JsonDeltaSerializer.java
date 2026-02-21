@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced O(N²) property lookup with HashMap (OLINGO-1625)
+ * Copyright 2026 SiteNetSoft - Narrowed catch(Exception) to SerializerException
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -493,7 +494,7 @@ public class JsonDeltaSerializer implements EdmDeltaSerializer {
         }
       } 
       return null;
-    } catch (Exception e) {
+    } catch (SerializerException e) {
       throw new SerializerException("Entity id is null.", SerializerException.MessageKeys.MISSING_ID);
     }
   }
