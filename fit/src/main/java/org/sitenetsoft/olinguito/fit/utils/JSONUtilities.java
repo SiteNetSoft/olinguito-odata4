@@ -48,7 +48,8 @@ import com.fasterxml.jackson.databind.node.TextNode;
 
 public class JSONUtilities extends AbstractUtilities {
 
-  private final ObjectMapper mapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
+  private final ObjectMapper mapper = new ObjectMapper().setDefaultPropertyInclusion(
+      JsonInclude.Value.construct(JsonInclude.Include.NON_NULL, JsonInclude.Include.NON_NULL));
 
   public JSONUtilities(final Metadata metadata) throws IOException {
     super(metadata);
@@ -111,7 +112,7 @@ public class JSONUtilities extends AbstractUtilities {
 
     final NavigationLinks links = new NavigationLinks();
 
-    final Iterator<Map.Entry<String, JsonNode>> fieldIter = srcNode.fields();
+    final Iterator<Map.Entry<String, JsonNode>> fieldIter = srcNode.properties().iterator();
 
     final Map<String, NavigationProperty> navigationProperties = metadata.getNavigationProperties(entitySetName);
 
@@ -322,7 +323,7 @@ public class JSONUtilities extends AbstractUtilities {
 
     final JsonNode srcObject = mapper.readTree(src);
 
-    final Iterator<Map.Entry<String, JsonNode>> fields = srcObject.fields();
+    final Iterator<Map.Entry<String, JsonNode>> fields = srcObject.properties().iterator();
     while (fields.hasNext()) {
       final Map.Entry<String, JsonNode> field = fields.next();
       res.put(field.getKey(), new ByteArrayInputStream(field.getValue().toString().getBytes(Constants.ENCODING)));

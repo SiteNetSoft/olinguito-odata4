@@ -137,7 +137,7 @@ public class ODataJsonInstanceAnnotationDeserializer {
 
 		final ComplexValue complexValue = new ComplexValue();
 		final Set<String> toRemove = new HashSet<>();
-		for (final Iterator<Map.Entry<String, JsonNode>> itor = node.fields(); itor.hasNext();) {
+		for (final Iterator<Map.Entry<String, JsonNode>> itor = node.properties().iterator(); itor.hasNext();) {
 			final Map.Entry<String, JsonNode> field = itor.next();
 			if (field.getKey().contains(ODATA_CONTROL_INFORMATION_PREFIX)) {
 				toRemove.add(field.getKey());

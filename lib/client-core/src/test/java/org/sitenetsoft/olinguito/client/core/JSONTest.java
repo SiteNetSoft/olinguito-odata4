@@ -126,7 +126,7 @@ public class JSONTest extends AbstractTest {
       node.remove(Constants.JSON_ID);
     }
     final List<String> toRemove = new ArrayList<>();
-    for (final Iterator<Map.Entry<String, JsonNode>> itor = node.fields(); itor.hasNext();) {
+    for (final Iterator<Map.Entry<String, JsonNode>> itor = node.properties().iterator(); itor.hasNext();) {
       final Map.Entry<String, JsonNode> field = itor.next();
 
       final String key = field.getKey();
@@ -183,7 +183,7 @@ public class JSONTest extends AbstractTest {
       node.remove(Constants.JSON_MEDIA_ETAG);
     }
     final List<String> toRemove = new ArrayList<>();
-    for (final Iterator<Map.Entry<String, JsonNode>> itor = node.fields(); itor.hasNext();) {
+    for (final Iterator<Map.Entry<String, JsonNode>> itor = node.properties().iterator(); itor.hasNext();) {
       final Map.Entry<String, JsonNode> field = itor.next();
 
       final String key = field.getKey();
@@ -234,7 +234,7 @@ public class JSONTest extends AbstractTest {
       node.remove(Constants.JSON_MEDIA_CONTENT_TYPE);
     }
     final List<String> toRemove = new ArrayList<>();
-    for (final Iterator<Map.Entry<String, JsonNode>> itor = node.fields(); itor.hasNext();) {
+    for (final Iterator<Map.Entry<String, JsonNode>> itor = node.properties().iterator(); itor.hasNext();) {
       final Map.Entry<String, JsonNode> field = itor.next();
 
       final String key = field.getKey();

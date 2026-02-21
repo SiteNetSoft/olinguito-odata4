@@ -145,7 +145,7 @@ public class JsonEntityDeserializer extends JsonDeserializer {
     final Set<String> toRemove = new HashSet<>();
 
     final Map<String, List<Annotation>> annotations = new HashMap<>();
-    for (final Iterator<Map.Entry<String, JsonNode>> itor = tree.fields(); itor.hasNext();) {
+    for (final Iterator<Map.Entry<String, JsonNode>> itor = tree.properties().iterator(); itor.hasNext();) {
       final Map.Entry<String, JsonNode> field = itor.next();
       final Matcher customAnnotation = CUSTOM_ANNOTATION.matcher(field.getKey());
 
