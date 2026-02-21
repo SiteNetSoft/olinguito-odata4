@@ -50,7 +50,7 @@
     </dependency>
     <dependency>
       <groupId>com.squareup.okhttp3</groupId>
-      <artifactId>okhttp</artifactId>
+      <artifactId>okhttp-jvm</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.xml.stream</groupId>
@@ -80,7 +80,7 @@
               <include>org.sitenetsoft.olinguito:odata-client-api</include>
               <include>org.sitenetsoft.olinguito:odata-commons-core</include>
               <include>org.sitenetsoft.olinguito:odata-commons-api</include>
-              <include>com.squareup.okhttp3:okhttp</include>
+              <include>com.squareup.okhttp3:okhttp-jvm</include>
               <include>com.squareup.okio:okio</include>
               <include>com.squareup.okio:okio-jvm</include>
               <include>org.jetbrains.kotlin:kotlin-stdlib</include>
