@@ -100,7 +100,7 @@ public class ApacheHttpResponse implements ODataHttpResponse {
    * @return the wrapped ClassicHttpResponse instance
    * @deprecated Use the transport-agnostic {@link ODataHttpResponse} interface methods instead.
    */
-  @Deprecated
+  @Deprecated(forRemoval = true)
   public ClassicHttpResponse unwrap() {
     return delegate;
   }
@@ -113,7 +113,7 @@ public class ApacheHttpResponse implements ODataHttpResponse {
    * @throws IllegalArgumentException if response is not an ApacheHttpResponse
    * @deprecated Use the transport-agnostic {@link ODataHttpResponse} interface methods instead.
    */
-  @Deprecated
+  @Deprecated(forRemoval = true)
   public static ClassicHttpResponse unwrap(final ODataHttpResponse response) {
     if (response instanceof ApacheHttpResponse apacheResponse) {
       return apacheResponse.delegate;

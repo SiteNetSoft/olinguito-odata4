@@ -138,7 +138,7 @@ class ApacheAdapterTest {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
+  @SuppressWarnings("removal")
   void testUnwrapReturnsDelegate() {
     final HttpClient httpClient = mock(HttpClient.class);
     final ApacheHttpClient client = new ApacheHttpClient(httpClient);
@@ -146,7 +146,7 @@ class ApacheAdapterTest {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
+  @SuppressWarnings("removal")
   void testStaticUnwrapReturnsDelegate() {
     final HttpClient httpClient = mock(HttpClient.class);
     final ODataHttpClient client = new ApacheHttpClient(httpClient);
@@ -154,7 +154,7 @@ class ApacheAdapterTest {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
+  @SuppressWarnings("removal")
   void testStaticUnwrapWithWrongTypeThrows() {
     final ODataHttpClient wrongClient = mock(ODataHttpClient.class);
     assertThrows(IllegalArgumentException.class, () -> ApacheHttpClient.unwrap(wrongClient));
@@ -251,7 +251,7 @@ class ApacheAdapterTest {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
+  @SuppressWarnings("removal")
   void testRequestUnwrap() {
     final HttpGet get = new HttpGet(TEST_URI);
     final ApacheHttpRequest request = new ApacheHttpRequest(get);
@@ -371,7 +371,7 @@ class ApacheAdapterTest {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
+  @SuppressWarnings("removal")
   void testResponseUnwrap() {
     final ClassicHttpResponse httpResponse = mockResponse(200, "OK", null, null);
     final ApacheHttpResponse response = new ApacheHttpResponse(httpResponse);
@@ -379,7 +379,7 @@ class ApacheAdapterTest {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
+  @SuppressWarnings("removal")
   void testResponseStaticUnwrapWithWrongTypeThrows() {
     final ODataHttpResponse wrongResponse = mock(ODataHttpResponse.class);
     assertThrows(IllegalArgumentException.class, () -> ApacheHttpResponse.unwrap(wrongResponse));
