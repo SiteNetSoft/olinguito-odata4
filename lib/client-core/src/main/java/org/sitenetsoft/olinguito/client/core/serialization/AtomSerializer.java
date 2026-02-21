@@ -99,7 +99,9 @@ public class AtomSerializer implements ODataSerializer {
   private void value(final XMLStreamWriter writer,
       final ValueType valueType, final EdmPrimitiveTypeKind kind, final Object value)
           throws XMLStreamException, EdmPrimitiveTypeException {
-    if (value == null || (valueType == ValueType.COMPLEX && value instanceof ComplexValue cv0 && cv0.getValue().isEmpty())) {
+    if (value == null
+        || (valueType == ValueType.COMPLEX && value instanceof ComplexValue cv0
+            && cv0.getValue().isEmpty())) {
       writer.writeAttribute(Constants.PREFIX_METADATA, Constants.NS_METADATA,
           Constants.ATTR_NULL, Boolean.TRUE.toString());
       return;
