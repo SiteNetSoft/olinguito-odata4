@@ -397,14 +397,14 @@ ClientEntity/ClientEntitySet
 |---|---|
 | HTTP Server (Servlet) | Jakarta Servlet 6.1.0 |
 | HTTP Server (Quarkus) | Vert.x / Quarkus |
-| HTTP Client (default) | Apache HttpComponents 4.x |
+| HTTP Client (default) | Apache HttpComponents 5.x |
 | HTTP Client (alternative) | OkHttp 5.x (HTTP/2, connection pooling, async) |
-| JSON Processing | Jackson 2.18.x |
+| JSON Processing | Jackson 2.21.x |
 | XML Processing | Aalto XML / StAX |
 | Async Streaming | Netty 4.1.x |
 | Build System | Maven 3.9+ |
-| Testing | JUnit 5.11.x (Jupiter) / Mockito 5.14.x |
-| Integration Testing | Embedded Tomcat 10.1.x (JUnit 4 via vintage engine) |
+| Testing | JUnit 5.11.x (Jupiter) / Mockito 5.21.x |
+| Integration Testing | Embedded Tomcat 10.1.x (JUnit 4 via JUnit Vintage engine) |
 | Code Coverage | JaCoCo |
 
 ## Package Namespace
