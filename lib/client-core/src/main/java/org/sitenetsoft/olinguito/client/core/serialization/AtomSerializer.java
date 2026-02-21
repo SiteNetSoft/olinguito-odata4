@@ -103,7 +103,7 @@ public class AtomSerializer implements ODataSerializer {
         || (valueType == ValueType.COMPLEX && value instanceof ComplexValue cv0
             && cv0.getValue().isEmpty())) {
       writer.writeAttribute(Constants.PREFIX_METADATA, Constants.NS_METADATA,
-          Constants.ATTR_NULL, Boolean.TRUE.toString());
+          Constants.ATTR_NULL, "true");
       return;
     }
     switch (valueType) {
