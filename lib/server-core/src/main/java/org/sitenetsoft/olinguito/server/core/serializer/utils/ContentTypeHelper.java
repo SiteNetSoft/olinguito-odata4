@@ -39,7 +39,7 @@ public class ContentTypeHelper {
   }
 
   public static boolean isODataIEEE754Compatible(final ContentType contentType) {
-    return Boolean.TRUE.toString().equalsIgnoreCase(
+    return "true".equalsIgnoreCase(
         contentType.getParameter(ContentType.PARAMETER_IEEE754_COMPATIBLE));
   }
 }
