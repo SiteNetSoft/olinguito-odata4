@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Improved test assertions
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - Added nullable collection parameter tests (OLINGO-1633)
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.xml;
 
@@ -182,6 +183,20 @@ class ODataXMLDeserializerActionParametersTest extends AbstractODataDeserializer
     assertNotNull(parameter);
     assertEquals((short) 1, parameter.getValue());
     parameter = parameters.get("ParameterDuration");
+    assertNotNull(parameter);
+    assertNull(parameter.getValue());
+  }
+
+  @Test
+  void nullableCollectionParameterOmitted() throws Exception {
+    final String input = PREAMBLE
+        + "<data:CollParameterEnum /><data:CollParameterDef />"
+        + "<data:CollParameterComp /><data:CollParameterETTwoPrim />"
+        + POSTAMBLE;
+    final Map<String, Parameter> parameters = deserialize(input, "UARTByteNineParam", null);
+    assertNotNull(parameters);
+    assertEquals(9, parameters.size());
+    final Parameter parameter = parameters.get("CollParameterByte");
     assertNotNull(parameter);
     assertNull(parameter.getValue());
   }

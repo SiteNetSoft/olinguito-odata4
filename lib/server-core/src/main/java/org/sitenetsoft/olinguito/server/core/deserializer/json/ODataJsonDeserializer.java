@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - Fixed odata.bind validation to use endsWith (OLINGO-1620)
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
+ * Copyright 2026 SiteNetSoft - Fixed nullable collection parameters in actions (OLINGO-1633)
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -395,10 +396,6 @@ public class ODataJsonDeserializer implements ODataDeserializer {
     if (node == null || node.isNull()) {
       if (!edmParameter.isNullable()) {
         throw new DeserializerException("Non-nullable parameter not present or null: " + paramName,
-            MessageKeys.INVALID_NULL_PARAMETER, paramName);
-      }
-      if (edmParameter.isCollection()) {
-        throw new DeserializerException("Collection must not be null for parameter: " + paramName,
             MessageKeys.INVALID_NULL_PARAMETER, paramName);
       }
       parameter.setValue(ValueType.PRIMITIVE, null);
