@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
  * Copyright 2026 SiteNetSoft - Fixed resource leak in readHeaders
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
+ * Copyright 2026 SiteNetSoft - Narrowed catch(Exception) to IOException
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.batch;
 
@@ -201,7 +202,7 @@ public class ODataBatchUtilities {
           }
         }
       }
-    } catch (Exception e) {
+    } catch (IOException e) {
       LOG.error("Error retrieving headers", e);
       throw new IllegalStateException(e);
     }

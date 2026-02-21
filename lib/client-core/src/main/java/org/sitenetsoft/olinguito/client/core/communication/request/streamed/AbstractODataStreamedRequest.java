@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
  * Copyright 2026 SiteNetSoft - Refactored to use transport-agnostic HTTP interfaces
+ * Copyright 2026 SiteNetSoft - Narrowed catch(Exception) to IOException
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.streamed;
 
@@ -157,7 +158,7 @@ public abstract class AbstractODataStreamedRequest<V extends ODataResponse, T ex
 
       try {
         req.rawAppend(input.readAllBytes());
-      } catch (Exception e) {
+      } catch (IOException e) {
         LOG.debug("Invalid stream", e);
         req.rawAppend(new byte[0]);
       }

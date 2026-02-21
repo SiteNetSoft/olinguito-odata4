@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Moved to server-adapter-netty module
+ * Copyright 2026 SiteNetSoft - Narrowed catch(Exception) to ReflectiveOperationException
  */
 package org.sitenetsoft.olinguito.netty.server.core;
 
@@ -64,7 +65,7 @@ public class ODataNettyImpl extends ODataNetty {
        */
       final Object object = clazz.getDeclaredConstructor().newInstance();
       odata = (OData) object;
-    } catch (Exception e) {
+    } catch (ReflectiveOperationException e) {
       throw new ODataRuntimeException(e);
     }
   }
