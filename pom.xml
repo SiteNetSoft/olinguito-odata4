@@ -94,7 +94,7 @@
     <commons.lang3.version>3.20.0</commons.lang3.version>
     <commons.vfs.version>2.10.0</commons.vfs.version>
     <esigate.version>5.3</esigate.version>
-    <cxf.version>4.0.10</cxf.version>
+    <cxf.version>4.1.5</cxf.version>
     <netty.version>4.1.131.Final</netty.version>
     <vertx.version>4.5.24</vertx.version>
 
