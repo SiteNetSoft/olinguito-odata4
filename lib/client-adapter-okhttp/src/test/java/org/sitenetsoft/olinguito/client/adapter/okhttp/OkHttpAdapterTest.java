@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Unit tests for OkHttp adapter
  * Copyright 2026 SiteNetSoft - Replaced wildcard import with explicit imports
+ * Copyright 2026 SiteNetSoft - Updated for OkHttp 5.3.2 API changes
  */
 package org.sitenetsoft.olinguito.client.adapter.okhttp;
 
@@ -101,7 +102,7 @@ class OkHttpAdapterTest {
 
     final RecordedRequest recorded = server.takeRequest();
     assertEquals("GET", recorded.getMethod());
-    assertEquals("/test", recorded.getPath());
+    assertEquals("/test", recorded.getUrl().encodedPath());
     assertEquals("application/json", recorded.getHeaders().get("Accept"));
   }
 
@@ -132,7 +133,7 @@ class OkHttpAdapterTest {
 
     final RecordedRequest recorded = server.takeRequest();
     assertEquals("POST", recorded.getMethod());
-    assertEquals("{\"name\":\"test\"}", recorded.getBody().readUtf8());
+    assertEquals("{\"name\":\"test\"}", recorded.getBody().utf8());
   }
 
   @Test
@@ -161,7 +162,7 @@ class OkHttpAdapterTest {
 
     final RecordedRequest recorded = server.takeRequest();
     assertEquals("POST", recorded.getMethod());
-    assertEquals("streaming body", recorded.getBody().readUtf8());
+    assertEquals("streaming body", recorded.getBody().utf8());
   }
 
   @Test
