@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Replaced Calendar.getInstance() with java.time-based construction
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Use Valuable.asCollection() for entity collection parameters (OLINGO-1638)
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -186,8 +187,7 @@ public class FunctionData {
                 && (parameter.isComplex() && parameter.asComplex().getValue().isEmpty()
                     || parameter.isEntity() && ((Entity) parameter.getValue()).getProperties().isEmpty())
             || parameter.isCollection()
-                && (parameter.isEntity() && ((EntityCollection) parameter.getValue()).getEntities().isEmpty()
-                    || !parameter.isEntity() && parameter.asCollection().isEmpty()))) {
+                && parameter.asCollection().isEmpty())) {
           count++;
         }
       }

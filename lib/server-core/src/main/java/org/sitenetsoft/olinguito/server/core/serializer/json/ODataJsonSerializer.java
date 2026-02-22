@@ -19,6 +19,9 @@
  * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
  * Copyright 2026 SiteNetSoft - Replaced O(N²) property lookup with HashMap (OLINGO-1625)
+ * Copyright 2026 SiteNetSoft - Fixed $expand=* including stream properties,
+ * instance annotations on single properties, $expand with $level nested
+ * navigation, transient entity id handling (OLINGO-1612/1611/1608/1594)
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -358,16 +361,22 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
    * @return ascii representation of the entity id
    */
   private String getEntityId(Entity entity, EdmEntityType entityType, String name) throws SerializerException {
-    if(entity != null && entity.getId() == null) {
-      if(entityType == null || entityType.getKeyPredicateNames() == null 
+    if (entity != null && entity.getId() == null) {
+      if (entityType == null || entityType.getKeyPredicateNames() == null
+          || entityType.getKeyPredicateNames().isEmpty()
           || name == null) {
-        throw new SerializerException("Entity id is null.", SerializerException.MessageKeys.MISSING_ID);
-      }else{
-        final UriHelper uriHelper = new UriHelperImpl(); 
+        // Transient entity — no persistent identity
+        return null;
+      }
+      try {
+        final UriHelper uriHelper = new UriHelperImpl();
         entity.setId(URI.create(name + '(' + uriHelper.buildKeyPredicate(entityType, entity) + ')'));
+      } catch (SerializerException e) {
+        // Key predicates cannot be built (e.g., missing key property values) — treat as transient
+        return null;
       }
     }
-    return entity.getId().toASCIIString();
+    return entity == null || entity.getId() == null ? null : entity.getId().toASCIIString();
   }
 
   private boolean areKeyPredicateNamesSelected(SelectOption select, EdmEntityType type) {
@@ -389,11 +398,13 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       String name, final JsonGenerator json)
       throws IOException, SerializerException, IllegalArgumentException {
     boolean cycle = false;
+    final String entityId = getEntityId(entity, entityType, name);
     if (expand != null) {
       if (ancestors == null) {
         ancestors = new HashSet<>();
       }
-      cycle = !ancestors.add(getEntityId(entity, entityType, name));
+      // Transient entities (null id) cannot form cycles
+      cycle = entityId != null && !ancestors.add(entityId);
     }
     try {
       json.writeStartObject();
@@ -422,14 +433,23 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
         }
       }
       if (cycle || onlyReference) {
-        json.writeStringField(constants.getId(), getEntityId(entity, entityType, name));
+        if (entityId != null) {
+          json.writeStringField(constants.getId(), entityId);
+        } else {
+          json.writeNullField(constants.getId());
+        }
       } else {
         final EdmEntityType resolvedType = resolveEntityType(metadata, entityType, entity.getType());
         if ((!isODataMetadataNone && !resolvedType.equals(entityType)) || isODataMetadataFull) {
           json.writeStringField(constants.getType(), "#" + entity.getType());
         }
         if ((!isODataMetadataNone && !areKeyPredicateNamesSelected(select, resolvedType)) || isODataMetadataFull) {
-          json.writeStringField(constants.getId(), getEntityId(entity, resolvedType, name));
+          final String resolvedId = getEntityId(entity, resolvedType, name);
+          if (resolvedId != null) {
+            json.writeStringField(constants.getId(), resolvedId);
+          } else {
+            json.writeNullField(constants.getId());
+          }
         }
         
         if (isODataMetadataFull) {
@@ -447,8 +467,8 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       }
       json.writeEndObject();
     } finally {
-      if (expand != null && !cycle && ancestors != null) {
-        ancestors.remove(getEntityId(entity, entityType, name));
+      if (expand != null && !cycle && ancestors != null && entityId != null) {
+        ancestors.remove(entityId);
       }
     }
   }
@@ -567,7 +587,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
     if ((toDepth != null && toDepth > 1) || (toDepth == null && ExpandSelectHelper.hasExpand(expand))) {
       final ExpandItem expandAll = ExpandSelectHelper.getExpandAll(expand);
       for (final String propertyName : type.getNavigationPropertyNames()) {
-        final ExpandItem innerOptions = ExpandSelectHelper.getExpandItemBasedOnType(expand.getExpandItems(), 
+        final ExpandItem innerOptions = ExpandSelectHelper.getExpandItemBasedOnType(expand.getExpandItems(),
             propertyName, type, name);
         if (innerOptions != null || expandAll != null || toDepth != null) {
           Integer levels = null;
@@ -577,22 +597,34 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
           LevelsExpandOption levelsOption = null;
           if (innerOptions != null) {
             levelsOption = innerOptions.getLevelsOption();
-            childExpand = levelsOption == null ? innerOptions.getExpandOption() : new ExpandOptionImpl().addExpandItem(
-                innerOptions);
+            if (levelsOption == null) {
+              childExpand = innerOptions.getExpandOption();
+            } else {
+              ExpandOptionImpl combined = new ExpandOptionImpl().addExpandItem(innerOptions);
+              // Preserve nested $expand items so they are processed at the next level
+              // (e.g., $expand=toB within $expand=toChildren($level=1;$expand=toB))
+              ExpandOption nestedExpand = innerOptions.getExpandOption();
+              if (nestedExpand != null) {
+                for (ExpandItem nestedItem : nestedExpand.getExpandItems()) {
+                  combined.addExpandItem(nestedItem);
+                }
+              }
+              childExpand = combined;
+            }
           } else if (expandAll != null) {
             levels = 1;
             levelsOption = expandAll.getLevelsOption();
             childExpand = new ExpandOptionImpl().addExpandItem(expandAll);
           }
 
-          if (levelsOption != null) { 
+          if (levelsOption != null) {
             levels = levelsOption.isMax() ? Integer.MAX_VALUE : levelsOption.getValue();
           }
           if (toDepth != null) {
             levels = toDepth - 1;
             childExpand = expand;
           }
-                             
+
           writeExpandedNavigationProperty(metadata, property, navigationLink,
             childExpand, levels,
             innerOptions == null ? null : innerOptions.getSelectOption(),
@@ -606,11 +638,13 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
     }
   }
 
-  private void writeExpandedStreamProperty(ExpandOption expand, String propertyName, EdmProperty edmProperty, 
-      Linked linked, ExpandItem expandAll, JsonGenerator json) throws SerializerException, 
+  private void writeExpandedStreamProperty(ExpandOption expand, String propertyName, EdmProperty edmProperty,
+      Linked linked, ExpandItem expandAll, JsonGenerator json) throws SerializerException,
       IllegalArgumentException, IOException {
     final ExpandItem innerOptions = ExpandSelectHelper.getExpandItem(expand.getExpandItems(), propertyName);
-    if (innerOptions != null || expandAll != null) {
+    // Per OData spec, $expand=* only expands navigation properties, not stream properties.
+    // Stream properties must be explicitly named in $expand to be included.
+    if (innerOptions != null) {
       if(constants instanceof Constantsv00){
         throw new SerializerException("Expand not supported for Stream Property Type!",
             SerializerException.MessageKeys.UNSUPPORTED_OPERATION_TYPE, "expand", edmProperty.getName());
@@ -1130,6 +1164,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       writeContextURL(contextURL, json);
       writeMetadataETag(metadata, json);
       writeOperations(property.getOperations(), json);
+      writeInstanceAnnotationsOnProperties(property, json);
       if (property.isNull() && options!=null && options.isNullable() != null && !options.isNullable()) {
         throw new SerializerException("Property value can not be null.", SerializerException.MessageKeys.NULL_INPUT);
       } else {
@@ -1192,11 +1227,12 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
         json.writeStringField(constants.getType(), "#" + 
       resolvedType.getFullQualifiedName().getFullQualifiedNameAsString());
       }
-      writeOperations(property.getOperations(), json);      
+      writeOperations(property.getOperations(), json);
+      writeInstanceAnnotationsOnProperties(property, json);
       final List<Property> values =
           property.isNull() ? List.of() : property.asComplex().getValue();
-      writeProperties(metadata, type, values, options == null ? null : options == null ? null : options.getSelect(), 
-          json, 
+      writeProperties(metadata, type, values, options == null ? null : options == null ? null : options.getSelect(),
+          json,
           property.asComplex(), options == null ? null : options.getExpand());
       if (!property.isNull() && property.isComplex()) {
         writeNavigationProperties(metadata, type, property.asComplex(),
@@ -1233,6 +1269,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
         json.writeStringField(constants.getType(),  "#Collection("+type.getFullQualifiedName().getName()+")");
       }
       writeOperations(property.getOperations(), json);
+      writeInstanceAnnotationsOnProperties(property, json);
       json.writeFieldName(Constants.VALUE);
       writePrimitiveCollection(type, property,
           options == null ? null : options.isNullable(),
@@ -1272,6 +1309,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
             "#Collection(" + type.getFullQualifiedName().getFullQualifiedNameAsString() + ")");                
       }
       writeOperations(property.getOperations(), json);
+      writeInstanceAnnotationsOnProperties(property, json);
       json.writeFieldName(Constants.VALUE);
       Set<List<String>> selectedPaths = null;
       if (null != options && null != options.getSelect()) {
@@ -1369,6 +1407,13 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       closeCircleStreamBufferOutput(outputStream, cachedException);
     }
 
+  }
+
+  private void writeInstanceAnnotationsOnProperties(final Property property, final JsonGenerator json)
+      throws IOException, SerializerException {
+    if (property != null && property.getName() != null) {
+      instanceAnnotSerializer.writeInstanceAnnotationsOnProperties(property.getName(), property, json);
+    }
   }
 
   void writeContextURL(final ContextURL contextURL, final JsonGenerator json) throws IOException {
