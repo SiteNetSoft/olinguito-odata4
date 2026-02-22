@@ -21,6 +21,8 @@
  * Copyright 2026 SiteNetSoft - Fixed odata.bind validation to use endsWith (OLINGO-1620)
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  * Copyright 2026 SiteNetSoft - Fixed nullable collection parameters in actions (OLINGO-1633)
+ * Copyright 2026 SiteNetSoft - Fixed Valuable.asCollection()
+ * ClassCastException on entity collection parameters (OLINGO-1638)
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -401,10 +403,9 @@ public class ODataJsonDeserializer implements ODataDeserializer {
       parameter.setValue(ValueType.PRIMITIVE, null);
     } else if (edmParameter.getType().getKind() == EdmTypeKind.ENTITY) {
       if (edmParameter.isCollection()) {
-        EntityCollection entityCollection = new EntityCollection();
-        entityCollection.getEntities().addAll(
-            consumeEntitySetArray((EdmEntityType) edmParameter.getType(), node, null));
-        parameter.setValue(ValueType.COLLECTION_ENTITY, entityCollection);
+        final List<Entity> entities =
+            consumeEntitySetArray((EdmEntityType) edmParameter.getType(), node, null);
+        parameter.setValue(ValueType.COLLECTION_ENTITY, entities);
       } else {
         final Entity entity = consumeEntityNode((EdmEntityType) edmParameter.getType(), (ObjectNode) node, null);
         parameter.setValue(ValueType.ENTITY, entity);

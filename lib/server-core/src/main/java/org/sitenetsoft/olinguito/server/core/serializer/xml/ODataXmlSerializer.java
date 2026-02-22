@@ -17,6 +17,8 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced O(N²) property lookup with HashMap (OLINGO-1625)
+ * Copyright 2026 SiteNetSoft - Fixed $expand with $level nested navigation
+ * and transient entity id handling (OLINGO-1608/1594)
  */
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
@@ -430,16 +432,21 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
    * @return ascii representation of the entity id
    */
   private String getEntityId(Entity entity, EdmEntityType entityType, String name) throws SerializerException {
-    if(entity.getId() == null) {
-      if((entity == null || entityType == null || entityType.getKeyPredicateNames() == null 
-          || name == null)) {
-        throw new SerializerException("Entity id is null.", SerializerException.MessageKeys.MISSING_ID);
-      }else{
-        final UriHelper uriHelper = new UriHelperImpl(); 
+    if (entity.getId() == null) {
+      if (entity == null || entityType == null || entityType.getKeyPredicateNames() == null
+          || entityType.getKeyPredicateNames().isEmpty()
+          || name == null) {
+        // Transient entity — no persistent identity
+        return null;
+      }
+      try {
+        final UriHelper uriHelper = new UriHelperImpl();
         entity.setId(URI.create(name + '(' + uriHelper.buildKeyPredicate(entityType, entity) + ')'));
+      } catch (SerializerException e) {
+        return null;
       }
     }
-    return entity.getId().toASCIIString();
+    return entity.getId() == null ? null : entity.getId().toASCIIString();
   }  
 
 
@@ -449,11 +456,12 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
       final XMLStreamWriter writer, final boolean top, final boolean writeOnlyRef,String name,  Set<String> ancestors)
       throws XMLStreamException, SerializerException {
     boolean cycle = false;
+    final String entityId = getEntityId(entity, entityType, name);
     if (expand != null) {
       if (ancestors == null) {
         ancestors = new HashSet<>();
       }
-      cycle = !ancestors.add(getEntityId(entity, entityType, name));
+      cycle = entityId != null && !ancestors.add(entityId);
     }
 
     if (cycle || writeOnlyRef) {
@@ -477,14 +485,17 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
         writer.writeAttribute(METADATA, NS_METADATA, Constants.ATOM_ATTR_ETAG, entity.getETag());
       }
   
+      writer.writeStartElement(NS_ATOM, Constants.ATOM_ELEM_ID);
       if (entity.getId() != null) {
-        writer.writeStartElement(NS_ATOM, Constants.ATOM_ELEM_ID);
         writer.writeCharacters(entity.getId().toASCIIString());
-        writer.writeEndElement();
+      } else {
+        // Transient entity — write odata:transient:{uuid} per OData Atom spec
+        writer.writeCharacters("odata:transient:" + java.util.UUID.randomUUID());
       }
-  
+      writer.writeEndElement();
+
       writerAuthorInfo(entity.getTitle(), writer);
-  
+
       if (entity.getId() != null) {
         writer.writeStartElement(NS_ATOM, Constants.ATOM_ELEM_LINK);
         writer.writeAttribute(Constants.ATTR_REL, Constants.EDIT_LINK_REL);
@@ -539,8 +550,8 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
       
       writer.writeEndElement(); // entry
     } finally {
-      if (!cycle && ancestors != null) {
-        ancestors.remove(getEntityId(entity, entityType, name));
+      if (!cycle && ancestors != null && entityId != null) {
+        ancestors.remove(entityId);
       }
     }
   }
@@ -668,7 +679,7 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
     if ((toDepth != null && toDepth > 1) || (toDepth == null && ExpandSelectHelper.hasExpand(expand))) {
       final ExpandItem expandAll = ExpandSelectHelper.getExpandAll(expand);
       for (final String propertyName : type.getNavigationPropertyNames()) {
-        final ExpandItem innerOptions = ExpandSelectHelper.getExpandItemBasedOnType(expand.getExpandItems(), 
+        final ExpandItem innerOptions = ExpandSelectHelper.getExpandItemBasedOnType(expand.getExpandItems(),
             propertyName, type, name);
         if (expandAll != null || innerOptions != null || toDepth != null) {
           Integer levels = null;
@@ -678,14 +689,24 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
           LevelsExpandOption levelsOption = null;
           if (innerOptions != null) {
             levelsOption = innerOptions.getLevelsOption();
-            childExpand = levelsOption == null ? innerOptions.getExpandOption() :
-              new ExpandOptionImpl().addExpandItem(innerOptions);
+            if (levelsOption == null) {
+              childExpand = innerOptions.getExpandOption();
+            } else {
+              ExpandOptionImpl combined = new ExpandOptionImpl().addExpandItem(innerOptions);
+              ExpandOption nestedExpand = innerOptions.getExpandOption();
+              if (nestedExpand != null) {
+                for (ExpandItem nestedItem : nestedExpand.getExpandItems()) {
+                  combined.addExpandItem(nestedItem);
+                }
+              }
+              childExpand = combined;
+            }
           } else if (expandAll != null) {
             levels = 1;
             levelsOption = expandAll.getLevelsOption();
             childExpand = new ExpandOptionImpl().addExpandItem(expandAll);
-          } 
-          
+          }
+
           if (levelsOption != null) {
             levels = levelsOption.isMax() ? Integer.MAX_VALUE :
               levelsOption.getValue();

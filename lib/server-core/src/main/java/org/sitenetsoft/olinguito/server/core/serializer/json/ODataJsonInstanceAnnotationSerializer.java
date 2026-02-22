@@ -18,6 +18,9 @@
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
+ * Copyright 2026 SiteNetSoft - Added overloaded
+ * writeInstanceAnnotationsOnProperties for standalone property
+ * serialization (OLINGO-1611)
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -84,9 +87,14 @@ public class ODataJsonInstanceAnnotationSerializer {
 	 */
 	public void writeInstanceAnnotationsOnProperties(final EdmProperty edmProperty, final Property property,
 			final JsonGenerator json) throws IOException, SerializerException {
+		writeInstanceAnnotationsOnProperties(edmProperty.getName(), property, json);
+	}
+
+	public void writeInstanceAnnotationsOnProperties(final String propertyName, final Property property,
+			final JsonGenerator json) throws IOException, SerializerException {
 		if (property != null) {
 			for (Annotation annotation : property.getAnnotations()) {
-				json.writeFieldName(edmProperty.getName() + "@" + annotation.getTerm());
+				json.writeFieldName(propertyName + "@" + annotation.getTerm());
 				writeInstanceAnnotation(json, annotation, "");
 			}
 		}
