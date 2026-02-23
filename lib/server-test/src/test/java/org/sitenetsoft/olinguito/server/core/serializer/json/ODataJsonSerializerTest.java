@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - OLINGO-1550: Test for $apply=groupby absent key properties
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -1239,6 +1240,30 @@ class ODataJsonSerializerTest {
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
         + "\"PropertyInt16\":32766,\"PropertyString\":\"Test String1\"}";
     Assertions.assertEquals(expectedResult, resultString);
+  }
+
+  /** OLINGO-1550: Key properties absent from entity data (e.g. $apply=groupby) should not cause
+   *  MISSING_PROPERTY errors when addKeyPropertiesToSelected forces them into the selected set. */
+  @Test
+  void selectWithAbsentKeyPropertyGroupby() throws Exception {
+    final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
+    final EdmEntityType entityType = edmEntitySet.getEntityType();
+    // Create entity WITHOUT the key property (PropertyInt16), simulating $apply=groupby result
+    final Entity entity = new Entity();
+    entity.setId(URI.create("ESAllPrim(1)"));
+    entity.addProperty(new Property(null, "PropertyString", ValueType.PRIMITIVE, "groupby result"));
+    final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(
+        ExpandSelectMock.mockSelectItem(edmEntitySet, "PropertyString")));
+    // Should NOT throw SerializerException with MISSING_PROPERTY
+    InputStream result = serializer.entity(metadata, entityType, entity,
+        EntitySerializerOptions.with()
+            .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
+            .select(select)
+            .build()).getContent();
+    final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
+    // Only PropertyString should be serialized — key not forced because it's absent from entity
+    Assertions.assertTrue(resultString.contains("\"PropertyString\""));
+    Assertions.assertFalse(resultString.contains("\"PropertyInt16\""));
   }
 
   @Test

@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Remove unnecessary @SuppressWarnings and raw type usage
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - OLINGO-1305: Test for complex type navigation in delta serializer
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -29,6 +30,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.data.Annotation;
+import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
 import org.sitenetsoft.olinguito.commons.api.data.ContextURL;
 import org.sitenetsoft.olinguito.commons.api.data.ContextURL.Suffix;
 import org.sitenetsoft.olinguito.commons.api.data.DeletedEntity;
@@ -1248,4 +1250,54 @@ class JsonDeltaSerializerWithNavigationsTest {
        Assertions.assertNotNull(jsonString);
        Assertions.assertEquals(expectedResult, jsonString);
      }
+
+  /** OLINGO-1305: Navigation properties on complex types should appear in delta serializer output. */
+  @Test
+  void navigationOnComplexTypeInDeltaEntity() throws Exception {
+    final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESCompMixPrimCollComp");
+    final EdmEntityType entityType = edmEntitySet.getEntityType();
+
+    // Build entity with complex property that has a navigation link
+    Entity entity = new Entity();
+    entity.setId(URI.create("ESCompMixPrimCollComp(1)"));
+    entity.addProperty(new Property(null, "PropertyInt16", ValueType.PRIMITIVE, (short) 1));
+
+    // Build complex value for PropertyMixedPrimCollComp (type CTMixPrimCollComp)
+    ComplexValue complexValue = new ComplexValue();
+    complexValue.getValue().add(new Property(null, "PropertyInt16", ValueType.PRIMITIVE, (short) 10));
+    complexValue.getValue().add(new Property(null, "CollPropertyString", ValueType.COLLECTION_PRIMITIVE,
+        List.of("test")));
+    // Add nav link on the complex value
+    Entity navEntity = new Entity();
+    navEntity.setId(URI.create("ESTwoKeyNav(PropertyInt16=1,PropertyString='2')"));
+    navEntity.addProperty(new Property(null, "PropertyInt16", ValueType.PRIMITIVE, (short) 1));
+    navEntity.addProperty(new Property(null, "PropertyString", ValueType.PRIMITIVE, "2"));
+    Link navLink = new Link();
+    navLink.setTitle("NavPropertyETTwoKeyNavOne");
+    navLink.setInlineEntity(navEntity);
+    complexValue.getNavigationLinks().add(navLink);
+
+    Property complexProp = new Property("olingo.odata.test1.CTMixPrimCollComp",
+        "PropertyMixedPrimCollComp", ValueType.COMPLEX, complexValue);
+    entity.addProperty(complexProp);
+
+    // Set up expand for nav property on complex type
+    final ExpandOption expand = ExpandSelectMock.mockExpandOption(Collections.singletonList(
+        ExpandSelectMock.mockExpandItem(edmEntitySet,
+            "PropertyMixedPrimCollComp", "NavPropertyETTwoKeyNavOne")));
+
+    Delta delta = new Delta();
+    delta.getEntities().add(entity);
+
+    InputStream stream = ser.entityCollection(metadata, entityType, delta,
+        EntityCollectionSerializerOptions.with()
+            .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
+            .expand(expand)
+            .build()).getContent();
+    String jsonString = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+    Assertions.assertNotNull(jsonString);
+    // The navigation property on the complex type should appear in the output
+    Assertions.assertTrue(jsonString.contains("NavPropertyETTwoKeyNavOne"),
+        "Navigation property on complex type should be serialized in delta response");
+  }
 }
