@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  * Copyright 2026 SiteNetSoft - Cached compiled regex pattern for split()
+ * Copyright 2026 SiteNetSoft - OLINGO-1466/1520: Handle Scale="variable"
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -507,7 +508,8 @@ public class MetadataParser {
       returnType.setPrecision(Integer.parseInt(precision));
     }
     String scale = attr(element, "Scale");
-    if (scale != null) {
+    if (scale != null
+        && !"variable".equalsIgnoreCase(scale) && !"floating".equalsIgnoreCase(scale)) {
       returnType.setScale(Integer.parseInt(scale));
     }
     String srid = attr(element, "SRID");
@@ -535,7 +537,8 @@ public class MetadataParser {
       parameter.setPrecision(Integer.parseInt(precision));
     }
     String scale = attr(element, "Scale");
-    if (scale != null) {
+    if (scale != null
+        && !"variable".equalsIgnoreCase(scale) && !"floating".equalsIgnoreCase(scale)) {
       parameter.setScale(Integer.parseInt(scale));
     }
     String srid = attr(element, "SRID");
@@ -564,7 +567,8 @@ public class MetadataParser {
       td.setPrecision(Integer.parseInt(precision));
     }
     String scale = attr(element, "Scale");
-    if (scale != null) {
+    if (scale != null
+        && !"variable".equalsIgnoreCase(scale) && !"floating".equalsIgnoreCase(scale)) {
       td.setScale(Integer.parseInt(scale));
     }
     String srid = attr(element, "SRID");
@@ -600,7 +604,8 @@ public class MetadataParser {
       term.setPrecision(Integer.parseInt(precision));
     }
     String scale = attr(element, "Scale");
-    if (scale != null) {
+    if (scale != null
+        && !"variable".equalsIgnoreCase(scale) && !"floating".equalsIgnoreCase(scale)) {
       term.setScale(Integer.parseInt(scale));
     }
     String srid = attr(element, "SRID");
@@ -1042,7 +1047,11 @@ public class MetadataParser {
     }
     String scale = attr(element, "Scale");
     if (scale != null) {
-      property.setScale(Integer.parseInt(scale));
+      if ("variable".equalsIgnoreCase(scale) || "floating".equalsIgnoreCase(scale)) {
+        property.setScaleAsString(scale);
+      } else {
+        property.setScale(Integer.parseInt(scale));
+      }
     }
     String srid = attr(element, "SRID");
     if (srid != null) {

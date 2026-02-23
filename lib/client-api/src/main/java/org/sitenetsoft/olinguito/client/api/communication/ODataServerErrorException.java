@@ -17,9 +17,11 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache StatusLine with framework-agnostic types
+ * Copyright 2026 SiteNetSoft - OLINGO-1542: Preserve ODataError in server error responses
  */
 package org.sitenetsoft.olinguito.client.api.communication;
 
+import org.sitenetsoft.olinguito.commons.api.ex.ODataError;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
 
 import java.io.InputStream;
@@ -34,7 +36,9 @@ public class ODataServerErrorException extends ODataRuntimeException {
 
   private static final long serialVersionUID = -6423014532618680135L;
 
-  private InputStream rawResponse;
+  private final ODataError error;
+
+  private final InputStream rawResponse;
 
   /**
    * Constructor.
@@ -43,7 +47,7 @@ public class ODataServerErrorException extends ODataRuntimeException {
    * @param statusMessage HTTP reason phrase.
    */
   public ODataServerErrorException(final int statusCode, final String statusMessage) {
-    this(statusCode, statusMessage, null);
+    this(statusCode, statusMessage, null, null);
   }
 
   /**
@@ -55,8 +59,34 @@ public class ODataServerErrorException extends ODataRuntimeException {
    */
   public ODataServerErrorException(final int statusCode, final String statusMessage,
       final InputStream rawResponse) {
-    super("HTTP/" + statusCode + " " + statusMessage);
+    this(statusCode, statusMessage, null, rawResponse);
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param statusCode HTTP status code.
+   * @param statusMessage HTTP reason phrase.
+   * @param error OData error to be wrapped.
+   * @param rawResponse raw response of the request.
+   */
+  public ODataServerErrorException(final int statusCode, final String statusMessage,
+      final ODataError error, final InputStream rawResponse) {
+    super(error == null
+        ? "HTTP/" + statusCode + " " + statusMessage
+        : (error.getCode() == null || error.getCode().isEmpty() ? "" : "(" + error.getCode() + ") ")
+            + error.getMessage() + " [HTTP/" + statusCode + " " + statusMessage + "]");
+    this.error = error;
     this.rawResponse = rawResponse;
+  }
+
+  /**
+   * Gets OData error.
+   *
+   * @return OData error.
+   */
+  public ODataError getODataError() {
+    return error;
   }
 
   /**

@@ -18,6 +18,8 @@
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
  * Copyright 2026 SiteNetSoft - Replaced Apache StatusLine with statusCode/reasonPhrase
+ * Copyright 2026 SiteNetSoft - OLINGO-1542: Preserve ODataError in
+ * server error responses
  */
 package org.sitenetsoft.olinguito.client.core.communication.header;
 
@@ -90,10 +92,8 @@ public final class ODataErrorResponseChecker {
         }
       }
 
-      if (statusCode >= 500 && error != null &&
-          (error.getDetails() == null || error.getDetails().isEmpty()) &&
-          (error.getInnerError() == null || error.getInnerError().isEmpty())) {
-        result = new ODataServerErrorException(statusCode, reasonPhrase, entityForException);
+      if (statusCode >= 500) {
+        result = new ODataServerErrorException(statusCode, reasonPhrase, error, entityForException);
       } else {
         result = new ODataClientErrorException(statusCode, reasonPhrase, error, entityForException);
       }

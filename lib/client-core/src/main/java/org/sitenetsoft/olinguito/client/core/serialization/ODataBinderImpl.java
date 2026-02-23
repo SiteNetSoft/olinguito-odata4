@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
+ * Copyright 2026 SiteNetSoft - OLINGO-1618: Lightweight debug logging
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -396,14 +397,8 @@ public class ODataBinderImpl implements ODataBinder {
   @Override
   public ClientEntitySet getODataEntitySet(final ResWrap<EntityCollection> resource) {
     if (LOG.isDebugEnabled()) {
-      final StringWriter writer = new StringWriter();
-      try {
-        client.getSerializer(ContentType.JSON).write(writer, resource.getPayload());
-        writer.flush();
-        LOG.debug("EntitySet -> ODataEntitySet:\n{}", writer);
-      } catch (final ODataSerializerException e) {
-        LOG.debug("EntitySet -> ODataEntitySet:\n{}", writer, e);
-      }
+      LOG.debug("EntitySet -> ODataEntitySet: {} entities",
+          resource.getPayload().getEntities().size());
     }
 
     final URI base = resource.getContextURL() == null
@@ -639,14 +634,8 @@ public class ODataBinderImpl implements ODataBinder {
   @Override
   public ClientEntity getODataEntity(final ResWrap<Entity> resource) {
     if (LOG.isDebugEnabled()) {
-      final StringWriter writer = new StringWriter();
-      try {
-        client.getSerializer(ContentType.JSON).write(writer, resource.getPayload());
-        writer.flush();
-        LOG.debug("EntityResource -> ODataEntity:\n{}", writer);
-      } catch (final ODataSerializerException e) {
-        LOG.debug("EntityResource -> ODataEntity:\n{}", writer, e);
-      }
+      LOG.debug("EntityResource -> ODataEntity: type={}, id={}",
+          resource.getPayload().getType(), resource.getPayload().getId());
     }
 
     final ContextURL contextURL = ContextURLParser.parse(resource.getContextURL());

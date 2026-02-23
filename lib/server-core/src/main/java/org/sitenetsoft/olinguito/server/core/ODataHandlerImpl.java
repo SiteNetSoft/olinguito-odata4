@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OLINGO-1558: Thread-safe URI parsing
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -142,9 +144,11 @@ public class ODataHandlerImpl implements ODataHandler {
     }
 
     final int measurementUriParser = debugger.startRuntimeMeasurement("Parser", "parseUri");
+    final UriInfo localUriInfo;
     try {
-      uriInfo = new Parser(serviceMetadata.getEdm(), odata)
+      localUriInfo = new Parser(serviceMetadata.getEdm(), odata)
           .parseUri(request.getRawODataPath(), request.getRawQueryPath(), null, request.getRawBaseUri());
+      this.uriInfo = localUriInfo;
     } catch (final ODataLibraryException e) {
       debugger.stopRuntimeMeasurement(measurementUriParser);
       debugger.stopRuntimeMeasurement(measurementHandle);
@@ -155,7 +159,7 @@ public class ODataHandlerImpl implements ODataHandler {
     final int measurementUriValidator = debugger.startRuntimeMeasurement("UriValidator", "validate");
     final HttpMethod method = request.getMethod();
     try {
-      new UriValidator().validate(uriInfo, method);
+      new UriValidator().validate(localUriInfo, method);
     } catch (final UriValidationException e) {
       debugger.stopRuntimeMeasurement(measurementUriValidator);
       debugger.stopRuntimeMeasurement(measurementHandle);
@@ -165,7 +169,7 @@ public class ODataHandlerImpl implements ODataHandler {
 
     final int measurementDispatcher = debugger.startRuntimeMeasurement("ODataDispatcher", "dispatch");
     try {
-      new ODataDispatcher(uriInfo, this).dispatch(request, response);
+      new ODataDispatcher(localUriInfo, this).dispatch(request, response);
     } finally {
       debugger.stopRuntimeMeasurement(measurementDispatcher);
       debugger.stopRuntimeMeasurement(measurementHandle);

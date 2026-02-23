@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
+ * Copyright 2026 SiteNetSoft - OLINGO-1492: ENUM/DEFINITION dispatch
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -207,6 +208,8 @@ public class ODataDispatcher {
           false);
       break;
     case PRIMITIVE:
+    case ENUM:
+    case DEFINITION:
       handlePrimitiveDispatching(request, response, returnType.isCollection());
       break;
     case COMPLEX:
@@ -249,6 +252,8 @@ public class ODataDispatcher {
         break;
 
       case PRIMITIVE:
+      case ENUM:
+      case DEFINITION:
         responseFormat = ContentNegotiator.doContentNegotiation(uriInfo.getFormatOption(),
             request, handler.getCustomContentTypeSupport(),
             isCollection ? RepresentationType.COLLECTION_PRIMITIVE : RepresentationType.PRIMITIVE);

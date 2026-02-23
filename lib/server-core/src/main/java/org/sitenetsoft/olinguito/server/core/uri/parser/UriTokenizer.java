@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OLINGO-1566: Word boundary check for INF/NaN tokens
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -986,7 +988,12 @@ public class UriTokenizer {
    */
   private boolean nextDoubleValue() {
     if (nextConstant("NaN") || nextConstant("-INF") || nextConstant("INF")) {
-      return true;
+      // Require word boundary: next character must not be an identifier part
+      if (index >= parseString.length()
+          || !Character.isUnicodeIdentifierPart(parseString.codePointAt(index))) {
+        return true;
+      }
+      return false;
     } else {
       final int lastGoodIndex = index;
       if (!nextIntegerValue(true)) {
