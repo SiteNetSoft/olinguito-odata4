@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OLINGO-1557: $it in $expand resolves to parent entity type
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -44,8 +46,15 @@ public class FilterParser {
   public FilterOption parse(UriTokenizer tokenizer, final EdmType referencedType,
       final Collection<String> crossjoinEntitySetNames, final Map<String, AliasQueryOption> aliases)
       throws UriParserException, UriValidationException {
+    return parse(tokenizer, referencedType, crossjoinEntitySetNames, aliases, null);
+  }
+
+  public FilterOption parse(UriTokenizer tokenizer, final EdmType referencedType,
+      final Collection<String> crossjoinEntitySetNames, final Map<String, AliasQueryOption> aliases,
+      final EdmType rootType)
+      throws UriParserException, UriValidationException {
     final Expression filterExpression = new ExpressionParser(edm, odata)
-        .parse(tokenizer, referencedType, crossjoinEntitySetNames, aliases);
+        .parse(tokenizer, referencedType, crossjoinEntitySetNames, aliases, rootType);
     final EdmType type = ExpressionParser.getType(filterExpression);
     if (type == null || type.equals(odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Boolean))) {
       return new FilterOptionImpl().setExpression(filterExpression);

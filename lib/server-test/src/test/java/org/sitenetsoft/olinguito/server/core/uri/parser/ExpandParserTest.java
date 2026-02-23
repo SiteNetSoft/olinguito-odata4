@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - Added derived-type-only nav property expand tests (OLINGO-1221)
+ * Copyright 2026 SiteNetSoft - OLINGO-1557: $it in $expand resolves to parent entity type
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -459,6 +460,39 @@ class ExpandParserTest {
         .isKeyPredicate(0, "PropertyInt16", "1")
         .isKeyPredicate(1, "PropertyString", "'2'")
         .n().isPrimitiveProperty("PropertyInt16", PropertyProvider.nameInt16, false);
+  }
+
+  /** OLINGO-1557: $it in $expand filter should resolve to parent entity type (ETKeyNav). */
+  @Test
+  void dollarItInExpandFilter() throws Exception {
+    // PropertyCompAllPrim exists on ETKeyNav but NOT on ETTwoKeyNav.
+    // If $it wrongly resolved to the navigation target (ETTwoKeyNav), this would throw
+    // EXPRESSION_PROPERTY_NOT_IN_TYPE.
+    runOnETKeyNav("NavPropertyETTwoKeyNavMany($filter=$it/PropertyCompAllPrim/PropertyInt16 eq 1)")
+        .goPath()
+        .isNavProperty("NavPropertyETTwoKeyNavMany", EntityTypeProvider.nameETTwoKeyNav, true)
+        .goUpExpandValidator()
+        .goFilter().is("<<$it/PropertyCompAllPrim/PropertyInt16> eq <1>>");
+  }
+
+  /** OLINGO-1557: $it in $expand $orderby should resolve to parent entity type. */
+  @Test
+  void dollarItInExpandOrderBy() throws Exception {
+    runOnETKeyNav("NavPropertyETTwoKeyNavMany($orderby=$it/PropertyCompAllPrim/PropertyInt16)")
+        .goPath()
+        .isNavProperty("NavPropertyETTwoKeyNavMany", EntityTypeProvider.nameETTwoKeyNav, true);
+  }
+
+  /** OLINGO-1557: $it in nested $expand filter should resolve to immediate parent. */
+  @Test
+  void dollarItInNestedExpandFilter() throws Exception {
+    // ETKeyNav -> NavPropertyETKeyNavMany (ETKeyNav) -> $expand=NavPropertyETTwoKeyNavMany($filter=...)
+    // $it inside the inner $filter should resolve to ETKeyNav (the type of NavPropertyETKeyNavMany),
+    // not ETTwoKeyNav (the nav target of the inner expand).
+    runOnETKeyNav("NavPropertyETKeyNavMany($expand=NavPropertyETTwoKeyNavMany"
+        + "($filter=$it/PropertyCompAllPrim/PropertyInt16 eq 1))")
+        .goPath()
+        .isNavProperty("NavPropertyETKeyNavMany", EntityTypeProvider.nameETKeyNav, true);
   }
 
   private ExpandValidator runOnETKeyNav(final String expand) throws ODataLibraryException {

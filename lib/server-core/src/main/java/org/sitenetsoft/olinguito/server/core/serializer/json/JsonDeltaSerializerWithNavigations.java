@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Replaced O(N²) property lookup with HashMap (OLINGO-1625)
  * Copyright 2026 SiteNetSoft - Narrowed catch(Exception) to SerializerException
+ * Copyright 2026 SiteNetSoft - OLINGO-1305: Thread linked/expand through complex value writing
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -254,7 +255,7 @@ public class JsonDeltaSerializerWithNavigations implements EdmDeltaSerializer {
     }
     String id = getEntityId(entity, entityType, name);
     json.writeStringField(Constants.AT + Constants.ATOM_ATTR_ID, id);
-    writeProperties(metadata, entityType, entity.getProperties(), select, json);
+    writeProperties(metadata, entityType, entity.getProperties(), select, json, entity, expand);
     writeNavigationProperties(metadata, entityType, entity, expand, id, json, isFullRepresentation);
     json.writeEndObject();
 
@@ -264,12 +265,20 @@ public class JsonDeltaSerializerWithNavigations implements EdmDeltaSerializer {
       final EdmProperty edmProperty, final Property property,
       final Set<List<String>> selectedPaths, final JsonGenerator json)
       throws IOException, SerializerException {
+    writeProperty(metadata, edmProperty, property, selectedPaths, json, null, null);
+  }
+
+  protected void writeProperty(final ServiceMetadata metadata,
+      final EdmProperty edmProperty, final Property property,
+      final Set<List<String>> selectedPaths, final JsonGenerator json,
+      final Linked linked, final ExpandOption expand)
+      throws IOException, SerializerException {
     boolean isStreamProperty = isStreamProperty(edmProperty);
     if (property != null) {
       if (!isStreamProperty) {
         json.writeFieldName(edmProperty.getName());
       }
-      writePropertyValue(metadata, edmProperty, property, selectedPaths, json);
+      writePropertyValue(metadata, edmProperty, property, selectedPaths, json, linked, expand);
     }
   }
 
@@ -279,7 +288,8 @@ public class JsonDeltaSerializerWithNavigations implements EdmDeltaSerializer {
   }
 
   private void writePropertyValue(final ServiceMetadata metadata, final EdmProperty edmProperty,
-      final Property property, final Set<List<String>> selectedPaths, final JsonGenerator json)
+      final Property property, final Set<List<String>> selectedPaths, final JsonGenerator json,
+      final Linked linked, final ExpandOption expand)
       throws IOException, SerializerException {
     final EdmType type = edmProperty.getType();
     try {
@@ -296,9 +306,11 @@ public class JsonDeltaSerializerWithNavigations implements EdmDeltaSerializer {
         }
       } else if (property.isComplex()) {
         if (edmProperty.isCollection()) {
-          writeComplexCollection(metadata, (EdmComplexType) type, property, selectedPaths, json);
+          writeComplexCollection(metadata, (EdmComplexType) type, property, selectedPaths, json,
+              linked, expand);
         } else {
-          writeComplex(metadata, (EdmComplexType) type, property, selectedPaths, json);
+          writeComplex(metadata, (EdmComplexType) type, property, selectedPaths, json,
+              linked, expand);
         }
       } else {
         throw new SerializerException("Property type not yet supported!",
@@ -337,7 +349,8 @@ public class JsonDeltaSerializerWithNavigations implements EdmDeltaSerializer {
   }
 
   private void writeComplex(final ServiceMetadata metadata, final EdmComplexType type,
-      final Property property, final Set<List<String>> selectedPaths, final JsonGenerator json)
+      final Property property, final Set<List<String>> selectedPaths, final JsonGenerator json,
+      final Linked linked, final ExpandOption expand)
       throws IOException, SerializerException {
     json.writeStartObject();
     String derivedName = property.getType();
@@ -345,8 +358,23 @@ public class JsonDeltaSerializerWithNavigations implements EdmDeltaSerializer {
     if (!isODataMetadataNone && !resolvedType.equals(type) || isODataMetadataFull) {
       json.writeStringField(Constants.JSON_TYPE, "#" + property.getType());
     }
+    // Resolve linked for the complex property
+    Linked resolvedLinked = linked;
+    if (resolvedLinked instanceof Entity entity) {
+      final Property navProp = entity.getProperty(property.getName());
+      if (navProp != null) {
+        resolvedLinked = navProp.asComplex();
+      }
+    } else if (resolvedLinked instanceof ComplexValue complexValue) {
+      for (Property prop : complexValue.getValue()) {
+        if (prop.getName().equals(property.getName())) {
+          resolvedLinked = prop.asComplex();
+          break;
+        }
+      }
+    }
     writeComplexValue(metadata, resolvedType, property.asComplex().getValue(), selectedPaths,
-        json);
+        json, resolvedLinked, expand, property.getName());
     json.writeEndObject();
   }
 
@@ -381,7 +409,8 @@ public class JsonDeltaSerializerWithNavigations implements EdmDeltaSerializer {
 
   private void writeComplexCollection(final ServiceMetadata metadata, final EdmComplexType type,
       final Property property,
-      final Set<List<String>> selectedPaths, final JsonGenerator json)
+      final Set<List<String>> selectedPaths, final JsonGenerator json,
+      final Linked linked, final ExpandOption expand)
       throws IOException, SerializerException {
     json.writeStartArray();
     for (Object value : property.asCollection()) {
@@ -392,7 +421,9 @@ public class JsonDeltaSerializerWithNavigations implements EdmDeltaSerializer {
           json.writeStringField(Constants.JSON_TYPE, "#" +
               type.getFullQualifiedName().getFullQualifiedNameAsString());
         }
-        writeComplexValue(metadata, type, ((ComplexValue) value).getValue(), selectedPaths, json);
+        final ComplexValue complexValue = (ComplexValue) value;
+        writeComplexValue(metadata, type, complexValue.getValue(), selectedPaths, json,
+            complexValue, expand, property.getName());
         json.writeEndObject();
         break;
       default:
@@ -469,6 +500,14 @@ public class JsonDeltaSerializerWithNavigations implements EdmDeltaSerializer {
       final EdmComplexType type, final List<Property> properties,
       final Set<List<String>> selectedPaths, final JsonGenerator json)
       throws IOException, SerializerException {
+    writeComplexValue(metadata, type, properties, selectedPaths, json, null, null, null);
+  }
+
+  protected void writeComplexValue(final ServiceMetadata metadata,
+      final EdmComplexType type, final List<Property> properties,
+      final Set<List<String>> selectedPaths, final JsonGenerator json,
+      final Linked linked, final ExpandOption expand, final String complexPropName)
+      throws IOException, SerializerException {
 
     final Map<String, Property> propertyMap = new HashMap<>();
     for (final Property p : properties) {
@@ -479,14 +518,25 @@ public class JsonDeltaSerializerWithNavigations implements EdmDeltaSerializer {
       if (selectedPaths == null || ExpandSelectHelper.isSelected(selectedPaths, propertyName)) {
         writeProperty(metadata, (EdmProperty) type.getProperty(propertyName), property,
             selectedPaths == null ? null : ExpandSelectHelper.getReducedSelectedPaths(selectedPaths, propertyName),
-            json);
+            json, linked, expand);
       }
+    }
+    if (linked != null && expand != null) {
+      writeComplexNavigationProperties(metadata, type, linked, expand, complexPropName, json);
     }
   }
 
   protected void writeProperties(final ServiceMetadata metadata, final EdmStructuredType type,
       final List<Property> properties,
       final SelectOption select, final JsonGenerator json)
+      throws IOException, SerializerException {
+    writeProperties(metadata, type, properties, select, json, null, null);
+  }
+
+  protected void writeProperties(final ServiceMetadata metadata, final EdmStructuredType type,
+      final List<Property> properties,
+      final SelectOption select, final JsonGenerator json,
+      final Linked linked, final ExpandOption expand)
       throws IOException, SerializerException {
     final boolean all = ExpandSelectHelper.isAll(select);
     final Set<String> selected = all ? new HashSet<>() : ExpandSelectHelper.getSelectedPropertyNames(select
@@ -501,7 +551,7 @@ public class JsonDeltaSerializerWithNavigations implements EdmDeltaSerializer {
         final Property property = propertyMap.get(propertyName);
         final Set<List<String>> selectedPaths = all || edmProperty.isPrimitive() ? null : ExpandSelectHelper
             .getSelectedPaths(select.getSelectItems(), propertyName);
-        writeProperty(metadata, edmProperty, property, selectedPaths, json);
+        writeProperty(metadata, edmProperty, property, selectedPaths, json, linked, expand);
       }
     }
   }
@@ -546,6 +596,32 @@ public class JsonDeltaSerializerWithNavigations implements EdmDeltaSerializer {
             }
           }
         }
+      }
+    }
+  }
+
+  /**
+   * Write navigation properties for complex types by checking navigation links on the linked value.
+   * Unlike top-level writeNavigationProperties which matches expand items by name,
+   * this checks for navigation links that exist on the complex value's Linked interface.
+   */
+  private void writeComplexNavigationProperties(final ServiceMetadata metadata,
+      final EdmStructuredType type, final Linked linked, final ExpandOption expand,
+      final String name, final JsonGenerator json)
+      throws SerializerException, IOException {
+    if (!ExpandSelectHelper.hasExpand(expand)) {
+      return;
+    }
+    for (final String propertyName : type.getNavigationPropertyNames()) {
+      final EdmNavigationProperty property = type.getNavigationProperty(propertyName);
+      final Link navigationLink = linked.getNavigationLink(property.getName());
+      if (navigationLink != null) {
+        String navEntitySetName = getNavigatedEntitySetName(metadata, property.getType()
+            .getFullQualifiedName().getFullQualifiedNameAsString());
+        writeExpandedNavigationProperty(metadata, property, navigationLink,
+            null, null, null, false, false,
+            navEntitySetName != null ? navEntitySetName : name + "/" + property.getName(),
+            json, true);
       }
     }
   }

@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Replaced O(N²) property lookup with HashMap (OLINGO-1625)
  * Copyright 2026 SiteNetSoft - Fixed $expand with $level nested navigation
  * and transient entity id handling (OLINGO-1608/1594)
+ * Copyright 2026 SiteNetSoft - OLINGO-1550: Skip aggregated-away key properties in $apply=groupby
  */
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
@@ -643,12 +644,12 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
     final boolean all = ExpandSelectHelper.isAll(select);
     final Set<String> selected = all ? new HashSet<>() :
         ExpandSelectHelper.getSelectedPropertyNames(select.getSelectItems());
-    addKeyPropertiesToSelected(selected, type);
     Set<List<String>> expandedPaths = ExpandSelectHelper.getExpandedItemsPath(expand);
     final Map<String, Property> propertyMap = new HashMap<>();
     for (final Property p : properties) {
       propertyMap.put(p.getName(), p);
     }
+    addKeyPropertiesToSelected(selected, type, propertyMap);
     for (final String propertyName : type.getPropertyNames()) {
       if (all || selected.contains(propertyName)) {
         final EdmProperty edmProperty = type.getStructuralProperty(propertyName);
@@ -661,11 +662,12 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
     }
   }
 
-  private void addKeyPropertiesToSelected(Set<String> selected, EdmStructuredType type) {
+  private void addKeyPropertiesToSelected(Set<String> selected, EdmStructuredType type,
+      Map<String, Property> propertyMap) {
     if (!selected.isEmpty() && type instanceof EdmEntityType edmEntityType) {
       List<String> keyNames = edmEntityType.getKeyPredicateNames();
       for (String key : keyNames) {
-        if (!selected.contains(key)) {
+        if (!selected.contains(key) && propertyMap.containsKey(key)) {
           selected.add(key);
         }
       }

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OLINGO-1557: $it in $expand resolves to parent entity type
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -23,6 +25,7 @@ import java.util.Map;
 
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmStructuredType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.AliasQueryOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.OrderByOption;
@@ -45,10 +48,17 @@ public class OrderByParser {
   public OrderByOption parse(UriTokenizer tokenizer, final EdmStructuredType referencedType,
       final Collection<String> crossjoinEntitySetNames, final Map<String, AliasQueryOption> aliases)
       throws UriParserException, UriValidationException {
+    return parse(tokenizer, referencedType, crossjoinEntitySetNames, aliases, null);
+  }
+
+  public OrderByOption parse(UriTokenizer tokenizer, final EdmStructuredType referencedType,
+      final Collection<String> crossjoinEntitySetNames, final Map<String, AliasQueryOption> aliases,
+      final EdmType rootType)
+      throws UriParserException, UriValidationException {
     OrderByOptionImpl orderByOption = new OrderByOptionImpl();
     do {
       final Expression orderByExpression = new ExpressionParser(edm, odata)
-          .parse(tokenizer, referencedType, crossjoinEntitySetNames, aliases);
+          .parse(tokenizer, referencedType, crossjoinEntitySetNames, aliases, rootType);
       OrderByItemImpl item = new OrderByItemImpl();
       item.setExpression(orderByExpression);
       if (tokenizer.next(TokenKind.AscSuffix)) {

@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  * Copyright 2026 SiteNetSoft - Fixed in operator bidirectional type compatibility (OLINGO-1628)
  * Copyright 2026 SiteNetSoft - OLINGO-1260: Expression depth limit
+ * Copyright 2026 SiteNetSoft - OLINGO-1557: $it in $expand resolves to parent entity type
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -169,6 +170,7 @@ public class ExpressionParser {
   private int expressionDepth;
   private Deque<UriResourceLambdaVariable> lambdaVariables = new ArrayDeque<>();
   private EdmType referringType;
+  private EdmType rootType;
   private Collection<String> crossjoinEntitySetNames;
   private Map<String, AliasQueryOption> aliases;
 
@@ -180,9 +182,17 @@ public class ExpressionParser {
   public Expression parse(UriTokenizer tokenizer, final EdmType referringType,
       final Collection<String> crossjoinEntitySetNames, final Map<String, AliasQueryOption> aliases)
       throws UriParserException, UriValidationException {
+    return parse(tokenizer, referringType, crossjoinEntitySetNames, aliases, null);
+  }
+
+  public Expression parse(UriTokenizer tokenizer, final EdmType referringType,
+      final Collection<String> crossjoinEntitySetNames, final Map<String, AliasQueryOption> aliases,
+      final EdmType rootType)
+      throws UriParserException, UriValidationException {
     // Initialize tokenizer.
     this.tokenizer = tokenizer;
     this.referringType = referringType;
+    this.rootType = rootType;
     this.crossjoinEntitySetNames = crossjoinEntitySetNames;
     this.aliases = aliases;
 
@@ -783,7 +793,8 @@ public class ExpressionParser {
 
   private void parseDollarIt(UriInfoImpl uriInfo, final EdmType referringType)
       throws UriParserException, UriValidationException {
-    UriResourceItImpl itResource = new UriResourceItImpl(referringType, false);
+    final EdmType itType = rootType != null ? rootType : referringType;
+    UriResourceItImpl itResource = new UriResourceItImpl(itType, false);
     uriInfo.addResourcePart(itResource);
     if (tokenizer.next(TokenKind.SLASH)) {
       final TokenKind tokenKind = ParserHelper.next(tokenizer, TokenKind.QualifiedName, TokenKind.ODataIdentifier);

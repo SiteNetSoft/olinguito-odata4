@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed $expand on derived type navigation properties (OLINGO-1221)
+ * Copyright 2026 SiteNetSoft - OLINGO-1557: $it in $expand resolves to parent entity type
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -28,6 +29,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationProperty;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmStructuredType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
 import org.sitenetsoft.olinguito.commons.api.edm.constants.EdmTypeKind;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
 import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmPrimitiveTypeFactory;
@@ -75,6 +77,12 @@ public class ExpandParser {
 
   public ExpandOption parse(UriTokenizer tokenizer, final EdmStructuredType referencedType)
       throws UriParserException, UriValidationException {
+    return parse(tokenizer, referencedType, null);
+  }
+
+  public ExpandOption parse(UriTokenizer tokenizer, final EdmStructuredType referencedType,
+      final EdmType outerType)
+      throws UriParserException, UriValidationException {
     ExpandOptionImpl expandOption = new ExpandOptionImpl();
     do {
       // In the crossjoin case the start has to be an EntitySet name which will dictate the reference type
@@ -82,7 +90,7 @@ public class ExpandParser {
         final ExpandItem item = parseCrossJoinItem(tokenizer);
         expandOption.addExpandItem(item);
       } else {
-        final ExpandItem item = parseItem(tokenizer, referencedType);
+        final ExpandItem item = parseItem(tokenizer, referencedType, outerType);
         expandOption.addExpandItem(item);
       }
     } while (tokenizer.next(TokenKind.COMMA));
@@ -115,7 +123,8 @@ public class ExpandParser {
     return item;
   }
 
-  private ExpandItem parseItem(UriTokenizer tokenizer, final EdmStructuredType referencedType)
+  private ExpandItem parseItem(UriTokenizer tokenizer, final EdmStructuredType referencedType,
+      final EdmType outerType)
       throws UriParserException, UriValidationException {
     ExpandItemImpl item = new ExpandItemImpl();
     if (tokenizer.next(TokenKind.STAR)) {
@@ -160,27 +169,32 @@ public class ExpandParser {
         }
       }
       //For handling $expand for Stream property in v 4.01
-        if(lastPart instanceof UriResourcePrimitivePropertyImpl){     
+        if(lastPart instanceof UriResourcePrimitivePropertyImpl){
           item.setResourcePath(resource);
         }else{
-        final EdmStructuredType newReferencedType = typeCastSuffix != null ? typeCastSuffix 
+        final EdmStructuredType newReferencedType = typeCastSuffix != null ? typeCastSuffix
           : (EdmStructuredType) lastPart.getType();
         final boolean newReferencedIsCollection = lastPart.isCollection();
+        // The outerType for $it resolution: use the type that owns the navigation property
+        final EdmType effectiveOuterType = outerType != null ? outerType : referencedType;
         if (hasSlash || tokenizer.next(TokenKind.SLASH)) {
           if (tokenizer.next(TokenKind.REF)) {
             resource.addResourcePart(new UriResourceRefImpl());
             item.setIsRef(true);
-            parseOptions(tokenizer, newReferencedType, newReferencedIsCollection, item, true, false);
+            parseOptions(tokenizer, newReferencedType, newReferencedIsCollection, item,
+                true, false, effectiveOuterType);
           } else {
             ParserHelper.requireNext(tokenizer, TokenKind.COUNT);
             resource.addResourcePart(new UriResourceCountImpl());
             item.setCountPath(true);
-            parseOptions(tokenizer, newReferencedType, newReferencedIsCollection, item, false, true);
+            parseOptions(tokenizer, newReferencedType, newReferencedIsCollection, item,
+                false, true, effectiveOuterType);
           }
         } else {
-          parseOptions(tokenizer, newReferencedType, newReferencedIsCollection, item, false, false);
+          parseOptions(tokenizer, newReferencedType, newReferencedIsCollection, item,
+              false, false, effectiveOuterType);
         }
-  
+
         item.setResourcePath(resource);
       }
      }
@@ -237,7 +251,8 @@ public class ExpandParser {
   private void parseOptions(UriTokenizer tokenizer,
       final EdmStructuredType referencedType, final boolean referencedIsCollection,
       ExpandItemImpl item,
-      final boolean forRef, final boolean forCount) throws UriParserException, UriValidationException {
+      final boolean forRef, final boolean forCount,
+      final EdmType outerType) throws UriParserException, UriValidationException {
     if (tokenizer.next(TokenKind.OPEN)) {
       do {
         SystemQueryOption systemQueryOption;
@@ -251,11 +266,14 @@ public class ExpandParser {
 
         } else if (!forRef && !forCount && tokenizer.next(TokenKind.EXPAND)) {
           ParserHelper.requireNext(tokenizer, TokenKind.EQ);
-          systemQueryOption = new ExpandParser(edm, odata, aliases, null).parse(tokenizer, referencedType);
+          // For nested $expand, the outerType becomes the current referencedType
+          systemQueryOption = new ExpandParser(edm, odata, aliases, null)
+              .parse(tokenizer, referencedType, referencedType);
 
         } else if (tokenizer.next(TokenKind.FILTER)) {
           ParserHelper.requireNext(tokenizer, TokenKind.EQ);
-          systemQueryOption = new FilterParser(edm, odata).parse(tokenizer, referencedType, null, aliases);
+          systemQueryOption = new FilterParser(edm, odata)
+              .parse(tokenizer, referencedType, null, aliases, outerType);
 
         } else if (!forRef && !forCount && tokenizer.next(TokenKind.LEVELS)) {
           ParserHelper.requireNext(tokenizer, TokenKind.EQ);
@@ -263,7 +281,8 @@ public class ExpandParser {
 
         } else if (!forCount && tokenizer.next(TokenKind.ORDERBY)) {
           ParserHelper.requireNext(tokenizer, TokenKind.EQ);
-          systemQueryOption = new OrderByParser(edm, odata).parse(tokenizer, referencedType, null, aliases);
+          systemQueryOption = new OrderByParser(edm, odata)
+              .parse(tokenizer, referencedType, null, aliases, outerType);
 
         } else if (tokenizer.next(TokenKind.SEARCH)) {
           ParserHelper.requireNext(tokenizer, TokenKind.EQ);
