@@ -18,6 +18,8 @@
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - OLINGO-1542: Updated test for
+ * ODataServerErrorException with ODataError
  */
 package org.sitenetsoft.olinguito.client.core;
 
@@ -87,7 +89,7 @@ class ErrorTest extends AbstractTest {
     ODataClient odataClient = ODataClientFactory.getClient();
     InputStream entity = getClass().getResourceAsStream("500error." + getSuffix(ContentType.JSON));
 
-    ODataClientErrorException exp = (ODataClientErrorException) ODataErrorResponseChecker.
+    ODataServerErrorException exp = (ODataServerErrorException) ODataErrorResponseChecker.
         checkResponse(odataClient, 500, "Internal Server Error", entity, ContentType.JSON);
     assertTrue(exp.getMessage().contains("(500)"));
     assertTrue(exp.getMessage().contains("Internal Server Error"));

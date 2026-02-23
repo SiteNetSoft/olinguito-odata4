@@ -23,6 +23,8 @@
  * Copyright 2026 SiteNetSoft - Fixed nullable collection parameters in actions (OLINGO-1633)
  * Copyright 2026 SiteNetSoft - Fixed Valuable.asCollection()
  * ClassCastException on entity collection parameters (OLINGO-1638)
+ * Copyright 2026 SiteNetSoft - OLINGO-1354: USE_BIG_DECIMAL_FOR_FLOATS
+ * in action parameter deserialization
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -425,7 +427,8 @@ public class ODataJsonDeserializer implements ODataDeserializer {
   public Parameter parameter(final String content, final EdmParameter parameter) throws DeserializerException {
     try {
       JsonParser parser = new JsonFactory(new ObjectMapper()
-          .configure(DeserializationFeature.FAIL_ON_READING_DUP_TREE_KEY, true))
+          .configure(DeserializationFeature.FAIL_ON_READING_DUP_TREE_KEY, true)
+          .configure(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS, true))
               .createParser(content);
       JsonNode node = parser.getCodec().readTree(parser);
       if (node == null) {

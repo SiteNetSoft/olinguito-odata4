@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Thread-safe EDM caches using ConcurrentHashMap
+ * Copyright 2026 SiteNetSoft - OLINGO-1586: Thread-safe annotation access
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
@@ -279,9 +280,7 @@ public class EdmEntityContainerImpl extends AbstractEdmNamed implements EdmEntit
     if (null != annotations && !annotations.isEmpty()) {
       isSingletonAnnotationsIncluded = true;
       for (CsdlAnnotation annotation : annotations) {
-        if (!compareAnnotations(singleton.getAnnotations(), annotation)) {
-          singleton.getAnnotations().add(annotation);
-        }
+        addAnnotationIfAbsent(singleton.getAnnotations(), annotation);
       }
     }
   }
@@ -450,11 +449,10 @@ public class EdmEntityContainerImpl extends AbstractEdmNamed implements EdmEntit
       CsdlNavigationProperty complexNavProperty, List<CsdlAnnotation> annotations) {
     if (null != annotations && !annotations.isEmpty()) {
       isAnnotationsIncluded = true;
+      List<CsdlAnnotation> navAnnotations = complexType.getNavigationProperty(
+          complexNavProperty.getName()).getAnnotations();
       for (CsdlAnnotation annotation : annotations) {
-        if (!compareAnnotations(complexType.getNavigationProperty(
-            complexNavProperty.getName()).getAnnotations(), annotation)) {
-          complexType.getNavigationProperty(complexNavProperty.getName()).getAnnotations().add(annotation);
-        }
+        addAnnotationIfAbsent(navAnnotations, annotation);
       }
     }
   }
@@ -469,11 +467,10 @@ public class EdmEntityContainerImpl extends AbstractEdmNamed implements EdmEntit
       List<CsdlAnnotation> annotations) {
     if (null != annotations && !annotations.isEmpty()) {
       isAnnotationsIncluded = true;
+      List<CsdlAnnotation> propAnnotations = complexType.getProperty(
+          complexProperty.getName()).getAnnotations();
       for (CsdlAnnotation annotation : annotations) {
-        if (!compareAnnotations(complexType.getProperty(
-            complexProperty.getName()).getAnnotations(), annotation)) {
-          complexType.getProperty(complexProperty.getName()).getAnnotations().add(annotation);
-        }
+        addAnnotationIfAbsent(propAnnotations, annotation);
       }
     }
   }
@@ -519,9 +516,7 @@ public class EdmEntityContainerImpl extends AbstractEdmNamed implements EdmEntit
     if (null != annotations && !annotations.isEmpty()) {
       isAnnotationsIncluded = true;
       for (CsdlAnnotation annotation : annotations) {
-        if (!compareAnnotations(entitySet.getAnnotations(), annotation)) {
-          entitySet.getAnnotations().add(annotation);
-        }
+        addAnnotationIfAbsent(entitySet.getAnnotations(), annotation);
       }
     }
   }
@@ -601,10 +596,7 @@ public class EdmEntityContainerImpl extends AbstractEdmNamed implements EdmEntit
     if (null != annotations && !annotations.isEmpty()) {
       isAnnotationsIncluded = true;
       for (CsdlAnnotation annotation : annotations) {
-        if (!compareAnnotations(entityType.getProperty(
-            property.getName()).getAnnotations(), annotation)) {
-          entityType.getProperty(property.getName()).getAnnotations().add(annotation);
-        }
+        addAnnotationIfAbsent(entityType.getProperty(property.getName()).getAnnotations(), annotation);
       }
     }
   }
@@ -639,11 +631,10 @@ public class EdmEntityContainerImpl extends AbstractEdmNamed implements EdmEntit
       List<CsdlAnnotation> annotations) {
     if (null != annotations && !annotations.isEmpty()) {
        isAnnotationsIncluded = true;
+       List<CsdlAnnotation> navAnnotations = entityType.getNavigationProperty(
+           navProperty.getName()).getAnnotations();
        for (CsdlAnnotation annotation : annotations) {
-         if (!compareAnnotations(entityType.getNavigationProperty(
-             navProperty.getName()).getAnnotations(), annotation)) {
-           entityType.getNavigationProperty(navProperty.getName()).getAnnotations().add(annotation);
-         }
+         addAnnotationIfAbsent(navAnnotations, annotation);
        }
      }
   }
@@ -836,9 +827,7 @@ public class EdmEntityContainerImpl extends AbstractEdmNamed implements EdmEntit
   private void addAnnotationsOnOperationImport(CsdlOperationImport operationImport, List<CsdlAnnotation> annotations) {
     if (null != annotations && !annotations.isEmpty()) {
       for (CsdlAnnotation annotation : annotations) {
-        if (!compareAnnotations(operationImport.getAnnotations(), annotation)) {
-          operationImport.getAnnotations().add(annotation);
-        }
+        addAnnotationIfAbsent(operationImport.getAnnotations(), annotation);
       }
     }
   }
@@ -945,11 +934,21 @@ public class EdmEntityContainerImpl extends AbstractEdmNamed implements EdmEntit
   }
 
   private boolean compareAnnotations(List<CsdlAnnotation> annotations, CsdlAnnotation annotation) {
-    for (CsdlAnnotation annot : annotations) {
-      if (annot.equals(annotation)) {
-        return true;
+    synchronized (annotations) {
+      for (CsdlAnnotation annot : annotations) {
+        if (annot.equals(annotation)) {
+          return true;
+        }
       }
     }
     return false;
+  }
+
+  private void addAnnotationIfAbsent(List<CsdlAnnotation> annotations, CsdlAnnotation annotation) {
+    synchronized (annotations) {
+      if (!compareAnnotations(annotations, annotation)) {
+        annotations.add(annotation);
+      }
+    }
   }
 }

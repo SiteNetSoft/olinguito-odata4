@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  * Copyright 2026 SiteNetSoft - Fixed in operator bidirectional type compatibility (OLINGO-1628)
+ * Copyright 2026 SiteNetSoft - OLINGO-1260: Expression depth limit
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -159,10 +160,13 @@ public class ExpressionParser {
     tokenToMethod = Collections.unmodifiableMap(temp);
   }
 
+  private static final int MAX_EXPRESSION_DEPTH = 128;
+
   private final Edm edm;
   private final OData odata;
 
   private UriTokenizer tokenizer;
+  private int expressionDepth;
   private Deque<UriResourceLambdaVariable> lambdaVariables = new ArrayDeque<>();
   private EdmType referringType;
   private Collection<String> crossjoinEntitySetNames;
@@ -188,6 +192,12 @@ public class ExpressionParser {
   }
 
   private Expression parseExpression() throws UriParserException, UriValidationException {
+    expressionDepth++;
+    if (expressionDepth > MAX_EXPRESSION_DEPTH) {
+      throw new UriParserSyntaxException("Expression too deeply nested.",
+          UriParserSyntaxException.MessageKeys.SYNTAX);
+    }
+    try {
     Expression left = parseAnd();
     while (tokenizer.next(TokenKind.OrOperator)) {
       checkType(left, EdmPrimitiveTypeKind.Boolean);
@@ -199,6 +209,9 @@ public class ExpressionParser {
           odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Boolean));
     }
     return left;
+    } finally {
+      expressionDepth--;
+    }
   }
 
   private Expression parseAnd() throws UriParserException, UriValidationException {

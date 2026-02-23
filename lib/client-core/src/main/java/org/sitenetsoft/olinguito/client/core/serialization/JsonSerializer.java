@@ -18,6 +18,8 @@
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - OLINGO-1626/1627: Infer primitive type
+ * instead of defaulting to String
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -367,10 +369,9 @@ public class JsonSerializer implements ODataSerializer {
         && !(valuable.isComplex() && !valuable.isCollection())) {
 
       String type = valuable.getType();
-      if ((!valuable.isCollection() &&
-          (type == null || type.isEmpty()) &&
-          valuable.isPrimitive())) {
-        type = EdmPrimitiveTypeKind.String.getFullQualifiedName().toString();
+      if (!valuable.isCollection() && (type == null || type.isEmpty()) && valuable.isPrimitive()) {
+        final EdmPrimitiveTypeKind kind = EdmTypeInfo.determineTypeKind(valuable.getValue());
+        type = (kind != null ? kind : EdmPrimitiveTypeKind.String).getFullQualifiedName().toString();
       }
       if (type != null && !type.isEmpty() && isODataMetadataFull) {
         jgen.writeStringField(
