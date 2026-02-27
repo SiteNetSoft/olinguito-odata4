@@ -25,6 +25,8 @@
  * ClassCastException on entity collection parameters (OLINGO-1638)
  * Copyright 2026 SiteNetSoft - OLINGO-1354: USE_BIG_DECIMAL_FOR_FLOATS
  * in action parameter deserialization
+ * Copyright 2026 SiteNetSoft - OLINGO-1590: Check EdmTypeKind before
+ * assuming "Geo" prefix means geospatial type
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -828,7 +830,7 @@ public class ODataJsonDeserializer implements ODataDeserializer {
     if (isValidNull(name, isNullable, jsonNode)) {
       return null;
     }
-    final boolean isGeoType = type.getName().startsWith("Geo");
+    final boolean isGeoType = type.getKind() == EdmTypeKind.PRIMITIVE && type.getName().startsWith("Geo");
     if (!isGeoType) {
       checkForValueNode(name, jsonNode);
     }

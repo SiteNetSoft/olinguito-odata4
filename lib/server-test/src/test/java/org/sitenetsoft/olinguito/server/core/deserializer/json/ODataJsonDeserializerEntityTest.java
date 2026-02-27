@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Improved test assertions; Replaced Arrays.asList with List.of
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - OLINGO-1590: Test enum types with "Geo" prefix
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -35,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -50,6 +52,13 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAbstractEdmProvider;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEnumMember;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEnumType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlPropertyRef;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlSchema;
 import org.sitenetsoft.olinguito.commons.api.edm.geo.Geospatial;
 import org.sitenetsoft.olinguito.commons.api.edm.geo.GeospatialCollection;
 import org.sitenetsoft.olinguito.commons.api.edm.geo.LineString;
@@ -61,6 +70,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.geo.Polygon;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlMapping;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
 import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerResult;
 import org.sitenetsoft.olinguito.server.api.deserializer.ODataDeserializer;
@@ -1910,5 +1920,67 @@ class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTest {
     final Entity entity = deserialize(entityString, "ETAllNullable");
     assertNotNull(entity);
     assertEquals(new BigDecimal("12345678912345678.1234567891234"), entity.getProperties().get(1).getValue());
+  }
+
+  /** OLINGO-1590: Enum types whose name starts with "Geo" must not be treated as geospatial primitives. */
+  @Test
+  void enumWithGeoPrefixIsNotTreatedAsGeospatial() throws Exception {
+    final String ns = "olingo.test.geo";
+    final FullQualifiedName enumFqn = new FullQualifiedName(ns, "GeoRegion");
+    final FullQualifiedName entityFqn = new FullQualifiedName(ns, "ETGeoEnum");
+
+    final CsdlAbstractEdmProvider provider = new CsdlAbstractEdmProvider() {
+      @Override
+      public CsdlEnumType getEnumType(FullQualifiedName fqn) {
+        if (enumFqn.equals(fqn)) {
+          return new CsdlEnumType()
+              .setName("GeoRegion")
+              .setMembers(List.of(
+                  new CsdlEnumMember().setName("North").setValue("1"),
+                  new CsdlEnumMember().setName("South").setValue("2")));
+        }
+        return null;
+      }
+
+      @Override
+      public CsdlEntityType getEntityType(FullQualifiedName fqn) {
+        if (entityFqn.equals(fqn)) {
+          return new CsdlEntityType()
+              .setName("ETGeoEnum")
+              .setKey(List.of(new CsdlPropertyRef().setName("Id")))
+              .setProperties(List.of(
+                  new CsdlProperty().setName("Id")
+                      .setType(EdmPrimitiveTypeKind.Int32.getFullQualifiedName()),
+                  new CsdlProperty().setName("Region")
+                      .setType(enumFqn)));
+        }
+        return null;
+      }
+
+      @Override
+      public List<CsdlSchema> getSchemas() {
+        CsdlSchema schema = new CsdlSchema();
+        schema.setNamespace(ns);
+        schema.setEnumTypes(List.of(getEnumType(enumFqn)));
+        schema.setEntityTypes(List.of(getEntityType(entityFqn)));
+        return List.of(schema);
+      }
+    };
+
+    final OData localOdata = OData.newInstance();
+    final ServiceMetadata localMetadata = localOdata.createServiceMetadata(provider, Collections.emptyList());
+    final EdmEntityType entityType = localMetadata.getEdm().getEntityType(entityFqn);
+
+    final String json = "{\"Id\":1,\"Region\":\"North\"}";
+    final Entity entity = localOdata.createDeserializer(ContentType.JSON, localMetadata)
+        .entity(new ByteArrayInputStream(json.getBytes()), entityType)
+        .getEntity();
+
+    assertNotNull(entity);
+    assertEquals(2, entity.getProperties().size());
+    Property regionProp = entity.getProperty("Region");
+    assertNotNull(regionProp);
+    assertEquals(ValueType.ENUM, regionProp.getValueType());
+    assertEquals(1, regionProp.getValue());
   }
 }
