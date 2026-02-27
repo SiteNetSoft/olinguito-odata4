@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OLINGO-1314: Don't echo raw header values in error messages (XSS)
  */
 package org.sitenetsoft.olinguito.commons.api.edm.constants;
 
@@ -65,7 +67,7 @@ public enum ODataServiceVersion {
           || V40.toString().equals(possibleDataServiceVersion)
           || V401.toString().equals(possibleDataServiceVersion);
     } else {
-      throw new IllegalArgumentException(version);
+      throw new IllegalArgumentException("Invalid OData version format");
     }
   }
 
@@ -78,7 +80,7 @@ public enum ODataServiceVersion {
    */
   public static boolean isBiggerThan(final String firstValue, final String secondValue) {
     if (!validateDataServiceVersion(secondValue) || !validateDataServiceVersion(firstValue)) {
-      throw new IllegalArgumentException("Illegal arguments: " + secondValue + " and " + firstValue);
+      throw new IllegalArgumentException("Invalid OData version format");
     }
 
     final double me = Double.parseDouble(extractDataServiceVersionString(firstValue));

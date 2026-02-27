@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OLINGO-1331: Validate key predicates in parseEntityId
  */
 package org.sitenetsoft.olinguito.server.core.uri;
 
@@ -154,6 +156,11 @@ public class UriHelperImpl implements UriHelper {
           new Parser(edm, new ODataImpl()).parseUri(oDataPath, null, null, rawServiceRoot).getUriResourceParts();
       if (uriResourceParts.size() == 1 && uriResourceParts.get(0).getKind() == UriResourceKind.entitySet) {
         final UriResourceEntitySet entityUriResource = (UriResourceEntitySet) uriResourceParts.get(0);
+
+        if (entityUriResource.getKeyPredicates().isEmpty()) {
+          throw new DeserializerException("Missing key predicates in entity binding link",
+              MessageKeys.INVALID_ENTITY_BINDING_LINK, entityId);
+        }
 
         return entityUriResource;
       }

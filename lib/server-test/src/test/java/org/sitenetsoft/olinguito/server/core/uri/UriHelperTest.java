@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - OLINGO-1331: Added parseEntityId tests
  */
 package org.sitenetsoft.olinguito.server.core.uri;
 
@@ -31,8 +32,10 @@ import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
 import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
 import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
 import org.sitenetsoft.olinguito.server.api.uri.UriHelper;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceEntitySet;
 import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
 import org.junit.jupiter.api.Assertions;
@@ -106,5 +109,25 @@ class UriHelperTest {
           property.setValue(property.getValueType(), null);
           helper.buildCanonicalURL(entitySet, entity);
       });
+  }
+
+  @Test
+  void parseEntityIdWithKeys() throws Exception {
+    final UriResourceEntitySet result = helper.parseEntityId(edm, "ESAllPrim(32767)", null);
+    Assertions.assertNotNull(result);
+    Assertions.assertFalse(result.getKeyPredicates().isEmpty());
+  }
+
+  @Test
+  void parseEntityIdWithoutKeys() {
+    assertThrows(DeserializerException.class, () -> helper.parseEntityId(edm, "ESAllPrim", null));
+  }
+
+  @Test
+  void parseEntityIdWithServiceRoot() throws Exception {
+    final UriResourceEntitySet result =
+        helper.parseEntityId(edm, "http://localhost/service/ESAllPrim(32767)", "http://localhost/service/");
+    Assertions.assertNotNull(result);
+    Assertions.assertFalse(result.getKeyPredicates().isEmpty());
   }
 }

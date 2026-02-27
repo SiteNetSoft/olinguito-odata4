@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  * Copyright 2026 SiteNetSoft - Fixed nullable collection parameters in actions (OLINGO-1633)
+ * Copyright 2026 SiteNetSoft - OLINGO-1579: Skip binding parameter in EDM validation loop
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.xml;
 
@@ -743,8 +744,12 @@ public class ODataXmlDeserializer implements ODataDeserializer {
           consumeParameters(edmAction, reader, event.asStartElement(), parameters);
         }
       }
-      // EDM checks.
-      for (final String param : edmAction.getParameterNames()) {
+      // EDM checks — skip the binding parameter (already excluded from XML parsing).
+      List<String> paramsToValidate = edmAction.getParameterNames();
+      if (edmAction.isBound()) {
+        paramsToValidate = paramsToValidate.subList(1, paramsToValidate.size());
+      }
+      for (final String param : paramsToValidate) {
         Parameter parameter = parameters.get(param);
         if (parameter == null) {
           final EdmParameter edmParameter = edmAction.getParameter(param);

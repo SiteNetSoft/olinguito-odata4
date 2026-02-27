@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
+ * Copyright 2026 SiteNetSoft - OLINGO-1534: Null-safe field writing for constant expressions in logical/comparison
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -1059,53 +1060,21 @@ public class MetadataDocumentJsonSerializer {
   private void appendConstantExpression(final JsonGenerator json, 
       final EdmConstantExpression constExp, String termName) throws SerializerException, IOException {
     switch (constExp.getExpressionType()) {
-    case Binary: 
-      json.writeObjectFieldStart(termName);
-      json.writeStringField(DOLLAR + constExp.getExpressionName(), constExp.getValueAsString());
-      json.writeEndObject();
-      break;
+    case Binary:
     case Date:
-      json.writeObjectFieldStart(termName);
-      json.writeStringField(DOLLAR + constExp.getExpressionName(), constExp.getValueAsString());
-      json.writeEndObject();
-      break;
     case DateTimeOffset:
-      json.writeObjectFieldStart(termName);
-      json.writeStringField(DOLLAR + constExp.getExpressionName(), constExp.getValueAsString());
-      json.writeEndObject();
-      break;
     case Decimal:
-      json.writeObjectFieldStart(termName);      
-      json.writeStringField(DOLLAR + constExp.getExpressionName(), constExp.getValueAsString());
-      json.writeEndObject();
-      break;
     case Float:
-      json.writeObjectFieldStart(termName);
-      json.writeStringField(DOLLAR + constExp.getExpressionName(), constExp.getValueAsString());
-      json.writeEndObject();
-      break;
     case Int:
-      json.writeObjectFieldStart(termName);
-      json.writeStringField(DOLLAR + constExp.getExpressionName(), constExp.getValueAsString());
-      json.writeEndObject();
-      break;
     case Duration:
-      json.writeObjectFieldStart(termName);
-      json.writeStringField(DOLLAR + constExp.getExpressionName(), constExp.getValueAsString());
-      json.writeEndObject();
-      break;
     case EnumMember:
-      json.writeObjectFieldStart(termName);
-      json.writeStringField(DOLLAR + constExp.getExpressionName(), constExp.getValueAsString());
-      json.writeEndObject();
-      break;
     case Guid:
-      json.writeObjectFieldStart(termName);
-      json.writeStringField("$" + constExp.getExpressionName(), constExp.getValueAsString());
-      json.writeEndObject();
-      break;
     case TimeOfDay:
-      json.writeObjectFieldStart(termName);
+      if (termName != null && !termName.isEmpty()) {
+        json.writeObjectFieldStart(termName);
+      } else {
+        json.writeStartObject();
+      }
       json.writeStringField(DOLLAR + constExp.getExpressionName(), constExp.getValueAsString());
       json.writeEndObject();
       break;

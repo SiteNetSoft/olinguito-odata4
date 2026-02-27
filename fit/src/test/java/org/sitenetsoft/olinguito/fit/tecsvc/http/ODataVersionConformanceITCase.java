@@ -15,10 +15,13 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OLINGO-1314: Updated version error tests for sanitized messages
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.http;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -52,9 +55,10 @@ public class ODataVersionConformanceITCase extends AbstractBaseTestITCase {
     assertEquals("4.0", connection.getHeaderField(HttpHeader.ODATA_VERSION));
 
     final String content = readBody(connection);
-    assertTrue(content.contains("OData version '3.0' is not supported."));
+    assertTrue(content.contains("OData version '4.0' is not supported."));
+    assertFalse(content.contains("3.0"));
   }
-  
+
   @Test
   public void invalidODataVersionHeader2() throws Exception {
     URL url = new URL(SERVICE_URI + "ESAllPrim");
@@ -68,9 +72,10 @@ public class ODataVersionConformanceITCase extends AbstractBaseTestITCase {
     assertEquals("4.0", connection.getHeaderField(HttpHeader.ODATA_VERSION));
 
     final String content = readBody(connection);
-    assertTrue(content.contains("OData version '5.0' is not supported."));
+    assertTrue(content.contains("OData version '4.0' is not supported."));
+    assertFalse(content.contains("5.0"));
   }
-  
+
   @Test
   public void invalidODataMaxVersionHeader1() throws Exception {
     URL url = new URL(SERVICE_URI + "ESAllPrim");
@@ -84,7 +89,8 @@ public class ODataVersionConformanceITCase extends AbstractBaseTestITCase {
     assertEquals("4.0", connection.getHeaderField(HttpHeader.ODATA_VERSION));
 
     final String content = readBody(connection);
-    assertTrue(content.contains("OData version '3.0' is not supported."));
+    assertTrue(content.contains("OData version '4.0' is not supported."));
+    assertFalse(content.contains("3.0"));
   }
   
   @Test
@@ -170,9 +176,10 @@ public class ODataVersionConformanceITCase extends AbstractBaseTestITCase {
     assertEquals("4.0", connection.getHeaderField(HttpHeader.ODATA_VERSION));
 
     final String content = readBody(connection);
-    assertTrue(content.contains("OData version '5.0' is not supported."));
+    assertTrue(content.contains("OData version '4.0' is not supported."));
+    assertFalse(content.contains("5.0"));
   }
-  
+
   @Override
   protected ODataClient getClient() {
     return null;

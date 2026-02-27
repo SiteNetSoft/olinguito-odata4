@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced wildcard import with explicit imports
+ * Copyright 2026 SiteNetSoft - OLINGO-1314: Don't echo raw header values in error messages (XSS)
  */
 package org.sitenetsoft.olinguito.server.adapter.servlet;
 
@@ -119,8 +120,9 @@ public class OData4HttpHandler {
 
     if (maxVersion != null
             && ODataServiceVersion.isBiggerThan(ODataServiceVersion.V40.toString(), maxVersion)) {
-      throw new ODataHandlerException("ODataVersion not supported: " + maxVersion,
-              ODataHandlerException.MessageKeys.ODATA_VERSION_NOT_SUPPORTED, maxVersion);
+      throw new ODataHandlerException("ODataVersion not supported.",
+              ODataHandlerException.MessageKeys.ODATA_VERSION_NOT_SUPPORTED,
+              ODataServiceVersion.V40.toString());
     }
   }
 
