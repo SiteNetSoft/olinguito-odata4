@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - OLINGO-1184: Test bound function after type filter in $filter
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -941,5 +942,14 @@ class UriParserTest {
     .isExSemantic(UriParserSemanticException.MessageKeys.UNKNOWN_PART);
     
     testUri.run("FICRTETTwoKeyNavParam(ParameterInt16=32)");
+  }
+
+  /** OLINGO-1184: Bound function after type filter in $filter must parse correctly. */
+  @Test
+  void boundFunctionAfterTypeFilterInFilter() throws Exception {
+    // Navigate to ETTwoKeyNav, type-filter to ETBaseTwoKeyNav, call bound function, access property
+    testUri.run("ESBaseTwoKeyNav",
+        "$filter=NavPropertyETTwoKeyNavOne/olingo.odata.test1.ETBaseTwoKeyNav"
+        + "/olingo.odata.test1.BFCETBaseTwoKeyNavRTETTwoKeyNav()/PropertyString eq 'test'");
   }
 }

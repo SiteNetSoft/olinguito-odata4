@@ -21,6 +21,7 @@
  * Copyright 2026 SiteNetSoft - Fixed in operator bidirectional type compatibility (OLINGO-1628)
  * Copyright 2026 SiteNetSoft - OLINGO-1260: Expression depth limit
  * Copyright 2026 SiteNetSoft - OLINGO-1557: $it in $expand resolves to parent entity type
+ * Copyright 2026 SiteNetSoft - OLINGO-1184: Fix bound function after type filter
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -860,7 +861,8 @@ public class ExpressionParser {
 
           if (tokenizer.next(TokenKind.SLASH)) {
             if (tokenizer.next(TokenKind.QualifiedName)) {
-              parseBoundFunction(fullQualifiedName, uriInfo, lastResource);
+              // OLINGO-1184: Read the actual function name, not the type filter name
+              parseBoundFunction(new FullQualifiedName(tokenizer.getText()), uriInfo, lastResource);
             } else if (tokenizer.next(TokenKind.ODataIdentifier)) {
               parsePropertyPathExpr(uriInfo, lastResource);
             } else {
@@ -877,10 +879,11 @@ public class ExpressionParser {
       } else if (edm.getComplexType(fullQualifiedName) != null) {
         if (allowTypeFilter) {
           setTypeFilter(lastResource, edm.getComplexType(fullQualifiedName));
-          
+
           if (tokenizer.next(TokenKind.SLASH)) {
             if (tokenizer.next(TokenKind.QualifiedName)) {
-              parseBoundFunction(fullQualifiedName, uriInfo, lastResource);
+              // OLINGO-1184: Read the actual function name, not the type filter name
+              parseBoundFunction(new FullQualifiedName(tokenizer.getText()), uriInfo, lastResource);
             } else if (tokenizer.next(TokenKind.ODataIdentifier)) {
               parsePropertyPathExpr(uriInfo, lastResource);
             } else {
@@ -1114,7 +1117,8 @@ public class ExpressionParser {
 
   private void parseBoundFunction(final FullQualifiedName fullQualifiedName, UriInfoImpl uriInfo,
       final UriResourcePartTyped lastResource) throws UriParserException, UriValidationException {
-    final EdmType type = lastResource.getType();
+    // OLINGO-1184: Use type filter as binding type when present (after type cast)
+    final EdmType type = getEffectiveType(lastResource);
     final List<UriParameter> parameters =
         ParserHelper.parseFunctionParameters(tokenizer, edm, referringType, true, aliases);
     final List<String> parameterNames = ParserHelper.getParameterNames(parameters);
@@ -1126,6 +1130,22 @@ public class ExpressionParser {
     }
     ParserHelper.validateFunctionParameters(boundFunction, parameters, edm, referringType, aliases);
     parseFunctionRest(uriInfo, boundFunction, parameters);
+  }
+
+  /** Returns the type filter if set on the resource, otherwise the base type. */
+  private static EdmType getEffectiveType(final UriResourcePartTyped resource) {
+    if (resource instanceof UriResourceTypedImpl typedImpl && typedImpl.getTypeFilter() != null) {
+      return typedImpl.getTypeFilter();
+    }
+    if (resource instanceof UriResourceWithKeysImpl withKeysImpl) {
+      if (withKeysImpl.getTypeFilterOnEntry() != null) {
+        return withKeysImpl.getTypeFilterOnEntry();
+      }
+      if (withKeysImpl.getTypeFilterOnCollection() != null) {
+        return withKeysImpl.getTypeFilterOnCollection();
+      }
+    }
+    return resource.getType();
   }
 
   private void parseFunctionRest(UriInfoImpl uriInfo, final EdmFunction function,
