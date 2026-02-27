@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - OLINGO-1550: Test for $apply=groupby absent key properties
+ * Copyright 2026 SiteNetSoft - OLINGO-1307: Test $expand on complex nav props without $select
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -57,7 +58,9 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationProperty;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmStructuredType;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.commons.api.edm.geo.Geospatial.Dimension;
 import org.sitenetsoft.olinguito.commons.api.edm.geo.GeospatialCollection;
@@ -84,6 +87,8 @@ import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
 import org.sitenetsoft.olinguito.server.api.serializer.SerializerResult;
 import org.sitenetsoft.olinguito.server.api.uri.UriHelper;
 import org.sitenetsoft.olinguito.server.api.uri.UriInfoResource;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceComplexProperty;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceNavigation;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.CountOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandItem;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandOption;
@@ -2997,5 +3002,56 @@ class ODataJsonSerializerTest {
         + "\"PropertyCompWithStream\":{\"PropertyStream\":\"\ufffdioz\ufffd\\\"\ufffd\","
             + "\"PropertyComp\":{\"PropertyInt16\":333,\"PropertyString\":\"TEST123\"}}}";
     Assertions.assertEquals(expectedResult, resultString);
+  }
+
+  // OLINGO-1307: $expand on nav property of complex type must include the complex property
+  // even when $select does not mention it.
+  @Test
+  void expandNavOnComplexWithSelectExcludingComplex() throws Exception {
+    final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESCompMixPrimCollComp");
+    final EdmEntityType entityType = edmEntitySet.getEntityType();
+    final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
+
+    // Build $expand=PropertyMixedPrimCollComp/NavPropertyETTwoKeyNavOne
+    // Must use UriResourceComplexProperty (not UriResourceProperty) for getExpandedItemsPath() to work
+    final EdmProperty complexProp = (EdmProperty) entityType.getProperty("PropertyMixedPrimCollComp");
+    final EdmStructuredType complexType = (EdmStructuredType) complexProp.getType();
+    final UriResourceComplexProperty complexResource = Mockito.mock(UriResourceComplexProperty.class);
+    Mockito.when(complexResource.getProperty()).thenReturn(complexProp);
+    Mockito.when(complexResource.getSegmentValue()).thenReturn(complexProp.getName());
+    Mockito.when(complexResource.getType()).thenReturn(complexType);
+    final EdmNavigationProperty navProp = complexType.getNavigationProperty("NavPropertyETTwoKeyNavOne");
+    final UriResourceNavigation navResource = Mockito.mock(UriResourceNavigation.class);
+    Mockito.when(navResource.getProperty()).thenReturn(navProp);
+    Mockito.when(navResource.getSegmentValue()).thenReturn(navProp.getName());
+    Mockito.when(navResource.getType()).thenReturn(navProp.getType());
+
+    final UriInfoResource expandPath = Mockito.mock(UriInfoResource.class);
+    Mockito.when(expandPath.getUriResourceParts()).thenReturn(List.of(complexResource, navResource));
+
+    final ExpandItem expandItem = Mockito.mock(ExpandItem.class);
+    Mockito.when(expandItem.getResourcePath()).thenReturn(expandPath);
+    final ExpandOption expand = ExpandSelectMock.mockExpandOption(List.of(expandItem));
+
+    // $select=PropertyInt16 (does NOT include PropertyMixedPrimCollComp)
+    final SelectOption select = ExpandSelectMock.mockSelectOption(List.of(
+        ExpandSelectMock.mockSelectItem(edmEntitySet, "PropertyInt16")));
+
+    InputStream result = serializer.entity(metadata, entityType, entity,
+        EntitySerializerOptions.with()
+            .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
+            .expand(expand)
+            .select(select)
+            .build()).getContent();
+    final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
+
+    // PropertyMixedPrimCollComp must be present (implicitly selected by $expand)
+    assertTrue(resultString.contains("\"PropertyMixedPrimCollComp\""),
+        "Complex property referenced by $expand must be included even when not in $select");
+    // The expanded nav property must be inlined
+    assertTrue(resultString.contains("\"NavPropertyETTwoKeyNavOne\""),
+        "Expanded navigation property within complex type must be present");
+    // PropertyInt16 should be in the output ($select)
+    assertTrue(resultString.contains("\"PropertyInt16\""));
   }
 }

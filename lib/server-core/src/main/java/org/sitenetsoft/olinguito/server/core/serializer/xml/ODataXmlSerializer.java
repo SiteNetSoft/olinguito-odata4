@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Fixed $expand with $level nested navigation
  * and transient entity id handling (OLINGO-1608/1594)
  * Copyright 2026 SiteNetSoft - OLINGO-1550: Skip aggregated-away key properties in $apply=groupby
+ * Copyright 2026 SiteNetSoft - OLINGO-1307: Include expanded complex properties even when not in $select
  */
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
@@ -650,6 +651,14 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
       propertyMap.put(p.getName(), p);
     }
     addKeyPropertiesToSelected(selected, type, propertyMap);
+    // OLINGO-1307: Include complex properties referenced by $expand even when not in $select
+    if (!all && !expandedPaths.isEmpty()) {
+      for (List<String> path : expandedPaths) {
+        if (!path.isEmpty()) {
+          selected.add(path.get(0));
+        }
+      }
+    }
     for (final String propertyName : type.getPropertyNames()) {
       if (all || selected.contains(propertyName)) {
         final EdmProperty edmProperty = type.getStructuralProperty(propertyName);
