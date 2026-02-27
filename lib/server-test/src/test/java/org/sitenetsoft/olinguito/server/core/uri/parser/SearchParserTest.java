@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - OLINGO-1585: Test alphanumeric search words in $expand
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -99,6 +100,19 @@ class SearchParserTest {
   void searchTree() throws Exception {
     testUri.run("ESTwoKeyNav", "$expand=NavPropertyETKeyNavMany($search=(abc AND def) OR NOT ghi)")
         .goExpand().isSearchSerialized("{{'abc' AND 'def'} OR {NOT 'ghi'}}");
+  }
+
+  /** OLINGO-1585: Alphanumeric search words and unreserved chars must work inside $expand. */
+  @Test
+  void searchInExpandWithAlphanumericTerms() throws Exception {
+    testUri.run("ESTwoKeyNav", "$expand=NavPropertyETKeyNavMany($search=a3b)")
+        .goExpand().isSearchSerialized("'a3b'");
+    testUri.run("ESTwoKeyNav", "$expand=NavPropertyETKeyNavMany($search=test123 AND item456)")
+        .goExpand().isSearchSerialized("{'test123' AND 'item456'}");
+    testUri.run("ESTwoKeyNav", "$expand=NavPropertyETKeyNavMany($search=foo-bar)")
+        .goExpand().isSearchSerialized("'foo-bar'");
+    testUri.run("ESTwoKeyNav", "$expand=NavPropertyETKeyNavMany($search=v1.2.3)")
+        .goExpand().isSearchSerialized("'v1.2.3'");
   }
 
   /**
