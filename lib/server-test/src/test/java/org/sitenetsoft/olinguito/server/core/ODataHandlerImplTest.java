@@ -18,11 +18,13 @@
  *
  * Copyright 2026 SiteNetSoft - Improved test assertions
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - OLINGO-1314: Updated version error tests for sanitized messages
  */
 package org.sitenetsoft.olinguito.server.core;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -1217,9 +1219,10 @@ class ODataHandlerImplTest {
     assertEquals(400, response.getStatusCode());
     assertNotNull(response.getContent());
     String doc = new String(response.getContent().readAllBytes(), StandardCharsets.UTF_8);
-    assertTrue(doc.contains("OData version '3.0' is not supported."));
+    assertTrue(doc.contains("OData version '4.0' is not supported."));
+    assertFalse(doc.contains("3.0"));
   }
-  
+
   @Test
   void validateInvalidOdataVersion2() throws Exception {
     final String uri = "ESAllPrim(0)";
@@ -1227,14 +1230,15 @@ class ODataHandlerImplTest {
 
     final Map<String, String> header = new HashMap<>();
     header.put(HttpHeader.ODATA_VERSION, "5.0");
-    
+
     final ODataResponse response = dispatchToValidateHeaders
         (HttpMethod.GET, uri, null, header, processor);
     assertEquals("4.0", response.getHeader(HttpHeader.ODATA_VERSION));
     assertEquals(400, response.getStatusCode());
     assertNotNull(response.getContent());
     String doc = new String(response.getContent().readAllBytes(), StandardCharsets.UTF_8);
-    assertTrue(doc.contains("OData version '5.0' is not supported."));
+    assertTrue(doc.contains("OData version '4.0' is not supported."));
+    assertFalse(doc.contains("5.0"));
   }
   
   @Test
@@ -1244,14 +1248,15 @@ class ODataHandlerImplTest {
 
     final Map<String, String> header = new HashMap<>();
     header.put(HttpHeader.ODATA_MAX_VERSION, "3.0");
-    
+
     final ODataResponse response = dispatchToValidateHeaders
         (HttpMethod.GET, uri, null, header, processor);
     assertEquals("4.0", response.getHeader(HttpHeader.ODATA_VERSION));
     assertEquals(400, response.getStatusCode());
     assertNotNull(response.getContent());
     String doc = new String(response.getContent().readAllBytes(), StandardCharsets.UTF_8);
-    assertTrue(doc.contains("OData version '3.0' is not supported."));
+    assertTrue(doc.contains("OData version '4.0' is not supported."));
+    assertFalse(doc.contains("3.0"));
   }
   
   @Test
@@ -1289,14 +1294,15 @@ class ODataHandlerImplTest {
     final Map<String, String> headers = new HashMap<>();
     headers.put(HttpHeader.ODATA_VERSION, "3.0");
     headers.put(HttpHeader.ODATA_MAX_VERSION, "4.0");
-    
+
     final ODataResponse response = dispatchToValidateHeaders
         (HttpMethod.GET, uri, null, headers, processor);
     assertEquals("4.0", response.getHeader(HttpHeader.ODATA_VERSION));
     assertEquals(400, response.getStatusCode());
     assertNotNull(response.getContent());
     String doc = new String(response.getContent().readAllBytes(), StandardCharsets.UTF_8);
-    assertTrue(doc.contains("OData version '3.0' is not supported."));
+    assertTrue(doc.contains("OData version '4.0' is not supported."));
+    assertFalse(doc.contains("3.0"));
   }
   
   @Test
@@ -1307,14 +1313,15 @@ class ODataHandlerImplTest {
     final Map<String, String> headers = new HashMap<>();
     headers.put(HttpHeader.ODATA_VERSION, "5.0");
     headers.put(HttpHeader.ODATA_MAX_VERSION, "5.0");
-    
+
     final ODataResponse response = dispatchToValidateHeaders
         (HttpMethod.GET, uri, null, headers, processor);
     assertEquals("4.0", response.getHeader(HttpHeader.ODATA_VERSION));
     assertEquals(400, response.getStatusCode());
     assertNotNull(response.getContent());
     String doc = new String(response.getContent().readAllBytes(), StandardCharsets.UTF_8);
-    assertTrue(doc.contains("OData version '5.0' is not supported."));
+    assertTrue(doc.contains("OData version '4.0' is not supported."));
+    assertFalse(doc.contains("5.0"));
   }
   
   @Test

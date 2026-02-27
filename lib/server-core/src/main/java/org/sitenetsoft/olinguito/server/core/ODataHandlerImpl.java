@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - OLINGO-1558: Thread-safe URI parsing
+ * Copyright 2026 SiteNetSoft - OLINGO-1314: Don't echo raw header values in error messages (XSS)
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -237,14 +238,16 @@ public class ODataHandlerImpl implements ODataHandler {
   private void validateODataVersion(final ODataRequest request) throws ODataHandlerException {
     final String odataVersion = request.getHeader(HttpHeader.ODATA_VERSION);
    if (odataVersion != null && !ODataServiceVersion.isValidODataVersion(odataVersion)) {
-      throw new ODataHandlerException("ODataVersion not supported: " + odataVersion,
-          ODataHandlerException.MessageKeys.ODATA_VERSION_NOT_SUPPORTED, odataVersion);
+      throw new ODataHandlerException("ODataVersion not supported.",
+          ODataHandlerException.MessageKeys.ODATA_VERSION_NOT_SUPPORTED,
+          ODataServiceVersion.V40.toString());
     }
-    
+
     final String maxVersion = request.getHeader(HttpHeader.ODATA_MAX_VERSION);
     if (maxVersion != null && !ODataServiceVersion.isValidMaxODataVersion(maxVersion)) {
-        throw new ODataHandlerException("ODataVersion not supported: " + maxVersion,
-            ODataHandlerException.MessageKeys.ODATA_VERSION_NOT_SUPPORTED, maxVersion);
+        throw new ODataHandlerException("ODataVersion not supported.",
+            ODataHandlerException.MessageKeys.ODATA_VERSION_NOT_SUPPORTED,
+            ODataServiceVersion.V40.toString());
       }
   }
 

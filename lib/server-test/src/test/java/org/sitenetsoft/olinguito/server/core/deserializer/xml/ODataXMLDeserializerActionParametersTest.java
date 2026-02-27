@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Improved test assertions
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - Added nullable collection parameter tests (OLINGO-1633)
+ * Copyright 2026 SiteNetSoft - OLINGO-1579: Added bound action with non-binding parameter test
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.xml;
 
@@ -205,6 +206,24 @@ class ODataXMLDeserializerActionParametersTest extends AbstractODataDeserializer
   void bindingParameter() throws Exception {
     final String input = PREAMBLE + "<data:ParameterETAllPrim>1</data:ParameterETAllPrim>" + POSTAMBLE;
     deserialize(input, "BAETAllPrimRT", "ETAllPrim");
+  }
+
+  @Test
+  void boundActionWithNonBindingParameter() throws Exception {
+    final String input = PREAMBLE
+        + "<data:PropertyComp>"
+        + "<data:PropertyInt16>1</data:PropertyInt16>"
+        + "<data:PropertyComp>"
+        + "<data:PropertyInt16>2</data:PropertyInt16>"
+        + "<data:PropertyString>test</data:PropertyString>"
+        + "</data:PropertyComp>"
+        + "</data:PropertyComp>"
+        + POSTAMBLE;
+    final Map<String, Parameter> parameters =
+        deserialize(input, "BAETTwoKeyNavRTETTwoKeyNavParam", "ETTwoKeyNav");
+    assertNotNull(parameters);
+    assertEquals(1, parameters.size());
+    assertNotNull(parameters.get("PropertyComp"));
   }
 
   @Test
