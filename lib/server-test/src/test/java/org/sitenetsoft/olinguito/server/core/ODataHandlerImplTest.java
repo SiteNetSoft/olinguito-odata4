@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Improved test assertions
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - OLINGO-1314: Updated version error tests for sanitized messages
+ * Copyright 2026 SiteNetSoft - OLINGO-1372: Tests for error responses respecting Accept header
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -290,26 +291,29 @@ class ODataHandlerImplTest {
 
   @Test
   void uriParserExceptionWithFormatQueryAtom() throws Exception {
+    // OLINGO-1372: $format=atom must be honored in error responses
     final ODataResponse response = dispatch(HttpMethod.GET, "ESAllPrims", "$format=atom", "", "", null);
     assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), response.getStatusCode());
-    assertEquals("application/json;odata.metadata=minimal",
+    assertEquals(ContentType.APPLICATION_ATOM_XML.toContentTypeString(),
         response.getHeader(HttpHeader.CONTENT_TYPE));
   }
 
   @Test
   void uriParserExceptionWithFormatQueryAtomAndTop() throws Exception {
+    // OLINGO-1372: $format=atom must be honored even with other query params
     final ODataResponse response = dispatch(HttpMethod.GET, "ESAllPrims", "$format=atom&$top=19", "", "", null);
     assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), response.getStatusCode());
-    assertEquals("application/json;odata.metadata=minimal",
+    assertEquals(ContentType.APPLICATION_ATOM_XML.toContentTypeString(),
         response.getHeader(HttpHeader.CONTENT_TYPE));
   }
 
   @Test
   void uriParserExceptionWithFormatAtomAcceptJson() throws Exception {
+    // OLINGO-1372: $format takes precedence over Accept header
     final ODataResponse response = dispatch(HttpMethod.GET, "ESAllPrims", "$format=atom",
         HttpHeader.ACCEPT, ContentType.APPLICATION_JSON.toContentTypeString(), null);
     assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), response.getStatusCode());
-    assertEquals("application/json;odata.metadata=minimal",
+    assertEquals(ContentType.APPLICATION_ATOM_XML.toContentTypeString(),
         response.getHeader(HttpHeader.CONTENT_TYPE));
   }
 
@@ -1352,6 +1356,51 @@ class ODataHandlerImplTest {
     assertEquals("4.0", response.getHeader(HttpHeader.ODATA_VERSION));
   }
   
+  // OLINGO-1372: Error responses must respect Accept header
+
+  @Test
+  void errorResponseRespectsAcceptXml() {
+    // Request an invalid path with Accept: application/xml
+    // This triggers a URI parser error (uriInfo stays null) and the error response
+    // should be serialized as XML, not JSON.
+    final ODataResponse response = dispatch(HttpMethod.GET, "nonExistentEntity", null,
+        HttpHeader.ACCEPT, ContentType.APPLICATION_XML.toContentTypeString(), null);
+    assertNotNull(response.getContent());
+    assertEquals(ContentType.APPLICATION_XML.toContentTypeString(),
+        response.getHeader(HttpHeader.CONTENT_TYPE));
+  }
+
+  @Test
+  void errorResponseRespectsAcceptXmlWithQueryString() {
+    // When uriInfo is null and a query string is present (but no $format),
+    // the Accept header should still be honored.
+    final ODataResponse response = dispatch(HttpMethod.GET, "nonExistentEntity", "$top=10",
+        HttpHeader.ACCEPT, ContentType.APPLICATION_XML.toContentTypeString(), null);
+    assertNotNull(response.getContent());
+    assertEquals(ContentType.APPLICATION_XML.toContentTypeString(),
+        response.getHeader(HttpHeader.CONTENT_TYPE));
+  }
+
+  @Test
+  void errorResponseRespectsFormatOptionXml() {
+    // When uriInfo is null and $format=xml is specified, the error response
+    // should be serialized as XML.
+    final ODataResponse response = dispatch(HttpMethod.GET, "nonExistentEntity", "$format=xml",
+        null, null, null);
+    assertNotNull(response.getContent());
+    assertEquals(ContentType.APPLICATION_XML.toContentTypeString(),
+        response.getHeader(HttpHeader.CONTENT_TYPE));
+  }
+
+  @Test
+  void errorResponseDefaultsToJsonWithoutAccept() {
+    // Without Accept header or $format, errors should default to JSON.
+    final ODataResponse response = dispatch(HttpMethod.GET, "nonExistentEntity", null,
+        null, null, null);
+    assertNotNull(response.getContent());
+    assertThat(response.getHeader(HttpHeader.CONTENT_TYPE), containsString("application/json"));
+  }
+
   private ODataResponse dispatchToValidateHeaders(final HttpMethod method, final String path, final String query,
       final Map<String, String> headers, final Processor processor) throws ODataHandlerException {
     ODataRequest request = new ODataRequest();
