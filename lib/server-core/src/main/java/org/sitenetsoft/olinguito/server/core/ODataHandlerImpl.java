@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - OLINGO-1558: Thread-safe URI parsing
  * Copyright 2026 SiteNetSoft - OLINGO-1314: Don't echo raw header values in error messages (XSS)
+ * Copyright 2026 SiteNetSoft - OLINGO-1372: Fix error responses ignoring Accept header
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -220,15 +221,19 @@ public class ODataHandlerImpl implements ODataHandler {
         return null;
       }
 
-      final String formatOption = SystemQueryOptionKind.FORMAT.toString();
-      int index = query.indexOf(formatOption);
-      int endIndex = query.indexOf('&', index);
+      final String formatPrefix = SystemQueryOptionKind.FORMAT.toString() + "=";
+      int index = query.indexOf(formatPrefix);
+      if(index == -1) {
+        return null;
+      }
+      int valueStart = index + formatPrefix.length();
+      int endIndex = query.indexOf('&', valueStart);
       if(endIndex == -1) {
         endIndex = query.length();
       }
-      String format = "";
-      if (index + formatOption.length() < endIndex) {
-         format = query.substring(index + formatOption.length(), endIndex);
+      String format = query.substring(valueStart, endIndex);
+      if (format.isEmpty()) {
+        return null;
       }
       return new FormatOptionImpl().setFormat(format);
     }
