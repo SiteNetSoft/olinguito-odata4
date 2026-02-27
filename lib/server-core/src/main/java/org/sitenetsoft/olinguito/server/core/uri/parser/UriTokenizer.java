@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - OLINGO-1566: Word boundary check for INF/NaN tokens
+ * Copyright 2026 SiteNetSoft - OLINGO-1585: Accept unreserved chars in search words
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -1537,19 +1538,26 @@ public class UriTokenizer {
   }
 
   private boolean nextWord() {
-    int count = 0;
+    int startIndex = index;
     while (index < parseString.length()) {
       final int code = parseString.codePointAt(index);
-      if (Character.isUnicodeIdentifierStart(code)) {
-        count++;
+      if (Character.isUnicodeIdentifierStart(code) || isUnreservedSearchChar(code)) {
         // Unicode characters outside of the Basic Multilingual Plane are represented as two Java characters.
         index += Character.isSupplementaryCodePoint(code) ? 2 : 1;
       } else {
         break;
       }
     }
-    final String word = parseString.substring(index - count, index);
-    return count > 0 && !("OR".equals(word) || "AND".equals(word) || "NOT".equals(word));
+    final String word = parseString.substring(startIndex, index);
+    return !word.isEmpty() && !("OR".equals(word) || "AND".equals(word) || "NOT".equals(word));
+  }
+
+  /** OData ABNF unreserved characters allowed in searchWord beyond unicode identifier starts. */
+  private static boolean isUnreservedSearchChar(int code) {
+    return (code >= '0' && code <= '9') // DIGIT
+        || code == '-'
+        || code == '.'
+        || code == '~';
   }
 
   private boolean nextPhrase() {

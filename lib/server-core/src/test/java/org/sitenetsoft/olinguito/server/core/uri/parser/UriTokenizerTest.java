@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - OLINGO-1585: Updated Word token tests for unreserved chars
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -571,7 +572,12 @@ class UriTokenizerTest {
     assertTrue(new UriTokenizer("\"" + outsideBmpLetter + "\"").next(TokenKind.Phrase));
 
     assertTrue(new UriTokenizer(outsideBmpLetter).next(TokenKind.Word));
-    assertFalse(new UriTokenizer("1").next(TokenKind.Word));
+    // OLINGO-1585: Digits and unreserved chars are valid in search words per OData ABNF
+    assertTrue(new UriTokenizer("1").next(TokenKind.Word));
+    assertTrue(new UriTokenizer("a3b").next(TokenKind.Word));
+    assertTrue(new UriTokenizer("foo-bar").next(TokenKind.Word));
+    assertTrue(new UriTokenizer("v1.2.3").next(TokenKind.Word));
+    assertTrue(new UriTokenizer("test~1").next(TokenKind.Word));
     assertFalse(new UriTokenizer("AND").next(TokenKind.Word));
     assertFalse(new UriTokenizer("OR").next(TokenKind.Word));
     assertFalse(new UriTokenizer("NOT").next(TokenKind.Word));
