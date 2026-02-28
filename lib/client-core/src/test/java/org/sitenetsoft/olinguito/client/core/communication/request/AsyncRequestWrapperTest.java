@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - OLINGO-1476: Tests for relative Location URIs
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -252,6 +253,33 @@ class AsyncRequestWrapperTest {
     AsyncRequestWrapperImpl<ODataResponse>.AsyncResponseWrapperImpl wrapper =
         createAsyncRequestWrapperImplWithLocation(target, location);
     assertEquals(new URI(location), wrapper.location);
+  }
+
+  @Test
+  void testLocationWithRelativeUrl() throws IOException, URISyntaxException {
+    String target = "http://server/service/path";
+    String location = "/monitor/123";
+    AsyncRequestWrapperImpl<ODataResponse>.AsyncResponseWrapperImpl wrapper =
+        createAsyncRequestWrapperImplWithLocation(target, location);
+    assertEquals(new URI("http://server/monitor/123"), wrapper.location);
+  }
+
+  @Test
+  void testLocationWithRelativePathTraversal() throws IOException, URISyntaxException {
+    String target = "http://server:8080/a/b/c/path";
+    String location = "../../_async('EQ1XW')";
+    AsyncRequestWrapperImpl<ODataResponse>.AsyncResponseWrapperImpl wrapper =
+        createAsyncRequestWrapperImplWithLocation(target, location);
+    assertEquals(new URI("http://server:8080/a/_async('EQ1XW')"), wrapper.location);
+  }
+
+  @Test
+  void testLocationWithRelativeSibling() throws IOException, URISyntaxException {
+    String target = "http://server/service/entities";
+    String location = "monitor/status";
+    AsyncRequestWrapperImpl<ODataResponse>.AsyncResponseWrapperImpl wrapper =
+        createAsyncRequestWrapperImplWithLocation(target, location);
+    assertEquals(new URI("http://server/service/monitor/status"), wrapper.location);
   }
 
 }
