@@ -21,6 +21,7 @@
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  * Copyright 2026 SiteNetSoft - Refactored to use transport-agnostic HTTP interfaces
  * Copyright 2026 SiteNetSoft - Fixed connection leak: close async monitor responses to release HC 5.x connections
+ * Copyright 2026 SiteNetSoft - OLINGO-1476: Resolve relative Location URIs against original request URI
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -139,6 +140,9 @@ public class AsyncRequestWrapperImpl<R extends ODataResponse> extends AbstractRe
   }
 
   private URI checkLocation(URI uri) {
+    if (!uri.isAbsolute()) {
+      uri = this.uri.resolve(uri);
+    }
     if (!this.uri.getScheme().equals(uri.getScheme())) {
       throw new AsyncRequestException("Unexpected scheme in the Location header");
     }
