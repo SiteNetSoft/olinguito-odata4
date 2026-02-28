@@ -17,10 +17,13 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
+ * Copyright 2026 SiteNetSoft - OLINGO-1142: Recursively resolve referenced metadata documents
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.retrieve;
 
 import java.net.URI;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.sitenetsoft.olinguito.client.core.StringHelper;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
@@ -73,14 +76,28 @@ public class XMLMetadataRequestImpl
         new XMLMetadataResponseImpl(odataClient, httpClient,
             rootReq.getHttpResponse(), rootRes.getBody());
 
-    // process external references
-    for (Reference reference : rootRes.getBody().getReferences()) {
+    // process external references (recursively, with cycle detection)
+    final Set<String> visitedUris = new HashSet<>();
+    visitedUris.add(uri.toASCIIString());
+    processReferences(rootRes.getBody(), response, rootReq, visitedUris);
+
+    return response;
+  }
+
+  private void processReferences(final XMLMetadata metadata, final XMLMetadataResponseImpl response,
+      final SingleXMLMetadatRequestImpl templateReq, final Set<String> visitedUris) {
+
+    for (Reference reference : metadata.getReferences()) {
+      final URI resolvedUri = uri.resolve(reference.getUri());
+      if (!visitedUris.add(resolvedUri.toASCIIString())) {
+        continue; // already visited — skip to prevent infinite recursion on circular references
+      }
+
       final SingleXMLMetadatRequestImpl includeReq = new SingleXMLMetadatRequestImpl(
           odataClient,
-          odataClient.newURIBuilder(uri.resolve(reference.getUri()).toASCIIString()).build());
-      // Copying the headers from first request to next request
-      for(String key : rootReq.getHeaderNames()){
-         includeReq.addCustomHeader(key ,rootReq.getHeader(key));
+          odataClient.newURIBuilder(resolvedUri.toASCIIString()).build());
+      for (String key : templateReq.getHeaderNames()) {
+        includeReq.addCustomHeader(key, templateReq.getHeader(key));
       }
       final XMLMetadata includeMetadata = includeReq.execute().getBody();
 
@@ -98,15 +115,11 @@ public class XMLMetadataRequestImpl
       // edmx:IncludeAnnotations
       for (IncludeAnnotations include : reference.getIncludeAnnotations()) {
         for (CsdlSchema schema : includeMetadata.getSchemas()) {
-          // create empty schema that will be fed with edm:Annotations that match the criteria in IncludeAnnotations
           final CsdlSchema forInclusion = new CsdlSchema();
           forInclusion.setNamespace(schema.getNamespace());
           forInclusion.setAlias(schema.getAlias());
 
-          // process all edm:Annotations in each schema of the included document
           for (CsdlAnnotations annotationGroup : schema.getAnnotationGroups()) {
-            // take into account only when (TargetNamespace was either not provided or matches) and
-            // (Qualifier was either not provided or matches)
             if (((include.getTargetNamespace() == null || include.getTargetNamespace().isBlank())
                 || include.getTargetNamespace().equals(
                     StringHelper.substringBeforeLast(annotationGroup.getTarget(), ".")))
@@ -116,9 +129,9 @@ public class XMLMetadataRequestImpl
               final CsdlAnnotations toBeIncluded = new CsdlAnnotations();
               toBeIncluded.setTarget(annotationGroup.getTarget());
               toBeIncluded.setQualifier(annotationGroup.getQualifier());
-              // only import annotations with terms matching the given TermNamespace
               for (CsdlAnnotation annotation : annotationGroup.getAnnotations()) {
-                if (include.getTermNamespace().equals(StringHelper.substringBeforeLast(annotation.getTerm(), "."))) {
+                if (include.getTermNamespace().equals(
+                    StringHelper.substringBeforeLast(annotation.getTerm(), "."))) {
                   toBeIncluded.getAnnotations().add(annotation);
                 }
               }
@@ -131,9 +144,10 @@ public class XMLMetadataRequestImpl
           }
         }
       }
-    }
 
-    return response;
+      // Recursively process references from the included document
+      processReferences(includeMetadata, response, templateReq, visitedUris);
+    }
   }
 
   private class SingleXMLMetadatRequestImpl extends AbstractMetadataRequestImpl<XMLMetadata> {
