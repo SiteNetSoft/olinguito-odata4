@@ -21,7 +21,7 @@
  * Copyright 2026 SiteNetSoft - Replaced O(N²) property lookup with HashMap (OLINGO-1625)
  * Copyright 2026 SiteNetSoft - Fixed $expand=* including stream properties,
  * instance annotations on single properties, $expand with $level nested
- * navigation, transient entity id handling (OLINGO-1612/1611/1608/1594)
+ * navigation, transient entity id handling including onlyReference null safety (OLINGO-1612/1611/1608/1594)
  * Copyright 2026 SiteNetSoft - OLINGO-1550: Skip aggregated-away key properties in $apply=groupby
  * Copyright 2026 SiteNetSoft - OLINGO-1307: Include expanded complex properties even when not in $select
  */
@@ -344,7 +344,12 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
     for (final Entity entity : entitySet) {
       if (onlyReference) {
         json.writeStartObject();
-        json.writeStringField(constants.getId(), getEntityId(entity, entityType, name));
+        final String entityId = getEntityId(entity, entityType, name);
+        if (entityId != null) {
+          json.writeStringField(constants.getId(), entityId);
+        } else {
+          json.writeNullField(constants.getId());
+        }
         json.writeEndObject();
       } else {
         writeEntity(metadata, entityType, entity, null, expand, toDepth, select, false, ancestors, name, json);

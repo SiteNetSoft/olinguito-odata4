@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - Added nullable collection parameter tests (OLINGO-1633)
  * Copyright 2026 SiteNetSoft - OLINGO-1579: Added bound action with non-binding parameter test
+ * Copyright 2026 SiteNetSoft - OLINGO-1638: Added entity collection parameter test
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.xml;
 
@@ -37,6 +38,7 @@ import java.util.Map;
 
 import org.sitenetsoft.olinguito.commons.api.Constants;
 import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
 import org.sitenetsoft.olinguito.commons.api.data.Parameter;
 import org.sitenetsoft.olinguito.commons.api.data.Property;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
@@ -161,6 +163,35 @@ class ODataXMLDeserializerActionParametersTest extends AbstractODataDeserializer
     complexValue = (ComplexValue) parameter.asCollection().get(1);
     assertEquals((short) -123, complexValue.getValue().get(0).getValue());
     assertEquals("Two", complexValue.getValue().get(1).getValue());
+  }
+
+  @Test
+  void entityCollection() throws Exception {
+    final Parameter parameter = deserializeUARTByteNineParam("CollParameterETTwoPrim",
+        "<atom:feed xmlns:atom=\"http://www.w3.org/2005/Atom\">"
+        + "<atom:entry>"
+        + "<atom:content type=\"application/xml\"><metadata:properties>"
+        + "<data:PropertyInt16>1234</data:PropertyInt16>"
+        + "<data:PropertyString>One</data:PropertyString>"
+        + "</metadata:properties></atom:content>"
+        + "</atom:entry>"
+        + "<atom:entry>"
+        + "<atom:content type=\"application/xml\"><metadata:properties>"
+        + "<data:PropertyInt16>-321</data:PropertyInt16>"
+        + "<data:PropertyString>Two</data:PropertyString>"
+        + "</metadata:properties></atom:content>"
+        + "</atom:entry>"
+        + "</atom:feed>");
+    assertTrue(parameter.isEntity());
+    assertTrue(parameter.isCollection());
+    @SuppressWarnings("unchecked")
+    final List<Entity> entities = (List<Entity>) parameter.asCollection();
+    assertNotNull(entities);
+    assertEquals(2, entities.size());
+    assertEquals((short) 1234, entities.get(0).getProperties().get(0).getValue());
+    assertEquals("One", entities.get(0).getProperties().get(1).getValue());
+    assertEquals((short) -321, entities.get(1).getProperties().get(0).getValue());
+    assertEquals("Two", entities.get(1).getProperties().get(1).getValue());
   }
 
   @Test

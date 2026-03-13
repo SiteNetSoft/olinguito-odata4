@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  * Copyright 2026 SiteNetSoft - Fixed nullable collection parameters in actions (OLINGO-1633)
  * Copyright 2026 SiteNetSoft - OLINGO-1579: Skip binding parameter in EDM validation loop
+ * Copyright 2026 SiteNetSoft - OLINGO-1638: Store entity list instead of EntityCollection wrapper for collection params
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.xml;
 
@@ -835,8 +836,32 @@ public class ODataXmlDeserializer implements ODataDeserializer {
       break;
     case ENTITY:
       if (edmParameter.isCollection()) {
-        final EntityCollection entityCollection = entitySet(reader, start, (EdmEntityType) edmParameter.getType());
-        parameter.setValue(ValueType.COLLECTION_ENTITY, entityCollection);
+        // Advance past the parameter wrapper element to find the <a:feed> element
+        StartElement feedStart = null;
+        while (reader.hasNext()) {
+          final XMLEvent evt = reader.nextEvent();
+          if (evt.isStartElement()
+              && Constants.QNAME_ATOM_ELEM_FEED.equals(evt.asStartElement().getName())) {
+            feedStart = evt.asStartElement();
+            break;
+          }
+          if (evt.isEndElement() && start.getName().equals(evt.asEndElement().getName())) {
+            // Empty/self-closing parameter element — no feed inside
+            break;
+          }
+        }
+        if (feedStart != null) {
+          final EntityCollection entityCollection = entitySet(reader, feedStart,
+              (EdmEntityType) edmParameter.getType());
+          parameter.setValue(ValueType.COLLECTION_ENTITY, entityCollection.getEntities());
+          // Consume remaining events until the parameter end element
+          while (reader.hasNext()) {
+            final XMLEvent evt = reader.nextEvent();
+            if (evt.isEndElement() && start.getName().equals(evt.asEndElement().getName())) {
+              break;
+            }
+          }
+        }
       } else {
         final Entity entity = entity(reader, start, (EdmEntityType) edmParameter.getType());
         parameter.setValue(ValueType.ENTITY, entity);

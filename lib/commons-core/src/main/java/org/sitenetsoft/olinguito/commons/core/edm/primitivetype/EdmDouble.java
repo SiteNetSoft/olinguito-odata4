@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OLINGO-1628: Add EdmDecimal to isCompatible() per OData ABNF
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
@@ -52,6 +54,7 @@ public final class EdmDouble extends SingletonPrimitiveType {
         || primitiveType instanceof EdmInt32
         || primitiveType instanceof EdmInt64
         || primitiveType instanceof EdmSingle
+        || primitiveType instanceof EdmDecimal
         || primitiveType instanceof EdmDouble;
   }
 

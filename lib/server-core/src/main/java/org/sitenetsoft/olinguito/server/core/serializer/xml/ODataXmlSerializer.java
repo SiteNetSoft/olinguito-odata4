@@ -18,7 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Replaced O(N²) property lookup with HashMap (OLINGO-1625)
  * Copyright 2026 SiteNetSoft - Fixed $expand with $level nested navigation
- * and transient entity id handling (OLINGO-1608/1594)
+ * and transient entity id handling including writeReference null safety (OLINGO-1608/1594)
  * Copyright 2026 SiteNetSoft - OLINGO-1550: Skip aggregated-away key properties in $apply=groupby
  * Copyright 2026 SiteNetSoft - OLINGO-1307: Include expanded complex properties even when not in $select
  * Copyright 2026 SiteNetSoft - OLINGO-1581: Added XML instance annotation serialization support
@@ -1352,7 +1352,9 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
             ContextURLBuilder.create(contextURL).toASCIIString());
       }
     }
-    writer.writeAttribute(Constants.ATOM_ATTR_ID, entity.getId().toASCIIString());
+    if (entity.getId() != null) {
+      writer.writeAttribute(Constants.ATOM_ATTR_ID, entity.getId().toASCIIString());
+    }
     writer.writeEndElement();
   }
 
