@@ -22,6 +22,7 @@
  * Copyright 2026 SiteNetSoft - OLINGO-1260: Expression depth limit
  * Copyright 2026 SiteNetSoft - OLINGO-1557: $it in $expand resolves to parent entity type
  * Copyright 2026 SiteNetSoft - OLINGO-1184: Fix bound function after type filter
+ * Copyright 2026 SiteNetSoft - Support $count($filter=...) and $count($search=...) in $filter expressions
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -60,6 +61,8 @@ import org.sitenetsoft.olinguito.server.api.uri.UriResourceFunction;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceLambdaVariable;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourcePartTyped;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.AliasQueryOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.FilterOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SearchOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.apply.AggregateExpression;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.BinaryOperatorKind;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Enumeration;
@@ -1077,7 +1080,9 @@ public class ExpressionParser {
       throws UriParserException, UriValidationException {
     // The initial slash (see grammar) must have been checked and consumed by the caller.
     if (tokenizer.next(TokenKind.COUNT)) {
-      uriInfo.addResourcePart(new UriResourceCountImpl());
+      final UriResourceCountImpl countResource = new UriResourceCountImpl();
+      parseCountOptions(countResource, lastResource);
+      uriInfo.addResourcePart(countResource);
     } else if (tokenizer.next(TokenKind.ANY)) {
       uriInfo.addResourcePart(parseLambdaRest(TokenKind.ANY, lastResource));
     } else if (tokenizer.next(TokenKind.ALL)) {
@@ -1086,6 +1091,41 @@ public class ExpressionParser {
       parseBoundFunction(new FullQualifiedName(tokenizer.getText()), uriInfo, lastResource);
     } else {
       throw new UriParserSyntaxException("Unexpected token.", UriParserSyntaxException.MessageKeys.SYNTAX);
+    }
+  }
+
+  /**
+   * Parses optional inline query options after $count, i.e., $count($filter=...;$search=...).
+   * Only $filter and $search are allowed per OData v4.01 ABNF.
+   */
+  private void parseCountOptions(final UriResourceCountImpl countResource,
+      final UriResourcePartTyped lastResource) throws UriParserException, UriValidationException {
+    if (tokenizer.next(TokenKind.OPEN)) {
+      do {
+        if (tokenizer.next(TokenKind.FILTER)) {
+          if (countResource.getFilterOption() != null) {
+            throw new UriParserSyntaxException("Double system query option '$filter'.",
+                UriParserSyntaxException.MessageKeys.DOUBLE_SYSTEM_QUERY_OPTION, "$filter");
+          }
+          ParserHelper.requireNext(tokenizer, TokenKind.EQ);
+          final FilterOption filterOption = new FilterParser(edm, odata)
+              .parse(tokenizer, lastResource.getType(), crossjoinEntitySetNames, aliases);
+          countResource.setFilterOption(filterOption);
+        } else if (tokenizer.next(TokenKind.SEARCH)) {
+          if (countResource.getSearchOption() != null) {
+            throw new UriParserSyntaxException("Double system query option '$search'.",
+                UriParserSyntaxException.MessageKeys.DOUBLE_SYSTEM_QUERY_OPTION, "$search");
+          }
+          ParserHelper.requireNext(tokenizer, TokenKind.EQ);
+          ParserHelper.bws(tokenizer);
+          final SearchOption searchOption = new SearchParser().parse(tokenizer);
+          countResource.setSearchOption(searchOption);
+        } else {
+          throw new UriParserSyntaxException("Only $filter and $search are allowed inside $count(...).",
+              UriParserSyntaxException.MessageKeys.SYNTAX);
+        }
+      } while (tokenizer.next(TokenKind.SEMI));
+      ParserHelper.requireNext(tokenizer, TokenKind.CLOSE);
     }
   }
 

@@ -15,13 +15,31 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Added filter and search options to UriResourceCount
  */
 package org.sitenetsoft.olinguito.server.api.uri;
+
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.FilterOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SearchOption;
 
 /**
  * Used to describe an $count used within an resource path
  * For example: http://.../serviceroot/entityset(1)/$count
  */
 public interface UriResourceCount extends UriResource {
-  // No additional methods needed for now.
+
+  /**
+   * @return the inline filter option from $count($filter=...), or null if not specified
+   */
+  default FilterOption getFilterOption() {
+    return null;
+  }
+
+  /**
+   * @return the inline search option from $count($search=...), or null if not specified
+   */
+  default SearchOption getSearchOption() {
+    return null;
+  }
 }

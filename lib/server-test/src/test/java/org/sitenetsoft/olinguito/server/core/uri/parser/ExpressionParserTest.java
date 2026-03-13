@@ -18,8 +18,13 @@
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - Added tests for $count($filter=...) and $count($search=...) in $filter expressions
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,8 +32,14 @@ import java.util.List;
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfo;
+import org.sitenetsoft.olinguito.server.api.uri.UriResource;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceCount;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceKind;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Binary;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.BinaryOperatorKind;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Expression;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Member;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.MethodKind;
 import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserSemanticException.MessageKeys;
 import org.sitenetsoft.olinguito.server.core.uri.testutil.FilterValidator;
@@ -2430,5 +2441,79 @@ class ExpressionParserTest {
     testFilter.runOnETAllPrim("geo.intersects(geometry'SRID=0;Point(0 0)',null)")
         .isMethod(MethodKind.GEOINTERSECTS, 2)
         .goParameter(0).isLiteralType(oData.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.GeometryPoint));
+  }
+
+  @Test
+  void countWithoutInlineOptions() throws Exception {
+    // $count without parenthesized options should still work (backward compatibility)
+    testFilter.runOnETTwoKeyNav("NavPropertyETTwoKeyNavMany/$count gt 1")
+        .isBinary(BinaryOperatorKind.GT)
+        .left().isMember()
+        .goPath()
+        .first().isNavProperty("NavPropertyETTwoKeyNavMany", EntityTypeProvider.nameETTwoKeyNav, true)
+        .n().isUriPathInfoKind(UriResourceKind.count);
+  }
+
+  @Test
+  void countWithFilterOption() throws Exception {
+    final UriInfo uriInfo = new Parser(edm, oData)
+        .parseUri("ESTwoKeyNav",
+            "$filter=NavPropertyETTwoKeyNavMany/$count($filter=PropertyString eq 'hello') gt 1",
+            null, null);
+    assertNotNull(uriInfo.getFilterOption());
+
+    final Expression outerExpr = uriInfo.getFilterOption().getExpression();
+    assertNotNull(outerExpr);
+
+    final Member member = (Member) ((Binary) outerExpr).getLeftOperand();
+    final List<UriResource> resourceParts = member.getResourcePath().getUriResourceParts();
+    assertEquals(2, resourceParts.size());
+    assertEquals(UriResourceKind.navigationProperty, resourceParts.get(0).getKind());
+    assertEquals(UriResourceKind.count, resourceParts.get(1).getKind());
+
+    final UriResourceCount countResource = (UriResourceCount) resourceParts.get(1);
+    assertNotNull(countResource.getFilterOption());
+    assertNull(countResource.getSearchOption());
+    assertNotNull(countResource.getFilterOption().getExpression());
+  }
+
+  @Test
+  void countWithSearchOption() throws Exception {
+    final UriInfo uriInfo = new Parser(edm, oData)
+        .parseUri("ESTwoKeyNav",
+            "$filter=NavPropertyETTwoKeyNavMany/$count($search=test) gt 1",
+            null, null);
+    assertNotNull(uriInfo.getFilterOption());
+
+    final Expression outerExpr = uriInfo.getFilterOption().getExpression();
+    final Member member = (Member) ((Binary) outerExpr).getLeftOperand();
+    final List<UriResource> resourceParts = member.getResourcePath().getUriResourceParts();
+    final UriResourceCount countResource = (UriResourceCount) resourceParts.get(1);
+    assertNull(countResource.getFilterOption());
+    assertNotNull(countResource.getSearchOption());
+    assertNotNull(countResource.getSearchOption().getSearchExpression());
+  }
+
+  @Test
+  void countWithFilterAndSearchOptions() throws Exception {
+    final UriInfo uriInfo = new Parser(edm, oData)
+        .parseUri("ESTwoKeyNav",
+            "$filter=NavPropertyETTwoKeyNavMany/$count($filter=PropertyString eq 'hello';$search=test) gt 1",
+            null, null);
+    assertNotNull(uriInfo.getFilterOption());
+
+    final Expression outerExpr = uriInfo.getFilterOption().getExpression();
+    final Member member = (Member) ((Binary) outerExpr).getLeftOperand();
+    final List<UriResource> resourceParts = member.getResourcePath().getUriResourceParts();
+    final UriResourceCount countResource = (UriResourceCount) resourceParts.get(1);
+    assertNotNull(countResource.getFilterOption());
+    assertNotNull(countResource.getSearchOption());
+  }
+
+  @Test
+  void countWithInvalidOptionRejected() throws Exception {
+    testFilter.runOnETTwoKeyNavEx(
+        "NavPropertyETTwoKeyNavMany/$count($select=PropertyString) gt 1")
+        .isExSyntax(UriParserSyntaxException.MessageKeys.SYNTAX);
   }
 }

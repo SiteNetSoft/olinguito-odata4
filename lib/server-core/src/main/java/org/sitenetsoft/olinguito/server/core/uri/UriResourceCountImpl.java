@@ -15,16 +15,43 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Added filter and search options to UriResourceCountImpl
  */
 package org.sitenetsoft.olinguito.server.core.uri;
 
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceCount;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceKind;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.FilterOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SearchOption;
 
 public class UriResourceCountImpl extends UriResourceImpl implements UriResourceCount {
 
+  private FilterOption filterOption;
+  private SearchOption searchOption;
+
   public UriResourceCountImpl() {
     super(UriResourceKind.count);
+  }
+
+  @Override
+  public FilterOption getFilterOption() {
+    return filterOption;
+  }
+
+  public UriResourceCountImpl setFilterOption(final FilterOption filterOption) {
+    this.filterOption = filterOption;
+    return this;
+  }
+
+  @Override
+  public SearchOption getSearchOption() {
+    return searchOption;
+  }
+
+  public UriResourceCountImpl setSearchOption(final SearchOption searchOption) {
+    this.searchOption = searchOption;
+    return this;
   }
 
   @Override
