@@ -21,6 +21,7 @@
  * and transient entity id handling (OLINGO-1608/1594)
  * Copyright 2026 SiteNetSoft - OLINGO-1550: Skip aggregated-away key properties in $apply=groupby
  * Copyright 2026 SiteNetSoft - OLINGO-1307: Include expanded complex properties even when not in $select
+ * Copyright 2026 SiteNetSoft - OLINGO-1581: Added XML instance annotation serialization support
  */
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
@@ -100,6 +101,9 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
   private static final String NS_METADATA = Constants.NS_METADATA;
   private static final String DATA = Constants.PREFIX_DATASERVICES;
   private static final String NS_DATA = Constants.NS_DATASERVICES;
+
+  private final ODataXmlInstanceAnnotationSerializer instanceAnnotSerializer =
+      new ODataXmlInstanceAnnotationSerializer();
 
   @Override
   public SerializerResult serviceDocument(final ServiceMetadata metadata, final String serviceRoot)
@@ -532,7 +536,10 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
       writer.writeAttribute(Constants.ATOM_ATTR_TERM,
           "#" + resolvedType.getFullQualifiedName().getFullQualifiedNameAsString());
       writer.writeEndElement();
-  
+
+      // Write instance annotations on the entity
+      instanceAnnotSerializer.writeInstanceAnnotationsOnEntity(entity.getAnnotations(), writer);
+
       // In the case media, content is sibiling
       if (!entityType.hasStream()) {
         writer.writeStartElement(NS_ATOM, Constants.ATOM_ELEM_CONTENT);
@@ -835,9 +842,11 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
             SerializerException.MessageKeys.MISSING_PROPERTY, edmProperty.getName());
       }
     } else {
-      writePropertyValue(metadata, edmProperty, property, selectedPaths, 
+      writePropertyValue(metadata, edmProperty, property, selectedPaths,
           xml10InvalidCharReplacement, writer, expandedPaths, linked, expand);
     }
+    // Write instance annotations on the property
+    instanceAnnotSerializer.writeInstanceAnnotationsOnProperties(edmProperty, property, writer);
     writer.writeEndElement();
   }
 
