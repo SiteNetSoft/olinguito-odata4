@@ -1284,6 +1284,9 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       if (isODataMetadataFull) {
         json.writeStringField(constants.getType(),  "#Collection("+type.getFullQualifiedName().getName()+")");
       }
+      if (options != null && options.getCount() != null && options.getCount().getValue()) {
+        writeInlineCount("", property.getCount(), json);
+      }
       writeOperations(property.getOperations(), json);
       writeInstanceAnnotationsOnProperties(property, json);
       json.writeFieldName(Constants.VALUE);
@@ -1323,6 +1326,9 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       if (isODataMetadataFull) {
         json.writeStringField(constants.getType(), 
             "#Collection(" + type.getFullQualifiedName().getFullQualifiedNameAsString() + ")");                
+      }
+      if (options != null && options.getCount() != null && options.getCount().getValue()) {
+        writeInlineCount("", property.getCount(), json);
       }
       writeOperations(property.getOperations(), json);
       writeInstanceAnnotationsOnProperties(property, json);

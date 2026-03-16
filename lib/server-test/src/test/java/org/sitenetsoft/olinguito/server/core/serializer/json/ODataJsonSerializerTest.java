@@ -1900,6 +1900,32 @@ class ODataJsonSerializerTest {
   }
 
   @Test
+  void primitiveCollectionPropertyWithCount() throws Exception {
+    final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESCollAllPrim");
+    final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("CollPropertyString");
+    final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty(edmProperty.getName());
+    property.setCount(property.asCollection().size());
+
+    CountOption countOption = Mockito.mock(CountOption.class);
+    Mockito.when(countOption.getValue()).thenReturn(true);
+
+    final String resultString = new String(serializer
+        .primitiveCollection(metadata, (EdmPrimitiveType) edmProperty.getType(), property,
+            PrimitiveSerializerOptions.with()
+                .contextURL(ContextURL.with()
+                    .entitySet(edmEntitySet).keyPath("1").navOrPropertyPath(edmProperty.getName())
+                    .build())
+                .count(countOption)
+                .build()).getContent().readAllBytes(), StandardCharsets.UTF_8);
+    Assertions.assertEquals("{"
+        + "\"@odata.context\":\"../$metadata#ESCollAllPrim(1)/CollPropertyString\","
+        + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
+        + "\"@odata.count\":3,"
+        + "\"value\":[\"Employee1@company.example\",\"Employee2@company.example\",\"Employee3@company.example\"]}",
+        resultString);
+  }
+
+  @Test
   void complexProperty() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESMixPrimCollComp");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("PropertyComp");
@@ -2016,7 +2042,36 @@ class ODataJsonSerializerTest {
         + "\"NavPropertyETTwoKeyNavOne@odata.navigationLink\":\"ESTwoKeyNav(PropertyInt16=1,PropertyString='2')\"}]}";
     Assertions.assertEquals(expectedResult, resultString);
   }
-  
+
+  @Test
+  void complexCollectionPropertyWithCount() throws Exception {
+    final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESMixPrimCollComp");
+    final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("CollPropertyComp");
+    final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty(edmProperty.getName());
+    property.setCount(property.asCollection().size());
+
+    CountOption countOption = Mockito.mock(CountOption.class);
+    Mockito.when(countOption.getValue()).thenReturn(true);
+
+    final String resultString = new String(serializer
+        .complexCollection(metadata, (EdmComplexType) edmProperty.getType(), property,
+            ComplexSerializerOptions.with()
+                .contextURL(ContextURL.with()
+                    .entitySet(edmEntitySet).keyPath("32767").navOrPropertyPath(edmProperty.getName())
+                    .build())
+                .count(countOption)
+                .build()).getContent().readAllBytes(), StandardCharsets.UTF_8);
+    Assertions.assertEquals("{"
+        + "\"@odata.context\":\"../$metadata#ESMixPrimCollComp(32767)/CollPropertyComp\","
+        + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
+        + "\"@odata.count\":3,"
+        + "\"value\":[{\"PropertyInt16\":123,\"PropertyString\":\"TEST 1\"},"
+        + "{\"PropertyInt16\":456,\"PropertyString\":\"TEST 2\"},"
+        + "{\"@odata.type\":\"#olingo.odata.test1.CTBase\",\"PropertyInt16\":789,"
+        + "\"PropertyString\":\"TEST 3\",\"AdditionalPropString\":\"ADD TEST\"}]}",
+        resultString);
+  }
+
   @Test
   void entityReference() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");

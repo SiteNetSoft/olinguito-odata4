@@ -15,10 +15,13 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OLINGO-1596: Add $count support for collection properties
  */
 package org.sitenetsoft.olinguito.server.api.serializer;
 
 import org.sitenetsoft.olinguito.commons.api.data.ContextURL;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.CountOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectOption;
 
@@ -26,6 +29,7 @@ import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectOption;
 public class ComplexSerializerOptions {
 
   private ContextURL contextURL;
+  private CountOption count;
   private ExpandOption expand;
   private SelectOption select;
   private String xml10InvalidCharReplacement;
@@ -33,6 +37,11 @@ public class ComplexSerializerOptions {
   /** Gets the {@link ContextURL}. */
   public ContextURL getContextURL() {
     return contextURL;
+  }
+
+  /** Gets the $count system query option. */
+  public CountOption getCount() {
+    return count;
   }
 
   /** Gets the $expand system query option. */
@@ -69,6 +78,12 @@ public class ComplexSerializerOptions {
     /** Sets the {@link ContextURL}. */
     public Builder contextURL(final ContextURL contextURL) {
       options.contextURL = contextURL;
+      return this;
+    }
+
+    /** Sets the $count system query option. */
+    public Builder count(final CountOption count) {
+      options.count = count;
       return this;
     }
 
