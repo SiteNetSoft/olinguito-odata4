@@ -15,16 +15,20 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OLINGO-1596: Add $count support for collection properties
  */
 package org.sitenetsoft.olinguito.server.api.serializer;
 
 import org.sitenetsoft.olinguito.commons.api.data.ContextURL;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.CountOption;
 
 /** Options for the OData serializer. */
 public final class PrimitiveSerializerOptions {
 
   private ContextURL contextURL;
+  private CountOption count;
   private Boolean isNullable;
   private Integer maxLength;
   private Integer precision;
@@ -35,6 +39,11 @@ public final class PrimitiveSerializerOptions {
   /** Gets the {@link ContextURL}. */
   public ContextURL getContextURL() {
     return contextURL;
+  }
+
+  /** Gets the $count system query option. */
+  public CountOption getCount() {
+    return count;
   }
 
   /** Gets the nullable facet. */
@@ -87,6 +96,12 @@ public final class PrimitiveSerializerOptions {
     /** Sets the {@link ContextURL}. */
     public Builder contextURL(final ContextURL contextURL) {
       options.contextURL = contextURL;
+      return this;
+    }
+
+    /** Sets the $count system query option. */
+    public Builder count(final CountOption count) {
+      options.count = count;
       return this;
     }
 

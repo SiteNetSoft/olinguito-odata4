@@ -15,15 +15,23 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OLINGO-1605: Make Geospatial types Serializable
  */
 package org.sitenetsoft.olinguito.commons.api.edm.geo;
+
+import java.io.Serial;
+import java.io.Serializable;
 
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 
 /**
  * Base class for all geospatial info.
  */
-public abstract class Geospatial {
+public abstract class Geospatial implements Serializable {
+
+  @Serial
+  private static final long serialVersionUID = 1L;
 
   /**
    * Dimension of the geospatial type

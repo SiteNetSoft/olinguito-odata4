@@ -1220,6 +1220,10 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
       }
       writeMetadataETag(metadata, writer);
       writer.writeAttribute(METADATA, NS_METADATA, Constants.ATTR_TYPE, "#Collection(" + type.getName() + ")");
+      if (options != null && options.getCount() != null && options.getCount().getValue()
+          && property.getCount() != null) {
+        writeCount(property, writer);
+      }
       writePrimitiveCollection(type, property,
           options == null ? null : options.isNullable(),
           options == null ? null : options.getMaxLength(),
@@ -1273,6 +1277,10 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
       writer.writeAttribute(METADATA, NS_METADATA, Constants.CONTEXT,
           ContextURLBuilder.create(contextURL).toASCIIString());
       writeMetadataETag(metadata, writer);
+      if (options != null && options.getCount() != null && options.getCount().getValue()
+          && property.getCount() != null) {
+        writeCount(property, writer);
+      }
       Set<List<String>> selectedPaths = null;
       if (null != options && null != options.getSelect()) {
         final boolean all = ExpandSelectHelper.isAll(options.getSelect());
@@ -1415,6 +1423,13 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
       throws XMLStreamException {
     writer.writeStartElement(METADATA, Constants.ATOM_ELEM_COUNT, NS_METADATA);
     writer.writeCharacters(String.valueOf(entitySet.getCount()==null?0:entitySet.getCount()));
+    writer.writeEndElement();
+  }
+
+  private void writeCount(final Property property, final XMLStreamWriter writer)
+      throws XMLStreamException {
+    writer.writeStartElement(METADATA, Constants.ATOM_ELEM_COUNT, NS_METADATA);
+    writer.writeCharacters(String.valueOf(property.getCount() == null ? 0 : property.getCount()));
     writer.writeEndElement();
   }
 

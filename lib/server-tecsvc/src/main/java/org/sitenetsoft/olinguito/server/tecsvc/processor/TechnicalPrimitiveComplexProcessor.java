@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
+ * Copyright 2026 SiteNetSoft - OLINGO-1596: Add $count support for collection properties
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
@@ -74,6 +75,7 @@ import org.sitenetsoft.olinguito.server.api.uri.UriResourceComplexProperty;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceFunction;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceKind;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceProperty;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.CountOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectOption;
 import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider;
@@ -282,10 +284,15 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
               response.setHeader(HttpHeader.ETAG, entity.getMediaETag());
             }
           }else {
+            final CountOption countOption = uriInfo.getCountOption();
             final ExpandOption expand = uriInfo.getExpandOption();
             final SelectOption select = uriInfo.getSelectOption();
+            if (countOption != null && countOption.getValue()
+                && property.isCollection() && property.asCollection() != null) {
+              property.setCount(property.asCollection().size());
+            }
             final SerializerResult result = serializeProperty(entity, edmEntitySet, path, property, edmProperty,
-                type, returnType, representationType, contentType, expand, select);
+                type, returnType, representationType, contentType, countOption, expand, select);
             response.setContent(result.getContent());
           }
         }
@@ -365,7 +372,7 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
             serializePrimitiveValue(property, edmProperty, (EdmPrimitiveType) edmProperty.getType(), null));
       } else {
         final SerializerResult result = serializeProperty(entity, edmEntitySet, path, property, edmProperty,
-            edmProperty.getType(), null, representationType, responseFormat, null, null);
+            edmProperty.getType(), null, representationType, responseFormat, null, null, null);
         response.setContent(result.getContent());
       }
       if (edmProperty.getType().getFullQualifiedName()
@@ -461,7 +468,8 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
       final List<String> path, final Property property, final EdmProperty edmProperty,
       final EdmType type, final EdmReturnType returnType,
       final RepresentationType representationType, final ContentType responseFormat,
-      final ExpandOption expand, final SelectOption select) throws ODataLibraryException {
+      final CountOption count, final ExpandOption expand, final SelectOption select)
+      throws ODataLibraryException {
     ODataSerializer serializer = odata.createSerializer(responseFormat);
     final ContextURL contextURL = isODataMetadataNone(responseFormat) ? null :
         getContextUrl(edmEntitySet, entity, path, type, representationType, expand, select);
@@ -486,6 +494,7 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
     case COLLECTION_PRIMITIVE:
       result = serializer.primitiveCollection(serviceMetadata, (EdmPrimitiveType) type, property,
           PrimitiveSerializerOptions.with().contextURL(contextURL)
+              .count(count)
               .nullable(edmProperty == null ? returnType.isNullable() : edmProperty.isNullable())
               .maxLength(edmProperty == null ? returnType.getMaxLength() : edmProperty.getMaxLength())
               .precision(edmProperty == null ? returnType.getPrecision() : edmProperty.getPrecision())
@@ -496,7 +505,7 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
     case COLLECTION_COMPLEX:
       result = serializer.complexCollection(serviceMetadata, (EdmComplexType) type, property,
           ComplexSerializerOptions.with().contextURL(contextURL)
-              .expand(expand).select(select)
+              .count(count).expand(expand).select(select)
               .build());
       break;
     default:

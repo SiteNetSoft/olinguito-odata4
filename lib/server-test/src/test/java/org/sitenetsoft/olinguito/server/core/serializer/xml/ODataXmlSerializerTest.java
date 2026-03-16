@@ -2785,6 +2785,36 @@ class ODataXmlSerializerTest {
   }
 
   @Test
+  void primitiveCollectionPropertyWithCount() throws Exception {
+    final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESCollAllPrim");
+    final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("CollPropertyString");
+    final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty(edmProperty.getName());
+    property.setCount(property.asCollection().size());
+
+    CountOption countOption = Mockito.mock(CountOption.class);
+    Mockito.when(countOption.getValue()).thenReturn(true);
+
+    final String resultString = new String(serializer
+        .primitiveCollection(metadata, (EdmPrimitiveType) edmProperty.getType(), property,
+            PrimitiveSerializerOptions.with()
+                .contextURL(ContextURL.with()
+                    .entitySet(edmEntitySet).keyPath("1").navOrPropertyPath(edmProperty.getName())
+                    .build())
+                .count(countOption)
+                .build()).getContent().readAllBytes(), StandardCharsets.UTF_8);
+    String expected = "<?xml version='1.0' encoding='UTF-8'?>"
+        + "<m:value xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\" "
+        + "m:context=\"../$metadata#ESCollAllPrim(1)/CollPropertyString\" "
+        + "m:metadata-etag=\"metadataETag\"  m:type=\"#Collection(String)\">"
+        + "<m:count>3</m:count>"
+        + "<m:element>Employee1@company.example</m:element>"
+        + "<m:element>Employee2@company.example</m:element>"
+        + "<m:element>Employee3@company.example</m:element>"
+        + "</m:value>";
+    checkXMLEqual(expected, resultString);
+  }
+
+  @Test
   void complexProperty() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESMixPrimCollComp");
     final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("PropertyComp");
@@ -2862,6 +2892,27 @@ class ODataXmlSerializerTest {
               </m:element>
             </m:value>""";
     checkXMLEqual(expected, resultString);
+  }
+
+  @Test
+  void complexCollectionPropertyWithCount() throws Exception {
+    final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESMixPrimCollComp");
+    final EdmProperty edmProperty = (EdmProperty) edmEntitySet.getEntityType().getProperty("CollPropertyComp");
+    final Property property = data.readAll(edmEntitySet).getEntities().get(0).getProperty(edmProperty.getName());
+    property.setCount(property.asCollection().size());
+
+    CountOption countOption = Mockito.mock(CountOption.class);
+    Mockito.when(countOption.getValue()).thenReturn(true);
+
+    final String resultString = new String(serializer
+        .complexCollection(metadata, (EdmComplexType) edmProperty.getType(), property,
+            ComplexSerializerOptions.with()
+                .contextURL(ContextURL.with()
+                    .entitySet(edmEntitySet).keyPath("32767").navOrPropertyPath(edmProperty.getName())
+                    .build())
+                .count(countOption)
+                .build()).getContent().readAllBytes(), StandardCharsets.UTF_8);
+    Assertions.assertTrue(resultString.contains("<m:count>3</m:count>"));
   }
 
   @Test

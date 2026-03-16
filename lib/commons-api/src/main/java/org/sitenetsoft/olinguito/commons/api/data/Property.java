@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
+ * Copyright 2026 SiteNetSoft - OLINGO-1596: Add count field for collection properties with $count=true
  */
 package org.sitenetsoft.olinguito.commons.api.data;
 
@@ -30,6 +31,7 @@ import java.util.Objects;
 public class Property extends Valuable {
 
   private String name;
+  private Integer count;
   private final List<Operation> operations = new ArrayList<>();
   
   /**
@@ -88,13 +90,31 @@ public class Property extends Valuable {
   }
   
   /**
+   * Gets the count for collection properties (used with $count=true).
+   *
+   * @return the count, or null if not set
+   */
+  public Integer getCount() {
+    return count;
+  }
+
+  /**
+   * Sets the count for collection properties (used with $count=true).
+   *
+   * @param count the count value
+   */
+  public void setCount(final Integer count) {
+    this.count = count;
+  }
+
+  /**
    * Gets operations.
    *
    * @return operations.
    */
   public List<Operation> getOperations() {
     return operations;
-  }  
+  }
 
   @Override
   public boolean equals(final Object o) {
