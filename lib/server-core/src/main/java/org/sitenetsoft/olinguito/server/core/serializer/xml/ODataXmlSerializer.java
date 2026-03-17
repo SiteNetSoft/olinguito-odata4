@@ -22,6 +22,7 @@
  * Copyright 2026 SiteNetSoft - OLINGO-1550: Skip aggregated-away key properties in $apply=groupby
  * Copyright 2026 SiteNetSoft - OLINGO-1307: Include expanded complex properties even when not in $select
  * Copyright 2026 SiteNetSoft - OLINGO-1581: Added XML instance annotation serialization support
+ * Copyright 2026 SiteNetSoft - OLINGO-1402: Use entity editLink/selfLink in XML serializer
  */
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
@@ -502,7 +503,18 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
 
       writerAuthorInfo(entity.getTitle(), writer);
 
-      if (entity.getId() != null) {
+      if (entity.getSelfLink() != null) {
+        writer.writeStartElement(NS_ATOM, Constants.ATOM_ELEM_LINK);
+        writer.writeAttribute(Constants.ATTR_REL, Constants.SELF_LINK_REL);
+        writer.writeAttribute(Constants.ATTR_HREF, entity.getSelfLink().getHref());
+        writer.writeEndElement();
+      }
+      if (entity.getEditLink() != null) {
+        writer.writeStartElement(NS_ATOM, Constants.ATOM_ELEM_LINK);
+        writer.writeAttribute(Constants.ATTR_REL, Constants.EDIT_LINK_REL);
+        writer.writeAttribute(Constants.ATTR_HREF, entity.getEditLink().getHref());
+        writer.writeEndElement();
+      } else if (entity.getId() != null) {
         writer.writeStartElement(NS_ATOM, Constants.ATOM_ELEM_LINK);
         writer.writeAttribute(Constants.ATTR_REL, Constants.EDIT_LINK_REL);
         writer.writeAttribute(Constants.ATTR_HREF, entity.getId().toASCIIString());

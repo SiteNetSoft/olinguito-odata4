@@ -380,8 +380,9 @@ class ODataJsonSerializerTest {
             "\"PropertyInt16@odata.type\":\"#Int16\"," + 
             "\"PropertyInt16\":32767," + 
             "\"PropertyString\":\"Test String4\"," + 
-            "\"NavPropertyETAllPrimOne@odata.navigationLink\":\"ESAllPrim(32767)\"," + 
-            "\"#olingo.odata.test1.BAETTwoPrimRTString\":{" + 
+            "\"NavPropertyETAllPrimOne@odata.navigationLink\":\"ESAllPrim(32767)\"," +
+            "\"NavPropertyETAllPrimMany@odata.navigationLink\":\"ESTwoPrim(32767)/NavPropertyETAllPrimMany\"," +
+            "\"#olingo.odata.test1.BAETTwoPrimRTString\":{" +
             "\"title\":\"olingo.odata.test1.BAETTwoPrimRTString\"," + 
             "\"target\":\"ESTwoPrim(32767)/olingo.odata.test1.BAETTwoPrimRTString\"" + 
             "}," + 
@@ -951,6 +952,8 @@ class ODataJsonSerializerTest {
         + "\"value\":[{\"@odata.type\":\"#olingo.odata.test1.ETTwoPrim\",\"@odata.id\":\"ESTwoPrim(32766)\","
         + "\"PropertyInt16@odata.type\":\"#Int16\",\"PropertyInt16\":32766,"
         + "\"PropertyString\":\"Test String1\","
+        + "\"NavPropertyETAllPrimOne@odata.navigationLink\":\"ESTwoPrim(32766)/NavPropertyETAllPrimOne\","
+        + "\"NavPropertyETAllPrimMany@odata.navigationLink\":\"ESTwoPrim(32766)/NavPropertyETAllPrimMany\","
         + "\"#olingo.odata.test1.BAETTwoPrimRTString\":"
         + "{\"title\":\"olingo.odata.test1.BAETTwoPrimRTString\","
         + "\"target\":\"ESTwoPrim(32766)/olingo.odata.test1.BAETTwoPrimRTString\"},"
@@ -967,6 +970,7 @@ class ODataJsonSerializerTest {
         + "{\"@odata.type\":\"#olingo.odata.test1.ETTwoPrim\",\"@odata.id\":\"ESTwoPrim(-365)\","
         + "\"PropertyInt16@odata.type\":\"#Int16\",\"PropertyInt16\":-365,"
         + "\"PropertyString\":\"Test String2\","
+        + "\"NavPropertyETAllPrimOne@odata.navigationLink\":\"ESTwoPrim(-365)/NavPropertyETAllPrimOne\","
         + "\"NavPropertyETAllPrimMany@odata.navigationLink\":\"ESTwoPrim(-365)/NavPropertyETAllPrimMany\","
         + "\"#olingo.odata.test1.BAETTwoPrimRTString\":"
         + "{\"title\":\"olingo.odata.test1.BAETTwoPrimRTString\","
@@ -983,6 +987,8 @@ class ODataJsonSerializerTest {
         + "{\"@odata.type\":\"#olingo.odata.test1.ETTwoPrim\",\"@odata.id\":\"ESTwoPrim(-32766)\","
         + "\"PropertyInt16@odata.type\":\"#Int16\",\"PropertyInt16\":-32766,"
         + "\"PropertyString\":null,"
+        + "\"NavPropertyETAllPrimOne@odata.navigationLink\":\"ESTwoPrim(-32766)/NavPropertyETAllPrimOne\","
+        + "\"NavPropertyETAllPrimMany@odata.navigationLink\":\"ESTwoPrim(-32766)/NavPropertyETAllPrimMany\","
         + "\"#olingo.odata.test1.BAETTwoPrimRTString\":"
         + "{\"title\":\"olingo.odata.test1.BAETTwoPrimRTString\","
         + "\"target\":\"ESTwoPrim(-32766)/olingo.odata.test1.BAETTwoPrimRTString\"},"
@@ -999,6 +1005,7 @@ class ODataJsonSerializerTest {
         + "\"PropertyInt16@odata.type\":\"#Int16\",\"PropertyInt16\":32767,"
         + "\"PropertyString\":\"Test String4\","
         + "\"NavPropertyETAllPrimOne@odata.navigationLink\":\"ESAllPrim(32767)\","
+        + "\"NavPropertyETAllPrimMany@odata.navigationLink\":\"ESTwoPrim(32767)/NavPropertyETAllPrimMany\","
         + "\"#olingo.odata.test1.BAETTwoPrimRTString\":"
         + "{\"title\":\"olingo.odata.test1.BAETTwoPrimRTString\","
         + "\"target\":\"ESTwoPrim(32767)/olingo.odata.test1.BAETTwoPrimRTString\"},"
@@ -1165,10 +1172,11 @@ class ODataJsonSerializerTest {
         + "\"@odata.mediaEtag\":\"W/\\\\\\\"08D25949E3BFB7AB\\\\\\\"\",\"@odata.mediaContentType\":\"image/svg+xml\","
         + "\"@odata.mediaEditLink\":\"ESMedia(1)/$value\","
         + "\"@odata.type\":\"#olingo.odata.test1.ETMedia\",\"@odata.id\":\"ESMedia(1)\","
-        + "\"PropertyInt16@odata.type\":\"#Int16\",\"PropertyInt16\":1}";
+        + "\"PropertyInt16@odata.type\":\"#Int16\",\"PropertyInt16\":1,"
+        + "\"NavPropertyETKeyNavOne@odata.navigationLink\":\"ESMedia(1)/NavPropertyETKeyNavOne\"}";
     Assertions.assertEquals(expectedResult, resultString);
   }
-  
+
   @Test
   void primitiveValuesAllNull() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllNullable");
@@ -2742,7 +2750,14 @@ class ODataJsonSerializerTest {
         + "\"#olingo.odata.test1.ETKeyNavCont\",\"@odata.id\":\"ESKeyNavCont(32766)\","
         + "\"PropertyInt16@odata.type\":\"#Int16\",\"PropertyInt16\":32766,"
         + "\"PropertyString\":\"Test String1\",\"PropertyCompNavCont\":"
-        + "{\"@odata.type\":\"#olingo.odata.test1.CTNavCont\"}}";        
+        + "{\"@odata.type\":\"#olingo.odata.test1.CTNavCont\"},"
+        + "\"NavPropertyETTwoKeyNavOne@odata.navigationLink\":\"ESKeyNavCont(32766)/NavPropertyETTwoKeyNavOne\","
+        + "\"NavPropertyETTwoKeyNavMany@odata.navigationLink\":\"ESKeyNavCont(32766)/NavPropertyETTwoKeyNavMany\","
+        + "\"NavPropertyETTwoKeyNavContOne@odata.navigationLink\":\"ESKeyNavCont(32766)/NavPropertyETTwoKeyNavContOne\","
+        + "\"NavPropertyETTwoKeyNavContMany@odata.navigationLink\":\"ESKeyNavCont(32766)/NavPropertyETTwoKeyNavContMany\","
+        + "\"NavPropertyETContOne@odata.navigationLink\":\"ESKeyNavCont(32766)/NavPropertyETContOne\","
+        + "\"NavPropertyETContMany@odata.navigationLink\":\"ESKeyNavCont(32766)/NavPropertyETContMany\","
+        + "\"NavPropertyETBaseContMany@odata.navigationLink\":\"ESKeyNavCont(32766)/NavPropertyETBaseContMany\"}";
 
     Assertions.assertEquals(expected, resultString);
   }
@@ -2781,7 +2796,13 @@ class ODataJsonSerializerTest {
         + "\"PropertyTimeOfDay@odata.type\":\"#TimeOfDay\","
         + "\"PropertyTimeOfDay\":\"23:49:14\",\"PropertyBoolean\":false,"
         + "\"PropertyByte@odata.type\":\"#Byte\",\"PropertyByte\":0,"
-        + "\"PropertySByte@odata.type\":\"#SByte\",\"PropertySByte\":-128},"
+        + "\"PropertySByte@odata.type\":\"#SByte\",\"PropertySByte\":-128,"
+        + "\"NavPropertyETBaseContOne@odata.navigationLink\":\"ESKeyNavCont(-365)/NavPropertyETContMany(-32768)/NavPropertyETBaseContOne\","
+        + "\"NavPropertyETBaseContMany@odata.navigationLink\":\"ESKeyNavCont(-365)/NavPropertyETContMany(-32768)/NavPropertyETBaseContMany\","
+        + "\"NavPropertyETBaseContTwoContMany@odata.navigationLink\":\"ESKeyNavCont(-365)/NavPropertyETContMany(-32768)/NavPropertyETBaseContTwoContMany\","
+        + "\"NavPropertyETBaseContTwoContOne@odata.navigationLink\":\"ESKeyNavCont(-365)/NavPropertyETContMany(-32768)/NavPropertyETBaseContTwoContOne\","
+        + "\"NavPropertyETContOne@odata.navigationLink\":\"ESKeyNavCont(-365)/NavPropertyETContMany(-32768)/NavPropertyETContOne\","
+        + "\"NavPropertyETContMany@odata.navigationLink\":\"ESKeyNavCont(-365)/NavPropertyETContMany(-32768)/NavPropertyETContMany\"},"
         + "{\"@odata.type\":\"#olingo.odata.test1.ETCont\","
         + "\"@odata.id\":\"ESKeyNavCont(-365)/NavPropertyETContMany(0)\","
         + "\"PropertyInt16@odata.type\":\"#Int16\",\"PropertyInt16\":0,"
@@ -2800,7 +2821,13 @@ class ODataJsonSerializerTest {
         + "\"PropertyTimeOfDay@odata.type\":\"#TimeOfDay\","
         + "\"PropertyTimeOfDay\":\"00:01:01\",\"PropertyBoolean\":false,"
         + "\"PropertyByte@odata.type\":\"#Byte\",\"PropertyByte\":0,"
-        + "\"PropertySByte@odata.type\":\"#SByte\",\"PropertySByte\":0}]}";        
+        + "\"PropertySByte@odata.type\":\"#SByte\",\"PropertySByte\":0,"
+        + "\"NavPropertyETBaseContOne@odata.navigationLink\":\"ESKeyNavCont(-365)/NavPropertyETContMany(0)/NavPropertyETBaseContOne\","
+        + "\"NavPropertyETBaseContMany@odata.navigationLink\":\"ESKeyNavCont(-365)/NavPropertyETContMany(0)/NavPropertyETBaseContMany\","
+        + "\"NavPropertyETBaseContTwoContMany@odata.navigationLink\":\"ESKeyNavCont(-365)/NavPropertyETContMany(0)/NavPropertyETBaseContTwoContMany\","
+        + "\"NavPropertyETBaseContTwoContOne@odata.navigationLink\":\"ESKeyNavCont(-365)/NavPropertyETContMany(0)/NavPropertyETBaseContTwoContOne\","
+        + "\"NavPropertyETContOne@odata.navigationLink\":\"ESKeyNavCont(-365)/NavPropertyETContMany(0)/NavPropertyETContOne\","
+        + "\"NavPropertyETContMany@odata.navigationLink\":\"ESKeyNavCont(-365)/NavPropertyETContMany(0)/NavPropertyETContMany\"}]}";
 
     Assertions.assertEquals(expected, resultString);
   }

@@ -329,7 +329,8 @@ class ODataJsonSerializerv01Test {
             "\"PropertyInt16@type\":\"#Int16\"," + 
             "\"PropertyInt16\":32767," + 
             "\"PropertyString\":\"Test String4\"," + 
-            "\"NavPropertyETAllPrimOne@navigationLink\":\"ESAllPrim(32767)\"," + 
+            "\"NavPropertyETAllPrimOne@navigationLink\":\"ESAllPrim(32767)\"," +
+            "\"NavPropertyETAllPrimMany@navigationLink\":\"ESTwoPrim(32767)/NavPropertyETAllPrimMany\"," +
             "\"#olingo.odata.test1.BAETTwoPrimRTString\":{" + 
             "\"title\":\"olingo.odata.test1.BAETTwoPrimRTString\"," + 
             "\"target\":\"ESTwoPrim(32767)/olingo.odata.test1.BAETTwoPrimRTString\"" + 
@@ -900,6 +901,8 @@ class ODataJsonSerializerv01Test {
         + "\"value\":[{\"@type\":\"#olingo.odata.test1.ETTwoPrim\",\"@id\":\"ESTwoPrim(32766)\","
         + "\"PropertyInt16@type\":\"#Int16\",\"PropertyInt16\":32766,"
         + "\"PropertyString\":\"Test String1\","
+        + "\"NavPropertyETAllPrimOne@navigationLink\":\"ESTwoPrim(32766)/NavPropertyETAllPrimOne\","
+        + "\"NavPropertyETAllPrimMany@navigationLink\":\"ESTwoPrim(32766)/NavPropertyETAllPrimMany\","
         + "\"#olingo.odata.test1.BAETTwoPrimRTString\":"
         + "{\"title\":\"olingo.odata.test1.BAETTwoPrimRTString\","
         + "\"target\":\"ESTwoPrim(32766)/olingo.odata.test1.BAETTwoPrimRTString\"},"
@@ -916,6 +919,7 @@ class ODataJsonSerializerv01Test {
         + "{\"@type\":\"#olingo.odata.test1.ETTwoPrim\",\"@id\":\"ESTwoPrim(-365)\","
         + "\"PropertyInt16@type\":\"#Int16\",\"PropertyInt16\":-365,"
         + "\"PropertyString\":\"Test String2\","
+        + "\"NavPropertyETAllPrimOne@navigationLink\":\"ESTwoPrim(-365)/NavPropertyETAllPrimOne\","
         + "\"NavPropertyETAllPrimMany@navigationLink\":\"ESTwoPrim(-365)/NavPropertyETAllPrimMany\","
         + "\"#olingo.odata.test1.BAETTwoPrimRTString\":"
         + "{\"title\":\"olingo.odata.test1.BAETTwoPrimRTString\","
@@ -932,6 +936,8 @@ class ODataJsonSerializerv01Test {
         + "{\"@type\":\"#olingo.odata.test1.ETTwoPrim\",\"@id\":\"ESTwoPrim(-32766)\","
         + "\"PropertyInt16@type\":\"#Int16\",\"PropertyInt16\":-32766,"
         + "\"PropertyString\":null,"
+        + "\"NavPropertyETAllPrimOne@navigationLink\":\"ESTwoPrim(-32766)/NavPropertyETAllPrimOne\","
+        + "\"NavPropertyETAllPrimMany@navigationLink\":\"ESTwoPrim(-32766)/NavPropertyETAllPrimMany\","
         + "\"#olingo.odata.test1.BAETTwoPrimRTString\":"
         + "{\"title\":\"olingo.odata.test1.BAETTwoPrimRTString\","
         + "\"target\":\"ESTwoPrim(-32766)/olingo.odata.test1.BAETTwoPrimRTString\"},"
@@ -948,6 +954,7 @@ class ODataJsonSerializerv01Test {
         + "\"PropertyInt16@type\":\"#Int16\",\"PropertyInt16\":32767,"
         + "\"PropertyString\":\"Test String4\","
         + "\"NavPropertyETAllPrimOne@navigationLink\":\"ESAllPrim(32767)\","
+        + "\"NavPropertyETAllPrimMany@navigationLink\":\"ESTwoPrim(32767)/NavPropertyETAllPrimMany\","
         + "\"#olingo.odata.test1.BAETTwoPrimRTString\":"
         + "{\"title\":\"olingo.odata.test1.BAETTwoPrimRTString\","
         + "\"target\":\"ESTwoPrim(32767)/olingo.odata.test1.BAETTwoPrimRTString\"},"
@@ -1121,10 +1128,11 @@ class ODataJsonSerializerv01Test {
         + "\"@mediaEtag\":\"W/\\\\\\\"08D25949E3BFB7AB\\\\\\\"\",\"@mediaContentType\":\"image/svg+xml\","
         + "\"@mediaEditLink\":\"ESMedia(1)/$value\","
         + "\"@type\":\"#olingo.odata.test1.ETMedia\",\"@id\":\"ESMedia(1)\","
-        + "\"PropertyInt16@type\":\"#Int16\",\"PropertyInt16\":1}";
+        + "\"PropertyInt16@type\":\"#Int16\",\"PropertyInt16\":1,"
+        + "\"NavPropertyETKeyNavOne@navigationLink\":\"ESMedia(1)/NavPropertyETKeyNavOne\"}";
     Assertions.assertEquals(expectedResult, resultString);
   }
-  
+
   @Test
   void primitiveValuesAllNull() throws Exception {
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllNullable");
