@@ -23,6 +23,7 @@
  * instance annotations on single properties, $expand with $level nested
  * navigation, transient entity id handling including onlyReference null safety (OLINGO-1612/1611/1608/1594)
  * Copyright 2026 SiteNetSoft - OLINGO-1550: Skip aggregated-away key properties in $apply=groupby
+ * Copyright 2026 SiteNetSoft - OLINGO-1019: Synthesize nav links in JSON metadata=full
  * Copyright 2026 SiteNetSoft - OLINGO-1307: Include expanded complex properties even when not in $select
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
@@ -592,11 +593,14 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       for (final String propertyName : type.getNavigationPropertyNames()) {
         final Link navigationLink = linked.getNavigationLink(propertyName);
         if (navigationLink != null) {
-          json.writeStringField(propertyName + constants.getNavigationLink(), navigationLink.getHref());  
+          json.writeStringField(propertyName + constants.getNavigationLink(), navigationLink.getHref());
+        } else if (linked instanceof Entity && linked.getId() != null) {
+          json.writeStringField(propertyName + constants.getNavigationLink(),
+              linked.getId().toASCIIString() + "/" + propertyName);
         }
         final Link associationLink = linked.getAssociationLink(propertyName);
         if (associationLink != null) {
-          json.writeStringField(propertyName + constants.getAssociationLink(), associationLink.getHref());  
+          json.writeStringField(propertyName + constants.getAssociationLink(), associationLink.getHref());
         }
       }
     }

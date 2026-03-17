@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
+ * Copyright 2026 SiteNetSoft - OLINGO-1324: Tolerate trailing slash in URI paths
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -137,6 +138,14 @@ public class Parser {
     // Remove an initial empty segment resulting from the expected '/' at the beginning of the path.
     if (numberOfSegments > 1 && pathSegmentsDecoded.get(0).isEmpty()) {
       pathSegmentsDecoded.remove(0);
+      numberOfSegments--;
+    }
+    // Remove a trailing empty segment resulting from a trailing '/' in the path,
+    // but only if the preceding segment is a non-empty resource segment (not a double-slash).
+    if (numberOfSegments > 1 && pathSegmentsDecoded.get(numberOfSegments - 1).isEmpty()
+        && !pathSegmentsDecoded.get(numberOfSegments - 2).isEmpty()
+        && !pathSegmentsDecoded.get(numberOfSegments - 2).startsWith("$")) {
+      pathSegmentsDecoded.remove(numberOfSegments - 1);
       numberOfSegments--;
     }
 

@@ -345,7 +345,9 @@ public class DerivedAndMixedTypeTestITCase extends AbstractBaseTestITCase {
         + "\"PropertyInt16@odata.type\":\"#Int16\","
         + "\"PropertyInt16\":111,"
         + "\"PropertyString\":\"TEST A\","
-        + "\"AdditionalPropertyString_5\":\"TEST A 0815\""
+        + "\"AdditionalPropertyString_5\":\"TEST A 0815\","
+        + "\"NavPropertyETAllPrimOne@odata.navigationLink\":\"ESBase(111)/NavPropertyETAllPrimOne\","
+        + "\"NavPropertyETAllPrimMany@odata.navigationLink\":\"ESBase(111)/NavPropertyETAllPrimMany\""
         + ",\"#olingo.odata.test1.BAETBaseETTwoBaseRTETTwoBase\":"
         + "{\"title\":\"olingo.odata.test1.BAETBaseETTwoBaseRTETTwoBase\","
         + "\"target\":\"ESBase(111)/olingo.odata.test1.BAETBaseETTwoBaseRTETTwoBase\"}}]"));
