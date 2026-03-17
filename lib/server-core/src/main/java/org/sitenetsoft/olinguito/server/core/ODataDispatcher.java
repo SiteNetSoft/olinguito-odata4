@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  * Copyright 2026 SiteNetSoft - OLINGO-1492: ENUM/DEFINITION dispatch
+ * Copyright 2026 SiteNetSoft - OLINGO-1433: Allow HEAD on media entity streams
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -347,8 +348,8 @@ public class ODataDispatcher {
       ODataHandlerException, PreconditionException {
     final HttpMethod method = request.getMethod();
     validatePreferHeader(request);
-    if (method == HttpMethod.GET) {
-      // This can be a GET on an EntitySet, Navigation or Function
+    if (method == HttpMethod.GET || method == HttpMethod.HEAD) {
+      // This can be a GET/HEAD on an EntitySet, Navigation or Function
       final ContentType requestedContentType = ContentNegotiator.
           doContentNegotiation(uriInfo.getFormatOption(),
           request, handler.getCustomContentTypeSupport(), RepresentationType.MEDIA);

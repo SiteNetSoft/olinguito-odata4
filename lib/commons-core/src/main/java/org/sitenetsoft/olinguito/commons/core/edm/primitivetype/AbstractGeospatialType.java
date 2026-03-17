@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Use Locale.ROOT for case conversion
  * Copyright 2026 SiteNetSoft - Cached compiled regex patterns for split()
+ * Copyright 2026 SiteNetSoft - OLINGO-1440: Fix polygon parsing without interior rings
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
@@ -193,7 +194,9 @@ public abstract class AbstractGeospatialType<T extends Geospatial> extends Singl
 	    interiorRings.add(new LineString(dimension, srid, interior));
     }
     final List<Point> exterior = new ArrayList<>();
-    for (final String pointCoo : split(first[first.length -1].substring(0, first[first.length -1].length() - 1), ',')) {
+    String exteriorRing = first[first.length - 1];
+    int startIdx = (first.length == 1 && !exteriorRing.isEmpty() && exteriorRing.charAt(0) == '(') ? 1 : 0;
+    for (final String pointCoo : split(exteriorRing.substring(startIdx, exteriorRing.length() - 1), ',')) {
       exterior.add(newPoint(null, pointCoo, isNullable, maxLength, precision, scale, isUnicode));
     }
 

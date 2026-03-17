@@ -134,6 +134,24 @@ class EdmGeoTest extends PrimitiveTypeBaseTest {
   }
   
   @Test
+  void polygonWithoutHoles() throws EdmPrimitiveTypeException {
+    final String input = "geography'SRID=0;Polygon((1.0 1.0,2.0 2.0,3.0 3.0,1.0 1.0))'";
+
+    final Polygon polygon = EdmGeographyPolygon.getInstance().
+        valueOfString(input, null, null, null, null, null, Polygon.class);
+    assertNotNull(polygon);
+    assertEquals("0", polygon.getSrid().toString());
+    assertEquals(0, polygon.getNumberOfInteriorRings());
+    Iterator<Point> itor = polygon.getExterior().iterator();
+    assertEquals(1, itor.next().getX(), 0);
+    assertEquals(2, itor.next().getX(), 0);
+    assertEquals(3, itor.next().getX(), 0);
+    assertEquals(1, itor.next().getX(), 0);
+
+    assertEquals(input, EdmGeographyPolygon.getInstance().valueToString(polygon, null, null, null, null, null));
+  }
+
+  @Test
   void polygonMultipleHoles() throws EdmPrimitiveTypeException {
     final String input = "geography'SRID=4326;Polygon((1.0 1.0,1.0 1.0),(2.0 2.0,2.0 2.0)"
       + ",(1.0 1.0,2.0 2.0,3.0 3.0,1.0 1.0))'";

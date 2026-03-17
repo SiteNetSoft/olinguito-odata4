@@ -564,7 +564,8 @@ class ODataHandlerImplTest {
     dispatchMethodNotAllowed(HttpMethod.PATCH, mediaUri, mediaProcessor);
     dispatchMethodNotAllowed(HttpMethod.PUT, mediaUri, mediaProcessor);
     dispatchMethodNotAllowed(HttpMethod.DELETE, mediaUri, mediaProcessor);
-    dispatchMethodNotAllowed(HttpMethod.HEAD, mediaUri, mediaProcessor);
+
+    dispatch(HttpMethod.HEAD, mediaUri, mediaProcessor);
   }
 
   @Test
@@ -791,7 +792,8 @@ class ODataHandlerImplTest {
 
     dispatchMethodNotAllowed(HttpMethod.POST, uri, processor);
     dispatchMethodNotAllowed(HttpMethod.PATCH, uri, processor);
-    dispatchMethodNotAllowed(HttpMethod.HEAD, uri, processor);
+
+    dispatch(HttpMethod.HEAD, uri, processor);
   }
 
   @Test
@@ -841,7 +843,8 @@ class ODataHandlerImplTest {
 
     dispatchMethodNotAllowed(HttpMethod.POST, uri, processor);
     dispatchMethodNotAllowed(HttpMethod.PATCH, uri, processor);
-    dispatchMethodNotAllowed(HttpMethod.HEAD, uri, processor);
+
+    dispatch(HttpMethod.HEAD, uri, processor);
   }
 
   @Test
