@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
+ * Copyright 2026 SiteNetSoft - OLINGO-1564: Handle null/empty in SRID.valueOf()
  */
 package org.sitenetsoft.olinguito.commons.api.edm.geo;
 
@@ -58,7 +59,9 @@ public final class SRID implements Serializable {
   public static SRID valueOf(final String exp) {
     final SRID instance = new SRID();
 
-    if (VARIABLE.equalsIgnoreCase(exp)) {
+    if (exp == null || exp.isEmpty()) {
+      return instance;
+    } else if (VARIABLE.equalsIgnoreCase(exp)) {
       instance.variable = Boolean.TRUE;
     } else {
       instance.value = Integer.parseInt(exp);
