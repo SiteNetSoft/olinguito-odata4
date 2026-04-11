@@ -30,6 +30,9 @@ import java.util.List;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.QueryOption;
 import org.junit.jupiter.api.Test;
 
+/*
+ * Copyright 2026 SiteNetSoft - OLINGO-1518: Tests for parenthesis/quote-aware URI splitter
+ */
 class UriDecoderTest {
 
   @Test
@@ -48,6 +51,19 @@ class UriDecoderTest {
   void path() throws Exception {
     assertEquals(List.of("a", "entitySet('/')", "bcd"),
         UriDecoder.splitAndDecodePath("a/entitySet('%2F')/b%63d"));
+  }
+
+  @Test
+  void pathWithLiteralSlashInsideFunctionParam() throws Exception {
+    // OLINGO-1518: a literal '/' inside a quoted function parameter value
+    // must not be treated as a path separator.
+    assertEquals(List.of("Entities(1)", "Func(x='a/b')", "$count"),
+        UriDecoder.splitAndDecodePath("Entities(1)/Func(x='a/b')/$count"));
+    assertEquals(List.of("Func(a='x/y',b='z')"),
+        UriDecoder.splitAndDecodePath("Func(a='x/y',b='z')"));
+    // Escaped single quote inside the literal: 'it''s/fine'
+    assertEquals(List.of("Func(x='it''s/fine')", "next"),
+        UriDecoder.splitAndDecodePath("Func(x='it''s/fine')/next"));
   }
 
   @Test

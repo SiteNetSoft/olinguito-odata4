@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Thread-safe EDM caches using ConcurrentHashMap
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
  * Copyright 2026 SiteNetSoft - OLINGO-1586: Thread-safe annotation access
+ * Copyright 2026 SiteNetSoft - OLINGO-972: Walk entity type hierarchy for bound operation binding
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
@@ -728,9 +729,16 @@ public class EdmProviderImpl extends AbstractEdm {
    */
   private boolean isEntityPreviousTypeCompatibleToBindingParam(final FullQualifiedName bindingParameterTypeName,
       final CsdlParameter parameter) throws ODataException {
-    return provider.getEntityType(bindingParameterTypeName) != null && 
-    provider.getEntityType(bindingParameterTypeName).getBaseTypeFQN() != null && 
-    provider.getEntityType(bindingParameterTypeName).getBaseTypeFQN().equals(parameter.getTypeFQN());
+    // OLINGO-972: walk the full base-type chain so bound operations defined on an ancestor
+    // type are inherited by grandchild (and deeper) types, not just direct children.
+    CsdlEntityType entityType = provider.getEntityType(bindingParameterTypeName);
+    while (entityType != null && entityType.getBaseTypeFQN() != null) {
+      if (entityType.getBaseTypeFQN().equals(parameter.getTypeFQN())) {
+        return true;
+      }
+      entityType = provider.getEntityType(entityType.getBaseTypeFQN());
+    }
+    return false;
   }
 
   @Override

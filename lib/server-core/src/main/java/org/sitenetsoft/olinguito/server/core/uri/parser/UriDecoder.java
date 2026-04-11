@@ -17,6 +17,8 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Removed static mutable formEncoding state (thread-safety fix)
+ * Copyright 2026 SiteNetSoft - OLINGO-1518: Parenthesis- and quote-aware splitter so function
+ *   parameter values containing literal '/' (or '&' in options) are not broken up.
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -62,6 +64,12 @@ public class UriDecoder {
 
   /**
    * Splits the input string at the given character.
+   * <p>
+   * OLINGO-1518: The splitter skips occurrences of {@code c} that appear inside a
+   * parenthesized group or inside a single-quoted string literal. This lets function
+   * parameter values carry literal slashes (e.g. {@code Func(x='a/b')}) or ampersands
+   * without being broken apart. OData-style escaped quotes ({@code ''}) are preserved.
+   *
    * @param input string to split
    * @param c character at which to split
    * @return list of elements (can be empty)
@@ -70,10 +78,28 @@ public class UriDecoder {
     List<String> list = new LinkedList<>();
 
     int start = 0;
-    int end;
-    while ((end = input.indexOf(c, start)) >= 0) {
-      list.add(input.substring(start, end));
-      start = end + 1;
+    int parenDepth = 0;
+    boolean inQuote = false;
+    final int len = input.length();
+    for (int i = 0; i < len; i++) {
+      final char ch = input.charAt(i);
+      if (ch == '\'') {
+        if (inQuote && i + 1 < len && input.charAt(i + 1) == '\'') {
+          // Escaped single quote inside a string literal
+          i++;
+        } else {
+          inQuote = !inQuote;
+        }
+      } else if (!inQuote) {
+        if (ch == '(') {
+          parenDepth++;
+        } else if (ch == ')' && parenDepth > 0) {
+          parenDepth--;
+        } else if (ch == c && parenDepth == 0) {
+          list.add(input.substring(start, i));
+          start = i + 1;
+        }
+      }
     }
 
     list.add(input.substring(start));
