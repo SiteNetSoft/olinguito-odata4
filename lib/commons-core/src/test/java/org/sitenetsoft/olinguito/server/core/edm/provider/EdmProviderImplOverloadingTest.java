@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - OLINGO-972: Test bound action inheritance across multiple levels
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -200,6 +201,36 @@ class EdmProviderImplOverloadingTest {
   @Test
   void noParametersAtBoundFunctionReslutsInException() {
       assertThrows(EdmException.class, () -> edm.getBoundFunction(badOperationName, operationType1, true, null));
+  }
+
+  @Test
+  void boundActionInheritedByGrandchildType() throws Exception {
+    // OLINGO-972: A bound action defined on a base type must be callable on
+    // grandchild (and deeper) derived types, not just direct children.
+    final FullQualifiedName actionName = new FullQualifiedName("ns", "act");
+    final FullQualifiedName baseType = new FullQualifiedName("ns", "Base");
+    final FullQualifiedName childType = new FullQualifiedName("ns", "Child");
+    final FullQualifiedName grandchildType = new FullQualifiedName("ns", "Grandchild");
+
+    CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
+
+    CsdlAction boundOnBase = new CsdlAction()
+        .setName(actionName.getName())
+        .setBound(true)
+        .setParameters(List.of(new CsdlParameter().setType(baseType).setCollection(false)));
+    when(provider.getActions(actionName)).thenReturn(List.of(boundOnBase));
+
+    when(provider.getEntityType(baseType)).thenReturn(new CsdlEntityType().setName(baseType.getName()));
+    when(provider.getEntityType(childType)).thenReturn(
+        new CsdlEntityType().setName(childType.getName()).setBaseType(baseType.getFullQualifiedNameAsString()));
+    when(provider.getEntityType(grandchildType)).thenReturn(
+        new CsdlEntityType().setName(grandchildType.getName()).setBaseType(childType.getFullQualifiedNameAsString()));
+
+    Edm localEdm = new EdmProviderImpl(provider);
+    EdmAction fromChild = localEdm.getBoundAction(actionName, childType, false);
+    assertNotNull(fromChild, "Bound action must resolve from direct child");
+    EdmAction fromGrandchild = localEdm.getBoundAction(actionName, grandchildType, false);
+    assertNotNull(fromGrandchild, "Bound action must resolve from grandchild (OLINGO-972)");
   }
 
 }
