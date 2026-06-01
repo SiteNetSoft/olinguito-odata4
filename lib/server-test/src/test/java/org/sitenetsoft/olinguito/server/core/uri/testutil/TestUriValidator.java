@@ -246,6 +246,11 @@ public class TestUriValidator implements TestValidator {
     return this;
   }
 
+  public TestUriValidator isExMessageText(final String expectedMessage) {
+    assertEquals(expectedMessage, exception.getTranslatedMessage(java.util.Locale.ENGLISH).getMessage());
+    return this;
+  }
+
   public TestUriValidator isExSyntax(final UriParserSyntaxException.MessageKeys messageKey) {
     assertEquals(UriParserSyntaxException.class, exception.getClass());
     return isExceptionMessage(messageKey);

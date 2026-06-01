@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  * Copyright 2026 SiteNetSoft - Fixed in operator bidirectional type compatibility (OLINGO-1628)
+ * Copyright 2026 SiteNetSoft - OLINGO-1288: Enriched type-incompatibility messages with property and entity context
  * Copyright 2026 SiteNetSoft - OLINGO-1260: Expression depth limit
  * Copyright 2026 SiteNetSoft - OLINGO-1557: $it in $expand resolves to parent entity type
  * Copyright 2026 SiteNetSoft - OLINGO-1184: Fix bound function after type filter
@@ -400,8 +401,10 @@ public class ExpressionParser {
           || !(leftPrim.isCompatible(inPrim) || inPrim.isCompatible(leftPrim))) {
         throw new UriParserSemanticException("Incompatible types.",
             UriParserSemanticException.MessageKeys.TYPES_NOT_COMPATIBLE,
+            leftExprType.getFullQualifiedName().getFullQualifiedNameAsString(),
             inExprType.getFullQualifiedName().getFullQualifiedNameAsString(),
-            leftExprType.getFullQualifiedName().getFullQualifiedNameAsString());
+            expr.toString(),
+            referringTypeName());
       }
     }
   }
@@ -1285,6 +1288,12 @@ public class ExpressionParser {
     return type;
   }
 
+  /** Null-safe name of the entity/complex type the filter expression refers to, for error messages. */
+  private String referringTypeName() {
+    return referringType == null || referringType.getFullQualifiedName() == null ? ""
+        : referringType.getFullQualifiedName().getFullQualifiedNameAsString();
+  }
+
   private boolean isType(final EdmType type, final EdmPrimitiveTypeKind... kinds) throws UriParserException {
     if (type == null) {
       return true;
@@ -1302,8 +1311,10 @@ public class ExpressionParser {
     if (!isType(type, kinds)) {
       throw new UriParserSemanticException("Incompatible types.",
           UriParserSemanticException.MessageKeys.TYPES_NOT_COMPATIBLE,
+          Arrays.deepToString(kinds),
           type == null ? "" : type.getFullQualifiedName().getFullQualifiedNameAsString(),
-          Arrays.deepToString(kinds));
+          "",
+          referringTypeName());
     }
   }
 
@@ -1351,7 +1362,9 @@ public class ExpressionParser {
       throw new UriParserSemanticException("Incompatible types.",
           UriParserSemanticException.MessageKeys.TYPES_NOT_COMPATIBLE,
           leftType.getFullQualifiedName().getFullQualifiedNameAsString(),
-          rightType.getFullQualifiedName().getFullQualifiedNameAsString());
+          rightType.getFullQualifiedName().getFullQualifiedNameAsString(),
+          left.toString(),
+          referringTypeName());
     }
   }
 
@@ -1414,7 +1427,9 @@ public class ExpressionParser {
         throw new UriParserSemanticException("Incompatible types.",
             UriParserSemanticException.MessageKeys.TYPES_NOT_COMPATIBLE,
             leftType.getFullQualifiedName().getFullQualifiedNameAsString(),
-            rightType.getFullQualifiedName().getFullQualifiedNameAsString());
+            rightType.getFullQualifiedName().getFullQualifiedNameAsString(),
+            left.toString(),
+            referringTypeName());
       }
     }
   }
@@ -1465,7 +1480,9 @@ public class ExpressionParser {
     throw new UriParserSemanticException("Incompatible types.",
         UriParserSemanticException.MessageKeys.TYPES_NOT_COMPATIBLE,
         leftType.getFullQualifiedName().getFullQualifiedNameAsString(),
-        rightType.getFullQualifiedName().getFullQualifiedNameAsString());
+        rightType.getFullQualifiedName().getFullQualifiedNameAsString(),
+        left.toString(),
+        referringTypeName());
   }
 
   private void checkStructuredTypeFilter(final EdmType type, final EdmType filterType)

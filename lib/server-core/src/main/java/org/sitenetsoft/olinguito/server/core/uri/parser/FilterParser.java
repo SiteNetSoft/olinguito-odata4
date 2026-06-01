@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - OLINGO-1557: $it in $expand resolves to parent entity type
+ * Copyright 2026 SiteNetSoft - OLINGO-1288: Enriched type-incompatibility messages with property and entity context
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -61,7 +62,10 @@ public class FilterParser {
     } else {
       throw new UriParserSemanticException("Filter expressions must be boolean.",
           UriParserSemanticException.MessageKeys.TYPES_NOT_COMPATIBLE,
-          "Edm.Boolean", type.getFullQualifiedName().getFullQualifiedNameAsString());
+          "Edm.Boolean", type.getFullQualifiedName().getFullQualifiedNameAsString(),
+          tokenizer.getText(),
+          referencedType == null || referencedType.getFullQualifiedName() == null ? ""
+              : referencedType.getFullQualifiedName().getFullQualifiedNameAsString());
     }
   }
 }
