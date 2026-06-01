@@ -359,6 +359,15 @@ class UriParserTest {
   }
 
   @Test
+  void typeMismatchMessageHasPropertyAndEntityContext() throws Exception {
+    // OLINGO-1288: the type-incompatibility message must name the offending property and the data object.
+    testFilter.runOnETKeyNavEx("PropertyInt16 eq 'abc'")
+        .isExSemantic(MessageKeys.TYPES_NOT_COMPATIBLE)
+        .isExMessageText("Incompatible type for property '[PropertyInt16]' in data object "
+            + "'olingo.odata.test1.ETKeyNav'. Expected: 'Edm.Int16' Actual: 'Edm.String'.");
+  }
+
+  @Test
   void metaData() throws Exception {
     // Parsing the fragment may be used if a uri has to be parsed on the consumer side.
     // On the producer side this feature is currently not supported, so the context fragment
