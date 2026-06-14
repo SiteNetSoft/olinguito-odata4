@@ -1682,6 +1682,16 @@ class ExpressionParserTest {
   }
 
   @Test
+  void lambdaVariableInFunctionParameter() throws Exception {
+    // OLINGO-1334: a lambda bound variable ('d') must remain resolvable when it is referenced
+    // inside a function parameter expression. The function-parameter sub-parser previously lost
+    // the enclosing lambda-variable scope, so 'd/PropertyInt16' could not be resolved.
+    testFilter.runOnETKeyNav("NavPropertyETTwoKeyNavMany/any(d:"
+        + "olingo.odata.test1.UFCRTStringTwoParam(ParameterInt16=d/PropertyInt16) eq 'SomeString')")
+        .is("<NavPropertyETTwoKeyNavMany/<ANY;<<UFCRTStringTwoParam> eq <'SomeString'>>>>");
+  }
+
+  @Test
   void isOfMethod() throws Exception {
     testFilter.runOnETKeyNav("isof(olingo.odata.test1.ETTwoKeyNav)")
         .is("<isof(<olingo.odata.test1.ETTwoKeyNav>)>")
