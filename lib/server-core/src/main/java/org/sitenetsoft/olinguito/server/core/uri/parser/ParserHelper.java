@@ -15,11 +15,14 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1334: propagate lambda-variable scope into function parameter parsing
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,6 +48,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.commons.api.edm.constants.EdmTypeKind;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.uri.UriParameter;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceLambdaVariable;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourcePartTyped;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.AliasQueryOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Expression;
@@ -163,6 +167,17 @@ public class ParserHelper {
       final Edm edm, final EdmType referringType, final boolean withComplex,
       final Map<String, AliasQueryOption> aliases)
       throws UriParserException, UriValidationException {
+    return parseFunctionParameters(tokenizer, edm, referringType, withComplex, aliases, null);
+  }
+
+  // OLINGO-1334: Lambda bound variables used inside function parameters (e.g.
+  // .../any(bf:namespace.Func(p=bf/Prop) ne 2)) must be resolvable by the sub-parser that
+  // parses the parameter expression, so the enclosing lambda-variable scope is threaded through.
+  protected static List<UriParameter> parseFunctionParameters(UriTokenizer tokenizer,
+      final Edm edm, final EdmType referringType, final boolean withComplex,
+      final Map<String, AliasQueryOption> aliases,
+      final Deque<UriResourceLambdaVariable> lambdaVariables)
+      throws UriParserException, UriValidationException {
     List<UriParameter> parameters = new ArrayList<>();
     Set<String> parameterNames = new HashSet<>();
     ParserHelper.requireNext(tokenizer, TokenKind.OPEN);
@@ -194,7 +209,11 @@ public class ParserHelper {
               UriParserSemanticException.MessageKeys.COMPLEX_PARAMETER_IN_RESOURCE_PATH, tokenizer.getText());
         }
       } else if (withComplex) {
-        final Expression expression = new ExpressionParser(edm, odata).parse(tokenizer, referringType, null, aliases);
+        final ExpressionParser expressionParser = new ExpressionParser(edm, odata);
+        if (lambdaVariables != null) {
+          expressionParser.setLambdaVariables(lambdaVariables);
+        }
+        final Expression expression = expressionParser.parse(tokenizer, referringType, null, aliases);
         parameter.setText(expression instanceof Literal literal ?
             "null".equals(literal.getText()) ? null : literal.getText() :
             null)

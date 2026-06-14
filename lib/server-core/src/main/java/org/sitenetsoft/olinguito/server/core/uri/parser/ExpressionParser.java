@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1334: propagate lambda-variable scope into function parameter parsing
  * Copyright 2026 SiteNetSoft - Fixed in operator bidirectional type compatibility (OLINGO-1628)
  * Copyright 2026 SiteNetSoft - OLINGO-1288: Enriched type-incompatibility messages with property and entity context
  * Copyright 2026 SiteNetSoft - OLINGO-1260: Expression depth limit
@@ -182,6 +183,13 @@ public class ExpressionParser {
   public ExpressionParser(final Edm edm, final OData odata) {
     this.edm = edm;
     this.odata = odata;
+  }
+
+  // OLINGO-1334: Seed this parser with the enclosing lambda-variable scope so that lambda bound
+  // variables (e.g. 'bf' in .../any(bf: ...)) remain resolvable when this parser is created to
+  // parse a function parameter expression by ParserHelper.parseFunctionParameters().
+  void setLambdaVariables(final Deque<UriResourceLambdaVariable> lambdaVariables) {
+    this.lambdaVariables = lambdaVariables;
   }
 
   public Expression parse(UriTokenizer tokenizer, final EdmType referringType,
@@ -1136,7 +1144,7 @@ public class ExpressionParser {
       final EdmType lastType, final boolean lastIsCollection) throws UriParserException, UriValidationException {
 
     final List<UriParameter> parameters =
-        ParserHelper.parseFunctionParameters(tokenizer, edm, referringType, true, aliases);
+        ParserHelper.parseFunctionParameters(tokenizer, edm, referringType, true, aliases, lambdaVariables);
     final List<String> parameterNames = ParserHelper.getParameterNames(parameters);
     final EdmFunction boundFunction = edm.getBoundFunction(fullQualifiedName,
         lastType.getFullQualifiedName(), lastIsCollection, parameterNames);
@@ -1163,7 +1171,7 @@ public class ExpressionParser {
     // OLINGO-1184: Use type filter as binding type when present (after type cast)
     final EdmType type = getEffectiveType(lastResource);
     final List<UriParameter> parameters =
-        ParserHelper.parseFunctionParameters(tokenizer, edm, referringType, true, aliases);
+        ParserHelper.parseFunctionParameters(tokenizer, edm, referringType, true, aliases, lambdaVariables);
     final List<String> parameterNames = ParserHelper.getParameterNames(parameters);
     final EdmFunction boundFunction = edm.getBoundFunction(fullQualifiedName,
         type.getFullQualifiedName(), lastResource.isCollection(), parameterNames);
