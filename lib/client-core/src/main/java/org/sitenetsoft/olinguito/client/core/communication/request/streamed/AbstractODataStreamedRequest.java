@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Code quality improvements
  * Copyright 2026 SiteNetSoft - Refactored to use transport-agnostic HTTP interfaces
  * Copyright 2026 SiteNetSoft - Narrowed catch(Exception) to IOException
+ * Copyright 2026 SiteNetSoft - OLINGO-1468: Defer payload buffering to the executor when chunking is disabled
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.streamed;
 
@@ -98,7 +99,13 @@ public abstract class AbstractODataStreamedRequest<V extends ODataResponse, T ex
   public T payloadManager() {
     payloadManager = getPayloadManager();
 
-    if (org.sitenetsoft.olinguito.client.core.uri.URIUtils.shouldUseRepeatableHttpBodyEntry(odataClient)) {
+    // OLINGO-1468: setRequestEntity buffers the body (readAllBytes) when the request must be
+    // repeatable or chunked encoding is disabled. The body of a streamed request is written by the
+    // caller only after this method returns, so buffering must happen on the executor thread;
+    // doing it on the calling thread blocks forever. Only the chunked-streaming case (which hands
+    // the stream to the transport without reading it) is safe to set up on the calling thread.
+    if (org.sitenetsoft.olinguito.client.core.uri.URIUtils.shouldUseRepeatableHttpBodyEntry(odataClient)
+        || !odataClient.getConfiguration().isUseChuncked()) {
       futureWrapper.setWrapped(odataClient.getConfiguration().getExecutor().submit(() -> { //NOSONAR
         setRequestEntity(payloadManager.getBody());
         try {

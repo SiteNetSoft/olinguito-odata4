@@ -22,10 +22,12 @@
  * Copyright 2026 SiteNetSoft - Refactored to use transport-agnostic HTTP interfaces
  * Copyright 2026 SiteNetSoft - Fixed connection leak: close async monitor responses to release HC 5.x connections
  * Copyright 2026 SiteNetSoft - OLINGO-1476: Resolve relative Location URIs against original request URI
+ * Copyright 2026 SiteNetSoft - OLINGO-1475: Honor chunked-encoding configuration for async request payloads
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Objects;
@@ -44,6 +46,7 @@ import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpRequest;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
 import org.sitenetsoft.olinguito.client.core.http.CompressingODataHttpClient;
+import org.sitenetsoft.olinguito.client.core.uri.URIUtils;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
@@ -98,7 +101,18 @@ public class AsyncRequestWrapperImpl<R extends ODataResponse> extends AbstractRe
     this.request = odataClient.getConfiguration().getHttpUriRequestFactory().create(method, this.uri);
 
     if (this.request.supportsEntity() && odataRequest instanceof AbstractODataBasicRequest<?> br) {
-      this.request.setEntity(br.getPayload(), -1, true);
+      // OLINGO-1475: async requests must honor the chunked-encoding configuration instead of
+      // always streaming chunked. Mirror the synchronous path (AbstractODataRequest.setRequestEntity):
+      // buffer the payload when chunking is disabled (or the request must be repeatable), otherwise
+      // stream it with chunked transfer encoding.
+      final InputStream payload = br.getPayload();
+      final byte[] bytes = URIUtils.readInputStreamBytes(odataClient, payload);
+      if (bytes != null) {
+        final boolean useChunked = odataClient.getConfiguration().isUseChuncked();
+        this.request.setEntity(bytes, useChunked && bytes.length >= 0);
+      } else {
+        this.request.setEntity(payload, -1, true);
+      }
     }
   }
 
