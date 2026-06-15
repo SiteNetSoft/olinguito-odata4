@@ -18,16 +18,23 @@
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1567: changeset 3xx error response regression test
  */
 package org.sitenetsoft.olinguito.client.core.communication.response.batch;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -86,6 +93,67 @@ class ODataBatchResponseTest {
     assertNull(error.getETag());
    }
   
+  @Test
+  void changesetErrorWith3xxStatusIsParsedAsErrorResponse() {
+    // OLINGO-1567: a failed changeset is returned as a single application/http error response
+    // (not multipart/mixed). When that response carries a 3xx status (reporter's "code > 300"),
+    // nextUnexpected() previously only handled >= 400 and threw "Expected item not found".
+    final String batch = "--batch_id\r\n"
+        + "Content-Type: application/http\r\n"
+        + "Content-Transfer-Encoding: binary\r\n"
+        + "\r\n"
+        + "HTTP/1.1 303 See Other\r\n"
+        + "Content-Type: application/json\r\n"
+        + "\r\n"
+        + "{\"error\":{\"code\":\"err\",\"message\":\"changeset failed\"}}\r\n"
+        + "--batch_id--\r\n";
+
+    final ODataChangesetResponseItem changeset = new ODataChangesetResponseItem(false);
+    // Two expected responses so the changeset's internal iterator is non-empty.
+    changeset.addResponse("1", mock(ODataResponse.class));
+    changeset.addResponse("2", mock(ODataResponse.class));
+
+    final List<ODataBatchResponseItem> expected = new ArrayList<>();
+    expected.add(changeset);
+
+    final ODataBatchResponseManager manager =
+        new ODataBatchResponseManager(new RawBatchResponse(batch.getBytes(StandardCharsets.UTF_8)), expected);
+
+    final ODataBatchResponseItem item = manager.next();
+    assertTrue(item.hasNext());
+    final ODataResponse response = item.next();
+    assertInstanceOf(ODataBatchErrorResponse.class, response);
+    // A failed changeset yields exactly one error response, then iteration stops.
+    assertEquals(false, item.hasNext());
+  }
+
+  static class RawBatchResponse implements ODataBatchResponse {
+    private final byte[] bytes;
+
+    RawBatchResponse(final byte[] bytes) {
+      this.bytes = bytes;
+    }
+
+    @Override public Collection<String> getHeaderNames() { return null; }
+    @Override public Collection<String> getHeader(final String name) {
+      final List<String> list = new ArrayList<>();
+      list.add("multipart/mixed;boundary=batch_id");
+      return list;
+    }
+    @Override public String getETag() { return null; }
+    @Override public String getContentType() { return "multipart/mixed;boundary=batch_id"; }
+    @Override public int getStatusCode() { return 202; }
+    @Override public String getStatusMessage() { return null; }
+    @Override public InputStream getRawResponse() { return new ByteArrayInputStream(bytes); }
+    @Override public ODataResponse initFromHttpResponse(final ODataHttpResponse res) { return null; }
+    @Override public ODataResponse initFromBatch(final Entry<Integer, String> responseLine,
+        final Map<String, Collection<String>> headers, final ODataBatchLineIterator batchLineIterator,
+        final String boundary) { return null; }
+    @Override public ODataResponse initFromEnclosedPart(final InputStream part) { return null; }
+    @Override public void close() { }
+    @Override public Iterator<ODataBatchResponseItem> getBody() { return null; }
+  }
+
   class BatchResponse implements ODataBatchResponse{
 
     @Override
