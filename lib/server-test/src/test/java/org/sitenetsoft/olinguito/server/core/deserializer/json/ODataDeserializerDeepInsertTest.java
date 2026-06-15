@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.Constants;
 import org.sitenetsoft.olinguito.commons.api.data.Annotation;
+import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
 import org.sitenetsoft.olinguito.commons.api.data.Entity;
 import org.sitenetsoft.olinguito.commons.api.data.Link;
 import org.sitenetsoft.olinguito.commons.api.data.ValueType;
@@ -204,6 +205,37 @@ class ODataDeserializerDeepInsertTest extends AbstractODataDeserializerTest {
             + "}",
         "ETAllPrim",
         DeserializerException.MessageKeys.INVALID_VALUE_FOR_NAVIGATION_PROPERTY);
+  }
+
+  @Test
+  void complexPropertyWithExpandedAndBoundNavigation() throws Exception {
+    // OLINGO-1181: navigation links (expanded nested entities) and navigation binding links
+    // (@odata.bind) nested inside a complex-type property must be populated on the ComplexValue
+    // during deep-insert deserialization. CTNavFiveProp declares navigation properties.
+    final Entity entity = ODataJsonDeserializerEntityTest.deserialize(
+        "{\"PropertyInt16\":1,"
+            + "\"PropertyString\":\"first\","
+            + "\"PropertyCompNav\":{"
+            + "\"PropertyInt16\":42,"
+            + "\"NavPropertyETTwoKeyNavOne\":{\"PropertyInt16\":1,\"PropertyString\":\"1\"},"
+            + "\"NavPropertyETTwoKeyNavMany@odata.bind\":[\"ESTwoKeyNav(PropertyInt16=2,PropertyString='2')\"]"
+            + "}}",
+        "ETKeyNav");
+
+    final ComplexValue complexValue = entity.getProperty("PropertyCompNav").asComplex();
+    assertNotNull(complexValue);
+
+    // Expanded navigation property (nested entity) -> navigation link
+    assertEquals(1, complexValue.getNavigationLinks().size());
+    final Link navigationLink = complexValue.getNavigationLinks().get(0);
+    assertEquals("NavPropertyETTwoKeyNavOne", navigationLink.getTitle());
+    assertNotNull(navigationLink.getInlineEntity());
+
+    // Navigation binding link (@odata.bind) -> navigation binding
+    assertEquals(1, complexValue.getNavigationBindings().size());
+    final Link bindingLink = complexValue.getNavigationBindings().get(0);
+    assertEquals("NavPropertyETTwoKeyNavMany", bindingLink.getTitle());
+    assertEquals(List.of("ESTwoKeyNav(PropertyInt16=2,PropertyString='2')"), bindingLink.getBindingLinks());
   }
 
   private Entity deserialize(final String resourceName) throws IOException, DeserializerException {

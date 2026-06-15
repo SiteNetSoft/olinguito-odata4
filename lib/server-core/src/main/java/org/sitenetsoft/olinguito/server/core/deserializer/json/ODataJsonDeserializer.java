@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - Fixed odata.bind validation to use endsWith (OLINGO-1620)
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1181: deep-insert navigation/binding links for complex types
  * Copyright 2026 SiteNetSoft - Fixed nullable collection parameters in actions (OLINGO-1633)
  * Copyright 2026 SiteNetSoft - Fixed Valuable.asCollection()
  * ClassCastException on entity collection parameters (OLINGO-1638)
@@ -633,11 +634,12 @@ public class ODataJsonDeserializer implements ODataDeserializer {
     return link;
   }
   
-  private Link consumeBindingLink(final String key, final JsonNode jsonNode, final EdmEntityType edmEntityType)
+  private Link consumeBindingLink(final String key, final JsonNode jsonNode,
+      final EdmStructuredType edmStructuredType)
       throws DeserializerException {
     String[] splitKey = key.split(ODATA_ANNOTATION_MARKER);
     String navigationPropertyName = splitKey[0];
-    EdmNavigationProperty edmNavigationProperty = edmEntityType.getNavigationProperty(navigationPropertyName);
+    EdmNavigationProperty edmNavigationProperty = edmStructuredType.getNavigationProperty(navigationPropertyName);
     if (edmNavigationProperty == null) {
       throw new DeserializerException("Invalid navigationPropertyName: " + navigationPropertyName,
           DeserializerException.MessageKeys.NAVIGATION_PROPERTY_NOT_FOUND, navigationPropertyName);
@@ -820,6 +822,37 @@ public class ODataJsonDeserializer implements ODataDeserializer {
         }
       }
     }
+
+    // OLINGO-1181: complex types may declare navigation properties. Consume expanded navigation
+    // properties (nested entities) and navigation binding links (@odata.bind) so that deep insert
+    // populates ComplexValue.getNavigationLinks() and ComplexValue.getNavigationBindings(), mirroring
+    // the entity-level handling. Complex types without navigation properties make this a no-op.
+    for (String navigationPropertyName : edmType.getNavigationPropertyNames()) {
+      JsonNode subNode = jsonNode.get(navigationPropertyName);
+      if (subNode != null) {
+        EdmNavigationProperty edmNavigationProperty = edmType.getNavigationProperty(navigationPropertyName);
+        checkNotNullOrValidNull(subNode, edmNavigationProperty);
+        Link link = createLink(null, navigationPropertyName, subNode, edmNavigationProperty);
+        complexValue.getNavigationLinks().add(link);
+        if (jsonNode instanceof ObjectNode objNode) {
+          objNode.remove(navigationPropertyName);
+        }
+      }
+    }
+    if (jsonNode instanceof ObjectNode objNode) {
+      final List<String> toRemove = new ArrayList<>();
+      Iterator<Entry<String, JsonNode>> fieldsIterator = objNode.properties().iterator();
+      while (fieldsIterator.hasNext()) {
+        Entry<String, JsonNode> field = fieldsIterator.next();
+        if (field.getKey().endsWith(constants.getBind())) {
+          Link bindingLink = consumeBindingLink(field.getKey(), field.getValue(), edmType);
+          complexValue.getNavigationBindings().add(bindingLink);
+          toRemove.add(field.getKey());
+        }
+      }
+      objNode.remove(toRemove);
+    }
+
     complexValue.setTypeName(edmType.getFullQualifiedName().getFullQualifiedNameAsString());
     return complexValue;
   }
