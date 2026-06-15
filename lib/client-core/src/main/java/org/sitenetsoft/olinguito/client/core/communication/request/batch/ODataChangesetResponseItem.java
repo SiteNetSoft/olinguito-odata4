@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Disambiguated similar log messages
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1567: treat 3xx changeset responses as error responses
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.batch;
 
@@ -123,8 +124,11 @@ public class ODataChangesetResponseItem extends AbstractODataBatchResponseItem {
       // generate async response
       current = new AsyncResponseImpl(responseLine, headers, batchLineIterator, boundary);
       return current;
-    } else if (responseLine.getKey() >= 400) {
-      // generate error response
+    } else if (responseLine.getKey() >= 300) {
+      // OLINGO-1567: a failed changeset is returned as a single application/http error response
+      // (not multipart/mixed). Any non-success status (>= 300, e.g. a 3xx redirect or a 4xx/5xx
+      // error) represents that failure; previously only >= 400 was handled, so a changeset error
+      // with a 3xx status fell through and threw "Expected item not found".
       current = new ODataBatchErrorResponse(responseLine, headers, batchLineIterator, boundary);
       return current;
     }
