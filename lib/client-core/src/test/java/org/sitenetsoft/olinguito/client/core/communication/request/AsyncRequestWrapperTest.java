@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - OLINGO-1476: Tests for relative Location URIs
+ * Copyright 2026 SiteNetSoft - OLINGO-1475: Tests for chunked-encoding configuration on async payloads
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -29,12 +30,21 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
 import org.apache.hc.core5.http.ClassicHttpRequest;
@@ -48,6 +58,8 @@ import org.sitenetsoft.olinguito.client.api.communication.response.ODataResponse
 import org.sitenetsoft.olinguito.client.api.domain.ClientInvokeResult;
 import org.sitenetsoft.olinguito.client.api.http.HttpClientFactory;
 import org.sitenetsoft.olinguito.client.api.http.HttpUriRequestFactory;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpRequest;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
 import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
 import org.sitenetsoft.olinguito.client.core.communication.request.AsyncRequestWrapperImpl.AsyncResponseWrapperImpl;
@@ -167,6 +179,54 @@ class AsyncRequestWrapperTest {
     assertTrue(wrappedResponse instanceof AsyncResponseWrapperImpl);
     AsyncResponseWrapperImpl wrappedResponseImpl = (AsyncResponseWrapperImpl) wrappedResponse;
     assertEquals(retryAfter, wrappedResponseImpl.retryAfter);
+  }
+
+  private AbstractODataBasicRequest<?> mockBasicRequest(final ODataHttpRequest httpRequest, final boolean useChunked)
+      throws URISyntaxException {
+    final ODataClient client = mock(ODataClient.class);
+    final Configuration configuration = mock(Configuration.class);
+    final HttpClientFactory httpClientFactory = mock(HttpClientFactory.class);
+    final HttpUriRequestFactory httpUriRequestFactory = mock(HttpUriRequestFactory.class);
+
+    when(client.getConfiguration()).thenReturn(configuration);
+    when(configuration.getHttpClientFactory()).thenReturn(httpClientFactory);
+    when(configuration.getHttpUriRequestFactory()).thenReturn(httpUriRequestFactory);
+    when(configuration.isGzipCompression()).thenReturn(false);
+    when(configuration.isUseChuncked()).thenReturn(useChunked);
+    when(httpClientFactory.create(any(), any())).thenReturn(mock(ODataHttpClient.class));
+    when(httpUriRequestFactory.create(any(), any())).thenReturn(httpRequest);
+    when(httpRequest.supportsEntity()).thenReturn(true);
+
+    @SuppressWarnings("unchecked")
+    final AbstractODataBasicRequest<ODataResponse> odataRequest = mock(AbstractODataBasicRequest.class);
+    when(odataRequest.getMethod()).thenReturn(HttpMethod.POST);
+    when(odataRequest.getURI()).thenReturn(new URI("http://server/path"));
+    when(odataRequest.getHeaderNames()).thenReturn(Collections.emptyList());
+    when(odataRequest.getPayload()).thenReturn(new ByteArrayInputStream("data".getBytes(StandardCharsets.UTF_8)));
+
+    new AsyncRequestWrapperImpl<>(client, odataRequest);
+    return odataRequest;
+  }
+
+  @Test
+  void asyncRequestBuffersPayloadWhenChunkingDisabled() throws URISyntaxException {
+    // OLINGO-1475: when chunked encoding is disabled, the async request must buffer the payload
+    // (byte[] entity, not chunked) instead of always streaming it chunked.
+    final ODataHttpRequest httpRequest = mock(ODataHttpRequest.class);
+    mockBasicRequest(httpRequest, false);
+
+    verify(httpRequest).setEntity(any(byte[].class), eq(false));
+    verify(httpRequest, never()).setEntity(any(InputStream.class), anyLong(), anyBoolean());
+  }
+
+  @Test
+  void asyncRequestStreamsChunkedWhenChunkingEnabled() throws URISyntaxException {
+    // OLINGO-1475: when chunked encoding is enabled, the async request streams the payload chunked.
+    final ODataHttpRequest httpRequest = mock(ODataHttpRequest.class);
+    mockBasicRequest(httpRequest, true);
+
+    verify(httpRequest).setEntity(any(InputStream.class), eq(-1L), eq(true));
+    verify(httpRequest, never()).setEntity(any(byte[].class), anyBoolean());
   }
 
   @Test
