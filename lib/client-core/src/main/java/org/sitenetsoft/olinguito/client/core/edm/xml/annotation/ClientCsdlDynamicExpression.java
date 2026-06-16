@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1403: parse annotations on logical/comparison expressions
  */
 package org.sitenetsoft.olinguito.client.core.edm.xml.annotation;
 
@@ -25,6 +26,7 @@ import java.io.Serial;
 import java.io.Serializable;
 
 import org.sitenetsoft.olinguito.client.core.edm.xml.AbstractClientCsdlEdmDeserializer;
+import org.sitenetsoft.olinguito.client.core.edm.xml.ClientCsdlAnnotation;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlAnnotationPath;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlDynamicExpression;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlExpression;
@@ -89,32 +91,39 @@ public abstract class ClientCsdlDynamicExpression extends CsdlDynamicExpression 
         final CsdlLogicalOrComparisonExpression not =
             new CsdlLogicalOrComparisonExpression(LogicalOrComparisonExpressionType.Not);
         jp.nextToken();
-        // Search for field name
-        while (jp.getCurrentToken() != JsonToken.FIELD_NAME) {
-          jp.nextToken();
-        }
-        not.setLeft(jp.readValueAs(ClientCsdlDynamicExpression.class));
-        // Search for end object
+        // Read the single operand plus any nested annotations until the Not element closes
         while (jp.getCurrentToken() != JsonToken.END_OBJECT || !"Not".equals(jp.currentName())) {
-          jp.nextToken();
+          if (jp.getCurrentToken() == JsonToken.FIELD_NAME && "Annotation".equals(jp.currentName())) {
+            jp.nextToken();
+            not.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));
+          } else if (jp.getCurrentToken() == JsonToken.FIELD_NAME) {
+            not.setLeft(jp.readValueAs(ClientCsdlDynamicExpression.class));
+          } else {
+            jp.nextToken();
+          }
         }
 
         expression = not;
       } else if (LogicalOrComparisonExpressionType.fromString(jp.currentName()) != null) {
         final CsdlLogicalOrComparisonExpression logicalOrComparissonExp =
             new CsdlLogicalOrComparisonExpression(LogicalOrComparisonExpressionType.fromString(jp.currentName()));
+        final String elementName = logicalOrComparissonExp.getType().name();
         jp.nextToken();
-        // Search for field name
-        while (jp.getCurrentToken() != JsonToken.FIELD_NAME) {
-          jp.nextToken();
-        }
-        // Read left and right operands as dynamic expressions
-        logicalOrComparissonExp.setLeft(jp.readValueAs(ClientCsdlDynamicExpression.class));
-        logicalOrComparissonExp.setRight(jp.readValueAs(ClientCsdlDynamicExpression.class));
-        // Search for expression
-        while (jp.getCurrentToken() != JsonToken.END_OBJECT || !jp.currentName().equals(logicalOrComparissonExp
-            .getType().name())) {
-          jp.nextToken();
+        // Read left and right operands plus any nested annotations until the element closes
+        int operands = 0;
+        while (jp.getCurrentToken() != JsonToken.END_OBJECT || !elementName.equals(jp.currentName())) {
+          if (jp.getCurrentToken() == JsonToken.FIELD_NAME && "Annotation".equals(jp.currentName())) {
+            jp.nextToken();
+            logicalOrComparissonExp.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));
+          } else if (jp.getCurrentToken() == JsonToken.FIELD_NAME) {
+            if (operands++ == 0) {
+              logicalOrComparissonExp.setLeft(jp.readValueAs(ClientCsdlDynamicExpression.class));
+            } else {
+              logicalOrComparissonExp.setRight(jp.readValueAs(ClientCsdlDynamicExpression.class));
+            }
+          } else {
+            jp.nextToken();
+          }
         }
 
         expression = logicalOrComparissonExp;

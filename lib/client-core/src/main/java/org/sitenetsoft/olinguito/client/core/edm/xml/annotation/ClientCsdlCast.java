@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1403: parse annotations nested in dynamic expressions
  */
 package org.sitenetsoft.olinguito.client.core.edm.xml.annotation;
 
@@ -53,6 +54,7 @@ class ClientCsdlCast extends CsdlCast implements Serializable {
           if ("Type".equals(jp.currentName())) {
             cast.setType(jp.nextTextValue());
           } else if ("Annotation".equals(jp.currentName())) {
+            jp.nextToken();
             cast.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));
           } else if ("MaxLength".equals(jp.currentName())) {
             final String maxLenght = jp.nextTextValue();
