@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  * Copyright 2026 SiteNetSoft - Replaced bare RuntimeException with ODataRuntimeException
+ * Copyright 2026 SiteNetSoft - OLINGO-1452: validate key PropertyRef existence
  */
 package org.sitenetsoft.olinguito.client.core.metadatavalidator;
 
@@ -39,6 +40,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlFunction;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlFunctionImport;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlNavigationProperty;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlNavigationPropertyBinding;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlPropertyRef;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlSchema;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlStructuralType;
 
@@ -113,13 +115,35 @@ public class CsdlTypeValidator {
           } else {
             baseEntityType = fetchLastCsdlBaseType(baseTypeFQName);
           }
-          if (baseEntityType != null && (baseEntityType.getKey() == null || 
+          if (baseEntityType != null && (baseEntityType.getKey() == null ||
               baseEntityType.getKey().isEmpty())) {
             throw new ODataRuntimeException("Missing key for EntityType " + baseEntityType.getName());
           }
         } else if (entityType.getKey() == null || entityType.getKey().isEmpty()) {
           throw new ODataRuntimeException("Missing key for EntityType " + entityType.getName());
         }
+        validateKeyPropertyRefs(entityType);
+      }
+    }
+  }
+
+  /**
+   * Validates that every key PropertyRef declared on the entity type resolves to an existing
+   * property. The key is declared on the type that owns the referenced properties, so a simple
+   * (non-aliased, non-path) reference must match a property of that same type. Alias/path-based
+   * references (name containing a {@code /}) are resolved lazily elsewhere and skipped here.
+   *
+   * @param entityType the entity type whose key property references to validate
+   */
+  private void validateKeyPropertyRefs(CsdlEntityType entityType) {
+    if (entityType.getKey() == null) {
+      return;
+    }
+    for (CsdlPropertyRef keyPropertyRef : entityType.getKey()) {
+      String refName = keyPropertyRef.getName();
+      if (refName != null && !refName.contains("/") && entityType.getProperty(refName) == null) {
+        throw new ODataRuntimeException("Invalid key PropertyRef '" + refName
+            + "' for EntityType " + entityType.getName() + ": referenced property does not exist.");
       }
     }
   }

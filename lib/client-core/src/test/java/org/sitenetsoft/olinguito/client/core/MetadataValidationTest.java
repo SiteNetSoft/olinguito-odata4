@@ -24,6 +24,7 @@ package org.sitenetsoft.olinguito.client.core;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -195,7 +196,26 @@ class MetadataValidationTest extends AbstractTest {
       + "</edmx:DataServices>"
       + "</edmx:Edmx>";
 
-  public static final String xmlWithWrongNamespaceInBindingTarget = 
+  public static final String xmlWithInvalidKeyPropertyRef =
+      "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+      + "<edmx:Edmx Version=\"4.0\" xmlns:edmx=\"http://docs.oasis-open.org/odata/ns/edmx\">"
+      + "<edmx:DataServices m:DataServiceVersion=\"4.0\"  "
+      + "m:MaxDataServiceVersion=\"4.0\" "
+      + "xmlns:m=\"http://docs.oasis-open.org/odata/ns/metadata\">"
+      + "<Schema Namespace=\"Microsoft.Exchange.Services.OData.Model\"  "
+      + "xmlns=\"http://docs.oasis-open.org/odata/ns/edm\">"
+      + "<EntityType Name=\"User\">"
+      + "<Key><PropertyRef Name=\"NonExistentId\" /></Key>"
+      + "<Property Name=\"Id\" Type=\"Edm.String\" Nullable=\"false\" />"
+      + "</EntityType>"
+      + "<EntityContainer Name=\"EntityContainer\"  m:IsDefaultEntityContainer=\"true\">"
+      + "<EntitySet Name=\"Users\" EntityType=\"Microsoft.Exchange.Services.OData.Model.User\" />"
+      + "</EntityContainer>"
+      + "</Schema>"
+      + "</edmx:DataServices>"
+      + "</edmx:Edmx>";
+
+  public static final String xmlWithWrongNamespaceInBindingTarget =
       "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
       + "<edmx:Edmx Version=\"4.0\" xmlns:edmx=\"http://docs.oasis-open.org/odata/ns/edmx\">"
       + "<edmx:DataServices m:DataServiceVersion=\"4.0\" m:MaxDataServiceVersion=\"4.0\" "
@@ -1056,7 +1076,36 @@ class MetadataValidationTest extends AbstractTest {
       assertEquals(e.getMessage(), "Missing key for EntityType User");
     }
   }
-  
+
+  /**
+   * OLINGO-1452: a key PropertyRef whose name does not resolve to a real
+   * property must be rejected during EDM validation, not lazily later.
+   */
+  @Test
+  void testEdmWithInvalidKeyPropertyRef() throws UnsupportedEncodingException {
+    InputStream stream = new ByteArrayInputStream(xmlWithInvalidKeyPropertyRef.getBytes("UTF-8"));
+    final Edm edm = client.getReader().readMetadata(stream);
+    assertNotNull(edm);
+    ODataMetadataValidation metadataValidator = client.metadataValidation();
+    RuntimeException e = assertThrows(RuntimeException.class, () -> metadataValidator.validateMetadata(edm));
+    assertTrue(e.getMessage().contains("NonExistentId"),
+        "Expected the unresolved key PropertyRef name in the message, was: " + e.getMessage());
+  }
+
+  /**
+   * OLINGO-1452: same check on the CSDL/XMLMetadata validation path.
+   */
+  @Test
+  void testXMLMetadataWithInvalidKeyPropertyRef() throws UnsupportedEncodingException {
+    InputStream stream = new ByteArrayInputStream(xmlWithInvalidKeyPropertyRef.getBytes("UTF-8"));
+    final XMLMetadata metadata = client.getDeserializer(ContentType.APPLICATION_XML).toMetadata(stream);
+    assertNotNull(metadata);
+    ODataMetadataValidation metadataValidator = client.metadataValidation();
+    RuntimeException e = assertThrows(RuntimeException.class, () -> metadataValidator.validateMetadata(metadata));
+    assertTrue(e.getMessage().contains("NonExistentId"),
+        "Expected the unresolved key PropertyRef name in the message, was: " + e.getMessage());
+  }
+
   @Test
   void testWrongEdm6() throws UnsupportedEncodingException {
     try {

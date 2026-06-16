@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
  * Copyright 2026 SiteNetSoft - Replaced bare RuntimeException with ODataRuntimeException
+ * Copyright 2026 SiteNetSoft - OLINGO-1452: validate key PropertyRef existence
  */
 package org.sitenetsoft.olinguito.client.core.metadatavalidator;
 
@@ -30,8 +31,10 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmComplexType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmException;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmFunction;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmFunctionImport;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmKeyPropertyRef;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationProperty;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationPropertyBinding;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmSingleton;
@@ -87,16 +90,35 @@ public class EdmTypeValidator {
         if (entityType.getBaseType() != null) {
           FullQualifiedName baseTypeFQName = entityType.getBaseType().getFullQualifiedName();
           EdmEntityType baseEntityType = edmEntityTypesMap.get(baseTypeFQName);
-          
+
           if (baseEntityType != null && baseEntityType.getKeyPredicateNames().isEmpty()) {
             throw new ODataRuntimeException("Missing key for EntityType " + baseEntityType.getName());
           }
         } else if (entityType.getKeyPredicateNames().isEmpty()) {
           throw new ODataRuntimeException("Missing key for EntityType " + entityType.getName());
         }
+        validateKeyPropertyRefs(entityType);
       }
     }
 
+  }
+
+  /**
+   * Validates that every key PropertyRef of the entity type resolves to an existing property.
+   * {@link EdmKeyPropertyRef#getProperty()} resolves lazily and only throws when the property
+   * is first accessed, so it is forced here to surface invalid key references during validation.
+   *
+   * @param entityType the entity type whose key property references to validate
+   */
+  private void validateKeyPropertyRefs(EdmEntityType entityType) {
+    for (EdmKeyPropertyRef keyPropertyRef : entityType.getKeyPropertyRefs()) {
+      try {
+        keyPropertyRef.getProperty();
+      } catch (EdmException e) {
+        throw new ODataRuntimeException("Invalid key PropertyRef '" + keyPropertyRef.getName()
+            + "' for EntityType " + entityType.getName() + ": referenced property does not exist.", e);
+      }
+    }
   }
   
   /**
