@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1289: detect cyclic base-type chains
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
@@ -54,6 +56,7 @@ public class EdmComplexTypeImpl extends AbstractEdmStructuredType implements Edm
   @Override
   protected void checkBaseType() {
     if (baseTypeName != null && baseType == null) {
+      checkForCyclicBaseType();
       baseType = buildBaseType(baseTypeName);
     }
   }
