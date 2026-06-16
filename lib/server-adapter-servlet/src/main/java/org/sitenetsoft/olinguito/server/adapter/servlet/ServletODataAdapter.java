@@ -1,5 +1,6 @@
 /*
  * Copyright 2026 SiteNetSoft
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1163/OLINGO-1422: delegate URI extraction to RequestUriResolver
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +38,7 @@ import org.sitenetsoft.olinguito.server.api.ODataContent;
 import org.sitenetsoft.olinguito.server.api.ODataRequest;
 import org.sitenetsoft.olinguito.server.api.ODataRequestHandler;
 import org.sitenetsoft.olinguito.server.api.ODataResponse;
+import org.sitenetsoft.olinguito.server.core.RequestUriResolver;
 
 /**
  * Servlet-based adapter that maps HttpServletRequest/Response
@@ -235,58 +237,17 @@ public final class ServletODataAdapter implements ODataServletHandler {
     private static void fillUriInformation(final ODataRequest odRequest,
                                            final HttpServletRequest httpRequest,
                                            final int split) {
-
-        String rawRequestUri = httpRequest.getRequestURL().toString();
-
-        String rawServiceResolutionUri = null;
-        String rawODataPath;
-
-        // Spring-style requestMapping support
-        Object mappingAttr = httpRequest.getAttribute(REQUEST_MAPPING_ATTR);
-        if (mappingAttr != null) {
-            String requestMapping = mappingAttr.toString();
-            rawServiceResolutionUri = requestMapping;
-            int beginIndex = rawRequestUri.indexOf(requestMapping) + requestMapping.length();
-            rawODataPath = rawRequestUri.substring(beginIndex);
-        } else if (!"".equals(httpRequest.getServletPath())) {
-            int beginIndex = rawRequestUri.indexOf(httpRequest.getServletPath())
-                    + httpRequest.getServletPath().length();
-            rawODataPath = rawRequestUri.substring(beginIndex);
-        } else if (!"".equals(httpRequest.getContextPath())) {
-            int beginIndex = rawRequestUri.indexOf(httpRequest.getContextPath())
-                    + httpRequest.getContextPath().length();
-            rawODataPath = rawRequestUri.substring(beginIndex);
-        } else {
-            rawODataPath = httpRequest.getRequestURI();
-        }
-
-        // Service resolution split handling
-        if (split > 0) {
-            rawServiceResolutionUri = rawODataPath;
-            for (int i = 0; i < split; i++) {
-                int index = rawODataPath.indexOf('/', 1);
-                if (index == -1) {
-                    rawODataPath = "";
-                    break;
-                } else {
-                    rawODataPath = rawODataPath.substring(index);
-                }
-            }
-            int end = rawServiceResolutionUri.length() - rawODataPath.length();
-            rawServiceResolutionUri = rawServiceResolutionUri.substring(0, end);
-        }
-
-        String rawBaseUri = rawRequestUri.substring(0,
-                rawRequestUri.length() - rawODataPath.length());
-
-        odRequest.setRawQueryPath(httpRequest.getQueryString());
-        odRequest.setRawRequestUri(
-                rawRequestUri
-                        + (httpRequest.getQueryString() == null ? "" : "?" + httpRequest.getQueryString())
-        );
-        odRequest.setRawODataPath(rawODataPath);
-        odRequest.setRawBaseUri(rawBaseUri);
-        odRequest.setRawServiceResolutionUri(rawServiceResolutionUri);
+        // Delegate to the shared resolver so the servlet/context-path extraction (and its
+        // hostname-collision fix, OLINGO-1163 / OLINGO-1422) lives in one place.
+        RequestUriResolver.fillUriInformation(
+                odRequest,
+                httpRequest.getRequestURL().toString(),
+                httpRequest.getRequestURI(),
+                httpRequest.getQueryString(),
+                httpRequest.getContextPath(),
+                httpRequest.getServletPath(),
+                httpRequest.getAttribute(REQUEST_MAPPING_ATTR),
+                split);
     }
 
     /**
