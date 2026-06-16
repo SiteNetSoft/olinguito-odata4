@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1403: parse annotations nested in dynamic expressions
  */
 package org.sitenetsoft.olinguito.client.core.edm.xml.annotation;
 
@@ -50,6 +51,7 @@ class ClientCsdlLabeledElement extends CsdlLabeledElement implements Serializabl
           if ("Name".equals(jp.currentName())) {
             element.setName(jp.nextTextValue());
           } else if ("Annotation".equals(jp.currentName())) {
+            jp.nextToken();
             element.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));
           } else {
             element.setValue(jp.readValueAs(ClientCsdlDynamicExpression.class));

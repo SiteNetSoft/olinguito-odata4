@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1403: parse annotations on UrlRef expressions
  */
 package org.sitenetsoft.olinguito.client.core.edm.xml.annotation;
 
@@ -25,6 +26,7 @@ import java.io.Serial;
 import java.io.Serializable;
 
 import org.sitenetsoft.olinguito.client.core.edm.xml.AbstractClientCsdlEdmDeserializer;
+import org.sitenetsoft.olinguito.client.core.edm.xml.ClientCsdlAnnotation;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlUrlRef;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -46,7 +48,10 @@ class ClientCsdlUrlRef extends CsdlUrlRef implements Serializable  {
       for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.FIELD_NAME) {
-          if (isAnnotationConstExprConstruct(jp)) {
+          if ("Annotation".equals(jp.currentName())) {
+            jp.nextToken();
+            urlref.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));
+          } else if (isAnnotationConstExprConstruct(jp)) {
             urlref.setValue(parseAnnotationConstExprConstruct(jp));
           } else {
             urlref.setValue(jp.readValueAs(ClientCsdlDynamicExpression.class));

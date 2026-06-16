@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Removed commented-out dead code
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1403: test annotations nested in dynamic expressions
  */
 package org.sitenetsoft.olinguito.client.core;
 
@@ -342,6 +343,68 @@ class MetadataTest extends AbstractTest {
     assertEquals(CsdlConstantExpression.ConstantExpressionType.String, collection.getItems().get(0).asConstant()
         .getType());
     assertEquals("MasterData", collection.getItems().get(0).asConstant().getValue());
+  }
+
+  /**
+   * OLINGO-1403: nested {@code <Annotation>} elements inside dynamic expressions
+   * (Cast, IsOf, Null, LabeledElement, Apply, UrlRef) must be deserialized.
+   */
+  @Test
+  void nestedAnnotationsInExpressions() {
+    final XMLMetadata metadata = client.getDeserializer(ContentType.APPLICATION_XML).
+        toMetadata(getClass().getResourceAsStream("olingo1403-metadata.xml"));
+    assertNotNull(metadata);
+
+    final CsdlAnnotations group = metadata.getSchema(0).getAnnotationGroups().get(0);
+    assertNotNull(group);
+
+    var cast = group.getAnnotation("ns.CastAnno").getExpression().asDynamic().asCast();
+    assertEquals(1, cast.getAnnotations().size());
+    assertEquals("ns.InnerCast", cast.getAnnotations().get(0).getTerm());
+
+    var isof = group.getAnnotation("ns.IsOfAnno").getExpression().asDynamic().asIsOf();
+    assertEquals(1, isof.getAnnotations().size());
+    assertEquals("ns.InnerIsOf", isof.getAnnotations().get(0).getTerm());
+
+    var nullExp = group.getAnnotation("ns.NullAnno").getExpression().asDynamic().asNull();
+    assertEquals(1, nullExp.getAnnotations().size());
+    assertEquals("ns.InnerNull", nullExp.getAnnotations().get(0).getTerm());
+
+    var labeled = group.getAnnotation("ns.LabeledElementAnno").getExpression().asDynamic().asLabeledElement();
+    assertEquals(1, labeled.getAnnotations().size());
+    assertEquals("ns.InnerLabeled", labeled.getAnnotations().get(0).getTerm());
+
+    var apply = group.getAnnotation("ns.ApplyAnno").getExpression().asDynamic().asApply();
+    assertEquals(1, apply.getAnnotations().size());
+    assertEquals("ns.InnerApply", apply.getAnnotations().get(0).getTerm());
+
+    var urlRef = group.getAnnotation("ns.UrlRefAnno").getExpression().asDynamic().asUrlRef();
+    assertEquals(1, urlRef.getAnnotations().size());
+    assertEquals("ns.InnerUrlRef", urlRef.getAnnotations().get(0).getTerm());
+
+    // Logical/comparison expressions: nested annotation parsed AND operands preserved.
+    var and = group.getAnnotation("ns.AndAnno").getExpression().asDynamic().asLogicalOrComparison();
+    assertEquals(1, and.getAnnotations().size());
+    assertEquals("ns.InnerAnd", and.getAnnotations().get(0).getTerm());
+    assertTrue(and.getLeft().asDynamic().isPath());
+    assertTrue(and.getRight().asDynamic().isPath());
+
+    var or = group.getAnnotation("ns.OrAnno").getExpression().asDynamic().asLogicalOrComparison();
+    assertEquals(1, or.getAnnotations().size());
+    assertEquals("ns.InnerOr", or.getAnnotations().get(0).getTerm());
+    assertTrue(or.getLeft().asDynamic().isPath());
+    assertTrue(or.getRight().asDynamic().isPath());
+
+    var not = group.getAnnotation("ns.NotAnno").getExpression().asDynamic().asLogicalOrComparison();
+    assertEquals(1, not.getAnnotations().size());
+    assertEquals("ns.InnerNot", not.getAnnotations().get(0).getTerm());
+    assertTrue(not.getLeft().asDynamic().isPath());
+
+    var eq = group.getAnnotation("ns.EqAnno").getExpression().asDynamic().asLogicalOrComparison();
+    assertEquals(1, eq.getAnnotations().size());
+    assertEquals("ns.InnerEq", eq.getAnnotations().get(0).getTerm());
+    assertTrue(eq.getLeft().asDynamic().isPath());
+    assertTrue(eq.getRight().asDynamic().isPath());
   }
 
   /**
