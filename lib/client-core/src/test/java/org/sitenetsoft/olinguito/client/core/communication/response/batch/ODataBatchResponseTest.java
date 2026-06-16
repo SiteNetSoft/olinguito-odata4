@@ -134,24 +134,68 @@ class ODataBatchResponseTest {
       this.bytes = bytes;
     }
 
-    @Override public Collection<String> getHeaderNames() { return null; }
-    @Override public Collection<String> getHeader(final String name) {
+    @Override
+    public Collection<String> getHeaderNames() {
+      return null;
+    }
+
+    @Override
+    public Collection<String> getHeader(final String name) {
       final List<String> list = new ArrayList<>();
       list.add("multipart/mixed;boundary=batch_id");
       return list;
     }
-    @Override public String getETag() { return null; }
-    @Override public String getContentType() { return "multipart/mixed;boundary=batch_id"; }
-    @Override public int getStatusCode() { return 202; }
-    @Override public String getStatusMessage() { return null; }
-    @Override public InputStream getRawResponse() { return new ByteArrayInputStream(bytes); }
-    @Override public ODataResponse initFromHttpResponse(final ODataHttpResponse res) { return null; }
-    @Override public ODataResponse initFromBatch(final Entry<Integer, String> responseLine,
+
+    @Override
+    public String getETag() {
+      return null;
+    }
+
+    @Override
+    public String getContentType() {
+      return "multipart/mixed;boundary=batch_id";
+    }
+
+    @Override
+    public int getStatusCode() {
+      return 202;
+    }
+
+    @Override
+    public String getStatusMessage() {
+      return null;
+    }
+
+    @Override
+    public InputStream getRawResponse() {
+      return new ByteArrayInputStream(bytes);
+    }
+
+    @Override
+    public ODataResponse initFromHttpResponse(final ODataHttpResponse res) {
+      return null;
+    }
+
+    @Override
+    public ODataResponse initFromBatch(final Entry<Integer, String> responseLine,
         final Map<String, Collection<String>> headers, final ODataBatchLineIterator batchLineIterator,
-        final String boundary) { return null; }
-    @Override public ODataResponse initFromEnclosedPart(final InputStream part) { return null; }
-    @Override public void close() { }
-    @Override public Iterator<ODataBatchResponseItem> getBody() { return null; }
+        final String boundary) {
+      return null;
+    }
+
+    @Override
+    public ODataResponse initFromEnclosedPart(final InputStream part) {
+      return null;
+    }
+
+    @Override
+    public void close() {
+    }
+
+    @Override
+    public Iterator<ODataBatchResponseItem> getBody() {
+      return null;
+    }
   }
 
   class BatchResponse implements ODataBatchResponse{
