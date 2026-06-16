@@ -1,5 +1,6 @@
 /*
  * Copyright 2026 SiteNetSoft
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1163/OLINGO-1422: anchor servlet/context-path search past the authority
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,19 +39,23 @@ public final class RequestUriResolver {
         String rawServiceResolutionUri = null;
         String rawODataPath;
 
+        // Search only the path portion: the servlet/context path could otherwise be matched
+        // inside the scheme/host of the full request URL (OLINGO-1163 / OLINGO-1422).
+        final int pathStart = pathStartIndex(rawRequestUri);
+
         // Spring controller case: requestMapping attribute provided by app
         if (requestMappingAttr != null) {
             String requestMapping = requestMappingAttr.toString();
             rawServiceResolutionUri = requestMapping;
-            int beginIndex = rawRequestUri.indexOf(requestMapping) + requestMapping.length();
+            int beginIndex = rawRequestUri.indexOf(requestMapping, pathStart) + requestMapping.length();
             rawODataPath = rawRequestUri.substring(beginIndex);
 
         } else if (handlerPath != null && !"".equals(handlerPath)) {
-            int beginIndex = rawRequestUri.indexOf(handlerPath) + handlerPath.length();
+            int beginIndex = rawRequestUri.indexOf(handlerPath, pathStart) + handlerPath.length();
             rawODataPath = rawRequestUri.substring(beginIndex);
 
         } else if (contextPath != null && !"".equals(contextPath)) {
-            int beginIndex = rawRequestUri.indexOf(contextPath) + contextPath.length();
+            int beginIndex = rawRequestUri.indexOf(contextPath, pathStart) + contextPath.length();
             rawODataPath = rawRequestUri.substring(beginIndex);
 
         } else {
@@ -79,5 +84,19 @@ public final class RequestUriResolver {
         odRequest.setRawODataPath(rawODataPath);
         odRequest.setRawBaseUri(rawBaseUri);
         odRequest.setRawServiceResolutionUri(rawServiceResolutionUri);
+    }
+
+    /**
+     * Returns the index where the path component of an absolute request URL begins, i.e. the
+     * first {@code '/'} after the {@code scheme://authority} part. Returns 0 when the input has
+     * no scheme, so relative inputs keep the previous behavior.
+     */
+    private static int pathStartIndex(final String requestUrl) {
+        final int schemeEnd = requestUrl.indexOf("://");
+        if (schemeEnd < 0) {
+            return 0;
+        }
+        final int pathStart = requestUrl.indexOf('/', schemeEnd + 3);
+        return pathStart < 0 ? requestUrl.length() : pathStart;
     }
 }
