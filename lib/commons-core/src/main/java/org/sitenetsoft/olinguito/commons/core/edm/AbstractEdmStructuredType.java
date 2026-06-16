@@ -17,14 +17,17 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Thread-safe lazy fields with volatile
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1289: detect cyclic base-type chains
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmElement;
@@ -65,6 +68,29 @@ public abstract class AbstractEdmStructuredType extends EdmTypeImpl implements E
   protected abstract EdmStructuredType buildBaseType(FullQualifiedName baseTypeName);
 
   protected abstract void checkBaseType();
+
+  /**
+   * Walks the declared base-type chain by name and raises an {@link EdmException} if a cycle
+   * (including a self-reference) is detected, before any property/base-type resolution recurses.
+   * Resolution here is a cached {@code edm.get*Type} lookup only — it does not trigger the
+   * property walks that would otherwise overflow the stack (OLINGO-1289).
+   */
+  protected void checkForCyclicBaseType() {
+    final Set<FullQualifiedName> visited = new HashSet<>();
+    visited.add(getFullQualifiedName());
+    FullQualifiedName currentBaseTypeName = baseTypeName;
+    while (currentBaseTypeName != null) {
+      if (!visited.add(currentBaseTypeName)) {
+        throw new EdmException("Cyclic base type detected involving type '"
+            + getFullQualifiedName() + "'.");
+      }
+      final EdmStructuredType resolved = buildBaseType(currentBaseTypeName);
+      if (!(resolved instanceof AbstractEdmStructuredType)) {
+        break;
+      }
+      currentBaseTypeName = ((AbstractEdmStructuredType) resolved).baseTypeName;
+    }
+  }
 
   @Override
   public List<String> getPropertyNames() {

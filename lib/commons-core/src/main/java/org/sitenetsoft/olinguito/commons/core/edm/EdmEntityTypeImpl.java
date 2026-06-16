@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Thread-safe EDM caches using ConcurrentHashMap
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1289: detect cyclic base-type chains
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
@@ -58,6 +59,7 @@ public class EdmEntityTypeImpl extends AbstractEdmStructuredType implements EdmE
   protected void checkBaseType() {
     if (!baseTypeChecked) {
       if (baseTypeName != null) {
+        checkForCyclicBaseType();
         baseType = buildBaseType(baseTypeName);
         entityBaseType = (EdmEntityType) baseType;
       }
