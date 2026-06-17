@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - String-literal escaping now done by the library (ENUM_VALUE regex tightened)
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
@@ -42,22 +43,18 @@ class ExampleUriGeneratorTest {
 
 
     /**
-     * This test demonstrates that some String literals are not encapsulated (quoted) correctly. This happens because
-     * {@link org.sitenetsoft.olinguito.client.core.uri.URIUtils#quoteString(String, boolean)} incorrectly determines
-     * the string to be an enum using a poorly designed regex, causing it to not encapsulate the string with single
-     * quotes. This can be abused to circumvent filters as illustrated in the example below.
-     * <p>
-     * The test <b>fails</b>
+     * A string value that tries to break out of its literal must be safely quoted and have its
+     * embedded single quotes doubled, so it is treated as a single literal and cannot circumvent
+     * the filter. The library now does this itself (the caller no longer escapes manually): the
+     * value is wrapped in single quotes and the {@code ENUM_VALUE} regex no longer mistakes an
+     * unprefixed quoted-looking string for an enum literal.
      */
     @Test
     void testODataInjection() {
         String uri = ExampleUriGenerator.filterPersonByName("' or name ne '");
 
-        // Expected: https://example.com/Person?$filter=(name eq ''' or name ne ''')
+        // The whole injection attempt becomes one quoted literal: (name eq ''' or name ne ''')
         assertEquals("https://example.com/Person?%24filter=%28name%20eq%20'''%20or%20name%20ne%20'''%29", uri);
-
-        // Actual:  https://example.com/Person?%24filter=%28name%20eq%20''%20or%20name%20ne%20''%29
-        //          https://example.com/Person?$filter=(name eq '' or name ne '')
     }
 
     static final class ExampleUriGenerator {
@@ -67,31 +64,15 @@ class ExampleUriGeneratorTest {
         }
 
         static String filterPersonByName(String name) {
-            // OLingo does not escape string literals so we do it ourselves
-            String escapedName = escape(name);
-
+            // The library escapes string literals (doubles embedded single quotes) itself.
             String filter = client.getFilterFactory() //
-                .eq("name", escapedName) //
+                .eq("name", name) //
                 .build();
 
             return client.newURIBuilder("https://example.com/") //
                 .appendEntitySetSegment("Person") //
                 .filter(filter) //
                 .build().toString();
-        }
-
-        //CHECKSTYLE:OFF
-        /**
-         * Escapes a string literal by representing a single quote in a string literal as two consecutive single quotes,
-         * as per the <a href="https://docs.oasis-open.org/odata/odata/v4.01/os/part2-url-conventions/
-         * odata-v4.01-os-part2-url-conventions.html#sec_URLSyntax">OData 4.01 URL Conventions</a>
-         *
-         * @param value the value to escape
-         * @return the escaped value
-         */
-        //CHECKSTYLE:ON
-        private static String escape(String value) {
-            return value.replaceAll("'", "''");
         }
     }
 

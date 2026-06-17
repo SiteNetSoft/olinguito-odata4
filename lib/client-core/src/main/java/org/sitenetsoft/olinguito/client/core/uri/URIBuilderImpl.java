@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
  * Copyright 2026 SiteNetSoft - Removed HttpComponents dependency (replaced NameValuePair with Map.Entry)
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1369: percent-encode blank spaces in path segments
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
@@ -299,6 +300,13 @@ public class URIBuilderImpl implements URIBuilder {
     }
 
     try {
+      // Percent-encode blank spaces remaining in the path; query options are encoded
+      // separately below via encodeQueryParameter (OLINGO-1369).
+      if (segmentsBuilder.indexOf(" ") >= 0) {
+        final String encodedPath = segmentsBuilder.toString().replace(" ", "%20");
+        segmentsBuilder.setLength(0);
+        segmentsBuilder.append(encodedPath);
+      }
       if ((customQueryOptions.size() + queryOptions.size() + parameters.size()) > 0) {
         segmentsBuilder.append("?");
         List<Map.Entry<String, String>> list1 = new LinkedList<>();
