@@ -242,6 +242,34 @@ class AcceptTypeTest {
   }
   
   @Test
+  void bareWildcard() {
+    List<AcceptType> atl = AcceptType.create("*");
+    assertEquals(1, atl.size());
+    assertEquals("*/*", atl.get(0).toString());
+    assertTrue(atl.get(0).matches(ContentType.create("a/a")));
+  }
+
+  @Test
+  void qValueWithoutLeadingZero() {
+    final AcceptType acceptType = AcceptType.create("a/a;q=.2").get(0);
+    assertEquals(Float.valueOf(0.2F), acceptType.getQuality());
+  }
+
+  @Test
+  void jdkDefaultAcceptHeader() {
+    List<AcceptType> atl = AcceptType.create(
+        "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2");
+    assertNotNull(atl);
+    assertEquals(5, atl.size());
+    // The two q=.2 wildcard entries sort last, both as */*.
+    assertEquals(TypeUtil.MEDIA_TYPE_WILDCARD, atl.get(3).getType());
+    assertEquals(TypeUtil.MEDIA_TYPE_WILDCARD, atl.get(3).getSubtype());
+    assertEquals(TypeUtil.MEDIA_TYPE_WILDCARD, atl.get(4).getType());
+    assertEquals(TypeUtil.MEDIA_TYPE_WILDCARD, atl.get(4).getSubtype());
+    assertTrue(atl.get(0).matches(ContentType.create("text/html")));
+  }
+
+  @Test
   void withSubtypeStar1() {
     List<AcceptType> acceptTypes = AcceptType.create("application/json,application/*");
     assertEquals(2, acceptTypes.size());
