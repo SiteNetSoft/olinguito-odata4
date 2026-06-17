@@ -17,10 +17,13 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1419: retain unknown/annotation error fields
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
 
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;
 import org.sitenetsoft.olinguito.commons.api.Constants;
@@ -30,6 +33,9 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class JsonODataErrorDetailDeserializer extends JsonDeserializer {
+
+  private static final Set<String> KNOWN_DETAIL_FIELDS = Set.of(
+      Constants.ERROR_CODE, Constants.ERROR_MESSAGE, Constants.ERROR_TARGET);
 
   public JsonODataErrorDetailDeserializer(final boolean serverMode) {
     super(serverMode);
@@ -52,6 +58,12 @@ public class JsonODataErrorDetailDeserializer extends JsonDeserializer {
     }
     if (errorNode.has(Constants.ERROR_TARGET)) {
       error.setTarget(errorNode.get(Constants.ERROR_TARGET).textValue());
+    }
+
+    final Map<String, Object> additionalProperties =
+        JsonODataErrorDeserializer.collectAdditionalProperties(errorNode, parser, KNOWN_DETAIL_FIELDS);
+    if (!additionalProperties.isEmpty()) {
+      error.setAdditionalProperties(additionalProperties);
     }
 
     return new ResWrap<>(null, null, error);
