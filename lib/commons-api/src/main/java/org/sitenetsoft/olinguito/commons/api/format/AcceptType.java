@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
+ * Copyright 2026 SiteNetSoft - Port OLINGO-998: tolerate the JDK-default Accept header (bare '*' and 'q=.2')
  */
 package org.sitenetsoft.olinguito.commons.api.format;
 
@@ -81,10 +82,14 @@ public final class AcceptType {
     final String q = parameters.get(TypeUtil.PARAMETER_Q);
     if (q == null) {
       quality = 1F;
-    } else if (Q_PATTERN.matcher(q).matches()) {
-        quality = Float.parseFloat(q);
     } else {
-      throw new IllegalArgumentException("Illegal quality parameter '" + q + "' in accept header:" + type);
+      // Tolerate a missing leading zero ("q=.2"), as sent by the JDK default Accept header.
+      final String normalizedQ = q.startsWith(".") ? "0" + q : q;
+      if (Q_PATTERN.matcher(normalizedQ).matches()) {
+        quality = Float.parseFloat(normalizedQ);
+      } else {
+        throw new IllegalArgumentException("Illegal quality parameter '" + q + "' in accept header:" + type);
+      }
     }
   }
 
@@ -105,6 +110,11 @@ public final class AcceptType {
         typeSubtype.add(tokens[0]);
         typeSubtype.add(tokens[1]);
       }
+    } else if (tokens.length == 1 && TypeUtil.MEDIA_TYPE_WILDCARD.equals(types.trim())) {
+      // A lone '*' is shorthand for '*/*'. Some clients send it, notably the JDK
+      // default Accept header ("text/html,...,*; q=.2, */*; q=.2").
+      typeSubtype.add(TypeUtil.MEDIA_TYPE_WILDCARD);
+      typeSubtype.add(TypeUtil.MEDIA_TYPE_WILDCARD);
     } else {
       throw new IllegalArgumentException("Not exactly one '" + TypeUtil.TYPE_SUBTYPE_SEPARATOR +
           " at the beginning or at the end in format: " + format);
