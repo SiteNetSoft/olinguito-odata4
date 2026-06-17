@@ -17,15 +17,19 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1504: stream entity-set iterator response without buffering
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.retrieve;
 
+import java.io.InputStream;
 import java.net.URI;
 import java.util.Objects;
 
 import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.http.NoContentException;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntitySetIteratorRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
 import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
@@ -67,7 +71,7 @@ public class ODataEntitySetIteratorRequestImpl<ES extends ClientEntitySet, E ext
    */
   protected class ODataEntitySetIteratorResponseImpl extends AbstractODataRetrieveResponse {
 
-    private ODataEntitySetIteratorResponseImpl(final ODataClient odataClient, final ODataHttpClient httpClient,
+    ODataEntitySetIteratorResponseImpl(final ODataClient odataClient, final ODataHttpClient httpClient,
             final ODataHttpResponse res) {
 
       super(odataClient, httpClient, res);
@@ -80,6 +84,19 @@ public class ODataEntitySetIteratorRequestImpl<ES extends ClientEntitySet, E ext
                 odataClient, getRawResponse(), Objects.requireNonNull(ContentType.parse(getContentType())));
       }
       return entitySetIterator;
+    }
+
+    /**
+     * Returns the live response stream directly instead of buffering the whole feed into memory,
+     * so a large non-paginated collection does not cause an OutOfMemoryError (OLINGO-1504). The
+     * iterator returned by {@link #getBody()} consumes the stream incrementally and closes it.
+     */
+    @Override
+    public InputStream getRawResponse() {
+      if (HttpStatusCode.NO_CONTENT.getStatusCode() == getStatusCode()) {
+        throw new NoContentException();
+      }
+      return payload;
     }
   }
 }
