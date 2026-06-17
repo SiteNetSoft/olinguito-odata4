@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1587: configurable streamed/batch response timeout
  */
 package org.sitenetsoft.olinguito.client.api;
 
@@ -266,4 +268,20 @@ public interface Configuration {
    * @param executorService new executor services.
    */
   void setExecutor(ExecutorService executorService);
+
+  /**
+   * Gets the maximum number of seconds the client waits for a streamed/batch response before the
+   * request is aborted.
+   *
+   * @return response timeout in seconds.
+   */
+  int getResponseTimeoutInSec();
+
+  /**
+   * Sets the maximum number of seconds the client waits for a streamed/batch response before the
+   * request is aborted.
+   *
+   * @param responseTimeoutInSec response timeout in seconds (must be positive).
+   */
+  void setResponseTimeoutInSec(int responseTimeoutInSec);
 }

@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Implemented validateSingleRequest() method
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1587: apply configured response timeout to batch manager
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.batch;
 
@@ -83,6 +84,7 @@ public class ODataBatchRequestImpl
     public BatchManagerImpl(final ODataBatchRequest req) {
       super(req, ODataBatchRequestImpl.this.futureWrapper,
               ODataBatchRequestImpl.this.odataClient.getConfiguration().isContinueOnError());
+      setResponseTimeoutInSec(ODataBatchRequestImpl.this.odataClient.getConfiguration().getResponseTimeoutInSec());
     }
 
     @Override
