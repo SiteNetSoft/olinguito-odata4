@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Code quality improvements; replaced commons-codec Hex with HexFormat
  * Copyright 2026 SiteNetSoft - Removed HttpComponents dependency; pure Java URI construction
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
+ * Copyright 2026 SiteNetSoft - Double embedded single quotes in string literals (OData escaping)
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
@@ -68,7 +69,10 @@ public final class URIUtils {
    * Logger.
    */
 
-  private static final Pattern ENUM_VALUE = Pattern.compile("([^']+\\.[^']+)?'[^']+'");
+  // An enum literal is "Namespace.EnumType'member'"; the namespace.type prefix is REQUIRED so that
+  // an arbitrary (possibly malicious) quoted-looking string is not mistaken for an enum and left
+  // unquoted/unescaped. Without the prefix, values like "' or x ne '" bypassed quoting (injection).
+  private static final Pattern ENUM_VALUE = Pattern.compile("[^']+\\.[^']+'[^']+'");
   private static final String URI_OPTIONS = "/$";
 
   private URIUtils() {
@@ -165,7 +169,8 @@ public final class URIUtils {
     return ENUM_VALUE.matcher(string).matches()
         ? string
         : singleQuoteEscape
-            ? "'" + string + "'"
+            // OData string literals escape an embedded single quote by doubling it.
+            ? "'" + string.replace("'", "''") + "'"
             : "\"" + string + "\"";
   }
 

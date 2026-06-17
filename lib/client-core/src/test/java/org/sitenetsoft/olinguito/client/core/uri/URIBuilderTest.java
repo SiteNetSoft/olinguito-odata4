@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1369: tests for blank-space and embedded-quote encoding
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
@@ -51,6 +52,37 @@ class URIBuilderTest extends AbstractTest {
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendMetadataSegment().build();
 
     assertEquals(new org.apache.hc.core5.net.URIBuilder(SERVICE_ROOT + "/$metadata").build(), uri);
+  }
+
+  @Test
+  void keySegmentWithBlankSpaceIsEncoded() {
+    // OLINGO-1369: blank spaces in a key segment must be percent-encoded
+    final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("ObjektEbeneSet").
+        appendKeySegment("Landwirtschaft und Tierzucht").build();
+
+    assertEquals(SERVICE_ROOT + "/ObjektEbeneSet('Landwirtschaft%20und%20Tierzucht')", uri.toASCIIString());
+  }
+
+  @Test
+  void multiKeySegmentWithBlankSpaceIsEncoded() {
+    // OLINGO-1369: blank spaces in a multi-key segment must be percent-encoded
+    final Map<String, Object> key = new LinkedHashMap<>();
+    key.put("Nr", "121");
+    key.put("Bezeichnung", "Landwirtschaft und Tierzucht");
+    final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("ObjektEbeneSet").
+        appendKeySegment(key).build();
+
+    assertEquals(SERVICE_ROOT + "/ObjektEbeneSet(Nr='121',Bezeichnung='Landwirtschaft%20und%20Tierzucht')",
+        uri.toASCIIString());
+  }
+
+  @Test
+  void keySegmentWithEmbeddedSingleQuoteIsDoubled() {
+    // OData literal escaping: an embedded single quote must be doubled
+    final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("Customers").
+        appendKeySegment("O'Brien").build();
+
+    assertEquals(SERVICE_ROOT + "/Customers('O''Brien')", uri.toASCIIString());
   }
 
   @Test
