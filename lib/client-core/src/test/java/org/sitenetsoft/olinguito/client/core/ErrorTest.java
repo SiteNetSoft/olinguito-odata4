@@ -85,6 +85,30 @@ class ErrorTest extends AbstractTest {
   }
 
   @Test
+  void jsonAnnotationsRetained() throws Exception {
+    final String json =
+        "{\"error\":{"
+        + "\"code\":\"501\","
+        + "\"message\":\"Unsupported functionality\","
+        + "\"@Message.ExtendedInfo\":[{\"MessageId\":\"Base.1.0.GeneralError\"}],"
+        + "\"details\":[{"
+        + "\"code\":\"301\",\"target\":\"$search\",\"message\":\"not supported\","
+        + "\"@Custom.Hint\":\"retry later\"}]"
+        + "}}";
+    final ODataError error = client.getDeserializer(ContentType.JSON)
+        .toError(new ByteArrayInputStream(json.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+
+    final Map<String, Object> additional = error.getAdditionalProperties();
+    assertNotNull(additional);
+    assertTrue(additional.containsKey("@Message.ExtendedInfo"));
+    assertTrue(additional.get("@Message.ExtendedInfo") instanceof java.util.List);
+
+    final ODataErrorDetail detail = error.getDetails().get(0);
+    assertNotNull(detail.getAdditionalProperties());
+    assertEquals("retry later", detail.getAdditionalProperties().get("@Custom.Hint"));
+  }
+
+  @Test
   void test1OLINGO1102() throws Exception {
     ODataClient odataClient = ODataClientFactory.getClient();
     InputStream entity = getClass().getResourceAsStream("500error." + getSuffix(ContentType.JSON));

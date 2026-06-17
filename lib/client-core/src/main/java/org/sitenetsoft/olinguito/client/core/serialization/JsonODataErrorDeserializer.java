@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1419: retain unknown/annotation error fields
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -22,7 +24,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.sitenetsoft.olinguito.commons.api.Constants;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataError;
@@ -34,8 +39,31 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class JsonODataErrorDeserializer extends JsonDeserializer {
 
+  static final Set<String> KNOWN_ERROR_FIELDS = Set.of(
+      Constants.ERROR_CODE, Constants.ERROR_MESSAGE, Constants.ERROR_TARGET,
+      Constants.ERROR_DETAILS, Constants.ERROR_INNERERROR);
+
   public JsonODataErrorDeserializer(final boolean serverMode) {
     super(serverMode);
+  }
+
+  /**
+   * Collects every field of the given error node whose name is not one of the standard OData
+   * error members into a map, preserving structure. This keeps instance annotations (such as
+   * Redfish's {@code @Message.ExtendedInfo}) and other vendor extensions that would otherwise
+   * be silently dropped.
+   */
+  static Map<String, Object> collectAdditionalProperties(final JsonNode node, final JsonParser parser,
+      final Set<String> knownFields) throws IOException {
+    final Map<String, Object> additionalProperties = new LinkedHashMap<>();
+    for (final Iterator<String> itor = node.fieldNames(); itor.hasNext();) {
+      final String name = itor.next();
+      if (!knownFields.contains(name)) {
+        additionalProperties.put(name,
+            node.get(name).traverse(parser.getCodec()).readValueAs(Object.class));
+      }
+    }
+    return additionalProperties;
   }
 
   protected ODataError doDeserialize(final JsonParser parser) throws IOException {
@@ -79,6 +107,12 @@ public class JsonODataErrorDeserializer extends JsonDeserializer {
           innerErrorMap.put(keyTmp, val);
         }
         error.setInnerError(innerErrorMap);
+      }
+
+      final Map<String, Object> additionalProperties =
+          collectAdditionalProperties(errorNode, parser, KNOWN_ERROR_FIELDS);
+      if (!additionalProperties.isEmpty()) {
+        error.setAdditionalProperties(additionalProperties);
       }
     }
 
