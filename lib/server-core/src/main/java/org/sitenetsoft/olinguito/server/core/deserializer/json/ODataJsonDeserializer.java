@@ -28,6 +28,8 @@
  * in action parameter deserialization
  * Copyright 2026 SiteNetSoft - OLINGO-1590: Check EdmTypeKind before
  * assuming "Geo" prefix means geospatial type
+ * Copyright 2026 SiteNetSoft - OLINGO-1236: accept "NaN"/"INF"/"-INF" string
+ * values for Single/Double properties
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -1111,6 +1113,7 @@ public class ODataJsonDeserializer implements ODataDeserializer {
           || matchNumberCase(jsonNode, primKind)
           || matchBooleanCase(jsonNode, primKind)
           || matchIEEENumberCase(jsonNode, primKind)
+          || matchIEEESpecialValueCase(jsonNode, primKind)
           || jsonNode.isObject() && name.startsWith("Geo");
     }
     if (!valid) {
@@ -1123,6 +1126,16 @@ public class ODataJsonDeserializer implements ODataDeserializer {
   private boolean matchIEEENumberCase(final JsonNode node, final EdmPrimitiveTypeKind primKind) {
     return (isIEEE754Compatible ? node.isTextual() : node.isNumber())
         && (primKind == EdmPrimitiveTypeKind.Int64 || primKind == EdmPrimitiveTypeKind.Decimal);
+  }
+
+  private boolean matchIEEESpecialValueCase(final JsonNode node, final EdmPrimitiveTypeKind primKind) {
+    // OData represents the IEEE 754 special values as the JSON strings "NaN", "INF" and "-INF"
+    // (a bare numeric token is not valid JSON). EdmSingle/EdmDouble already parse these strings.
+    return node.isTextual()
+        && (primKind == EdmPrimitiveTypeKind.Single || primKind == EdmPrimitiveTypeKind.Double)
+        && ("NaN".equals(node.textValue())
+            || "INF".equals(node.textValue())
+            || "-INF".equals(node.textValue()));
   }
 
   private boolean matchBooleanCase(final JsonNode node, final EdmPrimitiveTypeKind primKind) {

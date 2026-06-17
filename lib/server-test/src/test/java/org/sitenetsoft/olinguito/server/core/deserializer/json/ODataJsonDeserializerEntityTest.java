@@ -139,6 +139,31 @@ class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTest {
   }
   
   @Test
+  void simpleEntityETAllPrimWithIEEESpecialValues() throws Exception {
+    String entityString =
+        "{\"PropertyInt16\":32767," +
+            "\"PropertyString\":\"NaN, INF and -INF as strings\"," +
+            "\"PropertySingle\":\"NaN\"," +
+            "\"PropertyDouble\":\"-INF\"}";
+    final Entity entity = deserialize(entityString, "ETAllPrim");
+    assertNotNull(entity);
+    assertEquals(Float.valueOf(Float.NaN), entity.getProperty("PropertySingle").getValue());
+    assertEquals(Double.valueOf(Double.NEGATIVE_INFINITY), entity.getProperty("PropertyDouble").getValue());
+
+    final Entity positiveInf = deserialize(
+        "{\"PropertyInt16\":32767,\"PropertyDouble\":\"INF\"}", "ETAllPrim");
+    assertEquals(Double.valueOf(Double.POSITIVE_INFINITY),
+        positiveInf.getProperty("PropertyDouble").getValue());
+  }
+
+  @Test
+  void simpleEntityETAllPrimWithInvalidNumericStringFails() throws Exception {
+    // A non-special string is still rejected for Double.
+    assertThrows(DeserializerException.class, () ->
+        deserialize("{\"PropertyInt16\":32767,\"PropertyDouble\":\"nan\"}", "ETAllPrim"));
+  }
+
+  @Test
   void derivedEntityETTwoPrim() throws Exception {
     String entityString =
         "{\"@odata.type\":\"#olingo.odata.test1.ETBase\","+
