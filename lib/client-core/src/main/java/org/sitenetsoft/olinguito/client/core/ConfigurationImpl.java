@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1587: configurable streamed/batch response timeout
  */
 package org.sitenetsoft.olinguito.client.core;
 
@@ -60,7 +62,11 @@ public class ConfigurationImpl implements Configuration {
 
   private static final String CONTINUE_ON_ERROR = "continueOnError";
 
+  private static final String RESPONSE_TIMEOUT_IN_SEC = "responseTimeoutInSec";
+
   public static final int DEFAULT_BUFFER_SIZE = 4 * 1024 * 1024;  // 4MB
+
+  public static final int DEFAULT_RESPONSE_TIMEOUT_IN_SEC = 300;
 
   private final Map<String, Object> conf = new HashMap<>();
 
@@ -233,6 +239,19 @@ public class ConfigurationImpl implements Configuration {
   @Override
   public void setContinueOnError(final boolean value) {
     setProperty(CONTINUE_ON_ERROR, value);
+  }
+
+  @Override
+  public int getResponseTimeoutInSec() {
+    return (Integer) getProperty(RESPONSE_TIMEOUT_IN_SEC, DEFAULT_RESPONSE_TIMEOUT_IN_SEC);
+  }
+
+  @Override
+  public void setResponseTimeoutInSec(final int responseTimeoutInSec) {
+    if (responseTimeoutInSec <= 0) {
+      throw new IllegalArgumentException("responseTimeoutInSec must be positive");
+    }
+    setProperty(RESPONSE_TIMEOUT_IN_SEC, responseTimeoutInSec);
   }
 
   @Override

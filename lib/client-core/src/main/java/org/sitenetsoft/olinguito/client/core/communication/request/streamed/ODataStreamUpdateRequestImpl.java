@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1587: apply configured response timeout
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.streamed;
 
@@ -78,6 +80,7 @@ public class ODataStreamUpdateRequestImpl
      */
     private StreamUpdateStreamManagerImpl(final InputStream input) {
       super(ODataStreamUpdateRequestImpl.this.futureWrapper, input);
+      setResponseTimeoutInSec(odataClient.getConfiguration().getResponseTimeoutInSec());
     }
 
     /**

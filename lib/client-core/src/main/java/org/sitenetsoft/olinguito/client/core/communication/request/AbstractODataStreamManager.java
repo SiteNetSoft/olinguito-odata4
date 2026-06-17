@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Fixed NPE in finalizeBody when bodyStreamWriter is null
  * Copyright 2026 SiteNetSoft - Replaced Apache HttpResponse with ODataHttpResponse
  * Copyright 2026 SiteNetSoft - Narrowed catch(Exception) to specific concurrency exceptions
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1587: configurable response timeout (was hardcoded 300s)
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -60,6 +61,12 @@ public abstract class AbstractODataStreamManager<T extends ODataResponse> extend
    * Wrapper for actual streamed request's future.
    */
   private final Wrapper<Future<ODataHttpResponse>> futureWrap;
+
+  /**
+   * Maximum delay (seconds) the no-arg {@link #getResponse()} waits before aborting; configurable
+   * via {@code Configuration.setResponseTimeoutInSec} (OLINGO-1587).
+   */
+  private int responseTimeoutInSec = ConfigurationImpl.DEFAULT_RESPONSE_TIMEOUT_IN_SEC;
 
   /**
    * Constructor.
@@ -152,11 +159,20 @@ public abstract class AbstractODataStreamManager<T extends ODataResponse> extend
   protected abstract T getResponse(long timeout, TimeUnit unit);
 
   /**
+   * Sets the response timeout (in seconds) used by the no-arg {@link #getResponse()}.
+   *
+   * @param responseTimeoutInSec response timeout in seconds.
+   */
+  protected void setResponseTimeoutInSec(final int responseTimeoutInSec) {
+    this.responseTimeoutInSec = responseTimeoutInSec;
+  }
+
+  /**
    * {@inheritDoc}
    */
   @Override
   public final T getResponse() {
-    return getResponse(300, TimeUnit.SECONDS);
+    return getResponse(responseTimeoutInSec, TimeUnit.SECONDS);
   }
 
   /**
