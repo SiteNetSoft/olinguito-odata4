@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1329: depend on the ODataHandler interface, not the impl
  */
 package org.sitenetsoft.olinguito.server.core.batchhandler;
 
@@ -24,6 +26,7 @@ import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
+import org.sitenetsoft.olinguito.server.api.ODataHandler;
 import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
 import org.sitenetsoft.olinguito.server.api.ODataRequest;
 import org.sitenetsoft.olinguito.server.api.ODataResponse;
@@ -32,16 +35,15 @@ import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchDeserializer
 import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchDeserializerException.MessageKeys;
 import org.sitenetsoft.olinguito.server.api.processor.BatchProcessor;
 import org.sitenetsoft.olinguito.server.core.ODataHandlerException;
-import org.sitenetsoft.olinguito.server.core.ODataHandlerImpl;
 import org.sitenetsoft.olinguito.server.core.deserializer.batch.BatchParserCommon;
 
 public class BatchHandler {
   private final BatchProcessor batchProcessor;
-  private final ODataHandlerImpl oDataHandler;
+  private final ODataHandler oDataHandler;
   private static final String RETURN_MINIMAL = "return=minimal";
   private static final String RETURN_REPRESENTATION = "return=representation";
 
-  public BatchHandler(final ODataHandlerImpl oDataHandler, final BatchProcessor batchProcessor) {
+  public BatchHandler(final ODataHandler oDataHandler, final BatchProcessor batchProcessor) {
 
     this.batchProcessor = batchProcessor;
     this.oDataHandler = oDataHandler;
