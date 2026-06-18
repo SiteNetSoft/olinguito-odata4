@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OLINGO-1540: document Int32 limit of the inline count (deferred)
  */
 package org.sitenetsoft.olinguito.client.api.domain;
 
@@ -42,6 +44,11 @@ public interface ClientEntitySet extends ClientInvokeResult, ClientAnnotatable {
 
   /**
    * Gets in-line count.
+   *
+   * <p>Note: the in-line count is limited to {@code Integer.MAX_VALUE}. The OData specification
+   * defines {@code @odata.count} as {@code Edm.Int64}; widening this to {@code long} is deferred
+   * (OLINGO-1540) because it would be a breaking public-API change. A server reporting a count
+   * above {@code Integer.MAX_VALUE} cannot be represented exactly here.</p>
    *
    * @return in-line count value.
    */

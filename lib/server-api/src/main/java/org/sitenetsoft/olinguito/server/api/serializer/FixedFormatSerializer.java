@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OLINGO-1540: document Int32 limit of the count value (deferred)
  */
 package org.sitenetsoft.olinguito.server.api.serializer;
 
@@ -45,6 +47,11 @@ public interface FixedFormatSerializer {
   
   /**
    * Writes a count into an InputStream as plain text.
+   *
+   * <p>Note: the count is limited to {@code Integer.MAX_VALUE}. The OData specification defines
+   * {@code $count} as {@code Edm.Int64}; widening this to {@code long} is deferred (OLINGO-1540)
+   * because it would be a breaking public-API change.</p>
+   *
    * @param count the count
    */
   InputStream count(Integer count) throws SerializerException;

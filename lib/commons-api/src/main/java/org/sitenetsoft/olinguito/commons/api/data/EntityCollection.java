@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
+ * Copyright 2026 SiteNetSoft - OLINGO-1540: document Int32 limit of the inline count (deferred)
  */
 package org.sitenetsoft.olinguito.commons.api.data;
 
@@ -48,6 +49,10 @@ public class EntityCollection extends AbstractEntityCollection {
 
   /**
    * Gets number of entries - if it was required.
+   *
+   * <p>Note: the inline count is limited to {@code Integer.MAX_VALUE}. The OData specification
+   * defines {@code @odata.count} as {@code Edm.Int64}; widening this to {@code long} is deferred
+   * (OLINGO-1540) because it would be a breaking public-API change.</p>
    *
    * @return number of entries into the entity set.
    */
