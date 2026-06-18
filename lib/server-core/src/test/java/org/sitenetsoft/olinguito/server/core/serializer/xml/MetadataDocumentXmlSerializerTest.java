@@ -208,6 +208,47 @@ class MetadataDocumentXmlSerializerTest {
 
   }
 
+  /** An annotation whose term cannot be resolved must still emit the mandatory Term attribute
+   *  using the raw term name (OLINGO-1399). */
+  @Test
+  void annotationWithUnresolvableTermFallsBackToRawName() throws Exception {
+    EdmSchema schema = mock(EdmSchema.class);
+    when(schema.getNamespace()).thenReturn("MyNamespace");
+    Edm edm = mock(Edm.class);
+    when(edm.getSchemas()).thenReturn(List.of(schema));
+
+    ServiceMetadata serviceMetadata = mock(ServiceMetadata.class);
+    when(serviceMetadata.getEdm()).thenReturn(edm);
+
+    EdmEnumType enumType = mock(EdmEnumType.class);
+    when(schema.getEnumTypes()).thenReturn(Collections.singletonList(enumType));
+    when(enumType.getName()).thenReturn("MyEnum");
+    EdmPrimitiveType int32Type = OData.newInstance().createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Int32);
+    when(enumType.getUnderlyingType()).thenReturn(int32Type);
+    when(enumType.getMemberNames()).thenReturn(Collections.singletonList("MyMember"));
+    EdmMember member = mock(EdmMember.class);
+    when(enumType.getMember("MyMember")).thenReturn(member);
+    when(member.getName()).thenReturn("MyMember");
+    when(member.getValue()).thenReturn("0");
+
+    EdmAnnotation annotation = mock(EdmAnnotation.class);
+    when(member.getAnnotations()).thenReturn(Collections.singletonList(annotation));
+    when(annotation.getTerm()).thenReturn(null);
+    when(annotation.getTermName()).thenReturn("my.vocab.Unresolved");
+    EdmConstantExpression expression = mock(EdmConstantExpression.class);
+    when(expression.isConstant()).thenReturn(true);
+    when(expression.asConstant()).thenReturn(expression);
+    when(expression.getExpressionType()).thenReturn(EdmExpressionType.String);
+    when(expression.getExpressionName()).thenReturn("String");
+    when(expression.getValueAsString()).thenReturn("MyDescription");
+    when(annotation.getExpression()).thenReturn(expression);
+
+    InputStream metadata = serializer.metadataDocument(serviceMetadata).getContent();
+    String metadataString = new String(metadata.readAllBytes(), StandardCharsets.UTF_8);
+
+    assertTrue(metadataString.contains("<Annotation Term=\"my.vocab.Unresolved\">"));
+  }
+
 
   @Test
   void writeEdmxWithLocalTestEdm() throws Exception {

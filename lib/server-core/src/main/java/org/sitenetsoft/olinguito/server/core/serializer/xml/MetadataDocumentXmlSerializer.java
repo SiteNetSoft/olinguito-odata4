@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OLINGO-1399: fall back to raw term name for unresolvable annotation terms
  */
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
@@ -312,6 +314,10 @@ public class MetadataDocumentXmlSerializer {
         if (annotation.getTerm() != null) {
           writer.writeAttribute(XML_TERM_ATT, getAliasedFullQualifiedName(annotation.getTerm().getFullQualifiedName(),
               false));
+        } else if (annotation.getTermName() != null) {
+          // The term cannot be resolved (its vocabulary is not served); still emit the mandatory
+          // Term attribute using the raw term name so the produced CSDL stays valid.
+          writer.writeAttribute(XML_TERM_ATT, annotation.getTermName());
         }
         if (annotation.getQualifier() != null) {
           writer.writeAttribute(XML_QUALIFIER_ATT, annotation.getQualifier());

@@ -23,6 +23,7 @@
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -282,7 +283,51 @@ class MetadataDocumentJsonSerializerTest {
         + "\"MyMember#Core.Description\":\"MyDescription\"}}}"));
 
   }
-  
+
+  @Test
+  void annotationWithUnresolvableTermFallsBackToRawName() throws Exception {
+    EdmSchema schema = mock(EdmSchema.class);
+    when(schema.getNamespace()).thenReturn("MyNamespace");
+    Edm edm = mock(Edm.class);
+    when(edm.getSchemas()).thenReturn(List.of(schema));
+
+    ServiceMetadata serviceMetadata = mock(ServiceMetadata.class);
+    when(serviceMetadata.getEdm()).thenReturn(edm);
+
+    EdmEnumType enumType = mock(EdmEnumType.class);
+    when(schema.getEnumTypes()).thenReturn(Collections.singletonList(enumType));
+    when(enumType.getName()).thenReturn("MyEnum");
+    when(enumType.getKind()).thenReturn(EdmTypeKind.ENUM);
+    EdmPrimitiveType int32Type = OData.newInstance().createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Int32);
+    when(enumType.getUnderlyingType()).thenReturn(int32Type);
+    when(enumType.getMemberNames()).thenReturn(Collections.singletonList("MyMember"));
+    EdmMember member = mock(EdmMember.class);
+    when(enumType.getMember("MyMember")).thenReturn(member);
+    when(member.getName()).thenReturn("MyMember");
+    when(member.getValue()).thenReturn("0");
+
+    EdmAnnotation annotation = mock(EdmAnnotation.class);
+    when(member.getAnnotations()).thenReturn(Collections.singletonList(annotation));
+    // The term's vocabulary is not part of the served metadata, so getTerm() cannot resolve it,
+    // but the raw term name is still available and must be emitted (OLINGO-1399).
+    when(annotation.getTerm()).thenReturn(null);
+    when(annotation.getTermName()).thenReturn("my.vocab.Unresolved");
+    EdmConstantExpression expression = mock(EdmConstantExpression.class);
+    when(expression.isConstant()).thenReturn(true);
+    when(expression.asConstant()).thenReturn(expression);
+    when(expression.getExpressionType()).thenReturn(EdmExpressionType.String);
+    when(expression.getExpressionName()).thenReturn("String");
+    when(expression.getValueAsString()).thenReturn("MyDescription");
+    when(annotation.getExpression()).thenReturn(expression);
+
+    InputStream metadata = serializer.metadataDocument(serviceMetadata).getContent();
+    String metadataString = new String(metadata.readAllBytes(), StandardCharsets.UTF_8);
+
+    assertTrue(metadataString.contains("\"MyMember@my.vocab.Unresolved\":\"MyDescription\""));
+    // The member name must not be emitted with an empty term ("MyMember@").
+    assertFalse(metadataString.contains("\"MyMember@\":"));
+  }
+
   /** Writes simplest (empty) Schema. */
   @Test
   void writeMetadataWithEmptySchema() throws Exception {
@@ -388,7 +433,8 @@ class MetadataDocumentJsonSerializerTest {
         + "{\"$Type\":\"Alias.CTEntityInfo\"},"
         + "\"NavPropertyETOne\":{\"$Kind\":\"NavigationProperty\","
         + "\"$Type\":\"Alias.ETOne\"},\"NavProperty\":{\"$Kind\":\"NavigationProperty\","
-        + "\"$Type\":\"Alias.ETAbstract\",\"$Nullable\":false,\"OnDelete\":{\"Action\":\"Cascade\"}}}"));
+        + "\"$Type\":\"Alias.ETAbstract\",\"$Nullable\":false,"
+        + "\"OnDelete\":{\"Action\":\"Cascade\",\"@core.Term\":true}}}"));
     assertTrue(metadata.contains("\"BAETTwoKeyNavRTETTwoKeyNavParam\":"
         + "[{\"$Kind\":\"Action\",\"$EntitySetPath\":\"BindingParam/NavPropertyETTwoKeyNavOne\","
         + "\"$IsBound\":true,\"$Parameter\":[{\"$Name\":\"BindingParam\",\"$Type\":\"Alias.ETTwoKeyNav\"},"
