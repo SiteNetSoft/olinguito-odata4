@@ -21,6 +21,7 @@
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  * Copyright 2026 SiteNetSoft - Refactored doExecute() to use transport-agnostic interfaces
  * Copyright 2026 SiteNetSoft - Narrowed catch(Exception) to ReflectiveOperationException
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1507: allow suppressing the auto-injected Accept header
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -91,6 +92,12 @@ public abstract class AbstractODataRequest extends AbstractRequest implements OD
   protected ODataHttpRequest request;
 
   /**
+   * When {@code true}, no default {@code Accept} header is injected and any existing one is left
+   * out, so the request is sent without an {@code Accept} header. See {@link #removeAccept()}.
+   */
+  private boolean acceptSuppressed;
+
+  /**
    * Constructor.
    *
    * @param odataClient client instance getting this request
@@ -143,8 +150,20 @@ public abstract class AbstractODataRequest extends AbstractRequest implements OD
 
   @Override
   public ODataRequest setAccept(final String value) {
+    // An explicit Accept overrides a previous suppression request.
+    acceptSuppressed = false;
     odataHeaders.setHeader(HttpHeader.ACCEPT, value);
     return this;
+  }
+
+  /**
+   * Suppresses the {@code Accept} header: no default is injected and any value set so far is
+   * dropped, so the request is sent without an {@code Accept} header. A later {@link #setAccept}
+   * re-enables it.
+   */
+  public void removeAccept() {
+    acceptSuppressed = true;
+    odataHeaders.removeHeader(HttpHeader.ACCEPT);
   }
 
   @Override
@@ -240,7 +259,7 @@ public abstract class AbstractODataRequest extends AbstractRequest implements OD
         setContentType(getContentType());
       }
       String acceptHeader = odataHeaders.getHeader(HttpHeader.ACCEPT);
-      if (acceptHeader == null || acceptHeader.isBlank()) {
+      if (!acceptSuppressed && (acceptHeader == null || acceptHeader.isBlank())) {
         setAccept(getAccept());
       }
 
@@ -290,7 +309,7 @@ public abstract class AbstractODataRequest extends AbstractRequest implements OD
       setContentType(getContentType());
     }
     String acceptHeader = odataHeaders.getHeader(HttpHeader.ACCEPT);
-    if (acceptHeader == null || acceptHeader.isBlank()) {
+    if (!acceptSuppressed && (acceptHeader == null || acceptHeader.isBlank())) {
       setAccept(getAccept());
     }
 
