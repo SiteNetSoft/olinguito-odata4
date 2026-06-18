@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OLINGO-1540: document Int32 limit of the inline count (deferred)
  */
 package org.sitenetsoft.olinguito.commons.api.data;
 
@@ -74,8 +76,11 @@ public abstract class EntityIterator extends AbstractEntityCollection implements
   }
 
   /**
-   * Gets count
-   * 
+   * Gets count.
+   *
+   * <p>Note: the inline count is limited to {@code Integer.MAX_VALUE}. The OData specification
+   * defines {@code @odata.count} as {@code Edm.Int64}; widening this to {@code long} is deferred
+   * (OLINGO-1540) because it would be a breaking public-API change.</p>
    */
   public Integer getCount() {
     return count;

@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Modernized equals/hashCode with Objects utility methods
  * Copyright 2026 SiteNetSoft - OLINGO-1596: Add count field for collection properties with $count=true
+ * Copyright 2026 SiteNetSoft - OLINGO-1540: document Int32 limit of the inline count (deferred)
  */
 package org.sitenetsoft.olinguito.commons.api.data;
 
@@ -91,6 +92,10 @@ public class Property extends Valuable {
   
   /**
    * Gets the count for collection properties (used with $count=true).
+   *
+   * <p>Note: the inline count is limited to {@code Integer.MAX_VALUE}. The OData specification
+   * defines {@code @odata.count} as {@code Edm.Int64}; widening this to {@code long} is deferred
+   * (OLINGO-1540) because it would be a breaking public-API change.</p>
    *
    * @return the count, or null if not set
    */
