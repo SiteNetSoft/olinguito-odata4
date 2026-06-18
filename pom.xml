@@ -96,7 +96,7 @@
     <esigate.version>5.3</esigate.version>
     <cxf.version>4.1.5</cxf.version>
     <netty.version>4.1.131.Final</netty.version>
-    <vertx.version>4.5.24</vertx.version>
+    <vertx.version>4.5.28</vertx.version>
 
     <velocity-engine.version>2.4.1</velocity-engine.version>
     <maven.plugin.api.version>3.9.9</maven.plugin.api.version>
@@ -131,7 +131,7 @@
 
     <tomcat.servlet.port>9080</tomcat.servlet.port>
     <tomcat.version>10.1.52</tomcat.version>
-    <quarkus.version>3.31.3</quarkus.version>
+    <quarkus.version>3.37.0</quarkus.version>
 
     <!-- for osgi integration testing -->
     <osgi.version>4.2.0</osgi.version>
