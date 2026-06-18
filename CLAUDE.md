@@ -118,4 +118,4 @@ The `feature/without-servlet-continue` branch has completed the decoupling of se
 - **Android modernization**: Replaced deprecated `AndroidHttpClient` with OkHttp adapter
 - **Karaf OSGi**: Updated features.xml bundles to match new module structure; renamed features from `olingo-*` to `olinguito-*`
 - **Samples/Tutorials**: Migrated from javax.servlet 2.5 to Jakarta Servlet 6.1.0; updated web.xml namespaces to Jakarta EE 6.0
-- **Quarkus**: Updated to 3.31.3
+- **Quarkus**: Updated to 3.37.0 (Vert.x aligned to 4.5.28)
