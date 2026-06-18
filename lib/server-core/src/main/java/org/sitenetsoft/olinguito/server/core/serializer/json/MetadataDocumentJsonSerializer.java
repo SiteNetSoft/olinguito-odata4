@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  * Copyright 2026 SiteNetSoft - OLINGO-1534: Null-safe field writing for constant expressions in logical/comparison
+ * Copyright 2026 SiteNetSoft - OLINGO-1399: fall back to raw term name for unresolvable annotation terms
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -824,6 +825,10 @@ public class MetadataDocumentJsonSerializer {
         String termName = memberName != null ? memberName : "";
         if (annotation.getTerm() != null) {
           termName += "@" + getAliasedFullQualifiedName(annotation.getTerm().getFullQualifiedName());
+        } else if (annotation.getTermName() != null) {
+          // The term's vocabulary is not part of the served metadata, so it cannot be resolved
+          // to an EdmTerm; fall back to the raw term name so the member name stays valid.
+          termName += "@" + annotation.getTermName();
         }
         if (annotation.getQualifier() != null) {
           termName += "#" + annotation.getQualifier();

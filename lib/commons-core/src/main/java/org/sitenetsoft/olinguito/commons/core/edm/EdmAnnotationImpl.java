@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1399: expose raw term name for unresolvable terms
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
@@ -47,6 +49,11 @@ public class EdmAnnotationImpl extends AbstractEdmAnnotatable implements EdmAnno
       term = edm.getTerm(new FullQualifiedName(annotation.getTerm()));
     }
     return term;
+  }
+
+  @Override
+  public String getTermName() {
+    return annotation.getTerm();
   }
 
   @Override
