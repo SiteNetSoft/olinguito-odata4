@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1507: allow suppressing the auto-injected Accept header
  */
 package org.sitenetsoft.olinguito.client.api.communication.request.retrieve;
 
@@ -32,6 +34,16 @@ public interface ODataRawRequest extends ODataRequest {
    * @param format format.
    */
   void setFormat(final String format);
+
+  /**
+   * Suppresses the {@code Accept} header so the request is sent without one.
+   *
+   * <p>By default a request without an explicit {@code Accept} header has one injected from the
+   * default format. Call this to send a truly raw request (for example to let the server choose
+   * the representation, or to talk to a server that behaves differently when {@code Accept} is
+   * present). A subsequent {@link #setAccept} or {@link #setFormat} re-enables the header.</p>
+   */
+  void removeAccept();
 
   /**
    * Executes the query.

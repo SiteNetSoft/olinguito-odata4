@@ -20,11 +20,15 @@
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.retrieve;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataRawRequest;
 import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
 import org.sitenetsoft.olinguito.client.core.ODataClientImpl;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
@@ -157,7 +161,26 @@ class RetrieveRequestTest {
     assertNotNull(req);
     assertNotNull(req.getDefaultFormat());
    }
-  
+
+  @Test
+  void testRawRequestRemoveAcceptSuppressesHeader() throws URISyntaxException {
+
+    ODataClientImpl client = (ODataClientImpl) ODataClientFactory.getClient();
+    URI uri = new URI("http://localhost:8080/svc");
+    ODataRawRequest req = client.getRetrieveRequestFactory().getRawRequest(uri);
+
+    // By default an Accept header is injected when none was set explicitly.
+    assertTrue(new String(req.toByteArray(), StandardCharsets.UTF_8).contains("Accept:"));
+
+    // After removeAccept() the request carries no Accept header.
+    req.removeAccept();
+    assertFalse(new String(req.toByteArray(), StandardCharsets.UTF_8).contains("Accept:"));
+
+    // An explicit Accept re-enables the header.
+    req.setAccept(ContentType.JSON.toContentTypeString());
+    assertTrue(new String(req.toByteArray(), StandardCharsets.UTF_8).contains("Accept:"));
+   }
+
   @Test
   void testServiceDocumentRequest() throws URISyntaxException {
 
