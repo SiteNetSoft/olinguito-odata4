@@ -107,7 +107,7 @@ client-adapter-quarkus
 
 ## Current Development
 
-The `feature/without-servlet-continue` branch has completed the decoupling of servlet-specific code into separate adapter modules. Key changes:
+All development happens on `master` (single-branch repo). The runtime-decoupling effort (formerly the `feature/without-servlet-continue` branch, 143 commits) was merged via PR #1 on 2026-08-05. Key changes from that effort:
 
 - **Servlet decoupling**: `server-core` and `server-api` are now runtime-agnostic; servlet code lives in `server-adapter-servlet`
 - **Netty decoupling**: Async streaming extracted to `server-adapter-netty`
@@ -119,3 +119,4 @@ The `feature/without-servlet-continue` branch has completed the decoupling of se
 - **Karaf OSGi**: Updated features.xml bundles to match new module structure; renamed features from `olingo-*` to `olinguito-*`
 - **Samples/Tutorials**: Migrated from javax.servlet 2.5 to Jakarta Servlet 6.1.0; updated web.xml namespaces to Jakarta EE 6.0
 - **Quarkus**: Updated to 3.37.0 (Vert.x aligned to 4.5.28)
+- **Upstream bug-fix ports**: 80 Apache Olingo JIRA tickets + 5 GitHub PRs ported with tests (full audit of OLINGO-700..1647 completed; remaining candidates deliberately deferred)
