@@ -18,6 +18,12 @@
     specific language governing permissions and limitations
     under the License.
 
+    Copyright 2026 SiteNetSoft - Migrated XMLUnit 1.6 to 2.11.0;
+    removed commons-codec dependency (replaced with java.util.HexFormat);
+    removed commons-lang3 dependency (replaced with Java 17+ equivalents)
+    Copyright 2026 SiteNetSoft - Removed unused jackson-annotations and odata-vocabularies dependencies
+    Copyright 2026 SiteNetSoft - Removed direct HttpComponents dependency (now in client-adapter-apache)
+
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -28,7 +34,7 @@
   <name>${project.artifactId}</name>
 
   <parent>
-    <groupId>org.apache.olingo</groupId>
+    <groupId>org.sitenetsoft.olinguito</groupId>
     <artifactId>odata-lib</artifactId>
     <version>5.0.1-SNAPSHOT</version>
     <relativePath>..</relativePath>
@@ -36,30 +42,30 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-client-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
+      <artifactId>odata-commons-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-commons-core</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
+      <artifactId>test-fixtures</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
+      <artifactId>odata-client-adapter-apache</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -74,10 +80,6 @@
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
     </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-    </dependency>
   	<dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-xml</artifactId>
@@ -86,11 +88,30 @@
       <groupId>com.fasterxml</groupId>
       <artifactId>aalto-xml</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>org.codehaus.woodstox</groupId>
+      <artifactId>stax2-api</artifactId>
+    </dependency>
     <!-- Test dependencies -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.sitenetsoft.olinguito</groupId>
+      <artifactId>odata-client-adapter-okhttp</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -99,8 +120,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>xmlunit</groupId>
-      <artifactId>xmlunit</artifactId>
+      <groupId>org.xmlunit</groupId>
+      <artifactId>xmlunit-core</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -138,14 +159,21 @@
         <configuration>
           <instructions>
             <Export-Package>
-              org.apache.olingo.client.core,
-              org.apache.olingo.client.core.http,
-              org.apache.olingo.client.core.uri.URIUtils,
-              org.apache.olingo.client.core.communication.request*
+              org.sitenetsoft.olinguito.client.core,
+              org.sitenetsoft.olinguito.client.core.http;-split-package:=merge-first,
+              org.sitenetsoft.olinguito.client.core.uri.URIUtils,
+              org.sitenetsoft.olinguito.client.core.communication.request*;-split-package:=merge-first
             </Export-Package>
+            <Private-Package>
+              org.sitenetsoft.olinguito.client.core.*
+            </Private-Package>
             <Import-Package>
               *;version=!
             </Import-Package>
+            <_fixupmessages>
+              "Split package";restrict:=warning;is:=ignore,
+              "private references";restrict:=warning;is:=ignore
+            </_fixupmessages>
           </instructions>
         </configuration>
       </plugin>

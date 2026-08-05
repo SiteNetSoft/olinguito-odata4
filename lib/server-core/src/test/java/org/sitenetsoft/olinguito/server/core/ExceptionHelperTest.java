@@ -1,0 +1,177 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ */
+package org.sitenetsoft.olinguito.server.core;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.util.Locale;
+
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
+import org.sitenetsoft.olinguito.server.api.ODataLibraryException.MessageKey;
+import org.sitenetsoft.olinguito.server.api.ODataServerError;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
+import org.sitenetsoft.olinguito.server.api.etag.PreconditionException;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
+import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserException;
+import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserSemanticException;
+import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidationException;
+import org.junit.jupiter.api.Test;
+
+class ExceptionHelperTest {
+
+  private static final String DEV_MSG = "devMsg";
+
+  @Test
+  void withRuntimeException() {
+    final Exception e = new NullPointerException();
+    ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(e);
+    assertEquals(HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode(), serverError.getStatusCode());
+    assertEquals("OData Library: An exception without message text was thrown.", serverError.getMessage());
+    assertEquals(e, serverError.getException());
+  }
+
+  @Test
+  void withRuntimeExceptionAndText() {
+    final Exception e = new NullPointerException("Text");
+    ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(e);
+    assertEquals(HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode(), serverError.getStatusCode());
+    assertEquals("Text", serverError.getMessage());
+    assertEquals(e, serverError.getException());
+  }
+
+  @Test
+  void uriValidatorExceptionMustLeadToBadRequest() {
+    for (MessageKey key : UriValidationException.MessageKeys.values()) {
+      final UriValidationException e = new UriValidationException(DEV_MSG, key);
+      ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(e, null);
+      checkStatusCode(serverError, HttpStatusCode.BAD_REQUEST, e);
+    }
+  }
+
+  @Test
+  void deserializerExceptionMustLeadToBadRequest() {
+    for (MessageKey key : DeserializerException.MessageKeys.values()) {
+      final DeserializerException e = new DeserializerException(DEV_MSG, key);
+      ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(e, null);
+      checkStatusCode(serverError, HttpStatusCode.BAD_REQUEST, e);
+    }
+  }
+
+  @Test
+  void serializerExceptionMustLeadToBadRequest() {
+    for (MessageKey key : SerializerException.MessageKeys.values()) {
+      final SerializerException e = new SerializerException(DEV_MSG, key);
+      ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(e, null);
+      checkStatusCode(serverError, HttpStatusCode.BAD_REQUEST, e);
+    }
+  }
+  
+  @Test
+  void libraryExceptionLeadToBadRequest() {
+      ODataLibraryException e = new SerializerException(DEV_MSG, SerializerException.MessageKeys.MISSING_PROPERTY);
+      ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(e, null);
+      checkStatusCode(serverError, HttpStatusCode.BAD_REQUEST, e);
+      e = new SerializerException(DEV_MSG, DeserializerException.MessageKeys.DUPLICATE_PROPERTY);
+      serverError = ODataExceptionHelper.createServerErrorObject(e, null);
+      checkStatusCode(serverError, HttpStatusCode.BAD_REQUEST, e);
+  }
+
+  @Test
+  void contentNegotiatorExceptionMustLeadToNotAcceptable() {
+    for (MessageKey key : ContentNegotiatorException.MessageKeys.values()) {
+      final ContentNegotiatorException e = new ContentNegotiatorException(DEV_MSG, key);
+      ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(e, null);
+      checkStatusCode(serverError, HttpStatusCode.NOT_ACCEPTABLE, e);
+    }
+  }
+
+  @Test
+  void preconditionRequiredTesting() {
+    for (MessageKey key : PreconditionException.MessageKeys.values()) {
+      final PreconditionException e = new PreconditionException(DEV_MSG, key);
+      ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(e, null);
+      if (e.getMessageKey().equals(PreconditionException.MessageKeys.FAILED)) {
+        checkStatusCode(serverError, HttpStatusCode.PRECONDITION_FAILED, e);
+      } else if (e.getMessageKey().equals(PreconditionException.MessageKeys.MISSING_HEADER)) {
+        checkStatusCode(serverError, HttpStatusCode.PRECONDITION_REQUIRED, e);
+      } else if (e.getMessageKey().equals(PreconditionException.MessageKeys.INVALID_URI)) {
+        checkStatusCode(serverError, HttpStatusCode.INTERNAL_SERVER_ERROR, e);
+      } else {
+        fail("Unexpected message key for: " + e.getClass().getName());
+      }
+    }
+  }
+
+  @Test
+  void httpHandlerExceptions() {
+    for (MessageKey key : ODataHandlerException.MessageKeys.values()) {
+      final ODataHandlerException e = new ODataHandlerException(DEV_MSG, key);
+      ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(e, null);
+
+      if (key.equals(ODataHandlerException.MessageKeys.FUNCTIONALITY_NOT_IMPLEMENTED)
+          || key.equals(ODataHandlerException.MessageKeys.PROCESSOR_NOT_IMPLEMENTED)) {
+        checkStatusCode(serverError, HttpStatusCode.NOT_IMPLEMENTED, e);
+      } else if (key.equals(ODataHandlerException.MessageKeys.HTTP_METHOD_NOT_ALLOWED)) {
+        checkStatusCode(serverError, HttpStatusCode.METHOD_NOT_ALLOWED, e);
+      } else {
+        checkStatusCode(serverError, HttpStatusCode.BAD_REQUEST, e);
+      }
+    }
+  }
+
+  @Test
+  void withNotImplementedException() {
+    final UriParserSemanticException  e = new UriParserSemanticException("Exception", 
+        UriParserSemanticException.MessageKeys.NOT_IMPLEMENTED, "Method");
+    ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(e, Locale.ENGLISH);
+    assertEquals(HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), serverError.getStatusCode());
+    assertEquals("'Method' is not implemented!", serverError.getMessage());
+    assertEquals(e, serverError.getException());
+  }
+  
+  @Test
+  void uriParserException() {
+    final UriParserException  e = new UriParserSemanticException("Exception", 
+        UriParserSemanticException.MessageKeys.NOT_IMPLEMENTED, "Method");
+    ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(e, Locale.ENGLISH);
+    assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), serverError.getStatusCode());
+    assertEquals("'Method' is not implemented!", serverError.getMessage());
+    assertEquals(e, serverError.getException());
+  }
+  
+  @Test
+  void acceptHeaderException() {
+    final AcceptHeaderContentNegotiatorException   e = new AcceptHeaderContentNegotiatorException ("Exception", 
+        UriParserSemanticException.MessageKeys.INVALID_KEY_VALUE, "Method");
+    ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(e, Locale.ENGLISH);
+    assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), serverError.getStatusCode());
+    assertEquals("Missing message for key 'INVALID_KEY_VALUE'!", serverError.getMessage());
+    assertEquals(e, serverError.getException());
+  }
+  
+  private void checkStatusCode(final ODataServerError serverError, final HttpStatusCode statusCode,
+      final ODataLibraryException exception) {
+    assertEquals(statusCode.getStatusCode(), serverError.getStatusCode(),
+        "FailedKey: " + exception.getMessageKey().getKey());
+  }
+}

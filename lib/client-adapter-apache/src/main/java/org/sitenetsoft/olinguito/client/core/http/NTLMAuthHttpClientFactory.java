@@ -1,0 +1,70 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
+ * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
+ * Copyright 2026 SiteNetSoft - Suppressed deprecated NTCredentials warning (no HC 5.x replacement)
+ */
+package org.sitenetsoft.olinguito.client.core.http;
+
+import java.net.URI;
+
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.NTCredentials;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
+
+/**
+ * Implementation for working with NTLM Authentication via embedded HttpClient features.
+ * <br/>
+ * External NTLM engine such as <a href="http://jcifs.samba.org/">JCIFS</a> library developed by the
+ * <a href="http://www.samba.org/">Samba</a> project as a part of their Windows interoperability suite of programs.
+ * <br/>
+ * See also <a href="http://hc.apache.org/httpcomponents-client-ga/ntlm.html
+ * #Using_Samba_JCIFS_as_an_alternative_NTLM_engine">...</a>.
+ * @see NTCredentials
+ */
+public class NTLMAuthHttpClientFactory extends DefaultHttpClientFactory {
+
+  private final String username;
+
+  private final String password;
+
+  private final String workstation;
+
+  private final String domain;
+
+  public NTLMAuthHttpClientFactory(final String username, final String password,
+          final String workstation, final String domain) {
+
+    this.username = username;
+    this.password = password;
+    this.workstation = workstation;
+    this.domain = domain;
+  }
+
+  @SuppressWarnings("deprecation") // NTCredentials deprecated in HC 5.x; no replacement for NTLM auth
+  @Override
+  protected HttpClientBuilder createBuilder(final HttpMethod method, final URI uri) {
+    final BasicCredentialsProvider provider = new BasicCredentialsProvider();
+    provider.setCredentials(new AuthScope(null, -1),
+            new NTCredentials(username, password.toCharArray(), workstation, domain));
+    return super.createBuilder(method, uri).setDefaultCredentialsProvider(provider);
+  }
+}

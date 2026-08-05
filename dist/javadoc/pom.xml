@@ -29,7 +29,7 @@
   <name>Olingo-OData-JavaDoc</name>
 
   <parent>
-    <groupId>org.apache.olingo</groupId>
+    <groupId>org.sitenetsoft.olinguito</groupId>
     <artifactId>odata-dist</artifactId>
     <version>5.0.1-SNAPSHOT</version>
     <relativePath>..</relativePath>
@@ -37,15 +37,6 @@
 
   <build>
     <finalName>${project.name}-${project.version}</finalName>
-    <resources>
-      <resource>
-        <directory>target/maven-shared-archive-resources</directory>
-        <includes>
-          <include>META-INF/*</include>
-        </includes>
-      </resource>
-    </resources>
-
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -59,7 +50,7 @@
 
   <profiles>
     <profile>
-      <id>apache-release</id>
+      <id>release-docs</id>
       <activation>
         <activeByDefault>false</activeByDefault>
       </activation>

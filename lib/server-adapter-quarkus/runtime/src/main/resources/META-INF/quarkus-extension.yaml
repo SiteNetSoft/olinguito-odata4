@@ -1,0 +1,16 @@
+name: "Olinguito OData"
+artifact: ${project.groupId}:${project.artifactId}::jar:${project.version}
+description: "Quarkus extension for Olinguito OData V4 server"
+metadata:
+  keywords:
+    - odata
+    - olinguito
+    - rest
+    - api
+  guide: "https://sitenetsoft.org/projects/olinguito.html"
+  categories:
+    - "web"
+    - "data"
+  status: "preview"
+  config:
+    - "quarkus.odata."

@@ -18,6 +18,9 @@
   specific language governing permissions and limitations
   under the License.
 
+  Copyright 2026 SiteNetSoft - Replaced Cobertura with JaCoCo for code coverage
+  Copyright 2026 SiteNetSoft - Replaced javax.activation with jakarta.activation-api
+
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -28,17 +31,21 @@
   <name>${project.artifactId}</name>
 
   <parent>
-    <groupId>org.apache.olingo</groupId>
+    <groupId>org.sitenetsoft.olinguito</groupId>
     <artifactId>odata-parent</artifactId>
     <version>5.0.1-SNAPSHOT</version>
   </parent>
 
   <properties>
-    <cobertura.skip>true</cobertura.skip>
+    <jacoco.skip>true</jacoco.skip>
     <sonar.skip>true</sonar.skip>
     <project-web-app-dir>${project.build.directory}/${project.build.finalName}</project-web-app-dir>
     <tomcat-base-dir>${project.build.directory}/emb-tom-fit</tomcat-base-dir>
     <project-resource-dir>${project.build.outputDirectory}</project-resource-dir>
+    <!-- Default test server type -->
+    <test.server.type>tomcat</test.server.type>
+    <!-- Default HTTP client adapter (apache or okhttp) -->
+    <http.client.adapter>apache</http.client.adapter>
   </properties>
 
   <profiles>
@@ -54,28 +61,104 @@
     <profile>
       <id>build.quality</id>
       <properties>
-        <cobertura.skip>false</cobertura.skip>
+        <jacoco.skip>false</jacoco.skip>
         <!-- nothing excluded -->
         <exclude.regex></exclude.regex>
       </properties>
+    </profile>
+    <!-- Test server profiles -->
+    <profile>
+      <id>test-tomcat</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <test.server.type>tomcat</test.server.type>
+      </properties>
+    </profile>
+    <profile>
+      <id>test-quarkus</id>
+      <properties>
+        <test.server.type>quarkus</test.server.type>
+        <quarkus.version>3.37.0</quarkus.version>
+      </properties>
+      <dependencyManagement>
+        <dependencies>
+          <!-- Vert.x BOM before Quarkus BOM to override CVE-2026-1002 fix -->
+          <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-stack-depchain</artifactId>
+            <version>${vertx.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+          </dependency>
+          <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-bom</artifactId>
+            <version>${quarkus.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
+      <dependencies>
+        <dependency>
+          <groupId>org.sitenetsoft.olinguito</groupId>
+          <artifactId>server-tecsvc-quarkus</artifactId>
+          <version>${project.version}</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-vertx-http</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-arc</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <!-- JUnit vintage engine to run JUnit 4 tests with JUnit 5 platform -->
+        <dependency>
+          <groupId>org.junit.vintage</groupId>
+          <artifactId>junit-vintage-engine</artifactId>
+          <version>5.10.1</version>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+    <!-- OkHttp adapter profile: runs integration tests using OkHttp instead of Apache HttpClient -->
+    <profile>
+      <id>test-okhttp</id>
+      <properties>
+        <http.client.adapter>okhttp</http.client.adapter>
+      </properties>
+      <dependencies>
+        <dependency>
+          <groupId>org.sitenetsoft.olinguito</groupId>
+          <artifactId>odata-client-adapter-okhttp</artifactId>
+          <version>${project.version}</version>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
     </profile>
   </profiles>
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-commons-core</artifactId>
       <version>${project.version}</version>
     </dependency>
 
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-client-core</artifactId>
       <version>${project.version}</version>
     </dependency>
 
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-client-proxy</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -123,11 +206,24 @@
       <version>${jakarta.ws.version}</version>
     </dependency>
 
-    <!-- JAVAX -->
+    <!-- Jakarta Activation (required by CXF) -->
+    <dependency>
+      <groupId>jakarta.activation</groupId>
+      <artifactId>jakarta.activation-api</artifactId>
+      <version>2.1.3</version>
+    </dependency>
+    <!-- Jakarta Persistence API (required by CXF OAuth2 annotations at compile time) -->
+    <dependency>
+      <groupId>jakarta.persistence</groupId>
+      <artifactId>jakarta.persistence-api</artifactId>
+      <version>3.2.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- javax.activation (required by Geronimo JavaMail 1.6 used in Services.java) -->
     <dependency>
       <groupId>javax.activation</groupId>
-      <artifactId>activation</artifactId>
-      <version>${javax.activation.version}</version>
+      <artifactId>javax.activation-api</artifactId>
+      <version>1.2.0</version>
     </dependency>
 
     <!-- SPRING -->
@@ -153,7 +249,7 @@
 
     <dependency>
       <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
+      <artifactId>slf4j-reload4j</artifactId>
       <version>${sl4j.version}</version>
     </dependency>
     <dependency>
@@ -167,10 +263,24 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-server-tecsvc</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-simple</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- Runtime-only: servlet classes loaded dynamically via Class.forName -->
+    <dependency>
+      <groupId>org.sitenetsoft.olinguito</groupId>
+      <artifactId>odata-server-tecsvc-servlet</artifactId>
+      <version>${project.version}</version>
+      <classifier>classes</classifier>
+      <scope>runtime</scope>
       <exclusions>
         <exclusion>
           <groupId>org.slf4j</groupId>
@@ -182,6 +292,12 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
+    <!-- JUnit vintage engine to run JUnit 4 tests with JUnit 5 platform -->
+    <dependency>
+      <groupId>org.junit.vintage</groupId>
+      <artifactId>junit-vintage-engine</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -189,9 +305,6 @@
       <resource>
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
-      </resource>
-      <resource>
-        <directory>target/maven-shared-archive-resources</directory>
       </resource>
     </resources>
 
@@ -227,16 +340,14 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-        <systemPropertyVariables>
-	        <property>
-	            <propertyName>buildDirectory</propertyName>
-	            <buildDirectory>${project.build.directory}</buildDirectory>
-	        </property>
-	         <property>
-	            <propertyName>finalName</propertyName>
-	            <buildDirectory>${project.build.finalName}</buildDirectory>
-	        </property>
-        </systemPropertyVariables>
+          <redirectTestOutputToFile>false</redirectTestOutputToFile>
+          <systemPropertyVariables>
+            <buildDirectory>${project.build.directory}</buildDirectory>
+            <finalName>${project.build.finalName}</finalName>
+            <test.server.type>${test.server.type}</test.server.type>
+            <http.client.adapter>${http.client.adapter}</http.client.adapter>
+            <java.util.logging.config.file>${project.basedir}/src/test/resources/logging.properties</java.util.logging.config.file>
+          </systemPropertyVariables>
           <includes>
             <include>**/*ITCase.java</include>
             <include>**/*Test.java</include>
@@ -248,43 +359,33 @@
          </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.8</version>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <configuration>
+          <skip>${jacoco.skip}</skip>
+        </configuration>
         <executions>
           <execution>
-            <id>unpack-dependencies</id>
-            <phase>compile</phase>
-            <!--<phase>package</phase>-->
+            <id>prepare-agent</id>
             <goals>
-              <goal>unpack-dependencies</goal>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals>
+              <goal>report</goal>
             </goals>
             <configuration>
-              <skip>${cobertura.skip}</skip>
-              <includeGroupIds>${project.groupId}</includeGroupIds>
-              <outputDirectory>${project.build.directory}/classes</outputDirectory>
-              <overWriteReleases>true</overWriteReleases>
-              <overWriteSnapshots>true</overWriteSnapshots>
+              <excludes>
+                <exclude>org/sitenetsoft/olinguito/**/tecsvc/**/*</exclude>
+                <exclude>org/sitenetsoft/olinguito/**/fit/**/*</exclude>
+                <exclude>org/sitenetsoft/olinguito/**/testutil/**/*</exclude>
+              </excludes>
             </configuration>
           </execution>
         </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>cobertura-maven-plugin</artifactId>
-        <configuration>
-          <skip>${cobertura.skip}</skip>
-          <instrumentation>
-            <excludes>
-              <exclude>org/apache/olingo/**/tecsvc/**/*.class</exclude>
-              <exclude>org/apache/olingo/**/fit/**/*.class</exclude>
-              <exclude>org/apache/olingo/**/testutil/**/*.class</exclude>
-            </excludes>
-          </instrumentation>
-          <check/>
-          <aggregate>true</aggregate>
-        </configuration>
       </plugin>
 
       <plugin>
@@ -310,7 +411,7 @@
           </execution>
         </executions>
         <configuration>
-          <mainClass>org.apache.olingo.fit.server.TomcatTestServer</mainClass>
+          <mainClass>org.sitenetsoft.olinguito.fit.server.TomcatTestServer</mainClass>
         </configuration>
       </plugin>
 
@@ -331,9 +432,6 @@
           <webResources>
             <resource>
               <directory>${project.build.outputDirectory}</directory>
-              <!--<includes>
-                <include>META-INF/DEPENDENCIES*</include>
-              </includes>-->
             </resource>
           </webResources>
 

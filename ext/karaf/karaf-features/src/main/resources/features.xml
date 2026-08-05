@@ -15,51 +15,56 @@
       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
       See the License for the specific language governing permissions and
       limitations under the License.
+
+      Copyright 2026 SiteNetSoft - Updated for module restructuring (servlet adapter, HTTP client adapter)
+      Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
+      Copyright 2026 SiteNetSoft - Added Netty and OkHttp adapter features
 -->
-<features xmlns="http://karaf.apache.org/xmlns/features/v1.0.0" name="olingo-${project.version}">
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.0.0" name="olinguito-${project.version}">
 
-  <feature name="olingo-server" version="${project.version}" resolver="(obr)" start-level="50">
+  <feature name="olinguito-server" version="${project.version}" resolver="(obr)" start-level="50">
     <feature>war</feature>
-    <bundle>mvn:commons-codec/commons-codec/${commons.codec.version}</bundle>
-    <bundle>mvn:org.apache.commons/commons-lang3/${commons.lang3.version}</bundle>
+    <bundle>mvn:org.slf4j/slf4j-api/${sl4j.version}</bundle>
     <bundle>mvn:org.codehaus.woodstox/stax2-api/${woodstox.stax2-api.version}</bundle>
-    <bundle>mvn:io.netty/netty-common/${netty.version}</bundle>
-    <bundle>mvn:io.netty/netty-buffer/${netty.version}</bundle>
-    <bundle>mvn:io.netty/netty-resolver/${netty.version}</bundle>
-    <bundle>mvn:io.netty/netty-transport/${netty.version}</bundle>
-    <bundle>mvn:io.netty/netty-codec/${netty.version}</bundle>
-    <bundle>mvn:io.netty/netty-handler/${netty.version}</bundle>
-    <bundle>mvn:io.netty/netty-codec-http/${netty.version}</bundle>
-
     <bundle>mvn:com.fasterxml/aalto-xml/${aalto-xml.version}</bundle>
     <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${jackson.version}</bundle>
     <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson.version}</bundle>
     <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/${jackson.version}</bundle>
 
-    <bundle>mvn:org.apache.olingo/odata-commons-api/${project.version}</bundle>
-    <bundle>mvn:org.apache.olingo/odata-commons-core/${project.version}</bundle>
-    <bundle>mvn:org.apache.olingo/odata-server-api/${project.version}</bundle>
-    <bundle>mvn:org.apache.olingo/odata-server-core/${project.version}</bundle>
+    <bundle>mvn:org.sitenetsoft.olinguito/odata-commons-api/${project.version}</bundle>
+    <bundle>mvn:org.sitenetsoft.olinguito/odata-commons-core/${project.version}</bundle>
+    <bundle>mvn:org.sitenetsoft.olinguito/odata-server-api/${project.version}</bundle>
+    <bundle>mvn:org.sitenetsoft.olinguito/odata-server-core/${project.version}</bundle>
+    <bundle>mvn:org.sitenetsoft.olinguito/odata-server-core-ext/${project.version}</bundle>
+    <bundle>mvn:org.sitenetsoft.olinguito/server-adapter-servlet/${project.version}</bundle>
   </feature>
 
-  <feature name="olingo-client" version="${project.version}" resolver="(obr)" start-level="50">
-    <bundle>mvn:commons-codec/commons-codec/${commons.codec.version}</bundle>
-    <bundle>mvn:commons-io/commons-io/${commons.io.version}</bundle>
-    <bundle>mvn:org.apache.commons/commons-lang3/${commons.lang3.version}</bundle>
+  <feature name="olinguito-client" version="${project.version}" resolver="(obr)" start-level="50">
+    <bundle>mvn:org.slf4j/slf4j-api/${sl4j.version}</bundle>
     <bundle>mvn:org.codehaus.woodstox/stax2-api/${woodstox.stax2-api.version}</bundle>
     <bundle>mvn:com.fasterxml/aalto-xml/${aalto-xml.version}</bundle>
-    <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${hc.core.version}</bundle>
-    <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${hc.client.version}</bundle>
+    <bundle>mvn:org.apache.httpcomponents.core5/httpcore5/${hc.core5.version}</bundle>
+    <bundle>mvn:org.apache.httpcomponents.client5/httpclient5/${hc.client5.version}</bundle>
 
     <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${jackson.version}</bundle>
     <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson.version}</bundle>
     <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/${jackson.version}</bundle>
-    <bundle>mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/${jackson.version}</bundle>
     <bundle>mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-xml/${jackson.version}</bundle>
 
-    <bundle>mvn:org.apache.olingo/odata-commons-api/${project.version}</bundle>
-    <bundle>mvn:org.apache.olingo/odata-commons-core/${project.version}</bundle>
-    <bundle>mvn:org.apache.olingo/odata-client-api/${project.version}</bundle>
-    <bundle>mvn:org.apache.olingo/odata-client-core/${project.version}</bundle>
+    <bundle>mvn:org.sitenetsoft.olinguito/odata-commons-api/${project.version}</bundle>
+    <bundle>mvn:org.sitenetsoft.olinguito/odata-commons-core/${project.version}</bundle>
+    <bundle>mvn:org.sitenetsoft.olinguito/odata-client-api/${project.version}</bundle>
+    <bundle>mvn:org.sitenetsoft.olinguito/odata-client-core/${project.version}</bundle>
+    <bundle>mvn:org.sitenetsoft.olinguito/odata-client-adapter-apache/${project.version}</bundle>
+  </feature>
+
+  <feature name="olinguito-server-netty" version="${project.version}" resolver="(obr)" start-level="50">
+    <feature>olinguito-server</feature>
+    <bundle>mvn:org.sitenetsoft.olinguito/server-adapter-netty/${project.version}</bundle>
+  </feature>
+
+  <feature name="olinguito-client-okhttp" version="${project.version}" resolver="(obr)" start-level="50">
+    <feature>olinguito-client</feature>
+    <bundle>mvn:org.sitenetsoft.olinguito/odata-client-adapter-okhttp/${project.version}</bundle>
   </feature>
 </features>

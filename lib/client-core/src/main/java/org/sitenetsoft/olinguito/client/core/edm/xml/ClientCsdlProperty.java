@@ -1,0 +1,96 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
+ */
+package org.sitenetsoft.olinguito.client.core.edm.xml;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.DeserializationContext;
+
+import org.sitenetsoft.olinguito.commons.api.edm.geo.SRID;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlProperty;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import java.io.IOException;
+import java.io.Serial;
+import java.io.Serializable;
+
+@JsonDeserialize(using = ClientCsdlProperty.PropertyDeserializer.class)
+class ClientCsdlProperty extends CsdlProperty implements Serializable {
+
+  @Serial
+  private static final long serialVersionUID = -4521766603286651372L;
+
+  static class PropertyDeserializer extends AbstractClientCsdlEdmDeserializer<ClientCsdlProperty> {
+    @Override
+    protected ClientCsdlProperty doDeserialize(final JsonParser jp, final DeserializationContext ctxt)
+            throws IOException {
+
+      final ClientCsdlProperty property = new ClientCsdlProperty();
+
+      for (; jp.getCurrentToken() != JsonToken.END_OBJECT; jp.nextToken()) {
+        final JsonToken token = jp.getCurrentToken();
+        if (token == JsonToken.FIELD_NAME) {
+          if ("Name".equals(jp.currentName())) {
+            property.setName(jp.nextTextValue());
+          } else if ("Type".equals(jp.currentName())) {
+            String metadataTypeName = jp.nextTextValue();
+            if (metadataTypeName.startsWith("Collection(")) {
+              property.setType(metadataTypeName.substring(metadataTypeName.indexOf("(") + 1,
+                      metadataTypeName.length() - 1));
+              property.setCollection(true);
+            } else {
+              property.setType(metadataTypeName);
+              property.setCollection(false);
+            }
+          } else if ("Nullable".equals(jp.currentName())) {
+            property.setNullable(Boolean.parseBoolean(jp.nextTextValue()));
+          } else if ("DefaultValue".equals(jp.currentName())) {
+            property.setDefaultValue(jp.nextTextValue());
+          } else if ("MaxLength".equals(jp.currentName())) {
+            final String maxLenght = jp.nextTextValue();
+            property.setMaxLength("max".equalsIgnoreCase(maxLenght) ? Integer.MAX_VALUE : Integer.parseInt(maxLenght));
+          } else if ("Precision".equals(jp.currentName())) {
+            property.setPrecision(Integer.parseInt(jp.nextTextValue()));
+          } else if ("Scale".equals(jp.currentName())) {
+            final String scale = jp.nextTextValue();
+            property.setScale("variable".equalsIgnoreCase(scale) || "floating".equalsIgnoreCase(scale) ?
+                0 : Integer.parseInt(scale));
+            property.setScaleAsString(scale);
+          } else if ("Unicode".equals(jp.currentName())) {
+            property.setUnicode(Boolean.parseBoolean(jp.nextTextValue()));
+          } else if ("SRID".equals(jp.currentName())) {
+            final String srid = jp.nextTextValue();
+            if (srid != null) {
+              property.setSrid(SRID.valueOf(srid));
+            }
+          } else if ("Annotation".equals(jp.currentName())) {
+            jp.nextToken();
+            property.getAnnotations().add(jp.readValueAs(ClientCsdlAnnotation.class));
+          }
+        }
+      }
+
+      return property;
+    }
+  }
+}

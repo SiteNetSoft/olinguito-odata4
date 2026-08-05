@@ -1,0 +1,163 @@
+= Olinguito OData V4 Documentation
+:toc: left
+:toclevels: 2
+:icons: font
+
+== Welcome
+
+Olinguito is a Java library for building and consuming OData V4.0 services. It is a community-maintained fork of Apache Olingo, providing both client and server implementations.
+
+== Documentation
+
+=== Getting Started
+
+* link:getting-started.adoc[Getting Started Guide] - Quick start for new users, installation, and basic examples
+
+=== Core Guides
+
+* link:server-guide.adoc[Server Development Guide] - Complete guide to building OData services
+* link:client-guide.adoc[Client Development Guide] - Complete guide to consuming OData services
+
+=== Platform Integration
+
+* link:servlet-guide.adoc[Servlet Integration Guide] - Deploying with Jakarta Servlet (Tomcat, Jetty, Spring Boot)
+* link:quarkus-guide.adoc[Quarkus Integration Guide] - Native Quarkus extension with build-time optimization
+
+=== Reference
+
+* link:architecture.adoc[Architecture Overview] - Module structure, design patterns, and technical details
+
+=== Tutorials
+
+Step-by-step tutorials are available in the `samples/tutorials/` directory:
+
+[cols="1,3"]
+|===
+|Tutorial |Description
+
+|p1_read
+|Basic read operations
+
+|p2_readep
+|Reading entity properties
+
+|p3_write
+|Create, update, and delete operations
+
+|p4_navigation
+|Navigation properties
+
+|p5_queryoptions-tcs
+|Query options (type cast segments)
+
+|p6_queryoptions-es
+|Query options (entity sets)
+
+|p7_queryoptions-o
+|Query options (ordering)
+
+|p8_queryoptions-f
+|Query options (filtering)
+
+|p9_action
+|Actions
+
+|p10_media
+|Media entities
+
+|p11_batch
+|Batch operations
+
+|p12_deep_insert
+|Deep insert operations
+
+|pe_streaming
+|Streaming support
+|===
+
+== Quick Reference
+
+=== Maven Coordinates
+
+[source,xml]
+----
+<!-- Server (Servlet) -->
+<dependency>
+    <groupId>org.sitenetsoft.olinguito</groupId>
+    <artifactId>odata-server-adapter-servlet</artifactId>
+    <version>${olinguito.version}</version>
+</dependency>
+
+<!-- Server (Quarkus) -->
+<dependency>
+    <groupId>org.sitenetsoft.olinguito</groupId>
+    <artifactId>odata-server-adapter-quarkus</artifactId>
+    <version>${olinguito.version}</version>
+</dependency>
+
+<!-- Client -->
+<dependency>
+    <groupId>org.sitenetsoft.olinguito</groupId>
+    <artifactId>odata-client-core</artifactId>
+    <version>${olinguito.version}</version>
+</dependency>
+----
+
+=== Key URLs
+
+Once your service is running:
+
+[cols="1,2"]
+|===
+|URL |Description
+
+|`/odata/`
+|Service document
+
+|`/odata/$metadata`
+|Service metadata (EDM)
+
+|`/odata/EntitySet`
+|Entity collection
+
+|`/odata/EntitySet(key)`
+|Single entity
+
+|`/odata/EntitySet?$filter=...`
+|Filtered results
+
+|`/odata/$batch`
+|Batch requests
+|===
+
+== Quick Links
+
+* https://github.com/sitenetsoft/olinguito-odata4[Source Repository]
+* https://www.odata.org/documentation/[OData V4 Specification]
+* http://olingo.apache.org/[Apache Olingo Documentation] (upstream reference)
+
+== Building from Source
+
+[source,bash]
+----
+# Clone
+git clone https://github.com/sitenetsoft/olinguito-odata4.git
+cd olinguito-odata4
+
+# Build with tests
+mvn -B install
+
+# Build without tests
+mvn -B install -DskipTests
+
+# Run integration tests
+mvn verify
+----
+
+Requires: Java 17+, Maven 3.9+
+
+== License
+
+This project is a derivative work based on Apache Olingo and is licensed under the Apache License 2.0.
+
+Copyright 2026 SiteNetSoft. See LICENSE file for details.

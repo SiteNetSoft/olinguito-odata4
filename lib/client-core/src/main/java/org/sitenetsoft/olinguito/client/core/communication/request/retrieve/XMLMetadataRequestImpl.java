@@ -1,0 +1,210 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
+ * Copyright 2026 SiteNetSoft - OLINGO-1142: Recursively resolve referenced metadata documents
+ */
+package org.sitenetsoft.olinguito.client.core.communication.request.retrieve;
+
+import java.net.URI;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.sitenetsoft.olinguito.client.core.StringHelper;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpRequest;
+import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.XMLMetadataRequest;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
+import org.sitenetsoft.olinguito.client.api.edm.xml.Include;
+import org.sitenetsoft.olinguito.client.api.edm.xml.IncludeAnnotations;
+import org.sitenetsoft.olinguito.client.api.edm.xml.Reference;
+import org.sitenetsoft.olinguito.client.api.edm.xml.XMLMetadata;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotations;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlSchema;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+
+public class XMLMetadataRequestImpl
+    extends AbstractMetadataRequestImpl<XMLMetadata>
+    implements XMLMetadataRequest {
+
+  XMLMetadataRequestImpl(final ODataClient odataClient, final URI uri) {
+    super(odataClient, uri);
+  }
+
+  @Override
+  public ODataRetrieveResponse<XMLMetadata> execute() {
+    SingleXMLMetadatRequestImpl rootReq = new SingleXMLMetadatRequestImpl(odataClient, uri);
+    if (getPrefer() != null) {
+      rootReq.setPrefer(getPrefer());
+    }
+    if (getIfMatch() != null) {
+      rootReq.setIfMatch(getIfMatch());
+    }
+    if (getIfNoneMatch() != null) {
+      rootReq.setIfNoneMatch(getIfNoneMatch());
+    }
+    if (getHeader() != null) {
+      for (String key : getHeaderNames()) {
+        rootReq.addCustomHeader(key, odataHeaders.getHeader(key));
+      }
+    }
+    final ODataRetrieveResponse<XMLMetadata> rootRes = rootReq.execute();
+
+    if (rootRes.getStatusCode() != HttpStatusCode.OK.getStatusCode()) {
+      return rootRes;
+    }
+    final XMLMetadataResponseImpl response =
+        new XMLMetadataResponseImpl(odataClient, httpClient,
+            rootReq.getHttpResponse(), rootRes.getBody());
+
+    // process external references (recursively, with cycle detection)
+    final Set<String> visitedUris = new HashSet<>();
+    visitedUris.add(uri.toASCIIString());
+    processReferences(rootRes.getBody(), response, rootReq, visitedUris);
+
+    return response;
+  }
+
+  private void processReferences(final XMLMetadata metadata, final XMLMetadataResponseImpl response,
+      final SingleXMLMetadatRequestImpl templateReq, final Set<String> visitedUris) {
+
+    for (Reference reference : metadata.getReferences()) {
+      final URI resolvedUri = uri.resolve(reference.getUri());
+      if (!visitedUris.add(resolvedUri.toASCIIString())) {
+        continue; // already visited — skip to prevent infinite recursion on circular references
+      }
+
+      final SingleXMLMetadatRequestImpl includeReq = new SingleXMLMetadatRequestImpl(
+          odataClient,
+          odataClient.newURIBuilder(resolvedUri.toASCIIString()).build());
+      for (String key : templateReq.getHeaderNames()) {
+        includeReq.addCustomHeader(key, templateReq.getHeader(key));
+      }
+      final XMLMetadata includeMetadata = includeReq.execute().getBody();
+
+      // edmx:Include
+      for (Include include : reference.getIncludes()) {
+        final CsdlSchema includedSchema = includeMetadata.getSchema(include.getNamespace());
+        if (includedSchema != null) {
+          response.getBody().getSchemas().add(includedSchema);
+          if (include.getAlias() != null && !include.getAlias().isBlank()) {
+            includedSchema.setAlias(include.getAlias());
+          }
+        }
+      }
+
+      // edmx:IncludeAnnotations
+      for (IncludeAnnotations include : reference.getIncludeAnnotations()) {
+        for (CsdlSchema schema : includeMetadata.getSchemas()) {
+          final CsdlSchema forInclusion = new CsdlSchema();
+          forInclusion.setNamespace(schema.getNamespace());
+          forInclusion.setAlias(schema.getAlias());
+
+          for (CsdlAnnotations annotationGroup : schema.getAnnotationGroups()) {
+            if (((include.getTargetNamespace() == null || include.getTargetNamespace().isBlank())
+                || include.getTargetNamespace().equals(
+                    StringHelper.substringBeforeLast(annotationGroup.getTarget(), ".")))
+                && ((include.getQualifier() == null || include.getQualifier().isBlank())
+                    || include.getQualifier().equals(annotationGroup.getQualifier()))) {
+
+              final CsdlAnnotations toBeIncluded = new CsdlAnnotations();
+              toBeIncluded.setTarget(annotationGroup.getTarget());
+              toBeIncluded.setQualifier(annotationGroup.getQualifier());
+              for (CsdlAnnotation annotation : annotationGroup.getAnnotations()) {
+                if (include.getTermNamespace().equals(
+                    StringHelper.substringBeforeLast(annotation.getTerm(), "."))) {
+                  toBeIncluded.getAnnotations().add(annotation);
+                }
+              }
+              forInclusion.getAnnotationGroups().add(toBeIncluded);
+            }
+          }
+
+          if (!forInclusion.getAnnotationGroups().isEmpty()) {
+            response.getBody().getSchemas().add(forInclusion);
+          }
+        }
+      }
+
+      // Recursively process references from the included document
+      processReferences(includeMetadata, response, templateReq, visitedUris);
+    }
+  }
+
+  private class SingleXMLMetadatRequestImpl extends AbstractMetadataRequestImpl<XMLMetadata> {
+
+    private ODataHttpResponse httpResponse;
+
+    public SingleXMLMetadatRequestImpl(final ODataClient odataClient, final URI uri) {
+      super(odataClient, uri);
+    }
+
+    public ODataHttpResponse getHttpResponse() {
+      return httpResponse;
+    }
+
+    @Override
+    protected void checkRequest(final ODataClient odataClient, final ODataHttpRequest request) {
+      // override the parent check, as the reference urls in metadata can be spanning cross-site
+    }
+
+    @Override
+    public ODataRetrieveResponse<XMLMetadata> execute() {
+      httpResponse = doExecute();
+      return new AbstractODataRetrieveResponse(odataClient, httpClient, httpResponse) {
+
+        private XMLMetadata metadata = null;
+
+        @Override
+        public XMLMetadata getBody() {
+          if (metadata == null) {
+            try {
+              metadata = odataClient.getDeserializer(ContentType.APPLICATION_XML).toMetadata(getRawResponse());
+            } finally {
+              this.close();
+            }
+          }
+          return metadata;
+        }
+      };
+    }
+  }
+
+  private class XMLMetadataResponseImpl extends AbstractODataRetrieveResponse {
+
+    private final XMLMetadata metadata;
+
+    private XMLMetadataResponseImpl(final ODataClient odataClient, final ODataHttpClient httpClient,
+        final ODataHttpResponse res, final XMLMetadata metadata) {
+
+      super(odataClient, httpClient, null);
+      initFromHttpResponse(res);
+      this.metadata = metadata;
+    }
+
+    @Override
+    public XMLMetadata getBody() {
+      return metadata;
+    }
+  }
+
+}

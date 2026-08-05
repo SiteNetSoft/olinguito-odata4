@@ -23,23 +23,15 @@
             <useTransitiveFiltering>true</useTransitiveFiltering>
             <scope>compile</scope>
             <includes>
-                <include>org.apache.olingo:odata-commons-api</include>
-                <include>org.apache.olingo:odata-commons-core</include>
-                <include>org.apache.olingo:odata-server-api</include>
-                <include>org.apache.olingo:odata-server-core</include>
-				<include>org.apache.olingo:odata-server-core-ext</include>
+                <include>org.sitenetsoft.olinguito:odata-commons-api</include>
+                <include>org.sitenetsoft.olinguito:odata-commons-core</include>
+                <include>org.sitenetsoft.olinguito:odata-server-api</include>
+                <include>org.sitenetsoft.olinguito:odata-server-core</include>
+				<include>org.sitenetsoft.olinguito:odata-server-core-ext</include>
             </includes>
         </dependencySet>
     </dependencySets>
     <fileSets>
-        <fileSet>
-            <directory>${project.build.directory}/maven-shared-archive-resources/META-INF</directory>
-            <outputDirectory>/</outputDirectory>
-            <excludes>
-                <exclude>LICENSE</exclude>
-                <exclude>NOTICE</exclude>
-           </excludes>
-        </fileSet>
         <fileSet>
             <directory>src/main/resources</directory>
             <outputDirectory>/</outputDirectory>

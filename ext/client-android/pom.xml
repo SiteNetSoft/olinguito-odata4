@@ -18,6 +18,9 @@
   specific language governing permissions and limitations
   under the License.
 
+  Copyright 2026 SiteNetSoft - Replaced commons-io with Java standard library
+  Copyright 2026 SiteNetSoft - Replaced Android SDK with OkHttp adapter
+
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -28,7 +31,7 @@
   <name>${project.artifactId}</name>
 
   <parent>
-    <groupId>org.apache.olingo</groupId>
+    <groupId>org.sitenetsoft.olinguito</groupId>
     <artifactId>odata-ext</artifactId>
     <version>5.0.1-SNAPSHOT</version>
     <relativePath>..</relativePath>
@@ -36,13 +39,18 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-client-proxy</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.google.android</groupId>
-      <artifactId>android</artifactId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
+      <artifactId>odata-client-adapter-okhttp</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp-jvm</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.xml.stream</groupId>
@@ -66,14 +74,19 @@
         <configuration>
           <artifactSet>
             <includes>
-              <include>org.apache.olingo:odata-client-proxy</include>
-              <include>org.apache.olingo:odata-client-core</include>
-              <include>org.apache.olingo:odata-client-api</include>
-              <include>org.apache.olingo:odata-commons-core</include>
-              <include>org.apache.olingo:odata-commons-api</include>
-              <include>org.apache.commons:commons-lang3</include>
+              <include>org.sitenetsoft.olinguito:odata-client-proxy</include>
+              <include>org.sitenetsoft.olinguito:odata-client-core</include>
+              <include>org.sitenetsoft.olinguito:odata-client-adapter-okhttp</include>
+              <include>org.sitenetsoft.olinguito:odata-client-api</include>
+              <include>org.sitenetsoft.olinguito:odata-commons-core</include>
+              <include>org.sitenetsoft.olinguito:odata-commons-api</include>
+              <include>com.squareup.okhttp3:okhttp-jvm</include>
+              <include>com.squareup.okio:okio</include>
+              <include>com.squareup.okio:okio-jvm</include>
+              <include>org.jetbrains.kotlin:kotlin-stdlib</include>
+              <include>org.jetbrains.kotlin:kotlin-stdlib-jdk8</include>
+              <include>org.jetbrains.kotlin:kotlin-stdlib-jdk7</include>
               <include>org.slf4j:slf4j-api</include>
-              <include>commons-io:commons-io</include>
               <include>com.fasterxml.jackson.core:jackson-core</include>
               <include>com.fasterxml.jackson.core:jackson-databind</include>
               <include>com.fasterxml.jackson.core:jackson-annotations</include>
@@ -87,7 +100,7 @@
           <relocations>
             <relocation>
               <pattern>javax.xml.stream</pattern>
-              <shadedPattern>org.apache.olingo.javax.xml.stream</shadedPattern>
+              <shadedPattern>org.sitenetsoft.olinguito.javax.xml.stream</shadedPattern>
             </relocation>
           </relocations>
           <filters>
@@ -95,23 +108,10 @@
               <artifact>*:*</artifact>
               <excludes>
                 <exclude>META-INF/**</exclude>
+                <exclude>**/module-info.class</exclude>
               </excludes>
             </filter>
           </filters>
-          <transformers>
-            <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-              <resource>META-INF/DEPENDENCIES</resource>
-              <file>target/maven-shared-archive-resources/META-INF/DEPENDENCIES</file>
-            </transformer>
-            <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-              <resource>META-INF/NOTICE</resource>
-              <file>target/maven-shared-archive-resources/META-INF/NOTICE</file>
-            </transformer>
-            <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-              <resource>META-INF/LICENSE</resource>
-              <file>target/maven-shared-archive-resources/META-INF/LICENSE</file>
-            </transformer>
-          </transformers>
         </configuration>
       </plugin>
     </plugins>
@@ -119,9 +119,6 @@
       <resource>
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
-      </resource>
-      <resource>
-        <directory>target/maven-shared-archive-resources</directory>
       </resource>
     </resources>
   </build>

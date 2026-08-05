@@ -18,6 +18,8 @@
     specific language governing permissions and limitations
     under the License.
 
+    Copyright 2026 SiteNetSoft - Replaced commons-logging with jcl-over-slf4j
+
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -29,7 +31,7 @@
   <name>${project.artifactId}</name>
 
   <parent>
-    <groupId>org.apache.olingo</groupId>
+    <groupId>org.sitenetsoft.olinguito</groupId>
     <artifactId>odata-samples</artifactId>
     <version>5.0.1-SNAPSHOT</version>
     <relativePath>..</relativePath>
@@ -57,14 +59,14 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-client-core</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>${commons.logging.version}</version>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>${sl4j.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -90,7 +92,7 @@
                   <goal>java</goal>
                 </goals>
                 <configuration>
-                  <mainClass>org.apache.olingo.samples.client.OlingoSampleApp</mainClass>
+                  <mainClass>org.sitenetsoft.olinguito.samples.client.OlingoSampleApp</mainClass>
                 </configuration>
               </execution>
             </executions>

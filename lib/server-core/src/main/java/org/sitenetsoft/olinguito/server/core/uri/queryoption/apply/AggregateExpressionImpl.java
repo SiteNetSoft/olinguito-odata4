@@ -1,0 +1,150 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Implemented accept() method
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
+ * Copyright 2026 SiteNetSoft - Dynamic property options for aggregate expressions (OLINGO PR#171)
+ */
+package org.sitenetsoft.olinguito.server.core.uri.queryoption.apply;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfo;
+import org.sitenetsoft.olinguito.server.api.uri.UriResource;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.apply.AggregateExpression;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.apply.AggregateExpressionDynamicPropertyOptions;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Expression;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.ExpressionVisitException;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.ExpressionVisitor;
+
+/**
+ * Represents an aggregate expression.
+ */
+public class AggregateExpressionImpl implements AggregateExpression {
+
+  private UriInfo path;
+  private Expression expression;
+  private StandardMethod standardMethod;
+  private FullQualifiedName customMethod;
+  private String alias;
+  private AggregateExpression inlineAggregateExpression;
+  private List<AggregateExpression> from = new ArrayList<>();
+  private Map<String, AggregateExpressionDynamicPropertyOptions> dynamicProperties = new HashMap<>();
+
+  @Override
+  public List<UriResource> getPath() {
+    return path == null ? List.of() : path.getUriResourceParts();
+  }
+
+  public AggregateExpressionImpl setPath(final UriInfo uriInfo) {
+    path = uriInfo;
+    return this;
+  }
+
+  @Override
+  public Expression getExpression() {
+    return expression;
+  }
+
+  public AggregateExpressionImpl setExpression(final Expression expression) {
+    this.expression = expression;
+    return this;
+  }
+
+  @Override
+  public StandardMethod getStandardMethod() {
+    return standardMethod;
+  }
+
+  public AggregateExpressionImpl setStandardMethod(final StandardMethod standardMethod) {
+    this.standardMethod = standardMethod;
+    return this;
+  }
+
+  @Override
+  public FullQualifiedName getCustomMethod() {
+    return customMethod;
+  }
+
+  public AggregateExpressionImpl setCustomMethod(final FullQualifiedName customMethod) {
+    this.customMethod = customMethod;
+    return this;
+  }
+
+  @Override
+  public AggregateExpression getInlineAggregateExpression() {
+    return inlineAggregateExpression;
+  }
+
+  public AggregateExpressionImpl setInlineAggregateExpression(final AggregateExpression aggregateExpression) {
+    inlineAggregateExpression = aggregateExpression;
+    return this;
+  }
+
+  @Override
+  public List<AggregateExpression> getFrom() {
+    return Collections.unmodifiableList(from);
+  }
+
+  public AggregateExpressionImpl addFrom(final AggregateExpression from) {
+    this.from.add(from);
+    return this;
+  }
+
+  @Override
+  public String getAlias() {
+    return alias;
+  }
+
+  public AggregateExpressionImpl setAlias(final String alias) {
+    this.alias = alias;
+    return this;
+  }
+
+  @Override
+  public <T> T accept(ExpressionVisitor<T> visitor) throws ExpressionVisitException, ODataApplicationException {
+    return visitor.visitComputeAggregate(this);
+  }
+  
+  @Override
+  public Set<String> getDynamicProperties() {
+    return Collections.unmodifiableSet(dynamicProperties.keySet());
+  }
+
+  @Override
+  public void addDynamicProperty(String name) {
+    dynamicProperties.put(name, new AggregateExpressionDynamicPropertyOptions());
+  }
+
+  @Override
+  public Map<String, AggregateExpressionDynamicPropertyOptions> getDynamicPropertiesWithOptions() {
+    return Collections.unmodifiableMap(dynamicProperties);
+  }
+
+  @Override
+  public void addDynamicProperty(String name, AggregateExpressionDynamicPropertyOptions options) {
+    dynamicProperties.put(name, options);
+  }
+}

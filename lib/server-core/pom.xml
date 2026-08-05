@@ -18,6 +18,8 @@
   specific language governing permissions and limitations
   under the License.
 
+  Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
+
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -28,7 +30,7 @@
   <name>${project.artifactId}</name>
 
   <parent>
-    <groupId>org.apache.olingo</groupId>
+    <groupId>org.sitenetsoft.olinguito</groupId>
     <artifactId>odata-lib</artifactId>
     <version>5.0.1-SNAPSHOT</version>
     <relativePath>..</relativePath>
@@ -36,24 +38,19 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-server-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.olingo</groupId>
-      <artifactId>odata-commons-core</artifactId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
+      <artifactId>odata-commons-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>jakarta.servlet</groupId>
-      <artifactId>jakarta.servlet-api</artifactId>
-      <version>${jakarta.servlet.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
+      <artifactId>odata-commons-core</artifactId>
+      <version>${project.version}</version>
     </dependency>
 
   	<dependency>
@@ -64,25 +61,21 @@
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.netty</groupId>
-      <artifactId>netty-codec-http</artifactId>
-    </dependency>
-
     <!-- Test dependencies -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
     </dependency>
   </dependencies>
 
@@ -105,11 +98,17 @@
             <Implementation-Version>${project.version}</Implementation-Version>
             <Implementation-Title>${project.name}</Implementation-Title>
             <Export-Package>
-              org.apache.olingo.server.core
+              org.sitenetsoft.olinguito.server.core
             </Export-Package>
+            <Private-Package>
+              org.sitenetsoft.olinguito.server.core.*
+            </Private-Package>
             <Import-Package>
               *
             </Import-Package>
+            <_fixupmessages>
+              "private references";restrict:=warning;is:=ignore
+            </_fixupmessages>
           </instructions>
         </configuration>
       </plugin>

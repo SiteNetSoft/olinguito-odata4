@@ -22,19 +22,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.olingo.commons.api.edm.provider.CsdlAbstractEdmProvider;
-import org.apache.olingo.commons.api.edm.provider.CsdlComplexType;
-import org.apache.olingo.commons.api.edm.provider.CsdlEntityContainer;
-import org.apache.olingo.commons.api.edm.provider.CsdlEntityContainerInfo;
-import org.apache.olingo.commons.api.edm.provider.CsdlEntitySet;
-import org.apache.olingo.commons.api.edm.provider.CsdlEntityType;
-import org.apache.olingo.commons.api.edm.provider.CsdlNavigationProperty;
-import org.apache.olingo.commons.api.edm.provider.CsdlNavigationPropertyBinding;
-import org.apache.olingo.commons.api.edm.provider.CsdlProperty;
-import org.apache.olingo.commons.api.edm.provider.CsdlPropertyRef;
-import org.apache.olingo.commons.api.edm.provider.CsdlSchema;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAbstractEdmProvider;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlComplexType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityContainer;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityContainerInfo;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntitySet;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlNavigationProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlNavigationPropertyBinding;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlPropertyRef;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlSchema;
 
 public class DemoEdmProvider extends CsdlAbstractEdmProvider {
 

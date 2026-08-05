@@ -18,6 +18,8 @@
     specific language governing permissions and limitations
     under the License.
 
+    Copyright 2026 SiteNetSoft - Removed commons-codec dependency (replaced with java.util.Base64)
+
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -28,7 +30,7 @@
   <name>${project.artifactId}</name>
 
   <parent>
-    <groupId>org.apache.olingo</groupId>
+    <groupId>org.sitenetsoft.olinguito</groupId>
     <artifactId>odata-lib</artifactId>
     <version>5.0.1-SNAPSHOT</version>
     <relativePath>..</relativePath>
@@ -36,18 +38,18 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-commons-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
     </dependency>
-
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -74,10 +76,10 @@
         <configuration>
           <instructions>
             <Export-Package>
-              org.apache.olingo.commons.core,
-              org.apache.olingo.commons.core.edm,
-              org.apache.olingo.commons.core.edm.provider,
-              org.apache.olingo.commons.core.edm.primitivetype,
+              org.sitenetsoft.olinguito.commons.core,
+              org.sitenetsoft.olinguito.commons.core.edm,
+              org.sitenetsoft.olinguito.commons.core.edm.provider,
+              org.sitenetsoft.olinguito.commons.core.edm.primitivetype,
             </Export-Package>
             <Import-Package>
               *

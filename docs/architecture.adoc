@@ -1,0 +1,504 @@
+= Olinguito Architecture Overview
+:toc: left
+:toclevels: 3
+:icons: font
+:source-highlighter: highlight.js
+
+== Introduction
+
+Olinguito is a modular Java library implementing the OData V4.0 specification. This document provides an overview of the architecture, module structure, and key design decisions.
+
+== Module Overview
+
+The project is organized into several modules, each with a specific responsibility:
+
+[source]
+----
+olinguito-odata4/
+├── lib/                          # Core libraries
+│   ├── commons-api/              # Shared API interfaces
+│   ├── commons-core/             # Shared implementations
+│   ├── client-api/               # Client API interfaces
+│   ├── client-core/              # Client implementation
+│   ├── client-adapter-apache/    # Apache HttpComponents adapter
+│   ├── client-adapter-okhttp/    # OkHttp adapter
+│   ├── client-adapter-quarkus/   # Quarkus client CDI extension
+│   ├── odata-vocabularies/       # OData vocabulary support
+│   ├── server-api/               # Server API interfaces
+│   ├── server-core/              # Server core (engine-agnostic)
+│   ├── server-core-ext/          # Server extensions
+│   ├── server-adapter-servlet/   # Jakarta Servlet adapter
+│   ├── server-adapter-netty/     # Netty async streaming adapter
+│   ├── server-adapter-quarkus/   # Quarkus server extension
+│   ├── server-tecsvc/            # Technical test service (core)
+│   ├── server-tecsvc-servlet/    # TecSvc servlet integration
+│   ├── server-tecsvc-quarkus/    # TecSvc Quarkus integration
+│   ├── server-test/              # Test utilities
+│   └── test-fixtures/            # Shared test fixtures
+├── ext/                          # Extensions
+│   ├── pojogen-maven-plugin/     # POJO generator
+│   ├── client-proxy/             # Client proxy generator
+│   └── client-android/           # Android client
+├── fit/                          # Integration tests
+├── samples/                      # Examples and tutorials
+└── dist/                         # Distribution packages
+----
+
+== Module Dependencies
+
+The modules follow a layered architecture with clear dependency boundaries:
+
+[source]
+----
+                    ┌─────────────────────────────────────┐
+                    │           Application Layer          │
+                    │  (Your OData Service / Client App)   │
+                    └─────────────────────────────────────┘
+                                      │
+            ┌─────────────────────────┴─────────────────────────┐
+            │                                                   │
+            ▼                                                   ▼
+┌─────────────────────────┐                     ┌─────────────────────────┐
+│   Server Adapters       │                     │   Client Core           │
+│  ┌───────────────────┐  │                     │  (odata-client-core)    │
+│  │ servlet-adapter   │  │                     └─────────────────────────┘
+│  └───────────────────┘  │                                 │
+│  ┌───────────────────┐  │                     ┌─────────────────────────┐
+│  │ quarkus-adapter   │  │                     │   HTTP Adapters         │
+│  └───────────────────┘  │                     │  ┌───────────────────┐  │
+│  ┌───────────────────┐  │                     │  │ adapter-apache    │  │
+│  │ netty-adapter     │  │                     │  └───────────────────┘  │
+│  └───────────────────┘  │                     │  ┌───────────────────┐  │
+└─────────────────────────┘                     │  │ adapter-okhttp    │  │
+            │                                   │  └───────────────────┘  │
+            │                                   └─────────────────────────┘
+            │                                               │
+            ▼                                               ▼
+┌─────────────────────────┐                     ┌─────────────────────────┐
+│   Server Core Ext       │                     │   Client API            │
+│ (odata-server-core-ext) │                     │  (odata-client-api)     │
+└─────────────────────────┘                     └─────────────────────────┘
+            │                                               │
+            ▼                                               │
+┌─────────────────────────┐                                 │
+│   Server Core           │                                 │
+│  (odata-server-core)    │                                 │
+└─────────────────────────┘                                 │
+            │                                               │
+            ▼                                               │
+┌─────────────────────────┐                                 │
+│   Server API            │                                 │
+│  (odata-server-api)     │                                 │
+└─────────────────────────┘                                 │
+            │                                               │
+            └───────────────────┬───────────────────────────┘
+                                │
+                                ▼
+                    ┌─────────────────────────┐
+                    │   Commons Core          │
+                    │  (odata-commons-core)   │
+                    └─────────────────────────┘
+                                │
+                                ▼
+                    ┌─────────────────────────┐
+                    │   Commons API           │
+                    │  (odata-commons-api)    │
+                    └─────────────────────────┘
+----
+
+== Core Modules
+
+=== Commons API (`odata-commons-api`)
+
+The foundation module containing shared interfaces and data structures:
+
+* *EDM (Entity Data Model)* - Interfaces for describing OData metadata
+** `EdmEntityType`, `EdmComplexType`, `EdmProperty`
+** `EdmEntitySet`, `EdmEntityContainer`
+** `EdmPrimitiveType` and type kinds
+* *Data Objects* - Runtime data representations
+** `Entity`, `EntityCollection`, `Property`
+** `Link`, `ComplexValue`
+* *Format Support* - Content type handling
+** `ContentType`, `AcceptType`
+* *HTTP Abstractions* - Protocol helpers
+** `HttpMethod`, `HttpStatusCode`, `HttpHeader`
+
+=== Commons Core (`odata-commons-core`)
+
+Implementations of commons-api:
+
+* *EDM Provider* - CSDL-based EDM implementation
+* *Primitive Types* - All OData primitive type implementations
+* *Serialization Helpers* - JSON and XML utilities
+* *URI Encoding* - OData URL encoding/decoding
+
+=== Server API (`odata-server-api`)
+
+Server-side interfaces for building OData services:
+
+* *Processors* - Request handling interfaces
+** `EntityProcessor` - Single entity operations
+** `EntityCollectionProcessor` - Collection operations
+** `PrimitiveProcessor` - Primitive property operations
+** `ComplexProcessor` - Complex property operations
+** `ActionProcessor`, `FunctionProcessor` - Operations
+** `BatchProcessor` - Batch request handling
+* *Request/Response* - HTTP abstraction
+** `ODataRequest`, `ODataResponse`
+* *URI Parsing* - Query option interfaces
+** `UriInfo`, `FilterOption`, `OrderByOption`
+** `SelectOption`, `ExpandOption`
+* *Serialization* - Output formatting
+** `ODataSerializer`, `SerializerResult`
+
+=== Server Core (`odata-server-core`)
+
+The OData processing engine (runtime-agnostic):
+
+* *Request Handler* - `ODataHandler` processes requests
+* *URI Parser* - Parses OData URLs into `UriInfo`
+* *Content Negotiation* - Determines response format
+* *Serializers* - JSON and XML output
+** `ODataJsonSerializer`
+** `ODataXmlSerializer`
+* *Deserializers* - JSON and XML input parsing
+* *Debug Support* - Development debugging tools
+
+=== Server Core Extensions (`odata-server-core-ext`)
+
+Higher-level server utilities:
+
+* *ServiceHandler* - Simplified processor interface
+* *ServiceRequest/ServiceResponse* - Wrapper classes
+* *MetadataParser* - XML metadata parsing
+* *PagingHelper* - Server-driven paging support
+
+=== Server Adapters
+
+==== Servlet Adapter (`odata-server-adapter-servlet`)
+
+Bridges OData to Jakarta Servlet API:
+
+* `ODataServletHandler` - Main entry point
+* `ServletODataAdapter` - Request/response conversion
+* `ServletResponseWriter` - Output handling
+
+==== Quarkus Adapter (`odata-server-adapter-quarkus`)
+
+Native Quarkus extension with build-time optimization:
+
+* *Deployment Module* - Build-time processing
+** `ODataProcessor` - Quarkus build steps
+** `ODataBuildItem` - Build-time data
+* *Runtime Module* - Request handling
+** `VertxODataHandler` - Vert.x integration
+** `ODataRecorder` - Runtime initialization
+
+==== Netty Adapter (`server-adapter-netty`)
+
+Async streaming support via Netty:
+
+* Decoupled from `server-api` and `server-core` to keep the core runtime-agnostic
+* Provides non-blocking I/O for high-throughput scenarios
+
+=== Client API (`odata-client-api`)
+
+Client-side interfaces:
+
+* *ODataClient* - Main client interface
+* *Request Factories* - Create typed requests
+* *HTTP Abstraction* - Transport-agnostic HTTP interfaces
+** `ODataHttpClient` - HTTP client handle (execute requests)
+** `ODataHttpRequest` - HTTP request manipulation (headers, body, URI)
+** `ODataHttpResponse` - HTTP response access (status, headers, body)
+** `HttpClientFactory` - Creates `ODataHttpClient` instances
+** `HttpUriRequestFactory` - Creates `ODataHttpRequest` instances
+* *Domain Objects* - Client-side entities
+** `ClientEntity`, `ClientEntitySet`
+** `ClientProperty`, `ClientValue`
+
+=== Client Core (`odata-client-core`)
+
+Client implementation:
+
+* *ODataClientFactory* - Factory with fluent `Builder` for adapter selection
+** `ODataClientFactory.builder().withApache().build()` (default)
+** `ODataClientFactory.builder().withOkHttp().build()` (requires adapter on classpath)
+* *Request Building* - Fluent URI builder
+* *Response Parsing* - JSON/XML deserialization
+* *Batch Support* - Batch request handling
+
+=== Client HTTP Adapters
+
+==== Apache HttpComponents Adapter (`client-adapter-apache`)
+
+Default HTTP transport, backed by Apache HttpComponents 4.x:
+
+* `ApacheHttpClient` - Wraps Apache `HttpClient` as `ODataHttpClient`
+* `ApacheHttpRequest` - Wraps Apache `HttpUriRequest` as `ODataHttpRequest`
+* `ApacheHttpResponse` - Wraps Apache `HttpResponse` as `ODataHttpResponse`
+* `DefaultHttpClientFactory` - Creates Apache-backed clients
+* `BasicAuthHttpClientFactory` - Preemptive HTTP basic auth
+* `ProxyWrappingHttpClientFactory` - HTTP proxy support
+* `ContentCompressingHttpClient` - GZIP/deflate compression decorator
+
+==== OkHttp Adapter (`client-adapter-okhttp`)
+
+Alternative HTTP transport backed by OkHttp 5.x:
+
+* `OkHttpClientWrapper` - Wraps `OkHttpClient` as `ODataHttpClient`
+* `OkHttpRequestWrapper` - Builds OkHttp `Request` from interface calls
+* `OkHttpResponseWrapper` - Wraps OkHttp `Response` as `ODataHttpResponse`
+* `OkHttpClientFactory` - Shared client with configurable:
+** Connection pooling, timeouts (connect/read/write/call)
+** HTTP/2 negotiation, retry on connection failure
+** Certificate pinning, event listener metrics
+** Async execution via `CompletableFuture`
+* `OkHttpBasicAuthClientFactory` - HTTP basic auth via interceptor
+* `OkHttpNTLMAuthClientFactory` - NTLM auth via authenticator
+
+=== Client Quarkus Adapter (`client-adapter-quarkus`)
+
+Quarkus CDI extension for the OData client:
+
+* Named/multi-client support via CDI qualifiers
+* Build-time optimization for native image compilation
+
+== Key Design Patterns
+
+=== Processor Pattern
+
+The server uses a processor-based design where each type of OData operation has a dedicated processor interface:
+
+[source,java]
+----
+public interface EntityCollectionProcessor extends Processor {
+    void readEntityCollection(ODataRequest request,
+                              ODataResponse response,
+                              UriInfo uriInfo,
+                              ContentType responseFormat)
+        throws ODataApplicationException, ODataLibraryException;
+}
+----
+
+Applications implement these interfaces and register them with the handler:
+
+[source,java]
+----
+ODataHandler handler = odata.createHandler(serviceMetadata);
+handler.register(new MyEntityCollectionProcessor());
+handler.register(new MyEntityProcessor());
+----
+
+=== Provider Pattern
+
+The EDM (metadata) is defined through providers:
+
+[source,java]
+----
+public abstract class CsdlAbstractEdmProvider implements CsdlEdmProvider {
+    public abstract CsdlEntityType getEntityType(FullQualifiedName name);
+    public abstract CsdlEntitySet getEntitySet(FullQualifiedName container,
+                                                String name);
+    // ... other methods
+}
+----
+
+=== Visitor Pattern
+
+Expression trees (for $filter, $orderby) use the visitor pattern:
+
+[source,java]
+----
+public interface ExpressionVisitor<T> {
+    T visitBinaryOperator(BinaryOperatorKind operator, T left, T right);
+    T visitUnaryOperator(UnaryOperatorKind operator, T operand);
+    T visitMethodCall(MethodKind methodCall, List<T> parameters);
+    T visitLiteral(Literal literal);
+    T visitMember(Member member);
+    // ... other visit methods
+}
+----
+
+== Request Processing Flow
+
+=== Server-Side Flow
+
+[source]
+----
+HTTP Request
+     │
+     ▼
+┌─────────────────────┐
+│  Adapter Layer      │  (Servlet/Quarkus)
+│  - Extract headers  │
+│  - Build ODataReq   │
+└─────────────────────┘
+     │
+     ▼
+┌─────────────────────┐
+│  ODataHandler       │
+│  - Parse URI        │
+│  - Content negot.   │
+│  - Route to proc.   │
+└─────────────────────┘
+     │
+     ▼
+┌─────────────────────┐
+│  Processor          │  (Your implementation)
+│  - Business logic   │
+│  - Data access      │
+│  - Build response   │
+└─────────────────────┘
+     │
+     ▼
+┌─────────────────────┐
+│  Serializer         │
+│  - Format output    │
+│  - JSON/XML/Atom    │
+└─────────────────────┘
+     │
+     ▼
+HTTP Response
+----
+
+=== Client-Side Flow
+
+[source]
+----
+Application Code
+     │
+     ▼
+┌─────────────────────┐
+│  ODataClient        │
+│  - Build URI        │
+│  - Create request   │
+└─────────────────────┘
+     │
+     ▼
+┌─────────────────────┐
+│  HTTP Abstraction   │  (ODataHttpClient / ODataHttpRequest)
+│  - Transport-agnostic│
+│  - Pluggable adapter│
+└─────────────────────┘
+     │
+     ├──────────────────────┐
+     ▼                      ▼
+┌──────────────┐    ┌──────────────┐
+│ Apache HTTP  │    │  OkHttp      │
+│ Components   │    │  (HTTP/2,    │
+│              │    │   async)     │
+└──────────────┘    └──────────────┘
+     │                      │
+     └──────────┬───────────┘
+                ▼
+┌─────────────────────┐
+│  Response Parser    │
+│  - Parse JSON/XML   │
+│  - Build entities   │
+└─────────────────────┘
+     │
+     ▼
+ClientEntity/ClientEntitySet
+----
+
+== Technology Stack
+
+[cols="1,2"]
+|===
+|Component |Technology
+
+|HTTP Server (Servlet)
+|Jakarta Servlet 6.1.0
+
+|HTTP Server (Quarkus)
+|Vert.x / Quarkus
+
+|HTTP Client (default)
+|Apache HttpComponents 4.x
+
+|HTTP Client (alternative)
+|OkHttp 5.x (HTTP/2, connection pooling, async)
+
+|JSON Processing
+|Jackson 2.18.x
+
+|XML Processing
+|Aalto XML / StAX
+
+|Async Streaming
+|Netty 4.1.x
+
+|Build System
+|Maven 3.9+
+
+|Testing
+|JUnit 5.11.x (Jupiter) / Mockito 5.14.x
+
+|Integration Testing
+|Embedded Tomcat 10.1.x (JUnit 4 via vintage engine)
+
+|Code Coverage
+|JaCoCo
+|===
+
+== Package Namespace
+
+All Olinguito classes use the package namespace:
+
+[source]
+----
+org.sitenetsoft.olinguito.*
+----
+
+Key packages:
+
+* `org.sitenetsoft.olinguito.commons.api` - Common interfaces
+* `org.sitenetsoft.olinguito.commons.api.edm` - EDM interfaces
+* `org.sitenetsoft.olinguito.commons.api.data` - Data structures
+* `org.sitenetsoft.olinguito.server.api` - Server interfaces
+* `org.sitenetsoft.olinguito.server.api.processor` - Processor interfaces
+* `org.sitenetsoft.olinguito.server.core` - Server implementation
+* `org.sitenetsoft.olinguito.client.api` - Client interfaces
+* `org.sitenetsoft.olinguito.client.core` - Client implementation
+
+== Extension Points
+
+=== Custom Processors
+
+Implement processor interfaces to handle OData operations:
+
+* `EntityCollectionProcessor` - GET on collections
+* `EntityProcessor` - GET/POST/PUT/PATCH/DELETE on entities
+* `PrimitiveProcessor` - Operations on primitive properties
+* `ComplexProcessor` - Operations on complex properties
+* `ActionProcessor` - Bound and unbound actions
+* `FunctionProcessor` - Bound and unbound functions
+* `BatchProcessor` - $batch requests
+* `MediaEntityProcessor` - Media resources
+
+=== Custom Serializers
+
+Extend serialization for custom formats:
+
+[source,java]
+----
+ODataSerializer serializer = odata.createSerializer(contentType);
+----
+
+=== Debug Support
+
+Enable debug mode for development:
+
+[source,java]
+----
+// Add ?odata-debug=json to URL for debug output
+// Supported: json, html, download
+----
+
+== See Also
+
+* link:getting-started.adoc[Getting Started Guide]
+* link:https://www.odata.org/documentation/[OData V4 Specification]
+* link:https://github.com/sitenetsoft/olinguito-odata4[Source Repository]

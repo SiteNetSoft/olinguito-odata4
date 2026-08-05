@@ -1,0 +1,1032 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Migrate from deprecated DefaultHttpClient to HttpClientBuilder
+ * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
+ * Copyright 2026 SiteNetSoft - Fixed deprecated HC 5.x execute() calls
+ * Copyright 2026 SiteNetSoft - Fixed HC 5.x resource leaks: close responses and HttpClient
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ */
+package org.sitenetsoft.olinguito.server.example;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import org.apache.catalina.Context;
+import org.apache.catalina.startup.Tomcat;
+import org.apache.hc.client5.http.classic.methods.HttpDelete;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPatch;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpPut;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+
+/**
+ * Please note that NONE of the system query options are developed in the sample
+ * service like $filter, $orderby etc. So using those options will be ignored
+ * right now. These tests designed to test the framework, all options are responsibilities
+ * of service developer.
+ */
+class TripPinServiceTest {
+  private static Tomcat tomcat = new Tomcat();
+  private static String baseURL;
+  private static CloseableHttpClient http;
+  private static final int TOMCAT_PORT = 9900;
+  private static final String CRLF = "\r\n";
+
+  @BeforeAll
+  static void beforeTest() throws Exception {
+    PoolingHttpClientConnectionManager conMan = new PoolingHttpClientConnectionManager();
+    conMan.setMaxTotal(200);
+    conMan.setDefaultMaxPerRoute(200);
+    http = HttpClientBuilder.create().setConnectionManager(conMan).build();
+    tomcat.setPort(TOMCAT_PORT);
+    File baseDir = new File(System.getProperty("java.io.tmpdir"));
+    tomcat.setBaseDir(baseDir.getAbsolutePath());
+    tomcat.getHost().setAppBase(baseDir.getAbsolutePath());
+    tomcat.getHost().setDeployOnStartup(true);
+    tomcat.getConnector().setSecure(false);
+    tomcat.setSilent(true);
+    Context cxt = tomcat.addContext("/trippin", baseDir.getAbsolutePath());
+    Tomcat.addServlet(cxt, "trippin", new TripPinServlet());
+    cxt.addServletMappingDecoded("/*", "trippin");
+    baseURL = "http://" + tomcat.getHost().getName() + ":"+ TOMCAT_PORT+"/trippin";
+    tomcat.start();
+  }
+
+  @AfterAll
+  static void afterTest() throws Exception {
+    http.close();
+    tomcat.stop();
+  }
+
+  private HttpHost getLocalhost() {
+    return new HttpHost(tomcat.getHost().getName(), TOMCAT_PORT);
+  }
+
+  private ClassicHttpResponse httpGET(String url, int expectedStatus) throws Exception{
+    ClassicHttpRequest request = new HttpGet(url);
+	  return httpSend(request, expectedStatus);
+  }
+
+  private ClassicHttpResponse httpSend(ClassicHttpRequest request, int expectedStatus) throws Exception{
+    ClassicHttpResponse response = http.executeOpen(getLocalhost(), request, null);
+    assertEquals(expectedStatus, response.getCode());
+    return response;
+  }
+
+  private JsonNode getJSONNode(ClassicHttpResponse response) throws IOException {
+    ObjectMapper objectMapper = new ObjectMapper();
+    JsonNode node = objectMapper.readTree(response.getEntity().getContent());
+    return node;
+  }
+
+  private String getHeader(ClassicHttpResponse response, String header) {
+    Header[] headers = response.getHeaders();
+    for (Header h : headers) {
+      if (h.getName().equalsIgnoreCase(header)) {
+        return h.getValue();
+      }
+    }
+    return null;
+  }
+
+  @Test
+  void testXMLInvalidChars() throws Exception {
+    ClassicHttpRequest req = new HttpGet(baseURL+"/Airlines('FM')");
+    req.setHeader("Accept", "application/xml");
+
+    ClassicHttpResponse response = httpSend(req, 200);
+    try {
+      String actual = new String(response.getEntity().getContent().readAllBytes(), StandardCharsets.UTF_8);
+      String expected =
+          "<m:properties>"
+          +     "<d:AirlineCode>FM</d:AirlineCode>"
+          +     "<d:Name>Shanghai xxxAirlinexxx</d:Name>"
+          +     "<d:Picture m:null=\"true\"></d:Picture>"
+          +  "</m:properties>"
+          + "</a:content>"
+          +"</a:entry>";
+      assertTrue(actual.endsWith(expected));
+    } finally {
+      response.close();
+    }
+  }
+
+  @Test
+  void testmetadata() throws Exception {
+    ClassicHttpRequest req = new HttpGet(baseURL+"/$metadata");
+    try (ClassicHttpResponse response = httpSend(req, 200)) {
+      new String(response.getEntity().getContent().readAllBytes(), StandardCharsets.UTF_8);
+    }
+  }
+
+  @Test
+  void testReadEntitySetWithPaging() throws Exception {
+    String url = baseURL+"/People";
+    ClassicHttpRequest request = new HttpGet(url);
+    request.setHeader("Prefer", "odata.maxpagesize=10");
+    ClassicHttpResponse response = httpSend(request, 200);
+    try {
+      JsonNode node = getJSONNode(response);
+      assertEquals(baseURL+"/$metadata#People", node.get("@odata.context").asText());
+      assertEquals(baseURL+"/People?$skiptoken=10", node.get("@odata.nextLink").asText());
+
+      JsonNode person = ((ArrayNode)node.get("value")).get(0);
+      assertEquals("russellwhyte", person.get("UserName").asText());
+      assertEquals("odata.maxpagesize=10", getHeader(response, "Preference-Applied"));
+    } finally {
+      response.close();
+    }
+  }
+
+  @Test
+  void testReadEntityWithKey() throws Exception {
+    try (ClassicHttpResponse response = httpGET(baseURL + "/Airlines('AA')", 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals(baseURL+"/$metadata#Airlines/$entity", node.get("@odata.context").asText());
+      assertEquals("American Airlines", node.get("Name").asText());
+      //assertEquals("/Airlines('AA')/Picture", node.get("Picture@odata.mediaReadLink").asText());
+    }
+  }
+
+  @Test
+  void testReadEntityWithFullMetadata() throws Exception {
+    try (ClassicHttpResponse response = httpGET(
+        baseURL+ "/People('russellwhyte')?$format=application/json;odata.metadata=full",
+        200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals("#Collection(String)", node.get("Emails@odata.type").asText());
+      assertEquals("Microsoft.OData.SampleService.Models.TripPin.ShareTrip",
+          node.get("#Microsoft.OData.SampleService.Models.TripPin.ShareTrip").get("title").asText());
+      assertEquals("/People('russellwhyte')/Microsoft.OData.SampleService.Models.TripPin.ShareTrip",
+          node.get("#Microsoft.OData.SampleService.Models.TripPin.ShareTrip").get("target").asText());
+
+      assertEquals("Microsoft.OData.SampleService.Models.TripPin.GetFavoriteAirline",
+          node.get("#Microsoft.OData.SampleService.Models.TripPin.GetFavoriteAirline").get("title").asText());
+      assertEquals("/People('russellwhyte')/Microsoft.OData.SampleService.Models.TripPin.GetFavoriteAirline",
+          node.get("#Microsoft.OData.SampleService.Models.TripPin.GetFavoriteAirline").get("target").asText());
+
+      assertEquals("Microsoft.OData.SampleService.Models.TripPin.GetFriendsTrips",
+          node.get("#Microsoft.OData.SampleService.Models.TripPin.GetFriendsTrips(userName)").get("title").asText());
+      assertEquals("/People('russellwhyte')/Microsoft.OData."
+          + "SampleService.Models.TripPin.GetFriendsTrips(userName=@userName)",
+          node.get("#Microsoft.OData.SampleService.Models.TripPin.GetFriendsTrips(userName)").get("target").asText());
+    }
+  }
+
+  @Test
+  void testErrorResponse() throws Exception {
+    try (ClassicHttpResponse response = httpGET(baseURL + "/Airlines(1)", 400)) {
+      Header[] headers = response.getHeaders("Content-Type");
+      assertEquals("application/json;odata.metadata=minimal", headers[0].getValue());
+      assertEquals("{\"error\":{\"code\":null,\"message\":\"The key value '' is invalid.\"}}",
+          new String(response.getEntity().getContent().readAllBytes(), StandardCharsets.UTF_8));
+    }
+  }
+
+  @Test
+  void testReadEntityWithNonExistingKey() throws Exception {
+    ClassicHttpResponse response = httpGET(baseURL + "/Airlines('OO')", 404);
+    EntityUtils.consume(response.getEntity());
+  }
+
+  @Test
+  public void testRead$Count() throws Exception {
+    try (ClassicHttpResponse response = httpGET(baseURL + "/Airlines/$count", 200)) {
+      assertEquals("15", new String(response.getEntity().getContent().readAllBytes(), StandardCharsets.UTF_8));
+    }
+  }
+
+  @Test
+  void testReadPrimitiveProperty() throws Exception {
+    try (ClassicHttpResponse response = httpGET(baseURL + "/Airlines('AA')/Name", 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals(baseURL+"/$metadata#Airlines('AA')/Name", node.get("@odata.context").asText());
+      assertEquals("American Airlines", node.get("value").asText());
+    }
+  }
+
+  @Test
+  void testReadNonExistentProperty() throws Exception {
+    ClassicHttpResponse response = httpGET(baseURL + "/Airlines('AA')/Unknown", 404);
+    EntityUtils.consume(response.getEntity());
+  }
+
+  @Test
+  void testReadPrimitiveArrayProperty() throws Exception {
+    try (ClassicHttpResponse response = httpGET(baseURL + "/People('russellwhyte')/Emails", 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals(baseURL+"/$metadata#People('russellwhyte')/Emails", node.get("@odata.context").asText());
+      assertTrue(node.get("value").isArray());
+      assertEquals("Russell@example.com", ((ArrayNode)node.get("value")).get(0).asText());
+      assertEquals("Russell@contoso.com", ((ArrayNode)node.get("value")).get(1).asText());
+    }
+  }
+
+  @Test
+  void testReadPrimitivePropertyValue() throws Exception {
+    try (ClassicHttpResponse response = httpGET(baseURL + "/Airlines('AA')/Name/$value", 200)) {
+      assertEquals("American Airlines",
+          new String(response.getEntity().getContent().readAllBytes(), StandardCharsets.UTF_8));
+    }
+  }
+
+  @Test
+  void testUpdateRawValue() throws Exception {
+    // Note that in-real services must convert raw value (byte[]) to
+    // the data type it needs to save in in updateProperty method
+    String editUrl = baseURL + "/Airlines('AF')/Name/$value";
+    HttpPut put = new HttpPut(editUrl);
+    put.setEntity(new StringEntity("Safari"));
+    try (ClassicHttpResponse response = httpSend(put, 204)) {
+      EntityUtils.consume(response.getEntity());
+    }
+
+    try (ClassicHttpResponse response = httpGET(baseURL + "/Airlines('AF')/Name/$value", 200)) {
+      assertEquals("Safari", new String(response.getEntity().getContent().readAllBytes(), StandardCharsets.UTF_8));
+    }
+  }
+
+  @Test @Disabled
+  // TODO: Support geometry types to make this run
+  public void testReadComplexProperty() throws Exception {
+    //HttpResponse response = httpGET(baseURL + "/Airports('KSFO')/Location");
+    //fail("support geometry type");
+  }
+
+  @Test
+  void testReadComplexArrayProperty() throws Exception {
+    try (ClassicHttpResponse response = httpGET(baseURL + "/People('russellwhyte')/AddressInfo", 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals(baseURL+"/$metadata#People('russellwhyte')/AddressInfo", node.get("@odata.context").asText());
+      assertTrue(node.get("value").isArray());
+      assertEquals("187 Suffolk Ln.", ((ArrayNode)node.get("value")).get(0).get("Address").asText());
+    }
+  }
+
+  @Test
+  void testReadMedia() throws Exception {
+    ClassicHttpResponse response = httpGET(baseURL + "/Photos(1)/$value", 200);
+    EntityUtils.consume(response.getEntity());
+  }
+
+  @Test
+  void testCreateMedia() throws Exception {
+    // treating update and create as same for now, as there is details about
+    // how entity payload and media payload can be sent at same time in request's body
+    String editUrl = baseURL + "/Photos(1)/$value";
+    HttpPut request = new HttpPut(editUrl);
+    request.setEntity(new ByteArrayEntity("bytecontents".getBytes(), ContentType.APPLICATION_OCTET_STREAM));
+    ClassicHttpResponse response = httpSend(request, 204);
+    EntityUtils.consume(response.getEntity());
+  }
+
+  @Test
+  void testDeleteMedia() throws Exception {
+    // treating update and create as same for now, as there is details about
+    // how entity payload and media payload can be sent at same time in request's body
+    String editUrl = baseURL + "/Photos(1)/$value";
+    HttpDelete request = new HttpDelete(editUrl);
+    ClassicHttpResponse response = httpSend(request, 204);
+    EntityUtils.consume(response.getEntity());
+  }
+
+  @Test
+  void testCreateStream() throws Exception {
+    // treating update and create as same for now, as there is details about
+    // how entity payload and media payload can be sent at same time in request's body
+    String editUrl = baseURL + "/Airlines('AA')/Picture";
+    HttpPost request = new HttpPost(editUrl);
+    request.setEntity(new ByteArrayEntity("bytecontents".getBytes(), ContentType.APPLICATION_OCTET_STREAM));
+    // method not allowed
+    ClassicHttpResponse response = httpSend(request, 405);
+    EntityUtils.consume(response.getEntity());
+  }
+
+  @Test
+  void testCreateStream2() throws Exception {
+    // treating update and create as same for now, as there is details about
+    // how entity payload and media payload can be sent at same time in request's body
+    String editUrl = baseURL + "/Airlines('AA')/Picture";
+    HttpPut request = new HttpPut(editUrl);
+    request.setEntity(new ByteArrayEntity("bytecontents".getBytes(), ContentType.APPLICATION_OCTET_STREAM));
+    ClassicHttpResponse response = httpSend(request, 204);
+    EntityUtils.consume(response.getEntity());
+  }
+
+  @Test
+  void testDeleteStream() throws Exception {
+    // treating update and create as same for now, as there is details about
+    // how entity payload and media payload can be sent at same time in request's body
+    String editUrl = baseURL + "/Airlines('AA')/Picture";
+    HttpDelete request = new HttpDelete(editUrl);
+    ClassicHttpResponse response = httpSend(request, 204);
+    EntityUtils.consume(response.getEntity());
+  }
+
+  @Test
+  void testReadStream() throws Exception {
+    // treating update and create as same for now, as there is details about
+    // how entity payload and media payload can be sent at same time in request's body
+    String editUrl = baseURL + "/Airlines('AA')/Picture";
+    ClassicHttpResponse response = httpGET(editUrl, 200);
+    EntityUtils.consume(response.getEntity());
+  }
+
+  @Test
+  void testLambdaAny() throws Exception {
+    // this is just testing to see the lamda expressions are going through the
+    // framework, none of the system options are not implemented in example service
+    String query = "Friends/any(d%3Ad/UserName%20eq%20'foo')";
+    ClassicHttpResponse response = httpGET(baseURL + "/People?$filter=" + query, 200);
+    EntityUtils.consume(response.getEntity());
+  }
+
+  @Test
+  void testSingleton() throws Exception {
+    try (ClassicHttpResponse response = httpGET(baseURL + "/Me", 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals(baseURL+"/$metadata#Me", node.get("@odata.context").asText());
+      assertEquals("russellwhyte", node.get("UserName").asText());
+    }
+  }
+
+  @Test
+  void testSelectOption() throws Exception {
+    try (ClassicHttpResponse response = httpGET(baseURL + "/People('russellwhyte')?$select=FirstName,LastName", 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals(baseURL+"/$metadata#People(UserName,FirstName,LastName)/$entity",
+          node.get("@odata.context").asText());
+      assertEquals("Russell", node.get("FirstName").asText());
+    }
+  }
+
+  @Test
+  void testActionImportWithNoResponse() throws Exception {
+    HttpPost request = new HttpPost(baseURL + "/ResetDataSource");
+    ClassicHttpResponse response = httpSend(request, 204);
+    EntityUtils.consume(response.getEntity());
+  }
+
+  @Test
+  void testAllowHeader() throws Exception {
+    ClassicHttpResponse response = httpGET(baseURL + "/ResetDataSource", 405);
+    Header[] headers = response.getHeaders("Allow");
+    assertEquals("POST", headers[0].getValue());
+    EntityUtils.consume(response.getEntity());
+  }
+
+  @Test @Disabled
+  void testFunctionImport() throws Exception {
+    //TODO: fails because of lack of geometery support
+    ClassicHttpResponse response = httpGET(baseURL + "/GetNearestAirport(lat=23.0,lon=34.0)", 200);
+    EntityUtils.consume(response.getEntity());
+  }
+
+  @Test
+  void testBadReferences() throws Exception {
+    ClassicHttpResponse response = httpGET(baseURL + "/People('russelwhyte')/$ref", 405);
+    EntityUtils.consume(response.getEntity());
+  }
+
+  @Test
+  void testReadReferences() throws Exception {
+    try (ClassicHttpResponse response = httpGET(baseURL + "/People('russellwhyte')/Friends/$ref", 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals(baseURL+"/$metadata#Collection($ref)", node.get("@odata.context").asText());
+      assertTrue(node.get("value").isArray());
+      assertEquals("/People('scottketchum')", ((ArrayNode)node.get("value")).get(0).get("@odata.id").asText());
+    }
+  }
+
+  @Test
+  void testAddCollectionReferences() throws Exception {
+    //GET
+    try (ClassicHttpResponse response = httpGET(baseURL + "/People('kristakemp')/Friends/$ref", 200)) {
+      JsonNode node = getJSONNode(response);
+      assertTrue(node.get("value").isArray());
+      assertEquals("/People('genevievereeves')", ((ArrayNode)node.get("value")).get(0).get("@odata.id").asText());
+      assertNull(((ArrayNode)node.get("value")).get(1));
+    }
+
+    //ADD
+    String payload = "{\n" +
+        "\"@odata.id\": \"/People('scottketchum')\"\n" +
+        "}";
+
+    HttpPost postRequest = new HttpPost(baseURL + "/People('kristakemp')/Friends/$ref");
+    postRequest.setEntity(new StringEntity(payload, ContentType.APPLICATION_JSON));
+    try (ClassicHttpResponse response = httpSend(postRequest, 204)) {
+      EntityUtils.consume(response.getEntity());
+    }
+
+    //GET
+    try (ClassicHttpResponse response = httpGET(baseURL + "/People('kristakemp')/Friends/$ref", 200)) {
+      JsonNode node = getJSONNode(response);
+      assertTrue(node.get("value").isArray());
+      assertEquals("/People('genevievereeves')", ((ArrayNode)node.get("value")).get(0).get("@odata.id").asText());
+      assertEquals("/People('scottketchum')", ((ArrayNode)node.get("value")).get(1).get("@odata.id").asText());
+    }
+  }
+
+
+  @Test
+  void testEntityId() throws Exception {
+    try (ClassicHttpResponse response = httpGET(baseURL+"/$entity?$id="+baseURL
+        + "/People('kristakemp')&$select=FirstName", 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals(baseURL+"/$metadata#People(UserName,FirstName)/$entity", node.get("@odata.context").asText());
+      assertEquals("Krista", node.get("FirstName").asText());
+    }
+
+    // using relative URL
+    try (ClassicHttpResponse response = httpGET(
+        baseURL+"/$entity?$id="+"People('kristakemp')&$select=FirstName", 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals(baseURL+"/$metadata#People(UserName,FirstName)/$entity", node.get("@odata.context").asText());
+      assertEquals("Krista", node.get("FirstName").asText());
+    }
+  }
+
+  @Test
+  void testCreateReadDeleteEntity() throws Exception {
+    String payload = "{\n" +
+        "         \"UserName\":\"olingodude\",\n" +
+        "         \"FirstName\":\"Olingo\",\n" +
+        "         \"LastName\":\"Apache\",\n" +
+        "         \"Emails\":[\n" +
+        "            \"olingo@apache.org\"\n" +
+        "         ],\n" +
+        "         \"AddressInfo\":[\n" +
+        "            {\n" +
+        "               \"Address\":\"100 apache Ln.\",\n" +
+        "               \"City\":{\n" +
+        "                  \"CountryRegion\":\"United States\",\n" +
+        "                  \"Name\":\"Boise\",\n" +
+        "                  \"Region\":\"ID\"\n" +
+        "               }\n" +
+        "            }\n" +
+        "         ],\n" +
+        "         \"Gender\":\"0\",\n" +
+        "         \"Concurrency\":635585295719432047\n" +
+        "}";
+    HttpPost postRequest = new HttpPost(baseURL + "/People");
+    postRequest.setEntity(new StringEntity(payload, ContentType.APPLICATION_JSON));
+    postRequest.addHeader("Prefer", "return=minimal");
+
+    String location;
+    try (ClassicHttpResponse response = httpSend(postRequest, 204)) {
+      // the below would be 204, if minimal was not supplied
+      assertEquals(baseURL +"/People('olingodude')", getHeader(response, "Location"));
+      assertEquals("return=minimal", getHeader(response, "Preference-Applied"));
+      location = getHeader(response, "Location");
+    }
+
+    try (ClassicHttpResponse response = httpGET(location, 200)) {
+      EntityUtils.consume(response.getEntity());
+    }
+
+    HttpDelete deleteRequest = new HttpDelete(location);
+    try (ClassicHttpResponse response = httpSend(deleteRequest, 204)) {
+      EntityUtils.consume(response.getEntity());
+    }
+
+    try (ClassicHttpResponse response = httpGET(location, 404)) {
+      EntityUtils.consume(response.getEntity());
+    }
+  }
+
+  @Test
+  void testUpdateEntity() throws Exception {
+    String payload = "{" +
+        "  \"Emails\":[" +
+        "     \"Krista@example.com\"," +
+        "     \"Krista@gmail.com\"" +
+        "         ]" +
+        "}";
+    HttpPatch updateRequest = new HttpPatch(baseURL+"/People('kristakemp')");
+    updateRequest.setEntity(new StringEntity(payload, ContentType.APPLICATION_JSON));
+    try (ClassicHttpResponse ignored = httpSend(updateRequest, 204)) {
+      // 204 No Content
+    }
+
+    try (ClassicHttpResponse response = httpGET(baseURL + "/People('kristakemp')", 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals(baseURL+"/$metadata#People/$entity", node.get("@odata.context").asText());
+      assertEquals("Krista@example.com", node.get("Emails").get(0).asText());
+      assertEquals("Krista@gmail.com", node.get("Emails").get(1).asText());
+    }
+  }
+
+  @Test
+  void testDeleteEntity() throws Exception{
+    // fail because no key predicates supplied
+    HttpDelete deleteRequest = new HttpDelete(baseURL+"/People");
+    ClassicHttpResponse response = httpSend(deleteRequest, 405);
+    EntityUtils.consume(response.getEntity());
+  }
+
+  @Test
+  void testCreateEntityWithLinkToRelatedEntities() throws Exception {
+    String payload = "{\n" +
+        "         \"UserName\":\"olingo\",\n" +
+        "         \"FirstName\":\"Olingo\",\n" +
+        "         \"LastName\":\"Apache\",\n" +
+        "         \"Emails\":[\n" +
+        "            \"olingo@apache.org\"\n" +
+        "         ],\n" +
+        "         \"AddressInfo\":[\n" +
+        "            {\n" +
+        "               \"Address\":\"100 apache Ln.\",\n" +
+        "               \"City\":{\n" +
+        "                  \"CountryRegion\":\"United States\",\n" +
+        "                  \"Name\":\"Boise\",\n" +
+        "                  \"Region\":\"ID\"\n" +
+        "               }\n" +
+        "            }\n" +
+        "         ],\n" +
+        "         \"Gender\":\"0\",\n" +
+        "         \"Concurrency\":635585295719432047,\n" +
+        "\"Friends@odata.bind\":[\"" +
+         baseURL+"/People('russellwhyte')\",\""+
+         baseURL+"/People('scottketchum')\""+
+        "]"+
+        "}";
+    HttpPost postRequest = new HttpPost(baseURL + "/People");
+    postRequest.setEntity(new StringEntity(payload, ContentType.APPLICATION_JSON));
+    postRequest.setHeader("Prefer", "return=minimal");
+    try (ClassicHttpResponse response = httpSend(postRequest, 204)) {
+      EntityUtils.consume(response.getEntity());
+    }
+
+    try (ClassicHttpResponse response = httpGET(baseURL+"/People('olingo')/Friends", 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals(baseURL+"/$metadata#People", node.get("@odata.context").asText());
+      assertTrue(node.get("value").isArray());
+      assertEquals("scottketchum", ((ArrayNode)node.get("value")).get(1).get("UserName").asText());
+    }
+  }
+
+  @Disabled("4.01 style binding not supported")
+  @Test
+  void testCreateEntityWithLinkToRelatedEntitiesIds() throws Exception {
+    String payload = "{\n" +
+        "         \"UserName\":\"olingo\",\n" +
+        "         \"FirstName\":\"Olingo\",\n" +
+        "         \"LastName\":\"Apache\",\n" +
+        "         \"Emails\":[\n" +
+        "            \"olingo@apache.org\"\n" +
+        "         ],\n" +
+        "         \"AddressInfo\":[\n" +
+        "            {\n" +
+        "               \"Address\":\"100 apache Ln.\",\n" +
+        "               \"City\":{\n" +
+        "                  \"CountryRegion\":\"United States\",\n" +
+        "                  \"Name\":\"Boise\",\n" +
+        "                  \"Region\":\"ID\"\n" +
+        "               }\n" +
+        "            }\n" +
+        "         ],\n" +
+        "         \"Gender\":\"0\",\n" +
+        "         \"Concurrency\":635585295719432047,\n" +
+        "\"Friends\":[" +
+        "{\"@id\": \"People('russellwhyte')\"},\n" +
+        "{\"@id\": \"People('scottketchum')\"}\n" +
+        "]"+
+        "}";
+    HttpPost postRequest = new HttpPost(baseURL + "/People");
+    postRequest.setEntity(new StringEntity(payload, ContentType.APPLICATION_JSON));
+    postRequest.setHeader("Prefer", "return=minimal");
+    ClassicHttpResponse response = httpSend(postRequest, 204);
+    EntityUtils.consume(response.getEntity());
+
+    response = httpGET(baseURL+"/People('olingo')/Friends", 200);
+    JsonNode node = getJSONNode(response);
+    assertEquals(baseURL+"/$metadata#People", node.get("@odata.context").asText());
+    assertTrue(node.get("value").isArray());
+    assertEquals("scottketchum", ((ArrayNode)node.get("value")).get(1).get("UserName").asText());
+  }
+
+  @Test
+  void testUpdatePrimitiveProperty() throws Exception {
+    String payload = "{"
+        + " \"value\":\"Pilar Ackerman\""
+        + "}";
+
+    String editUrl = baseURL + "/People('russellwhyte')/FirstName";
+    HttpPut postRequest = new HttpPut(editUrl);
+    postRequest.setEntity(new StringEntity(payload, ContentType.APPLICATION_JSON));
+    try (ClassicHttpResponse response = httpSend(postRequest, 204)) {
+      EntityUtils.consume(response.getEntity());
+    }
+
+    try (ClassicHttpResponse response = httpGET(editUrl, 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals(baseURL+"/$metadata#People('russellwhyte')/FirstName", node.get("@odata.context").asText());
+      assertEquals("Pilar Ackerman", node.get("value").asText());
+    }
+  }
+
+  @Test
+  void testUpdatePrimitiveArrayProperty() throws Exception {
+    String payload = "{"
+        + " \"value\": [\n" +
+        "       \"olingo@apache.com\"\n" +
+        "    ]"
+        + "}";
+
+    String editUrl = baseURL + "/People('russellwhyte')/Emails";
+    HttpPut postRequest = new HttpPut(editUrl);
+    postRequest.setEntity(new StringEntity(payload, ContentType.APPLICATION_JSON));
+    try (ClassicHttpResponse response = httpSend(postRequest, 204)) {
+      EntityUtils.consume(response.getEntity());
+    }
+
+    try (ClassicHttpResponse response = httpGET(editUrl, 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals(baseURL+"/$metadata#People('russellwhyte')/Emails", node.get("@odata.context").asText());
+      assertTrue(node.get("value").isArray());
+      assertEquals("olingo@apache.com", ((ArrayNode)node.get("value")).get(0).asText());
+    }
+  }
+
+  @Test
+  void testDeleteProperty() throws Exception {
+    String editUrl = baseURL + "/People('russellwhyte')/FirstName";
+    try (ClassicHttpResponse response = httpGET(editUrl, 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals("Russell", node.get("value").asText());
+    }
+
+    HttpDelete deleteRequest = new HttpDelete(editUrl);
+    try (ClassicHttpResponse response = httpSend(deleteRequest, 204)) {
+      EntityUtils.consume(response.getEntity());
+    }
+
+    try (ClassicHttpResponse response = httpGET(editUrl, 204)) {
+      EntityUtils.consume(response.getEntity());
+    }
+  }
+
+  @Test
+  void testReadNavigationPropertyEntityCollection() throws Exception {
+    String editUrl = baseURL + "/People('russellwhyte')/Friends";
+    try (ClassicHttpResponse response = httpGET(editUrl, 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals(baseURL+"/$metadata#People", node.get("@odata.context").asText());
+
+      JsonNode person = ((ArrayNode)node.get("value")).get(0);
+      assertEquals("scottketchum", person.get("UserName").asText());
+    }
+  }
+
+  @Test
+  void testReadNavigationPropertyNoContainsTarget() throws Exception {
+    String editUrl = baseURL + "/People('scottketchum')/Photo";
+    try (ClassicHttpResponse response = httpGET(editUrl, 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals(baseURL+"/$metadata#Photos/$entity", node.get("@odata.context").asText());
+    }
+  }
+
+  @Test
+  void testReadNavigationPropertyNonExistingNavigation() throws Exception {
+    String editUrl = baseURL + "/People('russellwhyte')/Foobar";
+    try (ClassicHttpResponse response = httpGET(editUrl, 404)) {
+      EntityUtils.consume(response.getEntity());
+    }
+  }
+
+  @Test
+  void testReadNavigationPropertyEntityCollection2() throws Exception {
+    String editUrl = baseURL + "/People('russellwhyte')/Friends('scottketchum')/Trips";
+    try (ClassicHttpResponse response = httpGET(editUrl, 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals(baseURL+"/$metadata#People('russellwhyte')/Friends('scottketchum')/Trips",
+          node.get("@odata.context").asText());
+      assertTrue(node.get("value").isArray());
+      assertEquals("1001", ((ArrayNode)node.get("value")).get(0).get("TripId").asText());
+    }
+  }
+
+  @Test
+  void testReadNavigationPropertyEntity() throws Exception {
+    String editUrl = baseURL + "/People('russellwhyte')/Trips(1003)";
+    try (ClassicHttpResponse response = httpGET(editUrl, 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals(baseURL+"/$metadata#People('russellwhyte')/Trips/$entity",
+          node.get("@odata.context").asText());
+      assertEquals("f94e9116-8bdd-4dac-ab61-08438d0d9a71", node.get("ShareId").asText());
+    }
+  }
+
+  @Test
+  void testReadNavigationPropertyEntityNotExisting() throws Exception {
+    String editUrl = baseURL + "/People('russellwhyte')/Trips(9999)";
+    ClassicHttpResponse response = httpGET(editUrl, 204);
+    EntityUtils.consume(response.getEntity());
+  }
+
+  @Test
+  void testReadNavigationPropertyEntitySetNotExisting() throws Exception {
+    String editUrl = baseURL + "/People('jhondoe')/Trips";
+    try (ClassicHttpResponse response = httpGET(editUrl, 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals(baseURL+"/$metadata#People('jhondoe')/Trips",
+          node.get("@odata.context").asText());
+      assertEquals(0, ((ArrayNode)node.get("value")).size());
+    }
+  }
+
+  @Test
+  void testBadNavigationProperty() throws Exception {
+    String editUrl = baseURL + "/People('russellwhyte')/Unknown";
+    ClassicHttpResponse response = httpGET(editUrl, 404);
+    EntityUtils.consume(response.getEntity());
+  }
+
+  @Test
+  void testReadNavigationPropertyEntityProperty() throws Exception {
+    String editUrl = baseURL + "/People('russellwhyte')/Trips(1003)/PlanItems(5)/ConfirmationCode";
+    try (ClassicHttpResponse response = httpGET(editUrl, 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals(baseURL+"/$metadata#People('russellwhyte')/Trips(1003)/PlanItems(5)/ConfirmationCode",
+          node.get("@odata.context").asText());
+      assertEquals("JH58494", node.get("value").asText());
+    }
+  }
+
+  @Test
+  void testReadNavigationPropertyEntityMultipleDerivedTypes() throws Exception {
+    String editUrl = baseURL + "/People('russellwhyte')/Trips(1003)/PlanItems";
+    try (ClassicHttpResponse response = httpGET(editUrl, 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals(baseURL+"/$metadata#People('russellwhyte')/Trips(1003)/PlanItems",
+          node.get("@odata.context").asText());
+      assertEquals("#Microsoft.OData.SampleService.Models.TripPin.Flight",
+          ((ArrayNode) node.get("value")).get(0).get("@odata.type").asText());
+    }
+  }
+
+  @Test
+  void testReadNavigationPropertyEntityCoolectionDerivedFilter() throws Exception {
+    String editUrl = baseURL
+        + "/People('russellwhyte')/Trips(1003)/PlanItems/Microsoft.OData.SampleService.Models.TripPin.Event";
+    try (ClassicHttpResponse response = httpGET(editUrl, 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals(baseURL+"/$metadata#People('russellwhyte')/Trips(1003)/PlanItems/"
+          + "Microsoft.OData.SampleService.Models.TripPin.Event",
+          node.get("@odata.context").asText());
+
+      assertEquals("#Microsoft.OData.SampleService.Models.TripPin.Event",
+          ((ArrayNode) node.get("value")).get(0).get("@odata.type").asText());
+    }
+  }
+
+  @Test
+  void testReadNavigationPropertyEntityDerivedFilter() throws Exception {
+    String editUrl = baseURL+ "/People('russellwhyte')/Trips(1003)/PlanItems(56)/"
+        + "Microsoft.OData.SampleService.Models.TripPin.Event";
+    try (ClassicHttpResponse response = httpGET(editUrl, 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals(baseURL+"/$metadata#People('russellwhyte')/Trips(1003)/PlanItems/"
+          + "Microsoft.OData.SampleService.Models.TripPin.Event/$entity",
+          node.get("@odata.context").asText());
+      assertEquals("#Microsoft.OData.SampleService.Models.TripPin.Event", node.get("@odata.type").asText());
+      assertEquals("56", node.get("PlanItemId").asText());
+    }
+  }
+
+  @Test
+  void testUpdateReference() throws Exception {
+    try (ClassicHttpResponse response = httpGET(baseURL+"/People('ronaldmundy')/Photo/$ref", 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals("/Photos(12)", node.get("@odata.id").asText());
+    }
+
+    String msg = "{\n" +
+        "\"@odata.id\": \"/Photos(11)\"\n" +
+        "}";
+    String editUrl = baseURL + "/People('ronaldmundy')/Photo/$ref";
+    HttpPut putRequest = new HttpPut(editUrl);
+    putRequest.setEntity(new StringEntity(msg, ContentType.APPLICATION_JSON));
+    putRequest.setHeader("Content-Type", "application/json;odata.metadata=minimal");
+    try (ClassicHttpResponse response = httpSend(putRequest, 204)) {
+      EntityUtils.consume(response.getEntity());
+    }
+
+    try (ClassicHttpResponse response = httpGET(baseURL+"/People('ronaldmundy')/Photo/$ref", 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals("/Photos(11)", node.get("@odata.id").asText());
+    }
+  }
+
+  @Test
+  void testAddDelete2ReferenceCollection() throws Exception {
+    // add
+    String msg = "{\n" +
+        "\"@odata.id\": \"/People('russellwhyte')\"\n" +
+        "}";
+    String editUrl = baseURL + "/People('vincentcalabrese')/Friends/$ref";
+    HttpPost postRequest = new HttpPost(editUrl);
+    postRequest.setEntity(new StringEntity(msg, ContentType.APPLICATION_JSON));
+    postRequest.addHeader("Content-Type", "application/json;odata.metadata=minimal");
+    try (ClassicHttpResponse response = httpSend(postRequest, 204)) {
+      EntityUtils.consume(response.getEntity());
+    }
+
+    // get
+    try (ClassicHttpResponse response = httpGET(editUrl, 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals("/People('russellwhyte')",
+          ((ArrayNode) node.get("value")).get(2).get("@odata.id").asText());
+    }
+
+    //delete
+    HttpDelete deleteRequest = new HttpDelete(editUrl+"?$id="+baseURL+"/People('russellwhyte')");
+    deleteRequest.addHeader("Content-Type", "application/json;odata.metadata=minimal");
+    try (ClassicHttpResponse response = httpSend(deleteRequest, 204)) {
+      EntityUtils.consume(response.getEntity());
+    }
+
+    // get
+    try (ClassicHttpResponse response = httpGET(editUrl, 200)) {
+      JsonNode node = getJSONNode(response);
+      assertNull(((ArrayNode) node.get("value")).get(2), "/People('russellwhyte')");
+    }
+  }
+
+  @Test
+  void testAddEntityToNavigationFailsNotEntitySet() throws Exception {
+    // adding to an entity that is not part of an entity set
+    // goes against a few assumptions in downstream code, so
+    // not handling for now
+    String msg = "{\n" +
+        "\"TripId\": 1010,\n" +
+        "\"Description\": \"The trip of a lifetime.\",\n" +
+        "\"Name\": \"Grand Prize\",\n" +
+        "\"Budget\": 100000\n" +
+        "}";
+    String editUrl = baseURL + "/People('vincentcalabrese')/Trips";
+    HttpPost postRequest = new HttpPost(editUrl);
+    postRequest.setEntity(new StringEntity(msg, ContentType.APPLICATION_JSON));
+    postRequest.addHeader("Content-Type", "application/json;odata.metadata=minimal");
+    ClassicHttpResponse response = httpSend(postRequest, 405);
+    EntityUtils.consume(response.getEntity());
+  }
+
+  @Test
+  void testAddEntityToNavigation() throws Exception {
+    String msg = "{\n" +
+        "\"Id\": 1010,\n" +
+        "\"Name\": \"Grand Prize\"\n" +
+        "}";
+    String editUrl = baseURL + "/People('vincentcalabrese')/Photo";
+    HttpPost postRequest = new HttpPost(editUrl);
+    postRequest.setEntity(new StringEntity(msg, ContentType.APPLICATION_JSON));
+    postRequest.addHeader("Content-Type", "application/json;odata.metadata=minimal");
+    try (ClassicHttpResponse response = httpSend(postRequest, 201)) {
+      EntityUtils.consume(response.getEntity());
+    }
+
+    try (ClassicHttpResponse response = httpGET(baseURL+"/People('vincentcalabrese')/Photo", 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals(baseURL+"/$metadata#Photos/$entity", node.get("@odata.context").asText());
+      assertEquals("Grand Prize", node.get("Name").asText());
+    }
+  }
+
+  @Test
+  void testAddEntityToNavigationSelf() throws Exception {
+    String payload = "{\n" +
+        "         \"UserName\":\"olingo\",\n" +
+        "         \"FirstName\":\"Olingo\",\n" +
+        "         \"LastName\":\"Apache\",\n" +
+        "         \"Emails\":[\n" +
+        "            \"olingo@apache.org\"\n" +
+        "         ],\n" +
+        "         \"AddressInfo\":[\n" +
+        "            {\n" +
+        "               \"Address\":\"100 apache Ln.\",\n" +
+        "               \"City\":{\n" +
+        "                  \"CountryRegion\":\"United States\",\n" +
+        "                  \"Name\":\"Boise\",\n" +
+        "                  \"Region\":\"ID\"\n" +
+        "               }\n" +
+        "            }\n" +
+        "         ],\n" +
+        "         \"Gender\":\"0\",\n" +
+        "         \"Concurrency\":635585295719432047\n" +
+        "}";
+    String editUrl = baseURL + "/People('vincentcalabrese')/Friends";
+    HttpPost postRequest = new HttpPost(editUrl);
+    postRequest.setEntity(new StringEntity(payload, ContentType.APPLICATION_JSON));
+    postRequest.addHeader("Content-Type", "application/json;odata.metadata=minimal");
+    try (ClassicHttpResponse response = httpSend(postRequest, 201)) {
+      EntityUtils.consume(response.getEntity());
+    }
+
+    try (ClassicHttpResponse response = httpGET(baseURL+"/People('vincentcalabrese')/Friends", 200)) {
+      JsonNode node = getJSONNode(response);
+      assertEquals(baseURL+"/$metadata#People", node.get("@odata.context").asText());
+      assertTrue(node.get("value").isArray());
+      assertEquals("olingo", ((ArrayNode)node.get("value")).get(2).get("UserName").asText());
+    }
+  }
+
+  @Test
+  void testDeleteReference() throws Exception {
+    String editUrl = baseURL + "/People('russellwhyte')/Photo/$ref";
+    ClassicHttpResponse response = httpGET(editUrl, 200);
+    EntityUtils.consume(response.getEntity());
+
+    HttpDelete deleteRequest = new HttpDelete(editUrl);
+    response = httpSend(deleteRequest, 204);
+    EntityUtils.consume(response.getEntity());
+
+    response = httpGET(editUrl, 204);
+    EntityUtils.consume(response.getEntity());
+  }
+
+  @Test
+  void crossJoin() throws Exception {
+    String editUrl = baseURL + "/$crossjoin(People,Airlines)?$filter="
+        + "People/UserName%20eq%20Airlines/AirlineCode";
+    ClassicHttpResponse response = httpGET(editUrl, 501);
+    EntityUtils.consume(response.getEntity());
+  }
+
+  @Test
+  void dataIsolation() throws Exception {
+    String url = baseURL + "/People";
+    ClassicHttpRequest request = new HttpGet(url);
+    request.setHeader(HttpHeader.ODATA_ISOLATION, "snapshot");
+    ClassicHttpResponse response = httpSend(request, 412);
+    EntityUtils.consume(response.getEntity());
+  }
+
+  @Test
+  void batchAccept() throws Exception {
+  	final String batchtUrl = baseURL + "/$batch";
+
+  	final String content = ""
+        + "--batch_12345" + CRLF
+        + "Content-Type: application/http" + CRLF
+        + "Content-Transfer-Encoding: binary" + CRLF
+        + CRLF
+        + "GET Airlines('FM') HTTP/1.1" + CRLF
+        + CRLF
+        + CRLF
+        + "--batch_12345--";
+
+    HttpPost request = new HttpPost(batchtUrl);
+    StringEntity stringEntity = new StringEntity(content,
+        ContentType.parse("multipart/mixed;boundary=batch_12345"));
+    request.setEntity(stringEntity);
+    // multipart/mixed should work as an Accept value
+    request.setHeader("Accept", "multipart/mixed");
+    ClassicHttpResponse response = httpSend(request, 202);
+    EntityUtils.consume(response.getEntity());
+  }
+
+}

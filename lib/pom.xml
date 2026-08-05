@@ -18,6 +18,8 @@
     specific language governing permissions and limitations
     under the License.
 
+    Copyright 2026 SiteNetSoft - Replaced Cobertura with JaCoCo for code coverage
+
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -28,7 +30,7 @@
   <name>${project.artifactId}</name>
 
   <parent>
-    <groupId>org.apache.olingo</groupId>
+    <groupId>org.sitenetsoft.olinguito</groupId>
     <artifactId>odata-parent</artifactId>
     <version>5.0.1-SNAPSHOT</version>
     <relativePath>..</relativePath>
@@ -39,15 +41,25 @@
     <module>commons-core</module>
     <module>client-api</module>
     <module>client-core</module>
+    <module>client-adapter-apache</module>
+    <module>client-adapter-okhttp</module>
+    <module>client-adapter-quarkus</module>
+    <module>odata-vocabularies</module>
     <module>server-api</module>
     <module>server-core</module>
     <module>server-core-ext</module>
+    <module>test-fixtures</module>
+    <module>server-adapter-servlet</module>
+    <module>server-adapter-netty</module>
+    <module>server-adapter-quarkus</module>
     <module>server-tecsvc</module>
+    <module>server-tecsvc-servlet</module>
+    <module>server-tecsvc-quarkus</module>
     <module>server-test</module>
   </modules>
 
   <properties>
-    <cobertura.skip>true</cobertura.skip>
+    <jacoco.skip>true</jacoco.skip>
     <!-- exclude proxy tests by default -->
     <exclude.regex>.*proxy.*</exclude.regex>
   </properties>
@@ -77,7 +89,8 @@
     <profile>
       <id>build.quality</id>
       <properties>
-        <cobertura.skip>false</cobertura.skip>
+        <jacoco.skip>false</jacoco.skip>
+        <dependency.check.skip>false</dependency.check.skip>
         <!-- nothing excluded -->
         <exclude.regex></exclude.regex>
       </properties>

@@ -1,0 +1,251 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ */
+package org.sitenetsoft.olinguito.server.core.deserializer.json;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import java.io.IOException;
+import java.util.List;
+
+import org.sitenetsoft.olinguito.commons.api.Constants;
+import org.sitenetsoft.olinguito.commons.api.data.Annotation;
+import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.data.Link;
+import org.sitenetsoft.olinguito.commons.api.data.ValueType;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerResult;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandItem;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandOption;
+import org.sitenetsoft.olinguito.server.core.deserializer.AbstractODataDeserializerTest;
+import org.junit.jupiter.api.Test;
+
+class ODataDeserializerDeepInsertTest extends AbstractODataDeserializerTest {
+
+  @Test
+  void unbalancedESAllPrim() throws Exception {
+    final DeserializerResult result = deserializeWithResult("UnbalancedESAllPrimFeed.json");
+    ExpandOption root = result.getExpandTree();
+    assertEquals(1, root.getExpandItems().size());
+
+    ExpandItem etTwoPrimManyLevel = root.getExpandItems().get(0);
+    assertEquals("NavPropertyETTwoPrimMany", etTwoPrimManyLevel.getResourcePath().getUriResourceParts().get(0)
+        .getSegmentValue());
+    assertEquals(1, etTwoPrimManyLevel.getExpandOption().getExpandItems().size());
+
+    ExpandItem etAllPrimOneLevel = etTwoPrimManyLevel.getExpandOption().getExpandItems().get(0);
+    assertEquals("NavPropertyETAllPrimOne", etAllPrimOneLevel.getResourcePath().getUriResourceParts().get(0)
+        .getSegmentValue());
+    assertEquals(1, etAllPrimOneLevel.getExpandOption().getExpandItems().size());
+
+    ExpandItem etTwoPrimOneLevel = etAllPrimOneLevel.getExpandOption().getExpandItems().get(0);
+    assertEquals("NavPropertyETTwoPrimOne", etTwoPrimOneLevel.getResourcePath().getUriResourceParts().get(0)
+        .getSegmentValue());
+    assertNull(etTwoPrimOneLevel.getExpandOption());
+  }
+
+  @Test
+  void unbalancedESAllPrim2() throws Exception {
+    final DeserializerResult result = deserializeWithResult("UnbalancedESAllPrimFeed2.json");
+    ExpandOption root = result.getExpandTree();
+    assertEquals(1, root.getExpandItems().size());
+
+    ExpandItem etTwoPrimManyLevel = root.getExpandItems().get(0);
+    assertEquals("NavPropertyETTwoPrimMany", etTwoPrimManyLevel.getResourcePath().getUriResourceParts().get(0)
+        .getSegmentValue());
+    assertEquals(1, etTwoPrimManyLevel.getExpandOption().getExpandItems().size());
+
+    ExpandItem etAllPrimOneLevel = etTwoPrimManyLevel.getExpandOption().getExpandItems().get(0);
+    assertEquals("NavPropertyETAllPrimOne", etAllPrimOneLevel.getResourcePath().getUriResourceParts().get(0)
+        .getSegmentValue());
+    assertEquals(2, etAllPrimOneLevel.getExpandOption().getExpandItems().size());
+
+    ExpandItem etTwoPrimOneLevel = etAllPrimOneLevel.getExpandOption().getExpandItems().get(0);
+    assertEquals("NavPropertyETTwoPrimMany", etTwoPrimOneLevel.getResourcePath().getUriResourceParts().get(0)
+        .getSegmentValue());
+    assertNull(etTwoPrimOneLevel.getExpandOption());
+
+    etTwoPrimOneLevel = etAllPrimOneLevel.getExpandOption().getExpandItems().get(1);
+    assertEquals("NavPropertyETTwoPrimOne", etTwoPrimOneLevel.getResourcePath().getUriResourceParts().get(0)
+        .getSegmentValue());
+    assertNull(etTwoPrimOneLevel.getExpandOption());
+  }
+
+  @Test
+  void esAllPrimExpandedToOne() throws Exception {
+    final Entity entity = deserialize("EntityESAllPrimExpandedNavPropertyETTwoPrimOne.json");
+
+    Link navigationLink = entity.getNavigationLink("NavPropertyETTwoPrimOne");
+    assertNotNull(navigationLink);
+
+    assertEquals("NavPropertyETTwoPrimOne", navigationLink.getTitle());
+    assertEquals(Constants.ENTITY_NAVIGATION_LINK_TYPE, navigationLink.getType());
+    assertNotNull(navigationLink.getInlineEntity());
+    assertNull(navigationLink.getInlineEntitySet());
+  }
+
+  @Test
+  void esAllPrimExpandedToOneWithODataAnnotations() throws Exception {
+    deserialize("EntityESAllPrimExpandedNavPropertyETTwoPrimOneWithODataAnnotations.json");
+  }
+
+  @Test
+  void esAllPrimExpandedToMany() throws Exception {
+    final Entity entity = deserialize("EntityESAllPrimExpandedNavPropertyETTwoPrimMany.json");
+
+    Link navigationLink = entity.getNavigationLink("NavPropertyETTwoPrimMany");
+    assertNotNull(navigationLink);
+
+    assertEquals("NavPropertyETTwoPrimMany", navigationLink.getTitle());
+    assertEquals(Constants.ENTITY_SET_NAVIGATION_LINK_TYPE, navigationLink.getType());
+    assertNull(navigationLink.getInlineEntity());
+    assertNotNull(navigationLink.getInlineEntitySet());
+    assertEquals(1, navigationLink.getInlineEntitySet().getEntities().size());
+  }
+
+  @Test
+  void esAllPrimExpandedToManyWithODataAnnotations() throws Exception {
+    deserialize("EntityESAllPrimExpandedNavPropertyETTwoPrimManyWithODataAnnotations.json");
+  }
+
+  @Test
+  void esAllPrimExpandedToOneWithCustomAnnotations() throws Exception {
+      Entity entity = deserialize("EntityESAllPrimExpandedNavPropertyETTwoPrimOneWithCustomAnnotations.json");
+      assertNotNull(entity);
+	  List<Annotation> annotations = entity.getNavigationLink("NavPropertyETTwoPrimOne").getAnnotations();
+	  assertEquals(1, annotations.size());
+	  assertEquals("custom.annotation", annotations.get(0).getTerm());
+	  assertEquals("customValue", annotations.get(0).getValue());
+	  assertEquals(ValueType.PRIMITIVE, annotations.get(0).getValueType());
+  }
+
+  @Test
+  void esAllPrimExpandedToManyWithCustomAnnotations() throws Exception {
+	  Entity entity = deserialize("EntityESAllPrimExpandedNavPropertyETTwoPrimManyWithCustomAnnotations.json");
+	  assertNotNull(entity);
+	  List<Annotation> annotations = entity.getNavigationLink("NavPropertyETTwoPrimMany").getAnnotations();
+	  assertEquals(1, annotations.size());
+	  assertEquals("custom.annotation", annotations.get(0).getTerm());
+	  assertEquals("customValue", annotations.get(0).getValue());
+	  assertEquals(ValueType.PRIMITIVE, annotations.get(0).getValueType());
+  }
+
+  @Test
+  void expandedToOneInvalidNullValue() throws Exception {
+    ODataJsonDeserializerEntityTest.expectException(
+        "{\"PropertyInt16\":32767,"
+            + "\"NavPropertyETTwoPrimOne\":null"
+            + "}",
+        "ETAllPrim",
+        DeserializerException.MessageKeys.INVALID_NULL_PROPERTY);
+  }
+
+  @Test
+  void expandedToOneValidNullValue() throws Exception {
+    final Entity entity = ODataJsonDeserializerEntityTest.deserialize(
+        "{\"PropertyInt16\":32767,"
+            + "\"NavPropertyETAllPrimOne\":null"
+            + "}",
+        "ETTwoPrim");
+
+    assertEquals(1, entity.getNavigationLinks().size());
+    final Link link = entity.getNavigationLinks().get(0);
+
+    assertEquals("NavPropertyETAllPrimOne", link.getTitle());
+    assertNull(link.getInlineEntity());
+    assertNull(link.getInlineEntitySet());
+  }
+
+  @Test
+  void expandedToOneInvalidStringValue() throws Exception {
+    ODataJsonDeserializerEntityTest.expectException(
+        "{\"PropertyInt16\":32767,"
+            + "\"NavPropertyETTwoPrimOne\":\"First Resource - positive values\""
+            + "}",
+        "ETAllPrim",
+        DeserializerException.MessageKeys.INVALID_VALUE_FOR_NAVIGATION_PROPERTY);
+  }
+
+  @Test
+  void expandedToManyInvalidNullValue() throws Exception {
+    ODataJsonDeserializerEntityTest.expectException(
+        "{\"PropertyInt16\":32767,"
+            + "\"NavPropertyETTwoPrimMany\":null"
+            + "}",
+        "ETAllPrim",
+        DeserializerException.MessageKeys.INVALID_NULL_PROPERTY);
+  }
+
+  @Test
+  void expandedToManyInvalidStringValue() throws Exception {
+    ODataJsonDeserializerEntityTest.expectException(
+        "{\"PropertyInt16\":32767,"
+            + "\"NavPropertyETTwoPrimMany\":\"First Resource - positive values\""
+            + "}",
+        "ETAllPrim",
+        DeserializerException.MessageKeys.INVALID_VALUE_FOR_NAVIGATION_PROPERTY);
+  }
+
+  @Test
+  void complexPropertyWithExpandedAndBoundNavigation() throws Exception {
+    // OLINGO-1181: navigation links (expanded nested entities) and navigation binding links
+    // (@odata.bind) nested inside a complex-type property must be populated on the ComplexValue
+    // during deep-insert deserialization. CTNavFiveProp declares navigation properties.
+    final Entity entity = ODataJsonDeserializerEntityTest.deserialize(
+        "{\"PropertyInt16\":1,"
+            + "\"PropertyString\":\"first\","
+            + "\"PropertyCompNav\":{"
+            + "\"PropertyInt16\":42,"
+            + "\"NavPropertyETTwoKeyNavOne\":{\"PropertyInt16\":1,\"PropertyString\":\"1\"},"
+            + "\"NavPropertyETTwoKeyNavMany@odata.bind\":[\"ESTwoKeyNav(PropertyInt16=2,PropertyString='2')\"]"
+            + "}}",
+        "ETKeyNav");
+
+    final ComplexValue complexValue = entity.getProperty("PropertyCompNav").asComplex();
+    assertNotNull(complexValue);
+
+    // Expanded navigation property (nested entity) -> navigation link
+    assertEquals(1, complexValue.getNavigationLinks().size());
+    final Link navigationLink = complexValue.getNavigationLinks().get(0);
+    assertEquals("NavPropertyETTwoKeyNavOne", navigationLink.getTitle());
+    assertNotNull(navigationLink.getInlineEntity());
+
+    // Navigation binding link (@odata.bind) -> navigation binding
+    assertEquals(1, complexValue.getNavigationBindings().size());
+    final Link bindingLink = complexValue.getNavigationBindings().get(0);
+    assertEquals("NavPropertyETTwoKeyNavMany", bindingLink.getTitle());
+    assertEquals(List.of("ESTwoKeyNav(PropertyInt16=2,PropertyString='2')"), bindingLink.getBindingLinks());
+  }
+
+  private Entity deserialize(final String resourceName) throws IOException, DeserializerException {
+    return ODataJsonDeserializerEntityTest.deserialize(getFileAsStream(resourceName),
+        "ETAllPrim", ContentType.JSON);
+  }
+
+  private DeserializerResult deserializeWithResult(final String resourceName) throws IOException,
+      DeserializerException {
+    return ODataJsonDeserializerEntityTest.deserializeWithResult(getFileAsStream(resourceName),
+        "ETAllPrim", ContentType.JSON);
+  }
+}

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
+<edmx:Edmx xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx" Version="4.0">
+  <edmx:DataServices>
+    <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="Annotations">
+      <Annotations Target="Test">
+        <Annotation Term="ns.CastAnno">
+          <Cast Type="Edm.Decimal">
+            <Annotation Term="ns.InnerCast">
+              <String>cast-inner</String>
+            </Annotation>
+            <Path>Average</Path>
+          </Cast>
+        </Annotation>
+        <Annotation Term="ns.IsOfAnno">
+          <IsOf Type="Self.PreferredCustomer">
+            <Annotation Term="ns.InnerIsOf">
+              <String>isof-inner</String>
+            </Annotation>
+            <Path>Customer</Path>
+          </IsOf>
+        </Annotation>
+        <Annotation Term="ns.NullAnno">
+          <Null>
+            <Annotation Term="ns.InnerNull">
+              <String>null-inner</String>
+            </Annotation>
+          </Null>
+        </Annotation>
+        <Annotation Term="ns.LabeledElementAnno">
+          <LabeledElement Name="genreName">
+            <Annotation Term="ns.InnerLabeled">
+              <String>labeled-inner</String>
+            </Annotation>
+            <Path>NameOfMovieGenre</Path>
+          </LabeledElement>
+        </Annotation>
+        <Annotation Term="ns.ApplyAnno">
+          <Apply Function="odata.concat">
+            <Annotation Term="ns.InnerApply">
+              <String>apply-inner</String>
+            </Annotation>
+            <String>x</String>
+          </Apply>
+        </Annotation>
+        <Annotation Term="ns.UrlRefAnno">
+          <UrlRef>
+            <Annotation Term="ns.InnerUrlRef">
+              <String>urlref-inner</String>
+            </Annotation>
+            <String>http://host/wiki/HowToUse</String>
+          </UrlRef>
+        </Annotation>
+        <Annotation Term="ns.AndAnno">
+          <And>
+            <Annotation Term="ns.InnerAnd">
+              <String>and-inner</String>
+            </Annotation>
+            <Path>IsMale</Path>
+            <Path>IsMarried</Path>
+          </And>
+        </Annotation>
+        <Annotation Term="ns.OrAnno">
+          <Or>
+            <Path>IsMale</Path>
+            <Path>IsMarried</Path>
+            <Annotation Term="ns.InnerOr">
+              <String>or-inner</String>
+            </Annotation>
+          </Or>
+        </Annotation>
+        <Annotation Term="ns.NotAnno">
+          <Not>
+            <Annotation Term="ns.InnerNot">
+              <String>not-inner</String>
+            </Annotation>
+            <Path>IsMale</Path>
+          </Not>
+        </Annotation>
+        <Annotation Term="ns.EqAnno">
+          <Eq>
+            <Annotation Term="ns.InnerEq">
+              <String>eq-inner</String>
+            </Annotation>
+            <Path>IsFemale</Path>
+            <Path>IsMale</Path>
+          </Eq>
+        </Annotation>
+      </Annotations>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>

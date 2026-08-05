@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed contains(null) NPE with List.of() collections
  */
 package myservice.mynamespace.service;
 
@@ -22,37 +24,38 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
-import org.apache.olingo.commons.api.data.ContextURL;
-import org.apache.olingo.commons.api.data.ContextURL.Builder;
-import org.apache.olingo.commons.api.data.ContextURL.Suffix;
-import org.apache.olingo.commons.api.data.EntityCollection;
-import org.apache.olingo.commons.api.data.Parameter;
-import org.apache.olingo.commons.api.edm.EdmAction;
-import org.apache.olingo.commons.api.edm.EdmEntitySet;
-import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.commons.api.http.HttpHeader;
-import org.apache.olingo.commons.api.http.HttpStatusCode;
-import org.apache.olingo.server.api.OData;
-import org.apache.olingo.server.api.ODataApplicationException;
-import org.apache.olingo.server.api.ODataLibraryException;
-import org.apache.olingo.server.api.ODataRequest;
-import org.apache.olingo.server.api.ODataResponse;
-import org.apache.olingo.server.api.ServiceMetadata;
-import org.apache.olingo.server.api.deserializer.ODataDeserializer;
-import org.apache.olingo.server.api.prefer.Preferences.Return;
-import org.apache.olingo.server.api.prefer.PreferencesApplied;
-import org.apache.olingo.server.api.processor.ActionEntityCollectionProcessor;
-import org.apache.olingo.server.api.processor.ActionEntityProcessor;
-import org.apache.olingo.server.api.processor.ActionVoidProcessor;
-import org.apache.olingo.server.api.serializer.EntityCollectionSerializerOptions;
-import org.apache.olingo.server.api.serializer.EntitySerializerOptions;
-import org.apache.olingo.server.api.uri.UriInfo;
-import org.apache.olingo.server.api.uri.UriResource;
-import org.apache.olingo.server.api.uri.UriResourceAction;
-import org.apache.olingo.server.api.uri.UriResourceEntitySet;
-import org.apache.olingo.server.api.uri.UriResourceNavigation;
+import org.sitenetsoft.olinguito.commons.api.data.ContextURL;
+import org.sitenetsoft.olinguito.commons.api.data.ContextURL.Builder;
+import org.sitenetsoft.olinguito.commons.api.data.ContextURL.Suffix;
+import org.sitenetsoft.olinguito.commons.api.data.EntityCollection;
+import org.sitenetsoft.olinguito.commons.api.data.Parameter;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmAction;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
+import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
+import org.sitenetsoft.olinguito.server.api.ODataRequest;
+import org.sitenetsoft.olinguito.server.api.ODataResponse;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.api.deserializer.ODataDeserializer;
+import org.sitenetsoft.olinguito.server.api.prefer.Preferences.Return;
+import org.sitenetsoft.olinguito.server.api.prefer.PreferencesApplied;
+import org.sitenetsoft.olinguito.server.api.processor.ActionEntityCollectionProcessor;
+import org.sitenetsoft.olinguito.server.api.processor.ActionEntityProcessor;
+import org.sitenetsoft.olinguito.server.api.processor.ActionVoidProcessor;
+import org.sitenetsoft.olinguito.server.api.serializer.EntityCollectionSerializerOptions;
+import org.sitenetsoft.olinguito.server.api.serializer.EntitySerializerOptions;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfo;
+import org.sitenetsoft.olinguito.server.api.uri.UriResource;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceAction;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceEntitySet;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceNavigation;
 
 import myservice.mynamespace.data.DemoEntityActionResult;
 import myservice.mynamespace.data.Storage;
@@ -215,7 +218,7 @@ public class DemoActionProcessor implements ActionVoidProcessor, ActionEntityCol
     // Collections must never be null.
     // Not nullable return types must not contain a null value.
     if (collection == null
-        || collection.getEntities().contains(null) && !action.getReturnType().isNullable()) {
+        || collection.getEntities().stream().anyMatch(Objects::isNull) && !action.getReturnType().isNullable()) {
       throw new ODataApplicationException("The action could not be executed.",
           HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode(), Locale.ROOT);
     }

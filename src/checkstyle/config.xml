@@ -29,6 +29,7 @@
 <module name="Checker">
   <property name="severity" value="warning"/>
   <module name="TreeWalker">
+    <module name="SuppressionCommentFilter"/>
     <module name="IllegalImport">
       <property name="severity" value="info"/>
       <property name="illegalPkgs" value="java.awt, javax.swing"/>
@@ -65,9 +66,10 @@
     <module name="RightCurly">
       <property name="severity" value="warning"/>
     </module>
-    <module name="LineLength">
-      <property name="max" value="120"/>
-    </module>
-	<module name="SuppressionCommentFilter"/>
+  </module>
+  <module name="SuppressWithPlainTextCommentFilter"/>
+  <!-- LineLength moved out of TreeWalker for Checkstyle 10.x compatibility -->
+  <module name="LineLength">
+    <property name="max" value="120"/>
   </module>
 </module>

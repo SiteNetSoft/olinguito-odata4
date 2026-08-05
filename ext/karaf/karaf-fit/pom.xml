@@ -28,7 +28,7 @@
   <name>${project.artifactId}</name>
 
   <parent>
-    <groupId>org.apache.olingo</groupId>
+    <groupId>org.sitenetsoft.olinguito</groupId>
     <artifactId>odata-karaf</artifactId>
     <version>5.0.1-SNAPSHOT</version>
     <relativePath>..</relativePath>
@@ -36,7 +36,7 @@
   <dependencies>
     <!-- Karaf features -->
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-karaf-features</artifactId>
       <version>${project.version}</version>
       <type>xml</type>
@@ -72,7 +72,7 @@
     </dependency>
     <!-- to force the olingo sample to be available before testing -->
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-server-osgi-sample</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
@@ -80,6 +80,12 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!-- JUnit vintage engine to run JUnit 4 tests with JUnit 5 platform -->
+    <dependency>
+      <groupId>org.junit.vintage</groupId>
+      <artifactId>junit-vintage-engine</artifactId>
       <scope>test</scope>
     </dependency>
 

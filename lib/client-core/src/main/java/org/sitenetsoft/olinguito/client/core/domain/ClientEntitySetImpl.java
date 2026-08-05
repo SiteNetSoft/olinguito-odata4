@@ -1,0 +1,150 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Replaced manual hashCode with Objects.hash()
+ */
+package org.sitenetsoft.olinguito.client.core.domain;
+
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import org.sitenetsoft.olinguito.client.api.domain.AbstractClientPayload;
+import org.sitenetsoft.olinguito.client.api.domain.ClientAnnotation;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntitySet;
+import org.sitenetsoft.olinguito.client.api.domain.ClientOperation;
+
+public class ClientEntitySetImpl extends AbstractClientPayload implements ClientEntitySet {
+
+  /**
+   * Link to the next page.
+   */
+  private final URI next;
+
+  /**
+   * Number of ODataEntities contained in this entity set.
+   * <br/>
+   * If <tt>$count</tt> was requested, this value comes from there.
+   */
+  private Integer count;
+
+  private URI deltaLink;
+
+  private final List<ClientEntity> entities = new ArrayList<>();
+
+  private final List<ClientAnnotation> annotations = new ArrayList<>();
+  
+  private final List<ClientOperation> operations = new ArrayList<>();
+
+  public ClientEntitySetImpl() {
+    super(null);
+    next = null;
+  }
+
+  public ClientEntitySetImpl(final URI next) {
+    super(null);
+    this.next = next;
+  }
+
+  @Override
+  public URI getNext() {
+    return next;
+  }
+
+  @Override
+  public Integer getCount() {
+    return count;
+  }
+
+  @Override
+  public void setCount(final int count) {
+    this.count = count;
+  }
+
+  @Override
+  public List<ClientEntity> getEntities() {
+    return entities;
+  }
+
+  @Override
+  public URI getDeltaLink() {
+    return deltaLink;
+  }
+
+  @Override
+  public void setDeltaLink(final URI deltaLink) {
+    this.deltaLink = deltaLink;
+  }
+
+  @Override
+  public List<ClientAnnotation> getAnnotations() {
+    return annotations;
+  }
+
+  @Override
+  public ClientOperation getOperation(final String title) {
+    ClientOperation result = null;
+    for (ClientOperation operation : operations) {
+      if (title.equals(operation.getTitle())) {
+        result = operation;
+        break;
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Gets operations.
+   *
+   * @return operations.
+   */
+  @Override
+  public List<ClientOperation> getOperations() {
+    return operations;
+  }
+  
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), count, next, annotations, deltaLink, entities);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (!(obj instanceof ClientEntitySetImpl other)) {
+      return false;
+    }
+      return (Objects.equals(count, other.count))
+        && (Objects.equals(next, other.next))
+        && annotations.equals(other.annotations)
+        && (Objects.equals(deltaLink, other.deltaLink))
+        && entities.equals(other.entities);
+  }
+
+  @Override
+  public String toString() {
+    return "ClientEntitySetImpl [deltaLink=" + deltaLink + ", entities=" + entities + ", annotations=" + annotations
+        + ", next=" + next + ", count=" + count + "super[" + super.toString() + "]]";
+  }
+}

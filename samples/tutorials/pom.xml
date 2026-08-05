@@ -28,7 +28,7 @@
   <name>${project.artifactId}</name>
 
   <parent>
-    <groupId>org.apache.olingo</groupId>
+    <groupId>org.sitenetsoft.olinguito</groupId>
     <artifactId>odata-samples</artifactId>
     <version>5.0.1-SNAPSHOT</version>
     <relativePath>..</relativePath>

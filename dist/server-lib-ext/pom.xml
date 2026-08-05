@@ -29,7 +29,7 @@
   <name>Olingo-OData-Server-Extension-for-Java</name>
 
   <parent>
-    <groupId>org.apache.olingo</groupId>
+    <groupId>org.sitenetsoft.olinguito</groupId>
     <artifactId>odata-dist</artifactId>
     <version>5.0.1-SNAPSHOT</version>
     <relativePath>..</relativePath>
@@ -51,7 +51,7 @@
 
   <profiles>
     <profile>
-      <id>apache-release</id>
+      <id>release-docs</id>
       <activation>
         <activeByDefault>false</activeByDefault>
       </activation>
@@ -86,33 +86,33 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-commons-api</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-commons-core</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-server-api</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-server-core</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
 	
 	<dependency>
-      <groupId>org.apache.olingo</groupId>
+      <groupId>org.sitenetsoft.olinguito</groupId>
       <artifactId>odata-server-core-ext</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>

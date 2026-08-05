@@ -1,0 +1,174 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ */
+package org.sitenetsoft.olinguito.server.core.edm.provider;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.sitenetsoft.olinguito.commons.api.edm.EdmComplexType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmElement;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmException;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlComplexType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEdmProvider;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlNavigationProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlProperty;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmComplexTypeImpl;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+class EdmComplexTypeImplTest {
+
+  private EdmComplexType baseType;
+
+  private EdmComplexType type;
+
+  @BeforeEach
+  void setupTypes() throws Exception {
+    CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
+    EdmProviderImpl edm = new EdmProviderImpl(provider);
+
+    FullQualifiedName baseName = new FullQualifiedName("namespace", "BaseTypeName");
+    CsdlComplexType baseComplexType = new CsdlComplexType();
+    List<CsdlProperty> baseProperties = new ArrayList<>();
+    baseProperties.add(new CsdlProperty().setName("prop1").setType(
+        EdmPrimitiveTypeKind.String.getFullQualifiedName()));
+    List<CsdlNavigationProperty> baseNavigationProperties = new ArrayList<>();
+    baseNavigationProperties.add(new CsdlNavigationProperty().setName("nav1"));
+    baseComplexType.setName("BaseTypeName").setAbstract(false).setOpenType(false).setProperties(baseProperties)
+        .setNavigationProperties(baseNavigationProperties);
+    when(provider.getComplexType(baseName)).thenReturn(baseComplexType);
+
+    baseType = new EdmComplexTypeImpl(edm, baseName, baseComplexType);
+
+    FullQualifiedName name = new FullQualifiedName("namespace", "typeName");
+    CsdlComplexType complexType = new CsdlComplexType().setBaseType(baseName);
+    List<CsdlProperty> properties = new ArrayList<>();
+    properties.add(new CsdlProperty().setName("prop2").setType(EdmPrimitiveTypeKind.String.getFullQualifiedName()));
+    List<CsdlNavigationProperty> navigationProperties = new ArrayList<>();
+    navigationProperties.add(new CsdlNavigationProperty().setName("nav2"));
+    complexType.setName("BaseTypeName").setAbstract(false).setOpenType(false).setProperties(properties)
+        .setNavigationProperties(navigationProperties);
+    when(provider.getComplexType(name)).thenReturn(complexType);
+
+    type = new EdmComplexTypeImpl(edm, name, complexType);
+  }
+
+  @Test
+  void noPropertiesAndNoNavPropertiesMustNotResultInException() {
+    EdmProviderImpl edm = mock(EdmProviderImpl.class);
+    CsdlComplexType complexType = new CsdlComplexType().setName("n");
+    new EdmComplexTypeImpl(edm, new FullQualifiedName("n", "n"), complexType);
+  }
+
+  @Test
+  void typeMustBeCompatibletoBasetype() {
+    assertTrue(type.compatibleTo(baseType));
+  }
+
+  @Test
+  void baseTypeMustNotBeCompatibleToType() {
+    assertFalse(baseType.compatibleTo(type));
+  }
+
+  @Test
+  void nullForCompatibleTypeMustResultInEdmException() {
+      assertThrows(EdmException.class, () -> assertFalse(type.compatibleTo(null)));
+  }
+
+  @Test
+  void getBaseType() {
+    assertNull(baseType.getBaseType());
+    assertNotNull(type.getBaseType());
+  }
+
+  @Test
+  void propertiesBehaviour() {
+    List<String> propertyNames = baseType.getPropertyNames();
+    assertEquals(1, propertyNames.size());
+    assertEquals("prop1", baseType.getProperty("prop1").getName());
+  }
+
+  @Test
+  void propertiesBehaviourWithBaseType() {
+    List<String> propertyNames = type.getPropertyNames();
+    assertEquals(2, propertyNames.size());
+    assertEquals("prop1", type.getProperty("prop1").getName());
+    assertEquals("prop2", type.getProperty("prop2").getName());
+  }
+
+  @Test
+  void navigationPropertiesBehaviour() {
+    List<String> navigationPropertyNames = baseType.getNavigationPropertyNames();
+    assertEquals(1, navigationPropertyNames.size());
+    assertEquals("nav1", baseType.getProperty("nav1").getName());
+  }
+
+  @Test
+  void navigationPropertiesBehaviourWithBaseType() {
+    List<String> navigationPropertyNames = type.getNavigationPropertyNames();
+    assertEquals(2, navigationPropertyNames.size());
+    assertEquals("nav1", type.getProperty("nav1").getName());
+    assertEquals("nav2", type.getProperty("nav2").getName());
+  }
+
+  @Test
+  void propertyCaching() {
+    EdmElement property = type.getProperty("prop1");
+    assertTrue(property == type.getProperty("prop1"));
+
+    property = type.getProperty("prop2");
+    assertTrue(property == type.getProperty("prop2"));
+
+    property = type.getProperty("nav1");
+    assertTrue(property == type.getProperty("nav1"));
+
+    property = type.getProperty("nav2");
+    assertTrue(property == type.getProperty("nav2"));
+  }
+
+  @Test
+  void nonExistingBaseType() throws Exception {
+      assertThrows(EdmException.class, () -> {
+          CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
+          EdmProviderImpl edm = new EdmProviderImpl(provider);
+          FullQualifiedName typeWithNonexistingBaseTypeName = new FullQualifiedName("namespace", "typeName");
+          CsdlComplexType complexTypeForNonexistingBaseType =
+          new CsdlComplexType().setBaseType(new FullQualifiedName("wrong", "wrong"));
+          complexTypeForNonexistingBaseType.setName("typeName");
+          when(provider.getComplexType(typeWithNonexistingBaseTypeName)).thenReturn(complexTypeForNonexistingBaseType);
+          EdmComplexTypeImpl instance =
+          new EdmComplexTypeImpl(edm, typeWithNonexistingBaseTypeName, complexTypeForNonexistingBaseType);
+          instance.getBaseType();
+      });
+  }
+}

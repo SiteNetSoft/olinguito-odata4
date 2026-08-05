@@ -1,0 +1,244 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
+ * Copyright 2026 SiteNetSoft - Replaced wildcard import with explicit imports
+ * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ */
+package org.sitenetsoft.olinguito.client.core.domain;
+
+import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.UUID;
+
+import org.sitenetsoft.olinguito.client.api.domain.ClientDeletedEntity.Reason;
+import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientInlineEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientLink;
+import org.sitenetsoft.olinguito.client.api.domain.ClientLinkType;
+import org.sitenetsoft.olinguito.client.api.domain.ClientObjectFactory;
+import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
+import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
+import org.sitenetsoft.olinguito.client.core.ODataClientImpl;
+import org.sitenetsoft.olinguito.client.core.domain.ClientPrimitiveValueImpl.BuilderImpl;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class ClientObjectImplTest {
+
+  @Test
+  void testFactory() throws URISyntaxException {
+    
+    ODataClientImpl client = (ODataClientImpl) ODataClientFactory.getClient();
+    ClientObjectFactory factory = client.getObjectFactory();
+    assertNotNull(factory);
+    URI uri = new URI("test");
+    assertNotNull(factory.newEntitySet(uri));
+    FullQualifiedName typeName = new FullQualifiedName("name.test");
+    ClientEntity entity = new ClientEntityImpl(typeName );
+    assertNotNull(factory.newDeepInsertEntity("test", entity));
+    assertNotNull(factory.newEntity(typeName));
+    assertNotNull(factory.newSingleton(typeName));
+    assertNotNull(factory.newMediaEditLink("media", 
+        uri, "image", "W/1"));
+    assertNotNull(factory.newDelta(uri));
+    assertNotNull(factory.newDelta());
+  }
+  
+  @Test
+  void testAnnotation(){
+    ClientValue val = new ClientCollectionValueImpl<ClientValue>("test");
+    ClientAnnotationImpl annotation = new ClientAnnotationImpl("term", val);
+    assertFalse(annotation.hasNullValue());
+    assertNull(annotation.getPrimitiveValue());
+    assertTrue(annotation.hasCollectionValue());
+    assertFalse(annotation.hasComplexValue());
+  }
+  
+  @Test
+  void testCollection(){
+    ClientCollectionValueImpl<ClientValue> val = new ClientCollectionValueImpl<ClientValue>("test");
+    assertNull(val.asEnum());
+    ClientCollectionValueImpl<ClientValue> val2 = new ClientCollectionValueImpl<ClientValue>("test");
+      assertEquals(val, val2);
+    assertNotNull(val.toString());
+    val.add(val2);
+    assertEquals(1, val.asJavaCollection().size());
+  }
+  
+  @Test
+  void testComplex() throws URISyntaxException{
+    ClientComplexValueImpl val = new ClientComplexValueImpl("test");
+    ClientEntity entity = new ClientEntityImpl(new FullQualifiedName("name.test"));
+    ClientLink link = new ClientInlineEntity(new URI("test"), ClientLinkType.ASSOCIATION,
+        "title", entity );
+    assertTrue(val.addLink(link ));
+    assertNull(val.asEnum());
+    assertTrue(val.removeLink(link));
+    ClientComplexValueImpl val2 = new ClientComplexValueImpl("test");
+      assertEquals(val, val2);
+    assertNotNull(val.toString());
+  }  
+  
+  @Test
+  void testDeletedEntity() throws URISyntaxException {
+    ClientDeletedEntityImpl val = new ClientDeletedEntityImpl();
+    assertNotNull(val);
+    val.setId(new URI("Id"));
+    assertNotNull(val.getId());
+    val.setReason(Reason.changed);
+    assertNotNull(val.getReason());
+    assertNotNull(val.toString());
+    ClientDeletedEntityImpl val2 = new ClientDeletedEntityImpl();
+      assertNotEquals(val, val2);
+  }
+  
+  @Test
+  void testDelta() throws URISyntaxException {
+    ClientDeltaImpl val = new ClientDeltaImpl();
+    ClientDeltaImpl val2 = new ClientDeltaImpl(new URI("Id"));
+    assertNotNull(val);
+    assertNotNull(val.getAddedLinks());
+    assertNotNull(val.getDeletedLinks());
+    assertNotNull(val.getDeletedEntities());
+    assertNotNull(val.getAnnotations());
+    assertNull(val.getContextURL());
+    assertNull(val.getDeltaLink());
+    assertNotNull(val.getEntities());
+    assertNull(val.getLink());
+    assertNull(val.getName());
+    assertNull(val.getNext());
+    assertNotNull(val.getOperations());
+    assertNotNull(val.toString());
+      assertNotEquals(val, val2);
+  }
+  
+  @Test
+  void testDeltaLink() throws URISyntaxException {
+    ClientDeltaLinkImpl val = new ClientDeltaLinkImpl();
+    ClientDeltaLinkImpl val2 = new ClientDeltaLinkImpl();
+    assertNotNull(val);
+    URI uri = new URI("test");
+    val.setSource(uri );
+    assertNotNull(val.getSource());
+    val.setRelationship("Nav");
+    assertNotNull(val.getRelationship());
+    val.setTarget(uri);
+    assertNotNull(val.getTarget());
+    assertNotNull(val.getAnnotations());
+    assertNull(val.getLink());
+    assertNull(val.getName());
+    assertNotNull(val.toString());
+      assertNotEquals(val, val2);
+  }
+  
+  @Test
+  void testClientEntity() throws URISyntaxException {
+    FullQualifiedName name = new FullQualifiedName("test.name");
+    ClientEntityImpl val = new ClientEntityImpl(name );
+    URI uri = new URI("test");
+    assertNotNull(val);
+    val.setId(new URI("Id"));
+    assertNotNull(val.getId());
+    assertNull(val.getETag());
+    ClientEntity entity = new ClientEntityImpl(name);
+    ClientLink link = new ClientInlineEntity(uri, ClientLinkType.ASSOCIATION,
+        "title", entity);
+    assertTrue(val.addLink(link ));
+    assertNull(val.getLink());
+    assertNotNull(val.getAssociationLink("title"));
+    assertTrue(val.removeLink(link ));
+    assertFalse(val.isReadOnly());
+    assertNotNull(val.toString());
+    ClientDeletedEntityImpl val2 = new ClientDeletedEntityImpl();
+      assertNotEquals(val, val2);
+  }
+  
+  @Test
+  void testClientEntitySet() throws URISyntaxException {
+    ClientEntitySetImpl val = new ClientEntitySetImpl();
+    URI uri = new URI("test");
+    ClientEntitySetImpl val2 = new ClientEntitySetImpl(uri);
+    assertNotNull(val);
+    val.setDeltaLink(uri);
+    assertNotNull(val.getOperations());
+    assertNull(val.getOperation("test"));
+    assertNotNull(val.toString());
+      assertNotEquals(val, val2);
+  }  
+  
+  @Test
+  void testClientEnumValue() {
+    ClientEnumValueImpl val = new ClientEnumValueImpl("type", "value");
+    ClientEnumValueImpl val2 = new ClientEnumValueImpl("type", "value");
+    assertNotNull(val.toString());
+      assertEquals(val, val2);
+  }
+  
+  @Test
+  void testClientPrimitiveValue() {
+    ClientPrimitiveValueImpl val = new ClientPrimitiveValueImpl();
+    ClientPrimitiveValueImpl val2 = new ClientPrimitiveValueImpl();
+    BuilderImpl builder = new BuilderImpl();
+    builder.setType(EdmPrimitiveTypeKind.Binary);
+    assertNotNull(builder.buildBoolean(true));
+    assertNotNull(builder);
+    byte[] byteArray = new byte[2];
+    assertNotNull(builder.buildBinary(byteArray));
+    Short shortValue = Short.parseShort("1");
+    assertNotNull(builder.buildInt16(shortValue));
+    assertNotNull(builder.buildInt32(Integer.parseInt("1")));
+    assertNotNull(builder.buildSingle(Float.parseFloat("1")));
+    assertNotNull(builder.buildDouble(Double.parseDouble("1")));
+    assertNotNull(builder.buildGuid(new UUID(1,1)));
+    assertNotNull(builder.buildDecimal(new BigDecimal("1")));
+    assertNotNull(builder.buildDuration(new BigDecimal("1")));
+    assertNotNull(val.toString());
+      assertEquals(val, val2);
+  }
+  
+  @Test
+  void testClientProperty() {
+    ClientValue value = new ClientCollectionValueImpl<ClientValue>("type");
+    ClientPropertyImpl val = new ClientPropertyImpl("type", value );
+    ClientPropertyImpl val2 = new ClientPropertyImpl("type", value);
+    assertNull(val.getOperation("type"));
+    assertNotNull(val.getOperations());
+    assertNotNull(val.toString());
+      assertEquals(val, val2);
+  }
+  
+  @Test
+  void testClientValuable() {
+    ClientValue value = new ClientCollectionValueImpl<ClientValue>("type");
+    ClientValuableImpl val = new ClientValuableImpl(value);
+    ClientValuableImpl val2 = new ClientValuableImpl(value);
+    assertNotNull(val.toString());
+      assertEquals(val, val2);
+  }
+}

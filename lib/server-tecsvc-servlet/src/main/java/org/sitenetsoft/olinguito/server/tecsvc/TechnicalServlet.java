@@ -1,0 +1,105 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Moved from server-tecsvc to server-tecsvc-servlet
+ * Copyright 2026 SiteNetSoft - Modernized Collections usage
+ */
+package org.sitenetsoft.olinguito.server.tecsvc;
+
+import java.io.IOException;
+import java.io.Serial;
+import java.net.URI;
+import java.util.List;
+import java.util.UUID;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
+import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReferenceInclude;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ODataRequestHandler;
+import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.TechnicalActionProcessor;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.TechnicalBatchProcessor;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.TechnicalEntityProcessor;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.TechnicalPrimitiveComplexProcessor;
+import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
+import org.sitenetsoft.olinguito.server.adapter.servlet.ODataServletHandler;
+import org.sitenetsoft.olinguito.server.adapter.servlet.ServletODataAdapter;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class TechnicalServlet extends HttpServlet {
+
+  @Serial
+  private static final long serialVersionUID = 1L;
+  private static final Logger LOG = LoggerFactory.getLogger(TechnicalServlet.class);
+  /**
+   * <p>ETag for the service document and the metadata document</p>
+   * <p>We use the same field for service-document and metadata-document ETags.
+   * It must change whenever the corresponding document changes.
+   * We don't know when someone changed the EDM in a way that changes one of these
+   * documents, but we do know that the EDM is defined completely in code and that
+   * therefore any change must be deployed, resulting in re-loading of this class,
+   * giving this field a new and hopefully unique value.</p>
+   */
+  private static final String metadataETag = "W/\"" + UUID.randomUUID() + "\"";
+
+  @Override
+  protected void service(final HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    try {
+      OData odata = OData.newInstance();
+      EdmxReference reference = new EdmxReference(URI.create("../v4.0/cs02/vocabularies/Org.OData.Core.V1.xml"));
+      reference.addInclude(new EdmxReferenceInclude("Org.OData.Core.V1", "Core"));
+      final ServiceMetadata serviceMetadata = odata.createServiceMetadata(
+          new EdmTechProvider(),
+          List.of(reference),
+          new MetadataETagSupport(metadataETag));
+
+      HttpSession session = request.getSession(true);
+      DataProvider dataProvider = (DataProvider) session.getAttribute(DataProvider.class.getName());
+      if (dataProvider == null) {
+        dataProvider = new DataProvider(odata, serviceMetadata.getEdm());
+        session.setAttribute(DataProvider.class.getName(), dataProvider);
+        LOG.info("Created new data provider.");
+      }
+
+      ODataRequestHandler core = odata.createHandler(serviceMetadata);
+      ODataServletHandler servlet = new ServletODataAdapter(core);
+      // Register processors.
+      core.register(new TechnicalEntityProcessor(dataProvider, serviceMetadata));
+      core.register(new TechnicalPrimitiveComplexProcessor(dataProvider, serviceMetadata));
+      core.register(new TechnicalActionProcessor(dataProvider, serviceMetadata));
+      core.register(new TechnicalBatchProcessor(dataProvider));
+      // Register helpers.
+      core.register(new ETagSupport());
+      // Process the request.
+      servlet.process(request, response);
+    } catch (final RuntimeException e) {
+      LOG.error("Server Error", e);
+      throw new ServletException(e);
+    }
+  }
+}

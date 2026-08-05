@@ -1,0 +1,163 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ */
+package org.sitenetsoft.olinguito.server.core.edm.provider;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.sitenetsoft.olinguito.commons.api.edm.EdmException;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmReferentialConstraint;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.constants.EdmTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEdmProvider;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlNavigationProperty;
+
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlReferentialConstraint;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmNavigationPropertyImpl;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
+import org.junit.jupiter.api.Test;
+
+class EdmNavigationPropertyImplTest {
+
+  @Test
+  void navigationProperty() throws Exception {
+    CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
+    EdmProviderImpl edm = new EdmProviderImpl(provider);
+    final FullQualifiedName entityTypeName = new FullQualifiedName("ns", "entity");
+    CsdlEntityType entityTypeProvider = new CsdlEntityType();
+    entityTypeProvider.setKey(Collections.emptyList());
+    when(provider.getEntityType(entityTypeName)).thenReturn(entityTypeProvider);
+    CsdlNavigationProperty propertyProvider = new CsdlNavigationProperty();
+    propertyProvider.setType(entityTypeName);
+    propertyProvider.setNullable(false);
+    EdmNavigationProperty property = new EdmNavigationPropertyImpl(edm, propertyProvider);
+    assertFalse(property.isCollection());
+    assertFalse(property.isNullable());
+    EdmType type = property.getType();
+    assertEquals(EdmTypeKind.ENTITY, type.getKind());
+    assertEquals("ns", type.getNamespace());
+    assertEquals("entity", type.getName());
+    assertNull(property.getReferencingPropertyName("referencedPropertyName"));
+    assertNull(property.getPartner());
+    assertFalse(property.containsTarget());
+
+    // Test caching
+    EdmType cachedType = property.getType();
+    assertTrue(type == cachedType);
+  }
+
+  @Test
+  void navigationPropertyWithReferntialConstraint() throws Exception {
+    CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
+    EdmProviderImpl edm = new EdmProviderImpl(provider);
+    final FullQualifiedName entityTypeName = new FullQualifiedName("ns", "entity");
+    CsdlEntityType entityTypeProvider = new CsdlEntityType();
+    entityTypeProvider.setKey(Collections.emptyList());
+    when(provider.getEntityType(entityTypeName)).thenReturn(entityTypeProvider);
+    CsdlNavigationProperty propertyProvider = new CsdlNavigationProperty();
+    propertyProvider.setType(entityTypeName);
+    propertyProvider.setNullable(false);
+    propertyProvider.setContainsTarget(true);
+    List<CsdlReferentialConstraint> referentialConstraints = new ArrayList<>();
+    referentialConstraints.add(new CsdlReferentialConstraint().setProperty("property").setReferencedProperty(
+        "referencedProperty"));
+    propertyProvider.setReferentialConstraints(referentialConstraints);
+  
+    EdmNavigationProperty property = new EdmNavigationPropertyImpl(edm, propertyProvider);
+    assertEquals("property", property.getReferencingPropertyName("referencedProperty"));
+    assertNull(property.getReferencingPropertyName("wrong"));
+    assertTrue(property.containsTarget());
+    
+    assertNotNull(property.getReferentialConstraints());
+    List<EdmReferentialConstraint> edmReferentialConstraints = property.getReferentialConstraints();
+    assertEquals(1, edmReferentialConstraints.size());
+    assertTrue(edmReferentialConstraints == property.getReferentialConstraints());
+    
+  }
+
+  @Test
+  void navigationPropertyWithPartner() throws Exception {
+    CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
+    EdmProviderImpl edm = new EdmProviderImpl(provider);
+    final FullQualifiedName entityTypeName = new FullQualifiedName("ns", "entity");
+    CsdlEntityType entityTypeProvider = new CsdlEntityType();
+    entityTypeProvider.setKey(Collections.emptyList());
+
+    List<CsdlNavigationProperty> navigationProperties = new ArrayList<>();
+    navigationProperties.add(new CsdlNavigationProperty().setName("partnerName").setType(entityTypeName));
+    entityTypeProvider.setNavigationProperties(navigationProperties);
+    when(provider.getEntityType(entityTypeName)).thenReturn(entityTypeProvider);
+    CsdlNavigationProperty propertyProvider = new CsdlNavigationProperty();
+    propertyProvider.setType(entityTypeName);
+    propertyProvider.setNullable(false);
+    propertyProvider.setPartner("partnerName");
+    EdmNavigationProperty property = new EdmNavigationPropertyImpl(edm, propertyProvider);
+    EdmNavigationProperty partner = property.getPartner();
+    assertNotNull(partner);
+
+    // Caching
+    assertTrue(partner == property.getPartner());
+  }
+
+  @Test
+  void navigationPropertyWithNonexistentPartner() throws Exception {
+      assertThrows(EdmException.class, () -> {
+          CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
+          EdmProviderImpl edm = new EdmProviderImpl(provider);
+          final FullQualifiedName entityTypeName = new FullQualifiedName("ns", "entity");
+          CsdlEntityType entityTypeProvider = new CsdlEntityType();
+          entityTypeProvider.setKey(Collections.emptyList());
+          List<CsdlNavigationProperty> navigationProperties = new ArrayList<>();
+          navigationProperties.add(new CsdlNavigationProperty().setName("partnerName").setType(entityTypeName));
+          entityTypeProvider.setNavigationProperties(navigationProperties);
+          when(provider.getEntityType(entityTypeName)).thenReturn(entityTypeProvider);
+          CsdlNavigationProperty propertyProvider = new CsdlNavigationProperty();
+          propertyProvider.setType(entityTypeName);
+          propertyProvider.setNullable(false);
+          propertyProvider.setPartner("wrong");
+          EdmNavigationProperty property = new EdmNavigationPropertyImpl(edm, propertyProvider);
+          property.getPartner();
+      });
+  }
+
+  @Test
+  void navigationPropertyWithNonExistentType() throws Exception {
+      assertThrows(EdmException.class, () -> {
+          EdmProviderImpl edm = mock(EdmProviderImpl.class);
+          CsdlNavigationProperty propertyProvider = new CsdlNavigationProperty();
+          EdmNavigationProperty property = new EdmNavigationPropertyImpl(edm, propertyProvider);
+          property.getType();
+      });
+  }
+}

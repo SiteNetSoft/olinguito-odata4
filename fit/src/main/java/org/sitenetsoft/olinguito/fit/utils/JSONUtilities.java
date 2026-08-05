@@ -1,0 +1,440 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
+ * Copyright 2026 SiteNetSoft - Removed commons-lang3 dependency
+ */
+package org.sitenetsoft.olinguito.fit.utils;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import jakarta.ws.rs.NotFoundException;
+
+import org.sitenetsoft.olinguito.fit.metadata.Metadata;
+import org.sitenetsoft.olinguito.fit.metadata.NavigationProperty;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
+
+public class JSONUtilities extends AbstractUtilities {
+
+  private final ObjectMapper mapper = new ObjectMapper().setDefaultPropertyInclusion(
+      JsonInclude.Value.construct(JsonInclude.Include.NON_NULL, JsonInclude.Include.NON_NULL));
+
+  public JSONUtilities(final Metadata metadata) throws IOException {
+    super(metadata);
+  }
+
+  @Override
+  protected Accept getDefaultFormat() {
+    return Accept.JSON_FULLMETA;
+  }
+
+  @Override
+  protected InputStream addLinks(
+      final String entitySetName, final String entitykey, final InputStream is, final Set<String> links)
+          throws IOException {
+
+    final ObjectNode srcNode = (ObjectNode) mapper.readTree(is);
+    is.close();
+
+    for (String link : links) {
+      srcNode.set(link + Constants.get(ConstantKey.JSON_NAVIGATION_SUFFIX),
+          new TextNode(Commons.getLinksURI(entitySetName, entitykey, link)));
+    }
+
+    return new ByteArrayInputStream(srcNode.toString().getBytes(Constants.ENCODING));
+  }
+
+  @Override
+  protected Set<String> retrieveAllLinkNames(final InputStream is) throws IOException {
+    final ObjectNode srcNode = (ObjectNode) mapper.readTree(is);
+    is.close();
+
+    final Set<String> links = new HashSet<>();
+
+    final Iterator<String> fieldIter = srcNode.fieldNames();
+
+    while (fieldIter.hasNext()) {
+      final String field = fieldIter.next();
+
+      if (field.endsWith(Constants.get(ConstantKey.JSON_NAVIGATION_BIND_SUFFIX))
+          || field.endsWith(Constants.get(ConstantKey.JSON_NAVIGATION_SUFFIX))
+          || field.endsWith(Constants.get(ConstantKey.JSON_MEDIA_SUFFIX))
+          || field.endsWith(Constants.get(ConstantKey.JSON_EDITLINK_NAME))) {
+        if (field.indexOf('@') > 0) {
+          links.add(field.substring(0, field.indexOf('@')));
+        } else {
+          links.add(field);
+        }
+      }
+    }
+
+    return links;
+  }
+
+  @Override
+  protected NavigationLinks retrieveNavigationInfo(final String entitySetName, final InputStream is)
+      throws IOException {
+
+    final ObjectNode srcNode = (ObjectNode) mapper.readTree(is);
+    is.close();
+
+    final NavigationLinks links = new NavigationLinks();
+
+    final Iterator<Map.Entry<String, JsonNode>> fieldIter = srcNode.properties().iterator();
+
+    final Map<String, NavigationProperty> navigationProperties = metadata.getNavigationProperties(entitySetName);
+
+    while (fieldIter.hasNext()) {
+      final Map.Entry<String, JsonNode> field = fieldIter.next();
+      if (field.getKey().endsWith(Constants.get(ConstantKey.JSON_NAVIGATION_BIND_SUFFIX))) {
+        final String title = field.getKey().substring(0, field.getKey().indexOf('@'));
+        final List<String> hrefs = new ArrayList<>();
+        if (field.getValue().isArray()) {
+          for (JsonNode href : field.getValue()) {
+            final String uri = href.asText();
+            hrefs.add(uri.substring(uri.lastIndexOf('/') + 1));
+          }
+        } else {
+          final String uri = field.getValue().asText();
+          hrefs.add(uri.substring(uri.lastIndexOf('/') + 1));
+        }
+
+        links.addLinks(title, hrefs);
+      } else if (navigationProperties.containsKey(field.getKey())) {
+        links.addInlines(field.getKey(),
+            new ByteArrayInputStream(field.getValue().toString().getBytes(Constants.ENCODING)));
+      }
+    }
+
+    return links;
+  }
+
+  @Override
+  protected InputStream normalizeLinks(
+      final String entitySetName, final String entityKey, final InputStream is, final NavigationLinks links)
+          throws IOException {
+
+    final ObjectNode srcNode = (ObjectNode) mapper.readTree(is);
+
+    if (links != null) {
+      for (String linkTitle : links.getLinkNames()) {
+        // normalize link
+        srcNode.remove(linkTitle + Constants.get(ConstantKey.JSON_NAVIGATION_BIND_SUFFIX));
+        srcNode.set(
+            linkTitle + Constants.get(ConstantKey.JSON_NAVIGATION_SUFFIX),
+            new TextNode(String.format("%s(%s)/%s", entitySetName, entityKey, linkTitle)));
+      }
+
+      for (String linkTitle : links.getInlineNames()) {
+        // normalize link if existed; declare a new one if missing
+        srcNode.remove(linkTitle + Constants.get(ConstantKey.JSON_NAVIGATION_BIND_SUFFIX));
+        srcNode.set(
+            linkTitle + Constants.get(ConstantKey.JSON_NAVIGATION_SUFFIX),
+            new TextNode(String.format("%s(%s)/%s", entitySetName, entityKey, linkTitle)));
+
+        // remove inline
+        srcNode.remove(linkTitle);
+
+        // remove from links
+        links.removeLink(linkTitle);
+      }
+    }
+
+    srcNode.set(
+        Constants.get(ConstantKey.JSON_EDITLINK_NAME), new TextNode(
+            Constants.get(ConstantKey.DEFAULT_SERVICE_URL) + entitySetName + "(" + entityKey + ")"));
+
+    return new ByteArrayInputStream(srcNode.toString().getBytes(Constants.ENCODING));
+  }
+
+  public InputStream addJsonInlinecount(final InputStream src, final int count) throws Exception {
+
+    final JsonNode srcNode = mapper.readTree(src);
+
+    ((ObjectNode) srcNode).put(Constants.get(ConstantKey.ODATA_COUNT_NAME), count);
+
+    final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    mapper.writeValue(bos, srcNode);
+
+    final InputStream res = new ByteArrayInputStream(bos.toByteArray());
+    bos.close();
+
+    return res;
+  }
+
+  public InputStream wrapJsonEntities(final InputStream entities) throws IOException {
+
+    final JsonNode node = mapper.readTree(entities);
+
+    final ObjectNode res;
+
+    final JsonNode value = node.get(Constants.get(ConstantKey.JSON_VALUE_NAME));
+
+    if (value.isArray()) {
+      res = mapper.createObjectNode();
+      res.set("value", value);
+      final JsonNode next = node.get(Constants.get(ConstantKey.JSON_NEXTLINK_NAME));
+      if (next != null) {
+        res.set(Constants.get(ConstantKey.JSON_NEXTLINK_NAME), next);
+      }
+    } else {
+      res = (ObjectNode) value;
+    }
+
+    final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    mapper.writeValue(bos, res);
+
+    final InputStream is = new ByteArrayInputStream(bos.toByteArray());
+    bos.close();
+
+    return is;
+  }
+
+  @Override
+  public InputStream selectEntity(final InputStream src, final String[] propertyNames) throws IOException {
+
+    final ObjectNode srcNode = (ObjectNode) mapper.readTree(src);
+
+    final Set<String> retain = new HashSet<>();
+    retain.add(Constants.get(ConstantKey.JSON_ID_NAME));
+    retain.add(Constants.get(ConstantKey.JSON_TYPE_NAME));
+    retain.add(Constants.get(ConstantKey.JSON_EDITLINK_NAME));
+    retain.add(Constants.get(ConstantKey.JSON_NEXTLINK_NAME));
+    retain.add(Constants.get(ConstantKey.JSON_ODATAMETADATA_NAME));
+    retain.add(Constants.get(ConstantKey.JSON_VALUE_NAME));
+
+    for (String name : propertyNames) {
+      retain.add(name);
+      retain.add(name + Constants.get(ConstantKey.JSON_NAVIGATION_SUFFIX));
+      retain.add(name + Constants.get(ConstantKey.JSON_MEDIA_SUFFIX));
+      retain.add(name + Constants.get(ConstantKey.JSON_TYPE_SUFFIX));
+    }
+
+    srcNode.retain(retain);
+
+    return new ByteArrayInputStream(srcNode.toString().getBytes(Constants.ENCODING));
+  }
+
+  @Override
+  public InputStream readEntities(
+      final List<String> links, final String linkName, final String next, final boolean forceFeed)
+          throws IOException {
+
+    if (links.isEmpty()) {
+      throw new NotFoundException();
+    }
+
+    final ObjectNode node = mapper.createObjectNode();
+
+    final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+    if (forceFeed || links.size() > 1) {
+      bos.write("[".getBytes());
+    }
+
+    for (String link : links) {
+      try {
+        final Map.Entry<String, String> uriMap = Commons.parseEntityURI(link);
+        final Map.Entry<String, InputStream> entity =
+            readEntity(uriMap.getKey(), uriMap.getValue(), Accept.JSON_FULLMETA);
+
+        if (bos.size() > 1) {
+          bos.write(",".getBytes());
+        }
+
+        entity.getValue().transferTo(bos);
+      } catch (Exception e) {
+        // log and ignore link
+        LOG.warn("Error parsing uri {}", link, e);
+      }
+    }
+
+    if (forceFeed || links.size() > 1) {
+      bos.write("]".getBytes());
+    }
+
+    node.set(Constants.get(ConstantKey.JSON_VALUE_NAME),
+        mapper.readTree(new ByteArrayInputStream(bos.toByteArray())));
+
+    if (next != null && !next.isBlank()) {
+      node.set(Constants.get(ConstantKey.JSON_NEXTLINK_NAME), new TextNode(next));
+    }
+
+    return new ByteArrayInputStream(node.toString().getBytes(Constants.ENCODING));
+  }
+
+  @Override
+  protected InputStream replaceLink(
+      final InputStream toBeChanged, final String linkName, final InputStream replacement)
+          throws IOException {
+
+    final ObjectNode toBeChangedNode = (ObjectNode) mapper.readTree(toBeChanged);
+    final ObjectNode replacementNode = (ObjectNode) mapper.readTree(replacement);
+
+    if (toBeChangedNode.get(linkName + Constants.get(ConstantKey.JSON_NAVIGATION_SUFFIX)) == null) {
+      throw new NotFoundException();
+    }
+
+    toBeChangedNode.set(linkName, replacementNode.get(Constants.get(ConstantKey.JSON_VALUE_NAME)));
+
+    final JsonNode next = replacementNode.get(linkName + Constants.get(ConstantKey.JSON_NEXTLINK_NAME));
+    if (next != null) {
+      toBeChangedNode.set(linkName + Constants.get(ConstantKey.JSON_NEXTLINK_SUFFIX), next);
+    }
+
+    return new ByteArrayInputStream(toBeChangedNode.toString().getBytes(Constants.ENCODING));
+  }
+
+  @Override
+  protected Map<String, InputStream> getChanges(final InputStream src) throws IOException {
+    final Map<String, InputStream> res = new HashMap<>();
+
+    final JsonNode srcObject = mapper.readTree(src);
+
+    final Iterator<Map.Entry<String, JsonNode>> fields = srcObject.properties().iterator();
+    while (fields.hasNext()) {
+      final Map.Entry<String, JsonNode> field = fields.next();
+      res.put(field.getKey(), new ByteArrayInputStream(field.getValue().toString().getBytes(Constants.ENCODING)));
+    }
+
+    return res;
+  }
+
+  @Override
+  public Map.Entry<String, List<String>> extractLinkURIs(
+      final String entitySetName, final String entityId, final String linkName) throws Exception {
+    final LinkInfo links = readLinks(entitySetName, entityId, linkName, Accept.JSON_FULLMETA);
+    return extractLinkURIs(links.getLinks());
+  }
+
+  @Override
+  public Map.Entry<String, List<String>> extractLinkURIs(final InputStream is) throws IOException {
+
+    final ObjectNode srcNode = (ObjectNode) mapper.readTree(is);
+    is.close();
+
+    final List<String> links = new ArrayList<>();
+
+    JsonNode uris = srcNode.get("value");
+    if (uris == null) {
+      final JsonNode url = srcNode.get("url");
+      if (url != null) {
+        links.add(url.textValue());
+      }
+    } else {
+        for (JsonNode jsonNode : uris) {
+            links.add(jsonNode.get("url").textValue());
+        }
+    }
+
+    final JsonNode next = srcNode.get(Constants.get(ConstantKey.JSON_NEXTLINK_NAME));
+
+    return new SimpleEntry<>(next == null ? null : next.asText(), links);
+  }
+
+  @Override
+  public InputStream addEditLink(
+      final InputStream content, final String title, final String href) throws IOException {
+
+    final ObjectNode srcNode = (ObjectNode) mapper.readTree(content);
+    content.close();
+
+    srcNode.set(Constants.get(ConstantKey.JSON_EDITLINK_NAME), new TextNode(href));
+    return new ByteArrayInputStream(srcNode.toString().getBytes(Constants.ENCODING));
+  }
+
+  @Override
+  public InputStream addOperation(final InputStream content, final String name, final String metaAnchor,
+      final String href) throws IOException {
+
+    final ObjectNode srcNode = (ObjectNode) mapper.readTree(content);
+    content.close();
+
+    final ObjectNode action = mapper.createObjectNode();
+    action.set("title", new TextNode(name));
+    action.set("target", new TextNode(href));
+
+    srcNode.set(metaAnchor, action);
+    return new ByteArrayInputStream(srcNode.toString().getBytes(Constants.ENCODING));
+  }
+
+  @Override
+  public InputStream replaceProperty(
+      final InputStream src, final InputStream replacement, final List<String> path, final boolean justValue)
+          throws IOException {
+
+    final ObjectNode srcNode = (ObjectNode) mapper.readTree(src);
+    src.close();
+
+    JsonNode replacementNode;
+    if (justValue) {
+      replacementNode = new TextNode(new String(replacement.readAllBytes(), StandardCharsets.UTF_8));
+    } else {
+      replacementNode = mapper.readTree(replacement);
+      if (replacementNode.has("value")) {
+        replacementNode = replacementNode.get("value");
+      }
+    }
+    replacement.close();
+
+    final ObjectNode parent = (ObjectNode) traversePath(srcNode, path);
+    parent.set(path.get(path.size() - 1), replacementNode);
+
+    return new ByteArrayInputStream(srcNode.toString().getBytes(Constants.ENCODING));
+  }
+
+  @Override
+  public InputStream deleteProperty(final InputStream src, final List<String> path) throws IOException {
+
+    final ObjectNode srcNode = (ObjectNode) mapper.readTree(src);
+    src.close();
+
+    final ObjectNode parent = (ObjectNode) traversePath(srcNode, path);
+    parent.set(path.get(path.size() - 1), null);
+
+    return new ByteArrayInputStream(srcNode.toString().getBytes(Constants.ENCODING));
+  }
+
+  private static JsonNode traversePath(final JsonNode root, final List<String> path) {
+    JsonNode node = root;
+    for (int i = 0; i < path.size() - 1; i++) {
+      node = node.get(path.get(i));
+      if (node == null) {
+        throw new NotFoundException();
+      }
+    }
+    return node;
+  }
+}

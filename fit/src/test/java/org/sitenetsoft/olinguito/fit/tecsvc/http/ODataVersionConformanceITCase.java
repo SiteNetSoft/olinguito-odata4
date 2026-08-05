@@ -1,0 +1,194 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OLINGO-1314: Updated version error tests for sanitized messages
+ */
+package org.sitenetsoft.olinguito.fit.tecsvc.http;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.Charset;
+
+// IOUtils removed - using Java standard library
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.fit.AbstractBaseTestITCase;
+import org.sitenetsoft.olinguito.fit.tecsvc.TecSvcConst;
+import org.junit.Test;
+
+public class ODataVersionConformanceITCase extends AbstractBaseTestITCase {
+
+  private static final String SERVICE_URI = TecSvcConst.BASE_URI + "/";
+
+  @Test
+  public void invalidODataVersionHeader1() throws Exception {
+    URL url = new URL(SERVICE_URI + "ESAllPrim");
+
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod(HttpMethod.GET.name()); 
+    connection.setRequestProperty(HttpHeader.ODATA_VERSION, "3.0");
+    connection.connect();
+
+    assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), connection.getResponseCode());
+    assertEquals("4.0", connection.getHeaderField(HttpHeader.ODATA_VERSION));
+
+    final String content = readBody(connection);
+    assertTrue(content.contains("OData version '4.0' is not supported."));
+    assertFalse(content.contains("3.0"));
+  }
+
+  @Test
+  public void invalidODataVersionHeader2() throws Exception {
+    URL url = new URL(SERVICE_URI + "ESAllPrim");
+
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod(HttpMethod.GET.name());
+    connection.setRequestProperty(HttpHeader.ODATA_VERSION, "5.0");
+    connection.connect();
+
+    assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), connection.getResponseCode());
+    assertEquals("4.0", connection.getHeaderField(HttpHeader.ODATA_VERSION));
+
+    final String content = readBody(connection);
+    assertTrue(content.contains("OData version '4.0' is not supported."));
+    assertFalse(content.contains("5.0"));
+  }
+
+  @Test
+  public void invalidODataMaxVersionHeader1() throws Exception {
+    URL url = new URL(SERVICE_URI + "ESAllPrim");
+
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod(HttpMethod.GET.name());
+    connection.setRequestProperty(HttpHeader.ODATA_MAX_VERSION, "3.0");
+    connection.connect();
+
+    assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), connection.getResponseCode());
+    assertEquals("4.0", connection.getHeaderField(HttpHeader.ODATA_VERSION));
+
+    final String content = readBody(connection);
+    assertTrue(content.contains("OData version '4.0' is not supported."));
+    assertFalse(content.contains("3.0"));
+  }
+  
+  @Test
+  public void validODataMaxVersionHeader() throws Exception {
+    URL url = new URL(SERVICE_URI + "ESAllPrim");
+
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod(HttpMethod.GET.name());
+    connection.setRequestProperty(HttpHeader.ODATA_MAX_VERSION, "5.0");
+    connection.connect();
+
+    assertEquals("4.0", connection.getHeaderField(HttpHeader.ODATA_VERSION));
+
+    final String content = readBody(connection);
+    assertNotNull(content);
+  }
+
+  @Test
+  public void validODataVersionAndMaxVersionHeader() throws Exception {
+    URL url = new URL(SERVICE_URI + "ESAllPrim");
+
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod(HttpMethod.GET.name());
+    connection.setRequestProperty(HttpHeader.ODATA_VERSION, "4.0");
+    connection.setRequestProperty(HttpHeader.ODATA_MAX_VERSION, "5.0");
+    connection.connect();
+
+    assertEquals("4.0", connection.getHeaderField(HttpHeader.ODATA_VERSION));
+
+    final String content = readBody(connection);
+    assertNotNull(content);;
+  }
+  
+  @Test
+  public void validODataVersionAndMaxVersionHeader1() throws Exception {
+    URL url = new URL(SERVICE_URI + "ESAllPrim?$format=json");
+
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod(HttpMethod.GET.name());
+    connection.setRequestProperty(HttpHeader.ODATA_VERSION, "4.0");
+    connection.setRequestProperty(HttpHeader.ODATA_MAX_VERSION, "4.01");
+    connection.connect();
+
+    assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
+    assertEquals("4.0", connection.getHeaderField(HttpHeader.ODATA_VERSION));
+    assertEquals("application/json;odata.metadata=minimal", 
+        connection.getHeaderField(HttpHeader.CONTENT_TYPE));
+
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
+    assertNotNull(content);
+  }
+  
+  @Test
+  public void validODataVersionAndMaxVersionHeader2() throws Exception {
+    URL url = new URL(SERVICE_URI + "ESAllPrim?$format=json");
+
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod(HttpMethod.GET.name());
+    connection.setRequestProperty(HttpHeader.ODATA_VERSION, "4.0");
+    connection.setRequestProperty(HttpHeader.ODATA_MAX_VERSION, "4.0");
+    connection.connect();
+
+    assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
+    assertEquals("4.0", connection.getHeaderField(HttpHeader.ODATA_VERSION));
+    assertEquals("application/json;odata.metadata=minimal", 
+        connection.getHeaderField(HttpHeader.CONTENT_TYPE));
+
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
+    assertNotNull(content);
+  }
+  
+  @Test
+  public void invalidODataVersionAndMaxVersionHeader() throws Exception {
+    URL url = new URL(SERVICE_URI + "ESAllPrim");
+
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod(HttpMethod.GET.name());
+    connection.setRequestProperty(HttpHeader.ODATA_VERSION, "5.0");
+    connection.setRequestProperty(HttpHeader.ODATA_MAX_VERSION, "5.0");
+    connection.connect();
+
+    assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), connection.getResponseCode());
+    assertEquals("4.0", connection.getHeaderField(HttpHeader.ODATA_VERSION));
+
+    final String content = readBody(connection);
+    assertTrue(content.contains("OData version '4.0' is not supported."));
+    assertFalse(content.contains("5.0"));
+  }
+
+  @Override
+  protected ODataClient getClient() {
+    return null;
+  }
+
+  private static String readBody(HttpURLConnection c) throws Exception {
+    int code = c.getResponseCode();
+    var is = (code >= 400) ? c.getErrorStream() : c.getInputStream();
+    return is == null ? "" : new String(is.readAllBytes(), Charset.defaultCharset());
+  }
+
+}

@@ -1,0 +1,315 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Converted switch statements to switch expressions
+ */
+package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+
+import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.data.Link;
+import org.sitenetsoft.olinguito.commons.api.data.Property;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmComplexType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEnumType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmFunction;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
+import org.sitenetsoft.olinguito.commons.api.edm.constants.EdmTypeKind;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoResource;
+import org.sitenetsoft.olinguito.server.api.uri.UriParameter;
+import org.sitenetsoft.olinguito.server.api.uri.UriResource;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceFunction;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceLambdaAny;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceLambdaVariable;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceNavigation;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceProperty;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Binary;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.BinaryOperatorKind;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Expression;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.ExpressionVisitException;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.ExpressionVisitor;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Literal;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Member;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.MethodKind;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.UnaryOperatorKind;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceLambdaVarImpl;
+import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operand.TypedOperand;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operand.UntypedOperand;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operand.VisitorOperand;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operation.BinaryOperator;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operation.MethodCallOperator;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operation.UnaryOperator;
+
+public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> {
+
+  private Entity entity;
+  private final UriInfoResource uriInfo;
+  private final Edm edm;
+  private ComplexValue complexValue;
+
+  public ExpressionVisitorImpl(final Entity entity, final UriInfoResource uriInfo, final Edm edm) {
+    this.entity = entity;
+    this.uriInfo = uriInfo;
+    this.edm = edm;
+  }
+
+  public ExpressionVisitorImpl(final ComplexValue complexValue, final UriInfoResource uriInfo, final Edm edm) {
+    this.complexValue = complexValue;
+    this.uriInfo = uriInfo;
+    this.edm = edm;
+  }
+
+  @Override
+  public VisitorOperand visitBinaryOperator(final BinaryOperatorKind operator, final VisitorOperand left,
+      final VisitorOperand right) throws ExpressionVisitException, ODataApplicationException {
+
+    final BinaryOperator binaryOperator = new BinaryOperator(left, right);
+
+    return switch (operator) {
+      case AND -> binaryOperator.andOperator();
+      case OR -> binaryOperator.orOperator();
+      case EQ -> binaryOperator.equalsOperator();
+      case NE -> binaryOperator.notEqualsOperator();
+      case GE -> binaryOperator.greaterEqualsOperator();
+      case GT -> binaryOperator.greaterThanOperator();
+      case LE -> binaryOperator.lessEqualsOperator();
+      case LT -> binaryOperator.lessThanOperator();
+      case ADD, SUB, MUL, DIV, MOD -> binaryOperator.arithmeticOperator(operator);
+      case HAS -> binaryOperator.hasOperator();
+      case IN -> binaryOperator.inOperator();
+    };
+  }
+
+  @Override
+  public VisitorOperand visitUnaryOperator(final UnaryOperatorKind operator, final VisitorOperand operand)
+      throws ExpressionVisitException, ODataApplicationException {
+
+    final UnaryOperator unaryOperator = new UnaryOperator(operand);
+
+    return switch (operator) {
+      case MINUS -> unaryOperator.minusOperation();
+      case NOT -> unaryOperator.notOperation();
+    };
+  }
+
+  @Override
+  public VisitorOperand visitMethodCall(final MethodKind methodCall, final List<VisitorOperand> parameters)
+      throws ExpressionVisitException, ODataApplicationException {
+
+    final MethodCallOperator methodCallOperation = new MethodCallOperator(parameters);
+
+    return switch (methodCall) {
+      case ENDSWITH -> methodCallOperation.endsWith();
+      case INDEXOF -> methodCallOperation.indexOf();
+      case STARTSWITH -> methodCallOperation.startsWith();
+      case TOLOWER -> methodCallOperation.toLower();
+      case TOUPPER -> methodCallOperation.toUpper();
+      case TRIM -> methodCallOperation.trim();
+      case SUBSTRING -> methodCallOperation.substring();
+      case CONTAINS -> methodCallOperation.contains();
+      case CONCAT -> methodCallOperation.concat();
+      case LENGTH -> methodCallOperation.length();
+      case YEAR -> methodCallOperation.year();
+      case MONTH -> methodCallOperation.month();
+      case DAY -> methodCallOperation.day();
+      case HOUR -> methodCallOperation.hour();
+      case MINUTE -> methodCallOperation.minute();
+      case SECOND -> methodCallOperation.second();
+      case FRACTIONALSECONDS -> methodCallOperation.fractionalseconds();
+      case ROUND -> methodCallOperation.round();
+      case FLOOR -> methodCallOperation.floor();
+      case CEILING -> methodCallOperation.ceiling();
+      case SUBSTRINGOF -> methodCallOperation.substringof();
+      default -> throwNotImplemented();
+    };
+  }
+
+  @Override
+  public VisitorOperand visitLambdaExpression(final String lambdaFunction, final String lambdaVariable,
+      final Expression expression) throws ExpressionVisitException, ODataApplicationException {
+    return throwNotImplemented();
+  }
+
+  @Override
+  public VisitorOperand visitLiteral(final Literal literal) throws ExpressionVisitException, ODataApplicationException {
+    return new UntypedOperand(literal.getText());
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public VisitorOperand visitMember(final Member member) throws ExpressionVisitException,
+      ODataApplicationException {
+
+    final List<UriResource> uriResourceParts = member.getResourcePath().getUriResourceParts();
+
+    // UriResourceParts contains at least one UriResource.
+    final UriResource initialPart = uriResourceParts.get(0);
+    if (initialPart instanceof UriResourceProperty uriResourceProp) {
+      EdmProperty currentEdmProperty = uriResourceProp.getProperty();
+      Property currentProperty = entity.getProperty(currentEdmProperty.getName());
+      for (int i = 1; i < uriResourceParts.size(); i++) {
+        if (currentProperty.isComplex()) {
+          if (uriResourceParts.get(i) instanceof UriResourceLambdaAny any) {
+            if (any.getExpression() instanceof Binary expression) {
+              if (currentProperty.isCollection()) {
+                final List<ComplexValue> complex = (List<ComplexValue>) currentProperty.asCollection();
+                Iterator<ComplexValue> itr = complex.iterator();
+                while (itr.hasNext()) {
+                  final ComplexValue value = itr.next();
+                  VisitorOperand operand = expression.accept(new ExpressionVisitorImpl(value, uriInfo, edm));
+                  final TypedOperand typedOperand = operand.asTypedOperand();
+                  if (typedOperand.is(OData.newInstance().createPrimitiveTypeInstance
+                      (EdmPrimitiveTypeKind.Boolean))) {
+                    if (Boolean.TRUE.equals(typedOperand.getTypedValue(Boolean.class))) {
+                      return operand;
+                    }
+                  }
+                }
+              } 
+            }
+          } else {
+            currentEdmProperty = ((UriResourceProperty) uriResourceParts.get(i)).getProperty();
+            final List<Property> complex = currentProperty.asComplex().getValue();
+            for (final Property innerProperty : complex) {
+              if (innerProperty.getName().equals(currentEdmProperty.getName())) {
+                currentProperty = innerProperty;
+                break;
+              }
+            }
+          }
+        }
+      }
+      return new TypedOperand(currentProperty.getValue(), currentEdmProperty.getType(), currentEdmProperty);
+    } else if (initialPart instanceof UriResourceFunction uriResourceFunc) {
+      final EdmFunction function = uriResourceFunc.getFunction();
+      if (uriResourceParts.size() > 1) {
+        return throwNotImplemented();
+      }
+      final EdmType type = function.getReturnType().getType();
+      final DataProvider dataProvider = new DataProvider(OData.newInstance(), edm);
+      final List<UriParameter> parameters = uriResourceFunc.getParameters();
+      return new TypedOperand(
+        type.getKind() == EdmTypeKind.ENTITY ?
+            function.getReturnType().isCollection() ?
+                dataProvider.readFunctionEntityCollection(function, parameters, uriInfo) :
+                dataProvider.readFunctionEntity(function, parameters, uriInfo) :
+            dataProvider.readFunctionPrimitiveComplex(function, parameters, uriInfo),
+        type);
+
+    } else if (initialPart instanceof UriResourceLambdaVariable) {
+      EdmComplexType complexType = (EdmComplexType) ((UriResourceLambdaVarImpl)initialPart).getTypeFilter();
+      EdmProperty currentEdmProperty = ((UriResourceProperty) uriResourceParts.get(1)).getProperty();
+      Property currentProperty = null;
+      List<Property> properties = complexValue.getValue();
+      for (final Property innerProperty : properties) {
+        if (innerProperty.getName().equals(currentEdmProperty.getName()) && 
+            complexType.getProperty(innerProperty.getName()) != null) {
+          currentProperty = innerProperty;
+          break;
+        }
+      }
+      return new TypedOperand(currentProperty == null ? null : currentProperty.getValue(), 
+          currentEdmProperty.getType(), currentEdmProperty);
+    } else if (initialPart instanceof UriResourceNavigation uriResourceNav) {
+      EdmNavigationProperty currentEdmNavProperty = uriResourceNav.getProperty();
+      EdmProperty currentEdmProperty = null;
+      Link link = entity.getNavigationLink(currentEdmNavProperty.getName());
+      Entity inlineEntity = link != null ? link.getInlineEntity() : null;
+      Property currentProperty = null;
+      for (int i = 1; i < uriResourceParts.size(); i++) {
+        currentEdmProperty = ((UriResourceProperty) uriResourceParts.get(i)).getProperty();
+        if (null != inlineEntity) {
+          for (Property property : inlineEntity.getProperties()) {
+            if (property.getName().equalsIgnoreCase(currentEdmProperty.getName())) {
+              currentProperty = property;
+              break;
+            } 
+          }
+        }
+      }
+      return new TypedOperand(currentProperty != null ? currentProperty.getValue() : null, 
+          currentEdmProperty.getType(), currentEdmProperty);
+    } else {
+      return throwNotImplemented();
+    }
+  }
+
+  @Override
+  public VisitorOperand visitAlias(final String aliasName) throws ExpressionVisitException, ODataApplicationException {
+    if (entity.getProperty(uriInfo.getValueForAlias(aliasName)) != null) {
+      return new UntypedOperand(String.valueOf(entity.getProperty(uriInfo.getValueForAlias(aliasName)).getValue()));
+    } else {
+      return new UntypedOperand(uriInfo.getValueForAlias(aliasName));
+    }
+  }
+
+  @Override
+  public VisitorOperand visitTypeLiteral(final EdmType type)
+      throws ExpressionVisitException, ODataApplicationException {
+    return throwNotImplemented();
+  }
+
+  @Override
+  public VisitorOperand visitLambdaReference(final String variableName) throws ExpressionVisitException,
+      ODataApplicationException {
+    return throwNotImplemented();
+  }
+
+  @Override
+  public VisitorOperand visitEnum(final EdmEnumType type, final List<String> enumValues)
+      throws ExpressionVisitException, ODataApplicationException {
+    Long result = null;
+    try {
+      for (final String enumValue : enumValues) {
+        final Long value = type.valueOfString(enumValue, null, null, null, null, null, Long.class);
+        result = result == null ? value : result | value;
+      }
+    } catch (final EdmPrimitiveTypeException e) {
+      throw new ODataApplicationException("Illegal enum value.",
+          HttpStatusCode.BAD_REQUEST.getStatusCode(), Locale.ROOT, e);
+    }
+    return new TypedOperand(result, type);
+  }
+
+  private VisitorOperand throwNotImplemented() throws ODataApplicationException {
+    throw new ODataApplicationException("Not implemented", HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(),
+        Locale.ROOT);
+  }
+
+  @Override
+  public VisitorOperand visitBinaryOperator(BinaryOperatorKind operator, VisitorOperand left,
+      List<VisitorOperand> right) throws ExpressionVisitException, ODataApplicationException {
+    BinaryOperator binaryOperator = new BinaryOperator(left, right);
+    return switch (operator) {
+      case IN -> binaryOperator.inOperator();
+      default -> throwNotImplemented();
+    };
+  }
+}

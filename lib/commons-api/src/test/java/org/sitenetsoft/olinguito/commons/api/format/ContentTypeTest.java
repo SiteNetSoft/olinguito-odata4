@@ -1,0 +1,197 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ */
+package org.sitenetsoft.olinguito.commons.api.format;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+class ContentTypeTest {
+
+  @Test
+  void create() {
+    assertEquals("a/b", ContentType.create("a/b").toContentTypeString());
+    assertEquals(ContentType.create("a/b;c=d;x=y"), ContentType.create("a/b;x=y;c=d"));
+    assertEquals(ContentType.create("a/b;c=d;x=y"), ContentType.create("a/b; x=y; c=d"));
+    assertEquals(ContentType.create("A/B"), ContentType.create("a/b"));
+  }
+
+  @Test
+  void createFail() {
+    createWrong("a");
+    createWrong(" a / b ");
+    createWrong("a/b;");
+    createWrong("a/b;parameter");
+    createWrong("a/b;parameter=");
+    createWrong("a/b;=value");
+    createWrong("a/b;the name=value");
+    createWrong("a/b;name= value");
+
+    createWrong("*/*");
+    createWrong("*");
+    createWrong("a//b");
+    createWrong("///");
+    createWrong("a/*");
+    createWrong("*/b");
+
+    createWrong(null);
+  }
+
+  @Test
+  void createWithParameter() {
+    assertEquals(ContentType.create("a/b;c=d"), ContentType.create(ContentType.create("a/b"), "c", "d"));
+    assertEquals(ContentType.create("a/b;e=f;c=d"), ContentType.create(
+        ContentType.create(ContentType.create("a/b"), "c", "d"), "e", "f"));
+    assertEquals(ContentType.create("a/b;e=f;c=d"), ContentType.create(
+        ContentType.create(ContentType.create("A/B"), "C", "D"), "E", "F"));
+  }
+
+  @Test
+  void createAndModify() {
+    ContentType ct1 = ContentType.create("a/b");
+    assertEquals(ContentType.create("a/b;c=d"), ContentType.create(ct1, "c", "d"));
+
+    ContentType ct2 = ContentType.create("a/b;c=d");
+    assertEquals(ContentType.create("a/b;c=d;e=f"), ContentType.create(ct2, "e", "f"));
+    assertEquals(ContentType.create("a/b;c=g"), ContentType.create(ct2, "c", "g"));
+
+      assertNotEquals(ContentType.create(ct2, "c", "g"), ct2);
+  }
+
+  @Test
+  void parse() {
+    assertEquals(ContentType.APPLICATION_OCTET_STREAM, ContentType.parse("application/octet-stream"));
+
+    assertNull(ContentType.parse("a"));
+    assertNull(ContentType.parse("a/b;c"));
+    assertNull(ContentType.parse("a/b;c="));
+    assertNull(ContentType.parse("a/b;c= "));
+  }
+
+  @Test
+  void charsetUtf8() {
+    ContentType ct1 = ContentType.create("a/b;charset=utf8");
+    ContentType ct2 = ContentType.create("a/b;charset=utf-8");
+
+    assertNotEquals(ct1, ct2);
+    assertEquals(ct1.getType(), ct2.getType());
+    assertEquals(ct1.getSubtype(), ct2.getSubtype());
+    assertEquals("utf8", ct1.getParameters().get(ContentType.PARAMETER_CHARSET));
+    assertEquals("utf-8", ct2.getParameters().get(ContentType.PARAMETER_CHARSET));
+    assertEquals("utf-8", ct2.getParameter(ContentType.PARAMETER_CHARSET));
+
+    assertTrue(ct1.isCompatible(ct2));
+  }
+
+  @Test
+  void toContentTypeString() {
+    assertEquals("application/json;a=b;c=d",
+        ContentType.create(ContentType.create(ContentType.APPLICATION_JSON, "a", "b"), "c", "d")
+            .toContentTypeString());
+  }
+
+  private void createWrong(final String value) {
+    try {
+      ContentType.create(value);
+      fail("Expected exception not thrown.");
+    } catch (final IllegalArgumentException e) {
+      assertNotNull(e);
+    }
+  }
+
+  @Test
+  void firstFromValidMultiAcceptHeader() {
+
+    ContentType contentType = ContentType.fromAcceptHeader("application/xml ; q=0.9, application/xhtml+xml,*/*;q=0.8 ");
+
+    assertEquals(ContentType.APPLICATION_XML, contentType);
+
+  }
+
+  @Test
+  void missingMimeTypefromAcceptHeaderDefaultsToJson() {
+
+    ContentType contentType = ContentType.fromAcceptHeader(";q=0.9");
+
+    assertEquals(ContentType.JSON, contentType);
+
+  }
+
+  @Test
+  void fromValidSingleAcceptHeader() {
+
+    ContentType contentType = ContentType.fromAcceptHeader("application/xml");
+
+    assertEquals(ContentType.APPLICATION_XML, contentType);
+
+  }
+
+  @Test
+  void fromAcceptHeaderDefaultsToJsonIfNull() {
+
+    ContentType contentType = ContentType.fromAcceptHeader(null);
+
+    assertEquals(ContentType.JSON, contentType);
+
+  }
+
+  @Test
+  void fromAcceptHeaderDefaultsToJsonIfEmpty() {
+
+    ContentType contentType = ContentType.fromAcceptHeader("");
+
+    assertEquals(ContentType.JSON, contentType);
+
+  }
+
+  @Test
+  void fromAcceptHeaderDefaultsToJsonIfBlank() {
+
+    ContentType contentType = ContentType.fromAcceptHeader(" ");
+
+    assertEquals(ContentType.JSON, contentType);
+
+  }
+
+  @Test
+  void fromAcceptHeaderDefaultsToJsonIfInvalid() {
+
+    ContentType contentType = ContentType.fromAcceptHeader("invalid");
+
+    assertEquals(ContentType.JSON, contentType);
+
+  }
+
+  @Test
+  void fromAcceptHeaderDefaultsToJsonIfFirstValueBlank() {
+
+    ContentType contentType = ContentType.fromAcceptHeader("  ,text/plain ");
+
+    assertEquals(ContentType.JSON, contentType);
+
+  }
+
+}

@@ -1,0 +1,178 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced commons-lang3 StringUtils with Java standard library
+ */
+package org.sitenetsoft.olinguito.fit;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
+
+import org.sitenetsoft.olinguito.fit.metadata.Metadata;
+import org.sitenetsoft.olinguito.fit.methods.PATCH;
+import org.sitenetsoft.olinguito.fit.utils.Accept;
+import org.sitenetsoft.olinguito.fit.utils.ConstantKey;
+import org.sitenetsoft.olinguito.fit.utils.Constants;
+import org.sitenetsoft.olinguito.fit.utils.FSManager;
+import org.springframework.stereotype.Service;
+
+@Service
+@Path("/V40/Demo.svc")
+public class Demo extends Services {
+
+  public Demo() throws IOException {
+    super(new Metadata(FSManager.instance().
+        readRes("demo" + capitalize(Constants.get(ConstantKey.METADATA)), Accept.XML)));
+  }
+
+  private static String capitalize(final String str) {
+    if (str == null || str.isEmpty()) {
+      return str;
+    }
+    return Character.toUpperCase(str.charAt(0)) + str.substring(1);
+  }
+
+  private Response replaceServiceName(final Response response) {
+    try {
+      final String content = new String(((InputStream) response.getEntity()).readAllBytes(), Constants.ENCODING).
+          replaceAll("Static\\.svc", "Demo.svc");
+
+      final Response.ResponseBuilder builder = Response.status(response.getStatus());
+      for (String headerName : response.getHeaders().keySet()) {
+        for (Object headerValue : response.getHeaders().get(headerName)) {
+          builder.header(headerName, headerValue);
+        }
+      }
+
+      final byte[] contentBytes = content.getBytes(Constants.ENCODING);
+      final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      baos.write(contentBytes);
+
+      builder.header("Content-Length", baos.size());
+      builder.entity(new ByteArrayInputStream(baos.toByteArray()));
+
+      return builder.build();
+    } catch (Exception e) {
+      return response;
+    }
+  }
+
+  @GET
+  @Path("/$metadata")
+  @Produces(MediaType.APPLICATION_XML)
+  @Override
+  public Response getMetadata() {
+    return super.getMetadata(
+        "demo" + capitalize(Constants.get(ConstantKey.METADATA)));
+  }
+
+  @GET
+  @Path("/{entitySetName}({entityId})")
+  @Override
+  public Response getEntity(
+      @Context final UriInfo uriInfo,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @PathParam("entitySetName") final String entitySetName,
+      @PathParam("entityId") final String entityId,
+      @QueryParam("$format") @DefaultValue("") final String format,
+      @QueryParam("$expand") @DefaultValue("") final String expand,
+      @QueryParam("$select") @DefaultValue("") final String select) {
+
+    return replaceServiceName(super.getEntityInternal(uriInfo.getRequestUri().toASCIIString(),
+        accept, entitySetName, entityId, format, expand, select));
+  }
+
+  @GET
+  @Path("/{entitySetName}({entityId})/$value")
+  @Override
+  public Response getMediaEntity(
+      @Context final UriInfo uriInfo,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @PathParam("entitySetName") final String entitySetName,
+      @PathParam("entityId") final String entityId) {
+
+    return super.getMediaEntity(uriInfo, accept, entitySetName, entityId);
+  }
+
+  @POST
+  @Path("/{entitySetName}")
+  @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML, MediaType.APPLICATION_JSON })
+  @Consumes({ MediaType.APPLICATION_ATOM_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM })
+  @Override
+  public Response postNewEntity(
+      @Context final UriInfo uriInfo,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @HeaderParam("Content-Type") @DefaultValue("") final String contentType,
+      @HeaderParam("Prefer") @DefaultValue("") final String prefer,
+      @PathParam("entitySetName") final String entitySetName,
+      final String entity) {
+
+    return replaceServiceName(super.postNewEntity(uriInfo, accept, contentType, prefer, entitySetName, entity));
+  }
+
+  @PATCH
+  @Path("/{entitySetName}({entityId})")
+  @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML, MediaType.APPLICATION_JSON })
+  @Consumes({ MediaType.APPLICATION_ATOM_XML, MediaType.APPLICATION_JSON })
+  @Override
+  public Response patchEntity(
+      @Context final UriInfo uriInfo,
+      @HeaderParam("Accept") @DefaultValue("") final String accept,
+      @HeaderParam("Content-Type") @DefaultValue("") final String contentType,
+      @HeaderParam("Prefer") @DefaultValue("") final String prefer,
+      @HeaderParam("If-Match") @DefaultValue("") final String ifMatch,
+      @PathParam("entitySetName") final String entitySetName,
+      @PathParam("entityId") final String entityId,
+      final String changes) {
+
+    return replaceServiceName(super.patchEntity(uriInfo, accept, contentType, prefer, ifMatch, entitySetName, entityId,
+        changes));
+  }
+
+  @PUT
+  @Produces({ MediaType.APPLICATION_ATOM_XML, MediaType.APPLICATION_JSON })
+  @Consumes({ MediaType.WILDCARD, MediaType.APPLICATION_OCTET_STREAM })
+  @Path("/{entitySetName}({entityId})/$value")
+  @Override
+  public Response replaceMediaEntity(
+      @Context final UriInfo uriInfo,
+      @HeaderParam("Prefer") @DefaultValue("") final String prefer,
+      @PathParam("entitySetName") final String entitySetName,
+      @PathParam("entityId") final String entityId,
+      final String value) {
+
+    return super.replaceMediaEntity(uriInfo, prefer, entitySetName, entityId, value);
+  }
+}

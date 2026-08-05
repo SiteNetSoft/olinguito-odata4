@@ -1,0 +1,125 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Improved test assertions
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ */
+package org.sitenetsoft.olinguito.server.core.deserializer.json;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.util.List;
+
+import org.sitenetsoft.olinguito.commons.api.data.Parameter;
+import org.sitenetsoft.olinguito.commons.api.data.Property;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException.MessageKeys;
+import org.sitenetsoft.olinguito.server.core.deserializer.AbstractODataDeserializerTest;
+import org.junit.jupiter.api.Test;
+
+class ODataJsonDeserializerFunctionParametersTest extends AbstractODataDeserializerTest {
+
+  @Test
+  void empty() throws Exception {
+    final Parameter parameter = deserialize("{}", "UFCRTETTwoKeyNavParamCTTwoPrim", "ParameterCTTwoPrim");
+    assertNotNull(parameter);
+    assertTrue(parameter.isComplex());
+  }
+
+  @Test
+  void primitive() throws Exception {
+    final Parameter parameter = deserialize("'test'", "UFCRTCollStringTwoParam", "ParameterString");
+    assertNotNull(parameter);
+    assertTrue(parameter.isPrimitive());
+    assertFalse(parameter.isCollection());
+    assertEquals("test", parameter.getValue());
+  }
+
+  @Test
+  void complex() throws Exception {
+    final Parameter parameter = deserialize("{ \"PropertyString\": \"Yes\", \"PropertyInt16\": 42 }",
+        "UFCRTETTwoKeyNavParamCTTwoPrim", "ParameterCTTwoPrim");
+    assertNotNull(parameter);
+    assertTrue(parameter.isComplex());
+    assertFalse(parameter.isCollection());
+    final List<Property> complexValues = parameter.asComplex().getValue();
+    assertEquals((short) 42, complexValues.get(0).getValue());
+    assertEquals("Yes", complexValues.get(1).getValue());
+  }
+
+  @Test
+  void ignoreODataAnnotations() throws Exception {
+    final Parameter parameter = deserialize("{\"PropertyInt16@odata.type\":\"Edm.Int16\",\"PropertyInt16\":42,"
+        + "\"PropertyString\":\"Test\"}",
+        "UFCRTETTwoKeyNavParamCTTwoPrim", "ParameterCTTwoPrim");
+    assertNotNull(parameter);
+    assertTrue(parameter.isComplex());
+    assertFalse(parameter.isCollection());
+    final List<Property> complexValues = parameter.asComplex().getValue();
+    assertEquals((short) 42, complexValues.get(0).getValue());
+    assertEquals("Test", complexValues.get(1).getValue());
+  }
+
+  @Test
+  void parameterWithNullLiteral() throws Exception {
+    final Parameter parameter = deserialize(null, "UFCRTCollCTTwoPrimTwoParam", "ParameterString");
+    assertNotNull(parameter);
+    assertNull(parameter.getValue());
+
+    expectException(null, "UFCRTStringTwoParam", "ParameterInt16", MessageKeys.INVALID_VALUE_FOR_PROPERTY);
+  }
+
+  @Test
+  void noContent() throws Exception {
+    expectException("", "UFCRTETTwoKeyNavParamCTTwoPrim", "ParameterCTTwoPrim", MessageKeys.JSON_SYNTAX_EXCEPTION);
+  }
+
+  @Test
+  void wrongType() throws Exception {
+    expectException("null", "UFCRTStringTwoParam", "ParameterInt16", MessageKeys.INVALID_VALUE_FOR_PROPERTY);
+    expectException("\"42\"", "UFCRTStringTwoParam", "ParameterInt16", MessageKeys.INVALID_VALUE_FOR_PROPERTY);
+    expectException("'42'", "UFCRTStringTwoParam", "ParameterInt16", MessageKeys.INVALID_VALUE_FOR_PROPERTY);
+    expectException("123456", "UFCRTStringTwoParam", "ParameterInt16", MessageKeys.INVALID_VALUE_FOR_PROPERTY);
+    expectException("[42]", "UFCRTStringTwoParam", "ParameterInt16", MessageKeys.INVALID_VALUE_FOR_PROPERTY);
+  }
+
+  private Parameter deserialize(final String input, final String functionName, final String parameterName)
+      throws DeserializerException {
+    return OData.newInstance().createFixedFormatDeserializer()
+        .parameter(input,
+            edm.getUnboundFunctions(new FullQualifiedName(NAMESPACE, functionName)).get(0)
+                .getParameter(parameterName));
+  }
+
+  private void expectException(final String input, final String functionName, final String parameterName,
+      final DeserializerException.MessageKeys messageKey) {
+    try {
+      deserialize(input, functionName, parameterName);
+      fail("Expected exception not thrown.");
+    } catch (final DeserializerException e) {
+      assertEquals(messageKey, e.getMessageKey());
+    }
+  }
+}

@@ -1,0 +1,76 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ */
+package org.sitenetsoft.olinguito.netty.server.core;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.netty.server.api.ODataNetty;
+import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
+import org.junit.jupiter.api.Test;
+
+class ODataNettyImplTest {
+
+  private final ODataNetty odata = ODataNetty.newInstance();
+
+  @Test
+  void serializerSupportedFormats() throws SerializerException {
+    assertNotNull(odata.createSerializer(ContentType.JSON_NO_METADATA));
+    assertNotNull(odata.createSerializer(ContentType.JSON));
+    assertNotNull(odata.createSerializer(ContentType.APPLICATION_JSON));
+    assertNotNull(odata.createSerializer(ContentType.JSON_FULL_METADATA));
+    
+  }
+
+  @Test
+  void deserializerSupportedFormats() throws DeserializerException {
+    assertNotNull(odata.createDeserializer(ContentType.JSON_NO_METADATA));
+    assertNotNull(odata.createDeserializer(ContentType.JSON));
+    assertNotNull(odata.createDeserializer(ContentType.JSON_FULL_METADATA));
+    assertNotNull(odata.createDeserializer(ContentType.APPLICATION_JSON));
+  }
+
+  @Test
+  void serializerFixedFormat() throws DeserializerException {
+    assertNotNull(odata.createFixedFormatSerializer());
+  }
+  
+  @Test
+  void deserializerFixedFormat() throws DeserializerException {
+    assertNotNull(odata.createFixedFormatDeserializer());
+  }
+  
+  @Test
+  void testCreateETagHelper() {
+    assertNotNull(odata.createETagHelper());
+  }
+  
+  @Test
+  void testCreateUriHelper() {
+    assertNotNull(odata.createUriHelper());
+  }
+  
+  @Test
+  void testCreateDebugResponseHelper() {
+    assertNotNull(odata.createDebugResponseHelper("json"));
+  }
+}

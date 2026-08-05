@@ -18,7 +18,7 @@
  */
 package myservice.mynamespace.data;
 
-import org.apache.olingo.commons.api.data.Entity;
+import org.sitenetsoft.olinguito.commons.api.data.Entity;
 
 public class DemoEntityActionResult {
   private Entity entity;

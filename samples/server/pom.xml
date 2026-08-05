@@ -18,6 +18,8 @@
   specific language governing permissions and limitations
   under the License.
 
+  Copyright 2026 SiteNetSoft - Updated SLF4J version and web.xml namespace
+
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -28,14 +30,14 @@
 	<name>${project.artifactId}</name>
 
 	<parent>
-		<groupId>org.apache.olingo</groupId>
+		<groupId>org.sitenetsoft.olinguito</groupId>
 		<artifactId>odata-samples</artifactId>
 		<version>5.0.1-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 
 	<properties>
-		<version.slf4j>1.7.7</version.slf4j>
+		<version.slf4j>2.0.17</version.slf4j>
 	</properties>
 
 	<build>
@@ -59,25 +61,30 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.olingo</groupId>
+			<groupId>org.sitenetsoft.olinguito</groupId>
 			<artifactId>odata-server-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.olingo</groupId>
+			<groupId>org.sitenetsoft.olinguito</groupId>
 			<artifactId>odata-server-core</artifactId>
 			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.olingo</groupId>
+			<groupId>org.sitenetsoft.olinguito</groupId>
 			<artifactId>odata-commons-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.olingo</groupId>
+			<groupId>org.sitenetsoft.olinguito</groupId>
 			<artifactId>odata-commons-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.sitenetsoft.olinguito</groupId>
+			<artifactId>server-adapter-servlet</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 

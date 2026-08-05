@@ -1,0 +1,98 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package org.sitenetsoft.olinguito.server.core.uri.queryoption.expression;
+
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
+import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoResource;
+import org.sitenetsoft.olinguito.server.api.uri.UriResource;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourcePartTyped;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.ExpressionVisitException;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.ExpressionVisitor;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Member;
+import org.sitenetsoft.olinguito.server.core.uri.UriInfoImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceActionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceTypedImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceWithKeysImpl;
+
+public class MemberImpl implements Member {
+
+  private final UriInfoResource path;
+  private final EdmType startTypeFilter;
+
+  public MemberImpl(final UriInfoResource path, final EdmType startTypeFilter) {
+    this.path = path;
+    this.startTypeFilter = startTypeFilter;
+  }
+
+  @Override
+  public UriInfoResource getResourcePath() {
+    return path;
+  }
+
+  @Override
+  public EdmType getStartTypeFilter() {
+    return startTypeFilter;
+  }
+
+  @Override
+  public <T> T accept(final ExpressionVisitor<T> visitor) throws ExpressionVisitException, ODataApplicationException {
+    return visitor.visitMember(this);
+  }
+
+  @Override
+  public EdmType getType() {
+    UriInfoImpl uriInfo = (UriInfoImpl) path;
+    UriResourceImpl lastResourcePart = (UriResourceImpl) uriInfo.getLastResourcePart();
+
+    if (lastResourcePart instanceof UriResourceWithKeysImpl lastKeyPred) {
+      if (lastKeyPred.getTypeFilterOnEntry() != null) {
+        return lastKeyPred.getTypeFilterOnEntry();
+      } else if (lastKeyPred.getTypeFilterOnCollection() != null) {
+        return lastKeyPred.getTypeFilterOnCollection();
+      }
+      return lastKeyPred.getType();
+    } else if (lastResourcePart instanceof UriResourceTypedImpl lastTyped) {
+      EdmType type = lastTyped.getTypeFilter();
+      if (type != null) {
+        return type;
+      }
+      return lastTyped.getType();
+    } else if (lastResourcePart instanceof UriResourceActionImpl actionImpl) {
+      return actionImpl.getType();
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public boolean isCollection() {
+    UriInfoImpl uriInfo = (UriInfoImpl) path;
+    UriResource lastResourcePart = uriInfo.getLastResourcePart();
+    return lastResourcePart instanceof UriResourcePartTyped partTyped ?
+        partTyped.isCollection() :
+        false;
+  }
+
+  @Override
+  public String toString() {
+    return path.getUriResourceParts().toString() + (startTypeFilter == null ? "" : startTypeFilter);
+  }
+}

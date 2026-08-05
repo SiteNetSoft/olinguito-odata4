@@ -1,0 +1,132 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ */
+package org.sitenetsoft.olinguito.server.core.etag;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Collections;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
+class ETagParserTest {
+
+  private static final ETagHelperImpl eTagHelper = new ETagHelperImpl();
+
+  @Test
+  void empty() {
+    final ETagInformation eTagInformation = eTagHelper.createETagInformation(null);
+    assertFalse(eTagInformation.isAll());
+    assertNotNull(eTagInformation.getETags());
+    assertTrue(eTagInformation.getETags().isEmpty());
+  }
+
+  @Test
+  void loneStar() {
+    final ETagInformation eTagInformation = eTagHelper.createETagInformation(Collections.singleton("*"));
+    assertTrue(eTagInformation.isAll());
+    assertNotNull(eTagInformation.getETags());
+    assertTrue(eTagInformation.getETags().isEmpty());
+  }
+
+  @Test
+  void starWins() {
+    final ETagInformation eTagInformation = eTagHelper.createETagInformation(List.of("\"ETag\"", "*"));
+    assertTrue(eTagInformation.isAll());
+    assertNotNull(eTagInformation.getETags());
+    assertTrue(eTagInformation.getETags().isEmpty());
+  }
+
+  @Test
+  void starAsEtagAndEmptyEtag() {
+    final ETagInformation eTagInformation = eTagHelper.createETagInformation(
+        Collections.singleton("\"*\", \"\""));
+    assertFalse(eTagInformation.isAll());
+    assertNotNull(eTagInformation.getETags());
+    assertThat(eTagInformation.getETags().size(), equalTo(2));
+    assertThat(eTagInformation.getETags(), hasItems("\"*\"", "\"\""));
+  }
+
+  @Test
+  void severalEtags() {
+    final ETagInformation eTagInformation = eTagHelper.createETagInformation(
+        List.of("\"ETag1\"", "\"ETag2\",, , ,W/\"ETag3\", ,"));
+    assertFalse(eTagInformation.isAll());
+    assertNotNull(eTagInformation.getETags());
+    assertThat(eTagInformation.getETags().size(), equalTo(3));
+    assertThat(eTagInformation.getETags(), hasItems("\"ETag1\"", "\"ETag2\"", "W/\"ETag3\""));
+  }
+
+  @Test
+  void duplicateEtagValues() {
+    final ETagInformation eTagInformation = eTagHelper.createETagInformation(
+        List.of("\"ETag1\"", "\"ETag2\", W/\"ETag1\", \"ETag1\""));
+    assertFalse(eTagInformation.isAll());
+    assertNotNull(eTagInformation.getETags());
+    assertThat(eTagInformation.getETags().size(), equalTo(3));
+    assertThat(eTagInformation.getETags(), hasItems("\"ETag1\"", "\"ETag2\"", "W/\"ETag1\""));
+  }
+
+  @Test
+  void specialCharacters() {
+    final ETagInformation eTagInformation = eTagHelper.createETagInformation(
+        Collections.singleton("\"!#$%&'()*+,-./:;<=>?@[]^_`{|}~¡\u00FF\", \"ETag2\""));
+    assertFalse(eTagInformation.isAll());
+    assertNotNull(eTagInformation.getETags());
+    assertThat(eTagInformation.getETags().size(), equalTo(2));
+    assertThat(eTagInformation.getETags(), hasItems(
+        "\"!#$%&'()*+,-./:;<=>?@[]^_`{|}~¡\u00FF\"", "\"ETag2\""));
+  }
+
+  @Test
+  void wrongFormat() {
+    final ETagInformation eTagInformation = eTagHelper.createETagInformation(
+        List.of("\"ETag1\", ETag2", "w/\"ETag3\"", "W//\"ETag4\"", "W/ETag5",
+            "\"\"ETag6\"\"", " \"ETag7\"\"ETag7\" ", "\"ETag8\" \"ETag8\"",
+            "\"ETag 9\"", "\"ETag10\""));
+    assertFalse(eTagInformation.isAll());
+    assertNotNull(eTagInformation.getETags());
+    assertThat(eTagInformation.getETags().size(), equalTo(2));
+    assertThat(eTagInformation.getETags(), hasItems("\"ETag1\"", "\"ETag10\""));
+  }
+
+  @Test
+  void match() {
+    assertFalse(eTagHelper.createETagInformation(Collections.emptySet()).isMatchedBy("\"ETag\""));
+    assertFalse(eTagHelper.createETagInformation(Collections.singleton("\"ETag\"")).isMatchedBy(null));
+    assertTrue(eTagHelper.createETagInformation(Collections.singleton("\"ETag\"")).isMatchedBy("\"ETag\""));
+    assertTrue(eTagHelper.createETagInformation(Collections.singleton("*")).isMatchedBy("\"ETag\""));
+    assertTrue(eTagHelper.createETagInformation(Collections.singleton("\"ETag\"")).isMatchedBy("W/\"ETag\""));
+    assertTrue(eTagHelper.createETagInformation(Collections.singleton("W/\"ETag\"")).isMatchedBy("\"ETag\""));
+    assertFalse(eTagHelper.createETagInformation(Collections.singleton("\"ETag\"")).isMatchedBy("W/\"ETag2\""));
+    assertFalse(eTagHelper.createETagInformation(Collections.singleton("W/\"ETag\"")).isMatchedBy("\"ETag2\""));
+    assertTrue(eTagHelper.createETagInformation(List.of("\"ETag1\",\"ETag2\"", "\"ETag3\",\"ETag4\""))
+        .isMatchedBy("\"ETag4\""));
+    assertFalse(eTagHelper.createETagInformation(List.of("\"ETag1\",\"ETag2\"", "\"ETag3\",\"ETag4\""))
+        .isMatchedBy("\"ETag5\""));
+  }
+}

@@ -1,0 +1,201 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ */
+package org.sitenetsoft.olinguito.server.core.edm.provider;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmException;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.constants.EdmTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlComplexType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEdmProvider;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEnumType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlTypeDefinition;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmPropertyImpl;
+import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
+import org.junit.jupiter.api.Test;
+
+class EdmPropertyImplTest {
+
+  @Test
+  void initialProperty() {
+    EdmProperty property = new EdmPropertyImpl(mock(Edm.class), new CsdlProperty());
+
+    assertTrue(property.isNullable());
+    assertFalse(property.isCollection());
+    assertNull(property.getName());
+    assertNull(property.getMapping());
+    assertNull(property.getMaxLength());
+    assertNull(property.getPrecision());
+    assertNull(property.getScale());
+    assertNull(property.getScaleAsString());
+    assertNull(property.getSrid());
+    assertNotNull(property.getAnnotations());
+    assertTrue(property.getAnnotations().isEmpty());
+
+    try {
+      property.getType();
+      fail("EdmException expected");
+    } catch (EdmException e) {
+      assertEquals("Property null must hava a full qualified type.", e.getMessage());
+    }
+   
+    try {
+      property.isPrimitive();
+      fail("EdmException expected");
+    } catch (EdmException e) {
+      assertEquals("Property null must hava a full qualified type.", e.getMessage());
+    }
+  }
+  
+  @Test
+  void getTypeReturnsPrimitiveType() {
+    EdmProviderImpl edm = new EdmProviderImpl(mock(CsdlEdmProvider.class));
+    CsdlProperty propertyProvider = new CsdlProperty();
+    propertyProvider.setType(EdmPrimitiveTypeKind.Binary.getFullQualifiedName());
+    final EdmProperty property = new EdmPropertyImpl(edm, propertyProvider);
+    assertTrue(property.isPrimitive());
+    final EdmType type = property.getType();
+    assertEquals(EdmTypeKind.PRIMITIVE, type.getKind());
+    assertEquals(EdmPrimitiveType.EDM_NAMESPACE, type.getNamespace());
+    assertEquals(EdmPrimitiveTypeKind.Binary.toString(), type.getName());
+  }
+
+  @Test
+  void getTypeReturnsComplexType() throws Exception {
+    CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
+    EdmProviderImpl edm = new EdmProviderImpl(provider);
+    final FullQualifiedName complexTypeName = new FullQualifiedName("ns", "complex");
+    CsdlComplexType complexTypeProvider = new CsdlComplexType();
+    when(provider.getComplexType(complexTypeName)).thenReturn(complexTypeProvider);
+    CsdlProperty propertyProvider = new CsdlProperty();
+    propertyProvider.setType(complexTypeName);
+    final EdmProperty property = new EdmPropertyImpl(edm, propertyProvider);
+    assertFalse(property.isCollection());
+    assertFalse(property.isPrimitive());
+    final EdmType type = property.getType();
+    assertEquals(EdmTypeKind.COMPLEX, type.getKind());
+    assertEquals("ns", type.getNamespace());
+    assertEquals("complex", type.getName());
+  }
+
+  @Test
+  void getTypeReturnsEnumType() throws Exception {
+    CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
+    EdmProviderImpl edm = new EdmProviderImpl(provider);
+    final FullQualifiedName enumTypeName = new FullQualifiedName("ns", "enum");
+    CsdlEnumType enumTypeProvider = new CsdlEnumType();
+    when(provider.getEnumType(enumTypeName)).thenReturn(enumTypeProvider);
+    CsdlProperty propertyProvider = new CsdlProperty();
+    propertyProvider.setType(enumTypeName);
+    final EdmProperty property = new EdmPropertyImpl(edm, propertyProvider);
+    assertFalse(property.isCollection());
+    assertFalse(property.isPrimitive());
+    final EdmType type = property.getType();
+    assertEquals(EdmTypeKind.ENUM, type.getKind());
+    assertEquals("ns", type.getNamespace());
+    assertEquals("enum", type.getName());
+  }
+
+  @Test
+  void getTypeReturnsTypeDefinition() throws Exception {
+    CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
+    EdmProviderImpl edm = new EdmProviderImpl(provider);
+    final FullQualifiedName typeName = new FullQualifiedName("ns", "definition");
+    CsdlTypeDefinition typeProvider =
+        new CsdlTypeDefinition().setUnderlyingType(new FullQualifiedName("Edm", "String"));
+    when(provider.getTypeDefinition(typeName)).thenReturn(typeProvider);
+    CsdlProperty propertyProvider = new CsdlProperty();
+    propertyProvider.setType(typeName);
+    final EdmProperty property = new EdmPropertyImpl(edm, propertyProvider);
+    assertFalse(property.isPrimitive());
+    final EdmType type = property.getType();
+    assertEquals(EdmTypeKind.DEFINITION, type.getKind());
+    assertEquals("ns", type.getNamespace());
+    assertEquals("definition", type.getName());
+  }
+
+  @Test
+  void getTypeReturnsWrongType() throws Exception {
+      assertThrows(EdmException.class, () -> {
+          CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
+          EdmProviderImpl edm = new EdmProviderImpl(provider);
+          final CsdlProperty propertyProvider = new CsdlProperty()
+          .setType(new FullQualifiedName("ns", "wrong"));
+          final EdmProperty property = new EdmPropertyImpl(edm, propertyProvider);
+          property.getType();
+          fail();
+      });
+  }
+
+  @Test
+  void getTypeReturnsNoTypeKind() throws Exception {
+      assertThrows(EdmException.class, () -> {
+          CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
+          EdmProviderImpl edm = new EdmProviderImpl(provider);
+          final CsdlProperty propertyProvider = new CsdlProperty()
+          .setType(new FullQualifiedName(EdmPrimitiveType.EDM_NAMESPACE, "type"));
+          final EdmProperty property = new EdmPropertyImpl(edm, propertyProvider);
+          property.getType();
+          fail();
+      });
+  }
+
+  @Test
+  void facets() {
+    EdmProviderImpl edm = new EdmProviderImpl(mock(CsdlEdmProvider.class));
+    CsdlProperty propertyProvider = new CsdlProperty();
+    propertyProvider.setType(EdmPrimitiveTypeKind.String.getFullQualifiedName());
+    propertyProvider.setPrecision(42);
+    propertyProvider.setScale(12);
+    propertyProvider.setScaleAsString("12");
+    propertyProvider.setMaxLength(128);
+    propertyProvider.setUnicode(true);
+    propertyProvider.setNullable(false);
+    propertyProvider.setDefaultValue("x");
+    final EdmProperty property = new EdmPropertyImpl(edm, propertyProvider);
+    assertTrue(property.isPrimitive());
+    assertNull(property.getMapping());
+    assertNull(property.getMimeType());
+    assertEquals(Integer.valueOf(42), property.getPrecision());
+    assertEquals(Integer.valueOf(12), property.getScale());
+    assertEquals("12", property.getScaleAsString());
+    assertEquals(Integer.valueOf(128), property.getMaxLength());
+    assertTrue(property.isUnicode());
+    assertFalse(property.isNullable());
+    assertEquals("x", property.getDefaultValue());
+    assertNull(property.getSrid());
+  }
+}
