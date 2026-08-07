@@ -89,28 +89,28 @@
   </modules>
 
   <properties>
-    <commons.codec.version>1.22.0</commons.codec.version>
+    <commons.codec.version>1.22.1</commons.codec.version>
     <commons.io.version>2.22.0</commons.io.version>
     <commons.lang3.version>3.20.0</commons.lang3.version>
     <commons.vfs.version>2.10.0</commons.vfs.version>
     <esigate.version>5.3</esigate.version>
-    <cxf.version>4.1.7</cxf.version>
-    <netty.version>4.1.135.Final</netty.version>
-    <vertx.version>4.5.28</vertx.version>
+    <cxf.version>4.1.8</cxf.version>
+    <netty.version>4.1.136.Final</netty.version>
+    <vertx.version>4.5.30</vertx.version>
 
     <velocity-engine.version>2.4.1</velocity-engine.version>
     <maven.plugin.api.version>3.9.9</maven.plugin.api.version>
     <maven.plugin.tools.version>3.13.1</maven.plugin.tools.version>
     <maven.bundle.plugin.version>5.1.9</maven.bundle.plugin.version>
-    <hc.client5.version>5.6.1</hc.client5.version>
-    <hc.core5.version>5.4.2</hc.core5.version>
+    <hc.client5.version>5.6.3</hc.client5.version>
+    <hc.core5.version>5.4.3</hc.core5.version>
     <okhttp.version>5.4.0</okhttp.version>
-    <jackson.version>2.22.0</jackson.version>
-    <jackson-annotations.version>2.21</jackson-annotations.version>
-    <jackson-databind.version>2.22.0</jackson-databind.version>
+    <jackson.version>2.22.1</jackson.version>
+    <jackson-annotations.version>2.22</jackson-annotations.version>
+    <jackson-databind.version>2.22.1</jackson-databind.version>
     <aalto-xml.version>1.4.0</aalto-xml.version>
     <woodstox.stax2-api.version>4.3.0</woodstox.stax2-api.version>
-    <xmlunit.version>2.12.0</xmlunit.version>
+    <xmlunit.version>2.13.0</xmlunit.version>
     <mockito.core.version>5.23.0</mockito.core.version>
     <junit-jupiter.version>5.14.4</junit-jupiter.version>
 
@@ -130,8 +130,8 @@
     <geronimo.version>1.0.1</geronimo.version>
 
     <tomcat.servlet.port>9080</tomcat.servlet.port>
-    <tomcat.version>10.1.55</tomcat.version>
-    <quarkus.version>3.37.0</quarkus.version>
+    <tomcat.version>10.1.57</tomcat.version>
+    <quarkus.version>3.38.1</quarkus.version>
 
     <!-- for osgi integration testing -->
     <osgi.version>4.2.0</osgi.version>

@@ -80,7 +80,7 @@
       <id>test-quarkus</id>
       <properties>
         <test.server.type>quarkus</test.server.type>
-        <quarkus.version>3.37.0</quarkus.version>
+        <quarkus.version>3.38.1</quarkus.version>
       </properties>
       <dependencyManagement>
         <dependencies>
