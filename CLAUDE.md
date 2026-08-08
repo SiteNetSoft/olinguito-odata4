@@ -93,7 +93,7 @@ client-adapter-quarkus
 - Netty for async streaming support
 - Apache HttpComponents for HTTP client (default adapter)
 - OkHttp 5.x for HTTP client (alternative adapter, used by Android module)
-- Embedded Tomcat 10.1.52 for integration tests (port 9080)
+- Embedded Tomcat 10.1.x for integration tests (port 9080)
 
 **Package namespace:** `org.sitenetsoft.olinguito.*`
 
@@ -118,5 +118,5 @@ All development happens on `master` (single-branch repo). The runtime-decoupling
 - **Android modernization**: Replaced deprecated `AndroidHttpClient` with OkHttp adapter
 - **Karaf OSGi**: Updated features.xml bundles to match new module structure; renamed features from `olingo-*` to `olinguito-*`
 - **Samples/Tutorials**: Migrated from javax.servlet 2.5 to Jakarta Servlet 6.1.0; updated web.xml namespaces to Jakarta EE 6.0
-- **Quarkus**: Updated to 3.37.0 (Vert.x aligned to 4.5.28)
+- **Quarkus**: Updated to 3.38.1 (Vert.x aligned to 4.5.30)
 - **Upstream bug-fix ports**: 80 Apache Olingo JIRA tickets + 5 GitHub PRs ported with tests (full audit of OLINGO-700..1647 completed; remaining candidates deliberately deferred)
