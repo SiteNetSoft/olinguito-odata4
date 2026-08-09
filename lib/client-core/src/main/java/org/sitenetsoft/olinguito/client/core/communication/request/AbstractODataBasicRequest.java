@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality improvements
+ * Copyright 2026 SiteNetSoft - Port OLINGO-1240: terminate batch item payload with CRLF
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -107,7 +108,8 @@ public abstract class AbstractODataBasicRequest<T extends ODataResponse>
 
       final InputStream payload = getPayload();
       if (payload != null) {
-        req.rawAppend(getPayload().readAllBytes());
+        req.rawAppend(payload.readAllBytes());
+        req.rawAppend(CRLF);
       }
     } catch (IOException e) {
       throw new IllegalStateException(e);
