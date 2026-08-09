@@ -30,6 +30,7 @@
  * assuming "Geo" prefix means geospatial type
  * Copyright 2026 SiteNetSoft - OLINGO-1236: accept "NaN"/"INF"/"-INF" string
  * values for Single/Double properties
+ * Copyright 2026 SiteNetSoft - Add OpenType support (dynamic property deserialization)
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -253,9 +254,78 @@ public class ODataJsonDeserializer implements ODataDeserializer {
     // consume remaining json node fields
     consumeRemainingJsonNodeFields(edmEntityType, tree, entity);
 
+    // consume dynamic properties for open types
+    if (edmEntityType.isOpenType()) {
+      consumeDynamicProperties(edmEntityType, tree, entity.getProperties());
+    }
+
     assertJsonNodeIsEmpty(tree);
 
     return entity;
+  }
+
+  /**
+   * Consumes remaining fields on an open type as dynamic primitive properties. Complex-valued fields
+   * are left untouched (dynamic complex values are unsupported) and fall through to
+   * {@link #assertJsonNodeIsEmpty(JsonNode)} as unknown content.
+   *
+   * @param edmType edm structured type which is open
+   * @param node json node which is consumed
+   * @param properties the entity's property list to append dynamic properties to
+   * @throws DeserializerException if an exception during consumation occurs
+   */
+  private void consumeDynamicProperties(final EdmStructuredType edmType, final ObjectNode node,
+      final List<Property> properties) throws DeserializerException {
+    final List<String> consumed = new ArrayList<>();
+    final Iterator<Entry<String, JsonNode>> fields = node.fields();
+    while (fields.hasNext()) {
+      final Entry<String, JsonNode> field = fields.next();
+      final String name = field.getKey();
+      if (name.contains(Constants.AT)) {
+        continue;
+      }
+      final JsonNode value = field.getValue();
+      if (value.isObject()) {
+        continue;
+      }
+      properties.add(createDynamicProperty(name, value));
+      consumed.add(name);
+    }
+    node.remove(consumed);
+  }
+
+  private Property createDynamicProperty(final String name, final JsonNode value) {
+    final Property property = new Property();
+    property.setName(name);
+    if (value.isNull()) {
+      property.setValue(ValueType.PRIMITIVE, null);
+      return property;
+    }
+    property.setType(inferPrimitiveTypeName(value));
+    property.setValue(ValueType.PRIMITIVE, inferPrimitiveValue(value));
+    return property;
+  }
+
+  private String inferPrimitiveTypeName(final JsonNode value) {
+    return (value.isShort() ? EdmPrimitiveTypeKind.Int16
+        : value.isInt() ? EdmPrimitiveTypeKind.Int32
+        : value.isLong() ? EdmPrimitiveTypeKind.Int64
+        : value.isBoolean() ? EdmPrimitiveTypeKind.Boolean
+        : value.isFloat() ? EdmPrimitiveTypeKind.Single
+        : value.isDouble() ? EdmPrimitiveTypeKind.Double
+        : value.isBigDecimal() ? EdmPrimitiveTypeKind.Decimal
+        : EdmPrimitiveTypeKind.String).getFullQualifiedName().getFullQualifiedNameAsString();
+  }
+
+  private Object inferPrimitiveValue(final JsonNode value) {
+    return value.isShort() ? value.shortValue()
+        : value.isInt() ? value.intValue()
+        : value.isLong() ? value.longValue()
+        : value.isBoolean() ? value.booleanValue()
+        : value.isFloat() ? value.floatValue()
+        : value.isDouble() ? value.doubleValue()
+        : value.isBigDecimal() ? value.decimalValue()
+        : value.asText();
   }
 
   private void consumeDeltaJsonNodeFields(EdmEntityType edmEntityType, ObjectNode node,
