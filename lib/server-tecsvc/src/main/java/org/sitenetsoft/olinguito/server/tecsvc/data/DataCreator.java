@@ -20,6 +20,8 @@
  * Copyright 2026 SiteNetSoft - Replace Charset.forName() with StandardCharsets
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
+ *
+ * Copyright 2026 SiteNetSoft - Add OpenType support (tecsvc ETOpen model)
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -114,7 +116,8 @@ public class DataCreator {
     data.put("ETBaseCont", createETBaseCont(edm, odata));
     data.put("ETTwoCont", createETTwoCont(edm, odata));
     data.put("ESStreamOnComplexProp", createETStreamOnComplexProp(edm, odata));
-    
+    data.put("ESOpen", createESOpen(edm, odata));
+
     linkSINav(data);
     linkESTwoPrim(data);
     linkESAllPrim(data);
@@ -1069,7 +1072,30 @@ public class DataCreator {
     createOperations("ESTwoPrim", entityCollection, EntityTypeProvider.nameETTwoPrim);
     return entityCollection;
   }
-  
+
+  private EntityCollection createESOpen(final Edm edm, final OData odata) {
+    EntityCollection entityCollection = new EntityCollection();
+
+    entityCollection.getEntities().add(new Entity()
+        .addProperty(createPrimitive("PropertyInt16", (short) 1))
+        .addProperty(createPrimitive("PropertyString", "open type 1"))
+        .addProperty(createPrimitive("DynamicString", "dynamic"))
+        .addProperty(createPrimitive("DynamicInt", 42L)));
+
+    entityCollection.getEntities().add(new Entity()
+        .addProperty(createPrimitive("PropertyInt16", (short) 2))
+        .addProperty(createPrimitive("PropertyString", "open type 2"))
+        .addProperty(createPrimitive("DynamicInt", 7L)));
+
+    entityCollection.getEntities().add(new Entity()
+        .addProperty(createPrimitive("PropertyInt16", (short) 3))
+        .addProperty(createPrimitive("PropertyString", "open type 3")));
+
+    setEntityType(entityCollection, edm.getEntityType(EntityTypeProvider.nameETOpen));
+    createEntityId(edm, odata, "ESOpen", entityCollection);
+    return entityCollection;
+  }
+
   private EntityCollection createESTwoPrimDerived(final Edm edm, final OData odata) {
     EntityCollection entityCollection = new EntityCollection();
 

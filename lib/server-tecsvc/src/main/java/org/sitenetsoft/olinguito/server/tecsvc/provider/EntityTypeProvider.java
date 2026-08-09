@@ -17,6 +17,8 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ *
+ * Copyright 2026 SiteNetSoft - Add OpenType support (tecsvc ETOpen model)
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
@@ -114,7 +116,9 @@ public class EntityTypeProvider {
 
   public static final FullQualifiedName nameETKeyAsSegmentStringNavKeyAsSegment =
           new FullQualifiedName(SchemaProvider.NAMESPACE, "ETKeyAsSegmentStringNavKeyAsSegment");
-  
+
+  public static final FullQualifiedName nameETOpen = new FullQualifiedName(SchemaProvider.NAMESPACE, "ETOpen");
+
   public CsdlEntityType getEntityType(final FullQualifiedName entityTypeName) throws ODataException {
     if(entityTypeName.equals(nameETAllPrimDefaultValues)){        
         return new CsdlEntityType()
@@ -619,6 +623,13 @@ public class EntityTypeProvider {
               .setProperties(List.of(
                       PropertyProvider.propertyString_NotNullable))
               .setNavigationProperties(List.of(PropertyProvider.navPropertyKeyAsSegment));
+    } else if (entityTypeName.equals(nameETOpen)) {
+      return new CsdlEntityType()
+          .setName("ETOpen")
+          .setOpenType(true)
+          .setKey(List.of(new CsdlPropertyRef().setName("PropertyInt16")))
+          .setProperties(List.of(
+              PropertyProvider.propertyInt16_NotNullable, PropertyProvider.propertyString));
     }
     return null;
   }

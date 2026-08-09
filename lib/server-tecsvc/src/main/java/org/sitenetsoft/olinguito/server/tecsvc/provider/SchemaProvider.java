@@ -17,6 +17,8 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
+ *
+ * Copyright 2026 SiteNetSoft - Add OpenType support (tecsvc ETOpen model)
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
@@ -91,8 +93,9 @@ public class SchemaProvider {
     entityTypes.add(prov.getEntityType(EntityTypeProvider.nameETCont)); 
     entityTypes.add(prov.getEntityType(EntityTypeProvider.nameETBaseCont)); 
     entityTypes.add(prov.getEntityType(EntityTypeProvider.nameETTwoCont)); 
-    entityTypes.add(prov.getEntityType(EntityTypeProvider.nameETStreamOnComplexProp)); 
-    
+    entityTypes.add(prov.getEntityType(EntityTypeProvider.nameETStreamOnComplexProp));
+    entityTypes.add(prov.getEntityType(EntityTypeProvider.nameETOpen));
+
     // ComplexTypes
     List<CsdlComplexType> complexTypes = new ArrayList<>();
     schema.setComplexTypes(complexTypes);
