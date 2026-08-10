@@ -33,6 +33,7 @@
  * Copyright 2026 SiteNetSoft - Add OpenType support (dynamic property deserialization)
  * Copyright 2026 SiteNetSoft - OpenType: support name@odata.type annotations and
  * primitive collections for dynamic properties
+ * Copyright 2026 SiteNetSoft - OpenType: accept dynamic properties inside open complex values
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -1033,6 +1034,13 @@ public class ODataJsonDeserializer implements ODataDeserializer {
         }
       }
       objNode.remove(toRemove);
+    }
+
+    // consume dynamic properties for open complex types; this must run before the caller's
+    // removeAnnotations/assertJsonNodeIsEmpty, which would otherwise strip name@odata.type
+    // annotations dynamic properties rely on and reject the remaining fields as unknown content
+    if (edmType.isOpenType() && jsonNode instanceof ObjectNode objNode) {
+      consumeDynamicProperties(edmType, objNode, complexValue.getValue());
     }
 
     complexValue.setTypeName(edmType.getFullQualifiedName().getFullQualifiedNameAsString());

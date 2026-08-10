@@ -35,6 +35,6 @@ class OpenTypeProviderTest {
     assertNotNull(type);
     assertTrue(type.isOpenType());
     assertEquals("PropertyInt16", type.getKey().get(0).getName());
-    assertEquals(2, type.getProperties().size());
+    assertEquals(3, type.getProperties().size());
   }
 }

@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Add OpenType support (dynamic property deserialization)
  * Copyright 2026 SiteNetSoft - OpenType: support name@odata.type annotations and
  * primitive collections for dynamic properties
+ * Copyright 2026 SiteNetSoft - OpenType: dynamic properties inside open complex values
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -32,6 +33,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.List;
 
+import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
 import org.sitenetsoft.olinguito.commons.api.data.Entity;
 import org.sitenetsoft.olinguito.commons.api.data.Property;
 import org.sitenetsoft.olinguito.commons.api.data.ValueType;
@@ -103,6 +105,26 @@ class ODataJsonDeserializerOpenTypeTest extends AbstractODataDeserializerTest {
   void unknownAnnotatedTypeRejected() {
     final String payload = "{\"PropertyInt16\":1,\"X@odata.type\":\"#No.Such.Type\",\"X\":\"v\"}";
     assertThrows(DeserializerException.class, () -> deserialize(payload, "ETOpen"));
+  }
+
+  @Test
+  void dynamicPropertyInsideOpenComplexValue() throws Exception {
+    final String payload = "{\"PropertyInt16\":1,"
+        + "\"PropertyComp\":{\"CompString\":\"s\",\"CompDynamic\":5}}";
+    final Entity entity = deserialize(payload, "ETOpen");
+    final ComplexValue comp = entity.getProperty("PropertyComp").asComplex();
+    assertEquals(2, comp.getValue().size());
+    assertEquals("CompDynamic", comp.getValue().get(1).getName());
+  }
+
+  @Test
+  void dynamicPropertyInsideClosedComplexValueRejected() {
+    // ETCompAllPrim.PropertyComp is CTAllPrim, a closed complex type: an unrecognized member
+    // inside it must still be rejected, mirroring unknownPropertyStillRejectedOnClosedType.
+    final String payload = "{\"PropertyInt16\":1,\"PropertyComp\":{\"CompDynamic\":5}}";
+    final DeserializerException e = assertThrows(DeserializerException.class,
+        () -> deserialize(payload, "ETCompAllPrim"));
+    assertEquals(DeserializerException.MessageKeys.UNKNOWN_CONTENT, e.getMessageKey());
   }
 
   @Test

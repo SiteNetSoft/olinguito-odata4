@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  *
  * Copyright 2026 SiteNetSoft - Add OpenType support (tecsvc ETOpen model)
+ * Copyright 2026 SiteNetSoft - OpenType: give ETOpen a declared open complex property PropertyComp
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
@@ -629,7 +630,8 @@ public class EntityTypeProvider {
           .setOpenType(true)
           .setKey(List.of(new CsdlPropertyRef().setName("PropertyInt16")))
           .setProperties(List.of(
-              PropertyProvider.propertyInt16_NotNullable, PropertyProvider.propertyString));
+              PropertyProvider.propertyInt16_NotNullable, PropertyProvider.propertyString,
+              new CsdlProperty().setName("PropertyComp").setType(ComplexTypeProvider.nameCTOpen)));
     }
     return null;
   }

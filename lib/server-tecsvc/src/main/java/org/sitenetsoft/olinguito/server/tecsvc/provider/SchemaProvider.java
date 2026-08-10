@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
  *
  * Copyright 2026 SiteNetSoft - Add OpenType support (tecsvc ETOpen model)
+ * Copyright 2026 SiteNetSoft - OpenType: register open complex type CTOpen
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
@@ -119,6 +120,7 @@ public class SchemaProvider {
     complexTypes.add(prov.getComplexType(ComplexTypeProvider.nameCTTwoPrimAno));
     complexTypes.add(prov.getComplexType(ComplexTypeProvider.nameCTBaseAno));
     complexTypes.add(prov.getComplexType(ComplexTypeProvider.nameCTWithStreamProp));
+    complexTypes.add(prov.getComplexType(ComplexTypeProvider.nameCTOpen));
     
     // Actions
     List<CsdlAction> actions = new ArrayList<>();

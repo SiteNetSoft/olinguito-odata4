@@ -22,6 +22,7 @@
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  *
  * Copyright 2026 SiteNetSoft - Add OpenType support (tecsvc ETOpen model)
+ * Copyright 2026 SiteNetSoft - OpenType: seed ESOpen entity 1 with an open complex PropertyComp
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -1079,6 +1080,10 @@ public class DataCreator {
     entityCollection.getEntities().add(new Entity()
         .addProperty(createPrimitive("PropertyInt16", (short) 1))
         .addProperty(createPrimitive("PropertyString", "open type 1"))
+        .addProperty(createComplex("PropertyComp",
+            ComplexTypeProvider.nameCTOpen.getFullQualifiedNameAsString(),
+            createPrimitive("CompString", "open comp 1"),
+            createPrimitive("CompDynamic", "dynamic comp value")))
         .addProperty(createPrimitive("DynamicString", "dynamic"))
         .addProperty(createPrimitive("DynamicInt", 42L)));
 
