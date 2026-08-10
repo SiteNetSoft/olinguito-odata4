@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Add OpenType support ($select of dynamic properties)
  */
 package org.sitenetsoft.olinguito.server.core.serializer.utils;
 
@@ -29,6 +31,7 @@ import org.sitenetsoft.olinguito.server.api.uri.UriResource;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceAction;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceComplexProperty;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceCount;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceDynamicProperty;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceEntitySet;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceFunction;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceNavigation;
@@ -64,6 +67,8 @@ public abstract class ExpandSelectHelper {
       final UriResource resource = item.getResourcePath().getUriResourceParts().get(0);
       if (resource instanceof UriResourceProperty property) {
         selected.add(property.getProperty().getName());
+      } else if (resource instanceof UriResourceDynamicProperty dynamicProperty) {
+        selected.add(dynamicProperty.getPropertyName());
       } else if (resource instanceof UriResourceNavigation navigation) {
         selected.add(navigation.getProperty().getName());
       } else if (resource instanceof UriResourceAction action) {
@@ -130,6 +135,8 @@ public abstract class ExpandSelectHelper {
           path.add(partProp.getProperty().getName());
         } else if (part instanceof UriResourceNavigation partNav) {
           path.add(partNav.getProperty().getName());
+        } else if (part instanceof UriResourceDynamicProperty partDynamic) {
+          path.add(partDynamic.getPropertyName());
         }
         if (part instanceof UriResourceComplexProperty complexPart &&
             complexPart.getComplexTypeFilter() != null) {
@@ -160,6 +167,8 @@ public abstract class ExpandSelectHelper {
               path.add(partProp.getProperty().getName());
             } else if (part instanceof UriResourceNavigation partNav) {
               path.add(partNav.getProperty().getName());
+            } else if (part instanceof UriResourceDynamicProperty partDynamic) {
+              path.add(partDynamic.getPropertyName());
             }
           }
           selectedPaths.add(path);

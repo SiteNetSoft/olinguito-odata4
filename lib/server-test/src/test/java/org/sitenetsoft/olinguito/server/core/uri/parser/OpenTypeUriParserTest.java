@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Add filter/orderby/expand dynamic-property parsing tests
  * Copyright 2026 SiteNetSoft - Add regression tests for dynamic-member NPE/bypass-narrowness fixes
  * Copyright 2026 SiteNetSoft - Add regression tests for IN-candidate and add/sub non-dynamic-operand checks
+ * Copyright 2026 SiteNetSoft - Add $select dynamic-property parsing tests
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -150,5 +151,22 @@ class OpenTypeUriParserTest {
   void expandOnDynamicNameStillRejected() {
     assertThrows(UriParserException.class,
         () -> new Parser(edm, odata).parseUri("ESOpen", "$expand=DynamicInt", null, null));
+  }
+
+  @Test
+  void selectDynamicNameParsesOnOpenType() throws Exception {
+    final UriInfo uriInfo = new Parser(edm, odata).parseUri("ESOpen", "$select=DynamicInt", null, null);
+    assertEquals(1, uriInfo.getSelectOption().getSelectItems().size());
+    final List<UriResource> parts =
+        uriInfo.getSelectOption().getSelectItems().get(0).getResourcePath().getUriResourceParts();
+    final UriResource last = parts.get(parts.size() - 1);
+    assertEquals(UriResourceKind.dynamicProperty, last.getKind());
+    assertEquals("DynamicInt", ((UriResourceDynamicProperty) last).getPropertyName());
+  }
+
+  @Test
+  void selectUnknownNameStillRejectedOnClosedType() {
+    assertThrows(UriParserSemanticException.class,
+        () -> new Parser(edm, odata).parseUri("ESTwoPrim", "$select=Unknown", null, null));
   }
 }

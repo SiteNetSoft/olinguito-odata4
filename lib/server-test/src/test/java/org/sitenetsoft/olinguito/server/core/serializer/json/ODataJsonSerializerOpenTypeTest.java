@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Add OpenType support (serialize dynamic properties in JSON)
+ * Copyright 2026 SiteNetSoft - Add $select-of-dynamic-property serializer tests
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -40,6 +41,8 @@ import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 import org.sitenetsoft.olinguito.server.api.serializer.EntitySerializerOptions;
 import org.sitenetsoft.olinguito.server.api.serializer.ODataSerializer;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectOption;
+import org.sitenetsoft.olinguito.server.core.uri.parser.Parser;
 import org.sitenetsoft.olinguito.server.tecsvc.MetadataETagSupport;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.SchemaProvider;
@@ -161,8 +164,40 @@ class ODataJsonSerializerOpenTypeTest {
     assertTrue(json.contains("\"CompDynamic\":5"));
   }
 
+  @Test
+  void selectedDynamicPropertyIncludedAndNonSelectedDeclaredExcluded() throws Exception {
+    final Entity entity = new Entity()
+        .addProperty(new Property(null, "PropertyInt16", ValueType.PRIMITIVE, (short) 1))
+        .addProperty(new Property(null, "PropertyString", ValueType.PRIMITIVE, "abc"))
+        .addProperty(new Property("Edm.String", "Custom", ValueType.PRIMITIVE, "hello"));
+    final SelectOption select = parseSelect("ESOpen", "$select=Custom");
+    final String json = serializeEntity(entity, "ETOpen", ContentType.JSON, select);
+    assertTrue(json.contains("\"Custom\":\"hello\""));
+    assertFalse(json.contains("PropertyString"));
+  }
+
+  @Test
+  void selectedAbsentDynamicPropertyOmittedWithoutError() throws Exception {
+    final Entity entity = new Entity()
+        .addProperty(new Property(null, "PropertyInt16", ValueType.PRIMITIVE, (short) 1))
+        .addProperty(new Property(null, "PropertyString", ValueType.PRIMITIVE, "abc"));
+    final SelectOption select = parseSelect("ESOpen", "$select=Custom");
+    final String json = serializeEntity(entity, "ETOpen", ContentType.JSON, select);
+    assertFalse(json.contains("Custom"));
+    assertFalse(json.contains("PropertyString"));
+  }
+
+  private SelectOption parseSelect(final String entitySetName, final String selectQuery) throws Exception {
+    return new Parser(metadata.getEdm(), odata).parseUri(entitySetName, selectQuery, null, null).getSelectOption();
+  }
+
   private String serializeEntity(final Entity entity, final String entityTypeName, final ContentType contentType)
       throws Exception {
+    return serializeEntity(entity, entityTypeName, contentType, null);
+  }
+
+  private String serializeEntity(final Entity entity, final String entityTypeName, final ContentType contentType,
+      final SelectOption select) throws Exception {
     final EdmEntityType edmEntityType = metadata.getEdm().getEntityType(
         new FullQualifiedName(SchemaProvider.NAMESPACE, entityTypeName));
     entity.setType(edmEntityType.getFullQualifiedName().getFullQualifiedNameAsString());
@@ -170,6 +205,7 @@ class ODataJsonSerializerOpenTypeTest {
     final byte[] bytes = serializer.entity(metadata, edmEntityType, entity,
         EntitySerializerOptions.with()
             .contextURL(ContextURL.with().type(edmEntityType).build())
+            .select(select)
             .build()).getContent().readAllBytes();
     return new String(bytes, StandardCharsets.UTF_8);
   }

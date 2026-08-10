@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Add OpenType support ($select of dynamic properties)
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -37,6 +39,7 @@ import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectOption;
 import org.sitenetsoft.olinguito.server.core.uri.UriInfoImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceActionImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceComplexPropertyImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceDynamicPropertyImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceFunctionImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceNavigationPropertyImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourcePrimitivePropertyImpl;
@@ -189,6 +192,12 @@ public class SelectParser {
     if (property == null) {
       final EdmNavigationProperty navigationProperty = referencedType.getNavigationProperty(name);
       if (navigationProperty == null) {
+        if (referencedType.isOpenType()) {
+          // Dynamic (undeclared) property of an open type; its type is unknown until runtime,
+          // so it must be a leaf: nothing else may follow it in the select path.
+          resource.addResourcePart(new UriResourceDynamicPropertyImpl(name));
+          return;
+        }
         throw new UriParserSemanticException("Selected property not found.",
             UriParserSemanticException.MessageKeys.EXPRESSION_PROPERTY_NOT_IN_TYPE,
             referencedType.getName(), name);
