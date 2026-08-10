@@ -17,6 +17,8 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Add OpenType support (dynamic property deserialization)
+ * Copyright 2026 SiteNetSoft - OpenType: support name@odata.type annotations and
+ * primitive collections for dynamic properties
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -27,9 +29,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
+import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.data.Entity;
 import org.sitenetsoft.olinguito.commons.api.data.Property;
+import org.sitenetsoft.olinguito.commons.api.data.ValueType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
@@ -66,14 +71,38 @@ class ODataJsonDeserializerOpenTypeTest extends AbstractODataDeserializerTest {
   }
 
   @Test
-  void dynamicArrayValueNotYetSupportedOnOpenType() {
-    // Array-valued dynamic properties are Task 3's job to support; until then they must be left
-    // unconsumed and fall through to UNKNOWN_CONTENT, same as object-valued dynamic properties.
-    // Task 3 is expected to update/replace this test once arrays become supported.
-    final String payload = "{\"PropertyInt16\":1,\"PropertyString\":\"abc\",\"Tags\":[\"a\",\"b\"]}";
+  void annotatedDynamicPropertyParsedAsDeclaredType() throws Exception {
+    final String payload = "{\"PropertyInt16\":1,"
+        + "\"When@odata.type\":\"#DateTimeOffset\",\"When\":\"2026-08-09T12:00:00Z\"}";
+    final Entity entity = deserialize(payload, "ETOpen");
+    final Property when = entity.getProperty("When");
+    assertEquals("Edm.DateTimeOffset", when.getType());
+    // EdmDateTimeOffset.getDefaultType() is java.sql.Timestamp in this codebase.
+    assertTrue(when.getValue() instanceof Timestamp);
+  }
+
+  @Test
+  void dynamicCollectionOfPrimitives() throws Exception {
+    final String payload = "{\"PropertyInt16\":1,\"Tags\":[\"a\",\"b\"],\"Empty\":[]}";
+    final Entity entity = deserialize(payload, "ETOpen");
+    final Property tags = entity.getProperty("Tags");
+    assertEquals(ValueType.COLLECTION_PRIMITIVE, tags.getValueType());
+    assertEquals(List.of("a", "b"), tags.asCollection());
+    assertEquals("Collection(Edm.String)", "Collection(" + entity.getProperty("Empty").getType() + ")");
+  }
+
+  @Test
+  void jsonObjectInDynamicSlotRejected() {
+    final String payload = "{\"PropertyInt16\":1,\"Nested\":{\"a\":1}}";
     final DeserializerException e = assertThrows(DeserializerException.class,
         () -> deserialize(payload, "ETOpen"));
     assertEquals(DeserializerException.MessageKeys.UNKNOWN_CONTENT, e.getMessageKey());
+  }
+
+  @Test
+  void unknownAnnotatedTypeRejected() {
+    final String payload = "{\"PropertyInt16\":1,\"X@odata.type\":\"#No.Such.Type\",\"X\":\"v\"}";
+    assertThrows(DeserializerException.class, () -> deserialize(payload, "ETOpen"));
   }
 
   @Test
