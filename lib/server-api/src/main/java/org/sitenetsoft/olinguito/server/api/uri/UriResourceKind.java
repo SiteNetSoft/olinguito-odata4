@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Added dynamicProperty enum constant for open-type support
  */
 package org.sitenetsoft.olinguito.server.api.uri;
 
@@ -40,6 +42,12 @@ public enum UriResourceKind {
    * URI: http://.../serviceroot/entityset/$count
    */
   count,
+
+  /**
+   * Class: {@link UriResourceDynamicProperty}<br>
+   * URI: http://.../serviceroot/entityset(1)/dynamicProperty
+   */
+  dynamicProperty,
 
   /**
    * Class: {@link UriResourceEntitySet}<br>

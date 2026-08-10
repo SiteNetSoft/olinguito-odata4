@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
+ * Copyright 2026 SiteNetSoft - Resolve dynamic path segments on open types
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -51,6 +52,7 @@ import org.sitenetsoft.olinguito.server.api.uri.queryoption.AliasQueryOption;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceActionImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceComplexPropertyImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceCountImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceDynamicPropertyImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceEntitySetImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceFunctionImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceNavigationPropertyImpl;
@@ -318,6 +320,10 @@ public class ResourcePathParser {
     }
     final EdmNavigationProperty navigationProperty = structType.getNavigationProperty(name);
     if (navigationProperty == null) {
+      if (structType.isOpenType()) {
+        ParserHelper.requireTokenEnd(tokenizer);
+        return new UriResourceDynamicPropertyImpl(name);
+      }
       throw new UriParserSemanticException("Property '" + name + "' not found in type '"
           + structType.getFullQualifiedName().getFullQualifiedNameAsString() + "'",
           UriParserSemanticException.MessageKeys.PROPERTY_NOT_IN_TYPE,
