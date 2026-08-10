@@ -25,11 +25,13 @@
  * Copyright 2026 SiteNetSoft - OLINGO-1550: Skip aggregated-away key properties in $apply=groupby
  * Copyright 2026 SiteNetSoft - OLINGO-1019: Synthesize nav links in JSON metadata=full
  * Copyright 2026 SiteNetSoft - OLINGO-1307: Include expanded complex properties even when not in $select
+ * Copyright 2026 SiteNetSoft - Add OpenType support (serialize dynamic properties in JSON)
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
@@ -39,6 +41,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import java.util.Base64;
 import org.sitenetsoft.olinguito.commons.api.Constants;
@@ -122,6 +125,18 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
     temp.put(Geospatial.Type.GEOSPATIALCOLLECTION, "GeometryCollection");
     geoValueTypeToJsonName = Collections.unmodifiableMap(temp);
   }
+
+  /**
+   * Dynamic-property {@link EdmPrimitiveTypeKind}s whose JSON representation is unambiguous from the
+   * wire value alone (a JSON string or a JSON number), so a <code>name@odata.type</code> annotation can
+   * be omitted for them under minimal metadata. Mirrors the (smaller) declared-property allow-list in
+   * {@link #writePropertyType}, but is intentionally broader: a dynamic property has no EDM-declared
+   * type for a client to fall back on, so every numeric kind must be considered self-describing.
+   */
+  private static final Set<EdmPrimitiveTypeKind> JSON_NATIVE_DYNAMIC_KINDS = Set.of(
+      EdmPrimitiveTypeKind.String, EdmPrimitiveTypeKind.Boolean, EdmPrimitiveTypeKind.Int16,
+      EdmPrimitiveTypeKind.Int32, EdmPrimitiveTypeKind.Int64, EdmPrimitiveTypeKind.Double,
+      EdmPrimitiveTypeKind.Decimal, EdmPrimitiveTypeKind.Single);
 
   private final boolean isIEEE754Compatible;
   private final boolean isODataMetadataNone;
@@ -571,6 +586,134 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
         writeProperty(metadata, edmProperty, property, selectedPaths, json, expandedPaths, linked, expand);
       }
     }
+    writeDynamicProperties(metadata, type, properties, selected, all, json);
+  }
+
+  /**
+   * Writes an open type's dynamic (undeclared) properties, i.e. instance properties that have no
+   * matching declared structural or navigation property on {@code type}. No-op for closed types, which
+   * keeps today's behavior of silently dropping undeclared instance properties there unchanged. Shared
+   * by both the entity/top-level-complex properties loop ({@link #writeProperties}) and the nested
+   * complex-value properties loop ({@link #writeComplexValue}); {@code selected}/{@code all} follow the
+   * same selection convention the declared-properties loop at the call site uses (an empty/unused
+   * {@code selected} when {@code all} is {@code true}), so this method does not need to know which of
+   * the two selection representations (entity {@code SelectOption} vs. complex {@code selectedPaths})
+   * the caller derived them from.
+   *
+   * @param metadata service metadata, kept for symmetry with sibling writer methods (currently unused)
+   * @param type the structured type the properties belong to
+   * @param properties the instance's full property list (declared and dynamic)
+   * @param selected the selected dynamic property names when {@code all} is {@code false}
+   * @param all whether every property is selected (no $select, or a $select containing {@code *})
+   * @param json the JSON generator to write to
+   */
+  private void writeDynamicProperties(final ServiceMetadata metadata, final EdmStructuredType type,
+      final List<Property> properties, final Set<String> selected, final boolean all,
+      final JsonGenerator json) throws IOException, SerializerException {
+    if (!type.isOpenType()) {
+      return;
+    }
+    final Set<String> declaredNames = new HashSet<>(type.getPropertyNames());
+    final Set<String> navigationNames = new HashSet<>(type.getNavigationPropertyNames());
+    for (final Property property : properties) {
+      final String name = property.getName();
+      if (declaredNames.contains(name) || navigationNames.contains(name)) {
+        continue;
+      }
+      if (all || selected.contains(name)) {
+        writeDynamicProperty(property, json);
+      }
+    }
+  }
+
+  /**
+   * Writes a single dynamic (undeclared) property's <code>name@odata.type</code> annotation (when
+   * required) and value, reusing the same {@link #writePrimitive}/{@link #writePrimitiveCollection}
+   * value-writing helpers the declared-properties path uses.
+   *
+   * <p>Dynamic properties carry their type as a plain <code>"Edm.X"</code>-form string on
+   * {@link Property#getType()} (see {@link EdmPrimitiveTypeKind#valueOfFQN(String)}). A missing or
+   * unresolvable type string is treated defensively as <code>Edm.String</code>: this codebase's own
+   * tecsvc test data seeds dynamic properties with a {@code null} type (see {@code DataCreator}), so a
+   * best-effort inference from the Java value's class is attempted first, falling back to
+   * <code>Edm.String</code> only when no value is available to infer from either.
+   *
+   * @param property the dynamic property to write
+   * @param json the JSON generator to write to
+   */
+  private void writeDynamicProperty(final Property property, final JsonGenerator json)
+      throws IOException, SerializerException {
+    final String name = property.getName();
+    final boolean isCollection = property.isCollection();
+    final EdmPrimitiveTypeKind kind = resolveDynamicPropertyTypeKind(property, isCollection);
+    final EdmPrimitiveType edmType = EdmPrimitiveTypeFactory.getInstance(kind);
+    if (isODataMetadataFull || !JSON_NATIVE_DYNAMIC_KINDS.contains(kind)) {
+      json.writeStringField(name + constants.getType(),
+          isCollection ? "#Collection(" + kind.name() + ")" : "#" + kind.name());
+    }
+    json.writeFieldName(name);
+    if (isCollection) {
+      writePrimitiveCollection(edmType, property, null, null, null, null, null, json);
+    } else {
+      try {
+        writePrimitive(edmType, property, null, null, null, null, null, json);
+      } catch (final EdmPrimitiveTypeException e) {
+        throw new SerializerException("Wrong value for property!", e,
+            SerializerException.MessageKeys.WRONG_PROPERTY_VALUE, name,
+            property.getValue() == null ? null : property.getValue().toString());
+      }
+    }
+  }
+
+  /**
+   * Resolves the {@link EdmPrimitiveTypeKind} used to write a dynamic property's value; see
+   * {@link #writeDynamicProperty} for the null/unresolvable-type fallback rationale.
+   */
+  private EdmPrimitiveTypeKind resolveDynamicPropertyTypeKind(final Property property,
+      final boolean isCollection) {
+    final String typeName = property.getType();
+    if (typeName != null) {
+      try {
+        return EdmPrimitiveTypeKind.valueOfFQN(typeName);
+      } catch (final IllegalArgumentException e) {
+        // unresolvable stored/annotated type string; fall through to defensive inference below
+      }
+    }
+    final Object sampleValue = isCollection ? firstNonNullElement(property) : property.getValue();
+    return sampleValue == null ? EdmPrimitiveTypeKind.String : inferDynamicPrimitiveTypeKind(sampleValue);
+  }
+
+  private Object firstNonNullElement(final Property property) {
+    for (final Object element : property.asCollection()) {
+      if (element != null) {
+        return element;
+      }
+    }
+    return null;
+  }
+
+  /** Infers an {@link EdmPrimitiveTypeKind} from a dynamic property's Java value class. */
+  private EdmPrimitiveTypeKind inferDynamicPrimitiveTypeKind(final Object value) {
+    if (value instanceof Short) {
+      return EdmPrimitiveTypeKind.Int16;
+    } else if (value instanceof Integer) {
+      return EdmPrimitiveTypeKind.Int32;
+    } else if (value instanceof Long) {
+      return EdmPrimitiveTypeKind.Int64;
+    } else if (value instanceof Boolean) {
+      return EdmPrimitiveTypeKind.Boolean;
+    } else if (value instanceof Float) {
+      return EdmPrimitiveTypeKind.Single;
+    } else if (value instanceof Double) {
+      return EdmPrimitiveTypeKind.Double;
+    } else if (value instanceof BigDecimal) {
+      return EdmPrimitiveTypeKind.Decimal;
+    } else if (value instanceof UUID) {
+      return EdmPrimitiveTypeKind.Guid;
+    } else if (value instanceof Byte) {
+      return EdmPrimitiveTypeKind.SByte;
+    }
+    return EdmPrimitiveTypeKind.String;
   }
 
   private void addKeyPropertiesToSelected(Set<String> selected, EdmStructuredType type,
@@ -1162,6 +1305,17 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
             json, expandedPaths, linked, expand);
       }
     }
+    final boolean allDynamic = selectedPaths == null;
+    final Set<String> selectedDynamic;
+    if (allDynamic) {
+      selectedDynamic = Collections.emptySet();
+    } else {
+      selectedDynamic = new HashSet<>();
+      for (final List<String> path : selectedPaths) {
+        selectedDynamic.add(path.get(0));
+      }
+    }
+    writeDynamicProperties(metadata, type, properties, selectedDynamic, allDynamic, json);
     try {
       writeNavigationProperties(metadata, type, linked, expand, null, null, complexPropName, json);
     } catch (IllegalArgumentException e) {
