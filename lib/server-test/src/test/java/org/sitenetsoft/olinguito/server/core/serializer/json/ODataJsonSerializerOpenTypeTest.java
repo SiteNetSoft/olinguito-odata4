@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
@@ -120,6 +121,26 @@ class ODataJsonSerializerOpenTypeTest {
         .addProperty(new Property(null, "DynamicNull", ValueType.PRIMITIVE, null));
     final String json = serializeEntity(entity, "ETOpen", ContentType.JSON);
     assertTrue(json.contains("\"DynamicNull\":null"));
+  }
+
+  @Test
+  void dynamicCollectionPropertySerializedWithoutAnnotationForNativeElementType() throws Exception {
+    final Entity entity = new Entity()
+        .addProperty(new Property(null, "PropertyInt16", ValueType.PRIMITIVE, (short) 1))
+        .addProperty(new Property("Edm.String", "Tags", ValueType.COLLECTION_PRIMITIVE, List.of("a", "b")));
+    final String json = serializeEntity(entity, "ETOpen", ContentType.JSON);
+    assertTrue(json.contains("\"Tags\":[\"a\",\"b\"]"));
+    assertFalse(json.contains("Tags@odata.type"));
+  }
+
+  @Test
+  void dynamicCollectionPropertyAnnotatedForNonNativeElementType() throws Exception {
+    final Entity entity = new Entity()
+        .addProperty(new Property(null, "PropertyInt16", ValueType.PRIMITIVE, (short) 1))
+        .addProperty(new Property("Edm.Guid", "Refs", ValueType.COLLECTION_PRIMITIVE,
+            List.of(UUID.fromString("01234567-89ab-cdef-0123-456789abcdef"))));
+    final String json = serializeEntity(entity, "ETOpen", ContentType.JSON);
+    assertTrue(json.contains("\"Refs@odata.type\":\"#Collection(Guid)\""));
   }
 
   @Test
