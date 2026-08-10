@@ -17,10 +17,12 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - New test for open-type dynamic property path segments
+ * Copyright 2026 SiteNetSoft - Add filter/orderby/expand dynamic-property parsing tests
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Collections;
@@ -55,5 +57,30 @@ class OpenTypeUriParserTest {
   void unknownSegmentStillRejectedOnClosedType() {
     assertThrows(UriParserSemanticException.class,
         () -> new Parser(edm, odata).parseUri("ESTwoPrim(1)/Anything", null, null, null));
+  }
+
+  @Test
+  void filterOnDynamicPropertyParsesOnOpenType() throws Exception {
+    final UriInfo uriInfo = new Parser(edm, odata)
+        .parseUri("ESOpen", "$filter=DynamicInt gt 5", null, null);
+    assertNotNull(uriInfo.getFilterOption().getExpression());
+  }
+
+  @Test
+  void orderByDynamicPropertyParsesOnOpenType() throws Exception {
+    assertNotNull(new Parser(edm, odata)
+        .parseUri("ESOpen", "$orderby=DynamicString desc", null, null).getOrderByOption());
+  }
+
+  @Test
+  void filterOnUnknownStillRejectedOnClosedType() {
+    assertThrows(UriParserException.class,
+        () -> new Parser(edm, odata).parseUri("ESTwoPrim", "$filter=Nope eq 1", null, null));
+  }
+
+  @Test
+  void expandOnDynamicNameStillRejected() {
+    assertThrows(UriParserException.class,
+        () -> new Parser(edm, odata).parseUri("ESOpen", "$expand=DynamicInt", null, null));
   }
 }

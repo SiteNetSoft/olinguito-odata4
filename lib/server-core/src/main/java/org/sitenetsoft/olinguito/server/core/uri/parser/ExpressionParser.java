@@ -25,6 +25,7 @@
  * Copyright 2026 SiteNetSoft - OLINGO-1557: $it in $expand resolves to parent entity type
  * Copyright 2026 SiteNetSoft - OLINGO-1184: Fix bound function after type filter
  * Copyright 2026 SiteNetSoft - Support $count($filter=...) and $count($search=...) in $filter expressions
+ * Copyright 2026 SiteNetSoft - Parse dynamic-property members in filter and orderby on open types
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -59,7 +60,9 @@ import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.commons.api.edm.constants.EdmTypeKind;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.uri.UriParameter;
+import org.sitenetsoft.olinguito.server.api.uri.UriResource;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceFunction;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceKind;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceLambdaVariable;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourcePartTyped;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.AliasQueryOption;
@@ -78,6 +81,7 @@ import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.UnaryOper
 import org.sitenetsoft.olinguito.server.core.uri.UriInfoImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceComplexPropertyImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceCountImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceDynamicPropertyImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceEntitySetImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceFunctionImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceItImpl;
@@ -370,18 +374,27 @@ public class ExpressionParser {
       return new BinaryImpl(left, BinaryOperatorKind.HAS, right,
           odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Boolean));
     } else if (tokenizer.next(TokenKind.InOperator)) {
-      EdmType leftExprType = getType(left);
-      EdmPrimitiveTypeKind kinds = EdmPrimitiveTypeKind.valueOfFQN(leftExprType.getFullQualifiedName());
+      // A dynamic (open-type) member's type is unknown until parse time, so its full-qualified
+      // name cannot be resolved to a primitive kind here; skip the type check in that case and
+      // treat it as compatible with any primitive operand, same as elsewhere for dynamic members.
+      final boolean leftIsDynamic = isDynamicUntypedMember(left);
+      final EdmType leftExprType = getType(left);
+      final EdmPrimitiveTypeKind kinds =
+          leftIsDynamic ? null : EdmPrimitiveTypeKind.valueOfFQN(leftExprType.getFullQualifiedName());
       if (tokenizer.next(TokenKind.OPEN)) {
         ParserHelper.bws(tokenizer);
         List<Expression> expressionList = parseInExpr();
-        checkInExpressionTypes(expressionList, leftExprType);
+        if (!leftIsDynamic) {
+          checkInExpressionTypes(expressionList, leftExprType);
+        }
         return new BinaryImpl(left, BinaryOperatorKind.IN, expressionList,
             odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Boolean));
       } else {
         ParserHelper.bws(tokenizer);
         final Expression right = parseExpression();
-        checkType(right, kinds);
+        if (!leftIsDynamic) {
+          checkType(right, kinds);
+        }
         return new BinaryImpl(left, BinaryOperatorKind.IN, right,
             odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Boolean));
       }
@@ -944,6 +957,12 @@ public class ExpressionParser {
     final EdmElement property = structuredType.getProperty(oDataIdentifier);
 
     if (property == null) {
+      if (structuredType.isOpenType()) {
+        // Dynamic (undeclared) property of an open type; its type is unknown until runtime,
+        // so it must be a leaf: nothing else may follow it in the member path.
+        uriInfo.addResourcePart(new UriResourceDynamicPropertyImpl(oDataIdentifier));
+        return;
+      }
       throw new UriParserSemanticException("Unknown property.",
           UriParserSemanticException.MessageKeys.EXPRESSION_PROPERTY_NOT_IN_TYPE,
           lastType.getFullQualifiedName().getFullQualifiedNameAsString(),
@@ -1314,6 +1333,21 @@ public class ExpressionParser {
     return false;
   }
 
+  /**
+   * Identifies an expression that is a member path ending in a dynamic (open-type) property.
+   * Such a member's type is unknown at parse time (it is only known by name), so it must be
+   * treated as compatible with any primitive operand. The check requires the actual dynamic
+   * resource kind rather than merely a null type, so that genuinely-untyped members arising for
+   * other reasons are not silently waved through by this bypass.
+   */
+  private static boolean isDynamicUntypedMember(final Expression expression) {
+    if (!(expression instanceof Member member)) {
+      return false;
+    }
+    final List<UriResource> parts = member.getResourcePath().getUriResourceParts();
+    return !parts.isEmpty() && parts.get(parts.size() - 1).getKind() == UriResourceKind.dynamicProperty;
+  }
+
   private void checkType(final Expression expression, final EdmPrimitiveTypeKind... kinds) throws UriParserException {
     final EdmType type = getType(expression);
     if (!isType(type, kinds)) {
@@ -1351,6 +1385,12 @@ public class ExpressionParser {
   private void checkEqualityTypes(final Expression left, final Expression right) throws UriParserException {
     checkNoCollection(left);
     checkNoCollection(right);
+
+    // A dynamic (open-type) member's type is unknown until runtime; treat it as compatible
+    // with any primitive operand rather than comparing types.
+    if (isDynamicUntypedMember(left) || isDynamicUntypedMember(right)) {
+      return;
+    }
 
     final EdmType leftType = getType(left);
     final EdmType rightType = getType(right);
@@ -1411,6 +1451,11 @@ public class ExpressionParser {
   private void checkRelationTypes(final Expression left, final Expression right) throws UriParserException {
     checkNoCollection(left);
     checkNoCollection(right);
+    // A dynamic (open-type) member's type is unknown until runtime; treat it as compatible
+    // with any primitive operand rather than comparing types.
+    if (isDynamicUntypedMember(left) || isDynamicUntypedMember(right)) {
+      return;
+    }
     final EdmType leftType = getType(left);
     final EdmType rightType = getType(right);
     checkType(left,
@@ -1446,6 +1491,11 @@ public class ExpressionParser {
       throws UriParserException {
     checkNoCollection(left);
     checkNoCollection(right);
+    // A dynamic (open-type) member's type is unknown until runtime; treat it as compatible
+    // with any primitive operand. The arithmetic result type is then equally unknown.
+    if (isDynamicUntypedMember(left) || isDynamicUntypedMember(right)) {
+      return null;
+    }
     final EdmType leftType = getType(left);
     final EdmType rightType = getType(right);
     if (isType(leftType,
