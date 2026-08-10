@@ -285,7 +285,7 @@ public class ODataJsonDeserializer implements ODataDeserializer {
         continue;
       }
       final JsonNode value = field.getValue();
-      if (value.isObject()) {
+      if (value.isContainerNode()) {
         continue;
       }
       properties.add(createDynamicProperty(name, value));

@@ -66,6 +66,17 @@ class ODataJsonDeserializerOpenTypeTest extends AbstractODataDeserializerTest {
   }
 
   @Test
+  void dynamicArrayValueNotYetSupportedOnOpenType() {
+    // Array-valued dynamic properties are Task 3's job to support; until then they must be left
+    // unconsumed and fall through to UNKNOWN_CONTENT, same as object-valued dynamic properties.
+    // Task 3 is expected to update/replace this test once arrays become supported.
+    final String payload = "{\"PropertyInt16\":1,\"PropertyString\":\"abc\",\"Tags\":[\"a\",\"b\"]}";
+    final DeserializerException e = assertThrows(DeserializerException.class,
+        () -> deserialize(payload, "ETOpen"));
+    assertEquals(DeserializerException.MessageKeys.UNKNOWN_CONTENT, e.getMessageKey());
+  }
+
+  @Test
   void unknownPropertyStillRejectedOnClosedType() {
     final String payload = "{\"PropertyInt16\":1,\"PropertyString\":\"abc\",\"Custom\":\"x\"}";
     final DeserializerException e = assertThrows(DeserializerException.class,
