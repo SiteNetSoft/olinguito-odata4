@@ -27,6 +27,7 @@
  * Copyright 2026 SiteNetSoft - Support $count($filter=...) and $count($search=...) in $filter expressions
  * Copyright 2026 SiteNetSoft - Parse dynamic-property members in filter and orderby on open types
  * Copyright 2026 SiteNetSoft - Fix NPE and non-dynamic-operand bypass narrowness in dynamic-member type checks
+ * Copyright 2026 SiteNetSoft - Validate IN-candidate and add/sub non-dynamic operands when the other operand is dynamic
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -141,6 +142,17 @@ public class ExpressionParser {
       EdmPrimitiveTypeKind.Boolean, EdmPrimitiveTypeKind.Guid, EdmPrimitiveTypeKind.String,
       EdmPrimitiveTypeKind.Date, EdmPrimitiveTypeKind.TimeOfDay,
       EdmPrimitiveTypeKind.DateTimeOffset, EdmPrimitiveTypeKind.Duration
+  };
+
+  // The set of primitive kinds an operand of add/sub could plausibly be, independent of the
+  // other operand's kind (numeric, or date/time-ish for date and duration arithmetic). Used to
+  // validate a single operand's own kind in getAddSubTypeAndCheckLeftAndRight() when the other
+  // operand is a dynamic member and no two-operand comparison is possible.
+  private static final EdmPrimitiveTypeKind[] ADD_SUB_KINDS = {
+      EdmPrimitiveTypeKind.Int16, EdmPrimitiveTypeKind.Int32, EdmPrimitiveTypeKind.Int64,
+      EdmPrimitiveTypeKind.Byte, EdmPrimitiveTypeKind.SByte,
+      EdmPrimitiveTypeKind.Decimal, EdmPrimitiveTypeKind.Single, EdmPrimitiveTypeKind.Double,
+      EdmPrimitiveTypeKind.DateTimeOffset, EdmPrimitiveTypeKind.Date, EdmPrimitiveTypeKind.Duration
   };
 
   // 'cast' and 'isof' are handled specially.
@@ -386,31 +398,29 @@ public class ExpressionParser {
       return new BinaryImpl(left, BinaryOperatorKind.HAS, right,
           odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Boolean));
     } else if (tokenizer.next(TokenKind.InOperator)) {
-      // A dynamic (open-type) member's type is unknown until parse time, so it is treated as
-      // compatible with any primitive operand and the type check below is skipped for it.
-      // leftExprType may independently be null for a non-dynamic left operand too (e.g. the
-      // composed result of arithmetic on a dynamic member); that case cannot be proven
-      // compatible with a typed candidate, so it is rejected below rather than risking an NPE
-      // from deriving a primitive kind out of a null type's full-qualified name.
+      // A dynamic (open-type) member's type is unknown until parse time, so the left operand's
+      // OWN kind is unconstrained (compatible with any primitive). That does not exempt the
+      // right-hand candidate(s) from their own primitive-ness check, though: a non-primitive
+      // candidate (e.g. a complex property) is still rejected below, just without comparing its
+      // kind against the (unknown) left kind. leftExprType may independently be null for a
+      // non-dynamic left operand too (e.g. the composed result of arithmetic on a dynamic
+      // member); that case cannot be proven compatible with a typed candidate at all, so every
+      // typed candidate is rejected in that case, rather than risking an NPE from deriving a
+      // primitive kind out of a null type's full-qualified name.
       final boolean leftIsDynamic = isDynamicUntypedMember(left);
       final EdmType leftExprType = getType(left);
       if (tokenizer.next(TokenKind.OPEN)) {
         ParserHelper.bws(tokenizer);
         List<Expression> expressionList = parseInExpr();
-        if (!leftIsDynamic) {
-          checkInExpressionTypes(expressionList, leftExprType);
-        }
+        checkInExpressionTypes(expressionList, leftExprType, leftIsDynamic);
         return new BinaryImpl(left, BinaryOperatorKind.IN, expressionList,
             odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Boolean));
       } else {
         ParserHelper.bws(tokenizer);
         final Expression right = parseExpression();
-        if (!leftIsDynamic) {
-          if (leftExprType == null) {
-            throw new UriParserSemanticException("Incompatible types.",
-                UriParserSemanticException.MessageKeys.TYPES_NOT_COMPATIBLE,
-                "", "", right.toString(), referringTypeName());
-          }
+        if (leftExprType == null) {
+          checkInCandidateWithUnconstrainedLeft(leftIsDynamic, getType(right), right);
+        } else {
           checkType(right, EdmPrimitiveTypeKind.valueOfFQN(leftExprType.getFullQualifiedName()));
         }
         return new BinaryImpl(left, BinaryOperatorKind.IN, right,
@@ -423,11 +433,12 @@ public class ExpressionParser {
   /**
    * @param expressionList
    * @param leftExprType
+   * @param leftIsDynamic
    * @throws UriParserException
    * @throws UriParserSemanticException
    */
-  private void checkInExpressionTypes(List<Expression> expressionList, EdmType leftExprType)
-      throws UriParserException, UriParserSemanticException {
+  private void checkInExpressionTypes(List<Expression> expressionList, EdmType leftExprType,
+      final boolean leftIsDynamic) throws UriParserException, UriParserSemanticException {
     for (Expression expr : expressionList) {
       EdmType inExprType = getType(expr);
 
@@ -435,20 +446,42 @@ public class ExpressionParser {
         continue;
       }
 
-      // leftExprType == null here means the left operand's type is unknown for a reason other
-      // than being a genuine dynamic member (that case is skipped by the caller); it cannot be
-      // proven compatible with a typed candidate, so fall through to the throw below.
+      if (leftExprType == null) {
+        checkInCandidateWithUnconstrainedLeft(leftIsDynamic, inExprType, expr);
+        continue;
+      }
+
       if (!(leftExprType instanceof EdmPrimitiveType leftPrim)
           || !(inExprType instanceof EdmPrimitiveType inPrim)
           || !(leftPrim.isCompatible(inPrim) || inPrim.isCompatible(leftPrim))) {
         throw new UriParserSemanticException("Incompatible types.",
             UriParserSemanticException.MessageKeys.TYPES_NOT_COMPATIBLE,
-            leftExprType == null ? "" : leftExprType.getFullQualifiedName().getFullQualifiedNameAsString(),
+            leftExprType.getFullQualifiedName().getFullQualifiedNameAsString(),
             inExprType.getFullQualifiedName().getFullQualifiedNameAsString(),
             expr.toString(),
             referringTypeName());
       }
     }
+  }
+
+  /**
+   * Validates a single IN-operator right-hand candidate (a list element, or the right operand of
+   * the alias form) when the left operand's own kind cannot be used for a precise compatibility
+   * check because the left operand's type is null. If the left operand is a genuine dynamic
+   * member, its kind is unconstrained, so any primitive candidate is acceptable regardless of
+   * its specific kind (only a non-primitive candidate, e.g. complex or collection, is rejected).
+   * Otherwise the null type comes from something other than a genuine dynamic member (e.g. the
+   * composed result of arithmetic on one), and no typed candidate can be proven compatible.
+   */
+  private void checkInCandidateWithUnconstrainedLeft(final boolean leftIsDynamic, final EdmType candidateType,
+      final Expression candidate) throws UriParserException {
+    if (candidateType == null || (leftIsDynamic && candidateType instanceof EdmPrimitiveType)) {
+      return;
+    }
+    throw new UriParserSemanticException("Incompatible types.",
+        UriParserSemanticException.MessageKeys.TYPES_NOT_COMPATIBLE,
+        "", candidateType.getFullQualifiedName().getFullQualifiedNameAsString(),
+        candidate.toString(), referringTypeName());
   }
 
   /**
@@ -1534,9 +1567,19 @@ public class ExpressionParser {
       throws UriParserException {
     checkNoCollection(left);
     checkNoCollection(right);
-    // A dynamic (open-type) member's type is unknown until runtime; treat it as compatible
-    // with any primitive operand. The arithmetic result type is then equally unknown.
-    if (isDynamicUntypedMember(left) || isDynamicUntypedMember(right)) {
+    final boolean dynLeft = isDynamicUntypedMember(left);
+    final boolean dynRight = isDynamicUntypedMember(right);
+    // A dynamic (open-type) member's type is unknown until runtime; skip its own kind check and
+    // treat it as compatible with any primitive operand (the arithmetic result type is then
+    // equally unknown), but still validate a non-dynamic operand's own kind so an invalid one
+    // (e.g. a complex property) is still rejected.
+    if (dynLeft || dynRight) {
+      if (!dynLeft) {
+        checkType(left, ADD_SUB_KINDS);
+      }
+      if (!dynRight) {
+        checkType(right, ADD_SUB_KINDS);
+      }
       return null;
     }
     final EdmType leftType = getType(left);

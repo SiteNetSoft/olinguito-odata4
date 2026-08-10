@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - New test for open-type dynamic property path segments
  * Copyright 2026 SiteNetSoft - Add filter/orderby/expand dynamic-property parsing tests
  * Copyright 2026 SiteNetSoft - Add regression tests for dynamic-member NPE/bypass-narrowness fixes
+ * Copyright 2026 SiteNetSoft - Add regression tests for IN-candidate and add/sub non-dynamic-operand checks
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -106,6 +107,31 @@ class OpenTypeUriParserTest {
     // property) must still be validated and rejected as an invalid relational operand.
     assertThrows(UriParserSemanticException.class, () -> new Parser(edm, odata)
         .parseUri("ESOpen", "$filter=DynamicInt gt PropertyComp", null, null));
+  }
+
+  @Test
+  void filterEqualityDynamicVersusComplexOperandRejected() {
+    // Pins the equality-site fix: the dynamic left operand is skipped, but the known
+    // non-dynamic right operand (a complex property) must still be rejected as non-primitive.
+    assertThrows(UriParserSemanticException.class, () -> new Parser(edm, odata)
+        .parseUri("ESOpen", "$filter=DynamicInt eq PropertyComp", null, null));
+  }
+
+  @Test
+  void filterInDynamicLeftVersusComplexCandidateRejected() {
+    // The LEFT operand's dynamic-compatibility rule leaves its own kind unconstrained, but that
+    // does NOT exempt the IN candidate list from its own primitive-ness check: a complex
+    // candidate must still be rejected even though the left operand is a genuine dynamic member.
+    assertThrows(UriParserSemanticException.class, () -> new Parser(edm, odata)
+        .parseUri("ESOpen", "$filter=DynamicInt in (PropertyComp)", null, null));
+  }
+
+  @Test
+  void filterAddDynamicVersusComplexOperandRejected() {
+    // The dynamic left operand is skipped, but the known non-dynamic right operand (a complex
+    // property) must still be validated and rejected as an invalid add operand.
+    assertThrows(UriParserSemanticException.class, () -> new Parser(edm, odata)
+        .parseUri("ESOpen", "$filter=DynamicInt add PropertyComp", null, null));
   }
 
   @Test
