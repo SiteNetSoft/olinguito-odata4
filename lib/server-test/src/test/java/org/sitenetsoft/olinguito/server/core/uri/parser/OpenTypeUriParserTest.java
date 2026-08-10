@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - New test for open-type dynamic property path segments
  * Copyright 2026 SiteNetSoft - Add filter/orderby/expand dynamic-property parsing tests
+ * Copyright 2026 SiteNetSoft - Add regression tests for dynamic-member NPE/bypass-narrowness fixes
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -34,6 +35,9 @@ import org.sitenetsoft.olinguito.server.api.uri.UriInfo;
 import org.sitenetsoft.olinguito.server.api.uri.UriResource;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceDynamicProperty;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceKind;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Binary;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Expression;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Member;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
 import org.junit.jupiter.api.Test;
 
@@ -63,7 +67,45 @@ class OpenTypeUriParserTest {
   void filterOnDynamicPropertyParsesOnOpenType() throws Exception {
     final UriInfo uriInfo = new Parser(edm, odata)
         .parseUri("ESOpen", "$filter=DynamicInt gt 5", null, null);
-    assertNotNull(uriInfo.getFilterOption().getExpression());
+    final Expression expression = uriInfo.getFilterOption().getExpression();
+    assertNotNull(expression);
+    // Walk down to the left operand's member path and confirm it actually resolved to a
+    // dynamic-property resource, not merely that some non-null expression was produced.
+    final Expression left = ((Binary) expression).getLeftOperand();
+    assertLastPartIsDynamicProperty((Member) left, "DynamicInt");
+  }
+
+  private static void assertLastPartIsDynamicProperty(final Member member, final String expectedName) {
+    final List<UriResource> parts = member.getResourcePath().getUriResourceParts();
+    final UriResource last = parts.get(parts.size() - 1);
+    assertEquals(UriResourceKind.dynamicProperty, last.getKind());
+    assertEquals(expectedName, ((UriResourceDynamicProperty) last).getPropertyName());
+  }
+
+  @Test
+  void filterAddChainOnDynamicPropertyRejectedNotNpe() {
+    // (DynamicInt add 5) is compatible (dynamic bypass); chaining a further "add true" can no
+    // longer see the dynamic origin (the intermediate is a Binary, not a Member) and must be
+    // rejected with a proper semantic exception rather than an NPE while building the message.
+    assertThrows(UriParserSemanticException.class, () -> new Parser(edm, odata)
+        .parseUri("ESOpen", "$filter=DynamicInt add 5 add true", null, null));
+  }
+
+  @Test
+  void filterInOnComposedDynamicArithmeticRejectedNotNpe() {
+    // The IN operand (DynamicInt add 5) has an unknown (null) type that is not itself a
+    // dynamic member; it cannot be proven compatible with the typed candidate list and must be
+    // rejected with a proper semantic exception rather than an NPE.
+    assertThrows(UriParserSemanticException.class, () -> new Parser(edm, odata)
+        .parseUri("ESOpen", "$filter=(DynamicInt add 5) in (1,2)", null, null));
+  }
+
+  @Test
+  void filterRelationDynamicVersusComplexOperandRejected() {
+    // The dynamic left operand is skipped, but the known non-dynamic right operand (a complex
+    // property) must still be validated and rejected as an invalid relational operand.
+    assertThrows(UriParserSemanticException.class, () -> new Parser(edm, odata)
+        .parseUri("ESOpen", "$filter=DynamicInt gt PropertyComp", null, null));
   }
 
   @Test
