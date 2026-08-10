@@ -185,12 +185,14 @@ public abstract class ExpandSelectHelper {
     for (final SelectItem item : selectItems) {
       final List<UriResource> parts = item.getResourcePath().getUriResourceParts();
       final UriResource resource = parts.get(0);
-      if (resource instanceof UriResourceProperty) {
+      if (resource instanceof UriResourceProperty || resource instanceof UriResourceDynamicProperty) {
         if (!parts.isEmpty()) {
           List<String> path = new ArrayList<>();
           for (final UriResource part : parts.subList(0, parts.size())) {
             if (part instanceof UriResourceProperty partProp2) {
               path.add(partProp2.getProperty().getName());
+            } else if (part instanceof UriResourceDynamicProperty partDynamic2) {
+              path.add(partDynamic2.getPropertyName());
             }
           }
           selectedPaths.add(path);
