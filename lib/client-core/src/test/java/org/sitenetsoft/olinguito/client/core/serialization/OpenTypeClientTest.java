@@ -23,6 +23,8 @@
  * round-trip since the client has no EDM to fall back on
  * Copyright 2026 SiteNetSoft - Add write pin for a dynamic Byte property: neither the client's
  * nor the server's bare-JSON-number inference can ever produce Byte, so it must be annotated too
+ * Copyright 2026 SiteNetSoft - Pin dynamic-collection round-trip: annotated read already works;
+ * minimal-metadata write does not yet annotate collections (documented gap, not fixed)
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -33,17 +35,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.domain.ClientCollectionValue;
 import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
 import org.sitenetsoft.olinguito.client.api.domain.ClientObjectFactory;
 import org.sitenetsoft.olinguito.client.api.domain.ClientProperty;
+import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
 import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmDateTimeOffset;
+import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmGuid;
 import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmInt32;
 import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmString;
 import org.junit.jupiter.api.Test;
@@ -165,5 +172,63 @@ class OpenTypeClientTest {
     assertNotNull(when);
     assertTrue(when.hasPrimitiveValue());
     assertEquals(EdmDateTimeOffset.getInstance(), when.getPrimitiveValue().getType());
+  }
+
+  @Test
+  void deserializesAnAnnotatedDynamicGuidCollectionProperty() throws Exception {
+    // The read side already handles a "name@odata.type":"#Collection(X)" annotation correctly:
+    // EdmTypeInfo's constructor strips the "Collection(...)" wrapper and the leading '#' before
+    // resolving the element kind, and JsonDeserializer#fromCollection then parses every element
+    // with that resolved type. No code change was needed for this direction.
+    final String json = "{"
+        + "\"@odata.context\":\"$metadata#ESOpen/$entity\","
+        + "\"PropertyInt16\":1,"
+        + "\"Refs@odata.type\":\"#Collection(Guid)\","
+        + "\"Refs\":[\"01234567-89ab-cdef-0123-456789abcdef\",\"11234567-89ab-cdef-0123-456789abcdef\"]"
+        + "}";
+    final InputStream input = new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8));
+
+    final ClientEntity entity = client.getBinder().getODataEntity(
+        client.getDeserializer(ContentType.JSON).toEntity(input));
+    final ClientProperty refs = entity.getProperty("Refs");
+    assertNotNull(refs);
+    assertTrue(refs.hasCollectionValue());
+    final List<ClientValue> values = new ArrayList<>();
+    refs.getCollectionValue().forEach(values::add);
+    assertEquals(2, values.size());
+    for (final ClientValue value : values) {
+      assertTrue(value.isPrimitive());
+      assertEquals(EdmGuid.getInstance(), value.asPrimitive().getType());
+    }
+  }
+
+  @Test
+  void dynamicGuidCollectionWrittenUnderMinimalMetadataHasNoTypeAnnotationYet() throws Exception {
+    // KNOWN, DELIBERATE GAP (documented, not fixed here - see open-types-guide.md and the M5(4)
+    // finding this test pins): unlike the scalar case (serializesADynamicGuidPropertyWithATypeAnnotation
+    // above), JsonSerializer#scalarPrimitiveKind returns null for any collection value, so under
+    // minimal metadata a dynamic COLLECTION property is written with no "name@odata.type"
+    // annotation at all - the exact same silent-corruption class of bug that was fixed for scalar
+    // dynamic primitives, just not yet extended to collections. A receiving open-type server's
+    // unannotated-collection inference (see ODataJsonDeserializer#createDynamicCollectionProperty)
+    // will default this back to Collection(Edm.String) on read. Building that client-side write
+    // support is out of scope for this fix wave; this test only pins the current behavior so a
+    // future change is a deliberate, visible diff rather than a silent regression either way.
+    final ClientObjectFactory factory = client.getObjectFactory();
+    final ClientEntity entity = factory.newEntity(new FullQualifiedName("Olinguito.OData", "ETOpen"));
+    entity.getProperties().add(factory.newPrimitiveProperty("PropertyInt16",
+        factory.newPrimitiveValueBuilder().buildInt16((short) 100)));
+    final ClientCollectionValue<ClientValue> refs = factory.newCollectionValue("Collection(Edm.Guid)");
+    refs.add(factory.newPrimitiveValueBuilder().buildGuid(
+        UUID.fromString("01234567-89ab-cdef-0123-456789abcdef")));
+    entity.getProperties().add(factory.newCollectionProperty("Refs", refs));
+
+    final InputStream written = client.getWriter().writeEntity(entity, ContentType.JSON);
+    final String json = new String(written.readAllBytes(), StandardCharsets.UTF_8);
+
+    assertTrue(json.contains("\"Refs\":[\"01234567-89ab-cdef-0123-456789abcdef\"]"),
+        () -> "expected the bare (unannotated) collection value: " + json);
+    assertEquals(-1, json.indexOf("Refs@odata.type"),
+        () -> "pin: no type annotation is written for dynamic collections yet: " + json);
   }
 }
