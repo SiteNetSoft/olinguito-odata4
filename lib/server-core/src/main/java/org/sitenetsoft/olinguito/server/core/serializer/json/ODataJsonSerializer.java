@@ -647,7 +647,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
     final boolean isCollection = property.isCollection();
     final EdmPrimitiveTypeKind kind = resolveDynamicPropertyTypeKind(property, isCollection);
     final EdmPrimitiveType edmType = EdmPrimitiveTypeFactory.getInstance(kind);
-    if (isODataMetadataFull || !JSON_NATIVE_DYNAMIC_KINDS.contains(kind)) {
+    if (!isODataMetadataNone && (isODataMetadataFull || !JSON_NATIVE_DYNAMIC_KINDS.contains(kind))) {
       json.writeStringField(name + constants.getType(),
           isCollection ? "#Collection(" + kind.name() + ")" : "#" + kind.name());
     }

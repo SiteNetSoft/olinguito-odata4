@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - OpenType: support name@odata.type annotations and
  * primitive collections for dynamic properties
  * Copyright 2026 SiteNetSoft - OpenType: dynamic properties inside open complex values
+ * Copyright 2026 SiteNetSoft - OpenType: annotated dynamic collection element type tests
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -32,6 +33,7 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.UUID;
 
 import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
 import org.sitenetsoft.olinguito.commons.api.data.Entity;
@@ -91,6 +93,30 @@ class ODataJsonDeserializerOpenTypeTest extends AbstractODataDeserializerTest {
     assertEquals(ValueType.COLLECTION_PRIMITIVE, tags.getValueType());
     assertEquals(List.of("a", "b"), tags.asCollection());
     assertEquals("Collection(Edm.String)", "Collection(" + entity.getProperty("Empty").getType() + ")");
+  }
+
+  @Test
+  void annotatedDynamicCollectionParsedAsDeclaredElementType() throws Exception {
+    // "Refs@odata.type":"#Collection(Guid)" must resolve every element as Edm.Guid rather than the
+    // unannotated inference path's Edm.String default.
+    final String payload = "{\"PropertyInt16\":1,"
+        + "\"Refs@odata.type\":\"#Collection(Guid)\","
+        + "\"Refs\":[\"01234567-89ab-cdef-0123-456789abcdef\",\"11234567-89ab-cdef-0123-456789abcdef\"]}";
+    final Entity entity = deserialize(payload, "ETOpen");
+    final Property refs = entity.getProperty("Refs");
+    assertEquals(ValueType.COLLECTION_PRIMITIVE, refs.getValueType());
+    assertEquals("Edm.Guid", refs.getType());
+    assertEquals(
+        List.of(UUID.fromString("01234567-89ab-cdef-0123-456789abcdef"),
+            UUID.fromString("11234567-89ab-cdef-0123-456789abcdef")),
+        refs.asCollection());
+  }
+
+  @Test
+  void annotatedDynamicCollectionWithUnknownElementTypeRejected() {
+    final String payload = "{\"PropertyInt16\":1,"
+        + "\"Refs@odata.type\":\"#Collection(No.Such.Type)\",\"Refs\":[\"v\"]}";
+    assertThrows(DeserializerException.class, () -> deserialize(payload, "ETOpen"));
   }
 
   @Test

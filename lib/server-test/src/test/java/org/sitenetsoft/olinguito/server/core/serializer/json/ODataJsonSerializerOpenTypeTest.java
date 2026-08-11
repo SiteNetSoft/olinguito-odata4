@@ -18,6 +18,8 @@
  *
  * Copyright 2026 SiteNetSoft - Add OpenType support (serialize dynamic properties in JSON)
  * Copyright 2026 SiteNetSoft - Add $select-of-dynamic-property serializer tests
+ * Copyright 2026 SiteNetSoft - Pin $select of a nested dynamic property under a declared complex
+ * Copyright 2026 SiteNetSoft - Server must not emit @odata.type under odata.metadata=none
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -89,6 +91,20 @@ class ODataJsonSerializerOpenTypeTest {
         .addProperty(new Property("Edm.String", "Sneaky", ValueType.PRIMITIVE, "x"));
     final String json = serializeEntity(entity, "ETTwoPrim", ContentType.JSON);
     assertFalse(json.contains("Sneaky"));
+  }
+
+  @Test
+  void nonNativeDynamicValueNotAnnotatedUnderMetadataNone() throws Exception {
+    // odata.metadata=none must never emit @odata.type, even for a non-JSON-native dynamic value:
+    // the client has no way to consume type-control annotations under "none" metadata anyway, and
+    // the OData JSON spec explicitly excludes them from that mode.
+    final Entity entity = new Entity()
+        .addProperty(new Property(null, "PropertyInt16", ValueType.PRIMITIVE, (short) 1))
+        .addProperty(new Property("Edm.Guid", "Ref", ValueType.PRIMITIVE,
+            UUID.fromString("01234567-89ab-cdef-0123-456789abcdef")));
+    final String json = serializeEntity(entity, "ETOpen", ContentType.JSON_NO_METADATA);
+    assertFalse(json.contains("@odata.type"));
+    assertTrue(json.contains("\"Ref\":\"01234567-89ab-cdef-0123-456789abcdef\""));
   }
 
   @Test
@@ -184,6 +200,29 @@ class ODataJsonSerializerOpenTypeTest {
     final SelectOption select = parseSelect("ESOpen", "$select=Custom");
     final String json = serializeEntity(entity, "ETOpen", ContentType.JSON, select);
     assertFalse(json.contains("Custom"));
+    assertFalse(json.contains("PropertyString"));
+  }
+
+  @Test
+  void selectOfNestedDynamicPropertyUnderDeclaredComplexEmitsOnlyThatMember() throws Exception {
+    // Extends selectedDynamicPropertyIncludedAndNonSelectedDeclaredExcluded to a nested complex
+    // value: $select=PropertyComp/CompDynamic must write PropertyComp with only its CompDynamic
+    // dynamic member (CompString, though present in the data, is not selected and must be
+    // omitted), and no top-level declared properties (unselected).
+    final ComplexValue complexValue = new ComplexValue();
+    complexValue.setTypeName(SchemaProvider.NAMESPACE + ".CTOpen");
+    complexValue.getValue().add(new Property(null, "CompString", ValueType.PRIMITIVE, "s"));
+    complexValue.getValue().add(new Property("Edm.Int64", "CompDynamic", ValueType.PRIMITIVE, 5L));
+
+    final Entity entity = new Entity()
+        .addProperty(new Property(null, "PropertyInt16", ValueType.PRIMITIVE, (short) 1))
+        .addProperty(new Property(null, "PropertyString", ValueType.PRIMITIVE, "abc"))
+        .addProperty(new Property(SchemaProvider.NAMESPACE + ".CTOpen", "PropertyComp",
+            ValueType.COMPLEX, complexValue));
+    final SelectOption select = parseSelect("ESOpen", "$select=PropertyComp/CompDynamic");
+    final String json = serializeEntity(entity, "ETOpen", ContentType.JSON, select);
+    assertTrue(json.contains("\"CompDynamic\":5"));
+    assertFalse(json.contains("CompString"));
     assertFalse(json.contains("PropertyString"));
   }
 

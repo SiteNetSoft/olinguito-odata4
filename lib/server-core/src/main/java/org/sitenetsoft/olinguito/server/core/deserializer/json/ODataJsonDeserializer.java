@@ -34,6 +34,8 @@
  * Copyright 2026 SiteNetSoft - OpenType: support name@odata.type annotations and
  * primitive collections for dynamic properties
  * Copyright 2026 SiteNetSoft - OpenType: accept dynamic properties inside open complex values
+ * Copyright 2026 SiteNetSoft - OpenType: resolve annotated element type for dynamic collection
+ * properties instead of ignoring name@odata.type on arrays
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -138,6 +140,7 @@ public class ODataJsonDeserializer implements ODataDeserializer {
   private static final String ODATA_STREAM_PROPERTY_MEDIA_READ_LINK = "mediaReadLink";
   private static final String ODATA_STREAM_PROPERTY_MEDIA_EDIT_LINK = "mediaEditLink";
   private static final String ODATA_STREAM_PROPERTY_MEDIA_MIME_TYPE = "mediaMimeType";
+  private static final String COLLECTION_TYPE_PREFIX = "Collection(";
 
   private final boolean isIEEE754Compatible;
   private ServiceMetadata serviceMetadata;
@@ -316,7 +319,8 @@ public class ODataJsonDeserializer implements ODataDeserializer {
         continue;
       }
       if (value.isArray()) {
-        final Property collectionProperty = createDynamicCollectionProperty(name, (ArrayNode) value);
+        final Property collectionProperty =
+            createDynamicCollectionProperty(name, (ArrayNode) value, dynamicTypes.get(name));
         if (collectionProperty == null) {
           // an element in the array is not a primitive value; leave the field unconsumed
           continue;
@@ -385,15 +389,28 @@ public class ODataJsonDeserializer implements ODataDeserializer {
   }
 
   /**
-   * Builds a dynamic collection property from a JSON array, inferring the element type from the
-   * first non-null element (or defaulting to <code>Edm.String</code> for an empty/all-null array).
+   * Builds a dynamic collection property from a JSON array. When a sibling
+   * <code>name@odata.type</code> annotation (e.g. <code>#Collection(Guid)</code>) was present, every
+   * element is parsed as that resolved element type via {@link EdmPrimitiveType#valueOfString}
+   * (mirroring the annotated-scalar path in {@link #createDynamicProperty}); otherwise the element
+   * type is inferred from the first non-null element (or defaults to <code>Edm.String</code> for an
+   * empty/all-null array), as before.
    *
    * @param name the dynamic property name
    * @param value the JSON array
-   * @return the collection property, or {@code null} if the array contains a non-primitive element
-   *         (the field must then be left unconsumed so it is rejected as unknown content)
+   * @param annotatedType the <code>Collection(...)</code>-wrapped annotated element type (with its
+   *          leading <code>#</code> already stripped), or {@code null} if unannotated
+   * @return the collection property, or {@code null} if unannotated and the array contains a
+   *         non-primitive element (the field must then be left unconsumed so it is rejected as
+   *         unknown content)
+   * @throws DeserializerException if {@code annotatedType} names an unresolvable Edm type, or an
+   *           element's value does not parse as that type
    */
-  private Property createDynamicCollectionProperty(final String name, final ArrayNode value) {
+  private Property createDynamicCollectionProperty(final String name, final ArrayNode value,
+      final String annotatedType) throws DeserializerException {
+    if (annotatedType != null) {
+      return createAnnotatedDynamicCollectionProperty(name, value, annotatedType);
+    }
     final List<Object> values = new ArrayList<>();
     String typeName = null;
     for (final JsonNode element : value) {
@@ -413,6 +430,27 @@ public class ODataJsonDeserializer implements ODataDeserializer {
     property.setName(name);
     property.setType(typeName == null
         ? EdmPrimitiveTypeKind.String.getFullQualifiedName().getFullQualifiedNameAsString() : typeName);
+    property.setValue(ValueType.COLLECTION_PRIMITIVE, values);
+    return property;
+  }
+
+  /**
+   * Builds a dynamic collection property whose element type is fixed by an
+   * <code>name@odata.type</code> annotation (see {@link #createDynamicCollectionProperty}).
+   */
+  private Property createAnnotatedDynamicCollectionProperty(final String name, final ArrayNode value,
+      final String annotatedType) throws DeserializerException {
+    final String elementTypeName = annotatedType.startsWith(COLLECTION_TYPE_PREFIX) && annotatedType.endsWith(")")
+        ? annotatedType.substring(COLLECTION_TYPE_PREFIX.length(), annotatedType.length() - 1)
+        : annotatedType;
+    final EdmPrimitiveType type = resolveAnnotatedPrimitiveType(name, elementTypeName);
+    final List<Object> values = new ArrayList<>();
+    for (final JsonNode element : value) {
+      values.add(element.isNull() ? null : parseAnnotatedPrimitiveValue(name, type, element));
+    }
+    final Property property = new Property();
+    property.setName(name);
+    property.setType(type.getFullQualifiedName().getFullQualifiedNameAsString());
     property.setValue(ValueType.COLLECTION_PRIMITIVE, values);
     return property;
   }
