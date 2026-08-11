@@ -17,6 +17,8 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - New file: dynamic (open-type) property path-segment API
+ * Copyright 2026 SiteNetSoft - Document the getType()/isCollection() contract for dynamic
+ * properties
  */
 package org.sitenetsoft.olinguito.server.api.uri;
 
@@ -24,6 +26,11 @@ package org.sitenetsoft.olinguito.server.api.uri;
  * Used to describe a dynamic property used within a resource path on an open type.
  * Dynamic properties are not declared in the EDM; they are only known by name.
  * For example: http://.../serviceroot/entityset(1)/dynamicProperty
+ *
+ * <p>Because a dynamic property carries no EDM declaration, its EDM type is not known until an
+ * actual instance value is inspected at runtime: {@link #getType()} always returns {@code null}
+ * and {@link #isCollection()} always returns {@code false} for a dynamic property, regardless of
+ * what value the addressed instance may actually hold.
  */
 public interface UriResourceDynamicProperty extends UriResourcePartTyped {
 

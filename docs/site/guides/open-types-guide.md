@@ -5,8 +5,10 @@
 OData V4 [open types](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_OpenType)
 are entity or complex types whose instances may carry **dynamic properties** — properties that
 are not declared in `$metadata`. Olinguito supports open types end to end: server payload
-handling (JSON), server-side `$select` / `$filter` / `$orderby` and direct path addressing of
-dynamic properties, and client round-tripping.
+handling (JSON), server-side `$select` / `$filter` / `$orderby` of dynamic properties, and client
+round-tripping. Direct path addressing of a dynamic property (`/Entity(1)/DynamicName`) parses at
+the URI layer but is **not served** by either bundled server dispatch stack — see
+[Server: Querying Dynamic Properties](#server-querying-dynamic-properties) below.
 
 This guide covers:
 
@@ -117,11 +119,10 @@ properties a receiving open-type server will treat as dynamic.
 
 ## Server: Querying Dynamic Properties
 
-Dynamic properties can be addressed directly in the URI, wherever a single, unqualified property
-name is legal:
+Dynamic properties can be addressed in `$select` / `$filter` / `$orderby`, wherever a single,
+unqualified property name is legal:
 
 ```
-GET Products(1)/Brand
 GET Products?$select=Brand
 GET Products?$filter=Brand eq 'Acme'
 GET Products?$orderby=Brand desc
@@ -137,14 +138,30 @@ GET Products?$orderby=Brand desc
   implementation bundled with this project, a missing/absent dynamic property behaves as `null`,
   sorting before any present value in ascending order (per `OrderByHandler`'s null-ordering rule).
   A custom service's own processor is free to evaluate this differently.
-* **Direct path addressing** (`/Entity(1)/DynamicName`) resolves to a dedicated
-  `UriResourceDynamicProperty` in the parsed URI resource tree — an untyped path segment (there is
-  no EDM type to report for it) representing the dynamic property by name. This is supported end
-  to end by the processor-based dispatch stack tecsvc uses (`ODataHandler`/`ODataDispatcher`). The
-  older, `ServiceHandler`-based dispatch stack in `server-adapter-servlet`/`server-core-ext` (used
-  by simple samples such as the bundled TripPin example) has no equivalent hook for serving a
-  dynamic property's value at all, so on that stack every dynamic-property path segment 404s,
+
+### Direct path addressing (parses, not served)
+
+`GET Products(1)/Brand` — addressing a dynamic property directly as the last URI path segment —
+resolves to a dedicated `UriResourceDynamicProperty` in the parsed URI resource tree (an untyped
+path segment; there is no EDM type to report for it) representing the dynamic property by name.
+Parsing succeeds, but **neither bundled server dispatch stack actually serves it**:
+
+* The modern, processor-based dispatch stack tecsvc uses (`ODataHandler`/`ODataDispatcher`) has no
+  `dynamicProperty` case in `ODataDispatcher#handleResourceDispatching`, so it falls through to the
+  default branch and returns **501 Not Implemented**, regardless of which processors are
+  registered or whether the addressed instance actually has a value for that property. This is a
+  deliberate, tested deviation (see `ODataHandlerImplTest#dynamicPropertyDirectPathAddressingIsNotServedByDispatcher`)
+  rather than an oversight to be fixed silently — implementing it would mean adding a new
+  processor contract (there is no `DynamicPropertyProcessor` today) and was judged out of scope for
+  this feature; revisit only as a deliberate follow-up.
+* The older, `ServiceHandler`-based dispatch stack in `server-adapter-servlet`/`server-core-ext`
+  (used by simple samples such as the bundled TripPin example) has no equivalent hook for serving a
+  dynamic property's value at all, so on that stack every dynamic-property path segment **404s**,
   regardless of whether the instance actually has a value for it.
+
+If your service needs to serve a dynamic property's value directly, expose it as a declared
+property instead, or have your entity/complex processor inspect the full path and produce the
+value itself for the containing resource.
 
 ## Client: Reading and Writing Dynamic Properties
 
@@ -221,8 +238,21 @@ before open-type support was added:
 * **`$expand` on a dynamic name.** Dynamic properties are never navigation properties, so
   `$expand=SomeDynamicName` is rejected exactly as it is for any other unknown name.
 * **`$apply` on a dynamic name.** Out of scope for this feature.
-* **Nested or lambda paths in expressions.** Multi-segment or `any`/`all` lambda expressions over
-  dynamic properties are rejected, matching existing behavior for unresolvable paths.
+* **A dynamic name is always a leaf.** Nothing may follow a dynamic property in a path or
+  member expression — `$filter=DynamicInt/Foo`, `any`/`all` lambda paths continuing past a
+  dynamic member, and `ESOpen(1)/DynamicString/$value` are all rejected. This does **not** mean
+  multi-segment paths *containing* a dynamic property are rejected wholesale: a dynamic property
+  nested under one or more *declared* complex segments — e.g. `$filter=PropertyComp/CompDynamic
+  eq ...` or `$select=PropertyComp/CompDynamic` where `PropertyComp` is a declared, open complex
+  property — parses and serializes normally; only the segment *after* the dynamic leaf itself is
+  the problem. The two leaf violations above surface differently: the `$filter` case is a
+  leftover-token syntax error from the option-value parser (`UriParserSyntaxException`), while the
+  `$value` case parses fine but is rejected later by `UriValidator` with
+  `UNALLOWED_KIND_BEFORE_VALUE` (see `UriValidatorTest#dynamicPropertyValueRejectedByUriValidator`
+  and `OpenTypeUriParserTest#filterOnDynamicPropertyWithTrailingSegmentRejected` for the pinned
+  exact behavior).
+* **Direct path addressing is parsed but not served.** See
+  [Direct path addressing (parses, not served)](#direct-path-addressing-parses-not-served) above.
 
 ## See Also
 
