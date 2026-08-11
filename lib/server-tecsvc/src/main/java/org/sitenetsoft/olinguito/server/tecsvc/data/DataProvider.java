@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
+ * Copyright 2026 SiteNetSoft - OpenType: carry undeclared (dynamic) properties over on create/update
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -342,6 +343,12 @@ public class DataProvider {
       }
     }
 
+    // Open types may also carry undeclared (dynamic) properties; the loop above only handles
+    // the EDM-declared property set, so copy any remaining ones from the incoming payload verbatim.
+    if (entityType.isOpenType()) {
+      updateDynamicProperties(entity, changedEntity, entityType.getPropertyNames(), patch);
+    }
+
     // For insert operations collection navigation property bind operations and deep insert operations can be combined.
     // In this case, the bind operations MUST appear before the deep insert operations in the payload.
     // => Apply bindings first
@@ -359,6 +366,40 @@ public class DataProvider {
 
     // Update the ETag if present.
     updateETag(entity);
+  }
+
+  /**
+   * Copies undeclared (dynamic) properties from {@code changedEntity} onto {@code entity}, for
+   * open entity types. Declared properties (handled by the caller's own loop) are skipped.
+   *
+   * <p>For a full replace ({@code patch == false}), this also drops any dynamic property that
+   * is currently on {@code entity} but was not resubmitted in {@code changedEntity} - mirroring
+   * how {@link #updateProperty} wholesale-replaces declared properties for PUT (only a PATCH
+   * leaves properties the client omitted untouched).
+   */
+  private void updateDynamicProperties(final Entity entity, final Entity changedEntity,
+      final List<String> declaredPropertyNames, final boolean patch) {
+    if (!patch) {
+      final Iterator<Property> existingProperties = entity.getProperties().iterator();
+      while (existingProperties.hasNext()) {
+        final String existingName = existingProperties.next().getName();
+        if (!declaredPropertyNames.contains(existingName) && changedEntity.getProperty(existingName) == null) {
+          existingProperties.remove();
+        }
+      }
+    }
+    for (final Property changedProperty : changedEntity.getProperties()) {
+      final String propertyName = changedProperty.getName();
+      if (!declaredPropertyNames.contains(propertyName)) {
+        final Property existing = entity.getProperty(propertyName);
+        if (existing == null) {
+          entity.addProperty(new Property(changedProperty.getType(), propertyName,
+              changedProperty.getValueType(), changedProperty.getValue()));
+        } else {
+          existing.setValue(changedProperty.getValueType(), changedProperty.getValue());
+        }
+      }
+    }
   }
 
   public void updateETag(Entity entity) {

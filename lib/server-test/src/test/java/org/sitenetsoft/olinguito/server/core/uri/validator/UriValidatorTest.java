@@ -17,6 +17,8 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - Pin: dynamic-property path segment before $value is rejected by
+ * UriValidator with UNALLOWED_KIND_BEFORE_VALUE
  */
 package org.sitenetsoft.olinguito.server.core.uri.validator;
 
@@ -479,6 +481,21 @@ class UriValidatorTest {
         UriValidationException.MessageKeys.UNSUPPORTED_HTTP_METHOD);
     validateWrong("ESKeyNav(1)/PropertyString/$value", null, HttpMethod.DELETE,
         UriValidationException.MessageKeys.UNSUPPORTED_HTTP_METHOD);
+  }
+
+  @Test
+  void dynamicPropertyValueRejectedByUriValidator() throws Exception {
+    // Pins the ACTUAL current behavior for a dynamic-property path segment followed by $value: the
+    // raw URI parser resolves it fine (UriResourceKind.dynamicProperty, then value - no parse-time
+    // rejection). UriValidator#getUriTypeForValue switches on the kind of the segment BEFORE
+    // $value and only special-cases primitiveProperty/entitySet/navigationProperty/singleton/
+    // function; dynamicProperty isn't one of them (the dynamicProperty->propertyPrimitive mapping
+    // a few lines up only applies when dynamicProperty is the LAST segment, not the one before
+    // $value), so it falls to the default branch and throws UNALLOWED_KIND_BEFORE_VALUE - the same
+    // message key a genuinely-invalid kind before $value would get. See open-types-guide.md's
+    // "Direct path addressing" section.
+    validateWrong("ESOpen(1)/DynamicString/$value", null, HttpMethod.GET,
+        UriValidationException.MessageKeys.UNALLOWED_KIND_BEFORE_VALUE);
   }
 
   private String[] constructUri(final String[] uriParameterArray) {

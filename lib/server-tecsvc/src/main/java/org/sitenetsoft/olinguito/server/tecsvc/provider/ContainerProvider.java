@@ -17,6 +17,8 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ *
+ * Copyright 2026 SiteNetSoft - Add OpenType support (tecsvc ETOpen model)
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
@@ -115,6 +117,7 @@ public class ContainerProvider {
     entitySets.add(prov.getEntitySet(ContainerProvider.nameContainer, "ESAllPrimDerived"));
     entitySets.add(prov.getEntitySet(ContainerProvider.nameContainer, "ESDelta"));
     entitySets.add(prov.getEntitySet(ContainerProvider.nameContainer, "ESStreamOnComplexProp"));
+    entitySets.add(prov.getEntitySet(ContainerProvider.nameContainer, "ESOpen"));
 
     // Singletons
     List<CsdlSingleton> singletons = new ArrayList<>();
@@ -756,6 +759,16 @@ public class ContainerProvider {
             .setPath(PropertyProvider.navPropertyKeyAsSegment.getName())
             .setTarget("ESKeyAsSegmentString")
           ));
+      } else if (name.equals("ESOpen")) {
+        return new CsdlEntitySet()
+            .setName("ESOpen")
+            .setType(EntityTypeProvider.nameETOpen)
+            .setAnnotations(List.of(
+                new CsdlAnnotation().setTerm("Core.Description")
+                    .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
+                        .setValue("Contains entities with an open type")),
+                new CsdlAnnotation().setTerm(TermProvider.TERM_DATA.getFullQualifiedNameAsString()).setExpression(
+                    new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.Bool, "true"))));
       }
     }
     return null;

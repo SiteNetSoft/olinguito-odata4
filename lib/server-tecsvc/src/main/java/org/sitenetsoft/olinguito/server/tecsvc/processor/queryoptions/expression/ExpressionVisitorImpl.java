@@ -17,12 +17,15 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Converted switch statements to switch expressions
+ * Copyright 2026 SiteNetSoft - Evaluate dynamic (open-type) properties at query-option runtime
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression;
 
+import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
 import org.sitenetsoft.olinguito.commons.api.data.Entity;
@@ -44,6 +47,7 @@ import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
 import org.sitenetsoft.olinguito.server.api.uri.UriInfoResource;
 import org.sitenetsoft.olinguito.server.api.uri.UriParameter;
 import org.sitenetsoft.olinguito.server.api.uri.UriResource;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceDynamicProperty;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceFunction;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceLambdaAny;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceLambdaVariable;
@@ -66,6 +70,7 @@ import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression
 import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operation.BinaryOperator;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operation.MethodCallOperator;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operation.UnaryOperator;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.primitive.EdmNull;
 
 public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> {
 
@@ -175,7 +180,18 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
       EdmProperty currentEdmProperty = uriResourceProp.getProperty();
       Property currentProperty = entity.getProperty(currentEdmProperty.getName());
       for (int i = 1; i < uriResourceParts.size(); i++) {
-        if (currentProperty.isComplex()) {
+        if (uriResourceParts.get(i) instanceof UriResourceDynamicProperty dynamicProperty) {
+          // Dynamic (undeclared) property segments are always leaves of the resource path
+          // (OData open-type property paths cannot continue past an unresolved member),
+          // so it is safe to resolve and return immediately here. currentProperty (or the
+          // complex property leading to it) can be entirely absent on a given entity - only
+          // some entities in a collection may have seeded the parent complex property at all -
+          // so both null-property and non-complex-property must fall back to "no value" rather
+          // than NPE.
+          return resolveDynamicProperty(
+              currentProperty != null && currentProperty.isComplex() ? currentProperty.asComplex().getValue() : null,
+              dynamicProperty.getPropertyName());
+        } else if (currentProperty.isComplex()) {
           if (uriResourceParts.get(i) instanceof UriResourceLambdaAny any) {
             if (any.getExpression() instanceof Binary expression) {
               if (currentProperty.isCollection()) {
@@ -207,6 +223,12 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
         }
       }
       return new TypedOperand(currentProperty.getValue(), currentEdmProperty.getType(), currentEdmProperty);
+    } else if (initialPart instanceof UriResourceDynamicProperty dynamicProperty) {
+      // Undeclared property of an open type, resolved directly against the current entity's
+      // property list; resolveDynamicProperty() returns a typed-null operand (mirroring how
+      // missing nullable primitives are represented) when the property is not present.
+      return resolveDynamicProperty(entity == null ? null : entity.getProperties(),
+          dynamicProperty.getPropertyName());
     } else if (initialPart instanceof UriResourceFunction uriResourceFunc) {
       final EdmFunction function = uriResourceFunc.getFunction();
       if (uriResourceParts.size() > 1) {
@@ -301,6 +323,78 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
   private VisitorOperand throwNotImplemented() throws ODataApplicationException {
     throw new ODataApplicationException("Not implemented", HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(),
         Locale.ROOT);
+  }
+
+  /**
+   * Looks up a dynamic (undeclared, open-type) property by name in the given property list.
+   * Returns a typed-null operand ({@link EdmNull}-typed, null value) when the list is
+   * null/empty or the property is absent, mirroring how a null comparison operand is
+   * represented elsewhere in this package (see {@code BinaryOperator}/{@code TypedOperand}).
+   */
+  private VisitorOperand resolveDynamicProperty(final List<Property> properties, final String propertyName) {
+    if (properties != null) {
+      for (final Property property : properties) {
+        if (property.getName().equals(propertyName)) {
+          return new TypedOperand(property.getValue(), inferDynamicPropertyType(property));
+        }
+      }
+    }
+    return new TypedOperand(null, EdmNull.getInstance());
+  }
+
+  /**
+   * Dynamic properties carry no EDM property definition, so their runtime type has to be
+   * derived: first from the stored type-name string (set when the value came in with an
+   * explicit {@code @type} annotation), falling back to inference from the Java value's class.
+   */
+  private EdmType inferDynamicPropertyType(final Property property) {
+    final Object value = property.getValue();
+    if (value == null) {
+      return EdmNull.getInstance();
+    }
+    final String typeName = property.getType();
+    if (typeName != null) {
+      try {
+        return OData.newInstance().createPrimitiveTypeInstance(EdmPrimitiveTypeKind.valueOfFQN(typeName));
+      } catch (final IllegalArgumentException e) {
+        // Unresolvable stored type string; fall through to value-based inference below.
+      }
+    }
+    return OData.newInstance().createPrimitiveTypeInstance(inferPrimitiveTypeKindFromValue(value));
+  }
+
+  /**
+   * Infers an {@link EdmPrimitiveTypeKind} from a dynamic property's Java value class. This
+   * mapping is deliberately partial - it only covers the Java types the tecsvc JSON
+   * deserializer actually produces for untyped/inferred dynamic scalars (numbers, booleans,
+   * strings, GUIDs). Types with no unambiguous single Java representation without an explicit
+   * {@code @type} annotation - e.g. {@code byte[]} (could be Edm.Binary or Edm.Duration-as-bytes),
+   * temporal values (Edm.Date/DateTimeOffset/TimeOfDay/Duration all round-trip through different
+   * Java shapes) - are intentionally left unhandled here and fall through to the String default;
+   * such values should arrive with an explicit stored type name instead (see the {@code typeName}
+   * branch above).
+   */
+  private EdmPrimitiveTypeKind inferPrimitiveTypeKindFromValue(final Object value) {
+    if (value instanceof Short) {
+      return EdmPrimitiveTypeKind.Int16;
+    } else if (value instanceof Integer) {
+      return EdmPrimitiveTypeKind.Int32;
+    } else if (value instanceof Long) {
+      return EdmPrimitiveTypeKind.Int64;
+    } else if (value instanceof Boolean) {
+      return EdmPrimitiveTypeKind.Boolean;
+    } else if (value instanceof Float) {
+      return EdmPrimitiveTypeKind.Single;
+    } else if (value instanceof Double) {
+      return EdmPrimitiveTypeKind.Double;
+    } else if (value instanceof BigDecimal) {
+      return EdmPrimitiveTypeKind.Decimal;
+    } else if (value instanceof UUID) {
+      return EdmPrimitiveTypeKind.Guid;
+    } else if (value instanceof Byte) {
+      return EdmPrimitiveTypeKind.SByte;
+    }
+    return EdmPrimitiveTypeKind.String;
   }
 
   @Override

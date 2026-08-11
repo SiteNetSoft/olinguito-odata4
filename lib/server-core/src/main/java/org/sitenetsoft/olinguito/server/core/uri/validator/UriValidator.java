@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Converted switch statements to switch expressions
+ * Copyright 2026 SiteNetSoft - Permit GET on dynamic (open-type) property path segments
  */
 package org.sitenetsoft.olinguito.server.core.uri.validator;
 
@@ -180,6 +181,7 @@ public class UriValidator {
       case count -> getUriTypeForCount(segments.get(segments.size() - 2));
       case action -> getUriTypeForAction(lastPathSegment);
       case complexProperty -> getUriTypeForComplexProperty(lastPathSegment);
+      case dynamicProperty -> UriType.propertyPrimitive;
       case entitySet, navigationProperty -> getUriTypeForEntitySet(lastPathSegment);
       case function -> getUriTypeForFunction(lastPathSegment);
       case primitiveProperty -> getUriTypeForPrimitiveProperty(lastPathSegment);

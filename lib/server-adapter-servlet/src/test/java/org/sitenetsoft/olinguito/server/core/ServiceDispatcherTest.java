@@ -22,6 +22,8 @@
  * Copyright 2026 SiteNetSoft - Fixed HC 5.x resource leaks: shared HttpClient, close responses
  * Copyright 2026 SiteNetSoft - Replaced wildcard imports with explicit imports
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - Cover the dynamic (open-type) property 404 pre-check in
+ * ServiceDispatcher#internalExecute
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -54,6 +56,7 @@ import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.sitenetsoft.olinguito.commons.core.Encoder;
 import org.sitenetsoft.olinguito.server.adapter.servlet.OData4HttpHandler;
 import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ODataServerError;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 import org.sitenetsoft.olinguito.server.core.requests.ActionRequest;
 import org.sitenetsoft.olinguito.server.core.requests.DataRequest;
@@ -63,6 +66,7 @@ import org.sitenetsoft.olinguito.server.core.requests.MetadataRequest;
 import org.sitenetsoft.olinguito.server.core.responses.CountResponse;
 import org.sitenetsoft.olinguito.server.core.responses.EntityResponse;
 import org.sitenetsoft.olinguito.server.core.responses.EntitySetResponse;
+import org.sitenetsoft.olinguito.server.core.responses.ErrorResponse;
 import org.sitenetsoft.olinguito.server.core.responses.MetadataResponse;
 import org.sitenetsoft.olinguito.server.core.responses.NoContentResponse;
 import org.sitenetsoft.olinguito.server.core.responses.PrimitiveValueResponse;
@@ -381,6 +385,30 @@ class ServiceDispatcherTest {
             .toContentTypeString());
       }
     });
+  }
+
+  @Test
+  void testReadUnknownDynamicPropertySegmentReturns404() throws Exception {
+    // Person is declared OpenType="true" in trippin.xml, so "Unknown" parses as a
+    // UriResourceDynamicProperty rather than failing at parse time - but this legacy
+    // ServiceHandler-based dispatcher has no way to serve a dynamic property's value, so
+    // ServiceDispatcher#internalExecute's pre-check must reject it with 404 before any read/
+    // invoke handler method is invoked. processError is stubbed to actually write the error
+    // (mirroring the real TripPinHandler used elsewhere in this package) since a bare Mockito
+    // mock's void methods otherwise no-op, leaving the response empty rather than a 404.
+    final ServiceHandler handler = Mockito.mock(ServiceHandler.class);
+    Mockito.doAnswer(invocation -> {
+      final ODataServerError error = invocation.getArgument(0);
+      final ErrorResponse response = invocation.getArgument(1);
+      response.writeError(error);
+      return null;
+    }).when(handler).processError(Mockito.any(), Mockito.any());
+    beforeTest(handler);
+    try (ClassicHttpResponse response = httpGET(
+        "http://localhost:" + TOMCAT_PORT + "/trippin/People('russelwhyte')/Unknown")) {
+      Assertions.assertEquals(404, response.getCode());
+    }
+    Mockito.verify(handler, Mockito.never()).read(Mockito.any(), Mockito.any());
   }
 
   @Test

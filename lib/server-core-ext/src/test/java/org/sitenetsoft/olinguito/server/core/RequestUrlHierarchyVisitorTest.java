@@ -17,6 +17,8 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - Cover the UriResourceDynamicProperty visit hook (a no-op default
+ * on RequestURLVisitor - visit(UriInfo)/visit(UriInfoResource) do not throw)
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -29,6 +31,7 @@ import org.sitenetsoft.olinguito.server.api.uri.queryoption.FormatOption;
 import org.sitenetsoft.olinguito.server.core.uri.UriInfoImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceComplexPropertyImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceCountImpl;
+import org.sitenetsoft.olinguito.server.core.uri.UriResourceDynamicPropertyImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceEntitySetImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceFunctionImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceItImpl;
@@ -52,9 +55,9 @@ import org.sitenetsoft.olinguito.server.core.uri.queryoption.TopOptionImpl;
 import org.junit.jupiter.api.Test;
 
 class RequestUrlHierarchyVisitorTest {
-  
+
   @Test
-  void visitorTest(){
+  void visitorTest() {
     RequestURLHierarchyVisitor visitor = new RequestURLHierarchyVisitor();
     assertNull(visitor.getUriInfo());
     UriInfoImpl info = new UriInfoImpl();
@@ -99,5 +102,6 @@ class RequestUrlHierarchyVisitorTest {
     visitor.visit(new UriResourceSingletonImpl(null));
     visitor.visit(new UriResourceComplexPropertyImpl(null));
     visitor.visit(new UriResourcePrimitivePropertyImpl(null));
+    visitor.visit(new UriResourceDynamicPropertyImpl("dynamicProp"));
   }
 }

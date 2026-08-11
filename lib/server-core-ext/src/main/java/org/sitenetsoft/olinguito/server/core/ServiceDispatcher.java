@@ -15,13 +15,21 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reject dynamic (open-type) property path segments with 404 instead
+ * of silently dropping them, since this legacy dispatcher has no mechanism to serve their values
+ * Copyright 2026 SiteNetSoft - Moved the dynamic-property 404 check to a pre-check over the
+ * parsed URI resource parts in internalExecute (instead of a RequestURLVisitor#visit override),
+ * so RequestURLVisitor's existing visit(UriInfo)/visit(UriInfoResource) signatures need not widen
  */
 package org.sitenetsoft.olinguito.server.core;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.StringTokenizer;
 
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
@@ -39,14 +47,18 @@ import org.sitenetsoft.olinguito.server.api.uri.UriInfo;
 import org.sitenetsoft.olinguito.server.api.uri.UriInfoBatch;
 import org.sitenetsoft.olinguito.server.api.uri.UriInfoCrossjoin;
 import org.sitenetsoft.olinguito.server.api.uri.UriInfoEntityId;
+import org.sitenetsoft.olinguito.server.api.uri.UriInfoKind;
 import org.sitenetsoft.olinguito.server.api.uri.UriInfoMetadata;
 import org.sitenetsoft.olinguito.server.api.uri.UriInfoService;
+import org.sitenetsoft.olinguito.server.api.uri.UriResource;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceAction;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceComplexProperty;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceCount;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceDynamicProperty;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceEntitySet;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceFunction;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceNavigation;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourcePartTyped;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourcePrimitiveProperty;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceRef;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceSingleton;
@@ -62,6 +74,7 @@ import org.sitenetsoft.olinguito.server.core.requests.MetadataRequest;
 import org.sitenetsoft.olinguito.server.core.requests.OperationRequest;
 import org.sitenetsoft.olinguito.server.core.requests.ServiceDocumentRequest;
 import org.sitenetsoft.olinguito.server.core.uri.parser.Parser;
+import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserSemanticException;
 import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidator;
 
 public class ServiceDispatcher extends RequestURLHierarchyVisitor {
@@ -123,13 +136,15 @@ public class ServiceDispatcher extends RequestURLHierarchyVisitor {
 
     new UriValidator().validate(uriInfo, odRequest.getMethod());
 
+    rejectDynamicPropertySegments(uriInfo);
+
     // part1, 8.2.6
     String isolation = odRequest.getHeader(HttpHeader.ODATA_ISOLATION);
     if (isolation != null && "snapshot".equals(isolation) && !this.handler.supportsDataIsolation()) {
       odResponse.setStatusCode(HttpStatusCode.PRECONDITION_FAILED.getStatusCode());
       return;
     }
-    
+
     visit(uriInfo);
 
     // this should cover for any unsupported calls until they are implemented
@@ -202,6 +217,55 @@ public class ServiceDispatcher extends RequestURLHierarchyVisitor {
   public void visit(UriResourcePrimitiveProperty info) {
     DataRequest dataRequest = (DataRequest) this.request;
     dataRequest.setUriResourceProperty(info);
+  }
+
+  /**
+   * A dynamic (open-type) property segment has no backing {@link
+   * org.sitenetsoft.olinguito.commons.api.edm.EdmProperty}, so it cannot be plugged into {@link
+   * DataRequest#setUriResourceProperty}, whose whole {@code PropertyRequest} machinery (context
+   * URL, serializer options, {@link ServiceHandler} read/update hooks) is built around one. This
+   * legacy, {@link ServiceHandler}-based dispatcher (used by simple samples such as TripPin) has
+   * no equivalent hook for serving an undeclared property's value at all. Per OData, addressing a
+   * property that does not resolve on the requested instance must 404 - and since this dispatcher
+   * can never resolve a dynamic property's value, every dynamic-property segment 404s here, the
+   * same way an unknown segment on a closed type has always 404'd. (The newer processor-based
+   * dispatch stack used by the OpenType tecsvc integration tests fully supports reading, filtering,
+   * and ordering by dynamic properties; only this older stack is limited.)
+   *
+   * <p>Implemented as a pre-check over the already-parsed URI resource parts, run once up front
+   * in {@link #internalExecute}, rather than as a {@link RequestURLVisitor#visit(UriResourceDynamicProperty)}
+   * override: {@code RequestURLVisitor} is a shipped public interface, and routing this through
+   * the visitor would require widening {@code visit(UriInfo)}/{@code visit(UriInfoResource)}
+   * with a new checked exception - a source-breaking change for any other implementer.
+   *
+   * @param uriInfo the parsed request URI; a no-op unless it is a resource-path URI
+   *     ({@link UriInfoKind#resource})
+   * @throws UriParserSemanticException {@code PROPERTY_NOT_IN_TYPE} (404) if any resource part is
+   *     a {@link UriResourceDynamicProperty}
+   */
+  private void rejectDynamicPropertySegments(UriInfo uriInfo) throws UriParserSemanticException {
+    if (uriInfo.getKind() != UriInfoKind.resource) {
+      return;
+    }
+
+    List<UriResource> parts = uriInfo.asUriInfoResource().getUriResourceParts();
+    EdmType owningType = null;
+    for (UriResource resource : parts) {
+      if (resource instanceof UriResourceDynamicProperty dynamicProperty) {
+        String typeName = owningType == null ? "the requested resource"
+            : owningType.getFullQualifiedName().getFullQualifiedNameAsString();
+        throw new UriParserSemanticException(
+            "The type '" + typeName + "' has no property '" + dynamicProperty.getPropertyName() + "'",
+            UriParserSemanticException.MessageKeys.PROPERTY_NOT_IN_TYPE,
+            typeName, dynamicProperty.getPropertyName());
+      }
+      // Tracks the type of the most recent typed segment so a dynamic property nested under a
+      // (possibly open) complex property, e.g. .../PropertyComp/CompDynamic, is reported against
+      // the complex type it actually belongs to rather than the root entity/singleton type.
+      if (resource instanceof UriResourcePartTyped typed && typed.getType() != null) {
+        owningType = typed.getType();
+      }
+    }
   }
 
   @Override

@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Add OpenType support (open complex type CTOpen)
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
@@ -60,8 +61,9 @@ public class ComplexTypeProvider {
   public static final FullQualifiedName nameCTMixEnumDef = new FullQualifiedName(SchemaProvider.NAMESPACE,
       "CTMixEnumDef");
   public static final FullQualifiedName nameCTNavCont = new FullQualifiedName(SchemaProvider.NAMESPACE, "CTNavCont");
-  public static final FullQualifiedName nameCTWithStreamProp = 
+  public static final FullQualifiedName nameCTWithStreamProp =
       new FullQualifiedName(SchemaProvider.NAMESPACE, "CTWithStreamProp");
+  public static final FullQualifiedName nameCTOpen = new FullQualifiedName(SchemaProvider.NAMESPACE, "CTOpen");
 
   public CsdlComplexType getComplexType(final FullQualifiedName complexTypeName) throws ODataException {
 
@@ -229,6 +231,14 @@ public class ComplexTypeProvider {
               PropertyProvider.propertyComp_CTTwoPrim))
           .setNavigationProperties(List.of(PropertyProvider.navPropertyETStreamOnComplexProp_ETStreamNav,
               PropertyProvider.navPropertyETStreamOnComplexPropMany_ETStreamNav));
+    } else if (complexTypeName.equals(nameCTOpen)) {
+      return new CsdlComplexType()
+          .setName("CTOpen")
+          .setOpenType(true)
+          .setProperties(List.of(
+              new CsdlProperty()
+                  .setName("CompString")
+                  .setType(PropertyProvider.nameString)));
     }
 
     return null;

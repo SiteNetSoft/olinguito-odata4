@@ -20,6 +20,8 @@
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - OLINGO-1314: Updated version error tests for sanitized messages
  * Copyright 2026 SiteNetSoft - OLINGO-1372: Tests for error responses respecting Accept header
+ * Copyright 2026 SiteNetSoft - Pin: dynamic-property direct path addressing is parsed but not
+ * served by the processor-based dispatch stack (returns 501)
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -249,6 +251,16 @@ class ODataHandlerImplTest {
   @Test
   void unregisteredProcessor() {
     final ODataResponse response = dispatch(HttpMethod.GET, "ESAllPrim", null);
+    assertEquals(HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), response.getStatusCode());
+  }
+
+  @Test
+  void dynamicPropertyDirectPathAddressingIsNotServedByDispatcher() {
+    // Deliberate, documented deviation (see open-types-guide.md "Direct path addressing"): the URI
+    // parser resolves a dynamic-property path segment (UriResourceKind.dynamicProperty) fine, but
+    // ODataDispatcher#handleResourceDispatching has no case for it, so it falls through to the
+    // default FUNCTIONALITY_NOT_IMPLEMENTED branch regardless of which processors are registered.
+    final ODataResponse response = dispatch(HttpMethod.GET, "ESOpen(1)/DynamicString", null);
     assertEquals(HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), response.getStatusCode());
   }
 

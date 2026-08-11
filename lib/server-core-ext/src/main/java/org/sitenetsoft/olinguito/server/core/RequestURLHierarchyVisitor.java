@@ -15,6 +15,11 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Add UriResourceDynamicProperty visit hook for OpenType support
+ * Copyright 2026 SiteNetSoft - Un-widen visit(UriInfo)/visit(UriInfoResource) back to their
+ * original signatures; the default no-op on RequestURLVisitor#visit(UriResourceDynamicProperty)
+ * now covers this class, so its own override is redundant
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -34,6 +39,7 @@ import org.sitenetsoft.olinguito.server.api.uri.UriResource;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceAction;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceComplexProperty;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceCount;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceDynamicProperty;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceEntitySet;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceFunction;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceIt;
@@ -181,6 +187,9 @@ public class RequestURLHierarchyVisitor implements RequestURLVisitor {
         break;
       case count:
         visit((UriResourceCount) resource);
+        break;
+      case dynamicProperty:
+        visit((UriResourceDynamicProperty) resource);
         break;
       case entitySet:
         visit((UriResourceEntitySet) resource);
@@ -383,4 +392,6 @@ public class RequestURLHierarchyVisitor implements RequestURLVisitor {
   @Override
   public void visit(UriResourcePrimitiveProperty info) {
   }
+
+  // visit(UriResourceDynamicProperty) is inherited as a no-op default from RequestURLVisitor.
 }

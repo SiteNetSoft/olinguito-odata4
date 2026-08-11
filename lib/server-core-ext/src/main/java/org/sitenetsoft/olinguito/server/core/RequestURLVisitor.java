@@ -12,6 +12,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Add UriResourceDynamicProperty visit hook for OpenType support
+ * Copyright 2026 SiteNetSoft - Made the new visit(UriResourceDynamicProperty) hook a default
+ * no-op instead of widening visit(UriInfo)/visit(UriInfoResource) with a checked exception,
+ * to avoid a binary/source-incompatible change to this shipped public interface
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -27,6 +32,7 @@ import org.sitenetsoft.olinguito.server.api.uri.UriInfoService;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceAction;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceComplexProperty;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceCount;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceDynamicProperty;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceEntitySet;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceFunction;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceIt;
@@ -125,6 +131,19 @@ public interface RequestURLVisitor {
   void visit(UriResourceComplexProperty info);
 
   void visit(UriResourcePrimitiveProperty info);
+
+  /**
+   * Visits a dynamic (undeclared, open-type) property path segment. See
+   * {@link UriResourceDynamicProperty} - unlike {@link #visit(UriResourcePrimitiveProperty)} /
+   * {@link #visit(UriResourceComplexProperty)}, there is no {@code EdmProperty} backing it.
+   * {@code default} (rather than abstract, like every other {@code visit} method here) so adding
+   * it does not break existing implementers of this shipped public interface; the 404 rejection
+   * for dispatchers with no dynamic-property support is applied earlier, as a pre-check over the
+   * parsed URI resource parts, rather than from within this hook - see
+   * {@code ServiceDispatcher#rejectDynamicPropertySegments}.
+   */
+  default void visit(UriResourceDynamicProperty info) {
+  }
 
   void visit(ApplyOption option);
 }

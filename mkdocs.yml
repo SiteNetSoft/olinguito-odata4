@@ -60,6 +60,7 @@ nav:
       - OData V4 Overview: guides/overview.md
       - Server Guide: guides/server-guide.md
       - Client Guide: guides/client-guide.md
+      - Open Types Guide: guides/open-types-guide.md
       - Servlet Guide: guides/servlet-guide.md
       - Quarkus Guide: guides/quarkus-guide.md
   - Tutorials:

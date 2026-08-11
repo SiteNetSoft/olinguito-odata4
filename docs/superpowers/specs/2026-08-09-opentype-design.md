@@ -13,7 +13,7 @@ Support OData V4 open types (`OpenType="true"` on entity and complex types): ins
 **In scope**
 
 - Server: accept dynamic properties in JSON request payloads; emit them in JSON responses.
-- Server: `$select`, `$filter`, `$orderby`, and direct path addressing (`/Entity(1)/DynName`) of dynamic properties on open types.
+- Server: `$select`, `$filter`, `$orderby`, and direct path addressing (`/Entity(1)/DynName`) of dynamic properties on open types. **Deviation (see "Deviations from this design" below): direct path addressing ended up implemented at the URI-parse level only — serving it was deferred.**
 - Client: verified round-trip of dynamic properties (deserialize + serialize) with tests; documented usage via the existing `ClientEntity` property API.
 - Dynamic value kinds: primitives (with optional `@odata.type` annotation) and collections of primitives.
 - tecsvc open entity type + fit end-to-end integration tests.
@@ -23,7 +23,7 @@ Support OData V4 open types (`OpenType="true"` on entity and complex types): ins
 - XML/Atom payloads: dynamic properties remain rejected.
 - Dynamic complex values (JSON objects in dynamic slots): rejected (`UNKNOWN_CONTENT`).
 - `$expand` / `$apply` on dynamic names: rejected as today.
-- Nested/lambda dynamic-property paths in expressions (`any`/`all`, multi-segment): rejected as today.
+- Nested/lambda dynamic-property paths in expressions (`any`/`all`, multi-segment): rejected as today. **Clarification (see "Deviations from this design" below): this means a dynamic name may not itself be followed by further segments (it's always a leaf) — it does NOT mean a dynamic leaf nested under one or more declared complex segments is rejected; that case (e.g. `$filter=PropertyComp/CompDynamic eq ...`) is supported and tested.**
 - `ext/client-proxy` (`AbstractOpenType`): legacy, untouched.
 
 ## Approach
@@ -86,6 +86,52 @@ Approach A — inline open-type branching at each schema gate. At every point a 
 2. **tecsvc**: new open entity type (`ETOpen`) with seeded dynamic properties.
 3. **fit**: `OpenTypeITCase` — HTTP round-trip: POST with dynamic properties, GET, `$filter`/`$orderby`/`$select` on a dynamic property, plus a client-API create/read leg.
 4. **Full plain build** (checkstyle/RAT/all tests) gates every commit.
+
+## Deviations from this design
+
+Recorded during the final whole-branch review (post-2026-08-09 implementation), where they were
+found not to match what this document originally scoped:
+
+- **Direct path addressing is parsed, not served.** Section 3's `UriResourceDynamicProperty`
+  (`getType()` null, `isCollection()` false) is fully implemented and `/Entity(1)/DynName` resolves
+  correctly at the URI-parser layer — but `ODataDispatcher.handleResourceDispatching` (server-core)
+  has no `dynamicProperty` case in its switch, so it falls to the default branch and returns
+  **501 Not Implemented** on the modern, processor-based dispatch stack (`ODataHandler`/
+  `ODataDispatcher`), regardless of which processors are registered or whether the addressed
+  instance has a value for that property. The older `ServiceHandler`-based stack in
+  `server-adapter-servlet`/`server-core-ext` **404s** the same request (no equivalent hook exists
+  there either). This was a deliberate decision, not an oversight to silently patch: serving it
+  would require a new processor contract (there is no `DynamicPropertyProcessor` today), which was
+  judged out of scope for this feature. Pinned by
+  `ODataHandlerImplTest#dynamicPropertyDirectPathAddressingIsNotServedByDispatcher` (server-test)
+  and documented in `docs/site/guides/open-types-guide.md`'s "Direct path addressing (parses, not
+  served)" section. Revisit only as a deliberate follow-up feature.
+- **"Nested/lambda dynamic-property paths… rejected" only means a dynamic name is a leaf.** The
+  out-of-scope bullet above was ambiguous: it could be misread as rejecting any path that merely
+  *passes through* a declared complex segment on the way to a dynamic leaf. That case is in fact
+  supported (`parsePropertyPathExpr`/`SelectParser#addSelectPath` recurse generically through
+  declared complex segments regardless of depth) and is exercised by
+  `OpenTypeUriParserTest#filterOnNestedDynamicPropertyUnderDeclaredComplexParses`,
+  `#selectNestedDynamicPropertyUnderDeclaredComplexParses`, and
+  `ODataJsonSerializerOpenTypeTest#selectOfNestedDynamicPropertyUnderDeclaredComplexEmitsOnlyThatMember`.
+  What genuinely IS rejected: a segment following the dynamic name itself
+  (`$filter=DynamicInt/Foo`, pinned as a `UriParserSyntaxException` leftover-token error by
+  `OpenTypeUriParserTest#filterOnDynamicPropertyWithTrailingSegmentRejected`) and a dynamic property
+  immediately before `$value` (`ESOpen(1)/DynamicString/$value`, pinned as a `UriValidator`
+  `UNALLOWED_KIND_BEFORE_VALUE` rejection by
+  `UriValidatorTest#dynamicPropertyValueRejectedByUriValidator` — this parses fine and is only
+  caught at validation time, not at parse time as one might expect).
+- **Client-side write annotation support for dynamic values covers scalars, not collections.** A
+  later commit (`18eec232a`, pre-dating this review) closed a silent-corruption gap for dynamic
+  *scalar* primitives under `odata.metadata=minimal` by always annotating non-JSON-native kinds.
+  The same gap still exists for dynamic *collections*: `JsonSerializer#scalarPrimitiveKind` returns
+  `null` for any collection value, so a dynamic `Collection(Edm.Guid)` property is written with no
+  `name@odata.type` annotation under minimal metadata and will silently mistype as
+  `Collection(Edm.String)` on read by an open-type server. The read side already handles an
+  annotated dynamic collection correctly when one is present (no gap there). Pinned, not fixed, by
+  `OpenTypeClientTest#dynamicGuidCollectionWrittenUnderMinimalMetadataHasNoTypeAnnotationYet` and
+  `#deserializesAnAnnotatedDynamicGuidCollectionProperty`; extending the write side to collections
+  is a candidate for a dedicated follow-up.
 
 ## Rollout
 

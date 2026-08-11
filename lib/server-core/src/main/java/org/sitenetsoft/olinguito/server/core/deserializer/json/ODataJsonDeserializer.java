@@ -30,6 +30,12 @@
  * assuming "Geo" prefix means geospatial type
  * Copyright 2026 SiteNetSoft - OLINGO-1236: accept "NaN"/"INF"/"-INF" string
  * values for Single/Double properties
+ * Copyright 2026 SiteNetSoft - Add OpenType support (dynamic property deserialization)
+ * Copyright 2026 SiteNetSoft - OpenType: support name@odata.type annotations and
+ * primitive collections for dynamic properties
+ * Copyright 2026 SiteNetSoft - OpenType: accept dynamic properties inside open complex values
+ * Copyright 2026 SiteNetSoft - OpenType: resolve annotated element type for dynamic collection
+ * properties instead of ignoring name@odata.type on arrays
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -91,6 +97,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.geo.Point;
 import org.sitenetsoft.olinguito.commons.api.edm.geo.Polygon;
 import org.sitenetsoft.olinguito.commons.api.edm.geo.SRID;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmPrimitiveTypeFactory;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
 import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException.MessageKeys;
@@ -133,6 +140,7 @@ public class ODataJsonDeserializer implements ODataDeserializer {
   private static final String ODATA_STREAM_PROPERTY_MEDIA_READ_LINK = "mediaReadLink";
   private static final String ODATA_STREAM_PROPERTY_MEDIA_EDIT_LINK = "mediaEditLink";
   private static final String ODATA_STREAM_PROPERTY_MEDIA_MIME_TYPE = "mediaMimeType";
+  private static final String COLLECTION_TYPE_PREFIX = "Collection(";
 
   private final boolean isIEEE754Compatible;
   private ServiceMetadata serviceMetadata;
@@ -249,13 +257,224 @@ public class ODataJsonDeserializer implements ODataDeserializer {
 
     // consume delta json node fields for v4.01
     consumeDeltaJsonNodeFields(edmEntityType, tree, entity, expandBuilder);
-    
+
+    // consume dynamic properties for open types; this must run before
+    // consumeRemainingJsonNodeFields, which strips @odata.* control information fields
+    // (including name@odata.type annotations dynamic properties rely on)
+    if (edmEntityType.isOpenType()) {
+      consumeDynamicProperties(edmEntityType, tree, entity.getProperties());
+    }
+
     // consume remaining json node fields
     consumeRemainingJsonNodeFields(edmEntityType, tree, entity);
 
     assertJsonNodeIsEmpty(tree);
 
     return entity;
+  }
+
+  /**
+   * Consumes remaining fields on an open type as dynamic properties. Primitive scalar values are
+   * accepted as-is (with their type inferred, or taken from a sibling <code>name@odata.type</code>
+   * annotation, if present); arrays of primitive values are accepted as
+   * {@link ValueType#COLLECTION_PRIMITIVE}. Object-valued fields (and arrays containing a non-primitive
+   * element) are left untouched (dynamic complex values are unsupported) and fall through to
+   * {@link #assertJsonNodeIsEmpty(JsonNode)} as unknown content.
+   *
+   * @param edmType edm structured type which is open
+   * @param node json node which is consumed
+   * @param properties the entity's property list to append dynamic properties to
+   * @throws DeserializerException if an exception during consumation occurs
+   */
+  private void consumeDynamicProperties(final EdmStructuredType edmType, final ObjectNode node,
+      final List<Property> properties) throws DeserializerException {
+    final Map<String, String> dynamicTypes = new HashMap<>();
+    final List<String> annotations = new ArrayList<>();
+    final String typeSuffix = constants.getType();
+    Iterator<Entry<String, JsonNode>> fields = node.fields();
+    while (fields.hasNext()) {
+      final Entry<String, JsonNode> field = fields.next();
+      final String key = field.getKey();
+      if (key.endsWith(typeSuffix) && key.length() > typeSuffix.length()) {
+        String annotatedType = field.getValue().asText();
+        if (annotatedType.startsWith(Constants.HASH)) {
+          annotatedType = annotatedType.substring(1);
+        }
+        dynamicTypes.put(key.substring(0, key.length() - typeSuffix.length()), annotatedType);
+        annotations.add(key);
+      }
+    }
+    node.remove(annotations);
+
+    final List<String> consumed = new ArrayList<>();
+    fields = node.fields();
+    while (fields.hasNext()) {
+      final Entry<String, JsonNode> field = fields.next();
+      final String name = field.getKey();
+      if (name.contains(Constants.AT)) {
+        continue;
+      }
+      final JsonNode value = field.getValue();
+      if (value.isObject()) {
+        continue;
+      }
+      if (value.isArray()) {
+        final Property collectionProperty =
+            createDynamicCollectionProperty(name, (ArrayNode) value, dynamicTypes.get(name));
+        if (collectionProperty == null) {
+          // an element in the array is not a primitive value; leave the field unconsumed
+          continue;
+        }
+        properties.add(collectionProperty);
+      } else {
+        properties.add(createDynamicProperty(name, value, dynamicTypes.get(name)));
+      }
+      consumed.add(name);
+    }
+    node.remove(consumed);
+  }
+
+  private Property createDynamicProperty(final String name, final JsonNode value, final String annotatedType)
+      throws DeserializerException {
+    final Property property = new Property();
+    property.setName(name);
+    if (value.isNull()) {
+      property.setValue(ValueType.PRIMITIVE, null);
+      return property;
+    }
+    if (annotatedType == null) {
+      property.setType(inferPrimitiveTypeName(value));
+      property.setValue(ValueType.PRIMITIVE, inferPrimitiveValue(value));
+      return property;
+    }
+    final EdmPrimitiveType type = resolveAnnotatedPrimitiveType(name, annotatedType);
+    property.setType(type.getFullQualifiedName().getFullQualifiedNameAsString());
+    property.setValue(ValueType.PRIMITIVE, parseAnnotatedPrimitiveValue(name, type, value));
+    return property;
+  }
+
+  /**
+   * Resolves a <code>name@odata.type</code> annotation value (already stripped of its leading
+   * <code>#</code>) to an {@link EdmPrimitiveType}. Per the OData JSON format, a primitive type
+   * annotation carries the bare type name (e.g. <code>DateTimeOffset</code>) without the
+   * <code>Edm.</code> namespace prefix, so it is added back before resolution unless already present.
+   *
+   * @param name the dynamic property name (used for the exception parameter)
+   * @param annotatedType the annotation value with its leading <code>#</code> already stripped
+   * @throws DeserializerException wrapping {@link MessageKeys#UNKNOWN_CONTENT} if the type is not a
+   *           known Edm primitive type
+   */
+  private EdmPrimitiveType resolveAnnotatedPrimitiveType(final String name, final String annotatedType)
+      throws DeserializerException {
+    final String fqnCandidate = annotatedType.contains(".")
+        ? annotatedType : EdmPrimitiveType.EDM_NAMESPACE + "." + annotatedType;
+    try {
+      return EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.valueOfFQN(fqnCandidate));
+    } catch (final IllegalArgumentException e) {
+      throw new DeserializerException("Unknown annotated type: " + annotatedType + " for property: " + name, e,
+          DeserializerException.MessageKeys.UNKNOWN_CONTENT, name);
+    }
+  }
+
+  private Object parseAnnotatedPrimitiveValue(final String name, final EdmPrimitiveType type, final JsonNode value)
+      throws DeserializerException {
+    try {
+      return type.valueOfString(value.asText(), true, null,
+          Constants.DEFAULT_PRECISION, Constants.DEFAULT_SCALE, true, type.getDefaultType());
+    } catch (final EdmPrimitiveTypeException e) {
+      throw new DeserializerException(
+          "Invalid value: " + value.asText() + " for property: " + name, e,
+          DeserializerException.MessageKeys.INVALID_VALUE_FOR_PROPERTY, name);
+    }
+  }
+
+  /**
+   * Builds a dynamic collection property from a JSON array. When a sibling
+   * <code>name@odata.type</code> annotation (e.g. <code>#Collection(Guid)</code>) was present, every
+   * element is parsed as that resolved element type via {@link EdmPrimitiveType#valueOfString}
+   * (mirroring the annotated-scalar path in {@link #createDynamicProperty}); otherwise the element
+   * type is inferred from the first non-null element (or defaults to <code>Edm.String</code> for an
+   * empty/all-null array), as before.
+   *
+   * @param name the dynamic property name
+   * @param value the JSON array
+   * @param annotatedType the <code>Collection(...)</code>-wrapped annotated element type (with its
+   *          leading <code>#</code> already stripped), or {@code null} if unannotated
+   * @return the collection property, or {@code null} if unannotated and the array contains a
+   *         non-primitive element (the field must then be left unconsumed so it is rejected as
+   *         unknown content)
+   * @throws DeserializerException if {@code annotatedType} names an unresolvable Edm type, or an
+   *           element's value does not parse as that type
+   */
+  private Property createDynamicCollectionProperty(final String name, final ArrayNode value,
+      final String annotatedType) throws DeserializerException {
+    if (annotatedType != null) {
+      return createAnnotatedDynamicCollectionProperty(name, value, annotatedType);
+    }
+    final List<Object> values = new ArrayList<>();
+    String typeName = null;
+    for (final JsonNode element : value) {
+      if (element.isContainerNode()) {
+        return null;
+      }
+      if (element.isNull()) {
+        values.add(null);
+        continue;
+      }
+      if (typeName == null) {
+        typeName = inferPrimitiveTypeName(element);
+      }
+      values.add(inferPrimitiveValue(element));
+    }
+    final Property property = new Property();
+    property.setName(name);
+    property.setType(typeName == null
+        ? EdmPrimitiveTypeKind.String.getFullQualifiedName().getFullQualifiedNameAsString() : typeName);
+    property.setValue(ValueType.COLLECTION_PRIMITIVE, values);
+    return property;
+  }
+
+  /**
+   * Builds a dynamic collection property whose element type is fixed by an
+   * <code>name@odata.type</code> annotation (see {@link #createDynamicCollectionProperty}).
+   */
+  private Property createAnnotatedDynamicCollectionProperty(final String name, final ArrayNode value,
+      final String annotatedType) throws DeserializerException {
+    final String elementTypeName = annotatedType.startsWith(COLLECTION_TYPE_PREFIX) && annotatedType.endsWith(")")
+        ? annotatedType.substring(COLLECTION_TYPE_PREFIX.length(), annotatedType.length() - 1)
+        : annotatedType;
+    final EdmPrimitiveType type = resolveAnnotatedPrimitiveType(name, elementTypeName);
+    final List<Object> values = new ArrayList<>();
+    for (final JsonNode element : value) {
+      values.add(element.isNull() ? null : parseAnnotatedPrimitiveValue(name, type, element));
+    }
+    final Property property = new Property();
+    property.setName(name);
+    property.setType(type.getFullQualifiedName().getFullQualifiedNameAsString());
+    property.setValue(ValueType.COLLECTION_PRIMITIVE, values);
+    return property;
+  }
+
+  private String inferPrimitiveTypeName(final JsonNode value) {
+    return (value.isShort() ? EdmPrimitiveTypeKind.Int16
+        : value.isInt() ? EdmPrimitiveTypeKind.Int32
+        : value.isLong() ? EdmPrimitiveTypeKind.Int64
+        : value.isBoolean() ? EdmPrimitiveTypeKind.Boolean
+        : value.isFloat() ? EdmPrimitiveTypeKind.Single
+        : value.isDouble() ? EdmPrimitiveTypeKind.Double
+        : value.isBigDecimal() ? EdmPrimitiveTypeKind.Decimal
+        : EdmPrimitiveTypeKind.String).getFullQualifiedName().getFullQualifiedNameAsString();
+  }
+
+  private Object inferPrimitiveValue(final JsonNode value) {
+    return value.isShort() ? value.shortValue()
+        : value.isInt() ? value.intValue()
+        : value.isLong() ? value.longValue()
+        : value.isBoolean() ? value.booleanValue()
+        : value.isFloat() ? value.floatValue()
+        : value.isDouble() ? value.doubleValue()
+        : value.isBigDecimal() ? value.decimalValue()
+        : value.asText();
   }
 
   private void consumeDeltaJsonNodeFields(EdmEntityType edmEntityType, ObjectNode node,
@@ -853,6 +1072,13 @@ public class ODataJsonDeserializer implements ODataDeserializer {
         }
       }
       objNode.remove(toRemove);
+    }
+
+    // consume dynamic properties for open complex types; this must run before the caller's
+    // removeAnnotations/assertJsonNodeIsEmpty, which would otherwise strip name@odata.type
+    // annotations dynamic properties rely on and reject the remaining fields as unknown content
+    if (edmType.isOpenType() && jsonNode instanceof ObjectNode objNode) {
+      consumeDynamicProperties(edmType, objNode, complexValue.getValue());
     }
 
     complexValue.setTypeName(edmType.getFullQualifiedName().getFullQualifiedNameAsString());

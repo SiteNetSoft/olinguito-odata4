@@ -20,6 +20,11 @@
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - OLINGO-1626/1627: Infer primitive type
  * instead of defaulting to String
+ * Copyright 2026 SiteNetSoft - Always emit name@odata.type for non-JSON-native primitive
+ * values, even under minimal metadata, so a schema-agnostic reader (e.g. the server's open-type
+ * dynamic-property inference) can recover the correct EDM type instead of defaulting to String
+ * Copyright 2026 SiteNetSoft - Removed Byte/SByte from JSON_NATIVE_KINDS: neither inference
+ * path can ever produce them from a bare JSON number, so they need annotating too
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -31,6 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.sitenetsoft.olinguito.client.api.data.ResWrap;
 import org.sitenetsoft.olinguito.client.api.serialization.ODataSerializer;
@@ -62,6 +68,24 @@ public class JsonSerializer implements ODataSerializer {
     EdmPrimitiveTypeKind.Single, EdmPrimitiveTypeKind.Double,
     EdmPrimitiveTypeKind.Int16, EdmPrimitiveTypeKind.Int32, EdmPrimitiveTypeKind.Int64,
     EdmPrimitiveTypeKind.Decimal);
+
+  /**
+   * Primitive kinds whose EDM type is unambiguously recoverable from their bare JSON
+   * representation alone (a JSON string, boolean, or number) - mirrors the server's
+   * {@code ODataJsonSerializer.JSON_NATIVE_DYNAMIC_KINDS} allow-list for dynamic (open-type)
+   * properties exactly (8 kinds). Deliberately excludes {@code Byte}/{@code SByte}: neither this
+   * class's own {@code guessPropertyType}-style inference nor the server's
+   * {@code inferPrimitiveTypeName} can ever produce those two kinds from a bare JSON number (both
+   * only distinguish Int16/Int32/Int64/Single/Double/Decimal by Jackson's parsed node type), so an
+   * unannotated dynamic Byte/SByte value would silently mistype on read - the exact corruption
+   * this set exists to prevent. Anything outside this set needs a {@code name@odata.type}
+   * annotation to round-trip correctly, since the client has no EDM to fall back on and cannot
+   * tell a declared property from a dynamic one.
+   */
+  private static final Set<EdmPrimitiveTypeKind> JSON_NATIVE_KINDS = Set.of(
+    EdmPrimitiveTypeKind.String, EdmPrimitiveTypeKind.Boolean,
+    EdmPrimitiveTypeKind.Int16, EdmPrimitiveTypeKind.Int32, EdmPrimitiveTypeKind.Int64,
+    EdmPrimitiveTypeKind.Double, EdmPrimitiveTypeKind.Decimal, EdmPrimitiveTypeKind.Single);
 
   private final JsonGeoValueSerializer geoSerializer = new JsonGeoValueSerializer();
 
@@ -373,10 +397,25 @@ public class JsonSerializer implements ODataSerializer {
         final EdmPrimitiveTypeKind kind = EdmTypeInfo.determineTypeKind(valuable.getValue());
         type = (kind != null ? kind : EdmPrimitiveTypeKind.String).getFullQualifiedName().toString();
       }
-      if (type != null && !type.isEmpty() && isODataMetadataFull) {
-        jgen.writeStringField(
-            name + Constants.JSON_TYPE,
-            new EdmTypeInfo.Builder().setTypeExpression(type).build().external());
+      if (type != null && !type.isEmpty() && !isODataMetadataNone) {
+        if (isODataMetadataFull) {
+          // Pre-existing, unchanged behavior: every property gets its type annotated.
+          jgen.writeStringField(
+              name + Constants.JSON_TYPE,
+              new EdmTypeInfo.Builder().setTypeExpression(type).build().external());
+        } else {
+          // New: under minimal (and unspecified) metadata, still annotate a scalar primitive
+          // whose kind can't be recovered from its bare JSON form alone - the client has no EDM,
+          // so it can't tell a declared property from a dynamic (open-type) one, and the OData
+          // JSON spec requires this control information for the latter. Uses the same bare,
+          // "#"-prefixed short-name convention as the server's dynamic-property writer
+          // (ODataJsonSerializer#writeDynamicProperty) rather than the unprefixed form used
+          // above for full metadata, so a round-tripping server or client recognizes it.
+          final EdmPrimitiveTypeKind scalarKind = scalarPrimitiveKind(valuable, type);
+          if (scalarKind != null && !JSON_NATIVE_KINDS.contains(scalarKind)) {
+            jgen.writeStringField(name + Constants.JSON_TYPE, "#" + scalarKind.name());
+          }
+        }
       }
     }
 
@@ -386,6 +425,18 @@ public class JsonSerializer implements ODataSerializer {
 
     jgen.writeFieldName(name);
     value(jgen, valuable.getType(), valuable);
+  }
+
+  /**
+   * The {@link EdmPrimitiveTypeKind} of a scalar (non-collection) primitive value, or
+   * {@code null} for anything else (collections, complex, enum, geospatial) - used to decide
+   * whether a {@code name@odata.type} annotation is required under minimal metadata.
+   */
+  private EdmPrimitiveTypeKind scalarPrimitiveKind(final Valuable valuable, final String type) {
+    if (valuable.isCollection() || !valuable.isPrimitive()) {
+      return null;
+    }
+    return new EdmTypeInfo.Builder().setTypeExpression(type).build().getPrimitiveTypeKind();
   }
 
   private boolean isIEEE754Compatible() {
