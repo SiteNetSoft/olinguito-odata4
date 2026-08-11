@@ -79,7 +79,7 @@ the JSON value itself:
 | Decimal number | `Edm.Double` or `Edm.Decimal`, per how Jackson parses the literal |
 | String | `Edm.String` |
 | `null` | Typeless null property (no inferred type) |
-| Array | `Collection(<inferred element type>)`, inferred from the first element; an empty array infers `Collection(Edm.String)` |
+| Array | `Collection(<inferred element type>)`, inferred from the first non-null element; an empty (or all-null) array infers `Collection(Edm.String)` |
 
 A JSON **object** in a dynamic slot (a dynamic complex value) is not supported and is rejected
 with an `UNKNOWN_CONTENT` deserializer error — see [Out of Scope](#out-of-scope) below.
@@ -102,13 +102,18 @@ short type name OData uses elsewhere for instance annotations — not the fully-
 
 Collections use the same convention: `"Refs@odata.type": "#Collection(Guid)"`. An unparseable or
 unrecognized `@odata.type` annotation fails deserialization with an error naming the annotation.
+On the way in, the deserializer is lenient about the exact form: `#Guid`, `#Edm.Guid`, and bare
+`Guid` (no `#`, no `Edm.` prefix) all resolve to the same type, so either form on the wire round-
+trips correctly.
 
 On output, `odata.metadata=minimal` (the default) omits the annotation for any dynamic value whose
 `Edm` kind is self-describing from its JSON representation alone — `String`, `Boolean`, and every
 numeric kind (`Int16`/`Int32`/`Int64`/`Single`/`Double`/`Decimal`) — and emits it for everything
 else (`Guid`, `DateTimeOffset`, `Duration`, and other non-JSON-native primitives), so a
 round-tripping client can re-type them correctly. `odata.metadata=full` always emits
-`name@odata.type` for every dynamic value.
+`name@odata.type` for every dynamic value. The client applies the same rule when writing (see
+[Writing](#writing) below), since it has no EDM either and so cannot otherwise tell which of its
+properties a receiving open-type server will treat as dynamic.
 
 ## Server: Querying Dynamic Properties
 
@@ -124,13 +129,22 @@ GET Products?$orderby=Brand desc
 
 * **`$select`** — a selected dynamic name that is absent from a given instance is simply omitted
   from that instance's output (not an error), matching the spec.
-* **`$filter` / `$orderby`** — a dynamic member is treated as compatible with any primitive
-  comparison operand; type mismatches are resolved (or fail) at evaluation time using normal
-  comparison semantics rather than a URI parse-time type error. A missing/absent dynamic property
-  behaves as `null` for ordering and comparison purposes.
+* **`$filter` / `$orderby`** — the URI layer treats a dynamic member as compatible with any
+  primitive comparison operand at parse time; type mismatches are resolved (or fail) at
+  evaluation time using normal comparison semantics rather than a URI parse-time type error.
+  Evaluation itself (including how a missing/absent dynamic property sorts or compares) is up to
+  whatever expression visitor and data provider the service uses — in the tecsvc reference
+  implementation bundled with this project, a missing/absent dynamic property behaves as `null`,
+  sorting before any present value in ascending order (per `OrderByHandler`'s null-ordering rule).
+  A custom service's own processor is free to evaluate this differently.
 * **Direct path addressing** (`/Entity(1)/DynamicName`) resolves to a dedicated
   `UriResourceDynamicProperty` in the parsed URI resource tree — an untyped path segment (there is
-  no EDM type to report for it) representing the dynamic property by name.
+  no EDM type to report for it) representing the dynamic property by name. This is supported end
+  to end by the processor-based dispatch stack tecsvc uses (`ODataHandler`/`ODataDispatcher`). The
+  older, `ServiceHandler`-based dispatch stack in `server-adapter-servlet`/`server-core-ext` (used
+  by simple samples such as the bundled TripPin example) has no equivalent hook for serving a
+  dynamic property's value at all, so on that stack every dynamic-property path segment 404s,
+  regardless of whether the instance actually has a value for it.
 
 ## Client: Reading and Writing Dynamic Properties
 
@@ -176,6 +190,16 @@ request.execute();
 A full `PUT` (`UpdateType.REPLACE`) replaces the stored entity wholesale, including its dynamic
 properties — omitting a previously-set dynamic property in a PUT body drops it, the same as any
 declared property.
+
+Because the client has no EDM, it cannot tell which of a `ClientEntity`'s properties a receiving
+server will treat as declared versus dynamic. So for any primitive property whose `Edm` kind is
+not self-describing from its bare JSON form (a `Guid`, `DateTimeOffset`, `Duration`, and so on —
+the same non-JSON-native set from the [inference table](#type-inference-for-unannotated-values)
+above), the client writes a `name@odata.type` annotation even under minimal metadata, using the
+same `#`-prefixed short-name convention as the server. Without it, a receiving open-type server's
+inference would default an unannotated non-native value to `Edm.String`, silently corrupting it.
+JSON-native kinds (strings, booleans, and numbers) are unaffected and stay unannotated under
+minimal metadata, exactly as before.
 
 ## Out of Scope
 
