@@ -26,6 +26,7 @@
   Copyright 2026 SiteNetSoft - Removed direct commons-io usage (replaced with Java standard library)
   Copyright 2026 SiteNetSoft - Eliminated commons-logging classpath conflict with spring-jcl
   Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x; replaced javax.activation with jakarta.activation; added OWASP dependency-check plugin
+  Copyright 2026 SiteNetSoft - Excluded local gitignored SDD planning scratch space from RAT license-header scanning
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -621,6 +622,9 @@
             <exclude>.gitignore</exclude>
             <exclude>.git/**</exclude>
             <exclude>bin/**</exclude>
+            <!-- Local, gitignored SDD planning scratch space (task briefs, review diffs); never
+                 shipped, so not subject to license-header enforcement -->
+            <exclude>.superpowers/sdd/**</exclude>
             <exclude>**/*.local</exclude>
             <exclude>**/*.project</exclude>
             <exclude>**/*.classpath</exclude>
