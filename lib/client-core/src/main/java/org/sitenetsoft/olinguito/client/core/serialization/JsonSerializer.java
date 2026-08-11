@@ -23,6 +23,8 @@
  * Copyright 2026 SiteNetSoft - Always emit name@odata.type for non-JSON-native primitive
  * values, even under minimal metadata, so a schema-agnostic reader (e.g. the server's open-type
  * dynamic-property inference) can recover the correct EDM type instead of defaulting to String
+ * Copyright 2026 SiteNetSoft - Removed Byte/SByte from JSON_NATIVE_KINDS: neither inference
+ * path can ever produce them from a bare JSON number, so they need annotating too
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -71,15 +73,19 @@ public class JsonSerializer implements ODataSerializer {
    * Primitive kinds whose EDM type is unambiguously recoverable from their bare JSON
    * representation alone (a JSON string, boolean, or number) - mirrors the server's
    * {@code ODataJsonSerializer.JSON_NATIVE_DYNAMIC_KINDS} allow-list for dynamic (open-type)
-   * properties, plus {@code Byte}/{@code SByte} (also plain JSON numbers). Anything outside this
-   * set needs a {@code name@odata.type} annotation to round-trip correctly, since the client has
-   * no EDM to fall back on and cannot tell a declared property from a dynamic one.
+   * properties exactly (8 kinds). Deliberately excludes {@code Byte}/{@code SByte}: neither this
+   * class's own {@code guessPropertyType}-style inference nor the server's
+   * {@code inferPrimitiveTypeName} can ever produce those two kinds from a bare JSON number (both
+   * only distinguish Int16/Int32/Int64/Single/Double/Decimal by Jackson's parsed node type), so an
+   * unannotated dynamic Byte/SByte value would silently mistype on read - the exact corruption
+   * this set exists to prevent. Anything outside this set needs a {@code name@odata.type}
+   * annotation to round-trip correctly, since the client has no EDM to fall back on and cannot
+   * tell a declared property from a dynamic one.
    */
   private static final Set<EdmPrimitiveTypeKind> JSON_NATIVE_KINDS = Set.of(
     EdmPrimitiveTypeKind.String, EdmPrimitiveTypeKind.Boolean,
     EdmPrimitiveTypeKind.Int16, EdmPrimitiveTypeKind.Int32, EdmPrimitiveTypeKind.Int64,
-    EdmPrimitiveTypeKind.Double, EdmPrimitiveTypeKind.Decimal, EdmPrimitiveTypeKind.Single,
-    EdmPrimitiveTypeKind.Byte, EdmPrimitiveTypeKind.SByte);
+    EdmPrimitiveTypeKind.Double, EdmPrimitiveTypeKind.Decimal, EdmPrimitiveTypeKind.Single);
 
   private final JsonGeoValueSerializer geoSerializer = new JsonGeoValueSerializer();
 

@@ -198,8 +198,14 @@ the same non-JSON-native set from the [inference table](#type-inference-for-unan
 above), the client writes a `name@odata.type` annotation even under minimal metadata, using the
 same `#`-prefixed short-name convention as the server. Without it, a receiving open-type server's
 inference would default an unannotated non-native value to `Edm.String`, silently corrupting it.
-JSON-native kinds (strings, booleans, and numbers) are unaffected and stay unannotated under
-minimal metadata, exactly as before.
+This set exactly mirrors the server's own dynamic-property inference allow-list (`String`,
+`Boolean`, `Int16`/`Int32`/`Int64`, `Single`/`Double`/`Decimal` — 8 kinds), which is unaffected
+and stays unannotated under minimal metadata, exactly as before. `Byte` and `SByte` are
+JSON-number-*shaped* but are deliberately **not** in that set and so are always annotated too:
+neither the client's nor the server's inference can ever distinguish a `Byte`/`SByte` from a
+bare JSON number (both only ever infer `Int16`/`Int32`/`Int64`/`Single`/`Double`/`Decimal` by
+magnitude/shape), so an unannotated dynamic `Byte`/`SByte` would silently mistype exactly like a
+`Guid` would.
 
 ## Out of Scope
 

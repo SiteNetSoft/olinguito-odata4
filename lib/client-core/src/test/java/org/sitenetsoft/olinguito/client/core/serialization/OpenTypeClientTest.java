@@ -21,6 +21,8 @@
  * Copyright 2026 SiteNetSoft - Add write/read pins for non-JSON-native dynamic primitive
  * types (Guid, DateTimeOffset), which need an explicit name@odata.type annotation to
  * round-trip since the client has no EDM to fall back on
+ * Copyright 2026 SiteNetSoft - Add write pin for a dynamic Byte property: neither the client's
+ * nor the server's bare-JSON-number inference can ever produce Byte, so it must be annotated too
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -38,6 +40,7 @@ import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
 import org.sitenetsoft.olinguito.client.api.domain.ClientObjectFactory;
 import org.sitenetsoft.olinguito.client.api.domain.ClientProperty;
 import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmDateTimeOffset;
@@ -122,6 +125,26 @@ class OpenTypeClientTest {
 
     assertTrue(json.contains("\"Ref@odata.type\":\"#Guid\""),
         () -> "expected a #Guid type annotation for the dynamic Guid property: " + json);
+  }
+
+  @Test
+  void serializesADynamicBytePropertyWithATypeAnnotation() throws Exception {
+    final ClientObjectFactory factory = client.getObjectFactory();
+    final ClientEntity entity = factory.newEntity(new FullQualifiedName("Olinguito.OData", "ETOpen"));
+    entity.getProperties().add(factory.newPrimitiveProperty("PropertyInt16",
+        factory.newPrimitiveValueBuilder().buildInt16((short) 100)));
+    // Undeclared (dynamic) Byte property. Byte is JSON-number-shaped like Int16/Int32/Int64, but
+    // unlike those, neither the client's nor the server's inference (both only ever distinguish
+    // Int16/Int32/Int64/Single/Double/Decimal from a bare JSON number) can produce Byte from an
+    // unannotated value - so it needs the annotation just as much as a non-numeric type like Guid.
+    entity.getProperties().add(factory.newPrimitiveProperty("Age",
+        factory.newPrimitiveValueBuilder().setType(EdmPrimitiveTypeKind.Byte).setValue((short) 5).build()));
+
+    final InputStream written = client.getWriter().writeEntity(entity, ContentType.JSON);
+    final String json = new String(written.readAllBytes(), StandardCharsets.UTF_8);
+
+    assertTrue(json.contains("\"Age@odata.type\":\"#Byte\""),
+        () -> "expected a #Byte type annotation for the dynamic Byte property: " + json);
   }
 
   @Test
