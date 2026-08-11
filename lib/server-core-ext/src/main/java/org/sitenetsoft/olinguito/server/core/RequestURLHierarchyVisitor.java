@@ -17,6 +17,9 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Add UriResourceDynamicProperty visit hook for OpenType support
+ * Copyright 2026 SiteNetSoft - Un-widen visit(UriInfo)/visit(UriInfoResource) back to their
+ * original signatures; the default no-op on RequestURLVisitor#visit(UriResourceDynamicProperty)
+ * now covers this class, so its own override is redundant
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -62,7 +65,6 @@ import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.SkipOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.SkipTokenOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.TopOption;
-import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserSemanticException;
 
 public class RequestURLHierarchyVisitor implements RequestURLVisitor {
 
@@ -73,7 +75,7 @@ public class RequestURLHierarchyVisitor implements RequestURLVisitor {
   }
 
   @Override
-  public void visit(UriInfo info) throws UriParserSemanticException {
+  public void visit(UriInfo info) {
     this.uriInfo = info;
 
     UriInfoKind kind = info.getKind();
@@ -173,7 +175,7 @@ public class RequestURLHierarchyVisitor implements RequestURLVisitor {
   }
 
   @Override
-  public void visit(UriInfoResource info) throws UriParserSemanticException {
+  public void visit(UriInfoResource info) {
     List<UriResource> parts = info.getUriResourceParts();
     for (UriResource resource : parts) {
       switch (resource.getKind()) {
@@ -391,7 +393,5 @@ public class RequestURLHierarchyVisitor implements RequestURLVisitor {
   public void visit(UriResourcePrimitiveProperty info) {
   }
 
-  @Override
-  public void visit(UriResourceDynamicProperty info) throws UriParserSemanticException {
-  }
+  // visit(UriResourceDynamicProperty) is inherited as a no-op default from RequestURLVisitor.
 }

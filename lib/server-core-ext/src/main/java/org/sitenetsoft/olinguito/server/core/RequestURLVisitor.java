@@ -14,6 +14,9 @@
  * limitations under the License.
  *
  * Copyright 2026 SiteNetSoft - Add UriResourceDynamicProperty visit hook for OpenType support
+ * Copyright 2026 SiteNetSoft - Made the new visit(UriResourceDynamicProperty) hook a default
+ * no-op instead of widening visit(UriInfo)/visit(UriInfoResource) with a checked exception,
+ * to avoid a binary/source-incompatible change to this shipped public interface
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -55,11 +58,10 @@ import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.SkipOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.SkipTokenOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.TopOption;
-import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserSemanticException;
 
 public interface RequestURLVisitor {
 
-  void visit(UriInfo info) throws UriParserSemanticException;
+  void visit(UriInfo info);
 
   void visit(UriInfoService info);
 
@@ -73,7 +75,7 @@ public interface RequestURLVisitor {
 
   void visit(UriInfoMetadata info);
 
-  void visit(UriInfoResource info) throws UriParserSemanticException;
+  void visit(UriInfoResource info);
 
   // Walk UriInfoResource
   void visit(ExpandOption option);
@@ -134,8 +136,14 @@ public interface RequestURLVisitor {
    * Visits a dynamic (undeclared, open-type) property path segment. See
    * {@link UriResourceDynamicProperty} - unlike {@link #visit(UriResourcePrimitiveProperty)} /
    * {@link #visit(UriResourceComplexProperty)}, there is no {@code EdmProperty} backing it.
+   * {@code default} (rather than abstract, like every other {@code visit} method here) so adding
+   * it does not break existing implementers of this shipped public interface; the 404 rejection
+   * for dispatchers with no dynamic-property support is applied earlier, as a pre-check over the
+   * parsed URI resource parts, rather than from within this hook - see
+   * {@code ServiceDispatcher#rejectDynamicPropertySegments}.
    */
-  void visit(UriResourceDynamicProperty info) throws UriParserSemanticException;
+  default void visit(UriResourceDynamicProperty info) {
+  }
 
   void visit(ApplyOption option);
 }

@@ -17,8 +17,8 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
- * Copyright 2026 SiteNetSoft - Cover the UriResourceDynamicProperty visit hook and declare the
- * checked UriParserSemanticException now thrown by visit(UriInfo)/visit(UriInfoResource)
+ * Copyright 2026 SiteNetSoft - Cover the UriResourceDynamicProperty visit hook (a no-op default
+ * on RequestURLVisitor - visit(UriInfo)/visit(UriInfoResource) do not throw)
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -52,13 +52,12 @@ import org.sitenetsoft.olinguito.server.core.uri.queryoption.SearchOptionImpl;
 import org.sitenetsoft.olinguito.server.core.uri.queryoption.SkipOptionImpl;
 import org.sitenetsoft.olinguito.server.core.uri.queryoption.SkipTokenOptionImpl;
 import org.sitenetsoft.olinguito.server.core.uri.queryoption.TopOptionImpl;
-import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserSemanticException;
 import org.junit.jupiter.api.Test;
 
 class RequestUrlHierarchyVisitorTest {
 
   @Test
-  void visitorTest() throws UriParserSemanticException {
+  void visitorTest() {
     RequestURLHierarchyVisitor visitor = new RequestURLHierarchyVisitor();
     assertNull(visitor.getUriInfo());
     UriInfoImpl info = new UriInfoImpl();
