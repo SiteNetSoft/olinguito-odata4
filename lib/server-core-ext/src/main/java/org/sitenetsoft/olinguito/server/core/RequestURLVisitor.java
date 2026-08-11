@@ -12,6 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Add UriResourceDynamicProperty visit hook for OpenType support
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -27,6 +29,7 @@ import org.sitenetsoft.olinguito.server.api.uri.UriInfoService;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceAction;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceComplexProperty;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceCount;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceDynamicProperty;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceEntitySet;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceFunction;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceIt;
@@ -52,10 +55,11 @@ import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.SkipOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.SkipTokenOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.TopOption;
+import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserSemanticException;
 
 public interface RequestURLVisitor {
 
-  void visit(UriInfo info);
+  void visit(UriInfo info) throws UriParserSemanticException;
 
   void visit(UriInfoService info);
 
@@ -69,7 +73,7 @@ public interface RequestURLVisitor {
 
   void visit(UriInfoMetadata info);
 
-  void visit(UriInfoResource info);
+  void visit(UriInfoResource info) throws UriParserSemanticException;
 
   // Walk UriInfoResource
   void visit(ExpandOption option);
@@ -125,6 +129,13 @@ public interface RequestURLVisitor {
   void visit(UriResourceComplexProperty info);
 
   void visit(UriResourcePrimitiveProperty info);
+
+  /**
+   * Visits a dynamic (undeclared, open-type) property path segment. See
+   * {@link UriResourceDynamicProperty} - unlike {@link #visit(UriResourcePrimitiveProperty)} /
+   * {@link #visit(UriResourceComplexProperty)}, there is no {@code EdmProperty} backing it.
+   */
+  void visit(UriResourceDynamicProperty info) throws UriParserSemanticException;
 
   void visit(ApplyOption option);
 }

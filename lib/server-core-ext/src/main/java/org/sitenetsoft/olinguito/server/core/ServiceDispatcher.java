@@ -15,6 +15,9 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reject dynamic (open-type) property path segments with 404 instead
+ * of silently dropping them, since this legacy dispatcher has no mechanism to serve their values
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -44,6 +47,7 @@ import org.sitenetsoft.olinguito.server.api.uri.UriInfoService;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceAction;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceComplexProperty;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceCount;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceDynamicProperty;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceEntitySet;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceFunction;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceNavigation;
@@ -62,6 +66,7 @@ import org.sitenetsoft.olinguito.server.core.requests.MetadataRequest;
 import org.sitenetsoft.olinguito.server.core.requests.OperationRequest;
 import org.sitenetsoft.olinguito.server.core.requests.ServiceDocumentRequest;
 import org.sitenetsoft.olinguito.server.core.uri.parser.Parser;
+import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserSemanticException;
 import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidator;
 
 public class ServiceDispatcher extends RequestURLHierarchyVisitor {
@@ -202,6 +207,42 @@ public class ServiceDispatcher extends RequestURLHierarchyVisitor {
   public void visit(UriResourcePrimitiveProperty info) {
     DataRequest dataRequest = (DataRequest) this.request;
     dataRequest.setUriResourceProperty(info);
+  }
+
+  /**
+   * A dynamic (open-type) property segment has no backing {@link
+   * org.sitenetsoft.olinguito.commons.api.edm.EdmProperty}, so it cannot be plugged into {@link
+   * DataRequest#setUriResourceProperty}, whose whole {@code PropertyRequest} machinery (context
+   * URL, serializer options, {@link ServiceHandler} read/update hooks) is built around one. This
+   * legacy, {@link ServiceHandler}-based dispatcher (used by simple samples such as TripPin) has
+   * no equivalent hook for serving an undeclared property's value at all. Per OData, addressing a
+   * property that does not resolve on the requested instance must 404 - and since this dispatcher
+   * can never resolve a dynamic property's value, every dynamic-property segment 404s here, the
+   * same way an unknown segment on a closed type has always 404'd. (The newer processor-based
+   * dispatch stack used by the OpenType tecsvc integration tests fully supports reading, filtering,
+   * and ordering by dynamic properties; only this older stack is limited.)
+   */
+  @Override
+  public void visit(UriResourceDynamicProperty info) throws UriParserSemanticException {
+    String typeName = owningTypeName();
+    throw new UriParserSemanticException(
+        "The type '" + typeName + "' has no property '" + info.getPropertyName() + "'",
+        UriParserSemanticException.MessageKeys.PROPERTY_NOT_IN_TYPE,
+        typeName, info.getPropertyName());
+  }
+
+  private String owningTypeName() {
+    if (this.request instanceof DataRequest dataRequest) {
+      if (dataRequest.getUriResourceEntitySet() != null) {
+        return dataRequest.getEntitySet().getEntityType()
+            .getFullQualifiedName().getFullQualifiedNameAsString();
+      }
+      if (dataRequest.getUriResourceSingleton() != null) {
+        return dataRequest.getUriResourceSingleton().getSingleton().getEntityType()
+            .getFullQualifiedName().getFullQualifiedNameAsString();
+      }
+    }
+    return "?";
   }
 
   @Override

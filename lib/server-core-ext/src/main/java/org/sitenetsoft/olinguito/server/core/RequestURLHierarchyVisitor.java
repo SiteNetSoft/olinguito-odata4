@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Add UriResourceDynamicProperty visit hook for OpenType support
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -34,6 +36,7 @@ import org.sitenetsoft.olinguito.server.api.uri.UriResource;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceAction;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceComplexProperty;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceCount;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceDynamicProperty;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceEntitySet;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceFunction;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceIt;
@@ -59,6 +62,7 @@ import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.SkipOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.SkipTokenOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.TopOption;
+import org.sitenetsoft.olinguito.server.core.uri.parser.UriParserSemanticException;
 
 public class RequestURLHierarchyVisitor implements RequestURLVisitor {
 
@@ -69,7 +73,7 @@ public class RequestURLHierarchyVisitor implements RequestURLVisitor {
   }
 
   @Override
-  public void visit(UriInfo info) {
+  public void visit(UriInfo info) throws UriParserSemanticException {
     this.uriInfo = info;
 
     UriInfoKind kind = info.getKind();
@@ -169,7 +173,7 @@ public class RequestURLHierarchyVisitor implements RequestURLVisitor {
   }
 
   @Override
-  public void visit(UriInfoResource info) {
+  public void visit(UriInfoResource info) throws UriParserSemanticException {
     List<UriResource> parts = info.getUriResourceParts();
     for (UriResource resource : parts) {
       switch (resource.getKind()) {
@@ -181,6 +185,9 @@ public class RequestURLHierarchyVisitor implements RequestURLVisitor {
         break;
       case count:
         visit((UriResourceCount) resource);
+        break;
+      case dynamicProperty:
+        visit((UriResourceDynamicProperty) resource);
         break;
       case entitySet:
         visit((UriResourceEntitySet) resource);
@@ -382,5 +389,9 @@ public class RequestURLHierarchyVisitor implements RequestURLVisitor {
 
   @Override
   public void visit(UriResourcePrimitiveProperty info) {
+  }
+
+  @Override
+  public void visit(UriResourceDynamicProperty info) throws UriParserSemanticException {
   }
 }
