@@ -183,8 +183,13 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
         if (uriResourceParts.get(i) instanceof UriResourceDynamicProperty dynamicProperty) {
           // Dynamic (undeclared) property segments are always leaves of the resource path
           // (OData open-type property paths cannot continue past an unresolved member),
-          // so it is safe to resolve and return immediately here.
-          return resolveDynamicProperty(currentProperty.isComplex() ? currentProperty.asComplex().getValue() : null,
+          // so it is safe to resolve and return immediately here. currentProperty (or the
+          // complex property leading to it) can be entirely absent on a given entity - only
+          // some entities in a collection may have seeded the parent complex property at all -
+          // so both null-property and non-complex-property must fall back to "no value" rather
+          // than NPE.
+          return resolveDynamicProperty(
+              currentProperty != null && currentProperty.isComplex() ? currentProperty.asComplex().getValue() : null,
               dynamicProperty.getPropertyName());
         } else if (currentProperty.isComplex()) {
           if (uriResourceParts.get(i) instanceof UriResourceLambdaAny any) {
@@ -358,7 +363,17 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
     return OData.newInstance().createPrimitiveTypeInstance(inferPrimitiveTypeKindFromValue(value));
   }
 
-  /** Infers an {@link EdmPrimitiveTypeKind} from a dynamic property's Java value class. */
+  /**
+   * Infers an {@link EdmPrimitiveTypeKind} from a dynamic property's Java value class. This
+   * mapping is deliberately partial - it only covers the Java types the tecsvc JSON
+   * deserializer actually produces for untyped/inferred dynamic scalars (numbers, booleans,
+   * strings, GUIDs). Types with no unambiguous single Java representation without an explicit
+   * {@code @type} annotation - e.g. {@code byte[]} (could be Edm.Binary or Edm.Duration-as-bytes),
+   * temporal values (Edm.Date/DateTimeOffset/TimeOfDay/Duration all round-trip through different
+   * Java shapes) - are intentionally left unhandled here and fall through to the String default;
+   * such values should arrive with an explicit stored type name instead (see the {@code typeName}
+   * branch above).
+   */
   private EdmPrimitiveTypeKind inferPrimitiveTypeKindFromValue(final Object value) {
     if (value instanceof Short) {
       return EdmPrimitiveTypeKind.Int16;

@@ -346,7 +346,7 @@ public class DataProvider {
     // Open types may also carry undeclared (dynamic) properties; the loop above only handles
     // the EDM-declared property set, so copy any remaining ones from the incoming payload verbatim.
     if (entityType.isOpenType()) {
-      updateDynamicProperties(entity, changedEntity, entityType.getPropertyNames());
+      updateDynamicProperties(entity, changedEntity, entityType.getPropertyNames(), patch);
     }
 
     // For insert operations collection navigation property bind operations and deep insert operations can be combined.
@@ -371,9 +371,23 @@ public class DataProvider {
   /**
    * Copies undeclared (dynamic) properties from {@code changedEntity} onto {@code entity}, for
    * open entity types. Declared properties (handled by the caller's own loop) are skipped.
+   *
+   * <p>For a full replace ({@code patch == false}), this also drops any dynamic property that
+   * is currently on {@code entity} but was not resubmitted in {@code changedEntity} - mirroring
+   * how {@link #updateProperty} wholesale-replaces declared properties for PUT (only a PATCH
+   * leaves properties the client omitted untouched).
    */
   private void updateDynamicProperties(final Entity entity, final Entity changedEntity,
-      final List<String> declaredPropertyNames) {
+      final List<String> declaredPropertyNames, final boolean patch) {
+    if (!patch) {
+      final Iterator<Property> existingProperties = entity.getProperties().iterator();
+      while (existingProperties.hasNext()) {
+        final String existingName = existingProperties.next().getName();
+        if (!declaredPropertyNames.contains(existingName) && changedEntity.getProperty(existingName) == null) {
+          existingProperties.remove();
+        }
+      }
+    }
     for (final Property changedProperty : changedEntity.getProperties()) {
       final String propertyName = changedProperty.getName();
       if (!declaredPropertyNames.contains(propertyName)) {
