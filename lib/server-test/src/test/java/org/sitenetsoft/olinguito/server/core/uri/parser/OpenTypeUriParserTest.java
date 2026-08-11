@@ -21,6 +21,9 @@
  * Copyright 2026 SiteNetSoft - Add regression tests for dynamic-member NPE/bypass-narrowness fixes
  * Copyright 2026 SiteNetSoft - Add regression tests for IN-candidate and add/sub non-dynamic-operand checks
  * Copyright 2026 SiteNetSoft - Add $select dynamic-property parsing tests
+ * Copyright 2026 SiteNetSoft - Pin nested dynamic-leaf-under-declared-complex $filter/$select
+ * Copyright 2026 SiteNetSoft - Pin actual exception for a dynamic name with a trailing $filter
+ * path segment
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -82,6 +85,18 @@ class OpenTypeUriParserTest {
     final UriResource last = parts.get(parts.size() - 1);
     assertEquals(UriResourceKind.dynamicProperty, last.getKind());
     assertEquals(expectedName, ((UriResourceDynamicProperty) last).getPropertyName());
+  }
+
+  @Test
+  void filterOnDynamicPropertyWithTrailingSegmentRejected() {
+    // A dynamic name is always a leaf: parsePropertyPathExpr adds the dynamicProperty resource part
+    // and returns immediately without consuming a following '/', so "DynamicInt/Foo" leaves the
+    // '/Foo eq 1' tail unconsumed by the member-path parser. That surfaces as a generic leftover-
+    // token syntax error from the $filter option value parser (ParserHelper), NOT the
+    // UriParserSemanticException one might expect for an open-type-specific leaf violation - pin
+    // the actual thrown type.
+    assertThrows(UriParserSyntaxException.class,
+        () -> new Parser(edm, odata).parseUri("ESOpen", "$filter=DynamicInt/Foo eq 1", null, null));
   }
 
   @Test
@@ -168,5 +183,32 @@ class OpenTypeUriParserTest {
   void selectUnknownNameStillRejectedOnClosedType() {
     assertThrows(UriParserSemanticException.class,
         () -> new Parser(edm, odata).parseUri("ESTwoPrim", "$select=Unknown", null, null));
+  }
+
+  @Test
+  void filterOnNestedDynamicPropertyUnderDeclaredComplexParses() throws Exception {
+    // A dynamic name is always a leaf, but a dynamic leaf nested under a *declared* complex
+    // property (ETOpen.PropertyComp is CTOpen, an open complex type) is supported: only a dynamic
+    // property itself may not be followed by further segments, not paths that merely pass through
+    // one on the way to it.
+    final UriInfo uriInfo = new Parser(edm, odata)
+        .parseUri("ESOpen", "$filter=PropertyComp/CompDynamic eq 'x'", null, null);
+    final Expression left = ((Binary) uriInfo.getFilterOption().getExpression()).getLeftOperand();
+    final List<UriResource> parts = ((Member) left).getResourcePath().getUriResourceParts();
+    assertEquals(2, parts.size());
+    assertEquals(UriResourceKind.complexProperty, parts.get(0).getKind());
+    assertLastPartIsDynamicProperty((Member) left, "CompDynamic");
+  }
+
+  @Test
+  void selectNestedDynamicPropertyUnderDeclaredComplexParses() throws Exception {
+    final UriInfo uriInfo = new Parser(edm, odata)
+        .parseUri("ESOpen", "$select=PropertyComp/CompDynamic", null, null);
+    final List<UriResource> parts =
+        uriInfo.getSelectOption().getSelectItems().get(0).getResourcePath().getUriResourceParts();
+    assertEquals(2, parts.size());
+    assertEquals(UriResourceKind.complexProperty, parts.get(0).getKind());
+    assertEquals(UriResourceKind.dynamicProperty, parts.get(1).getKind());
+    assertEquals("CompDynamic", ((UriResourceDynamicProperty) parts.get(1)).getPropertyName());
   }
 }
