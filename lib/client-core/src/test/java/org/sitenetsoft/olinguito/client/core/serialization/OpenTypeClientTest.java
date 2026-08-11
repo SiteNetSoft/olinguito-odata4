@@ -18,6 +18,9 @@
  *
  * Copyright 2026 SiteNetSoft - New file: pin tests proving the client is schema-agnostic
  * with respect to OData open-type dynamic properties (read and write)
+ * Copyright 2026 SiteNetSoft - Add write/read pins for non-JSON-native dynamic primitive
+ * types (Guid, DateTimeOffset), which need an explicit name@odata.type annotation to
+ * round-trip since the client has no EDM to fall back on
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -28,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
@@ -36,6 +40,7 @@ import org.sitenetsoft.olinguito.client.api.domain.ClientProperty;
 import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmDateTimeOffset;
 import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmInt32;
 import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmString;
 import org.junit.jupiter.api.Test;
@@ -97,5 +102,45 @@ class OpenTypeClientTest {
     final String json = new String(written.readAllBytes(), StandardCharsets.UTF_8);
 
     assertTrue(json.contains("\"Brand\":\"new\""), () -> "expected dynamic property in JSON output: " + json);
+  }
+
+  @Test
+  void serializesADynamicGuidPropertyWithATypeAnnotation() throws Exception {
+    final ClientObjectFactory factory = client.getObjectFactory();
+    final ClientEntity entity = factory.newEntity(new FullQualifiedName("Olinguito.OData", "ETOpen"));
+    entity.getProperties().add(factory.newPrimitiveProperty("PropertyInt16",
+        factory.newPrimitiveValueBuilder().buildInt16((short) 100)));
+    // Undeclared (dynamic) Guid property: its EDM kind is not recoverable from a bare JSON
+    // string, so the type annotation is mandatory for a schema-agnostic reader (e.g. the
+    // server's open-type dynamic-property inference) to avoid silently mistyping it as String.
+    entity.getProperties().add(factory.newPrimitiveProperty("Ref",
+        factory.newPrimitiveValueBuilder().buildGuid(
+            UUID.fromString("01234567-89ab-cdef-0123-456789abcdef"))));
+
+    final InputStream written = client.getWriter().writeEntity(entity, ContentType.JSON);
+    final String json = new String(written.readAllBytes(), StandardCharsets.UTF_8);
+
+    assertTrue(json.contains("\"Ref@odata.type\":\"#Guid\""),
+        () -> "expected a #Guid type annotation for the dynamic Guid property: " + json);
+  }
+
+  @Test
+  void deserializesAnAnnotatedDynamicDateTimeOffsetProperty() throws Exception {
+    final String json = "{"
+        + "\"@odata.context\":\"$metadata#ESOpen/$entity\","
+        + "\"PropertyInt16\":1,"
+        + "\"When@odata.type\":\"#DateTimeOffset\","
+        + "\"When\":\"2026-01-01T00:00:00Z\""
+        + "}";
+    final InputStream input = new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8));
+
+    final ClientEntity entity = client.getBinder().getODataEntity(
+        client.getDeserializer(ContentType.JSON).toEntity(input));
+    assertNotNull(entity);
+
+    final ClientProperty when = entity.getProperty("When");
+    assertNotNull(when);
+    assertTrue(when.hasPrimitiveValue());
+    assertEquals(EdmDateTimeOffset.getInstance(), when.getPrimitiveValue().getType());
   }
 }
