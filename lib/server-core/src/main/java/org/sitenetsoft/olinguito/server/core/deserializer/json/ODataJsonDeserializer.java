@@ -36,6 +36,7 @@
  * Copyright 2026 SiteNetSoft - OpenType: accept dynamic properties inside open complex values
  * Copyright 2026 SiteNetSoft - OpenType: resolve annotated element type for dynamic collection
  * properties instead of ignoring name@odata.type on arrays
+ * Copyright 2026 SiteNetSoft - OpenType CRUD Task 1: implement ODataDeserializer.dynamicProperty
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -1410,6 +1411,59 @@ public class ODataJsonDeserializer implements ODataDeserializer {
             edmProperty.isNullable(), edmProperty.getMaxLength(), edmProperty.getPrecision(), edmProperty.getScale(),
             edmProperty.isUnicode(), edmProperty.getMapping(),
             tree);
+      }
+      return DeserializerResultImpl.with().property(property).build();
+    } catch (final IOException e) {
+      throw wrapParseException(e);
+    }
+  }
+
+  /**
+   * Deserializes a single, schema-less dynamic (OpenType) property. Accepts the same
+   * <code>{"value": ...}</code> payload shape as {@link #property(InputStream, EdmProperty)},
+   * plus an optional <code>value@odata.type</code> sibling annotation (mirroring the
+   * <code>name@odata.type</code> annotation honored for dynamic properties inside an open
+   * entity/complex value by {@link #consumeDynamicProperties}) used to resolve the property's
+   * type since no {@link EdmProperty} is available here to supply it. Delegates the actual
+   * value inference/annotation handling to {@link #createDynamicProperty} and
+   * {@link #createDynamicCollectionProperty}, naming the resulting {@link Property}
+   * {@code propertyName}.
+   */
+  @Override
+  public DeserializerResult dynamicProperty(final InputStream stream, final String propertyName)
+      throws DeserializerException {
+    try {
+      final ObjectNode tree = parseJsonTree(stream);
+      final JsonNode valueNode = tree.get(Constants.VALUE);
+      if (valueNode == null) {
+        throw new DeserializerException(
+            "Could not find a 'value' member for dynamic property: " + propertyName,
+            DeserializerException.MessageKeys.UNKNOWN_CONTENT, propertyName);
+      }
+
+      String annotatedType = null;
+      final JsonNode annotatedTypeNode = tree.get(Constants.VALUE + constants.getType());
+      if (annotatedTypeNode != null) {
+        annotatedType = annotatedTypeNode.asText();
+        if (annotatedType.startsWith(Constants.HASH)) {
+          annotatedType = annotatedType.substring(1);
+        }
+      }
+
+      final Property property;
+      if (valueNode.isObject()) {
+        throw new DeserializerException(
+            "Invalid value for dynamic property: " + propertyName + " must not be an object.",
+            DeserializerException.MessageKeys.UNKNOWN_CONTENT, propertyName);
+      } else if (valueNode.isArray()) {
+        property = createDynamicCollectionProperty(propertyName, (ArrayNode) valueNode, annotatedType);
+        if (property == null) {
+          throw new DeserializerException(
+              "Invalid value for dynamic property: " + propertyName + " must not contain object elements.",
+              DeserializerException.MessageKeys.UNKNOWN_CONTENT, propertyName);
+        }
+      } else {
+        property = createDynamicProperty(propertyName, valueNode, annotatedType);
       }
       return DeserializerResultImpl.with().property(property).build();
     } catch (final IOException e) {
