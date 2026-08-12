@@ -19,6 +19,8 @@
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  * Copyright 2026 SiteNetSoft - OLINGO-1492: ENUM/DEFINITION dispatch
  * Copyright 2026 SiteNetSoft - OLINGO-1433: Allow HEAD on media entity streams
+ * Copyright 2026 SiteNetSoft - OpenType CRUD Task 2: dispatch dynamicProperty path segments
+ * through the primitive-property dispatch path
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -173,6 +175,15 @@ public class ODataDispatcher {
       if (lastPathSegment instanceof UriResourceProperty primProp) {
         handlePrimitiveDispatching(request, response, primProp.isCollection());
       }
+      break;
+
+    case dynamicProperty:
+      // A dynamic (open-type) property has no EDM declaration; it is always a scalar value, never
+      // a collection, so route it through the same primitive dispatch as a declared, non-collection
+      // primitiveProperty. handlePrimitiveDispatching only touches the EDM property on the
+      // PUT/PATCH Edm.Stream special-case, and that check is instanceof UriResourcePrimitiveProperty
+      // guarded, so it safely no-ops for a dynamic segment.
+      handlePrimitiveDispatching(request, response, false);
       break;
 
     case complexProperty:

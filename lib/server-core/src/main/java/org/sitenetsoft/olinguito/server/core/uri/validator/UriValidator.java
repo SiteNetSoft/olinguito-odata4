@@ -18,6 +18,8 @@
  *
  * Copyright 2026 SiteNetSoft - Converted switch statements to switch expressions
  * Copyright 2026 SiteNetSoft - Permit GET on dynamic (open-type) property path segments
+ * Copyright 2026 SiteNetSoft - OpenType CRUD Task 2: document that PUT/PATCH/DELETE on dynamic
+ * property path segments bypass the EDM property nullability/collection checks
  */
 package org.sitenetsoft.olinguito.server.core.uri.validator;
 
@@ -363,6 +365,11 @@ private boolean isAction(final UriInfo uriInfo) {
     final List<UriResource> parts = uriInfo.getUriResourceParts();
     final UriResource last = !parts.isEmpty() ? parts.get(parts.size() - 1) : null;
     final UriResource previous = parts.size() > 1 ? parts.get(parts.size() - 2) : null;
+    // Deliberately excludes UriResourceKind.dynamicProperty: a dynamic (open-type) property has no
+    // EDM declaration to dereference (no EdmProperty, so no isCollection()/isNullable() to check),
+    // and is conceptually always writable/removable. Only declared primitiveProperty/complexProperty
+    // segments (and $value directly after a primitiveProperty) reach the EdmProperty dereference
+    // below; PUT/PATCH/DELETE on a dynamic-property last segment fall straight through unrestricted.
     if (last != null
         && (last.getKind() == UriResourceKind.primitiveProperty
         || last.getKind() == UriResourceKind.complexProperty

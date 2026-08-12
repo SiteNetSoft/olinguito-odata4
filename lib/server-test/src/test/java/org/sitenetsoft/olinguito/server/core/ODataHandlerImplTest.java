@@ -20,8 +20,8 @@
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - OLINGO-1314: Updated version error tests for sanitized messages
  * Copyright 2026 SiteNetSoft - OLINGO-1372: Tests for error responses respecting Accept header
- * Copyright 2026 SiteNetSoft - Pin: dynamic-property direct path addressing is parsed but not
- * served by the processor-based dispatch stack (returns 501)
+ * Copyright 2026 SiteNetSoft - OpenType CRUD Task 2: replaced the dynamic-property 501 pin with
+ * routing assertions now that ODataDispatcher dispatches dynamicProperty segments
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -251,16 +251,6 @@ class ODataHandlerImplTest {
   @Test
   void unregisteredProcessor() {
     final ODataResponse response = dispatch(HttpMethod.GET, "ESAllPrim", null);
-    assertEquals(HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), response.getStatusCode());
-  }
-
-  @Test
-  void dynamicPropertyDirectPathAddressingIsNotServedByDispatcher() {
-    // Deliberate, documented deviation (see open-types-guide.md "Direct path addressing"): the URI
-    // parser resolves a dynamic-property path segment (UriResourceKind.dynamicProperty) fine, but
-    // ODataDispatcher#handleResourceDispatching has no case for it, so it falls through to the
-    // default FUNCTIONALITY_NOT_IMPLEMENTED branch regardless of which processors are registered.
-    final ODataResponse response = dispatch(HttpMethod.GET, "ESOpen(1)/DynamicString", null);
     assertEquals(HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), response.getStatusCode());
   }
 
@@ -892,6 +882,58 @@ class ODataHandlerImplTest {
 
     dispatchMethodNotAllowed(HttpMethod.POST, uri, processor);
     dispatchMethodNotAllowed(HttpMethod.HEAD, uri, processor);
+  }
+
+  @Test
+  void dynamicPropertyGetRoutesToPrimitiveProcessor() throws Exception {
+    final PrimitiveProcessor processor = mock(PrimitiveProcessor.class);
+    dispatch(HttpMethod.GET, "ESOpen(1)/DynamicString", processor);
+    verify(processor).readPrimitive(
+        any(ODataRequest.class), any(ODataResponse.class), any(UriInfo.class), any(ContentType.class));
+  }
+
+  @Test
+  void dynamicPropertyPutRoutesToUpdatePrimitive() throws Exception {
+    final PrimitiveProcessor processor = mock(PrimitiveProcessor.class);
+    dispatch(HttpMethod.PUT, "ESOpen(1)/DynamicString", processor);
+    verify(processor).updatePrimitive(
+        any(ODataRequest.class), any(ODataResponse.class), any(UriInfo.class), any(ContentType.class),
+        any(ContentType.class));
+  }
+
+  @Test
+  void dynamicPropertyPatchRoutesToUpdatePrimitive() throws Exception {
+    final PrimitiveProcessor processor = mock(PrimitiveProcessor.class);
+    dispatch(HttpMethod.PATCH, "ESOpen(1)/DynamicString", processor);
+    verify(processor).updatePrimitive(
+        any(ODataRequest.class), any(ODataResponse.class), any(UriInfo.class), any(ContentType.class),
+        any(ContentType.class));
+  }
+
+  @Test
+  void dynamicPropertyDeleteRoutesToDeletePrimitive() throws Exception {
+    final PrimitiveProcessor processor = mock(PrimitiveProcessor.class);
+    dispatch(HttpMethod.DELETE, "ESOpen(1)/DynamicString", processor);
+    verify(processor).deletePrimitive(any(ODataRequest.class), any(ODataResponse.class), any(UriInfo.class));
+  }
+
+  @Test
+  void dynamicPropertyPostAndHeadAreRejected() throws Exception {
+    // A dynamic property behaves like a scalar primitive property: POST is not a valid method on a
+    // single value and HEAD is not supported (mirrors dispatchPrimitiveProperty's POST/HEAD checks).
+    final PrimitiveProcessor processor = mock(PrimitiveProcessor.class);
+    final String uri = "ESOpen(1)/DynamicString";
+    dispatchMethodNotAllowed(HttpMethod.POST, uri, processor);
+    dispatchMethodNotAllowed(HttpMethod.HEAD, uri, processor);
+  }
+
+  @Test
+  void closedTypeUnknownSegmentStill404s() throws Exception {
+    // A closed (non-open) type must still reject an unknown path segment at parse time
+    // (UriParserSemanticException/PROPERTY_NOT_IN_TYPE), regardless of dynamic-property dispatch
+    // now being wired up for open types.
+    final ODataResponse response = dispatch(HttpMethod.GET, "ESTwoPrim(1)/Nope", null);
+    assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), response.getStatusCode());
   }
 
   @Test

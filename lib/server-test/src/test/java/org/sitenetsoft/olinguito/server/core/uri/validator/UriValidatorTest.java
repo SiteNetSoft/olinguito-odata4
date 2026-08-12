@@ -498,6 +498,20 @@ class UriValidatorTest {
         UriValidationException.MessageKeys.UNALLOWED_KIND_BEFORE_VALUE);
   }
 
+  @Test
+  void dynamicPropertyMethodsValidateOk() throws Exception {
+    // A dynamic (open-type) property is conceptually always nullable/writable/removable: it has no
+    // EDM declaration to check nullability or collection-ness against, so GET/PUT/PATCH/DELETE must
+    // all validate cleanly (validatePropertyOperations only dereferences the EDM property for
+    // primitiveProperty/complexProperty/value-after-primitiveProperty last segments; dynamicProperty
+    // is none of those, so it is never dereferenced).
+    final String uri = "ESOpen(1)/DynamicString";
+    validate(uri, null, HttpMethod.GET);
+    validate(uri, null, HttpMethod.PUT);
+    validate(uri, null, HttpMethod.PATCH);
+    validate(uri, null, HttpMethod.DELETE);
+  }
+
   private String[] constructUri(final String[] uriParameterArray) {
     final String path = uriParameterArray[0];
     String query = "";
