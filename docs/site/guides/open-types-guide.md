@@ -5,10 +5,11 @@
 OData V4 [open types](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_OpenType)
 are entity or complex types whose instances may carry **dynamic properties** — properties that
 are not declared in `$metadata`. Olinguito supports open types end to end: server payload
-handling (JSON), server-side `$select` / `$filter` / `$orderby` of dynamic properties, and client
-round-tripping. Direct path addressing of a dynamic property (`/Entity(1)/DynamicName`) parses at
-the URI layer but is **not served** by either bundled server dispatch stack — see
-[Server: Querying Dynamic Properties](#server-querying-dynamic-properties) below.
+handling (JSON), server-side `$select` / `$filter` / `$orderby` of dynamic properties, direct-path
+CRUD (`GET`/`PUT`/`PATCH`/`DELETE` on `/Entity(1)/DynamicName`), and client round-tripping. See
+[Direct Path CRUD on Dynamic Properties](#direct-path-crud-on-dynamic-properties)
+below for exactly what the modern (`ODataHandler`/`ODataDispatcher`) dispatch stack serves and what
+it still doesn't.
 
 This guide covers:
 
@@ -139,29 +140,41 @@ GET Products?$orderby=Brand desc
   sorting before any present value in ascending order (per `OrderByHandler`'s null-ordering rule).
   A custom service's own processor is free to evaluate this differently.
 
-### Direct path addressing (parses, not served)
+### Direct Path CRUD on Dynamic Properties
 
-`GET Products(1)/Brand` — addressing a dynamic property directly as the last URI path segment —
-resolves to a dedicated `UriResourceDynamicProperty` in the parsed URI resource tree (an untyped
-path segment; there is no EDM type to report for it) representing the dynamic property by name.
-Parsing succeeds, but **neither bundled server dispatch stack actually serves it**:
+`GET/PUT/PATCH/DELETE Products(1)/Brand` — addressing a dynamic property directly as the last URI
+path segment — resolves to a dedicated `UriResourceDynamicProperty` in the parsed URI resource
+tree (an untyped path segment; there is no EDM type to report for it) representing the dynamic
+property by name. On the modern, processor-based dispatch stack tecsvc uses (`ODataHandler`/
+`ODataDispatcher`), all four HTTP methods are served through the ordinary primitive-property
+dispatch flow:
 
-* The modern, processor-based dispatch stack tecsvc uses (`ODataHandler`/`ODataDispatcher`) has no
-  `dynamicProperty` case in `ODataDispatcher#handleResourceDispatching`, so it falls through to the
-  default branch and returns **501 Not Implemented**, regardless of which processors are
-  registered or whether the addressed instance actually has a value for that property. This is a
-  deliberate, tested deviation (see `ODataHandlerImplTest#dynamicPropertyDirectPathAddressingIsNotServedByDispatcher`)
-  rather than an oversight to be fixed silently — implementing it would mean adding a new
-  processor contract (there is no `DynamicPropertyProcessor` today) and was judged out of scope for
-  this feature; revisit only as a deliberate follow-up.
-* The older, `ServiceHandler`-based dispatch stack in `server-adapter-servlet`/`server-core-ext`
-  (used by simple samples such as the bundled TripPin example) has no equivalent hook for serving a
-  dynamic property's value at all, so on that stack every dynamic-property path segment **404s**,
-  regardless of whether the instance actually has a value for it.
+| Method | Behavior |
+|---|---|
+| `GET` | 200 with the stored value. Type is resolved from the stored `Property`'s recorded type first, falling back to inference from the Java value's class, falling back to `Edm.String`. Absent property → 404. Present-but-`null` value → 204 with no `Content-Type` header. A collection-valued dynamic property serializes as a primitive collection. A dynamic property nested exactly one level under an open complex property (e.g. `Products(1)/PropertyComp/CompDynamic`) is also served this way: 200 when present, 404 when the name or its parent complex property is absent. |
+| `PUT` / `PATCH` | Identical semantics for a dynamic scalar or collection — a dynamic value has no sub-structure for PATCH's partial-merge semantics to apply to, so both verbs replace the value wholesale (a collection PUT/PATCH is always a full clear-and-replace, never an element-wise merge). The request body is `{"value": <v>}`, optionally with `"value@odata.type": "#Kind"` to set or change the stored type explicitly (same short-name convention as the payload-level `@odata.type` annotation); without it, the type is inferred the same way GET falls back for an unresolvable stored type. A JSON object as `value` is rejected with 400. If the property doesn't exist yet, `PUT`/`PATCH` **create** it (upsert) rather than 404ing — dynamic properties routinely start absent by design, so there is no meaningful "update-only" case to distinguish from create. |
+| `DELETE` | Removes the property from the instance entirely (204). Absent property → 404 (unlike PUT/PATCH, there is no sensible upsert interpretation for delete-then-succeed). |
 
-If your service needs to serve a dynamic property's value directly, expose it as a declared
-property instead, or have your entity/complex processor inspect the full path and produce the
-value itself for the containing resource.
+Preconditions (`If-Match`/`If-None-Match`) are enforced on all four methods exactly as they are for
+declared properties.
+
+**Still out of scope, by design:**
+
+* **Nested writes.** `GET` serves one level of complex-property nesting (above), but `PUT`/`PATCH`/
+  `DELETE` on a nested dynamic path (e.g. `Products(1)/PropertyComp/CompDynamic`) return a clean
+  **501 Not Implemented** — the single-property write helpers only operate on an entity's own
+  top-level property list today. Revisit as a deliberate follow-up if a service needs writable
+  nested dynamic properties.
+* **`$value` / `$count` after a dynamic segment** stay rejected exactly as before (see
+  [Out of Scope](#out-of-scope) below) — CRUD applies to the dynamic property's own representation,
+  not to a raw-value or count sub-resource of it.
+* **The older, `ServiceHandler`-based dispatch stack** in `server-adapter-servlet`/
+  `server-core-ext` (used by simple samples such as the bundled TripPin example) still has no hook
+  for serving a dynamic property at all, so on that stack every dynamic-property path segment
+  **404s** for every method, regardless of whether the instance actually has a value for it. If
+  your service is built on that stack and needs to serve a dynamic property's value directly,
+  expose it as a declared property instead, or have your entity/complex processor inspect the full
+  path and produce the value itself for the containing resource.
 
 ## Client: Reading and Writing Dynamic Properties
 
@@ -224,6 +237,16 @@ bare JSON number (both only ever infer `Int16`/`Int32`/`Int64`/`Single`/`Double`
 magnitude/shape), so an unannotated dynamic `Byte`/`SByte` would silently mistype exactly like a
 `Guid` would.
 
+The same rule applies to dynamic **collections**: writing a `Collection(Edm.Guid)` (or any other
+non-JSON-native element kind) dynamic property emits `name@odata.type: "#Collection(Kind)"` even
+under minimal metadata, for the same reason and using the same allow-list as the scalar case above.
+A collection whose element kind is JSON-native (`String`, `Boolean`, the numeric kinds) stays
+unannotated under minimal metadata, exactly like a native scalar. This is symmetric with the
+server's own dynamic-collection annotation rule (see
+[Collections use the same convention](#the-odatatype-annotation) above), and the round trip is
+tested end to end: a collection the client writes this way deserializes back into the correct
+element type on an open-type server.
+
 ## Out of Scope
 
 The following remain unsupported and are pinned by regression tests — behavior is unchanged from
@@ -251,8 +274,11 @@ before open-type support was added:
   `UNALLOWED_KIND_BEFORE_VALUE` (see `UriValidatorTest#dynamicPropertyValueRejectedByUriValidator`
   and `OpenTypeUriParserTest#filterOnDynamicPropertyWithTrailingSegmentRejected` for the pinned
   exact behavior).
-* **Direct path addressing is parsed but not served.** See
-  [Direct path addressing (parses, not served)](#direct-path-addressing-parses-not-served) above.
+* **Nested dynamic-property writes.** `PUT`/`PATCH`/`DELETE` on a dynamic property nested under a
+  complex segment are not implemented (clean 501); GET-only for that case. Direct-path GET/PUT/
+  PATCH/DELETE on a top-level dynamic property is fully served — see
+  [Direct Path CRUD on Dynamic Properties](#direct-path-crud-on-dynamic-properties)
+  above.
 
 ## See Also
 

@@ -120,4 +120,4 @@ All development happens on `master` (single-branch repo). The runtime-decoupling
 - **Samples/Tutorials**: Migrated from javax.servlet 2.5 to Jakarta Servlet 6.1.0; updated web.xml namespaces to Jakarta EE 6.0
 - **Quarkus**: Updated to 3.38.1 (Vert.x aligned to 4.5.30)
 - **Upstream bug-fix ports**: 80 Apache Olingo JIRA tickets + 5 GitHub PRs ported with tests (full audit of OLINGO-700..1647 completed; remaining candidates deliberately deferred)
-- **OpenType support**: dynamic properties on open entity/complex types (JSON; payload + $select/$filter/$orderby)
+- **OpenType support**: dynamic properties on open entity/complex types (JSON; payload + $select/$filter/$orderby + direct-path CRUD)

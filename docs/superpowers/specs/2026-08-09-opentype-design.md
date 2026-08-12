@@ -106,6 +106,8 @@ found not to match what this document originally scoped:
   `ODataHandlerImplTest#dynamicPropertyDirectPathAddressingIsNotServedByDispatcher` (server-test)
   and documented in `docs/site/guides/open-types-guide.md`'s "Direct path addressing (parses, not
   served)" section. Revisit only as a deliberate follow-up feature.
+  **Resolved 2026-08-11**: direct-path GET/PUT/PATCH/DELETE on top-level dynamic properties (plus
+  nested GET) are now served — see `docs/superpowers/specs/2026-08-11-opentype-crud-design.md`.
 - **"Nested/lambda dynamic-property paths… rejected" only means a dynamic name is a leaf.** The
   out-of-scope bullet above was ambiguous: it could be misread as rejecting any path that merely
   *passes through* a declared complex segment on the way to a dynamic leaf. That case is in fact
@@ -132,6 +134,8 @@ found not to match what this document originally scoped:
   `OpenTypeClientTest#dynamicGuidCollectionWrittenUnderMinimalMetadataHasNoTypeAnnotationYet` and
   `#deserializesAnAnnotatedDynamicGuidCollectionProperty`; extending the write side to collections
   is a candidate for a dedicated follow-up.
+  **Resolved 2026-08-11**: dynamic collection writes now carry the `#Collection(Kind)` annotation
+  symmetrically with scalars — see `docs/superpowers/specs/2026-08-11-opentype-crud-design.md`.
 
 ## Rollout
 
