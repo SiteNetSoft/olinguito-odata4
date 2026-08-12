@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
  * Copyright 2026 SiteNetSoft - OLINGO-1596: Add $count support for collection properties
+ * Copyright 2026 SiteNetSoft - OpenType CRUD Task 3: serve GET for direct dynamic-property paths
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
@@ -31,6 +32,7 @@ import org.sitenetsoft.olinguito.commons.api.data.ContextURL.Builder;
 import org.sitenetsoft.olinguito.commons.api.data.Entity;
 import org.sitenetsoft.olinguito.commons.api.data.Link;
 import org.sitenetsoft.olinguito.commons.api.data.Property;
+import org.sitenetsoft.olinguito.commons.api.data.ValueType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmComplexType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
@@ -72,6 +74,7 @@ import org.sitenetsoft.olinguito.server.api.uri.UriInfo;
 import org.sitenetsoft.olinguito.server.api.uri.UriInfoResource;
 import org.sitenetsoft.olinguito.server.api.uri.UriResource;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceComplexProperty;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourceDynamicProperty;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceFunction;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceKind;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceProperty;
@@ -80,6 +83,7 @@ import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectOption;
 import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider.DataProviderException;
+import org.sitenetsoft.olinguito.server.tecsvc.data.DynamicPropertyTypeResolver;
 
 /**
  * Technical Processor which provides functionality related to primitive and complex types and collections thereof.
@@ -214,6 +218,13 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
     final List<UriResource> resourceParts = resource.getUriResourceParts();
     final int trailing =
         representationType == RepresentationType.COUNT || representationType == RepresentationType.VALUE ? 1 : 0;
+
+    if (resourceParts.get(resourceParts.size() - trailing - 1)
+        instanceof UriResourceDynamicProperty dynamicProperty) {
+      readDynamicProperty(request, response, uriInfo, contentType, edmEntitySet, dynamicProperty);
+      return;
+    }
+
     final List<String> path = getPropertyPath(resourceParts, trailing);
 
     final Entity entity = readEntity(uriInfo);
@@ -304,7 +315,62 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
     }
   }
 
-  private Property getData(Entity entity, List<String> path, List<UriResource> resourceParts, UriInfoResource resource) 
+  /**
+   * Serves GET on a direct dynamic (open-type) property path, e.g. {@code ESOpen(1)/DynamicString}.
+   * A dynamic property has no EDM declaration, so - unlike {@link #readProperty} above - the type
+   * used for serialization is resolved at runtime from the property's stored type name or its
+   * Java value's class (see {@link DynamicPropertyTypeResolver}), defaulting to {@code Edm.String}.
+   * A collection-valued dynamic property ({@link ValueType#COLLECTION_PRIMITIVE}) is served
+   * through the primitive-collection serializer instead of the scalar one, even though dispatch
+   * (see {@code ODataDispatcher}) always routes a dynamic-property segment through the scalar
+   * {@code readPrimitive} entry point, since the actual shape of an open type's dynamic value is
+   * only known once the entity data is inspected.
+   */
+  private void readDynamicProperty(final ODataRequest request, final ODataResponse response, final UriInfo uriInfo,
+      final ContentType contentType, final EdmEntitySet edmEntitySet,
+      final UriResourceDynamicProperty dynamicProperty) throws ODataApplicationException, ODataLibraryException {
+    final Entity entity = readEntity(uriInfo);
+
+    if (entity.getETag() != null
+        && odata.createETagHelper().checkReadPreconditions(entity.getETag(),
+            request.getHeaders(HttpHeader.IF_MATCH), request.getHeaders(HttpHeader.IF_NONE_MATCH))) {
+      response.setStatusCode(HttpStatusCode.NOT_MODIFIED.getStatusCode());
+      response.setHeader(HttpHeader.ETAG, entity.getETag());
+      return;
+    }
+
+    final Property property = entity.getProperty(dynamicProperty.getPropertyName());
+    if (property == null) {
+      throw new ODataApplicationException("Nothing found.", HttpStatusCode.NOT_FOUND.getStatusCode(), Locale.ROOT);
+    }
+
+    if (property.getValue() == null) {
+      response.setStatusCode(HttpStatusCode.NO_CONTENT.getStatusCode());
+    } else {
+      final EdmPrimitiveTypeKind kind = DynamicPropertyTypeResolver.resolveKind(property);
+      final EdmPrimitiveType type = odata.createPrimitiveTypeInstance(kind);
+      final boolean isCollection = property.getValueType() == ValueType.COLLECTION_PRIMITIVE;
+      final List<String> path = List.of(dynamicProperty.getPropertyName());
+      final RepresentationType effectiveType =
+          isCollection ? RepresentationType.COLLECTION_PRIMITIVE : RepresentationType.PRIMITIVE;
+      final ContextURL contextURL = isODataMetadataNone(contentType) ? null :
+          getContextUrl(edmEntitySet, entity, path, type, effectiveType, null, null);
+      final PrimitiveSerializerOptions options =
+          PrimitiveSerializerOptions.with().contextURL(contextURL).nullable(true).build();
+      final ODataSerializer serializer = odata.createSerializer(contentType);
+      final SerializerResult result = isCollection ?
+          serializer.primitiveCollection(serviceMetadata, type, property, options) :
+          serializer.primitive(serviceMetadata, type, property, options);
+      response.setContent(result.getContent());
+      response.setStatusCode(HttpStatusCode.OK.getStatusCode());
+    }
+    response.setHeader(HttpHeader.CONTENT_TYPE, contentType.toContentTypeString());
+    if (entity.getETag() != null) {
+      response.setHeader(HttpHeader.ETAG, entity.getETag());
+    }
+  }
+
+  private Property getData(Entity entity, List<String> path, List<UriResource> resourceParts, UriInfoResource resource)
       throws DataProviderException {
     if(resourceParts.size()>1 && resourceParts.get(1) instanceof UriResourceFunction funcResource){
       return dataProvider.readFunctionPrimitiveComplex(funcResource.getFunction(),
@@ -561,7 +627,8 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
           && kind != UriResourceKind.complexProperty
           && kind != UriResourceKind.count
           && kind != UriResourceKind.value
-          && kind != UriResourceKind.function) {
+          && kind != UriResourceKind.function
+          && kind != UriResourceKind.dynamicProperty) {
         throw new ODataApplicationException("Invalid resource type.",
             HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), Locale.ROOT);
       }

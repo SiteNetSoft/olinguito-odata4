@@ -18,14 +18,14 @@
  *
  * Copyright 2026 SiteNetSoft - Converted switch statements to switch expressions
  * Copyright 2026 SiteNetSoft - Evaluate dynamic (open-type) properties at query-option runtime
+ * Copyright 2026 SiteNetSoft - OpenType CRUD Task 3: extracted dynamic-property EdmPrimitiveTypeKind
+ * resolution into DynamicPropertyTypeResolver, shared with the tecsvc GET-dispatch path
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression;
 
-import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
 
 import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
 import org.sitenetsoft.olinguito.commons.api.data.Entity;
@@ -64,6 +64,7 @@ import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.MethodKin
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.UnaryOperatorKind;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceLambdaVarImpl;
 import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider;
+import org.sitenetsoft.olinguito.server.tecsvc.data.DynamicPropertyTypeResolver;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operand.TypedOperand;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operand.UntypedOperand;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operand.VisitorOperand;
@@ -344,57 +345,15 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
 
   /**
    * Dynamic properties carry no EDM property definition, so their runtime type has to be
-   * derived: first from the stored type-name string (set when the value came in with an
-   * explicit {@code @type} annotation), falling back to inference from the Java value's class.
+   * derived: from {@link DynamicPropertyTypeResolver}, which resolves a stored type-name string
+   * (set when the value came in with an explicit {@code @type} annotation) or, failing that,
+   * infers a kind from the Java value's class.
    */
   private EdmType inferDynamicPropertyType(final Property property) {
-    final Object value = property.getValue();
-    if (value == null) {
+    if (property.getValue() == null) {
       return EdmNull.getInstance();
     }
-    final String typeName = property.getType();
-    if (typeName != null) {
-      try {
-        return OData.newInstance().createPrimitiveTypeInstance(EdmPrimitiveTypeKind.valueOfFQN(typeName));
-      } catch (final IllegalArgumentException e) {
-        // Unresolvable stored type string; fall through to value-based inference below.
-      }
-    }
-    return OData.newInstance().createPrimitiveTypeInstance(inferPrimitiveTypeKindFromValue(value));
-  }
-
-  /**
-   * Infers an {@link EdmPrimitiveTypeKind} from a dynamic property's Java value class. This
-   * mapping is deliberately partial - it only covers the Java types the tecsvc JSON
-   * deserializer actually produces for untyped/inferred dynamic scalars (numbers, booleans,
-   * strings, GUIDs). Types with no unambiguous single Java representation without an explicit
-   * {@code @type} annotation - e.g. {@code byte[]} (could be Edm.Binary or Edm.Duration-as-bytes),
-   * temporal values (Edm.Date/DateTimeOffset/TimeOfDay/Duration all round-trip through different
-   * Java shapes) - are intentionally left unhandled here and fall through to the String default;
-   * such values should arrive with an explicit stored type name instead (see the {@code typeName}
-   * branch above).
-   */
-  private EdmPrimitiveTypeKind inferPrimitiveTypeKindFromValue(final Object value) {
-    if (value instanceof Short) {
-      return EdmPrimitiveTypeKind.Int16;
-    } else if (value instanceof Integer) {
-      return EdmPrimitiveTypeKind.Int32;
-    } else if (value instanceof Long) {
-      return EdmPrimitiveTypeKind.Int64;
-    } else if (value instanceof Boolean) {
-      return EdmPrimitiveTypeKind.Boolean;
-    } else if (value instanceof Float) {
-      return EdmPrimitiveTypeKind.Single;
-    } else if (value instanceof Double) {
-      return EdmPrimitiveTypeKind.Double;
-    } else if (value instanceof BigDecimal) {
-      return EdmPrimitiveTypeKind.Decimal;
-    } else if (value instanceof UUID) {
-      return EdmPrimitiveTypeKind.Guid;
-    } else if (value instanceof Byte) {
-      return EdmPrimitiveTypeKind.SByte;
-    }
-    return EdmPrimitiveTypeKind.String;
+    return OData.newInstance().createPrimitiveTypeInstance(DynamicPropertyTypeResolver.resolveKind(property));
   }
 
   @Override

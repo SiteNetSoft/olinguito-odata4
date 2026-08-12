@@ -17,22 +17,28 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - New file: end-to-end coverage for OpenType (open, dynamic-property) entities
+ * Copyright 2026 SiteNetSoft - OpenType CRUD Task 3: direct dynamic-property GET fit coverage
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import org.sitenetsoft.olinguito.client.api.communication.ODataClientErrorException;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataEntityCreateRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataEntityUpdateRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.UpdateType;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntityRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntitySetRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataPropertyRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataEntityCreateResponse;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataEntityUpdateResponse;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
@@ -270,5 +276,124 @@ public class OpenTypeITCase extends AbstractParamTecSvcITCase {
     assertNotNull(reread);
     assertNull(reread.getProperty("DynamicInt"));
     assertNull(reread.getProperty("DynamicString"));
+  }
+
+  @Test
+  public void readDynamicPropertyDirectly() {
+    assumeTrue(ASSUME_JSON_REASON, isJson());
+
+    final ODataPropertyRequest<ClientProperty> request = getClient().getRetrieveRequestFactory()
+        .getPropertyRequest(getClient().newURIBuilder(SERVICE_URI)
+            .appendEntitySetSegment(ES_OPEN)
+            .appendKeySegment(1)
+            .appendPropertySegment("DynamicString")
+            .build());
+    setCookieHeader(request);
+
+    final ODataRetrieveResponse<ClientProperty> response = request.execute();
+    saveCookieHeader(response);
+    assertEquals(HttpStatusCode.OK.getStatusCode(), response.getStatusCode());
+
+    final ClientProperty property = response.getBody();
+    assertNotNull(property);
+    assertNotNull(property.getPrimitiveValue());
+    assertEquals("dynamic", property.getPrimitiveValue().toValue());
+    assertEquals("Edm.String",
+        property.getPrimitiveValue().getType().getFullQualifiedName().getFullQualifiedNameAsString());
+  }
+
+  @Test
+  public void readAbsentDynamicPropertyReturns404() {
+    assumeTrue(ASSUME_JSON_REASON, isJson());
+
+    // Entity 3 is seeded with no dynamic properties at all.
+    final ODataPropertyRequest<ClientProperty> request = getClient().getRetrieveRequestFactory()
+        .getPropertyRequest(getClient().newURIBuilder(SERVICE_URI)
+            .appendEntitySetSegment(ES_OPEN)
+            .appendKeySegment(3)
+            .appendPropertySegment("DynamicString")
+            .build());
+    setCookieHeader(request);
+
+    try {
+      request.execute();
+      fail("Expected exception not thrown!");
+    } catch (final ODataClientErrorException e) {
+      assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), e.getStatusCode());
+    }
+  }
+
+  @Test
+  public void readDynamicInt64Directly() {
+    assumeTrue(ASSUME_JSON_REASON, isJson());
+
+    final ODataPropertyRequest<ClientProperty> request = getClient().getRetrieveRequestFactory()
+        .getPropertyRequest(getClient().newURIBuilder(SERVICE_URI)
+            .appendEntitySetSegment(ES_OPEN)
+            .appendKeySegment(1)
+            .appendPropertySegment("DynamicInt")
+            .build());
+    setCookieHeader(request);
+
+    final ODataRetrieveResponse<ClientProperty> response = request.execute();
+    saveCookieHeader(response);
+    assertEquals(HttpStatusCode.OK.getStatusCode(), response.getStatusCode());
+
+    final ClientProperty property = response.getBody();
+    assertNotNull(property);
+    assertNotNull(property.getPrimitiveValue());
+    // Deliberately not asserting getPrimitiveValue().getType() here: OData JSON minimal metadata
+    // carries no @odata.type annotation for a raw primitive-property document (see
+    // ODataJsonSerializer#primitive), and a dynamic property has no CSDL declaration the client
+    // could otherwise resolve the type from either, so the client SDK falls back to its own
+    // bare-JSON-number heuristic (Edm.Int32) regardless of what the server actually resolved and
+    // serialized the value as. See readDynamicIntSerializesAsNumberNotString below for a
+    // wire-level pin of the server-side Edm.Int64 resolution instead.
+    assertShortOrInt(42, property.getPrimitiveValue().toValue());
+  }
+
+  @Test
+  public void readDynamicIntSerializesAsNumberNotString() throws Exception {
+    assumeTrue(ASSUME_JSON_REASON, isJson());
+
+    final ODataPropertyRequest<ClientProperty> request = getClient().getRetrieveRequestFactory()
+        .getPropertyRequest(getClient().newURIBuilder(SERVICE_URI)
+            .appendEntitySetSegment(ES_OPEN)
+            .appendKeySegment(1)
+            .appendPropertySegment("DynamicInt")
+            .build());
+    setCookieHeader(request);
+
+    final ODataRetrieveResponse<ClientProperty> response = request.execute();
+    saveCookieHeader(response);
+
+    // Pins the server-side type resolution (DynamicPropertyTypeResolver resolves the stored Long
+    // 42L to Edm.Int64) at the wire level: a bare JSON number, not a quoted string - which is what
+    // the Edm.String fallback would have produced instead.
+    final String actualResult = new String(response.getRawResponse().readAllBytes(), StandardCharsets.UTF_8);
+    assertTrue(actualResult.endsWith("\"value\":42}"));
+  }
+
+  @Test
+  public void readDynamicPropertyOnClosedTypeStillRejected() {
+    assumeTrue(ASSUME_JSON_REASON, isJson());
+
+    // Pin: ETTwoPrim is a closed type, so an undeclared segment must still be rejected at
+    // URI-parse time (PROPERTY_NOT_IN_TYPE), regardless of dynamic-property GET now being served
+    // for open types.
+    final ODataPropertyRequest<ClientProperty> request = getClient().getRetrieveRequestFactory()
+        .getPropertyRequest(getClient().newURIBuilder(SERVICE_URI)
+            .appendEntitySetSegment("ESTwoPrim")
+            .appendKeySegment(32766)
+            .appendPropertySegment("Nope")
+            .build());
+    setCookieHeader(request);
+
+    try {
+      request.execute();
+      fail("Expected exception not thrown!");
+    } catch (final ODataClientErrorException e) {
+      assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), e.getStatusCode());
+    }
   }
 }
