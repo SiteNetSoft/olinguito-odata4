@@ -20,6 +20,8 @@
  * Copyright 2026 SiteNetSoft - OpenType CRUD Task 3: direct dynamic-property GET fit coverage
  * Copyright 2026 SiteNetSoft - OpenType CRUD Task 3 fix round 1: nested dynamic-property GET, 204
  * Content-Type, and PUT/DELETE-still-501 regression coverage
+ * Copyright 2026 SiteNetSoft - OpenType CRUD Task 4: replace the PUT/PATCH/DELETE-still-501 pins
+ * with real dynamic-property write/delete coverage
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
@@ -30,16 +32,18 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
+import java.io.IOException;
 import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.UUID;
 
 import org.sitenetsoft.olinguito.client.api.communication.ODataClientErrorException;
-import org.sitenetsoft.olinguito.client.api.communication.ODataServerErrorException;
-import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataDeleteRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataEntityCreateRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataEntityUpdateRequest;
-import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataPropertyUpdateRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.UpdateType;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntityRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntitySetRequest;
@@ -497,50 +501,230 @@ public class OpenTypeITCase extends AbstractParamTecSvcITCase {
   }
 
   @Test
-  public void updateDynamicPropertyStillNotImplemented() {
+  public void putReplacesDynamicPropertyValue() throws IOException, InterruptedException {
     assumeTrue(ASSUME_JSON_REASON, isJson());
 
-    // Regression pin: PUT/PATCH/DELETE on a dynamic-property path are a later task's job, not this
-    // one's. TechnicalPrimitiveComplexProcessor#validatePath must keep rejecting a dynamic-property
-    // segment for the write paths (updateProperty/deleteProperty) with a clean 501, exactly as it
-    // did before direct dynamic-property GET support was added - not crash with an unhandled
-    // ClassCastException from their unconditional UriResourceProperty cast.
-    final ODataPropertyUpdateRequest request = getClient().getCUDRequestFactory()
-        .getPropertyPrimitiveValueUpdateRequest(
-            getClient().newURIBuilder(SERVICE_URI)
-                .appendEntitySetSegment(ES_OPEN)
-                .appendKeySegment(1)
-                .appendPropertySegment("DynamicString")
-                .build(),
-            getFactory().newPrimitiveProperty("DynamicString",
-                getFactory().newPrimitiveValueBuilder().buildString("updated")));
-    setCookieHeader(request);
+    final URI uri = dynamicPropertyUri(1, "DynamicString");
 
-    try {
-      request.execute();
-      fail("Expected exception not thrown!");
-    } catch (final ODataServerErrorException e) {
-      assertTrue(e.getMessage(), e.getMessage().contains("HTTP/" + HttpStatusCode.NOT_IMPLEMENTED.getStatusCode()));
-    }
+    final HttpResponse<String> putResponse = sendDynamicPropertyRequest("PUT", uri, "{\"value\":\"changed\"}", null);
+    assertEquals(HttpStatusCode.OK.getStatusCode(), putResponse.statusCode());
+    final String isolatedCookie = isolatedCookie(putResponse);
+
+    final HttpResponse<String> getResponse = sendDynamicPropertyRequest("GET", uri, null, isolatedCookie);
+    assertEquals(HttpStatusCode.OK.getStatusCode(), getResponse.statusCode());
+    assertTrue(getResponse.body(), getResponse.body().endsWith("\"value\":\"changed\"}"));
   }
 
   @Test
-  public void deleteDynamicPropertyStillNotImplemented() {
+  public void putChangesDynamicPropertyType() throws IOException, InterruptedException {
     assumeTrue(ASSUME_JSON_REASON, isJson());
 
-    final ODataDeleteRequest request = getClient().getCUDRequestFactory().getDeleteRequest(
-        getClient().newURIBuilder(SERVICE_URI)
-            .appendEntitySetSegment(ES_OPEN)
-            .appendKeySegment(1)
-            .appendPropertySegment("DynamicString")
-            .build());
-    setCookieHeader(request);
+    // DynamicInt is seeded as an Int64 (42). A PUT carrying a value@odata.type annotation must be
+    // able to switch it to an entirely different scalar type (here Guid) - PUT replaces both the
+    // stored value AND type, unlike the whole-entity PUT/PATCH path's dynamic-property handling
+    // (DataProvider#updateDynamicProperties), which only ever replaced the value.
+    final URI uri = dynamicPropertyUri(1, "DynamicInt");
+    final String uuid = UUID.randomUUID().toString();
 
-    try {
-      request.execute();
-      fail("Expected exception not thrown!");
-    } catch (final ODataServerErrorException e) {
-      assertTrue(e.getMessage(), e.getMessage().contains("HTTP/" + HttpStatusCode.NOT_IMPLEMENTED.getStatusCode()));
+    final HttpResponse<String> putResponse = sendDynamicPropertyRequest("PUT", uri,
+        "{\"value@odata.type\":\"#Guid\",\"value\":\"" + uuid + "\"}", null);
+    assertEquals(HttpStatusCode.OK.getStatusCode(), putResponse.statusCode());
+    final String isolatedCookie = isolatedCookie(putResponse);
+
+    final HttpResponse<String> getResponse = sendDynamicPropertyRequest("GET", uri, null, isolatedCookie);
+    assertEquals(HttpStatusCode.OK.getStatusCode(), getResponse.statusCode());
+    assertTrue(getResponse.body(), getResponse.body().endsWith("\"value\":\"" + uuid + "\"}"));
+  }
+
+  @Test
+  public void patchBehavesLikePutForDynamicScalar() throws IOException, InterruptedException {
+    assumeTrue(ASSUME_JSON_REASON, isJson());
+
+    final URI uri = dynamicPropertyUri(1, "DynamicString");
+
+    final HttpResponse<String> patchResponse =
+        sendDynamicPropertyRequest("PATCH", uri, "{\"value\":\"patched\"}", null);
+    assertEquals(HttpStatusCode.OK.getStatusCode(), patchResponse.statusCode());
+    final String isolatedCookie = isolatedCookie(patchResponse);
+
+    final HttpResponse<String> getResponse = sendDynamicPropertyRequest("GET", uri, null, isolatedCookie);
+    assertEquals(HttpStatusCode.OK.getStatusCode(), getResponse.statusCode());
+    assertTrue(getResponse.body(), getResponse.body().endsWith("\"value\":\"patched\"}"));
+  }
+
+  @Test
+  public void patchCreatesAbsentDynamicPropertyUpsert() throws IOException, InterruptedException {
+    assumeTrue(ASSUME_JSON_REASON, isJson());
+
+    // Design decision (see task report): tecsvc's declared-property direct-path update never
+    // actually encounters a truly-absent property slot in normal use (DataProvider allocates one
+    // for every declared property at entity-creation time, present-but-null at worst), so there is
+    // no established "absent declared property -> 404" precedent to mirror here. Both PUT and PATCH
+    // on an absent dynamic property therefore upsert (create it), matching ordinary REST PUT/PATCH
+    // idempotent-create semantics. Entity 3 has no dynamic properties at all.
+    final URI uri = dynamicPropertyUri(3, "FreshlyPatched");
+
+    final HttpResponse<String> patchResponse =
+        sendDynamicPropertyRequest("PATCH", uri, "{\"value\":\"created via patch\"}", null);
+    assertEquals(HttpStatusCode.OK.getStatusCode(), patchResponse.statusCode());
+    final String isolatedCookie = isolatedCookie(patchResponse);
+
+    final HttpResponse<String> getResponse = sendDynamicPropertyRequest("GET", uri, null, isolatedCookie);
+    assertEquals(HttpStatusCode.OK.getStatusCode(), getResponse.statusCode());
+    assertTrue(getResponse.body(), getResponse.body().endsWith("\"value\":\"created via patch\"}"));
+  }
+
+  @Test
+  public void deleteRemovesDynamicProperty() throws IOException, InterruptedException {
+    assumeTrue(ASSUME_JSON_REASON, isJson());
+
+    final URI deleteUri = dynamicPropertyUri(1, "DynamicString");
+
+    final HttpResponse<String> deleteResponse = sendDynamicPropertyRequest("DELETE", deleteUri, null, null);
+    assertEquals(HttpStatusCode.NO_CONTENT.getStatusCode(), deleteResponse.statusCode());
+    final String isolatedCookie = isolatedCookie(deleteResponse);
+
+    final HttpResponse<String> getResponse = sendDynamicPropertyRequest("GET", deleteUri, null, isolatedCookie);
+    assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), getResponse.statusCode());
+
+    // The sibling dynamic property (DynamicInt) must be untouched by deleting DynamicString.
+    final URI siblingUri = dynamicPropertyUri(1, "DynamicInt");
+    final HttpResponse<String> siblingResponse = sendDynamicPropertyRequest("GET", siblingUri, null, isolatedCookie);
+    assertEquals(HttpStatusCode.OK.getStatusCode(), siblingResponse.statusCode());
+    assertTrue(siblingResponse.body(), siblingResponse.body().endsWith("\"value\":42}"));
+  }
+
+  @Test
+  public void deleteAbsentDynamicPropertyReturns404() throws IOException, InterruptedException {
+    assumeTrue(ASSUME_JSON_REASON, isJson());
+
+    // Entity 3 is seeded with no dynamic properties at all: nothing to remove.
+    final HttpResponse<String> response =
+        sendDynamicPropertyRequest("DELETE", dynamicPropertyUri(3, "DynamicString"), null, null);
+    assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), response.statusCode());
+  }
+
+  @Test
+  public void writeObjectPayloadToDynamicPropertyRejected() throws IOException, InterruptedException {
+    assumeTrue(ASSUME_JSON_REASON, isJson());
+
+    final HttpResponse<String> response = sendDynamicPropertyRequest(
+        "PUT", dynamicPropertyUri(1, "DynamicString"), "{\"value\":{\"a\":1}}", null);
+    assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), response.statusCode());
+  }
+
+  @Test
+  public void writeUnresolvableAnnotatedTypeToDynamicPropertyRejected() throws IOException, InterruptedException {
+    assumeTrue(ASSUME_JSON_REASON, isJson());
+
+    final HttpResponse<String> response = sendDynamicPropertyRequest("PUT", dynamicPropertyUri(1, "DynamicString"),
+        "{\"value@odata.type\":\"#Bogus\",\"value\":\"x\"}", null);
+    assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), response.statusCode());
+  }
+
+  @Test
+  public void putFullyReplacesDynamicCollectionProperty() throws IOException, InterruptedException {
+    assumeTrue(ASSUME_JSON_REASON, isJson());
+
+    // Design decision: a dynamic collection-valued property is written the same way a declared
+    // collection property is (DataProvider#updateProperty's collection branch always clears and
+    // replaces wholesale, regardless of the patch flag, since a collection has no per-element
+    // identity to merge/patch by) - so PUT and PATCH on a dynamic collection both do a full
+    // replace, never an append/merge.
+    final URI uri = dynamicPropertyUri(3, "DynamicCollection");
+
+    final HttpResponse<String> putResponse = sendDynamicPropertyRequest("PUT", uri, "{\"value\":[1,2,3]}", null);
+    assertEquals(HttpStatusCode.OK.getStatusCode(), putResponse.statusCode());
+    final String isolatedCookie = isolatedCookie(putResponse);
+
+    final HttpResponse<String> patchResponse =
+        sendDynamicPropertyRequest("PATCH", uri, "{\"value\":[9]}", isolatedCookie);
+    assertEquals(HttpStatusCode.OK.getStatusCode(), patchResponse.statusCode());
+    assertTrue(patchResponse.body(), patchResponse.body().endsWith("\"value\":[9]}"));
+
+    final HttpResponse<String> getResponse = sendDynamicPropertyRequest("GET", uri, null, isolatedCookie);
+    assertEquals(HttpStatusCode.OK.getStatusCode(), getResponse.statusCode());
+    assertTrue(getResponse.body(), getResponse.body().endsWith("\"value\":[9]}"));
+  }
+
+  @Test
+  public void writeNestedDynamicPropertyStillNotImplemented() throws IOException, InterruptedException {
+    assumeTrue(ASSUME_JSON_REASON, isJson());
+
+    // Scope decision (see task report): only entity-level dynamic properties are served for direct
+    // PUT/PATCH/DELETE by this task; a dynamic property nested inside an open complex property
+    // (PropertyComp/CompDynamic, seeded on entity 1) must still fail cleanly with 501 - not crash -
+    // exactly like the whole write path did before this task, mirroring
+    // readNestedDynamicPropertyDirectly's GET counterpart for the read side.
+    final URI uri = getClient().newURIBuilder(SERVICE_URI)
+        .appendEntitySetSegment(ES_OPEN)
+        .appendKeySegment(1)
+        .appendPropertySegment("PropertyComp")
+        .appendPropertySegment("CompDynamic")
+        .build();
+
+    final HttpResponse<String> putResponse = sendDynamicPropertyRequest("PUT", uri, "{\"value\":\"x\"}", null);
+    assertEquals(HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), putResponse.statusCode());
+
+    final HttpResponse<String> deleteResponse = sendDynamicPropertyRequest("DELETE", uri, null, null);
+    assertEquals(HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), deleteResponse.statusCode());
+  }
+
+  @Test
+  public void writeDynamicPropertyOnClosedTypeStillRejected() throws IOException, InterruptedException {
+    assumeTrue(ASSUME_JSON_REASON, isJson());
+
+    // Pin: ETTwoPrim is a closed type, so an undeclared segment must still be rejected at
+    // URI-parse time regardless of dynamic-property writes now being served for open types.
+    final URI uri = getClient().newURIBuilder(SERVICE_URI)
+        .appendEntitySetSegment("ESTwoPrim")
+        .appendKeySegment(32766)
+        .appendPropertySegment("Nope")
+        .build();
+
+    final HttpResponse<String> response = sendDynamicPropertyRequest("PUT", uri, "{\"value\":\"x\"}", null);
+    assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), response.statusCode());
+  }
+
+  private URI dynamicPropertyUri(final int key, final String propertyName) {
+    return getClient().newURIBuilder(SERVICE_URI)
+        .appendEntitySetSegment(ES_OPEN)
+        .appendKeySegment(key)
+        .appendPropertySegment(propertyName)
+        .build();
+  }
+
+  /**
+   * Sends a raw PUT/PATCH/DELETE/GET request with a hand-written JSON body, bypassing the OData
+   * client SDK entirely. This is necessary because the SDK's typed property-update API
+   * (see {@code ODataPropertyUpdateRequestImpl}) always serializes from a {@link ClientProperty}
+   * and cannot express a {@code value@odata.type} annotation or a deliberately-malformed payload,
+   * and it offers no PATCH variant for a primitive property at all (only PUT).
+   * {@code java.net.http.HttpClient} is used instead of {@code java.net.HttpURLConnection} (the
+   * idiom used elsewhere under {@code fit.tecsvc.http}) because the latter rejects the "PATCH"
+   * method with a {@code ProtocolException} on the JDK's built-in implementation.
+   *
+   * @param cookie the session cookie to send, or {@code null} to start a fresh, isolated session
+   *          (see the class-wide isolation rationale on {@link #createEntityWithDynamicProperty})
+   */
+  private HttpResponse<String> sendDynamicPropertyRequest(final String method, final URI uri, final String jsonBody,
+      final String cookie) throws IOException, InterruptedException {
+    final HttpRequest.Builder builder = HttpRequest.newBuilder(uri)
+        .header(HttpHeader.ACCEPT, "application/json")
+        .method(method, jsonBody == null
+            ? HttpRequest.BodyPublishers.noBody()
+            : HttpRequest.BodyPublishers.ofString(jsonBody, StandardCharsets.UTF_8));
+    if (jsonBody != null) {
+      builder.header(HttpHeader.CONTENT_TYPE, "application/json");
     }
+    if (cookie != null) {
+      builder.header(HttpHeader.COOKIE, cookie);
+    }
+    return HttpClient.newHttpClient().send(builder.build(), HttpResponse.BodyHandlers.ofString());
+  }
+
+  private String isolatedCookie(final HttpResponse<String> response) {
+    return response.headers().firstValue(HttpHeader.SET_COOKIE)
+        .orElseThrow(() -> new AssertionError("Expected a Set-Cookie header to isolate the mutating session"));
   }
 }

@@ -20,6 +20,8 @@
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  * Copyright 2026 SiteNetSoft - OpenType: carry undeclared (dynamic) properties over on create/update
+ * Copyright 2026 SiteNetSoft - OpenType CRUD Task 4: extract single dynamic-property
+ * upsert/remove helpers, reused by the direct dynamic-property PUT/PATCH/DELETE path
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -391,15 +393,50 @@ public class DataProvider {
     for (final Property changedProperty : changedEntity.getProperties()) {
       final String propertyName = changedProperty.getName();
       if (!declaredPropertyNames.contains(propertyName)) {
-        final Property existing = entity.getProperty(propertyName);
-        if (existing == null) {
-          entity.addProperty(new Property(changedProperty.getType(), propertyName,
-              changedProperty.getValueType(), changedProperty.getValue()));
-        } else {
-          existing.setValue(changedProperty.getValueType(), changedProperty.getValue());
-        }
+        updateDynamicProperty(entity, changedProperty);
       }
     }
+  }
+
+  /**
+   * Upserts a single dynamic (open-type) property onto {@code entity}: if a property with this
+   * name is already present, its stored type and value are replaced in place; otherwise a new
+   * {@link Property} is appended. Shared by the whole-entity PUT/PATCH path (the loop in
+   * {@link #updateDynamicProperties}) and by {@code TechnicalPrimitiveComplexProcessor}'s direct
+   * dynamic-property PUT/PATCH (e.g. {@code ESOpen(1)/DynamicString}), so the two paths do not
+   * duplicate the value/type replacement logic.
+   *
+   * <p>Unlike the entity-level path before this method was extracted, this always updates the
+   * stored type too - not just the value - since a direct single-property write may legitimately
+   * change a dynamic property's type (e.g. a {@code value@odata.type} annotation switching an
+   * Int64 to a Guid).
+   *
+   * @param entity the entity to update
+   * @param changedProperty the incoming property (name, type and value) to store
+   */
+  public void updateDynamicProperty(final Entity entity, final Property changedProperty) {
+    final String propertyName = changedProperty.getName();
+    final Property existing = entity.getProperty(propertyName);
+    if (existing == null) {
+      entity.addProperty(new Property(changedProperty.getType(), propertyName,
+          changedProperty.getValueType(), changedProperty.getValue()));
+    } else {
+      existing.setType(changedProperty.getType());
+      existing.setValue(changedProperty.getValueType(), changedProperty.getValue());
+    }
+  }
+
+  /**
+   * Removes a dynamic (open-type) property from {@code entity} by name, e.g. for a direct
+   * {@code DELETE ESOpen(1)/DynamicString}.
+   *
+   * @param entity the entity to remove the property from
+   * @param propertyName the dynamic property's name
+   * @return {@code true} if a property with this name was present (and has been removed),
+   *         {@code false} if it was already absent
+   */
+  public boolean removeDynamicProperty(final Entity entity, final String propertyName) {
+    return entity.getProperties().removeIf(property -> property.getName().equals(propertyName));
   }
 
   public void updateETag(Entity entity) {

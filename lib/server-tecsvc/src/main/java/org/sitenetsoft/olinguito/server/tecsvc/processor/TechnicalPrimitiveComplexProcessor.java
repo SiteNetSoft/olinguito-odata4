@@ -19,6 +19,8 @@
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
  * Copyright 2026 SiteNetSoft - OLINGO-1596: Add $count support for collection properties
  * Copyright 2026 SiteNetSoft - OpenType CRUD Task 3: serve GET for direct dynamic-property paths
+ * Copyright 2026 SiteNetSoft - OpenType CRUD Task 4: serve PUT/PATCH/DELETE for direct
+ * dynamic-property paths
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
@@ -95,6 +97,9 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
     ComplexProcessor, ComplexCollectionProcessor, CountComplexCollectionProcessor {
 
   private static final String EDMSTREAM = "Edm.Stream";
+
+  private static final String NESTED_DYNAMIC_WRITE_MESSAGE =
+      "Writing a dynamic property nested inside a complex property is not supported.";
 
   public TechnicalPrimitiveComplexProcessor(final DataProvider dataProvider,
       final ServiceMetadata serviceMetadata) {
@@ -439,6 +444,26 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
       final ContentType requestFormat, final ContentType responseFormat, final RepresentationType representationType)
       throws ODataApplicationException, ODataLibraryException {
     final UriInfoResource resource = uriInfo.asUriInfoResource();
+    final List<UriResource> resourceParts = resource.getUriResourceParts();
+    final int trailing = representationType == RepresentationType.VALUE ? 1 : 0;
+    final int lastIndex = resourceParts.size() - trailing - 1;
+
+    if (resourceParts.get(lastIndex) instanceof UriResourceDynamicProperty dynamicProperty) {
+      // Mirrors readProperty's dynamic branch (see its Javadoc): validate every OTHER segment
+      // (still rejecting anything validatePath would reject), then handle the dynamic write itself
+      // in updateDynamicProperty, entirely bypassing validatePath's shared allow-list and the
+      // declared-property EdmProperty logic below (which would ClassCastException on a
+      // UriResourceDynamicProperty).
+      for (int i = 1; i < resourceParts.size(); i++) {
+        if (i != lastIndex) {
+          validateSegmentKind(resourceParts.get(i));
+        }
+      }
+      final List<String> parentPath = getPropertyPath(resourceParts, trailing + 1);
+      updateDynamicProperty(request, response, uriInfo, requestFormat, responseFormat, dynamicProperty, parentPath);
+      return;
+    }
+
     validatePath(resource);
     final EdmEntitySet edmEntitySet = getEdmEntitySet(resource);
 
@@ -447,8 +472,6 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
         request.getHeaders(HttpHeader.IF_MATCH),
         request.getHeaders(HttpHeader.IF_NONE_MATCH));
 
-    final List<UriResource> resourceParts = resource.getUriResourceParts();
-    final int trailing = representationType == RepresentationType.VALUE ? 1 : 0;
     final List<String> path = getPropertyPath(resourceParts, trailing);
     final EdmProperty edmProperty = ((UriResourceProperty) resourceParts.get(resourceParts.size() - trailing - 1))
         .getProperty();
@@ -509,6 +532,22 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
   private void deleteProperty(final ODataRequest request, ODataResponse response, final UriInfo uriInfo,
       final boolean isValue) throws ODataLibraryException, ODataApplicationException {
     final UriInfoResource resource = uriInfo.asUriInfoResource();
+    final List<UriResource> resourceParts = resource.getUriResourceParts();
+    final int trailing = isValue ? 1 : 0;
+    final int lastIndex = resourceParts.size() - trailing - 1;
+
+    if (resourceParts.get(lastIndex) instanceof UriResourceDynamicProperty dynamicProperty) {
+      // See the matching branch in updateProperty above for the rationale.
+      for (int i = 1; i < resourceParts.size(); i++) {
+        if (i != lastIndex) {
+          validateSegmentKind(resourceParts.get(i));
+        }
+      }
+      final List<String> parentPath = getPropertyPath(resourceParts, trailing + 1);
+      deleteDynamicProperty(request, response, uriInfo, dynamicProperty, parentPath);
+      return;
+    }
+
     validatePath(resource);
     getEdmEntitySet(uriInfo); // including checks
 
@@ -517,8 +556,6 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
         request.getHeaders(HttpHeader.IF_MATCH),
         request.getHeaders(HttpHeader.IF_NONE_MATCH));
 
-    final List<UriResource> resourceParts = resource.getUriResourceParts();
-    final int trailing = isValue ? 1 : 0;
     final List<String> path = getPropertyPath(resourceParts, trailing);
 
     Property property = getPropertyData(entity, path);
@@ -535,6 +572,118 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
       }
     } else {
       throw new ODataApplicationException("Not nullable.", HttpStatusCode.BAD_REQUEST.getStatusCode(), Locale.ROOT);
+    }
+  }
+
+  /**
+   * Serves PUT/PATCH on a direct dynamic (open-type) property path, e.g. {@code ESOpen(1)/DynamicString}.
+   * A dynamic property has no EDM declaration, so - unlike {@link #updateProperty} above - the
+   * incoming payload is parsed via
+   * {@link org.sitenetsoft.olinguito.server.api.deserializer.ODataDeserializer#dynamicProperty(
+   * InputStream, String)}
+   * (Task 1), which resolves the property's type from an optional {@code value@odata.type}
+   * annotation (or infers it) rather than from a known {@link EdmProperty}. PATCH is deliberately
+   * handled identically to PUT: a dynamic scalar has no sub-structure to leave partially
+   * untouched, so there is nothing for PATCH's "leave omitted fields alone" semantics to apply to
+   * (the entire property value/type is always replaced wholesale, matching a full PUT). A
+   * dynamic property absent on the addressed entity is upserted (created), not rejected with 404 -
+   * see the design-decision note in the task report.
+   *
+   * <p>Nested dynamic-property writes (through an open complex property, e.g.
+   * {@code ESOpen(1)/PropertyComp/CompDynamic}) are out of scope for this method and rejected with a
+   * clean 501 by the caller before this method is even reached (see {@code parentPath} handling in
+   * {@link #updateProperty}).
+   */
+  private void updateDynamicProperty(final ODataRequest request, final ODataResponse response,
+      final UriInfo uriInfo, final ContentType requestFormat, final ContentType responseFormat,
+      final UriResourceDynamicProperty dynamicProperty, final List<String> parentPath)
+      throws ODataApplicationException, ODataLibraryException {
+    if (!parentPath.isEmpty()) {
+      throw new ODataApplicationException(NESTED_DYNAMIC_WRITE_MESSAGE,
+          HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), Locale.ROOT);
+    }
+    final UriInfoResource resource = uriInfo.asUriInfoResource();
+    final EdmEntitySet edmEntitySet = getEdmEntitySet(resource);
+
+    final Entity entity = readEntity(uriInfo);
+    odata.createETagHelper().checkChangePreconditions(entity.getETag(),
+        request.getHeaders(HttpHeader.IF_MATCH),
+        request.getHeaders(HttpHeader.IF_NONE_MATCH));
+
+    final String name = dynamicProperty.getPropertyName();
+    final Property changedProperty = odata.createDeserializer(requestFormat)
+        .dynamicProperty(request.getBody(), name).getProperty();
+
+    dataProvider.updateDynamicProperty(entity, changedProperty);
+    dataProvider.updateETag(entity);
+
+    final Property property = entity.getProperty(name);
+    final List<String> path = List.of(name);
+
+    final Return returnPreference = odata.createPreferences(request.getHeaders(HttpHeader.PREFER)).getReturn();
+    if (returnPreference == null || returnPreference == Return.REPRESENTATION) {
+      response.setStatusCode(HttpStatusCode.OK.getStatusCode());
+      final EdmPrimitiveTypeKind kind = DynamicPropertyTypeResolver.resolveKind(property);
+      final EdmPrimitiveType type = odata.createPrimitiveTypeInstance(kind);
+      final boolean isCollection = property.getValueType() == ValueType.COLLECTION_PRIMITIVE;
+      final RepresentationType effectiveType =
+          isCollection ? RepresentationType.COLLECTION_PRIMITIVE : RepresentationType.PRIMITIVE;
+      final ContextURL contextURL = isODataMetadataNone(responseFormat) ? null :
+          getContextUrl(edmEntitySet, entity, path, type, effectiveType, null, null);
+      final PrimitiveSerializerOptions options =
+          PrimitiveSerializerOptions.with().contextURL(contextURL).nullable(true).build();
+      final ODataSerializer serializer = odata.createSerializer(responseFormat);
+      final SerializerResult result = isCollection ?
+          serializer.primitiveCollection(serviceMetadata, type, property, options) :
+          serializer.primitive(serviceMetadata, type, property, options);
+      response.setContent(result.getContent());
+      response.setHeader(HttpHeader.CONTENT_TYPE, responseFormat.toContentTypeString());
+    } else {
+      response.setStatusCode(HttpStatusCode.NO_CONTENT.getStatusCode());
+    }
+    if (returnPreference != null) {
+      response.setHeader(HttpHeader.PREFERENCE_APPLIED,
+          PreferencesApplied.with().returnRepresentation(returnPreference).build().toValueString());
+    }
+    if (entity.getETag() != null) {
+      response.setHeader(HttpHeader.ETAG, entity.getETag());
+    }
+  }
+
+  /**
+   * Serves DELETE on a direct dynamic (open-type) property path, e.g. {@code ESOpen(1)/DynamicString}:
+   * removes the property from the entity's property list entirely (unlike deleting a declared,
+   * nullable property, which only clears its value - a dynamic property has no EDM declaration to
+   * fall back to, so "deleted" means "no longer present at all"). Deleting an absent dynamic
+   * property 404s: unlike the upsert-on-write choice in {@link #updateDynamicProperty}, there is no
+   * reasonable "create it first" interpretation for DELETE, and this mirrors
+   * {@code readDynamicProperty}'s 404 for the same absent-property case on GET.
+   *
+   * <p>Nested dynamic-property deletes are out of scope, same as {@link #updateDynamicProperty}.
+   */
+  private void deleteDynamicProperty(final ODataRequest request, final ODataResponse response,
+      final UriInfo uriInfo, final UriResourceDynamicProperty dynamicProperty, final List<String> parentPath)
+      throws ODataApplicationException, ODataLibraryException {
+    if (!parentPath.isEmpty()) {
+      throw new ODataApplicationException(NESTED_DYNAMIC_WRITE_MESSAGE,
+          HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), Locale.ROOT);
+    }
+    final UriInfoResource resource = uriInfo.asUriInfoResource();
+    getEdmEntitySet(resource); // including checks
+
+    final Entity entity = readEntity(uriInfo);
+    odata.createETagHelper().checkChangePreconditions(entity.getETag(),
+        request.getHeaders(HttpHeader.IF_MATCH),
+        request.getHeaders(HttpHeader.IF_NONE_MATCH));
+
+    if (!dataProvider.removeDynamicProperty(entity, dynamicProperty.getPropertyName())) {
+      throw new ODataApplicationException("Nothing found.", HttpStatusCode.NOT_FOUND.getStatusCode(), Locale.ROOT);
+    }
+
+    dataProvider.updateETag(entity);
+    response.setStatusCode(HttpStatusCode.NO_CONTENT.getStatusCode());
+    if (entity.getETag() != null) {
+      response.setHeader(HttpHeader.ETAG, entity.getETag());
     }
   }
 
@@ -669,14 +818,16 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
    * Validates every path segment (excluding the first, the entity set/singleton/function root)
    * against the kinds this processor's write paths ({@link #updateProperty}/{@link #deleteProperty})
    * and the declared-property read path support. Deliberately does NOT allow
-   * {@link UriResourceKind#dynamicProperty}: a dynamic-property segment is only ever valid as the
-   * scalar GET leaf handled directly in {@link #readProperty}, which validates its own non-dynamic
-   * segments via {@link #validateSegmentKind} instead of calling this method. Loosening this
-   * shared allow-list to admit dynamicProperty would also let PUT/PATCH ({@link #updateProperty})
-   * and DELETE ({@link #deleteProperty}) reach their unconditional {@code UriResourceProperty}
-   * casts on a dynamic-property segment, which is not a {@code UriResourceProperty} and would
-   * throw an unhandled {@code ClassCastException} instead of the clean 501 those write paths must
-   * keep returning until a future task implements them.
+   * {@link UriResourceKind#dynamicProperty}: a dynamic-property segment is handled directly by
+   * {@link #readProperty}, {@link #updateProperty} and {@link #deleteProperty} themselves - each
+   * detects a trailing dynamic-property segment before ever calling this method, validates its
+   * OTHER (non-dynamic) segments via {@link #validateSegmentKind} instead, and dispatches to its own
+   * dynamic-specific handler ({@link #readDynamicProperty}, {@link #updateDynamicProperty} or
+   * {@link #deleteDynamicProperty}). Loosening this shared allow-list to admit dynamicProperty here
+   * instead would let the declared-property logic further down in {@link #updateProperty} and
+   * {@link #deleteProperty} reach their unconditional {@code UriResourceProperty} casts on a
+   * dynamic-property segment, which is not a {@code UriResourceProperty} and would throw an
+   * unhandled {@code ClassCastException}.
    */
   private void validatePath(final UriInfoResource uriInfo) throws ODataApplicationException {
     final List<UriResource> resourcePaths = uriInfo.getUriResourceParts();
