@@ -178,11 +178,14 @@ public class ODataDispatcher {
       break;
 
     case dynamicProperty:
-      // A dynamic (open-type) property has no EDM declaration; it is always a scalar value, never
-      // a collection, so route it through the same primitive dispatch as a declared, non-collection
-      // primitiveProperty. handlePrimitiveDispatching only touches the EDM property on the
-      // PUT/PATCH Edm.Stream special-case, and that check is instanceof UriResourcePrimitiveProperty
-      // guarded, so it safely no-ops for a dynamic segment.
+      // A dynamic (open-type) property has no EDM declaration, so the URI layer cannot tell
+      // whether the (schema-less) segment is collection-valued; it is always routed as scalar
+      // (isCollection=false) through the same primitive dispatch as a declared, non-collection
+      // primitiveProperty. Collection-valued dynamics ARE served through this route - the
+      // processor inspects the stored data's actual shape at runtime and serializes it as a
+      // primitive collection when appropriate. handlePrimitiveDispatching only touches the EDM
+      // property on the PUT/PATCH Edm.Stream special-case, and that check is instanceof
+      // UriResourcePrimitiveProperty guarded, so it safely no-ops for a dynamic segment.
       handlePrimitiveDispatching(request, response, false);
       break;
 

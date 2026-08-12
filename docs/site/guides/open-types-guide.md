@@ -152,12 +152,13 @@ dispatch flow:
 | Method | Behavior |
 |---|---|
 | `GET` | 200 with the stored value. Type is resolved from the stored `Property`'s recorded type first, falling back to inference from the Java value's class, falling back to `Edm.String`. Absent property → 404. Present-but-`null` value → 204 with no `Content-Type` header. A collection-valued dynamic property serializes as a primitive collection. A dynamic property nested exactly one level under an open complex property (e.g. `Products(1)/PropertyComp/CompDynamic`) is also served this way: 200 when present, 404 when the name or its parent complex property is absent. |
-| `PUT` / `PATCH` | Identical semantics for a dynamic scalar or collection — a dynamic value has no sub-structure for PATCH's partial-merge semantics to apply to, so both verbs replace the value wholesale (a collection PUT/PATCH is always a full clear-and-replace, never an element-wise merge). The request body is `{"value": <v>}`, optionally with `"value@odata.type": "#Kind"` to set or change the stored type explicitly (same short-name convention as the payload-level `@odata.type` annotation); without it, the type is inferred the same way GET falls back for an unresolvable stored type. A JSON object as `value` is rejected with 400. If the property doesn't exist yet, `PUT`/`PATCH` **create** it (upsert) rather than 404ing — dynamic properties routinely start absent by design, so there is no meaningful "update-only" case to distinguish from create. |
+| `PUT` / `PATCH` | Identical semantics for a dynamic scalar or collection — a dynamic value has no sub-structure for PATCH's partial-merge semantics to apply to, so both verbs replace the value wholesale (a collection PUT/PATCH is always a full clear-and-replace, never an element-wise merge). The request body is `{"value": <v>}`, optionally with `"value@odata.type": "#Kind"` to set or change the stored type explicitly (same short-name convention as the payload-level `@odata.type` annotation); without it, the type is inferred the same way GET falls back for an unresolvable stored type. A JSON object as `value` is rejected with 400. If the property doesn't exist yet, `PUT`/`PATCH` **create** it (upsert) rather than 404ing — dynamic properties routinely start absent by design, so there is no meaningful "update-only" case to distinguish from create. On success: 200 with the updated representation by default, or 204 (no body) when the request carries `Prefer: return=minimal`. |
 | `DELETE` | Removes the property from the instance entirely (204). Absent property → 404 (unlike PUT/PATCH, there is no sensible upsert interpretation for delete-then-succeed). |
 
 Preconditions (`If-Match`/`If-None-Match`) are enforced on the write methods (`PUT`/`PATCH`/
-`DELETE`) exactly as they are for declared properties; `GET` does not check preconditions, again
-matching the declared-property behavior.
+`DELETE`) exactly as they are for declared properties. `GET` supports conditional reads
+(`If-None-Match` → 304 Not Modified) but is not subject to the mandatory `If-Match` enforcement,
+which applies to the write methods — matching declared-property behavior.
 
 **Still out of scope, by design:**
 

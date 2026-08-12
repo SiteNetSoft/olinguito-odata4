@@ -84,7 +84,11 @@ public interface ODataDeserializer {
    * Property} is named {@code propertyName}.
    * <p>
    * The default implementation always throws, so deserializers that do not support dynamic
-   * properties (e.g. non-JSON formats) need not override this method.
+   * properties (e.g. non-JSON formats) need not override this method. That default's
+   * {@link DeserializerException} is mapped uniformly to HTTP 400 (Bad Request) by
+   * {@code ODataExceptionHelper}, the same as every other {@code DeserializerException} - so a
+   * write to a dynamic property in an unsupported (non-JSON) format surfaces on the wire as
+   * 400, not 501 or 415.
    * @param stream the payload stream
    * @param propertyName the name to give the deserialized dynamic property
    * @return {@link DeserializerResult#getProperty()}
