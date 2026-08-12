@@ -23,6 +23,8 @@
  *
  * Copyright 2026 SiteNetSoft - Add OpenType support (tecsvc ETOpen model)
  * Copyright 2026 SiteNetSoft - OpenType: seed ESOpen entity 1 with an open complex PropertyComp
+ * Copyright 2026 SiteNetSoft - OpenType CRUD Task 3 fix round 1: seed ESOpen entity 1 with a
+ * present-but-null dynamic property (DynamicNull) to cover the GET 204 path
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -1085,7 +1087,8 @@ public class DataCreator {
             createPrimitive("CompString", "open comp 1"),
             createPrimitive("CompDynamic", "dynamic comp value")))
         .addProperty(createPrimitive("DynamicString", "dynamic"))
-        .addProperty(createPrimitive("DynamicInt", 42L)));
+        .addProperty(createPrimitive("DynamicInt", 42L))
+        .addProperty(createPrimitive("DynamicNull", null)));
 
     entityCollection.getEntities().add(new Entity()
         .addProperty(createPrimitive("PropertyInt16", (short) 2))

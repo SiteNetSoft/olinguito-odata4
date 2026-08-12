@@ -23,6 +23,7 @@
 package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -212,18 +213,31 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
           throws ODataApplicationException, ODataLibraryException {
     final UriInfoResource resource = uriInfo.asUriInfoResource();
     validateOptions(resource);
-    validatePath(resource);
-    final EdmEntitySet edmEntitySet = getEdmEntitySet(resource);
 
     final List<UriResource> resourceParts = resource.getUriResourceParts();
     final int trailing =
         representationType == RepresentationType.COUNT || representationType == RepresentationType.VALUE ? 1 : 0;
+    final int lastIndex = resourceParts.size() - trailing - 1;
 
-    if (resourceParts.get(resourceParts.size() - trailing - 1)
-        instanceof UriResourceDynamicProperty dynamicProperty) {
-      readDynamicProperty(request, response, uriInfo, contentType, edmEntitySet, dynamicProperty);
+    if (resourceParts.get(lastIndex) instanceof UriResourceDynamicProperty dynamicProperty) {
+      // A dynamic-property segment is only ever valid as the GET-served leaf handled below; it is
+      // deliberately NOT added to validatePath()'s shared allow-list, because that method also
+      // gates updateProperty (PUT/PATCH) and deleteProperty (DELETE) - Task 4's job, not this
+      // task's. Validate every OTHER segment (still rejecting anything validatePath would reject),
+      // then handle the dynamic segment itself here.
+      for (int i = 1; i < resourceParts.size(); i++) {
+        if (i != lastIndex) {
+          validateSegmentKind(resourceParts.get(i));
+        }
+      }
+      final EdmEntitySet edmEntitySet = getEdmEntitySet(resource);
+      final List<String> parentPath = getPropertyPath(resourceParts, trailing + 1);
+      readDynamicProperty(request, response, uriInfo, contentType, edmEntitySet, dynamicProperty, parentPath);
       return;
     }
+
+    validatePath(resource);
+    final EdmEntitySet edmEntitySet = getEdmEntitySet(resource);
 
     final List<String> path = getPropertyPath(resourceParts, trailing);
 
@@ -316,19 +330,25 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
   }
 
   /**
-   * Serves GET on a direct dynamic (open-type) property path, e.g. {@code ESOpen(1)/DynamicString}.
-   * A dynamic property has no EDM declaration, so - unlike {@link #readProperty} above - the type
-   * used for serialization is resolved at runtime from the property's stored type name or its
-   * Java value's class (see {@link DynamicPropertyTypeResolver}), defaulting to {@code Edm.String}.
-   * A collection-valued dynamic property ({@link ValueType#COLLECTION_PRIMITIVE}) is served
-   * through the primitive-collection serializer instead of the scalar one, even though dispatch
-   * (see {@code ODataDispatcher}) always routes a dynamic-property segment through the scalar
-   * {@code readPrimitive} entry point, since the actual shape of an open type's dynamic value is
-   * only known once the entity data is inspected.
+   * Serves GET on a direct dynamic (open-type) property path, e.g. {@code ESOpen(1)/DynamicString}
+   * or a nested one, e.g. {@code ESOpen(1)/PropertyComp/CompDynamic} (an open complex property may
+   * itself carry dynamic properties). A dynamic property has no EDM declaration, so - unlike
+   * {@link #readProperty} above - the type used for serialization is resolved at runtime from the
+   * property's stored type name or its Java value's class (see {@link DynamicPropertyTypeResolver}),
+   * defaulting to {@code Edm.String}. A collection-valued dynamic property
+   * ({@link ValueType#COLLECTION_PRIMITIVE}) is served through the primitive-collection serializer
+   * instead of the scalar one, even though dispatch (see {@code ODataDispatcher}) always routes a
+   * dynamic-property segment through the scalar {@code readPrimitive} entry point, since the actual
+   * shape of an open type's dynamic value is only known once the entity data is inspected.
+   *
+   * @param parentPath the declared property path (complex property names, if any) leading from the
+   *                   entity down to - but not including - the dynamic property itself; empty when
+   *                   the dynamic property is directly on the entity
    */
   private void readDynamicProperty(final ODataRequest request, final ODataResponse response, final UriInfo uriInfo,
       final ContentType contentType, final EdmEntitySet edmEntitySet,
-      final UriResourceDynamicProperty dynamicProperty) throws ODataApplicationException, ODataLibraryException {
+      final UriResourceDynamicProperty dynamicProperty, final List<String> parentPath)
+      throws ODataApplicationException, ODataLibraryException {
     final Entity entity = readEntity(uriInfo);
 
     if (entity.getETag() != null
@@ -339,18 +359,20 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
       return;
     }
 
-    final Property property = entity.getProperty(dynamicProperty.getPropertyName());
+    final Property property = resolveDynamicProperty(entity, parentPath, dynamicProperty.getPropertyName());
     if (property == null) {
       throw new ODataApplicationException("Nothing found.", HttpStatusCode.NOT_FOUND.getStatusCode(), Locale.ROOT);
     }
 
     if (property.getValue() == null) {
+      // Mirrors the declared-property path above (:258/:310): no Content-Type on a 204.
       response.setStatusCode(HttpStatusCode.NO_CONTENT.getStatusCode());
     } else {
       final EdmPrimitiveTypeKind kind = DynamicPropertyTypeResolver.resolveKind(property);
       final EdmPrimitiveType type = odata.createPrimitiveTypeInstance(kind);
       final boolean isCollection = property.getValueType() == ValueType.COLLECTION_PRIMITIVE;
-      final List<String> path = List.of(dynamicProperty.getPropertyName());
+      final List<String> path = new ArrayList<>(parentPath);
+      path.add(dynamicProperty.getPropertyName());
       final RepresentationType effectiveType =
           isCollection ? RepresentationType.COLLECTION_PRIMITIVE : RepresentationType.PRIMITIVE;
       final ContextURL contextURL = isODataMetadataNone(contentType) ? null :
@@ -363,11 +385,36 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
           serializer.primitive(serviceMetadata, type, property, options);
       response.setContent(result.getContent());
       response.setStatusCode(HttpStatusCode.OK.getStatusCode());
+      response.setHeader(HttpHeader.CONTENT_TYPE, contentType.toContentTypeString());
     }
-    response.setHeader(HttpHeader.CONTENT_TYPE, contentType.toContentTypeString());
     if (entity.getETag() != null) {
       response.setHeader(HttpHeader.ETAG, entity.getETag());
     }
+  }
+
+  /**
+   * Resolves a dynamic property by name, optionally nested inside a chain of open complex
+   * properties. When {@code parentPath} is empty, looks the name up directly on the entity.
+   * Otherwise navigates to the parent complex property first (reusing the same
+   * {@link #getPropertyData(Entity, List)} traversal the declared-property path uses) and looks
+   * the name up inside it. Returns {@code null} - which the caller turns into a 404 - when the
+   * parent complex property itself is absent on this particular entity, or when the name is not
+   * present in its value.
+   */
+  private Property resolveDynamicProperty(final Entity entity, final List<String> parentPath, final String name) {
+    if (parentPath.isEmpty()) {
+      return entity.getProperty(name);
+    }
+    final Property parent = getPropertyData(entity, parentPath);
+    if (parent == null || !parent.isComplex()) {
+      return null;
+    }
+    for (final Property inner : parent.asComplex().getValue()) {
+      if (inner.getName().equals(name)) {
+        return inner;
+      }
+    }
+    return null;
   }
 
   private Property getData(Entity entity, List<String> path, List<UriResource> resourceParts, UriInfoResource resource)
@@ -618,20 +665,36 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
               .build());
   }
 
+  /**
+   * Validates every path segment (excluding the first, the entity set/singleton/function root)
+   * against the kinds this processor's write paths ({@link #updateProperty}/{@link #deleteProperty})
+   * and the declared-property read path support. Deliberately does NOT allow
+   * {@link UriResourceKind#dynamicProperty}: a dynamic-property segment is only ever valid as the
+   * scalar GET leaf handled directly in {@link #readProperty}, which validates its own non-dynamic
+   * segments via {@link #validateSegmentKind} instead of calling this method. Loosening this
+   * shared allow-list to admit dynamicProperty would also let PUT/PATCH ({@link #updateProperty})
+   * and DELETE ({@link #deleteProperty}) reach their unconditional {@code UriResourceProperty}
+   * casts on a dynamic-property segment, which is not a {@code UriResourceProperty} and would
+   * throw an unhandled {@code ClassCastException} instead of the clean 501 those write paths must
+   * keep returning until a future task implements them.
+   */
   private void validatePath(final UriInfoResource uriInfo) throws ODataApplicationException {
     final List<UriResource> resourcePaths = uriInfo.getUriResourceParts();
     for (final UriResource segment : resourcePaths.subList(1, resourcePaths.size())) {
-      final UriResourceKind kind = segment.getKind();
-      if (kind != UriResourceKind.navigationProperty
-          && kind != UriResourceKind.primitiveProperty
-          && kind != UriResourceKind.complexProperty
-          && kind != UriResourceKind.count
-          && kind != UriResourceKind.value
-          && kind != UriResourceKind.function
-          && kind != UriResourceKind.dynamicProperty) {
-        throw new ODataApplicationException("Invalid resource type.",
-            HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), Locale.ROOT);
-      }
+      validateSegmentKind(segment);
+    }
+  }
+
+  private void validateSegmentKind(final UriResource segment) throws ODataApplicationException {
+    final UriResourceKind kind = segment.getKind();
+    if (kind != UriResourceKind.navigationProperty
+        && kind != UriResourceKind.primitiveProperty
+        && kind != UriResourceKind.complexProperty
+        && kind != UriResourceKind.count
+        && kind != UriResourceKind.value
+        && kind != UriResourceKind.function) {
+      throw new ODataApplicationException("Invalid resource type.",
+          HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), Locale.ROOT);
     }
   }
 }

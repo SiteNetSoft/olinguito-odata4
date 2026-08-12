@@ -18,6 +18,8 @@
  *
  * Copyright 2026 SiteNetSoft - New file: end-to-end coverage for OpenType (open, dynamic-property) entities
  * Copyright 2026 SiteNetSoft - OpenType CRUD Task 3: direct dynamic-property GET fit coverage
+ * Copyright 2026 SiteNetSoft - OpenType CRUD Task 3 fix round 1: nested dynamic-property GET, 204
+ * Content-Type, and PUT/DELETE-still-501 regression coverage
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
@@ -33,8 +35,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.client.api.communication.ODataClientErrorException;
+import org.sitenetsoft.olinguito.client.api.communication.ODataServerErrorException;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataDeleteRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataEntityCreateRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataEntityUpdateRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataPropertyUpdateRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.UpdateType;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntityRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntitySetRequest;
@@ -394,6 +399,148 @@ public class OpenTypeITCase extends AbstractParamTecSvcITCase {
       fail("Expected exception not thrown!");
     } catch (final ODataClientErrorException e) {
       assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), e.getStatusCode());
+    }
+  }
+
+  @Test
+  public void readNestedDynamicPropertyDirectly() {
+    assumeTrue(ASSUME_JSON_REASON, isJson());
+
+    // PropertyComp (CTOpen, itself an open complex type) is seeded on entity 1 with a dynamic
+    // CompDynamic property. Addressing it directly (ESOpen(1)/PropertyComp/CompDynamic) parses to
+    // [EntitySet, ComplexProperty(PropertyComp), DynamicProperty(CompDynamic)] - the dynamic-property
+    // lookup must navigate through the intervening complex-property segment, not just the entity's
+    // own top-level property list.
+    final ODataPropertyRequest<ClientProperty> request = getClient().getRetrieveRequestFactory()
+        .getPropertyRequest(getClient().newURIBuilder(SERVICE_URI)
+            .appendEntitySetSegment(ES_OPEN)
+            .appendKeySegment(1)
+            .appendPropertySegment("PropertyComp")
+            .appendPropertySegment("CompDynamic")
+            .build());
+    setCookieHeader(request);
+
+    final ODataRetrieveResponse<ClientProperty> response = request.execute();
+    saveCookieHeader(response);
+    assertEquals(HttpStatusCode.OK.getStatusCode(), response.getStatusCode());
+
+    final ClientProperty property = response.getBody();
+    assertNotNull(property);
+    assertNotNull(property.getPrimitiveValue());
+    assertEquals("dynamic comp value", property.getPrimitiveValue().toValue());
+  }
+
+  @Test
+  public void readNestedAbsentDynamicPropertyReturns404() {
+    assumeTrue(ASSUME_JSON_REASON, isJson());
+
+    // PropertyComp is present on entity 1, but it has no "NoSuch" dynamic property inside it.
+    final ODataPropertyRequest<ClientProperty> request = getClient().getRetrieveRequestFactory()
+        .getPropertyRequest(getClient().newURIBuilder(SERVICE_URI)
+            .appendEntitySetSegment(ES_OPEN)
+            .appendKeySegment(1)
+            .appendPropertySegment("PropertyComp")
+            .appendPropertySegment("NoSuch")
+            .build());
+    setCookieHeader(request);
+
+    try {
+      request.execute();
+      fail("Expected exception not thrown!");
+    } catch (final ODataClientErrorException e) {
+      assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), e.getStatusCode());
+    }
+  }
+
+  @Test
+  public void readDynamicPropertyOnAbsentParentComplexReturns404() {
+    assumeTrue(ASSUME_JSON_REASON, isJson());
+
+    // Entity 2 has no PropertyComp property at all (unlike entity 1), so navigating into it must
+    // 404 rather than NPE.
+    final ODataPropertyRequest<ClientProperty> request = getClient().getRetrieveRequestFactory()
+        .getPropertyRequest(getClient().newURIBuilder(SERVICE_URI)
+            .appendEntitySetSegment(ES_OPEN)
+            .appendKeySegment(2)
+            .appendPropertySegment("PropertyComp")
+            .appendPropertySegment("CompDynamic")
+            .build());
+    setCookieHeader(request);
+
+    try {
+      request.execute();
+      fail("Expected exception not thrown!");
+    } catch (final ODataClientErrorException e) {
+      assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), e.getStatusCode());
+    }
+  }
+
+  @Test
+  public void readNullDynamicPropertyReturns204WithoutContentType() {
+    assumeTrue(ASSUME_JSON_REASON, isJson());
+
+    // Entity 1 is seeded with a present-but-null dynamic property (DynamicNull). A present-but-null
+    // value must 204, and - mirroring the sibling declared-property read - must NOT set a
+    // Content-Type header on that 204 (there is no body to describe).
+    final ODataPropertyRequest<ClientProperty> request = getClient().getRetrieveRequestFactory()
+        .getPropertyRequest(getClient().newURIBuilder(SERVICE_URI)
+            .appendEntitySetSegment(ES_OPEN)
+            .appendKeySegment(1)
+            .appendPropertySegment("DynamicNull")
+            .build());
+    setCookieHeader(request);
+
+    final ODataRetrieveResponse<ClientProperty> response = request.execute();
+    saveCookieHeader(response);
+    assertEquals(HttpStatusCode.NO_CONTENT.getStatusCode(), response.getStatusCode());
+    assertNull(response.getContentType());
+  }
+
+  @Test
+  public void updateDynamicPropertyStillNotImplemented() {
+    assumeTrue(ASSUME_JSON_REASON, isJson());
+
+    // Regression pin: PUT/PATCH/DELETE on a dynamic-property path are a later task's job, not this
+    // one's. TechnicalPrimitiveComplexProcessor#validatePath must keep rejecting a dynamic-property
+    // segment for the write paths (updateProperty/deleteProperty) with a clean 501, exactly as it
+    // did before direct dynamic-property GET support was added - not crash with an unhandled
+    // ClassCastException from their unconditional UriResourceProperty cast.
+    final ODataPropertyUpdateRequest request = getClient().getCUDRequestFactory()
+        .getPropertyPrimitiveValueUpdateRequest(
+            getClient().newURIBuilder(SERVICE_URI)
+                .appendEntitySetSegment(ES_OPEN)
+                .appendKeySegment(1)
+                .appendPropertySegment("DynamicString")
+                .build(),
+            getFactory().newPrimitiveProperty("DynamicString",
+                getFactory().newPrimitiveValueBuilder().buildString("updated")));
+    setCookieHeader(request);
+
+    try {
+      request.execute();
+      fail("Expected exception not thrown!");
+    } catch (final ODataServerErrorException e) {
+      assertTrue(e.getMessage(), e.getMessage().contains("HTTP/" + HttpStatusCode.NOT_IMPLEMENTED.getStatusCode()));
+    }
+  }
+
+  @Test
+  public void deleteDynamicPropertyStillNotImplemented() {
+    assumeTrue(ASSUME_JSON_REASON, isJson());
+
+    final ODataDeleteRequest request = getClient().getCUDRequestFactory().getDeleteRequest(
+        getClient().newURIBuilder(SERVICE_URI)
+            .appendEntitySetSegment(ES_OPEN)
+            .appendKeySegment(1)
+            .appendPropertySegment("DynamicString")
+            .build());
+    setCookieHeader(request);
+
+    try {
+      request.execute();
+      fail("Expected exception not thrown!");
+    } catch (final ODataServerErrorException e) {
+      assertTrue(e.getMessage(), e.getMessage().contains("HTTP/" + HttpStatusCode.NOT_IMPLEMENTED.getStatusCode()));
     }
   }
 }
