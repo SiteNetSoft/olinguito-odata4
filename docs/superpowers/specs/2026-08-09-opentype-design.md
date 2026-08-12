@@ -102,11 +102,14 @@ found not to match what this document originally scoped:
   `server-adapter-servlet`/`server-core-ext` **404s** the same request (no equivalent hook exists
   there either). This was a deliberate decision, not an oversight to silently patch: serving it
   would require a new processor contract (there is no `DynamicPropertyProcessor` today), which was
-  judged out of scope for this feature. Pinned by
+  judged out of scope for this feature. This was pinned by
   `ODataHandlerImplTest#dynamicPropertyDirectPathAddressingIsNotServedByDispatcher` (server-test)
   and documented in `docs/site/guides/open-types-guide.md`'s "Direct path addressing (parses, not
   served)" section. Revisit only as a deliberate follow-up feature.
-  **Resolved 2026-08-11**: direct-path GET/PUT/PATCH/DELETE on top-level dynamic properties (plus
+  **Resolved 2026-08-11**: the 501 pin above no longer exists in the suite — it was replaced during
+  the follow-up by routing-assertion tests (`ODataHandlerImplTest#dynamicPropertyGetRoutesToPrimitiveProcessor`
+  et al.) that confirm the opposite (successful routing to the primitive processor). Direct-path
+  GET/PUT/PATCH/DELETE on top-level dynamic properties (plus
   nested GET) are now served — see `docs/superpowers/specs/2026-08-11-opentype-crud-design.md`.
 - **"Nested/lambda dynamic-property paths… rejected" only means a dynamic name is a leaf.** The
   out-of-scope bullet above was ambiguous: it could be misread as rejecting any path that merely

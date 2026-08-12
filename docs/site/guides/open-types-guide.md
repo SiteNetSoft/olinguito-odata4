@@ -155,8 +155,9 @@ dispatch flow:
 | `PUT` / `PATCH` | Identical semantics for a dynamic scalar or collection — a dynamic value has no sub-structure for PATCH's partial-merge semantics to apply to, so both verbs replace the value wholesale (a collection PUT/PATCH is always a full clear-and-replace, never an element-wise merge). The request body is `{"value": <v>}`, optionally with `"value@odata.type": "#Kind"` to set or change the stored type explicitly (same short-name convention as the payload-level `@odata.type` annotation); without it, the type is inferred the same way GET falls back for an unresolvable stored type. A JSON object as `value` is rejected with 400. If the property doesn't exist yet, `PUT`/`PATCH` **create** it (upsert) rather than 404ing — dynamic properties routinely start absent by design, so there is no meaningful "update-only" case to distinguish from create. |
 | `DELETE` | Removes the property from the instance entirely (204). Absent property → 404 (unlike PUT/PATCH, there is no sensible upsert interpretation for delete-then-succeed). |
 
-Preconditions (`If-Match`/`If-None-Match`) are enforced on all four methods exactly as they are for
-declared properties.
+Preconditions (`If-Match`/`If-None-Match`) are enforced on the write methods (`PUT`/`PATCH`/
+`DELETE`) exactly as they are for declared properties; `GET` does not check preconditions, again
+matching the declared-property behavior.
 
 **Still out of scope, by design:**
 
