@@ -17,6 +17,8 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - OpenType CRUD Task 2 fix: pin that dynamic-property segments
+ * preserve the resolved binding target for ETag precondition enforcement
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -77,6 +79,14 @@ class PreconditionsValidatorTest {
   void propertyValue() throws Exception {
     assertTrue(mustValidate("ESAllPrim(1)/PropertyInt16/$value", "ESAllPrim"));
     assertTrue(mustValidate("ESMixPrimCollComp(0)/PropertyComp/PropertyString/$value", "ESMixPrimCollComp"));
+  }
+
+  @Test
+  void dynamicProperty() throws Exception {
+    // A dynamic (open-type) property is still a property OF the addressed entity: the binding
+    // target resolved from ESOpen(1) must survive the dynamicProperty segment exactly like it
+    // survives primitiveProperty/complexProperty, so ETag preconditions are still enforced.
+    assertTrue(mustValidate("ESOpen(1)/DynamicString", "ESOpen"));
   }
 
   @Test

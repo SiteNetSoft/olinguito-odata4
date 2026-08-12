@@ -15,6 +15,9 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OpenType CRUD Task 2 fix: preserve the resolved binding target for
+ * dynamicProperty segments so ETag preconditions are enforced on dynamic-property writes/deletes
  */
 package org.sitenetsoft.olinguito.server.core.etag;
 
@@ -65,6 +68,7 @@ public class PreconditionsValidator {
         break;
       case primitiveProperty:
       case complexProperty:
+      case dynamicProperty:
         break;
       case value:
       case action:

@@ -22,6 +22,8 @@
  * Copyright 2026 SiteNetSoft - OLINGO-1372: Tests for error responses respecting Accept header
  * Copyright 2026 SiteNetSoft - OpenType CRUD Task 2: replaced the dynamic-property 501 pin with
  * routing assertions now that ODataDispatcher dispatches dynamicProperty segments
+ * Copyright 2026 SiteNetSoft - OpenType CRUD Task 2 fix: pin ETag precondition enforcement for
+ * dynamic-property PUT/PATCH/DELETE
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -37,7 +39,8 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -49,6 +52,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.sitenetsoft.olinguito.commons.api.edm.EdmBindingTarget;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.commons.api.edm.constants.ODataServiceVersion;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAbstractEdmProvider;
@@ -65,6 +69,7 @@ import org.sitenetsoft.olinguito.server.api.ODataResponse;
 import org.sitenetsoft.olinguito.server.api.ODataServerError;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 import org.sitenetsoft.olinguito.server.api.batch.BatchFacade;
+import org.sitenetsoft.olinguito.server.api.etag.CustomETagSupport;
 import org.sitenetsoft.olinguito.server.api.processor.ActionComplexCollectionProcessor;
 import org.sitenetsoft.olinguito.server.api.processor.ActionComplexProcessor;
 import org.sitenetsoft.olinguito.server.api.processor.ActionEntityCollectionProcessor;
@@ -934,6 +939,57 @@ class ODataHandlerImplTest {
     // now being wired up for open types.
     final ODataResponse response = dispatch(HttpMethod.GET, "ESTwoPrim(1)/Nope", null);
     assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), response.getStatusCode());
+  }
+
+  @Test
+  void dynamicPropertyPutEnforcesEtagPreconditionWhenSupportEnabled() throws Exception {
+    // PreconditionsValidator must keep resolving the entity set's binding target across a
+    // dynamicProperty segment (like it already does for primitiveProperty/complexProperty), so a
+    // PUT on ESOpen(1)/DynamicString without If-Match must be rejected with Precondition Required
+    // when the registered CustomETagSupport reports the entity set needs an ETag, and the mocked
+    // processor must never be invoked in that case.
+    final String uri = "ESOpen(1)/DynamicString";
+    final PrimitiveProcessor processor = mock(PrimitiveProcessor.class);
+    final CustomETagSupport eTagSupport = mock(CustomETagSupport.class);
+    when(eTagSupport.hasETag(any(EdmBindingTarget.class))).thenReturn(true);
+
+    final ODataResponse withoutIfMatch =
+        dispatchWithETagSupport(HttpMethod.PUT, uri, processor, eTagSupport, null);
+    // The bug this pins: without a resolved binding target for the dynamicProperty segment,
+    // PreconditionsValidator#mustValidatePreconditions silently returns false, so the write is
+    // never rejected and reaches the processor - assert both symptoms so a regression is
+    // unambiguous either way.
+    verifyNoInteractions(processor);
+    assertEquals(HttpStatusCode.PRECONDITION_REQUIRED.getStatusCode(), withoutIfMatch.getStatusCode());
+
+    dispatchWithETagSupport(HttpMethod.PUT, uri, processor, eTagSupport, "*");
+    verify(processor).updatePrimitive(
+        any(ODataRequest.class), any(ODataResponse.class), any(UriInfo.class), any(ContentType.class),
+        any(ContentType.class));
+  }
+
+  private ODataResponse dispatchWithETagSupport(final HttpMethod method, final String path,
+      final Processor processor, final CustomETagSupport eTagSupport, final String ifMatchValue) {
+    ODataRequest request = new ODataRequest();
+    request.setMethod(method);
+    request.setRawBaseUri(BASE_URI);
+    request.setRawODataPath(path);
+    request.addHeader(HttpHeader.CONTENT_TYPE, Collections.singletonList(ContentType.JSON.toContentTypeString()));
+    if (ifMatchValue != null) {
+      request.addHeader(HttpHeader.IF_MATCH, Collections.singletonList(ifMatchValue));
+    }
+
+    final OData odata = OData.newInstance();
+    final ServiceMetadata metadata = odata.createServiceMetadata(
+        new EdmTechProvider(), Collections.emptyList());
+
+    ODataHandlerImpl handler = new ODataHandlerImpl(odata, metadata, new ServerCoreDebugger(odata));
+    handler.register(processor);
+    handler.register(eTagSupport);
+
+    final ODataResponse response = handler.process(request);
+    assertNotNull(response);
+    return response;
   }
 
   @Test
