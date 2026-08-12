@@ -21,6 +21,9 @@
  * primitive collections for dynamic properties
  * Copyright 2026 SiteNetSoft - OpenType: dynamic properties inside open complex values
  * Copyright 2026 SiteNetSoft - OpenType: annotated dynamic collection element type tests
+ * Copyright 2026 SiteNetSoft - Client/server symmetry: feed the exact payload the client
+ * writer now produces for a dynamic Guid collection under minimal metadata back into the
+ * server deserializer and confirm the element type survives the round trip
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -110,6 +113,24 @@ class ODataJsonDeserializerOpenTypeTest extends AbstractODataDeserializerTest {
         List.of(UUID.fromString("01234567-89ab-cdef-0123-456789abcdef"),
             UUID.fromString("11234567-89ab-cdef-0123-456789abcdef")),
         refs.asCollection());
+  }
+
+  @Test
+  void clientWrittenDynamicGuidCollectionPayloadSurvivesServerDeserialization() throws Exception {
+    // Client/server symmetry: this is the exact payload JsonSerializer#valuable (client-core)
+    // now produces for a dynamic Collection(Edm.Guid) property under minimal metadata - see
+    // OpenTypeClientTest#dynamicGuidCollectionWrittenUnderMinimalMetadataCarriesCollectionAnnotation
+    // in lib/client-core - proving the new client "name@odata.type":"#Collection(X)" annotation
+    // round-trips through the server's existing dynamic-collection-annotation support rather
+    // than silently defaulting to Collection(Edm.String).
+    final String payload = "{\"PropertyInt16\":100,"
+        + "\"Refs@odata.type\":\"#Collection(Guid)\","
+        + "\"Refs\":[\"01234567-89ab-cdef-0123-456789abcdef\"]}";
+    final Entity entity = deserialize(payload, "ETOpen");
+    final Property refs = entity.getProperty("Refs");
+    assertEquals(ValueType.COLLECTION_PRIMITIVE, refs.getValueType());
+    assertEquals("Edm.Guid", refs.getType());
+    assertEquals(List.of(UUID.fromString("01234567-89ab-cdef-0123-456789abcdef")), refs.asCollection());
   }
 
   @Test

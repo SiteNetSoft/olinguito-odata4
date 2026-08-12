@@ -25,6 +25,9 @@
  * nor the server's bare-JSON-number inference can ever produce Byte, so it must be annotated too
  * Copyright 2026 SiteNetSoft - Pin dynamic-collection round-trip: annotated read already works;
  * minimal-metadata write does not yet annotate collections (documented gap, not fixed)
+ * Copyright 2026 SiteNetSoft - Annotate dynamic collection writes with their element type:
+ * flip the documented gap pin into a passing assertion, add native-element-type and
+ * metadata=none pins
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -203,17 +206,13 @@ class OpenTypeClientTest {
   }
 
   @Test
-  void dynamicGuidCollectionWrittenUnderMinimalMetadataHasNoTypeAnnotationYet() throws Exception {
-    // KNOWN, DELIBERATE GAP (documented, not fixed here - see open-types-guide.md and the M5(4)
-    // finding this test pins): unlike the scalar case (serializesADynamicGuidPropertyWithATypeAnnotation
-    // above), JsonSerializer#scalarPrimitiveKind returns null for any collection value, so under
-    // minimal metadata a dynamic COLLECTION property is written with no "name@odata.type"
-    // annotation at all - the exact same silent-corruption class of bug that was fixed for scalar
-    // dynamic primitives, just not yet extended to collections. A receiving open-type server's
-    // unannotated-collection inference (see ODataJsonDeserializer#createDynamicCollectionProperty)
-    // will default this back to Collection(Edm.String) on read. Building that client-side write
-    // support is out of scope for this fix wave; this test only pins the current behavior so a
-    // future change is a deliberate, visible diff rather than a silent regression either way.
+  void dynamicGuidCollectionWrittenUnderMinimalMetadataCarriesCollectionAnnotation() throws Exception {
+    // Mirrors the scalar case (serializesADynamicGuidPropertyWithATypeAnnotation above): a dynamic
+    // Guid COLLECTION's element kind is just as unrecoverable from bare JSON strings as a scalar
+    // Guid is, so under minimal metadata the property must carry a "name@odata.type":
+    // "#Collection(Guid)" annotation - otherwise a receiving open-type server's unannotated
+    // inference (see ODataJsonDeserializer#createDynamicCollectionProperty) defaults it back to
+    // Collection(Edm.String) on read, silently corrupting the element type.
     final ClientObjectFactory factory = client.getObjectFactory();
     final ClientEntity entity = factory.newEntity(new FullQualifiedName("Olinguito.OData", "ETOpen"));
     entity.getProperties().add(factory.newPrimitiveProperty("PropertyInt16",
@@ -226,9 +225,55 @@ class OpenTypeClientTest {
     final InputStream written = client.getWriter().writeEntity(entity, ContentType.JSON);
     final String json = new String(written.readAllBytes(), StandardCharsets.UTF_8);
 
+    assertTrue(json.contains("\"Refs@odata.type\":\"#Collection(Guid)\""),
+        () -> "expected a #Collection(Guid) type annotation for the dynamic Guid collection: " + json);
+    assertTrue(json.contains("\"Refs\":[\"01234567-89ab-cdef-0123-456789abcdef\"]"),
+        () -> "expected the (still bare) collection value: " + json);
+  }
+
+  @Test
+  void dynamicNativeElementCollectionWrittenUnderMinimalMetadataHasNoTypeAnnotation() throws Exception {
+    // Unlike Guid, String is a JSON-native kind (JSON_NATIVE_KINDS): its EDM kind is unambiguously
+    // recoverable from a bare JSON string, so - just as for a scalar dynamic String property - a
+    // dynamic String COLLECTION must NOT be annotated even though it is a collection of a
+    // non-JSON-native-looking dynamic property; the annotation would be redundant.
+    final ClientObjectFactory factory = client.getObjectFactory();
+    final ClientEntity entity = factory.newEntity(new FullQualifiedName("Olinguito.OData", "ETOpen"));
+    entity.getProperties().add(factory.newPrimitiveProperty("PropertyInt16",
+        factory.newPrimitiveValueBuilder().buildInt16((short) 100)));
+    final ClientCollectionValue<ClientValue> tags = factory.newCollectionValue("Collection(Edm.String)");
+    tags.add(factory.newPrimitiveValueBuilder().buildString("a"));
+    entity.getProperties().add(factory.newCollectionProperty("Tags", tags));
+
+    final InputStream written = client.getWriter().writeEntity(entity, ContentType.JSON);
+    final String json = new String(written.readAllBytes(), StandardCharsets.UTF_8);
+
+    assertTrue(json.contains("\"Tags\":[\"a\"]"),
+        () -> "expected the bare (unannotated) collection value: " + json);
+    assertEquals(-1, json.indexOf("Tags@odata.type"),
+        () -> "a native-element-type dynamic collection should not be annotated: " + json);
+  }
+
+  @Test
+  void dynamicGuidCollectionWrittenUnderNoMetadataHasNoTypeAnnotation() throws Exception {
+    // Under odata.metadata=none, no type control information is ever written - not even for a
+    // scalar dynamic Guid property (see the isODataMetadataNone guard in JsonSerializer#valuable) -
+    // so a dynamic Guid COLLECTION must not be annotated either.
+    final ClientObjectFactory factory = client.getObjectFactory();
+    final ClientEntity entity = factory.newEntity(new FullQualifiedName("Olinguito.OData", "ETOpen"));
+    entity.getProperties().add(factory.newPrimitiveProperty("PropertyInt16",
+        factory.newPrimitiveValueBuilder().buildInt16((short) 100)));
+    final ClientCollectionValue<ClientValue> refs = factory.newCollectionValue("Collection(Edm.Guid)");
+    refs.add(factory.newPrimitiveValueBuilder().buildGuid(
+        UUID.fromString("01234567-89ab-cdef-0123-456789abcdef")));
+    entity.getProperties().add(factory.newCollectionProperty("Refs", refs));
+
+    final InputStream written = client.getWriter().writeEntity(entity, ContentType.JSON_NO_METADATA);
+    final String json = new String(written.readAllBytes(), StandardCharsets.UTF_8);
+
     assertTrue(json.contains("\"Refs\":[\"01234567-89ab-cdef-0123-456789abcdef\"]"),
         () -> "expected the bare (unannotated) collection value: " + json);
     assertEquals(-1, json.indexOf("Refs@odata.type"),
-        () -> "pin: no type annotation is written for dynamic collections yet: " + json);
+        () -> "no type annotation is ever written under odata.metadata=none: " + json);
   }
 }

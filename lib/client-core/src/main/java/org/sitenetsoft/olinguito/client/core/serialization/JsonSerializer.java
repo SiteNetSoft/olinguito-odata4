@@ -25,6 +25,9 @@
  * dynamic-property inference) can recover the correct EDM type instead of defaulting to String
  * Copyright 2026 SiteNetSoft - Removed Byte/SByte from JSON_NATIVE_KINDS: neither inference
  * path can ever produce them from a bare JSON number, so they need annotating too
+ * Copyright 2026 SiteNetSoft - Annotate dynamic collection writes with their element type: a
+ * dynamic collection whose element kind isn't JSON-native now gets a "name@odata.type":
+ * "#Collection(X)" annotation under minimal metadata, mirroring the existing scalar case
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -414,6 +417,14 @@ public class JsonSerializer implements ODataSerializer {
           final EdmPrimitiveTypeKind scalarKind = scalarPrimitiveKind(valuable, type);
           if (scalarKind != null && !JSON_NATIVE_KINDS.contains(scalarKind)) {
             jgen.writeStringField(name + Constants.JSON_TYPE, "#" + scalarKind.name());
+          } else if (valuable.isCollection()) {
+            // Collection sibling of the scalar case above: a dynamic collection's element kind is
+            // just as unrecoverable from bare JSON as a dynamic scalar's is, so it needs the same
+            // treatment - just wrapped as "#Collection(X)" instead of "#X".
+            final EdmPrimitiveTypeKind elementKind = collectionElementPrimitiveKind(type);
+            if (elementKind != null && !JSON_NATIVE_KINDS.contains(elementKind)) {
+              jgen.writeStringField(name + Constants.JSON_TYPE, "#Collection(" + elementKind.name() + ")");
+            }
           }
         }
       }
@@ -436,6 +447,18 @@ public class JsonSerializer implements ODataSerializer {
     if (valuable.isCollection() || !valuable.isPrimitive()) {
       return null;
     }
+    return new EdmTypeInfo.Builder().setTypeExpression(type).build().getPrimitiveTypeKind();
+  }
+
+  /**
+   * The {@link EdmPrimitiveTypeKind} of a collection value's element type (e.g. {@code Guid} for
+   * a {@code type} of {@code "Collection(Edm.Guid)"}), or {@code null} if the element type isn't
+   * a resolvable primitive kind (e.g. a collection of complex or enum values) - used to decide
+   * whether a {@code name@odata.type} collection annotation is required under minimal metadata.
+   * {@link EdmTypeInfo}'s constructor already strips the {@code Collection(...)} wrapper itself,
+   * so no manual substring handling is needed here.
+   */
+  private EdmPrimitiveTypeKind collectionElementPrimitiveKind(final String type) {
     return new EdmTypeInfo.Builder().setTypeExpression(type).build().getPrimitiveTypeKind();
   }
 
