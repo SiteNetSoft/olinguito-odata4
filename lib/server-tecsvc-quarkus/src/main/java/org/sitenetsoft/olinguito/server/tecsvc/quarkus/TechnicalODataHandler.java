@@ -15,6 +15,8 @@
  *
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 3: build a versioned ServiceMetadata so the
+ * $schemaversion system query option is enforced (OData 4.01, Part 1: Protocol, section 11.2.12)
  */
 package org.sitenetsoft.olinguito.server.tecsvc.quarkus;
 
@@ -43,6 +45,7 @@ import org.sitenetsoft.olinguito.server.tecsvc.processor.TechnicalBatchProcessor
 import org.sitenetsoft.olinguito.server.tecsvc.processor.TechnicalEntityProcessor;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.TechnicalPrimitiveComplexProcessor;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
+import org.sitenetsoft.olinguito.server.tecsvc.provider.SchemaProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,7 +89,8 @@ public class TechnicalODataHandler implements Handler<RoutingContext> {
         this.serviceMetadata = odata.createServiceMetadata(
                 new EdmTechProvider(),
                 List.of(reference),
-                new MetadataETagSupport(METADATA_ETAG));
+                new MetadataETagSupport(METADATA_ETAG),
+                SchemaProvider.SCHEMA_VERSION);
     }
 
     @Override

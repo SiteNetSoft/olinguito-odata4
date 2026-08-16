@@ -18,6 +18,8 @@
  *
  * Copyright 2026 SiteNetSoft - Moved from server-tecsvc to server-tecsvc-servlet
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 3: build a versioned ServiceMetadata so the
+ * $schemaversion system query option is enforced (OData 4.01, Part 1: Protocol, section 11.2.12)
  */
 package org.sitenetsoft.olinguito.server.tecsvc;
 
@@ -44,6 +46,7 @@ import org.sitenetsoft.olinguito.server.tecsvc.processor.TechnicalBatchProcessor
 import org.sitenetsoft.olinguito.server.tecsvc.processor.TechnicalEntityProcessor;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.TechnicalPrimitiveComplexProcessor;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
+import org.sitenetsoft.olinguito.server.tecsvc.provider.SchemaProvider;
 import org.sitenetsoft.olinguito.server.adapter.servlet.ODataServletHandler;
 import org.sitenetsoft.olinguito.server.adapter.servlet.ServletODataAdapter;
 
@@ -76,7 +79,8 @@ public class TechnicalServlet extends HttpServlet {
       final ServiceMetadata serviceMetadata = odata.createServiceMetadata(
           new EdmTechProvider(),
           List.of(reference),
-          new MetadataETagSupport(metadataETag));
+          new MetadataETagSupport(metadataETag),
+          SchemaProvider.SCHEMA_VERSION);
 
       HttpSession session = request.getSession(true);
       DataProvider dataProvider = (DataProvider) session.getAttribute(DataProvider.class.getName());

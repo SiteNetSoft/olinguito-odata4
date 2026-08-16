@@ -20,6 +20,8 @@
  * Copyright 2026 SiteNetSoft - Pin: dynamic-property path segment before $value is rejected by
  * UriValidator with UNALLOWED_KIND_BEFORE_VALUE
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 1: $schemaversion system query option
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 3: $schemaversion is exempt from the
+ * method-specific query-option checks
  */
 package org.sitenetsoft.olinguito.server.core.uri.validator;
 
@@ -421,6 +423,30 @@ class UriValidatorTest {
     	validateWrong(URI_ENTITY, queryOptions[i], HttpMethod.PATCH,
     	          UriValidationException.MessageKeys.SYSTEM_QUERY_OPTION_NOT_ALLOWED_FOR_HTTP_METHOD);
     }
+  }
+
+  @Test
+  void schemaVersionAllowedForEveryHttpMethod() throws Exception {
+    // OData 4.01, Part 1: Protocol, section 11.2.12: $schemaversion MAY be included in any request,
+    // so it is exempt from the method-specific query-option checks that reject every other system
+    // query option on a non-read request. $batch is the case that matters in practice: it is a
+    // POST, so without the exemption a batch request could never carry the option its parts
+    // inherit.
+    final HttpMethod[] methods =
+        { HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.PATCH, HttpMethod.DELETE };
+    for (final HttpMethod method : methods) {
+      validate(URI_BATCH, QO_SCHEMAVERSION, method);
+      validate(URI_ENTITY, QO_SCHEMAVERSION, method);
+    }
+
+    // The exemption covers $schemaversion alone: an option that is not allowed for the method is
+    // still rejected when it travels next to $schemaversion.
+    validateWrong(URI_ENTITY, QO_SCHEMAVERSION + '&' + QO_FILTER, HttpMethod.POST,
+        UriValidationException.MessageKeys.SYSTEM_QUERY_OPTION_NOT_ALLOWED_FOR_HTTP_METHOD);
+    validateWrong(URI_ENTITY, QO_SCHEMAVERSION + '&' + QO_FORMAT, HttpMethod.DELETE,
+        UriValidationException.MessageKeys.SYSTEM_QUERY_OPTION_NOT_ALLOWED_FOR_HTTP_METHOD);
+    validateWrong(URI_ENTITY, QO_SCHEMAVERSION + '&' + QO_TOP, HttpMethod.PATCH,
+        UriValidationException.MessageKeys.SYSTEM_QUERY_OPTION_NOT_ALLOWED_FOR_HTTP_METHOD);
   }
 
   @Test

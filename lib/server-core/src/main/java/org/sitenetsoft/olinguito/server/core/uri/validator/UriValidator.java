@@ -23,6 +23,8 @@
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 1: $schemaversion (OData 4.01 section 11.2.12)
  * MAY be included in any request, so column 13 is true in every row, including batch and
  * mediaStream which are otherwise all-false
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 3: $schemaversion is exempt from the
+ * method-specific query-option checks, so it may also accompany non-read requests such as $batch
  */
 package org.sitenetsoft.olinguito.server.core.uri.validator;
 
@@ -316,8 +318,25 @@ public class UriValidator {
     }
   }
 
+  /**
+   * Validates the system query options of a request that is not a read request.
+   *
+   * @param uriType the URI type of the request
+   * @param isAction whether the last path segment is an action
+   * @param allOptions the system query options of the request, <code>$schemaversion</code> included
+   * @param httpMethod the HTTP method of the request
+   * @throws UriValidationException if an option is not allowed for this method and URI type
+   */
   private void validateNonReadQueryOptions(final UriType uriType, final boolean isAction,
-      final List<SystemQueryOption> options, final HttpMethod httpMethod) throws UriValidationException {
+      final List<SystemQueryOption> allOptions, final HttpMethod httpMethod) throws UriValidationException {
+    // OData 4.01, Part 1: Protocol, section 11.2.12: $schemaversion MAY be included in any request,
+    // whatever its HTTP method, so it never takes part in the method-specific checks below. Without
+    // this exemption a POST $batch?$schemaversion=... would be rejected as a bad request and the
+    // batch-part inheritance of the option could never be reached.
+    final List<SystemQueryOption> options = allOptions.stream()
+        .filter(option -> SystemQueryOptionKind.SCHEMAVERSION != option.getKind())
+        .toList();
+
     if (httpMethod == HttpMethod.POST && isAction) {
       // From the OData specification:
       // For POST requests to an action URL the return type of the action determines the applicable

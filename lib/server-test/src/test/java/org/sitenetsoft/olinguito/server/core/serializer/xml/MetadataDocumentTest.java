@@ -18,6 +18,8 @@
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 3: tecsvc now publishes its schema version
+ * through a schema-level Core.SchemaVersion annotation
  */
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
@@ -35,6 +37,7 @@ import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
+import org.sitenetsoft.olinguito.server.tecsvc.provider.SchemaProvider;
 import org.junit.jupiter.api.Test;
 
 class MetadataDocumentTest {
@@ -142,7 +145,11 @@ class MetadataDocumentTest {
         containsString("<EntitySet Name=\"ESInvisible\" EntityType=\"Namespace1_Alias.ETAllPrim\" "
             + "IncludeInServiceDocument=\"false\">"));
 
-    assertThat(metadata, containsString("</EntityContainer></Schema></edmx:DataServices></edmx:Edmx>"));
+    // The tecsvc schema publishes its version (OData 4.01, Part 1: Protocol, section 11.2.12) as a
+    // schema-level annotation, written after the entity container.
+    assertThat(metadata, containsString("</EntityContainer>"
+        + "<Annotation Term=\"Core.SchemaVersion\"><String>" + SchemaProvider.SCHEMA_VERSION + "</String>"
+        + "</Annotation></Schema></edmx:DataServices></edmx:Edmx>"));
 
     // BaseTypeCheck
     assertThat(metadata, containsString("<EntityType Name=\"ETBase\" BaseType=\"Namespace1_Alias.ETTwoPrim\">"));

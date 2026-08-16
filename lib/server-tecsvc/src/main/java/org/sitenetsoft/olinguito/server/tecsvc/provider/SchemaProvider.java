@@ -20,6 +20,8 @@
  *
  * Copyright 2026 SiteNetSoft - Add OpenType support (tecsvc ETOpen model)
  * Copyright 2026 SiteNetSoft - OpenType: register open complex type CTOpen
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 3: publish the schema version through the
+ * Core.SchemaVersion annotation (OData 4.01, Part 1: Protocol, section 11.2.12)
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
@@ -27,17 +29,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAction;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlComplexType;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEdmProvider;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityType;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlFunction;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlSchema;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlConstantExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlConstantExpression.ConstantExpressionType;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
 
 public class SchemaProvider {
 
   public static final String NAMESPACE = "olingo.odata.test1";
   public static final String NAMESPACE_ALIAS = "Namespace1_Alias";
+
+  /**
+   * Version of this service's schema, published in the metadata document through the
+   * <code>Core.SchemaVersion</code> annotation and accepted as the value of the
+   * <code>$schemaversion</code> system query option (OData 4.01, Part 1: Protocol, section 11.2.12).
+   * The same constant is handed to the {@code ServiceMetadata} the tecsvc runtime adapters build,
+   * so the published and the enforced version can never drift apart.
+   */
+  public static final String SCHEMA_VERSION = "1.0.0";
+
+  /** Alias-qualified name of the vocabulary term the schema version is published with. */
+  private static final String SCHEMA_VERSION_TERM = "Core.SchemaVersion";
 
   private final CsdlEdmProvider prov;
 
@@ -228,6 +245,10 @@ public class SchemaProvider {
 
     // EntityContainer
     schema.setEntityContainer(prov.getEntityContainer());
+
+    // Schema version (OData 4.01, Part 1: Protocol, section 11.2.12)
+    schema.setAnnotations(List.of(new CsdlAnnotation().setTerm(SCHEMA_VERSION_TERM)
+        .setExpression(new CsdlConstantExpression(ConstantExpressionType.String, SCHEMA_VERSION))));
 
     return List.of(schema);
   }
