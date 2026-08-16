@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 1 Task 7: fit-level round trips for /$query POST
  * requests through real Tomcat (OData 4.01 URL Conventions section 4.17)
+ * Copyright 2026 SiteNetSoft - Pinned the /$query x omit-values=nulls cross-feature seam
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.http;
 
@@ -131,6 +132,32 @@ public class QueryPostITCase extends AbstractBaseTestITCase {
         secondBody.contains("\"PropertyInt16\":11,"));
   }
 
+  /**
+   * MANDATORY regression test pinning the <tt>/$query</tt> x <tt>omit-values=nulls</tt>
+   * cross-feature seam: {@code ODataHandlerImpl.handleQueryPathIfPresent} forces the HTTP method
+   * to GET before dispatching (see {@link #getConnection}'s doc and the class-level comment
+   * above), and tecsvc's Prefer-header gate for the omit-values preference
+   * ({@code TechnicalEntityProcessor#readEntity}) only ever runs for a GET-dispatched request
+   * (see {@code PreferHeaderForGetAndDeleteITCase#omitValuesNulls_GetEntity}, which pins the same
+   * behavior for a plain GET on this exact entity). This test proves the two features compose: a
+   * <tt>/$query</tt> POST with an empty <tt>text/plain</tt> body carries no additional query
+   * options, so once rewritten it is equivalent to a plain GET on the same entity, and
+   * <tt>ESTwoPrim(-32766)</tt>'s null-seeded <tt>PropertyString</tt>
+   * (DataCreator#createESTwoPrim) must still be omitted from the response.
+   */
+  @Test
+  public void queryPostOmitValuesNullsComposesWithGetOnlyGate() throws Exception {
+    final HttpURLConnection connection = getConnection(HttpMethod.POST, "ESTwoPrim(-32766)/$query",
+        "", TEXT_PLAIN, "omit-values=nulls");
+    assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
+    assertEquals("omit-values=nulls", connection.getHeaderField(HttpHeader.PREFERENCE_APPLIED));
+
+    final String body = readResponse(connection);
+    assertFalse("omitted property must not merely be null-valued", body.contains("\"PropertyString\":null"));
+    assertFalse("omitted property's field name must be absent entirely", body.contains("PropertyString"));
+    assertTrue("non-null key property must remain present", body.contains("\"PropertyInt16\":-32766"));
+  }
+
   private static int countOccurrences(final String haystack, final String needle) {
     int count = 0;
     int index = 0;
@@ -163,10 +190,32 @@ public class QueryPostITCase extends AbstractBaseTestITCase {
    */
   private HttpURLConnection getConnection(final HttpMethod method, final String pathAndQuery,
       final String body, final String contentType) throws IOException {
+    return getConnection(method, pathAndQuery, body, contentType, null);
+  }
+
+  /**
+   * Opens a raw connection against the tecsvc service, optionally writing a request body and a
+   * <tt>Prefer</tt> header.
+   *
+   * @param method HTTP method to use.
+   * @param pathAndQuery resource path (and, optionally, a URL query string), relative to the
+   * service root.
+   * @param body request body to write; when {@code null}, no body is written and the connection is
+   * left as a plain request (matching a GET with no payload).
+   * @param contentType {@code Content-Type} header value to send along with a non-null body.
+   * @param preferHeader value of the {@code Prefer} request header to send; when {@code null}, no
+   * {@code Prefer} header is sent.
+   * @return the connected {@link HttpURLConnection}.
+   */
+  private HttpURLConnection getConnection(final HttpMethod method, final String pathAndQuery,
+      final String body, final String contentType, final String preferHeader) throws IOException {
     final URL url = new URL(SERVICE_URI + pathAndQuery);
     final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestMethod(method.toString());
     connection.setRequestProperty(HttpHeader.ACCEPT, APPLICATION_JSON);
+    if (preferHeader != null) {
+      connection.setRequestProperty(HttpHeader.PREFER, preferHeader);
+    }
     if (body != null) {
       connection.setRequestProperty(HttpHeader.CONTENT_TYPE, contentType);
       connection.setDoOutput(true);

@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Added omit-values=nulls read-path coverage (OData 4.01, Protocol Section 8.2.8.6)
  * Copyright 2026 SiteNetSoft - Pinned maxpagesize/track-changes co-occurrence and omit-values
  * exclusion on reference-collection reads
+ * Copyright 2026 SiteNetSoft - Pinned omit-values=nulls on a streamed-collection response
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.http;
 
@@ -480,6 +481,42 @@ public class PreferHeaderForGetAndDeleteITCase extends AbstractBaseTestITCase {
 
     final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
     assertTrue(content.contains("\"@odata.context\":\"../$metadata#Collection($ref)"));
+  }
+
+  // The serialization guide claims omit-values=nulls covers "including streamed collections",
+  // but until now no test exercised the streamed serializer path (TechnicalEntityProcessor
+  // #isStreaming / #serializeEntityCollectionStreamed, which also receives the omitNulls flag).
+  // ESStreamServerSidePaging is that path: TechnicalEntityProcessor#isStreaming matches its name
+  // directly, so a plain GET against it is served by serializeEntityCollectionStreamed rather
+  // than the regular serializeEntityCollection used by every other entity set above.
+  //
+  // Seed check (DataCreator#createESStreamServerSidePaging): every entity has PropertyInt16 (the
+  // key, never null) and PropertyStream, a media-stream Link (read-link or edit-link+eTag+type),
+  // never a null-valued regular primitive. There is no null-valued declared property in this
+  // seed's shape for omit-values to omit, so this test cannot pin a body-omission assertion the
+  // way omitValuesNulls_GetEntity does for ESTwoPrim(-32766); it pins that the preference is
+  // still honored (Preference-Applied echoed) and that the non-null key property still comes
+  // through intact on the streamed path.
+  @Test
+  public void omitValuesNulls_GetStreamedEntityCollection() throws Exception {
+    URL url = new URL(SERVICE_URI + "ESStreamServerSidePaging");
+
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod(HttpMethod.GET.name());
+    connection.setRequestProperty(HttpHeader.PREFER, "omit-values=nulls");
+    connection.connect();
+
+    assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
+    assertEquals("omit-values=nulls", connection.getHeaderField(HttpHeader.PREFERENCE_APPLIED));
+
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
+    // Entity 1 (read-link, no eTag/type set) serializes with no PropertyStream fields at all at
+    // the default (minimal) metadata level -- see ODataJsonSerializer#writePrimitiveValue's Stream
+    // branch, which only ever writes the read/edit-link href itself under full metadata.
+    assertTrue(content.contains("{\"PropertyInt16\":1}"));
+    // Entity 2 (edit-link, with eTag/type set) still carries its non-null media fields intact.
+    assertTrue(content.contains("{\"PropertyInt16\":2,"
+        + "\"PropertyStream@odata.mediaEtag\":\"eTag\",\"PropertyStream@odata.mediaContentType\":\"image/jpeg\"}"));
   }
 
   @Override
