@@ -17,6 +17,8 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Port OLINGO-1587: configurable streamed/batch response timeout
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 1 Task 7: configurable $query POST retrieve requests
+ * (OData 4.01 URL Conventions section 4.17)
  */
 package org.sitenetsoft.olinguito.client.core;
 
@@ -63,6 +65,8 @@ public class ConfigurationImpl implements Configuration {
   private static final String CONTINUE_ON_ERROR = "continueOnError";
 
   private static final String RESPONSE_TIMEOUT_IN_SEC = "responseTimeoutInSec";
+
+  private static final String USE_QUERY_POST_REQUEST = "useQueryPostRequest";
 
   public static final int DEFAULT_BUFFER_SIZE = 4 * 1024 * 1024;  // 4MB
 
@@ -262,5 +266,15 @@ public class ConfigurationImpl implements Configuration {
   @Override
   public void setExecutor(final ExecutorService executorService) {
     executor = executorService;
+  }
+
+  @Override
+  public boolean isUseQueryPostRequest() {
+    return (Boolean) getProperty(USE_QUERY_POST_REQUEST, false);
+  }
+
+  @Override
+  public void setUseQueryPostRequest(final boolean value) {
+    setProperty(USE_QUERY_POST_REQUEST, value);
   }
 }

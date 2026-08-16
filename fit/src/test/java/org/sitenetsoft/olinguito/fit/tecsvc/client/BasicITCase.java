@@ -19,6 +19,8 @@
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  * Copyright 2026 SiteNetSoft - Added omit-values=nulls client round trip (OData 4.01, Protocol Section 8.2.8.6)
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 1 Task 7: added $query POST client round trip
+ * (OData 4.01 URL Conventions section 4.17)
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
@@ -1869,6 +1871,74 @@ public class BasicITCase extends AbstractParamTecSvcITCase {
       assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusCode());
       final ODataError error = e.getODataError();
       assertThat(error.getMessage(), containsString("key"));
-    }    
+    }
+  }
+
+  /**
+   * Tier 5 Wave 1 Task 7: with {@code Configuration#setUseQueryPostRequest(true)}, a retrieve
+   * request whose URI carries a query string (here, a {@code $filter}) must go out as a POST to a
+   * {@code /$query} resource path instead of a plain GET, per OData 4.01 URL Conventions section
+   * 4.17 - and still come back with exactly the same entities as the flag-off GET.
+   */
+  @Test
+  public void readEntitySetViaQueryPostRequest() {
+    final ODataClient client = getClient();
+    try {
+      final FilterFactory filterFactory = client.getFilterFactory();
+      final URIFilter filter = filterFactory.gt(PROPERTY_INT16, 0);
+      final URI uri = client.newURIBuilder(SERVICE_URI)
+          .appendEntitySetSegment(ES_ALL_PRIM).filter(filter.build()).build();
+
+      client.getConfiguration().setUseQueryPostRequest(false);
+      final ODataEntitySetRequest<ClientEntitySet> plainGetRequest =
+          client.getRetrieveRequestFactory().getEntitySetRequest(uri);
+      setCookieHeader(plainGetRequest);
+      final ODataRetrieveResponse<ClientEntitySet> plainGetResponse = plainGetRequest.execute();
+      saveCookieHeader(plainGetResponse);
+      assertEquals(HttpStatusCode.OK.getStatusCode(), plainGetResponse.getStatusCode());
+      final ClientEntitySet plainGetResult = plainGetResponse.getBody();
+      assertNotNull(plainGetResult);
+      assertFalse(plainGetResult.getEntities().isEmpty());
+
+      client.getConfiguration().setUseQueryPostRequest(true);
+      final ODataEntitySetRequest<ClientEntitySet> queryPostRequest =
+          client.getRetrieveRequestFactory().getEntitySetRequest(uri);
+      setCookieHeader(queryPostRequest);
+      final ODataRetrieveResponse<ClientEntitySet> queryPostResponse = queryPostRequest.execute();
+      saveCookieHeader(queryPostResponse);
+      assertEquals(HttpStatusCode.OK.getStatusCode(), queryPostResponse.getStatusCode());
+      final ClientEntitySet queryPostResult = queryPostResponse.getBody();
+      assertNotNull(queryPostResult);
+
+      assertEquals(plainGetResult.getEntities().size(), queryPostResult.getEntities().size());
+      for (int i = 0; i < plainGetResult.getEntities().size(); i++) {
+        assertEquals(
+            plainGetResult.getEntities().get(i).getProperty(PROPERTY_INT16).getValue().toString(),
+            queryPostResult.getEntities().get(i).getProperty(PROPERTY_INT16).getValue().toString());
+      }
+    } finally {
+      client.getConfiguration().setUseQueryPostRequest(false);
+    }
+  }
+
+  /**
+   * Tier 5 Wave 1 Task 7: a retrieve request whose URI does NOT carry a query string must stay a
+   * plain GET even with the flag on - there is no query string to move into a POST body.
+   */
+  @Test
+  public void readEntitySetWithoutQueryStringStaysGetEvenWithQueryPostEnabled() {
+    final ODataClient client = getClient();
+    try {
+      client.getConfiguration().setUseQueryPostRequest(true);
+      final ODataEntitySetRequest<ClientEntitySet> request = client.getRetrieveRequestFactory()
+          .getEntitySetRequest(client.newURIBuilder(SERVICE_URI).appendEntitySetSegment(ES_ALL_PRIM).build());
+      setCookieHeader(request);
+      final ODataRetrieveResponse<ClientEntitySet> response = request.execute();
+      saveCookieHeader(response);
+      assertEquals(HttpStatusCode.OK.getStatusCode(), response.getStatusCode());
+      assertFalse(response.getBody().getEntities().isEmpty());
+    } finally {
+      client.getConfiguration().setUseQueryPostRequest(false);
+    }
   }
 }

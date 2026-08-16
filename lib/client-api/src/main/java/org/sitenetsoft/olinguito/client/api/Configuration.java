@@ -17,6 +17,8 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Port OLINGO-1587: configurable streamed/batch response timeout
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 1 Task 7: configurable $query POST retrieve requests
+ * (OData 4.01 URL Conventions section 4.17)
  */
 package org.sitenetsoft.olinguito.client.api;
 
@@ -284,4 +286,25 @@ public interface Configuration {
    * @param responseTimeoutInSec response timeout in seconds (must be positive).
    */
   void setResponseTimeoutInSec(int responseTimeoutInSec);
+
+  /**
+   * Checks whether retrieve requests carrying a query string are sent as a <tt>POST</tt> to a
+   * <tt>/$query</tt> resource-path suffix with the query string moved into a <tt>text/plain</tt>
+   * body, instead of as a plain <tt>GET</tt> with the query string in the URL. See OData 4.01 URL
+   * Conventions, section 4.17.
+   *
+   * @return whether retrieve requests with a query string are sent via <tt>$query</tt> POST.
+   */
+  boolean isUseQueryPostRequest();
+
+  /**
+   * Sets whether retrieve requests carrying a query string are sent as a <tt>POST</tt> to a
+   * <tt>/$query</tt> resource-path suffix with the query string moved into a <tt>text/plain</tt>
+   * body, instead of as a plain <tt>GET</tt> with the query string in the URL. See OData 4.01 URL
+   * Conventions, section 4.17. Retrieve requests without a query string are unaffected and always
+   * remain plain <tt>GET</tt> requests.
+   *
+   * @param value 'TRUE' to send retrieve requests with a query string via <tt>$query</tt> POST.
+   */
+  void setUseQueryPostRequest(boolean value);
 }
