@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - OData 4.01: optional function parameters
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -1983,6 +1984,39 @@ class ResourcePathParserTest {
         .isFunction("UFCRTCollETMixPrimCollCompTwoParam")
         .isParameter(0, "ParameterInt16", "1")
         .isParameter(1, "ParameterString", "'1'");
+  }
+
+  @Test
+  void functionImportWithOptionalParameters() throws Exception {
+    // OData 4.01, Part 1: Protocol, section 11.5.4.2: an overload also matches if the specified
+    // parameters cover all of its non-optional parameters.
+    testRes.run("FICRTStringOptionalParam(ParameterString='x')")
+        .isFunctionImport("FICRTStringOptionalParam")
+        .isFunction("UFCRTStringOptionalParam")
+        .isType(PropertyProvider.nameString)
+        .isParameter(0, "ParameterString", "'x'");
+
+    testRes.run("FICRTStringOptionalParam(ParameterString='x',ParameterSuffix='y')")
+        .isFunctionImport("FICRTStringOptionalParam")
+        .isFunction("UFCRTStringOptionalParam")
+        .isType(PropertyProvider.nameString)
+        .isParameter(0, "ParameterString", "'x'")
+        .isParameter(1, "ParameterSuffix", "'y'");
+
+    testRes.run("FICRTStringOptionalNoDefault(ParameterString='x')")
+        .isFunctionImport("FICRTStringOptionalNoDefault")
+        .isFunction("UFCRTStringOptionalNoDefault")
+        .isType(PropertyProvider.nameString)
+        .isParameter(0, "ParameterString", "'x'");
+  }
+
+  @Test
+  void functionImportWithOptionalParametersError() {
+    // A required parameter must still be specified.
+    testUri.runEx("FICRTStringOptionalParam()").isExSemantic(MessageKeys.FUNCTION_NOT_FOUND);
+    testUri.runEx("FICRTStringOptionalParam(ParameterSuffix='y')").isExSemantic(MessageKeys.FUNCTION_NOT_FOUND);
+    testUri.runEx("FICRTStringOptionalParam(ParameterString='x',InvalidParam='y')")
+        .isExSemantic(MessageKeys.FUNCTION_NOT_FOUND);
   }
 
   @Test

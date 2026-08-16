@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - Use Valuable.asCollection() for entity collection parameters (OLINGO-1638)
+ * Copyright 2026 SiteNetSoft - OData 4.01: functions with optional parameters
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -116,6 +117,10 @@ public class FunctionData {
       return DataCreator.createPrimitive(name, "UFCRTString string value");
     }else if ( name.equals("BFNESTwoKeyNavRTString") ) {
       return DataCreator.createPrimitive(name, "BFNESTwoKeyNavRTString string value");
+    } else if (name.equals("UFCRTStringOptionalParam") || name.equals("UFCRTStringOptionalNoDefault")) {
+      // An omitted optional parameter is either replaced by its default value before we are called
+      // or simply absent (if it has no default value), in which case no suffix is appended.
+      return DataCreator.createPrimitive(name, getParameterString(parameters) + getParameterSuffix(parameters));
     } else if (name.equals("UFCRTCollString")) {
       return data.get("ESCollAllPrim").getEntities().get(0).getProperty("CollPropertyString");
     } else if (name.equals("UFCRTCTTwoPrim")) {
@@ -235,6 +240,12 @@ public class FunctionData {
 
   private static Short getParameterInt16(final Map<String, Parameter> parameters) {
     return parameters.containsKey("ParameterInt16") ? (Short) parameters.get("ParameterInt16").getValue() : null;
+  }
+
+  /** Returns the value of the optional parameter "ParameterSuffix", the empty string if absent or null. */
+  private static String getParameterSuffix(final Map<String, Parameter> parameters) {
+    final Parameter parameter = parameters.get("ParameterSuffix");
+    return parameter == null || parameter.getValue() == null ? "" : (String) parameter.getValue();
   }
 
   private static String getParameterString(final Map<String, Parameter> parameters) {

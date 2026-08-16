@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  * Copyright 2026 SiteNetSoft - OpenType: carry undeclared (dynamic) properties over on create/update
+ * Copyright 2026 SiteNetSoft - OData 4.01: apply default values of omitted optional parameters
  * Copyright 2026 SiteNetSoft - OpenType CRUD Task 4: extract single dynamic-property
  * upsert/remove helpers, reused by the direct dynamic-property PUT/PATCH/DELETE path
  */
@@ -747,7 +748,45 @@ public class DataProvider {
         }
       }
     }
+    addOptionalParameterDefaults(function, values);
     return values;
+  }
+
+  /**
+   * Applies the default values of omitted optional parameters (OData 4.01, Part 1: Protocol,
+   * section 11.5.4.1.1). An omitted optional parameter without default value is left absent, which
+   * this service interprets as "no value given".
+   */
+  private void addOptionalParameterDefaults(final EdmFunction function, final Map<String, Parameter> values)
+      throws DataProviderException {
+    for (final String name : function.getParameterNames()) {
+      if (values.containsKey(name)) {
+        continue;
+      }
+      final EdmParameter edmParameter = function.getParameter(name);
+      final String defaultValue = edmParameter.isOptional() ? edmParameter.getOptionalDefaultValue() : null;
+      if (defaultValue == null) {
+        continue;
+      }
+      try {
+        values.put(name, odata.createFixedFormatDeserializer().parameter(
+            toUriLiteral(defaultValue, edmParameter), edmParameter));
+      } catch (final DeserializerException e) {
+        throw new DataProviderException("Invalid default value for function parameter " + name + ".",
+            HttpStatusCode.INTERNAL_SERVER_ERROR, e);
+      }
+    }
+  }
+
+  /**
+   * The default value of the Core.OptionalParameter annotation is the plain value, so it has to be
+   * converted to a URI literal before the fixed-format deserializer can read it.
+   */
+  private String toUriLiteral(final String defaultValue, final EdmParameter parameter) {
+    final EdmType type = parameter.getType();
+    return !parameter.isCollection() && type instanceof EdmPrimitiveType primitiveType ?
+        primitiveType.toUriLiteral(defaultValue) :
+        defaultValue;
   }
 
   public Property processActionPrimitive(final String name, final Map<String, Parameter> actionParameters)

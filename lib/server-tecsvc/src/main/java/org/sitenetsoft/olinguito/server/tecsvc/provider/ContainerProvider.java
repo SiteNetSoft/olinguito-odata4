@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  *
  * Copyright 2026 SiteNetSoft - Add OpenType support (tecsvc ETOpen model)
+ * Copyright 2026 SiteNetSoft - OData 4.01: function imports with optional parameters
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
@@ -164,6 +165,8 @@ public class ContainerProvider {
     functionImports.add(prov.getFunctionImport(ContainerProvider.nameContainer, "FICRTCTTwoPrim"));
     functionImports.add(prov.getFunctionImport(ContainerProvider.nameContainer, "FICRTCollString"));
     functionImports.add(prov.getFunctionImport(ContainerProvider.nameContainer, "FICRTString"));
+    functionImports.add(prov.getFunctionImport(ContainerProvider.nameContainer, "FICRTStringOptionalParam"));
+    functionImports.add(prov.getFunctionImport(ContainerProvider.nameContainer, "FICRTStringOptionalNoDefault"));
     functionImports.add(prov.getFunctionImport(ContainerProvider.nameContainer, "FICRTCollESTwoKeyNavParam"));
     functionImports.add(prov.getFunctionImport(ContainerProvider.nameContainer, "FICRTCollCTTwoPrimTwoParam"));
     functionImports.add(prov.getFunctionImport(ContainerProvider.nameContainer, "FINRTCollCTNavFiveProp"));
@@ -991,6 +994,18 @@ public class ContainerProvider {
         return new CsdlFunctionImport()
             .setName(name)
             .setFunction(FunctionProvider.nameUFCRTString)
+            .setIncludeInServiceDocument(true);
+
+      } else if (name.equals("FICRTStringOptionalParam")) {
+        return new CsdlFunctionImport()
+            .setName(name)
+            .setFunction(FunctionProvider.nameUFCRTStringOptionalParam)
+            .setIncludeInServiceDocument(true);
+
+      } else if (name.equals("FICRTStringOptionalNoDefault")) {
+        return new CsdlFunctionImport()
+            .setName(name)
+            .setFunction(FunctionProvider.nameUFCRTStringOptionalNoDefault)
             .setIncludeInServiceDocument(true);
 
       } else if (name.equals("FICRTCollESTwoKeyNavParam")) {

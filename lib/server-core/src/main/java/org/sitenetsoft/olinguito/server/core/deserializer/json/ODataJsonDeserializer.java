@@ -37,6 +37,7 @@
  * Copyright 2026 SiteNetSoft - OpenType: resolve annotated element type for dynamic collection
  * properties instead of ignoring name@odata.type on arrays
  * Copyright 2026 SiteNetSoft - OpenType CRUD Task 1: implement ODataDeserializer.dynamicProperty
+ * Copyright 2026 SiteNetSoft - OData 4.01: apply default values of omitted optional action parameters
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -620,6 +621,12 @@ public class ODataJsonDeserializer implements ODataDeserializer {
 
   private Parameter createParameter(final JsonNode node, final String paramName, final EdmParameter edmParameter)
       throws DeserializerException {
+    if (node == null) {
+      final Parameter defaultParameter = createDefaultParameter(paramName, edmParameter);
+      if (defaultParameter != null) {
+        return defaultParameter;
+      }
+    }
     Parameter parameter = new Parameter();
     parameter.setName(paramName);
     if (node == null || node.isNull()) {
@@ -644,6 +651,42 @@ public class ODataJsonDeserializer implements ODataDeserializer {
               edmParameter.getPrecision(), edmParameter.getScale(), true, edmParameter.getMapping(), node);
       parameter.setValue(property.getValueType(), property.getValue());
       parameter.setType(property.getType());
+    }
+    return parameter;
+  }
+
+  /**
+   * Creates a parameter from the default value of an omitted optional parameter (OData 4.01,
+   * Part 1: Protocol, section 11.5.5.1). The rule applies to omission only: an explicitly passed
+   * null value stays null. Returns null if the parameter has no applicable default value, in which
+   * case the regular handling of an omitted parameter applies.
+   */
+  private Parameter createDefaultParameter(final String paramName, final EdmParameter edmParameter)
+      throws DeserializerException {
+    final String defaultValue = edmParameter.isOptional() ? edmParameter.getOptionalDefaultValue() : null;
+    final EdmType type = edmParameter.getType();
+    if (defaultValue == null || edmParameter.isCollection() || !(type instanceof EdmPrimitiveType primitiveType)) {
+      return null;
+    }
+    final Parameter parameter = new Parameter();
+    parameter.setName(paramName);
+    parameter.setType(type.getFullQualifiedName().getFullQualifiedNameAsString());
+    final EdmMapping mapping = edmParameter.getMapping();
+    try {
+      final Object value;
+      if (mapping == null) {
+        value = primitiveType.valueOfString(defaultValue,
+            edmParameter.isNullable(), edmParameter.getMaxLength(),
+            edmParameter.getPrecision(), edmParameter.getScale(), true, primitiveType.getDefaultType());
+      } else {
+        value = primitiveType.valueOfString(defaultValue,
+            edmParameter.isNullable(), edmParameter.getMaxLength(),
+            edmParameter.getPrecision(), edmParameter.getScale(), true, mapping.getMappedJavaClass());
+      }
+      parameter.setValue(type.getKind() == EdmTypeKind.ENUM ? ValueType.ENUM : ValueType.PRIMITIVE, value);
+    } catch (final EdmPrimitiveTypeException e) {
+      throw new DeserializerException("Invalid default value for parameter: " + paramName, e,
+          MessageKeys.INVALID_VALUE_FOR_PROPERTY, paramName);
     }
     return parameter;
   }

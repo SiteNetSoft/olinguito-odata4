@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - OData 4.01: functions with optional parameters
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
@@ -25,12 +26,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlFunction;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlParameter;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlReturnType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlConstantExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlPropertyValue;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlRecord;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
 
 public class FunctionProvider {
+
+  /** Alias-qualified name of the Core.OptionalParameter term; the tecsvc schema uses the alias "Core". */
+  private static final String OPTIONAL_PARAMETER_TERM = "Core.OptionalParameter";
 
   // Bound Functions
   
@@ -177,6 +185,12 @@ public class FunctionProvider {
 
   public static final FullQualifiedName nameUFCRTString =
       new FullQualifiedName(SchemaProvider.NAMESPACE, "UFCRTString");
+
+  public static final FullQualifiedName nameUFCRTStringOptionalParam =
+      new FullQualifiedName(SchemaProvider.NAMESPACE, "UFCRTStringOptionalParam");
+
+  public static final FullQualifiedName nameUFCRTStringOptionalNoDefault =
+      new FullQualifiedName(SchemaProvider.NAMESPACE, "UFCRTStringOptionalNoDefault");
 
   public static final FullQualifiedName nameUFCRTStringTwoParam =
       new FullQualifiedName(SchemaProvider.NAMESPACE, "UFCRTStringTwoParam");
@@ -489,6 +503,32 @@ public class FunctionProvider {
               .setComposable(true)
               .setParameters(List.of())
               .setComposable(true)
+              .setReturnType(
+                  new CsdlReturnType().setType(PropertyProvider.nameString).setNullable(false)));
+
+    } else if (functionName.equals(nameUFCRTStringOptionalParam)) {
+      return List.of(
+          new CsdlFunction()
+              .setName(nameUFCRTStringOptionalParam.getName())
+              .setComposable(true)
+              .setParameters(List.of(
+                  new CsdlParameter().setName("ParameterString").setType(PropertyProvider.nameString)
+                      .setNullable(false),
+                  new CsdlParameter().setName("ParameterSuffix").setType(PropertyProvider.nameString)
+                      .setAnnotations(List.of(optionalParameterAnnotation("-default")))))
+              .setReturnType(
+                  new CsdlReturnType().setType(PropertyProvider.nameString).setNullable(false)));
+
+    } else if (functionName.equals(nameUFCRTStringOptionalNoDefault)) {
+      return List.of(
+          new CsdlFunction()
+              .setName(nameUFCRTStringOptionalNoDefault.getName())
+              .setComposable(true)
+              .setParameters(List.of(
+                  new CsdlParameter().setName("ParameterString").setType(PropertyProvider.nameString)
+                      .setNullable(false),
+                  new CsdlParameter().setName("ParameterSuffix").setType(PropertyProvider.nameString)
+                      .setAnnotations(List.of(optionalParameterAnnotation(null)))))
               .setReturnType(
                   new CsdlReturnType().setType(PropertyProvider.nameString).setNullable(false)));
 
@@ -1156,4 +1196,20 @@ public class FunctionProvider {
     return null;
   }
 
+
+  /**
+   * Builds a Core.OptionalParameter annotation (OData 4.01, Core vocabulary) for an operation
+   * parameter, optionally carrying a default value that a service applies when the parameter is
+   * omitted. The default value is the plain value, not a URI literal.
+   * @param defaultValue the default value, or null for an annotation without one
+   */
+  static CsdlAnnotation optionalParameterAnnotation(final String defaultValue) {
+    final CsdlAnnotation annotation = new CsdlAnnotation().setTerm(OPTIONAL_PARAMETER_TERM);
+    if (defaultValue != null) {
+      annotation.setExpression(new CsdlRecord().setPropertyValues(List.of(
+          new CsdlPropertyValue().setProperty("DefaultValue").setValue(
+              new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String, defaultValue)))));
+    }
+    return annotation;
+  }
 }

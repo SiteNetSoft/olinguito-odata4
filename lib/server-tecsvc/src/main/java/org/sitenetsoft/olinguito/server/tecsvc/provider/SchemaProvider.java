@@ -22,6 +22,8 @@
  * Copyright 2026 SiteNetSoft - OpenType: register open complex type CTOpen
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 3: publish the schema version through the
  * Core.SchemaVersion annotation (OData 4.01, Part 1: Protocol, section 11.2.12)
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 6: register the operations with optional
+ * parameters
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
@@ -163,6 +165,7 @@ public class SchemaProvider {
     actions.addAll(prov.getActions(ActionProvider.
         nameBAETTwoKeyNavCTBasePrimCompNavCTTwoBasePrimCompNavRTCTTwoBasePrimCompNav));
     actions.addAll(prov.getActions(ActionProvider.nameUARTString));
+    actions.addAll(prov.getActions(ActionProvider.nameUARTStringOptionalParam));
     actions.addAll(prov.getActions(ActionProvider.nameUARTCollStringTwoParam));
     actions.addAll(prov.getActions(ActionProvider.nameUARTCTTwoPrimParam));
     actions.addAll(prov.getActions(ActionProvider.nameUARTCollCTTwoPrimParam));
@@ -187,6 +190,8 @@ public class SchemaProvider {
     functions.addAll(prov.getFunctions(FunctionProvider.nameUFCRTETTwoKeyNavParam));
     functions.addAll(prov.getFunctions(FunctionProvider.nameUFCRTETTwoKeyNavParamCTTwoPrim));
     functions.addAll(prov.getFunctions(FunctionProvider.nameUFCRTStringTwoParam));
+    functions.addAll(prov.getFunctions(FunctionProvider.nameUFCRTStringOptionalParam));
+    functions.addAll(prov.getFunctions(FunctionProvider.nameUFCRTStringOptionalNoDefault));
     functions.addAll(prov.getFunctions(FunctionProvider.nameUFCRTCollETTwoKeyNavParam));
     functions.addAll(prov.getFunctions(FunctionProvider.nameUFCRTString));
     functions.addAll(prov.getFunctions(FunctionProvider.nameUFCRTCollStringTwoParam));

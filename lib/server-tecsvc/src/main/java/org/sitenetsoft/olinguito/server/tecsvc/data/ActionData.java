@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Replaced Calendar.getInstance() with GregorianCalendar.from()
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - OData 4.01: action with optional parameters
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -67,6 +68,8 @@ public class ActionData {
       throws DataProviderException {
     if ("UARTString".equals(name)) {
       return DataCreator.createPrimitive(null, "UARTString string value");
+    } else if ("UARTStringOptionalParam".equals(name)) {
+      return FunctionData.primitiveComplexFunction("UFCRTStringOptionalParam", parameters, null);
     } else if ("UARTByteNineParam".equals(name)) {
       return FunctionData.primitiveComplexFunction("UFNRTByteNineParam", parameters, null);
     }else if("_A_RTTimeOfDay_".equals(name)){

@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - OData 4.01: action with optional parameters
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
@@ -101,6 +102,8 @@ public class ActionProvider {
   // Unbound Actions
   public static final FullQualifiedName nameUARTString = new FullQualifiedName(SchemaProvider.NAMESPACE,
       "UARTString");
+  public static final FullQualifiedName nameUARTStringOptionalParam =
+      new FullQualifiedName(SchemaProvider.NAMESPACE, "UARTStringOptionalParam");
   public static final FullQualifiedName nameUARTCollStringTwoParam = new FullQualifiedName(SchemaProvider.NAMESPACE,
       "UARTCollStringTwoParam");
   public static final FullQualifiedName nameUARTCollCTTwoPrimParam = new FullQualifiedName(SchemaProvider.NAMESPACE,
@@ -180,6 +183,19 @@ public class ActionProvider {
     }else if (actionName.equals(nameUARTString)) {
       return List.of(
           new CsdlAction().setName(nameUARTString.getName())
+              .setReturnType(new CsdlReturnType().setType(PropertyProvider.nameString)));
+
+    } else if (actionName.equals(nameUARTStringOptionalParam)) {
+      return List.of(
+          new CsdlAction().setName(nameUARTStringOptionalParam.getName())
+              .setParameters(List.of(
+                  new CsdlParameter().setName("ParameterString").setType(PropertyProvider.nameString)
+                      .setNullable(false),
+                  new CsdlParameter().setName("ParameterSuffix").setType(PropertyProvider.nameString)
+                      .setAnnotations(List.of(
+                          FunctionProvider.optionalParameterAnnotation("-default"))),
+                  new CsdlParameter().setName("ParameterOptionalNoDefault").setType(PropertyProvider.nameString)
+                      .setAnnotations(List.of(FunctionProvider.optionalParameterAnnotation(null)))))
               .setReturnType(new CsdlReturnType().setType(PropertyProvider.nameString)));
 
     } else if (actionName.equals(nameUARTCollStringTwoParam)) {

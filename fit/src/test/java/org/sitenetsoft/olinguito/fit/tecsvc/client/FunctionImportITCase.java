@@ -17,11 +17,13 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - OData 4.01: optional function parameters with default values
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,6 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.sitenetsoft.olinguito.client.api.communication.ODataClientErrorException;
 import org.sitenetsoft.olinguito.client.api.communication.request.invoke.ODataInvokeRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataValueRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataInvokeResponse;
@@ -381,6 +384,63 @@ public class FunctionImportITCase extends AbstractParamTecSvcITCase {
     saveCookieHeader(response);
     assertEquals(HttpStatusCode.OK.getStatusCode(), response.getStatusCode());
     assertShortOrInt(0, response.getBody().getPrimitiveValue().toValue());
+  }
+
+  @Test
+  public void optionalParameterOmitted() {
+    // OData 4.01, Part 1: Protocol, section 11.5.4.1.1: the annotated default value is applied.
+    assertEquals("base-default", invokeOptionalParameterFunction("FICRTStringOptionalParam", null));
+  }
+
+  @Test
+  public void optionalParameterSpecified() {
+    assertEquals("base-explicit", invokeOptionalParameterFunction("FICRTStringOptionalParam", "-explicit"));
+  }
+
+  @Test
+  public void optionalParameterWithoutDefaultOmitted() {
+    // Without a default value the parameter simply stays absent (service-defined interpretation).
+    assertEquals("base", invokeOptionalParameterFunction("FICRTStringOptionalNoDefault", null));
+  }
+
+  @Test
+  public void optionalParameterWithoutDefaultSpecified() {
+    assertEquals("base-explicit", invokeOptionalParameterFunction("FICRTStringOptionalNoDefault", "-explicit"));
+  }
+
+  @Test
+  public void requiredParameterOmitted() {
+    ODataInvokeRequest<ClientProperty> request = getClient().getInvokeRequestFactory()
+        .getFunctionInvokeRequest(getClient().newURIBuilder(TecSvcConst.BASE_URI)
+            .appendOperationCallSegment("FICRTStringOptionalParam").build(),
+            ClientProperty.class,
+            Collections.<String, ClientValue> singletonMap("ParameterSuffix",
+                getFactory().newPrimitiveValueBuilder().buildString("-explicit")));
+    setCookieHeader(request);
+    try {
+      request.execute();
+      fail("Expected Exception not thrown!");
+    } catch (final ODataClientErrorException e) {
+      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusCode());
+    }
+  }
+
+  private String invokeOptionalParameterFunction(final String functionImport, final String suffix) {
+    final Map<String, ClientValue> parameters = new HashMap<String, ClientValue>();
+    parameters.put("ParameterString", getFactory().newPrimitiveValueBuilder().buildString("base"));
+    if (suffix != null) {
+      parameters.put("ParameterSuffix", getFactory().newPrimitiveValueBuilder().buildString(suffix));
+    }
+    ODataInvokeRequest<ClientProperty> request = getClient().getInvokeRequestFactory()
+        .getFunctionInvokeRequest(getClient().newURIBuilder(TecSvcConst.BASE_URI)
+            .appendOperationCallSegment(functionImport).build(),
+            ClientProperty.class,
+            parameters);
+    setCookieHeader(request);
+    final ODataInvokeResponse<ClientProperty> response = request.execute();
+    saveCookieHeader(response);
+    assertEquals(HttpStatusCode.OK.getStatusCode(), response.getStatusCode());
+    return response.getBody().getPrimitiveValue().toValue().toString();
   }
 
   private Map<String, ClientValue> buildTwoParameters(final int parameterInt16, final String parameterString) {

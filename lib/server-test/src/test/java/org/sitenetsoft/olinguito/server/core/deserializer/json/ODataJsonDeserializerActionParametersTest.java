@@ -21,6 +21,7 @@
  * Copyright 2026 SiteNetSoft - Added nullable collection parameter tests (OLINGO-1633)
  * Copyright 2026 SiteNetSoft - Updated entity collection parameter test
  * to use List instead of EntityCollection (OLINGO-1638)
+ * Copyright 2026 SiteNetSoft - OData 4.01: optional action parameters with default values
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -237,6 +238,45 @@ class ODataJsonDeserializerActionParametersTest extends AbstractODataDeserialize
     final Parameter parameter = parameters.get("CollParameterByte");
     assertNotNull(parameter);
     assertNull(parameter.getValue());
+  }
+
+  @Test
+  void optionalParameterOmitted() throws Exception {
+    // OData 4.01, Part 1: Protocol, section 11.5.5.1: an omitted optional parameter annotated with
+    // a default value is treated as if that value had been passed.
+    final Map<String, Parameter> parameters = deserialize("{\"ParameterString\":\"Test\"}",
+        "UARTStringOptionalParam", null);
+    assertNotNull(parameters);
+    assertEquals(3, parameters.size());
+    final Parameter suffix = parameters.get("ParameterSuffix");
+    assertNotNull(suffix);
+    assertTrue(suffix.isPrimitive());
+    assertEquals("-default", suffix.getValue());
+    // An omitted optional parameter without default value is service-defined; here it stays null.
+    final Parameter noDefault = parameters.get("ParameterOptionalNoDefault");
+    assertNotNull(noDefault);
+    assertNull(noDefault.getValue());
+  }
+
+  @Test
+  void optionalParameterPresent() throws Exception {
+    final Map<String, Parameter> parameters = deserialize(
+        "{\"ParameterString\":\"Test\",\"ParameterSuffix\":\"-explicit\"}",
+        "UARTStringOptionalParam", null);
+    assertNotNull(parameters);
+    assertEquals("-explicit", parameters.get("ParameterSuffix").getValue());
+  }
+
+  @Test
+  void optionalParameterExplicitNull() throws Exception {
+    // The default-value rules apply to omission only, an explicitly passed null stays null.
+    final Map<String, Parameter> parameters = deserialize(
+        "{\"ParameterString\":\"Test\",\"ParameterSuffix\":null}",
+        "UARTStringOptionalParam", null);
+    assertNotNull(parameters);
+    final Parameter suffix = parameters.get("ParameterSuffix");
+    assertNotNull(suffix);
+    assertNull(suffix.getValue());
   }
 
   @Test
