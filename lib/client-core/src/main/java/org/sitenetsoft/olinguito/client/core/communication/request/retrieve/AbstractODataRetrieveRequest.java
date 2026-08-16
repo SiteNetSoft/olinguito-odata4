@@ -18,6 +18,10 @@
  *
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 1 Task 7: send retrieve requests carrying a query
  * string as a $query POST on demand (OData 4.01 URL Conventions section 4.17)
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 1 Task 7 fix round 1: set the $query POST
+ * Content-Type at construction time (direct header write) instead of inside doExecute(), so
+ * dispatch paths that never call this class's doExecute() - AsyncRequestWrapperImpl, and batch
+ * serialization via AbstractODataRequest#toByteArray() - see the correct header too
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.retrieve;
 
@@ -36,6 +40,7 @@ import org.sitenetsoft.olinguito.client.core.communication.request.AbstractOData
 import org.sitenetsoft.olinguito.client.core.communication.response.AbstractODataResponse;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 
 /**
@@ -68,7 +73,10 @@ public abstract class AbstractODataRetrieveRequest<T>
   /**
    * Delegate constructor: computes whether this request must be sent as a <tt>$query</tt> POST once,
    * then uses that single decision both to pick the HTTP method/URI passed to the superclass and to
-   * decide whether a POST body needs to be kept around.
+   * decide whether a POST body needs to be kept around. When it is a <tt>$query</tt> POST, the
+   * <tt>Content-Type</tt> header is also fixed to <tt>text/plain</tt> right here, at construction
+   * time - see the note on {@link #odataHeaders} below for why that matters and why it is a direct
+   * header write rather than a call to {@link #setContentType(String)}.
    *
    * @param odataClient client instance getting this request
    * @param query query to be executed, as originally built (with its query string, if any)
@@ -77,6 +85,34 @@ public abstract class AbstractODataRetrieveRequest<T>
   private AbstractODataRetrieveRequest(final ODataClient odataClient, final URI query, final boolean queryPost) {
     super(odataClient, queryPost ? HttpMethod.POST : HttpMethod.GET, queryPost ? toQueryPostURI(query) : query);
     this.queryPostBody = queryPost ? query.getRawQuery() : null;
+    if (queryPost) {
+      // Fix round 1: this used to be a setContentType(...) call inside doExecute(), which only the
+      // synchronous execute() path ever reaches. Two other dispatch paths read the Content-Type
+      // header directly and never call this class's doExecute() at all:
+      //  - AsyncRequestWrapperImpl's own doExecute() (a different, unrelated override on a
+      //    different class) builds its own transport request from odataRequest.getHeaderNames()/
+      //    getHeader(...), and its constructor additionally does
+      //    odataRequest.setContentType(odataRequest.getContentType()) - a self-reassignment that,
+      //    before this fix, read the still-unset header, fell back to the client's default format
+      //    (e.g. application/json) via getContentType(), and then WROTE that default back onto the
+      //    header, permanently locking in the wrong Content-Type before doExecute() ever had a
+      //    chance to run.
+      //  - Batch serialization (AbstractODataRequest#toByteArray(), called from
+      //    AbstractODataBasicRequest#batch()) only fills in the default Content-Type "if not yet
+      //    set" - it never calls doExecute() either.
+      // Setting the header here, at construction, means every dispatch path observes the correct
+      // value from the start, with no per-path special-casing needed.
+      //
+      // This is a direct write to the odataHeaders field (inherited, protected, from
+      // AbstractODataRequest) rather than a call to the virtual setContentType(String) method,
+      // because a subclass is free to override that method: AbstractMetadataRequestImpl does,
+      // pinning it to a no-op so metadata responses always report application/xml. Metadata
+      // requests never carry a query string (there is no $query use case for $metadata), so
+      // queryPost is never true there and this code path is not reachable for that subclass today -
+      // but writing the header field directly means the mechanism is correct on its own terms,
+      // not merely correct by accident of which subclasses happen to reach it.
+      odataHeaders.setHeader(HttpHeader.CONTENT_TYPE, ContentType.TEXT_PLAIN.toContentTypeString());
+    }
   }
 
   /**
@@ -128,13 +164,14 @@ public abstract class AbstractODataRetrieveRequest<T>
   }
 
   /**
-   * Attaches the <tt>$query</tt> POST body (with a <tt>text/plain</tt> Content-Type), if any, before
-   * delegating to the regular request execution.
+   * Attaches the <tt>$query</tt> POST body, if any, before delegating to the regular synchronous
+   * request execution. (The <tt>Content-Type</tt> header itself is already set, if needed, at
+   * construction time - see the delegate constructor - so that it is also visible to dispatch paths,
+   * such as the async wrapper and batch serialization, that never call this method.)
    */
   @Override
   protected ODataHttpResponse doExecute() {
     if (queryPostBody != null) {
-      setContentType(ContentType.TEXT_PLAIN.toContentTypeString());
       setRequestEntity(getPayload());
     }
     return super.doExecute();
