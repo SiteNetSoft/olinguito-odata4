@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Added matchesPattern filter function (OData 4.01)
  */
 package org.sitenetsoft.olinguito.client.api.uri;
 
