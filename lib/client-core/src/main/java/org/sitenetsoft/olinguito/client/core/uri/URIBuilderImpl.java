@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Code quality improvements
  * Copyright 2026 SiteNetSoft - Removed HttpComponents dependency (replaced NameValuePair with Map.Entry)
  * Copyright 2026 SiteNetSoft - Port OLINGO-1369: percent-encode blank spaces in path segments
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 4: implemented schemaVersion(String)
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
@@ -229,6 +230,11 @@ public class URIBuilderImpl implements URIBuilder {
   @Override
   public URIBuilder format(final String format) {
     return replaceQueryOption(QueryOption.FORMAT, format);
+  }
+
+  @Override
+  public URIBuilder schemaVersion(final String version) {
+    return replaceQueryOption(QueryOption.SCHEMAVERSION, version);
   }
 
   @Override

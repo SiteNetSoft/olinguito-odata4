@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Upgraded Apache HttpComponents 4.x to 5.x
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - Port OLINGO-1369: tests for blank-space and embedded-quote encoding
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 4: test for $schemaversion client URI builder
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
@@ -552,5 +553,13 @@ class URIBuilderTest extends AbstractTest {
     final URI uri = client.newURIBuilder(SERVICE_ROOT).
         addCustomQueryOption("x!/?", "@?$").build();
     assertEquals("http://host/service?x%21%2F%3F=%40%3F%24", uri.toASCIIString());
+  }
+
+  @Test
+  void schemaVersion() throws ODataDeserializerException {
+    // Tier 5 Wave 2 Task 4: $schemaversion query option on the client URI builder
+    final ODataClient client = ODataClientFactory.getClient();
+    final URI uri = client.newURIBuilder(SERVICE_ROOT).appendMetadataSegment().schemaVersion("*").build();
+    assertEquals("http://host/service/$metadata?%24schemaversion=%2A", uri.toASCIIString());
   }
 }

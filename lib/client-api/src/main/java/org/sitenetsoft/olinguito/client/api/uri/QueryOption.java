@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Use Locale.ROOT for case conversion
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 4: added $schemaversion (OData 4.01 section 11.2.12)
  */
 package org.sitenetsoft.olinguito.client.api.uri;
 
@@ -89,7 +90,13 @@ public enum QueryOption {
    * Search expressions are used within the $search system query option to request entities matching the specified
    * expression.
    */
-  SEARCH;
+  SEARCH,
+  /**
+   * The $schemaversion system query option allows the client to request a specific version of the schema
+   * used to interpret the response (OData 4.01, Part 1: Protocol, section 11.2.12). The value <tt>*</tt>
+   * requests the latest version supported by the service.
+   */
+  SCHEMAVERSION;
 
   @Override
   public String toString() {

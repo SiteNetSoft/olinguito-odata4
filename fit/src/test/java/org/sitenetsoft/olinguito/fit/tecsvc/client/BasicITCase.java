@@ -21,6 +21,8 @@
  * Copyright 2026 SiteNetSoft - Added omit-values=nulls client round trip (OData 4.01, Protocol Section 8.2.8.6)
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 1 Task 7: added $query POST client round trip
  * (OData 4.01 URL Conventions section 4.17)
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 4: added $schemaversion client round trip
+ * (OData 4.01, Part 1: Protocol, section 11.2.12)
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
@@ -1939,6 +1941,41 @@ public class BasicITCase extends AbstractParamTecSvcITCase {
       assertFalse(response.getBody().getEntities().isEmpty());
     } finally {
       client.getConfiguration().setUseQueryPostRequest(false);
+    }
+  }
+
+  /**
+   * Tier 5 Wave 2 Task 4: the client URI builder's {@code $schemaversion} query option round-trips
+   * against tecsvc, whose schema is versioned {@code "1.0.0"} (OData 4.01, Part 1: Protocol,
+   * section 11.2.12).
+   */
+  @Test
+  public void schemaVersionMatchingServiceVersionSucceeds() {
+    final ODataClient client = getClient();
+    final URI uri = client.newURIBuilder(SERVICE_URI).appendEntitySetSegment(ES_ALL_PRIM)
+        .schemaVersion("1.0.0").build();
+    final ODataEntitySetRequest<ClientEntitySet> request =
+        client.getRetrieveRequestFactory().getEntitySetRequest(uri);
+    setCookieHeader(request);
+    final ODataRetrieveResponse<ClientEntitySet> response = request.execute();
+    saveCookieHeader(response);
+    assertEquals(HttpStatusCode.OK.getStatusCode(), response.getStatusCode());
+    assertFalse(response.getBody().getEntities().isEmpty());
+  }
+
+  @Test
+  public void schemaVersionNotMatchingServiceVersionReturnsNotFound() {
+    final ODataClient client = getClient();
+    final URI uri = client.newURIBuilder(SERVICE_URI).appendEntitySetSegment(ES_ALL_PRIM)
+        .schemaVersion("9.9.9").build();
+    final ODataEntitySetRequest<ClientEntitySet> request =
+        client.getRetrieveRequestFactory().getEntitySetRequest(uri);
+    setCookieHeader(request);
+    try {
+      request.execute();
+      fail("Expected exception not thrown!");
+    } catch (final ODataClientErrorException e) {
+      assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), e.getStatusCode());
     }
   }
 }

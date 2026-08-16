@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced commons-lang3 Pair with Map.Entry in public API
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 4: added schemaVersion(String)
  */
 package org.sitenetsoft.olinguito.client.api.uri;
 
@@ -173,6 +174,15 @@ public interface URIBuilder {
    * @see QueryOption#FORMAT
    */
   URIBuilder format(String format);
+
+  /**
+   * Adds schemaversion query option.
+   *
+   * @param version requested schema version, or <tt>*</tt> for the latest version supported by the service.
+   * @return current URIBuilder instance
+   * @see QueryOption#SCHEMAVERSION
+   */
+  URIBuilder schemaVersion(String version);
 
   /**
    * Adds filter for filter query option.
