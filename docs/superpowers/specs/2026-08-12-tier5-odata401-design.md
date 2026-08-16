@@ -83,6 +83,12 @@ Design:
 
 Tests: parser units; handler validation (match/`*`/mismatch-404-with-body/absent); `$metadata?$schemaversion=*` returns current with the annotation; batch inheritance fit test; closed pin (services without a version source behave as today).
 
+Implementation notes (Wave 2, as built — deviations from this section's letter):
+- `getSchemaVersionOption()` is declared once on `UriInfo` itself, not replicated across the kind-specific sub-interfaces the way `getFormatOption()` is (§11.2.12 allows the option on any request).
+- The version is carried by `ServiceMetadata` via an additive concrete `OData.createServiceMetadata(provider, references, eTagSupport, String schemaVersion)` overload (default body throws `UnsupportedOperationException`; `ODataImpl` overrides it) — no extension interface was needed.
+- `$schemaversion` also had to be exempted from `UriValidator.validateNonReadQueryOptions`, which otherwise rejects every system query option on POST/PUT/PATCH/DELETE — without the exemption `POST $batch?$schemaversion=…` 400s and batch inheritance is unreachable. The exemption is narrow (other options on writes still rejected).
+- Batch: an unknown version on the OUTER `$batch` URL 404s the whole envelope (the envelope is itself a request, version-checked before dispatch) rather than producing per-part 404s inside a multipart body; a part's own unknown version yields a 404 for that part inside a 200 batch.
+
 ## Feature 5: Optional function parameters (OLINGO-1634) — Wave 2
 
 Normative: [OData-Protocol] §11.5.4.1.1, §11.5.4.2, §11.5.5.1 (quoted in full in the citations file); Core vocabulary term `Core.OptionalParameter` / `Core.OptionalParameterType.DefaultValue`. Function inline parameters annotated `Core.OptionalParameter` MAY be omitted; with a `DefaultValue` the omitted parameter has that value, without one the service chooses. Overload resolution: select on exact match, else on a specified-set matching a subset that includes all non-optional parameters of exactly one overload; optional parameters MUST come after non-optional ones (CSDL rule); ambiguity → service MAY 400. **Actions have no optional-parameter overload mechanism** — only body-omission rules (§11.5.5.1: omitted nullable ⇒ null; omitted annotated ⇒ DefaultValue or service's choice).
@@ -95,6 +101,12 @@ Design:
 - Client: no new API (the URI builder already emits caller-chosen parameter subsets) — client half is end-to-end fit proof.
 
 Tests: EDM units (annotation surfacing, optional-after-required CSDL-rule validation); overload-resolution units (exact, subset, ambiguous-400, required-missing pin); tecsvc function with required+optional(+default) params; fit invocations with/without the optional parameter (default observed); action-body omission pins.
+
+Implementation notes (Wave 2, as built — deviations from this section's letter):
+- **Optional-after-required CSDL ordering is NOT enforced** by the overload matcher; it is a provider-authoring rule. The matcher is order-independent (a sanity test pins that a compliant model resolves). The conformance summary's "CSDL ordering" MUST claim is corrected accordingly.
+- **DefaultValue is read as a URI literal** (Core vocabulary: "same rules as the `cast` function in URLs") — `'-default'`, `Ns.Enum'Member'`, `42` — and run through `fromUriLiteral` before use.
+- **server-core does not inject defaults for URL-invoked functions.** It exposes `EdmParameter.isOptional()/getOptionalDefaultValue()` and the *service* materializes defaults; tecsvc's `DataProvider.getFunctionParameters` shows the pattern using the fixed-format deserializer. The JSON action-body deserializer does inject, but only for OMITTED parameters — an explicit JSON `null` stays null; an omitted optional without a default is left absent. Only primitive/enum non-collection defaults are applied.
+- Ambiguity is signalled by a new additive `EdmAmbiguousOverloadException` (commons-api, extends `EdmException`) so that genuine model errors keep their 500 treatment; the URI parser maps only that type to 400 `FUNCTION_AMBIGUOUS`.
 
 ## Feature 6: Key-as-segment convention (OLINGO-1084) — Wave 3, first
 
@@ -132,10 +144,10 @@ Tests: EDM units (annotation surfacing, Alias); parser units (single-part named 
 
 ## Conformance summary
 
-- MUST-level clauses implemented and pinned: matchesPattern signature/dialect reference (§5.1.1.7.1); omit-values Preference-Applied + instance-annotation inclusion + write/delta inclusion (§8.2.8.6, JSON §24 item 22); /$query POST-only + text/plain + merge (§4.17); $schemaversion 404 + versioned processing + batch inheritance (§11.2.12, §13.2.1 item 5); optional-parameter overload rules + CSDL ordering (§11.5.4.2); key-as-segment precedence + multi-part + referential-constraint omission + parenthesized coexistence (§4.3.6, §13.2.1 item 9.l.a); alternate-key single-part naming MUST (§4.3.5).
+- MUST-level clauses implemented and pinned: matchesPattern signature/dialect reference (§5.1.1.7.1); omit-values Preference-Applied + instance-annotation inclusion + write/delta inclusion (§8.2.8.6, JSON §24 item 22); /$query POST-only + text/plain + merge (§4.17); $schemaversion 404 + versioned processing + batch inheritance (§11.2.12, §13.2.1 item 5); optional-parameter overload rules (§11.5.4.2; CSDL optional-after-required ordering is a provider-authoring rule, not matcher-enforced — see Feature 5 notes); key-as-segment precedence + multi-part + referential-constraint omission + parenthesized coexistence (§4.3.6, §13.2.1 item 9.l.a); alternate-key single-part naming MUST (§4.3.5).
 - MAY/SHOULD choices: apply omit-values=nulls on reads only; decline omit-values=defaults; 400 on ambiguous function overloads; key-as-segment opt-in flag.
 - Spec-silent decisions (all documented in the guide): matchesPattern invalid-regex 400; /$query status codes (405/415/400) and duplicate-option handling; omit-values dynamic-null retention; alternate-key writes allowed + primary-key canonical URLs; alternate-key nested-path scope bound.
-- Recorded deviations: java.util.regex instead of an ECMAScript regex engine (Feature 1); alternate-key nested `PropertyRef` paths deferred (Feature 7).
+- Recorded deviations: java.util.regex instead of an ECMAScript regex engine (Feature 1); `$schemaversion` exempted from the non-read query-option rejection and unknown outer-`$batch` version 404s the envelope (Feature 4); optional-after-required CSDL ordering not matcher-enforced, and DefaultValue injection for URL-invoked functions left to the service (Feature 5); alternate-key nested `PropertyRef` paths deferred (Feature 7).
 
 ## Testing & rollout
 
