@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Added the omit-values preference (OData 4.01, Protocol Section 8.2.8.6)
  */
 package org.sitenetsoft.olinguito.server.api.serializer;
 
@@ -29,6 +31,7 @@ public class EntitySerializerOptions {
   private SelectOption select;
   private boolean writeOnlyReferences;
   private String xml10InvalidCharReplacement;
+  private boolean omitNulls;
 
   /** Gets the {@link ContextURL}. */
   public ContextURL getContextURL() {
@@ -48,6 +51,15 @@ public class EntitySerializerOptions {
   /** only writes the references of the entities */
   public boolean getWriteOnlyReferences() {
     return writeOnlyReferences;
+  }
+
+  /**
+   * Whether properties with a null value (and no instance annotation) should be omitted from the
+   * serialized output, per the <code>omit-values=nulls</code> preference
+   * ([OData-Protocol] Section 8.2.8.6).
+   */
+  public boolean isOmitNulls() {
+    return omitNulls;
   }
 
   /** Gets the replacement string for unicode characters, that is not allowed in XML 1.0 */
@@ -94,7 +106,17 @@ public class EntitySerializerOptions {
       options.writeOnlyReferences = ref;
       return this;
     }
-    
+
+    /**
+     * Sets whether properties with a null value (and no instance annotation) are omitted from
+     * the serialized output, per the <code>omit-values=nulls</code> preference
+     * ([OData-Protocol] Section 8.2.8.6).
+     */
+    public Builder omitNulls(final boolean omitNulls) {
+      options.omitNulls = omitNulls;
+      return this;
+    }
+
     /** set the replacement string for xml 1.0 unicode controlled characters that are not allowed */
     public Builder xml10InvalidCharReplacement(final String replacement) {
       options.xml10InvalidCharReplacement = replacement;

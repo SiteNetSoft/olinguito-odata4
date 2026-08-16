@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Added OMIT_VALUES for the OData 4.01 omit-values preference
  */
 package org.sitenetsoft.olinguito.commons.api.format;
 
@@ -28,6 +30,7 @@ public enum PreferenceName {
   CONTINUE_ON_ERROR("odata.continue-on-error"),
   INCLUDE_ANNOTATIONS("odata.include-annotations"),
   MAX_PAGE_SIZE("odata.maxpagesize"),
+  OMIT_VALUES("omit-values"),
   TRACK_CHANGES("odata.track-changes"),
   TRACK_CHANGES_PREF("track-changes"),
   RETURN("return"),

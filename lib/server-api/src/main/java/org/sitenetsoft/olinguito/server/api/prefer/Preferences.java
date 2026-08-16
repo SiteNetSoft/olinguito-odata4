@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
+ * Copyright 2026 SiteNetSoft - Added the omit-values preference (OData 4.01, Protocol Section 8.2.8.6)
  */
 package org.sitenetsoft.olinguito.server.api.prefer;
 
@@ -73,6 +74,25 @@ public interface Preferences {
 
   /** Whether the preference <code>respond-async</code> has been set. */
   public boolean hasRespondAsync();
+
+  /** The values <code>omit-values</code> may specify, per [OData-Protocol] Section 8.2.8.6. */
+  public enum OmitValues {
+    NULLS, DEFAULTS
+  }
+
+  /**
+   * Gets the value of the preference <code>omit-values</code> or <code>null</code> if not set
+   * or the value is not valid, as described in
+   * <a href="https://docs.oasis-open.org/odata/odata/v4.01/">[OData-Protocol] Section 8.2.8.6</a>:
+   * "The omit-values preference specifies values that MAY be omitted from a response payload. Valid
+   * values are nulls or defaults." A default implementation is provided (returning <code>null</code>,
+   * i.e., behaving as if the preference had not been recognized) so that existing implementers of this
+   * interface are not broken by this addition.
+   * @return the requested omission mode, or <code>null</code> if not set or not a recognized value
+   */
+  public default OmitValues getOmitValues() {
+    return null;
+  }
 
   /**
    * Gets the value of the preference <code>wait</code> or <code>null</code> if not set

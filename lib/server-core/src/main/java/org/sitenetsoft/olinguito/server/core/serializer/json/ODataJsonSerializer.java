@@ -26,6 +26,7 @@
  * Copyright 2026 SiteNetSoft - OLINGO-1019: Synthesize nav links in JSON metadata=full
  * Copyright 2026 SiteNetSoft - OLINGO-1307: Include expanded complex properties even when not in $select
  * Copyright 2026 SiteNetSoft - Add OpenType support (serialize dynamic properties in JSON)
+ * Copyright 2026 SiteNetSoft - Added the omit-values preference (OData 4.01, Protocol Section 8.2.8.6)
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -144,6 +145,19 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
   private IConstants constants;
   private ODataJsonInstanceAnnotationSerializer instanceAnnotSerializer;
 
+  /**
+   * Whether null-valued, non-annotated properties are omitted from the current top-level
+   * {@link #entity} / {@link #entityCollection} call, per the <code>omit-values=nulls</code>
+   * preference ([OData-Protocol] Section 8.2.8.6). Set at the start of each top-level entry point
+   * from that call's {@link EntitySerializerOptions#isOmitNulls()} /
+   * {@link EntityCollectionSerializerOptions#isOmitNulls()}, and read (only, never mutated) by
+   * {@link #writeProperty} for the whole synchronous recursive write, including nested complex
+   * values. Safe as instance state because {@link org.sitenetsoft.olinguito.server.core.ODataImpl}
+   * creates a fresh {@code ODataJsonSerializer} per {@code createSerializer} call and each top-level
+   * write runs to completion synchronously before the next one is issued on the same instance.
+   */
+  private boolean omitNulls;
+
   public ODataJsonSerializer(final ContentType contentType, final IConstants constants) {
     isIEEE754Compatible = ContentTypeHelper.isODataIEEE754Compatible(contentType);
     isODataMetadataNone = ContentTypeHelper.isODataMetadataNone(contentType);
@@ -231,7 +245,8 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
     OutputStream outputStream = null;
     SerializerException cachedException = null;
     boolean pagination = false;
-    
+    omitNulls = options != null && options.isOmitNulls();
+
     CircleStreamBuffer buffer = new CircleStreamBuffer();
     outputStream = buffer.getOutputStream();
     try (JsonGenerator json = new JsonFactory().createGenerator(outputStream)) {
@@ -282,6 +297,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
 
     SerializerException cachedException;
     boolean pagination = false;
+    omitNulls = options != null && options.isOmitNulls();
     try {
       JsonGenerator json = new JsonFactory().createGenerator(outputStream);
       json.writeStartObject();
@@ -318,7 +334,8 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       final Entity entity, final EntitySerializerOptions options) throws SerializerException {
     OutputStream outputStream = null;
     SerializerException cachedException = null;
-    
+    omitNulls = options != null && options.isOmitNulls();
+
     final ContextURL contextURL = checkContextURL(options == null ? null : options.getContextURL());
     CircleStreamBuffer buffer = new CircleStreamBuffer();
     outputStream = buffer.getOutputStream();
@@ -900,6 +917,9 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
 	
 	instanceAnnotSerializer.writeInstanceAnnotationsOnProperties(edmProperty, property, json);
     boolean isStreamProperty = isStreamProperty(edmProperty);
+    if (isPropertyOmittedByOmitValuesPreference(edmProperty, property, isStreamProperty)) {
+      return;
+    }
     writePropertyType(edmProperty, json);
     if (!isStreamProperty) {
       json.writeFieldName(edmProperty.getName());
@@ -919,11 +939,42 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
         }
       }
     } else {
-      writePropertyValue(metadata, edmProperty, property, selectedPaths, json, 
+      writePropertyValue(metadata, edmProperty, property, selectedPaths, json,
           expandedPaths, linked, expand);
     }
   }
-  
+
+  /**
+   * Whether {@link #writeProperty} must omit {@code edmProperty} entirely (no type control
+   * information, no field name, no <code>null</code> literal), under the active
+   * <code>omit-values=nulls</code> preference ([OData-Protocol] Section 8.2.8.6).
+   *
+   * <p>Gated on all of: the preference being active for this top-level write ({@link #omitNulls});
+   * the property being absent or {@link Property#isNull()}; the declared property being nullable
+   * (a non-nullable missing property must still hit the existing {@link SerializerException} below,
+   * unaffected by this preference); not a stream property (streams never write a null literal in the
+   * first place); not a collection (a null collection-valued property already serializes as
+   * <code>[]</code>, never as JSON <code>null</code> — there is no null value for the preference to
+   * omit); and no instance annotations present (per spec, "Properties with instance annotations are
+   * not affected by this preference and MUST be included in the payload if they would be included
+   * without this preference").
+   *
+   * <p>Dynamic (open-type) properties never reach this method — they are written by
+   * {@link #writeDynamicProperties}/{@link #writeDynamicProperty}, a separate code path that this
+   * preference intentionally does not touch (the OData 4.01 spec text is silent on omit-values for
+   * dynamic properties; treating them as always-written is the conservative, spec-compatible choice).
+   */
+  private boolean isPropertyOmittedByOmitValuesPreference(final EdmProperty edmProperty,
+      final Property property, final boolean isStreamProperty) {
+    return omitNulls
+        && (property == null || property.isNull())
+        && edmProperty.isNullable() != Boolean.FALSE
+        && !isStreamProperty
+        && !edmProperty.isCollection()
+        && (property == null || property.getAnnotations().isEmpty());
+  }
+
+
   private void writePropertyType(final EdmProperty edmProperty, JsonGenerator json)
       throws SerializerException, IOException {
     if (!isODataMetadataFull) {

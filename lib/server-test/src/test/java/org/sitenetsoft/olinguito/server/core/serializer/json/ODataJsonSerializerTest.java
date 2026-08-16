@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - OLINGO-1550: Test for $apply=groupby absent key properties
  * Copyright 2026 SiteNetSoft - OLINGO-1307: Test $expand on complex nav props without $select
+ * Copyright 2026 SiteNetSoft - Tests for the omit-values preference (OData 4.01, Protocol Section 8.2.8.6)
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -42,6 +43,7 @@ import java.util.List;
 
 import java.io.ByteArrayOutputStream;
 import org.sitenetsoft.olinguito.commons.api.constants.Constantsv01;
+import org.sitenetsoft.olinguito.commons.api.data.Annotation;
 import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
 import org.sitenetsoft.olinguito.commons.api.data.ContextURL;
 import org.sitenetsoft.olinguito.commons.api.data.ContextURL.Suffix;
@@ -428,6 +430,164 @@ class ODataJsonSerializerTest {
         + "\"PropertyDate\":null,\"PropertyDateTimeOffset\":null,\"PropertyDuration\":null,"
         + "\"PropertyGuid\":null,\"PropertyTimeOfDay\":null}";
     Assertions.assertEquals(expectedResult, resultString);
+  }
+
+  @Test
+  void entityAllPrimAllNullOmitted() throws Exception {
+    final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
+    Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
+    entity.getProperties().retainAll(Collections.singletonList(entity.getProperties().get(0)));
+    final String resultString = new String(serializer.entity(metadata, edmEntitySet.getEntityType(),
+        entity,
+        EntitySerializerOptions.with()
+            .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
+            .omitNulls(true)
+            .build()).getContent().readAllBytes(), StandardCharsets.UTF_8);
+    final String expectedResult = "{\"@odata.context\":\"$metadata#ESAllPrim/$entity\","
+        + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
+        + "\"PropertyInt16\":32767}";
+    Assertions.assertEquals(expectedResult, resultString);
+  }
+
+  @Test
+  void entityAllPrimOmitNullsNoNullsUnaffected() throws Exception {
+    final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
+    final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
+    InputStream result = serializer.entity(metadata, edmEntitySet.getEntityType(), entity,
+        EntitySerializerOptions.with()
+            .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
+            .omitNulls(true)
+            .build()).getContent();
+    final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
+    final String expectedResult = "{"
+        + "\"@odata.context\":\"$metadata#ESAllPrim/$entity\","
+        + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
+        + "\"PropertyInt16\":32767,"
+        + "\"PropertyString\":\"First Resource - positive values\","
+        + "\"PropertyBoolean\":true,"
+        + "\"PropertyByte\":255,"
+        + "\"PropertySByte\":127,"
+        + "\"PropertyInt32\":2147483647,"
+        + "\"PropertyInt64\":9223372036854775807,"
+        + "\"PropertySingle\":1.79E20,"
+        + "\"PropertyDouble\":-1.79E19,"
+        + "\"PropertyDecimal\":34,"
+        + "\"PropertyBinary\":\"ASNFZ4mrze8=\","
+        + "\"PropertyDate\":\"2012-12-03\","
+        + "\"PropertyDateTimeOffset\":\"2012-12-03T07:16:23Z\","
+        + "\"PropertyDuration\":\"PT6S\","
+        + "\"PropertyGuid\":\"01234567-89ab-cdef-0123-456789abcdef\","
+        + "\"PropertyTimeOfDay\":\"03:26:05\""
+        + "}";
+    Assertions.assertEquals(expectedResult, resultString);
+  }
+
+  @Test
+  void entityAllPrimOmitNullsKeepsInstanceAnnotatedNullProperty() throws Exception {
+    final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
+    final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
+    final Property property = entity.getProperty("PropertyString");
+    property.setValue(ValueType.PRIMITIVE, null);
+    final Annotation annotation = new Annotation();
+    annotation.setTerm("custom.term");
+    annotation.setType("Boolean");
+    annotation.setValue(ValueType.PRIMITIVE, true);
+    property.getAnnotations().add(annotation);
+
+    final String resultString = new String(serializer.entity(metadata, edmEntitySet.getEntityType(), entity,
+        EntitySerializerOptions.with()
+            .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
+            .omitNulls(true)
+            .build()).getContent().readAllBytes(), StandardCharsets.UTF_8);
+
+    MatcherAssert.assertThat(resultString, CoreMatchers.containsString("\"PropertyString@custom.term\":true"));
+    MatcherAssert.assertThat(resultString, CoreMatchers.containsString("\"PropertyString\":null"));
+  }
+
+  @Test
+  void entityCompAllPrimOmitNullsAppliesToNestedComplexProperty() throws Exception {
+    final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESCompAllPrim");
+    final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
+    final ComplexValue complexValue = entity.getProperty("PropertyComp").asComplex();
+    for (final Property nested : complexValue.getValue()) {
+      if (nested.getName().equals("PropertyString")) {
+        nested.setValue(ValueType.PRIMITIVE, null);
+      }
+    }
+    final String resultString = new String(serializer.entity(metadata, edmEntitySet.getEntityType(), entity,
+        EntitySerializerOptions.with()
+            .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
+            .omitNulls(true)
+            .build()).getContent().readAllBytes(), StandardCharsets.UTF_8);
+    final String expectedResult = "{"
+        + "\"@odata.context\":\"$metadata#ESCompAllPrim/$entity\","
+        + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
+        + "\"@odata.etag\":\"W/\\\"32767\\\"\","
+        + "\"PropertyInt16\":32767,"
+        + "\"PropertyComp\":{"
+        + "\"PropertyBinary\":\"ASNFZ4mrze8=\","
+        + "\"PropertyBoolean\":true,"
+        + "\"PropertyByte\":255,"
+        + "\"PropertyDate\":\"2012-10-03\","
+        + "\"PropertyDateTimeOffset\":\"2012-10-03T07:16:23.1234567Z\","
+        + "\"PropertyDecimal\":34.27,"
+        + "\"PropertySingle\":1.79E20,"
+        + "\"PropertyDouble\":-1.79E19,"
+        + "\"PropertyDuration\":\"PT6S\","
+        + "\"PropertyGuid\":\"01234567-89ab-cdef-0123-456789abcdef\","
+        + "\"PropertyInt16\":32767,"
+        + "\"PropertyInt32\":2147483647,"
+        + "\"PropertyInt64\":9223372036854775807,"
+        + "\"PropertySByte\":127,"
+        + "\"PropertyTimeOfDay\":\"01:00:01\""
+        + "}}";
+    Assertions.assertEquals(expectedResult, resultString);
+    MatcherAssert.assertThat(resultString, CoreMatchers.not(CoreMatchers.containsString("PropertyString")));
+  }
+
+  @Test
+  void entityMixPrimCollCompOmitNullsKeepsEmptyCollectionNotOmitted() throws Exception {
+    final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESMixPrimCollComp");
+    final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
+    entity.getProperty("CollPropertyString").setValue(ValueType.COLLECTION_PRIMITIVE, null);
+    final String resultString = new String(serializer.entity(metadata, edmEntitySet.getEntityType(), entity,
+        EntitySerializerOptions.with()
+            .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
+            .omitNulls(true)
+            .build()).getContent().readAllBytes(), StandardCharsets.UTF_8);
+    MatcherAssert.assertThat(resultString, CoreMatchers.containsString("\"CollPropertyString\":[]"));
+  }
+
+  @Test
+  void entityCollectionOmitNulls() throws Exception {
+    final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
+    final EntityCollection entitySet = data.readAll(edmEntitySet);
+    for (final Entity entity : entitySet.getEntities()) {
+      entity.getProperties().retainAll(Collections.singletonList(entity.getProperties().get(0)));
+    }
+    final String resultString = new String(serializer.entityCollection(metadata, edmEntitySet.getEntityType(),
+        entitySet,
+        EntityCollectionSerializerOptions.with()
+            .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
+            .omitNulls(true)
+            .build()).getContent().readAllBytes(), StandardCharsets.UTF_8);
+    MatcherAssert.assertThat(resultString, CoreMatchers.not(CoreMatchers.containsString("PropertyString")));
+    MatcherAssert.assertThat(resultString, CoreMatchers.containsString("\"PropertyInt16\":32767"));
+  }
+
+  @Test
+  void entityCollectionOmitNullsFalseKeepsNulls() throws Exception {
+    final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
+    final EntityCollection entitySet = data.readAll(edmEntitySet);
+    for (final Entity entity : entitySet.getEntities()) {
+      entity.getProperties().retainAll(Collections.singletonList(entity.getProperties().get(0)));
+    }
+    final String resultString = new String(serializer.entityCollection(metadata, edmEntitySet.getEntityType(),
+        entitySet,
+        EntityCollectionSerializerOptions.with()
+            .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
+            .build()).getContent().readAllBytes(), StandardCharsets.UTF_8);
+    MatcherAssert.assertThat(resultString, CoreMatchers.containsString("\"PropertyString\":null"));
   }
 
   @Test

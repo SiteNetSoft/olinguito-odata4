@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - Added tests for the omit-values preference (OData 4.01, Protocol Section 8.2.8.6)
  */
 package org.sitenetsoft.olinguito.server.core.prefer;
 
@@ -48,6 +49,7 @@ class PreferencesTest {
     assertFalse(preferences.hasContinueOnError());
     assertNull(preferences.getMaxPageSize());
     assertFalse(preferences.hasTrackChanges());
+    assertNull(preferences.getOmitValues());
     assertNull(preferences.getReturn());
     assertFalse(preferences.hasRespondAsync());
     assertNull(preferences.getWait());
@@ -58,7 +60,7 @@ class PreferencesTest {
     final Preferences preferences = new PreferencesImpl(Collections.singleton(
         "odata.allow-entityreferences, odata.callback;url=\"callbackURI\","
             + "odata.continue-on-error, odata.include-annotations=\"*\", odata.maxpagesize=42,"
-            + "odata.track-changes, return=representation, respond-async, wait=12345"));
+            + "odata.track-changes, omit-values=nulls, return=representation, respond-async, wait=12345"));
     assertTrue(preferences.hasAllowEntityReferences());
     assertEquals(URI.create("callbackURI"), preferences.getCallback());
     assertNotNull(preferences.getPreference("odata.callback"));
@@ -69,9 +71,34 @@ class PreferencesTest {
     assertEquals(Integer.valueOf(42), preferences.getMaxPageSize());
     assertEquals("42", preferences.getPreference("odata.MaxPageSize").getValue());
     assertTrue(preferences.hasTrackChanges());
+    assertEquals(Preferences.OmitValues.NULLS, preferences.getOmitValues());
     assertEquals(Return.REPRESENTATION, preferences.getReturn());
     assertTrue(preferences.hasRespondAsync());
     assertEquals(Integer.valueOf(12345), preferences.getWait());
+  }
+
+  @Test
+  void omitValuesDefaults() {
+    final Preferences preferences = new PreferencesImpl(Collections.singleton("omit-values=defaults"));
+    assertEquals(Preferences.OmitValues.DEFAULTS, preferences.getOmitValues());
+  }
+
+  @Test
+  void omitValuesCaseInsensitive() {
+    final Preferences preferences = new PreferencesImpl(Collections.singleton("omit-values=NuLLs"));
+    assertEquals(Preferences.OmitValues.NULLS, preferences.getOmitValues());
+  }
+
+  @Test
+  void omitValuesUnknownValue() {
+    final Preferences preferences = new PreferencesImpl(Collections.singleton("omit-values=weird"));
+    assertNull(preferences.getOmitValues());
+  }
+
+  @Test
+  void omitValuesNotSet() {
+    final Preferences preferences = new PreferencesImpl(Collections.singleton("wait=1"));
+    assertNull(preferences.getOmitValues());
   }
 
   @Test

@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
+ * Copyright 2026 SiteNetSoft - Added the omit-values preference (OData 4.01, Protocol Section 8.2.8.6)
  */
 package org.sitenetsoft.olinguito.server.api.prefer;
 
@@ -78,6 +79,7 @@ public final class PreferencesApplied {
       SAFE_PREFERENCE_NAMES.add(PreferenceName.CALLBACK.getName());
       SAFE_PREFERENCE_NAMES.add(PreferenceName.CONTINUE_ON_ERROR.getName());
       SAFE_PREFERENCE_NAMES.add(PreferenceName.MAX_PAGE_SIZE.getName());
+      SAFE_PREFERENCE_NAMES.add(PreferenceName.OMIT_VALUES.getName());
       SAFE_PREFERENCE_NAMES.add(PreferenceName.TRACK_CHANGES.getName());
       SAFE_PREFERENCE_NAMES.add(PreferenceName.RETURN.getName());
       SAFE_PREFERENCE_NAMES.add(PreferenceName.RESPOND_ASYNC.getName());

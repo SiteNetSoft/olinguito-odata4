@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - Added a test for the omit-values preference (OData 4.01, Protocol Section 8.2.8.6)
  */
 package org.sitenetsoft.olinguito.server.api.prefer;
 
@@ -36,11 +37,24 @@ class PreferencesAppliedTest {
   void all() {
     assertEquals("odata.allow-entityreferences, odata.callback,"
         + " odata.continue-on-error, odata.include-annotations=\"*\", odata.maxpagesize=42,"
-        + " odata.track-changes, return=representation, respond-async, wait=12345",
+        + " odata.track-changes, omit-values=nulls, return=representation, respond-async, wait=12345",
         PreferencesApplied.with().allowEntityReferences().callback().continueOnError()
         .preference("odata.include-annotations", "*").maxPageSize(42).trackChanges()
+        .preference("omit-values", "nulls")
         .returnRepresentation(Return.REPRESENTATION).respondAsync().waitPreference(12345)
         .build().toValueString());
+  }
+
+  @Test
+  void omitValuesRendersUnquoted() {
+    assertEquals("omit-values=nulls",
+        PreferencesApplied.with().preference("omit-values", "nulls").build().toValueString());
+  }
+
+  @Test
+  void omitValuesDefaultsRendersUnquoted() {
+    assertEquals("omit-values=defaults",
+        PreferencesApplied.with().preference("omit-values", "defaults").build().toValueString());
   }
 
   @Test

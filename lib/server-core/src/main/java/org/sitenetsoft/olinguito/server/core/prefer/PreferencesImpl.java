@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
+ * Copyright 2026 SiteNetSoft - Added the omit-values preference (OData 4.01, Protocol Section 8.2.8.6)
  */
 package org.sitenetsoft.olinguito.server.core.prefer;
 
@@ -100,6 +101,21 @@ public class PreferencesImpl implements Preferences {
   @Override
   public boolean hasRespondAsync() {
     return preferences.containsKey(PreferenceName.RESPOND_ASYNC.getName());
+  }
+
+  @Override
+  public OmitValues getOmitValues() {
+    if (preferences.containsKey(PreferenceName.OMIT_VALUES.getName())) {
+      final String value = preferences.get(PreferenceName.OMIT_VALUES.getName()).getValue();
+      if (value != null) {
+        if (OmitValues.NULLS.toString().equalsIgnoreCase(value)) {
+          return OmitValues.NULLS;
+        } else if (OmitValues.DEFAULTS.toString().equalsIgnoreCase(value)) {
+          return OmitValues.DEFAULTS;
+        }
+      }
+    }
+    return null;
   }
 
   @Override

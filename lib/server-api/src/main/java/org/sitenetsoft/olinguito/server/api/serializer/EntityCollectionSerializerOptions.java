@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Added the omit-values preference (OData 4.01, Protocol Section 8.2.8.6)
  */
 package org.sitenetsoft.olinguito.server.api.serializer;
 
@@ -36,6 +38,7 @@ public class EntityCollectionSerializerOptions {
   private ODataContentWriteErrorCallback odataContentWriteErrorCallback;
   private String xml10InvalidCharReplacement;
   private boolean isFullRepresentation = false;
+  private boolean omitNulls;
 
   /** Gets the {@link ContextURL}. */
   public ContextURL getContextURL() {
@@ -83,9 +86,18 @@ public class EntityCollectionSerializerOptions {
     return xml10InvalidCharReplacement;
   }  
   
-  /** Inline entries will not have @delta if representation is full **/ 
+  /** Inline entries will not have @delta if representation is full **/
   public boolean isFullRepresentation() {
     return isFullRepresentation;
+  }
+
+  /**
+   * Whether properties with a null value (and no instance annotation) should be omitted from the
+   * serialized output, per the <code>omit-values=nulls</code> preference
+   * ([OData-Protocol] Section 8.2.8.6).
+   */
+  public boolean isOmitNulls() {
+    return omitNulls;
   }
 
   /** Initializes the options builder. */
@@ -161,7 +173,17 @@ public class EntityCollectionSerializerOptions {
       options.isFullRepresentation = isFullRepresentation;
       return this;
     }
-    
+
+    /**
+     * Sets whether properties with a null value (and no instance annotation) are omitted from
+     * the serialized output, per the <code>omit-values=nulls</code> preference
+     * ([OData-Protocol] Section 8.2.8.6).
+     */
+    public Builder omitNulls(final boolean omitNulls) {
+      options.omitNulls = omitNulls;
+      return this;
+    }
+
     /** Builds the OData serializer options. */
     public EntityCollectionSerializerOptions build() {
       return options;
