@@ -20,6 +20,8 @@
  * Copyright 2026 SiteNetSoft - Add $select-of-dynamic-property serializer tests
  * Copyright 2026 SiteNetSoft - Pin $select of a nested dynamic property under a declared complex
  * Copyright 2026 SiteNetSoft - Server must not emit @odata.type under odata.metadata=none
+ * Copyright 2026 SiteNetSoft - omit-values: dynamic properties are never omitted (OData 4.01,
+ * Protocol Section 8.2.8.6)
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -237,6 +239,11 @@ class ODataJsonSerializerOpenTypeTest {
 
   private String serializeEntity(final Entity entity, final String entityTypeName, final ContentType contentType,
       final SelectOption select) throws Exception {
+    return serializeEntity(entity, entityTypeName, contentType, select, false);
+  }
+
+  private String serializeEntity(final Entity entity, final String entityTypeName, final ContentType contentType,
+      final SelectOption select, final boolean omitNulls) throws Exception {
     final EdmEntityType edmEntityType = metadata.getEdm().getEntityType(
         new FullQualifiedName(SchemaProvider.NAMESPACE, entityTypeName));
     entity.setType(edmEntityType.getFullQualifiedName().getFullQualifiedNameAsString());
@@ -245,7 +252,23 @@ class ODataJsonSerializerOpenTypeTest {
         EntitySerializerOptions.with()
             .contextURL(ContextURL.with().type(edmEntityType).build())
             .select(select)
+            .omitNulls(omitNulls)
             .build()).getContent().readAllBytes();
     return new String(bytes, StandardCharsets.UTF_8);
+  }
+
+  @Test
+  void omitValuesNullsNeverOmitsDynamicPropertiesButOmitsDeclaredNulls() throws Exception {
+    // Behavior matrix: dynamic (open-type) properties are written by a separate code path
+    // (writeDynamicProperties/writeDynamicProperty) that the omit-values=nulls preference
+    // intentionally does not touch, per the design's spec-silent decision. A null dynamic property
+    // must still be written, while a null DECLARED property on the same open-type entity is omitted.
+    final Entity entity = new Entity()
+        .addProperty(new Property(null, "PropertyInt16", ValueType.PRIMITIVE, (short) 1))
+        .addProperty(new Property(null, "PropertyString", ValueType.PRIMITIVE, null))
+        .addProperty(new Property(null, "DynamicNull", ValueType.PRIMITIVE, null));
+    final String json = serializeEntity(entity, "ETOpen", ContentType.JSON, null, true);
+    assertTrue(json.contains("\"DynamicNull\":null"));
+    assertFalse(json.contains("PropertyString"));
   }
 }

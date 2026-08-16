@@ -155,6 +155,18 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
    * values. Safe as instance state because {@link org.sitenetsoft.olinguito.server.core.ODataImpl}
    * creates a fresh {@code ODataJsonSerializer} per {@code createSerializer} call and each top-level
    * write runs to completion synchronously before the next one is issued on the same instance.
+   *
+   * <p><b>Invariant (entry-point-scoped field):</b> this field is shared by every public entry
+   * point that can reach {@link #writeProperty} / {@link #writeComplexValue} — currently
+   * {@link #entity}, {@link #entityCollection}, {@link #entityCollectionIntoStream} (which sets it
+   * from the option carried by their respective serializer-options types), and {@link #primitive},
+   * {@link #primitiveCollection}, {@link #complex}, {@link #complexCollection} (whose options types
+   * have no omit-values option, so they explicitly reset it to {@code false} at entry). Every public
+   * entry point that reaches the shared write chain MUST either set this field from its own option or
+   * reset it to {@code false}; otherwise a value left over from a prior call on the same instance
+   * could leak into a call whose options type does not support (and so cannot disable) the
+   * preference. Adding a new entry point that reaches {@link #writeProperty} requires doing one of
+   * the two.
    */
   private boolean omitNulls;
 
@@ -1380,7 +1392,10 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       final Property property, final PrimitiveSerializerOptions options) throws SerializerException {
     OutputStream outputStream = null;
     SerializerException cachedException = null;
-    
+    // PrimitiveSerializerOptions has no omit-values option; reset the shared omitNulls field so
+    // it cannot leak in from a prior entity()/entityCollection() call on this same instance.
+    omitNulls = false;
+
     final ContextURL contextURL = checkContextURL(options == null ? null : options.getContextURL());
     CircleStreamBuffer buffer = new CircleStreamBuffer();
     outputStream = buffer.getOutputStream();
@@ -1424,6 +1439,9 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       final Property property, final ComplexSerializerOptions options) throws SerializerException {
     OutputStream outputStream = null;
     SerializerException cachedException = null;
+    // ComplexSerializerOptions has no omit-values option; reset the shared omitNulls field so
+    // it cannot leak in from a prior entity()/entityCollection() call on this same instance.
+    omitNulls = false;
     try {
       final ContextURL contextURL = checkContextURL(options == null ? null : options.getContextURL());
       final String name =  contextURL == null ? null:
@@ -1482,7 +1500,10 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       final Property property, final PrimitiveSerializerOptions options) throws SerializerException {
     OutputStream outputStream = null;
     SerializerException cachedException = null;
-    
+    // PrimitiveSerializerOptions has no omit-values option; reset the shared omitNulls field so
+    // it cannot leak in from a prior entity()/entityCollection() call on this same instance.
+    omitNulls = false;
+
     final ContextURL contextURL = checkContextURL(options == null ? null : options.getContextURL());
     CircleStreamBuffer buffer = new CircleStreamBuffer();
     outputStream = buffer.getOutputStream();
@@ -1520,11 +1541,14 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
 
   @Override
   public SerializerResult complexCollection(final ServiceMetadata metadata, final EdmComplexType type,
-      final Property property, final ComplexSerializerOptions options) 
+      final Property property, final ComplexSerializerOptions options)
     		  throws SerializerException {
     OutputStream outputStream = null;
     SerializerException cachedException = null;
-    
+    // ComplexSerializerOptions has no omit-values option; reset the shared omitNulls field so
+    // it cannot leak in from a prior entity()/entityCollection() call on this same instance.
+    omitNulls = false;
+
     final ContextURL contextURL = checkContextURL(options == null ? null : options.getContextURL());
     CircleStreamBuffer buffer = new CircleStreamBuffer();
     outputStream = buffer.getOutputStream();

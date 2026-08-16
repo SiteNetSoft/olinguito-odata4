@@ -21,6 +21,8 @@
  * Copyright 2026 SiteNetSoft - OLINGO-1550: Test for $apply=groupby absent key properties
  * Copyright 2026 SiteNetSoft - OLINGO-1307: Test $expand on complex nav props without $select
  * Copyright 2026 SiteNetSoft - Tests for the omit-values preference (OData 4.01, Protocol Section 8.2.8.6)
+ * Copyright 2026 SiteNetSoft - omit-values: non-nullable-missing exception, streamed collection,
+ * and entry-point-reset regression tests
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -586,6 +588,101 @@ class ODataJsonSerializerTest {
         entitySet,
         EntityCollectionSerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
+            .build()).getContent().readAllBytes(), StandardCharsets.UTF_8);
+    MatcherAssert.assertThat(resultString, CoreMatchers.containsString("\"PropertyString\":null"));
+  }
+
+  @Test
+  void entityAllPrimKeyNullOmitNullsStillThrows() throws Exception {
+    // Behavior matrix: omit-values=nulls must not affect the existing non-nullable-missing-property
+    // exception. ESAllPrim's key property (PropertyInt16) is non-nullable; a missing/absent key
+    // property must still fail even with .omitNulls(true) set.
+    final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
+    final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
+    entity.getProperties().clear();
+    final SerializerException exception = assertThrows(SerializerException.class, () ->
+        serializer.entity(metadata, edmEntitySet.getEntityType(), entity,
+            EntitySerializerOptions.with()
+                .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
+                .omitNulls(true)
+                .build()));
+    MatcherAssert.assertThat(exception.getMessage(),
+        CoreMatchers.containsString("Non-nullable property not present"));
+  }
+
+  @Test
+  void entityCollectionStreamedOmitNulls() throws Exception {
+    // Behavior matrix + threading coverage: entityCollectionIntoStream (the synchronous write body
+    // behind entityCollectionStreamed()) must also honor omit-values=nulls.
+    final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESAllPrim");
+    final EntityIterator entityIterator = new EntityIterator() {
+      final EntityCollection entityCollection = data.readAll(edmEntitySet);
+      final Iterator<Entity> innerIterator = entityCollection.iterator();
+
+      @Override
+      public List<Operation> getOperations() {
+        return entityCollection.getOperations();
+      }
+
+      @Override
+      public boolean hasNext() {
+        return innerIterator.hasNext();
+      }
+      @Override
+      public Entity next() {
+        final Entity entity = innerIterator.next();
+        entity.getProperty("PropertyString").setValue(ValueType.PRIMITIVE, null);
+        return entity;
+      }
+    };
+
+    ODataContent result = serializer.entityCollectionStreamed(
+        metadata, edmEntitySet.getEntityType(), entityIterator,
+        EntityCollectionSerializerOptions.with()
+            .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
+            .omitNulls(true)
+            .build()).getODataContent();
+    ByteArrayOutputStream bout = new ByteArrayOutputStream();
+    result.write(bout);
+    final String resultString = new String(bout.toByteArray(), StandardCharsets.UTF_8);
+
+    MatcherAssert.assertThat(resultString, CoreMatchers.not(CoreMatchers.containsString("PropertyString")));
+    MatcherAssert.assertThat(resultString, CoreMatchers.containsString("\"PropertyInt16\":32767"));
+  }
+
+  @Test
+  void omitNullsDoesNotLeakFromEntityCallIntoLaterComplexCall() throws Exception {
+    // Defensive-reset coverage: complex() shares the omitNulls field with entity()/entityCollection()
+    // via the same writeProperty/writeComplexValue chain, but ComplexSerializerOptions has no
+    // omit-values option. A stateful field must not leak omitNulls=true from a prior entity() call
+    // (on the SAME serializer instance) into a later complex() call. Uses two different entity sets
+    // so the second data.readAll() below is unaffected by DataProvider's shared in-memory object
+    // identity (readAll() returns the same cached instances within a single test, not fresh copies).
+    final EdmEntitySet allPrimEntitySet = entityContainer.getEntitySet("ESAllPrim");
+    final Entity allPrimEntity = data.readAll(allPrimEntitySet).getEntities().get(0);
+    allPrimEntity.getProperty("PropertyString").setValue(ValueType.PRIMITIVE, null);
+    serializer.entity(metadata, allPrimEntitySet.getEntityType(), allPrimEntity,
+        EntitySerializerOptions.with()
+            .contextURL(ContextURL.with().entitySet(allPrimEntitySet).suffix(Suffix.ENTITY).build())
+            .omitNulls(true)
+            .build());
+
+    // PropertyComp on ESCompAllPrim is a CTAllPrim, whose PropertyString is nullable (unlike
+    // ESMixPrimCollComp's CTTwoPrim-typed PropertyComp, whose PropertyString is non-nullable).
+    final EdmEntitySet compEntitySet = entityContainer.getEntitySet("ESCompAllPrim");
+    final EdmProperty edmProperty = (EdmProperty) compEntitySet.getEntityType().getProperty("PropertyComp");
+    final Property complexProperty = data.readAll(compEntitySet).getEntities().get(0).getProperty("PropertyComp");
+    for (final Property nested : complexProperty.asComplex().getValue()) {
+      if (nested.getName().equals("PropertyString")) {
+        nested.setValue(ValueType.PRIMITIVE, null);
+      }
+    }
+    final String resultString = new String(serializer.complex(metadata, (EdmComplexType) edmProperty.getType(),
+        complexProperty,
+        ComplexSerializerOptions.with()
+            .contextURL(ContextURL.with()
+                .entitySet(compEntitySet).keyPath("32767").navOrPropertyPath(edmProperty.getName())
+                .build())
             .build()).getContent().readAllBytes(), StandardCharsets.UTF_8);
     MatcherAssert.assertThat(resultString, CoreMatchers.containsString("\"PropertyString\":null"));
   }
