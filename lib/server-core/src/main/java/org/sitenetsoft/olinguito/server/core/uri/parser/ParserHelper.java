@@ -33,8 +33,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmAmbiguousOverloadException;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
-import org.sitenetsoft.olinguito.commons.api.edm.EdmException;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmFunction;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmFunctionImport;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmKeyPropertyRef;
@@ -666,6 +666,8 @@ public class ParserHelper {
   /**
    * Resolves a bound function overload, mapping an ambiguous match (OData 4.01, Protocol
    * section 11.5.4.2) to a semantic URI-parser error instead of letting it surface as a 500.
+   * Any other {@link org.sitenetsoft.olinguito.commons.api.edm.EdmException} indicates a broken
+   * model and is deliberately left to propagate as a server error.
    */
   protected static EdmFunction getBoundFunction(final Edm edm, final FullQualifiedName functionName,
       final FullQualifiedName bindingParameterTypeName, final boolean isBindingParameterCollection,
@@ -673,7 +675,7 @@ public class ParserHelper {
     try {
       return edm.getBoundFunction(functionName, bindingParameterTypeName, isBindingParameterCollection,
           parameterNames);
-    } catch (final EdmException e) {
+    } catch (final EdmAmbiguousOverloadException e) {
       throw ambiguousFunction(e, functionName.getFullQualifiedNameAsString(), parameterNames);
     }
   }
@@ -683,7 +685,7 @@ public class ParserHelper {
       final List<String> parameterNames) throws UriParserSemanticException {
     try {
       return edm.getUnboundFunction(functionName, parameterNames);
-    } catch (final EdmException e) {
+    } catch (final EdmAmbiguousOverloadException e) {
       throw ambiguousFunction(e, functionName.getFullQualifiedNameAsString(), parameterNames);
     }
   }
@@ -693,13 +695,13 @@ public class ParserHelper {
       final List<String> parameterNames) throws UriParserSemanticException {
     try {
       return functionImport.getUnboundFunction(parameterNames);
-    } catch (final EdmException e) {
+    } catch (final EdmAmbiguousOverloadException e) {
       throw ambiguousFunction(e, functionImport.getName(), parameterNames);
     }
   }
 
-  private static UriParserSemanticException ambiguousFunction(final EdmException cause, final String functionName,
-      final List<String> parameterNames) {
+  private static UriParserSemanticException ambiguousFunction(final EdmAmbiguousOverloadException cause,
+      final String functionName, final List<String> parameterNames) {
     return new UriParserSemanticException(
         "Ambiguous function '" + functionName + "' with parameters " + parameterNames + ".", cause,
         UriParserSemanticException.MessageKeys.FUNCTION_AMBIGUOUS, functionName, String.valueOf(parameterNames));

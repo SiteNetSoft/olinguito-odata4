@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - OLINGO-972: Test bound action inheritance across multiple levels
  * Copyright 2026 SiteNetSoft - OData 4.01: covering-set overload resolution for optional parameters
+ * Copyright 2026 SiteNetSoft - OData 4.01: assert the dedicated ambiguous-overload exception
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -37,6 +38,7 @@ import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmAction;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmAmbiguousOverloadException;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmException;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmFunction;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
@@ -334,7 +336,7 @@ class EdmProviderImplOverloadingTest {
     when(provider.getEntityType(operationType1)).thenReturn(new CsdlEntityType().setProperties(new ArrayList<>()));
     final Edm localEdm = new EdmProviderImpl(provider);
 
-    EdmException exception = assertThrows(EdmException.class,
+    EdmAmbiguousOverloadException exception = assertThrows(EdmAmbiguousOverloadException.class,
         () -> localEdm.getUnboundFunction(functionName, List.of("A")));
     assertTrue(exception.getMessage().contains("Ambiguous function overload"), exception.getMessage());
   }
@@ -386,7 +388,7 @@ class EdmProviderImplOverloadingTest {
     when(provider.getEntityType(operationType1)).thenReturn(new CsdlEntityType().setProperties(new ArrayList<>()));
     final Edm localEdm = new EdmProviderImpl(provider);
 
-    assertThrows(EdmException.class,
+    assertThrows(EdmAmbiguousOverloadException.class,
         () -> localEdm.getBoundFunction(functionName, operationType1, false, List.of("A")));
   }
 

@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.sitenetsoft.olinguito.commons.api.edm.EdmAction;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmAmbiguousOverloadException;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmAnnotations;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmComplexType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
@@ -678,7 +679,7 @@ public class EdmProviderImpl extends AbstractEdm {
       return null;
     }
     if (candidates.size() > 1) {
-      throw new EdmException("Ambiguous function overload for '" + functionName
+      throw new EdmAmbiguousOverloadException("Ambiguous function overload for '" + functionName
           + "' with parameters " + parameterNames);
     }
     final CsdlFunction function = candidates.get(0);
