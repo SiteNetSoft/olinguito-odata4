@@ -19,6 +19,8 @@
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
  * Copyright 2026 SiteNetSoft - Apply omit-values=nulls on entity/entity-collection reads
  * (OData 4.01, Protocol Section 8.2.8.6)
+ * Copyright 2026 SiteNetSoft - Gate omit-values Preference-Applied on !isReference in
+ * readEntityCollection, symmetric with readEntity
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
@@ -742,9 +744,12 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
       preferencesAppliedBuilder.trackChanges();
       anyPreferenceApplied = true;
     }
-    if (omitNulls && delta == null) {
+    if (omitNulls && delta == null && !isReference) {
       // Delta payloads never omit nulls (see above), so a delta response must not claim to have
-      // applied omit-values either.
+      // applied omit-values either. Reference collections ($ref) never carry properties to omit
+      // either (serializeReferenceCollection only ever writes @odata.id), so an omit-values
+      // request against a $ref collection must not claim to have been applied there -- symmetric
+      // with readEntity's `!isReference` gate on the single-entity $ref case.
       preferencesAppliedBuilder.preference(PreferenceName.OMIT_VALUES.getName(), "nulls");
       anyPreferenceApplied = true;
     }

@@ -18,6 +18,8 @@
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
  * Copyright 2026 SiteNetSoft - Added omit-values=nulls read-path coverage (OData 4.01, Protocol Section 8.2.8.6)
+ * Copyright 2026 SiteNetSoft - Pinned maxpagesize/track-changes co-occurrence and omit-values
+ * exclusion on reference-collection reads
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.http;
 
@@ -440,6 +442,44 @@ public class PreferHeaderForGetAndDeleteITCase extends AbstractBaseTestITCase {
 
     final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
     assertFalse(content.contains("\"PropertyString\":null"));
+  }
+
+  // Coordinator review (Fix round 1): the trailing Preference-Applied block was restructured from a
+  // pageSize/trackChanges if/else (mutually exclusive by accident) into independent ifs so that
+  // omit-values could co-occur with either. That restructuring also allows maxpagesize and
+  // track-changes to co-occur, which the previous if/else silently prevented; this pins that this
+  // pair now accumulates into a single Preference-Applied header, with no omit-values involved.
+  @Test
+  public void maxPageSizeCombinedWithTrackChanges_GetEntityCollection() throws Exception {
+    URL url = new URL(SERVICE_URI + "ESServerSidePaging");
+
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod(HttpMethod.GET.name());
+    connection.setRequestProperty(HttpHeader.PREFER, "odata.maxpagesize=7, odata.track-changes");
+    connection.connect();
+
+    assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
+    assertEquals("odata.maxpagesize=7, odata.track-changes",
+        connection.getHeaderField(HttpHeader.PREFERENCE_APPLIED));
+  }
+
+  // Coordinator review (Fix round 1): serializeReferenceCollection ($ref) never writes properties,
+  // so it never omits anything; omit-values must not be echoed in Preference-Applied for a reference
+  // collection response, symmetric with readEntity's !isReference gate for a single-entity $ref.
+  @Test
+  public void omitValuesNulls_NotAppliedOrEchoedOnReferenceCollection() throws Exception {
+    URL url = new URL(SERVICE_URI + "ESAllPrim/$ref");
+
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod(HttpMethod.GET.name());
+    connection.setRequestProperty(HttpHeader.PREFER, "omit-values=nulls");
+    connection.connect();
+
+    assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
+    assertNull(connection.getHeaderField(HttpHeader.PREFERENCE_APPLIED));
+
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
+    assertTrue(content.contains("\"@odata.context\":\"../$metadata#Collection($ref)"));
   }
 
   @Override
