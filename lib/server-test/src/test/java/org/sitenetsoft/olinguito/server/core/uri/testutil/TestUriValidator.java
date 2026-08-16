@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 1: $schemaversion system query option
  */
 package org.sitenetsoft.olinguito.server.core.uri.testutil;
 
@@ -192,6 +194,11 @@ public class TestUriValidator implements TestValidator {
 
   public TestUriValidator isSkipTokenText(final String skipTokenText) {
     assertEquals(skipTokenText, uriInfo.getSkipTokenOption().getValue());
+    return this;
+  }
+
+  public TestUriValidator isSchemaVersionText(final String schemaVersionText) {
+    assertEquals(schemaVersionText, uriInfo.getSchemaVersionOption().getSchemaVersion());
     return this;
   }
 

@@ -15,12 +15,15 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 1: $schemaversion system query option
  */
 package org.sitenetsoft.olinguito.server.api.uri;
 
 import java.util.List;
 
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.AliasQueryOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SchemaVersionOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.SystemQueryOption;
 
 /**
@@ -90,4 +93,14 @@ UriInfoAll, UriInfoCrossjoin, UriInfoEntityId {
    * @return a list of all alias definitions
    */
   List<AliasQueryOption> getAliases();
+
+  /**
+   * Gets the $schemaversion system query option, if it was used in the request. Per OData 4.01,
+   * Part 1: Protocol, section 11.2.12, this option MAY be included in any request; it is therefore
+   * declared once here on {@link UriInfo} rather than on each of the seven kind-specific
+   * sub-interfaces (the per-kind {@code getFormatOption} pattern), since every consumer of URI
+   * information holds a {@link UriInfo} reference regardless of kind.
+   * @return the $schemaversion option, or <code>null</code> if it was not used in the URI
+   */
+  SchemaVersionOption getSchemaVersionOption();
 }

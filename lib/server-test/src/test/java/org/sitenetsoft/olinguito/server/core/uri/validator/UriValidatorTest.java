@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - Pin: dynamic-property path segment before $value is rejected by
  * UriValidator with UNALLOWED_KIND_BEFORE_VALUE
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 1: $schemaversion system query option
  */
 package org.sitenetsoft.olinguito.server.core.uri.validator;
 
@@ -92,6 +93,7 @@ class UriValidatorTest {
   private static final String QO_SKIPTOKEN = "$skiptoken=123";
   private static final String QO_TOP = "$top=1";
   private static final String QO_APPLY = "$apply=identity";
+  private static final String QO_SCHEMAVERSION = "$schemaversion=*";
 
   private final String[][] urisWithValidSystemQueryOptions = {
       { URI_ALL, QO_FILTER }, { URI_ALL, QO_FORMAT }, { URI_ALL, QO_EXPAND }, { URI_ALL, QO_COUNT },
@@ -166,7 +168,30 @@ class UriValidatorTest {
       { "FINRTInt16()", QO_FORMAT },
       { "FICRTCollString()", QO_FORMAT },
       { "FICRTCTTwoPrim()", QO_FORMAT },
-      { "FICRTCollCTTwoPrim()", QO_FORMAT }
+      { "FICRTCollCTTwoPrim()", QO_FORMAT },
+
+      // OData 4.01 section 11.2.12: $schemaversion MAY be included in ANY request, so it is valid
+      // for every URI type below, including $batch and a media-stream $value, which otherwise
+      // accept no system query options at all (see urisWithNonValidSystemQueryOptions: $format on
+      // $batch and on the media stream is still rejected, pinning that they stay closed for
+      // everything else).
+      { URI_ALL, QO_SCHEMAVERSION }, { URI_BATCH, QO_SCHEMAVERSION }, { URI_CROSSJOIN, QO_SCHEMAVERSION },
+      { URI_ENTITY_ID, QO_ID, QO_SCHEMAVERSION }, { URI_METADATA, QO_SCHEMAVERSION },
+      { URI_SERVICE, QO_SCHEMAVERSION }, { URI_ENTITY_SET, QO_SCHEMAVERSION },
+      { URI_ENTITY_SET_COUNT, QO_SCHEMAVERSION }, { URI_ENTITY, QO_SCHEMAVERSION },
+      { URI_MEDIA_STREAM, QO_SCHEMAVERSION }, { URI_REFERENCES, QO_SCHEMAVERSION },
+      { URI_REFERENCE, QO_SCHEMAVERSION }, { URI_PROPERTY_COMPLEX, QO_SCHEMAVERSION },
+      { URI_PROPERTY_COMPLEX_COLLECTION, QO_SCHEMAVERSION },
+      { URI_PROPERTY_COMPLEX_COLLECTION_COUNT, QO_SCHEMAVERSION },
+      { URI_PROPERTY_PRIMITIVE, QO_SCHEMAVERSION },
+      { URI_PROPERTY_PRIMITIVE_COLLECTION, QO_SCHEMAVERSION },
+      { URI_PROPERTY_PRIMITIVE_COLLECTION_COUNT, QO_SCHEMAVERSION },
+      { URI_PROPERTY_PRIMITIVE_VALUE, QO_SCHEMAVERSION }, { URI_SINGLETON, QO_SCHEMAVERSION },
+      { URI_NAV_ENTITY, QO_SCHEMAVERSION }, { URI_NAV_ENTITY_SET, QO_SCHEMAVERSION },
+      { URI_FI_ENTITY_SET, QO_SCHEMAVERSION }, { URI_FI_ENTITY, QO_SCHEMAVERSION },
+      { URI_FI_ENTITY_SET_KEY, QO_SCHEMAVERSION },
+      { "FINRTInt16()", QO_SCHEMAVERSION }, { "FICRTCollString()", QO_SCHEMAVERSION },
+      { "FICRTCTTwoPrim()", QO_SCHEMAVERSION }, { "FICRTCollCTTwoPrim()", QO_SCHEMAVERSION }
   };
 
   private final String[][] urisWithNonValidSystemQueryOptions = {

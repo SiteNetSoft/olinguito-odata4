@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
  * Copyright 2026 SiteNetSoft - OLINGO-1324: Tolerate trailing slash in URI paths
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 1: $schemaversion system query option
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -66,6 +67,7 @@ import org.sitenetsoft.olinguito.server.core.uri.queryoption.FilterOptionImpl;
 import org.sitenetsoft.olinguito.server.core.uri.queryoption.FormatOptionImpl;
 import org.sitenetsoft.olinguito.server.core.uri.queryoption.IdOptionImpl;
 import org.sitenetsoft.olinguito.server.core.uri.queryoption.OrderByOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.SchemaVersionOptionImpl;
 import org.sitenetsoft.olinguito.server.core.uri.queryoption.SearchOptionImpl;
 import org.sitenetsoft.olinguito.server.core.uri.queryoption.SelectOptionImpl;
 import org.sitenetsoft.olinguito.server.core.uri.queryoption.SkipOptionImpl;
@@ -388,6 +390,14 @@ public class Parser {
               optionName, optionValue);
         }
         systemOption = new IdOptionImpl().setValue(optionValue);
+        break;
+      case SCHEMAVERSION:
+        if (optionValue.isEmpty()) {
+          throw new UriParserSyntaxException("Illegal value of $schemaversion option!",
+              UriParserSyntaxException.MessageKeys.WRONG_VALUE_FOR_SYSTEM_QUERY_OPTION,
+              optionName, optionValue);
+        }
+        systemOption = new SchemaVersionOptionImpl().setValue(optionValue);
         break;
       case LEVELS:
         throw new UriParserSyntaxException("System query option '$levels' is allowed only inside '$expand'!",

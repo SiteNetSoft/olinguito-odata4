@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 1: added $schemaversion (OData 4.01 §11.2.12)
  */
 package org.sitenetsoft.olinguito.server.api.uri.queryoption;
 
@@ -92,7 +94,12 @@ public enum SystemQueryOptionKind {
   /**
    * @see ApplyOption
    */
-  APPLY("$apply");
+  APPLY("$apply"),
+
+  /**
+   * @see SchemaVersionOption
+   */
+  SCHEMAVERSION("$schemaversion");
 
   private final String syntax;
 

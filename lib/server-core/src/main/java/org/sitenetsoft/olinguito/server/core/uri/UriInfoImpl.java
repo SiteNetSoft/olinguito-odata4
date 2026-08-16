@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 1: $schemaversion system query option
  */
 package org.sitenetsoft.olinguito.server.core.uri;
 
@@ -48,6 +50,7 @@ import org.sitenetsoft.olinguito.server.api.uri.queryoption.FormatOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.IdOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.OrderByOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.QueryOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SchemaVersionOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.SearchOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.SkipOption;
@@ -194,6 +197,7 @@ public class UriInfoImpl implements UriInfo {
     case TOP:
     case LEVELS:
     case APPLY:
+    case SCHEMAVERSION:
       systemQueryOptions.put(systemQueryOptionKind, systemOption);
       break;
     default:
@@ -316,5 +320,10 @@ public class UriInfoImpl implements UriInfo {
   @Override
   public DeltaTokenOption getDeltaTokenOption() {
     return (DeltaTokenOption) systemQueryOptions.get(SystemQueryOptionKind.DELTATOKEN);
+  }
+
+  @Override
+  public SchemaVersionOption getSchemaVersionOption() {
+    return (SchemaVersionOption) systemQueryOptions.get(SystemQueryOptionKind.SCHEMAVERSION);
   }
 }

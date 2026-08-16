@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - OLINGO-1184: Test bound function after type filter in $filter
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 1: $schemaversion system query option
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -960,5 +961,21 @@ class UriParserTest {
     testUri.run("ESBaseTwoKeyNav",
         "$filter=NavPropertyETTwoKeyNavOne/olingo.odata.test1.ETBaseTwoKeyNav"
         + "/olingo.odata.test1.BFCETBaseTwoKeyNavRTETTwoKeyNav()/PropertyString eq 'test'");
+  }
+
+  /** OData 4.01 Part 1: Protocol, section 11.2.12: $schemaversion MAY be included in any request. */
+  @Test
+  void schemaVersion() throws Exception {
+    testUri.run("$metadata", "$schemaversion=*").isKind(UriInfoKind.metadata);
+    testUri.run("ESAllPrim", "$schemaversion=1.0.0").isKind(UriInfoKind.resource)
+        .isSchemaVersionText("1.0.0");
+    testUri.runEx("ESAllPrim", "$schemaversion=")
+        .isExSyntax(UriParserSyntaxException.MessageKeys.WRONG_VALUE_FOR_SYSTEM_QUERY_OPTION);
+    testUri.runEx("ESAllPrim", "$schemaversion=1&$schemaversion=2")
+        .isExSyntax(UriParserSyntaxException.MessageKeys.DOUBLE_SYSTEM_QUERY_OPTION);
+    // Case sensitivity: system query options are lower-case only; an unknown-cased variant
+    // is simply an unrecognized system query option.
+    testUri.runEx("ESAllPrim", "$SchemaVersion=1.0.0")
+        .isExSyntax(UriParserSyntaxException.MessageKeys.UNKNOWN_SYSTEM_QUERY_OPTION);
   }
 }

@@ -20,6 +20,9 @@
  * Copyright 2026 SiteNetSoft - Permit GET on dynamic (open-type) property path segments
  * Copyright 2026 SiteNetSoft - OpenType CRUD Task 2: document that PUT/PATCH/DELETE on dynamic
  * property path segments bypass the EDM property nullability/collection checks
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 1: $schemaversion (OData 4.01 section 11.2.12)
+ * MAY be included in any request, so column 13 is true in every row, including batch and
+ * mediaStream which are otherwise all-false
  */
 package org.sitenetsoft.olinguito.server.core.uri.validator;
 
@@ -50,48 +53,48 @@ public class UriValidator {
   //CHECKSTYLE:OFF (Maven checkstyle)
   // Column indices:
   // 0-FILTER  1-FORMAT  2-EXPAND  3-ID  4-COUNT  5-ORDERBY
-  // 6-SEARCH  7-SELECT  8-SKIP  9-SKIPTOKEN  10-TOP  11-APPLY  12-DELTATOKEN
+  // 6-SEARCH  7-SELECT  8-SKIP  9-SKIPTOKEN  10-TOP  11-APPLY  12-DELTATOKEN  13-SCHEMAVERSION
   private static final boolean[][] decisionMatrix = {
     // all                          0
-    {true,  true,  true,  false, true,  true,  true,  true,  true,  true,  true,  true,  true},
+    {true,  true,  true,  false, true,  true,  true,  true,  true,  true,  true,  true,  true,  true},
     // batch                        1
-    {false, false, false, false, false, false, false, false, false, false, false, false, false},
+    {false, false, false, false, false, false, false, false, false, false, false, false, false, true},
     // crossjoin                    2
-    {true,  true,  true,  false, true,  true,  true,  true,  true,  true,  true,  true,  true},
+    {true,  true,  true,  false, true,  true,  true,  true,  true,  true,  true,  true,  true,  true},
     // entityId                     3
-    {false, true,  true,  true,  false, false, false, true,  false, false, false, false, false},
+    {false, true,  true,  true,  false, false, false, true,  false, false, false, false, false, true},
     // metadata                     4
-    {false, true,  false, false, false, false, false, false, false, false, false, false, false},
+    {false, true,  false, false, false, false, false, false, false, false, false, false, false, true},
     // service                      5
-    {false, true,  false, false, false, false, false, false, false, false, false, false, false},
+    {false, true,  false, false, false, false, false, false, false, false, false, false, false, true},
     // entitySet                    6
-    {true,  true,  true,  false, true,  true,  true,  true,  true,  true,  true,  true,  true},
+    {true,  true,  true,  false, true,  true,  true,  true,  true,  true,  true,  true,  true,  true},
     // entitySetCount               7
-    {true,  false, false, false, false, false, true,  false, false, false, false, true,  true},
+    {true,  false, false, false, false, false, true,  false, false, false, false, true,  true,  true},
     // entity                       8
-    {false, true,  true,  false, false, false, false, true,  false, false, false, false, false},
+    {false, true,  true,  false, false, false, false, true,  false, false, false, false, false, true},
     // mediaStream                  9
-    {false, false, false, false, false, false, false, false, false, false, false, false, false},
+    {false, false, false, false, false, false, false, false, false, false, false, false, false, true},
     // references                  10
-    {true,  true,  false, false, true,  true,  true,  false, true,  true,  true,  false, true},
+    {true,  true,  false, false, true,  true,  true,  false, true,  true,  true,  false, true,  true},
     // reference                   11
-    {false, true,  false, false, false, false, false, false, false, false, false, false, false},
+    {false, true,  false, false, false, false, false, false, false, false, false, false, false, true},
     // propertyComplex             12
-    {false, true,  true,  false, false, false, false, true,  false, false, false, false, false},
+    {false, true,  true,  false, false, false, false, true,  false, false, false, false, false, true},
     // propertyComplexCollection   13
-    {true,  true,  true,  false, true,  true,  false, true,  true,  true,  true,  true,  true},
+    {true,  true,  true,  false, true,  true,  false, true,  true,  true,  true,  true,  true,  true},
     // propComplexCollectionCount  14
-    {true,  false, false, false, false, false, false, false, false, false, false, true,  false},
+    {true,  false, false, false, false, false, false, false, false, false, false, true,  false, true},
     // propertyPrimitive           15
-    {false, true,  false, false, false, false, false, false, false, false, false, false, false},
+    {false, true,  false, false, false, false, false, false, false, false, false, false, false, true},
     // propPrimitiveCollection     16
-    {true,  true,  false, false, true,  true,  false, false, true,  true,  true,  false, true},
+    {true,  true,  false, false, true,  true,  false, false, true,  true,  true,  false, true,  true},
     // propPrimitiveCollCount      17
-    {true,  false, false, false, false, false, false, false, false, false, false, false, false},
+    {true,  false, false, false, false, false, false, false, false, false, false, false, false, true},
     // propertyPrimitiveValue      18
-    {false, true,  false, false, false, false, false, false, false, false, false, false, false},
+    {false, true,  false, false, false, false, false, false, false, false, false, false, false, true},
     // none                        19
-    {false, true,  false, false, false, false, false, false, false, false, false, false, false}
+    {false, true,  false, false, false, false, false, false, false, false, false, false, false, true}
   };
   //CHECKSTYLE:ON
   //@formatter:on
@@ -146,6 +149,7 @@ public class UriValidator {
     temp.put(SystemQueryOptionKind.TOP, 10);
     temp.put(SystemQueryOptionKind.APPLY, 11);
     temp.put(SystemQueryOptionKind.DELTATOKEN, 12);
+    temp.put(SystemQueryOptionKind.SCHEMAVERSION, 13);
     OPTION_INDEX = Collections.unmodifiableMap(temp);
   }
 
