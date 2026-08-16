@@ -83,6 +83,8 @@ public interface FilterArgFactory {
   
   FilterArg contains(FilterArg first, FilterArg second);
 
+  FilterArg matchesPattern(FilterArg first, FilterArg second);
+
   FilterArg fractionalseconds(FilterArg param);
 
   FilterArg date(FilterArg param);

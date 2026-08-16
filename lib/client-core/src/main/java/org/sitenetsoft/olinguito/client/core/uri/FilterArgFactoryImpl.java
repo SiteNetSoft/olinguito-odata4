@@ -180,6 +180,11 @@ public class FilterArgFactoryImpl implements FilterArgFactory {
   }
 
   @Override
+  public FilterArg matchesPattern(final FilterArg first, final FilterArg second) {
+    return new FilterFunction("matchesPattern", first, second);
+  }
+
+  @Override
   public FilterArg fractionalseconds(final FilterArg param) {
     return new FilterFunction("fractionalseconds", param);
   }

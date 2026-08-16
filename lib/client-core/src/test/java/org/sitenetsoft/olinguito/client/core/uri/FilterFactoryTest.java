@@ -65,6 +65,22 @@ class FilterFactoryTest extends AbstractTest {
   }
 
   @Test
+  void matchesPattern() {
+    final URIFilter filter = getFilterFactory().match(getFilterArgFactory().matchesPattern(
+        getFilterArgFactory().property("CompanyName"), getFilterArgFactory().literal("^A.*e$")));
+    assertEquals("matchesPattern(CompanyName,'^A.*e$')", filter.build());
+  }
+
+  @Test
+  void matchesPatternWithAnd() {
+    final URIFilter filter = getFilterFactory().and(
+        getFilterFactory().match(getFilterArgFactory().matchesPattern(
+            getFilterArgFactory().property("CompanyName"), getFilterArgFactory().literal("^A.*e$"))),
+        getFilterFactory().eq("OrderID", 100));
+    assertEquals("(matchesPattern(CompanyName,'^A.*e$') and (OrderID eq 100))", filter.build());
+  }
+
+  @Test
   void maxdatetime() {
     final URIFilter filter = getFilterFactory().eq(
         getFilterArgFactory().property("EndTime"),
