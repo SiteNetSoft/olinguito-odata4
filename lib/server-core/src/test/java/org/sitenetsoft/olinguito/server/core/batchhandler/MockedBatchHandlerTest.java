@@ -18,6 +18,8 @@
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 2: tests for batch-part $schemaversion
+ * inheritance (OData 4.01, Part 1: Protocol, section 11.2.12)
  */
 package org.sitenetsoft.olinguito.server.core.batchhandler;
 
@@ -26,6 +28,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
@@ -61,6 +65,7 @@ import org.sitenetsoft.olinguito.server.core.deserializer.batch.BatchLineReader;
 import org.sitenetsoft.olinguito.server.core.deserializer.batch.BatchParserCommon;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -73,11 +78,12 @@ class MockedBatchHandlerTest {
   private static final String CRLF = "\r\n";
   private ODataHandlerImpl oDataHandler;
   private BatchHandler batchHandler;
+  private BatchProcessor batchProcessor;
   private int entityCounter = 1;
 
   @BeforeEach
   void setup() {
-    final BatchProcessor batchProcessor = new BatchTestProcessorImpl();
+    batchProcessor = new BatchTestProcessorImpl();
     batchProcessor.init(OData.newInstance(), null);
 
     entityCounter = 1;
@@ -244,6 +250,79 @@ class MockedBatchHandlerTest {
     assertEquals(9, line);
 
     reader.close();
+  }
+
+  @Test
+  void batchPartsInheritOuterSchemaVersion() throws Exception {
+    // OData 4.01, Part 1: Protocol, section 11.2.12: a part without its own $schemaversion
+    // inherits the outer $batch request's value; a part with its own keeps it.
+    final BatchHandler versionedBatchHandler = new BatchHandler(oDataHandler, batchProcessor, "1.2.3");
+
+    final String content = ""
+            + "--batch_12345" + CRLF
+            + "Content-Type: application/http" + CRLF
+            + "Content-Transfer-Encoding: binary" + CRLF
+            + CRLF
+            + "GET ESAllPrim(0) HTTP/1.1" + CRLF
+            + CRLF
+            + CRLF
+            + "--batch_12345" + CRLF
+            + "Content-Type: application/http" + CRLF
+            + "Content-Transfer-Encoding: binary" + CRLF
+            + CRLF
+            + "GET ESAllPrim(1)?$schemaversion=* HTTP/1.1" + CRLF
+            + CRLF
+            + CRLF
+            + "--batch_12345--";
+
+    final Map<String, List<String>> header = getMimeHeader();
+    final ODataResponse response = new ODataResponse();
+    final ODataRequest request = buildODataRequest(content, header);
+
+    versionedBatchHandler.process(request, response, true);
+
+    final ArgumentCaptor<ODataRequest> captor = ArgumentCaptor.forClass(ODataRequest.class);
+    verify(oDataHandler, times(2)).process(captor.capture());
+
+    ODataRequest partWithoutOwnOption = null;
+    ODataRequest partWithOwnOption = null;
+    for (final ODataRequest processedRequest : captor.getAllValues()) {
+      if (processedRequest.getRawODataPath().endsWith("(0)")) {
+        partWithoutOwnOption = processedRequest;
+      } else if (processedRequest.getRawODataPath().endsWith("(1)")) {
+        partWithOwnOption = processedRequest;
+      }
+    }
+
+    assertEquals("$schemaversion=1.2.3", partWithoutOwnOption.getRawQueryPath());
+    // Part already carries its own $schemaversion, so it is left completely untouched (no
+    // outer-value inheritance, no re-encoding of the value it already had).
+    assertEquals("$schemaversion=*", partWithOwnOption.getRawQueryPath());
+  }
+
+  @Test
+  void batchPartsUnaffectedWhenOuterRequestHasNoSchemaVersion() throws Exception {
+    // The 2-arg BatchHandler constructor (used elsewhere in this test class) carries no outer
+    // $schemaversion, so batch parts are left exactly as parsed - unchanged behavior.
+    final String content = ""
+            + "--batch_12345" + CRLF
+            + "Content-Type: application/http" + CRLF
+            + "Content-Transfer-Encoding: binary" + CRLF
+            + CRLF
+            + "GET ESAllPrim(0) HTTP/1.1" + CRLF
+            + CRLF
+            + CRLF
+            + "--batch_12345--";
+
+    final Map<String, List<String>> header = getMimeHeader();
+    final ODataResponse response = new ODataResponse();
+    final ODataRequest request = buildODataRequest(content, header);
+
+    batchHandler.process(request, response, true);
+
+    final ArgumentCaptor<ODataRequest> captor = ArgumentCaptor.forClass(ODataRequest.class);
+    verify(oDataHandler, times(1)).process(captor.capture());
+    assertEquals("", captor.getValue().getRawQueryPath());
   }
 
   @Test

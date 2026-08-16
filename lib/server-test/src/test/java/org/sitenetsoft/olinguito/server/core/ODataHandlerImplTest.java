@@ -1755,4 +1755,149 @@ class ODataHandlerImplTest {
     assertNotNull(response);
     return response;
   }
+
+  // Tier 5 Wave 2 Task 2: $schemaversion validated against ServiceMetadata.getSchemaVersion()
+  // (OData 4.01, Part 1: Protocol, section 11.2.12).
+
+  @Test
+  void schemaVersionMismatchIsNotFound() throws Exception {
+    final ServiceMetadata metadata = versionedMetadata("1.2.3");
+    final EntityCollectionProcessor processor = mock(EntityCollectionProcessor.class);
+
+    final ODataResponse response =
+        dispatchWithMetadata(HttpMethod.GET, "ESAllPrim", "$schemaversion=9.9.9", metadata, processor);
+
+    assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), response.getStatusCode());
+    assertNotNull(response.getContent());
+    verifyNoInteractions(processor);
+  }
+
+  @Test
+  void schemaVersionStarAndExactMatchPass() throws Exception {
+    final ServiceMetadata metadata = versionedMetadata("1.2.3");
+
+    final EntityCollectionProcessor starProcessor = mock(EntityCollectionProcessor.class);
+    dispatchWithMetadata(HttpMethod.GET, "ESAllPrim", "$schemaversion=*", metadata, starProcessor);
+    verify(starProcessor).readEntityCollection(
+        any(ODataRequest.class), any(ODataResponse.class), any(UriInfo.class), any(ContentType.class));
+
+    final EntityCollectionProcessor exactProcessor = mock(EntityCollectionProcessor.class);
+    dispatchWithMetadata(HttpMethod.GET, "ESAllPrim", "$schemaversion=1.2.3", metadata, exactProcessor);
+    verify(exactProcessor).readEntityCollection(
+        any(ODataRequest.class), any(ODataResponse.class), any(UriInfo.class), any(ContentType.class));
+  }
+
+  @Test
+  void schemaVersionIgnoredWhenServiceUnversioned() throws Exception {
+    // Recorded decision: a service with no schema version has no version to check the option
+    // against, so $schemaversion is accepted but has no validating effect.
+    final OData odata = OData.newInstance();
+    final ServiceMetadata metadata = odata.createServiceMetadata(new EdmTechProvider(), Collections.emptyList());
+    final EntityCollectionProcessor processor = mock(EntityCollectionProcessor.class);
+
+    dispatchWithMetadata(HttpMethod.GET, "ESAllPrim", "$schemaversion=9.9.9", metadata, processor);
+
+    verify(processor).readEntityCollection(
+        any(ODataRequest.class), any(ODataResponse.class), any(UriInfo.class), any(ContentType.class));
+  }
+
+  @Test
+  void schemaVersionAbsentUnchanged() throws Exception {
+    final ServiceMetadata metadata = versionedMetadata("1.2.3");
+    final EntityCollectionProcessor processor = mock(EntityCollectionProcessor.class);
+
+    dispatchWithMetadata(HttpMethod.GET, "ESAllPrim", null, metadata, processor);
+
+    verify(processor).readEntityCollection(
+        any(ODataRequest.class), any(ODataResponse.class), any(UriInfo.class), any(ContentType.class));
+  }
+
+  @Test
+  void schemaVersionMismatchOnMetadataPathIsNotFound() throws Exception {
+    // $schemaversion is validated on the $metadata path too, not just on resource paths.
+    final ServiceMetadata metadata = versionedMetadata("1.2.3");
+    final MetadataProcessor processor = mock(MetadataProcessor.class);
+
+    final ODataResponse response =
+        dispatchWithMetadata(HttpMethod.GET, "$metadata", "$schemaversion=9.9.9", metadata, processor);
+
+    assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), response.getStatusCode());
+    verifyNoInteractions(processor);
+  }
+
+  @Test
+  void schemaVersionMatchOnMetadataPathPasses() throws Exception {
+    final ServiceMetadata metadata = versionedMetadata("1.2.3");
+    final MetadataProcessor processor = mock(MetadataProcessor.class);
+
+    dispatchWithMetadata(HttpMethod.GET, "$metadata", "$schemaversion=1.2.3", metadata, processor);
+
+    verify(processor).readMetadata(
+        any(ODataRequest.class), any(ODataResponse.class), any(UriInfo.class), any(ContentType.class));
+  }
+
+  // Note: a literal "mismatched $schemaversion + disallowed HTTP method" ordering test (404 vs.
+  // 405) is not exercisable without also touching UriValidator: pre-existing
+  // UriValidator.validateNonReadQueryOptions() rejects ANY system query option (schemaversion
+  // included) on non-GET methods outside a narrow allow-list ($id for DELETE on references,
+  // $select/$expand for PUT/PATCH/POST) with 400 Bad Request, before ODataHandlerImpl even runs
+  // the schema-version check. That pre-existing restriction is out of this task's scope (only
+  // ODataHandlerImpl/BatchHandler/ServiceMetadata were to change). The two tests below pin the
+  // same "check runs before dispatch" ordering using a GET request and an unregistered processor
+  // (dispatch-level 501 Not Implemented) instead, which is reachable through UriValidator.
+
+  @Test
+  void schemaVersionMismatchPrecedesUnregisteredProcessorNotImplemented() throws Exception {
+    // Pin: the $schemaversion check sits between UriValidator.validate(...) and
+    // ODataDispatcher.dispatch(...) in ODataHandlerImpl.processInternal; processor selection
+    // (yielding 501 for an unregistered processor) happens inside dispatch(...). So a mismatched
+    // $schemaversion request against a resource with no registered processor surfaces the
+    // schema-version 404, not the dispatcher's 501 - the request never reaches dispatch().
+    final ServiceMetadata metadata = versionedMetadata("1.2.3");
+
+    final ODataResponse response =
+        dispatchWithMetadata(HttpMethod.GET, "ESAllPrim", "$schemaversion=9.9.9", metadata, null);
+
+    assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), response.getStatusCode());
+  }
+
+  @Test
+  void schemaVersionMatchStillYieldsNotImplementedForUnregisteredProcessor() throws Exception {
+    // Counterpart to the pin above: once $schemaversion matches, the request reaches dispatch()
+    // as before, so an unregistered processor is still reported as 501 there.
+    final ServiceMetadata metadata = versionedMetadata("1.2.3");
+
+    final ODataResponse response =
+        dispatchWithMetadata(HttpMethod.GET, "ESAllPrim", "$schemaversion=1.2.3", metadata, null);
+
+    assertEquals(HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), response.getStatusCode());
+  }
+
+  private ServiceMetadata versionedMetadata(final String schemaVersion) {
+    return new ServiceMetadataImpl(new EdmTechProvider(), Collections.emptyList(), null, schemaVersion);
+  }
+
+  private ODataResponse dispatchWithMetadata(final HttpMethod method, final String path, final String query,
+      final ServiceMetadata metadata, final Processor processor) {
+    ODataRequest request = new ODataRequest();
+    request.setMethod(method);
+    request.setRawBaseUri(BASE_URI);
+    if (path.isEmpty()) {
+      request.setRawRequestUri(BASE_URI);
+    }
+    request.setRawODataPath(path);
+    request.setRawQueryPath(query);
+    request.addHeader(HttpHeader.CONTENT_TYPE, Collections.singletonList(ContentType.JSON.toContentTypeString()));
+
+    final OData odata = OData.newInstance();
+    final ODataHandlerImpl handler = new ODataHandlerImpl(odata, metadata, new ServerCoreDebugger(odata));
+
+    if (processor != null) {
+      handler.register(processor);
+    }
+
+    final ODataResponse response = handler.process(request);
+    assertNotNull(response);
+    return response;
+  }
 }

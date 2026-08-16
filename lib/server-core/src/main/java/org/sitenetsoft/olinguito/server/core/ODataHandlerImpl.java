@@ -23,6 +23,8 @@
  * (URL Conventions section 4.17) - rewrite a /$query POST request into the equivalent GET
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 1 Task 6 fix round 1: rebuild rawRequestUri (not just
  * strip it) so context-URL/next-link/delta-link generation sees the merged query, not a stale one
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 2: validate $schemaversion against the service's
+ * schema version (OData 4.01, Part 1: Protocol, section 11.2.12) before dispatch
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -31,12 +33,14 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import org.sitenetsoft.olinguito.commons.api.edm.constants.ODataServiceVersion;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
 import org.sitenetsoft.olinguito.server.api.ODataHandler;
@@ -57,6 +61,7 @@ import org.sitenetsoft.olinguito.server.api.serializer.RepresentationType;
 import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
 import org.sitenetsoft.olinguito.server.api.uri.UriInfo;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.FormatOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SchemaVersionOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.SystemQueryOptionKind;
 import org.sitenetsoft.olinguito.server.core.debug.ServerCoreDebugger;
 import org.sitenetsoft.olinguito.server.core.uri.parser.Parser;
@@ -180,12 +185,48 @@ public class ODataHandlerImpl implements ODataHandler {
     }
     debugger.stopRuntimeMeasurement(measurementUriValidator);
 
+    try {
+      validateSchemaVersion(localUriInfo);
+    } catch (final ODataApplicationException e) {
+      debugger.stopRuntimeMeasurement(measurementHandle);
+      throw e;
+    }
+
     final int measurementDispatcher = debugger.startRuntimeMeasurement("ODataDispatcher", "dispatch");
     try {
       new ODataDispatcher(localUriInfo, this).dispatch(request, response);
     } finally {
       debugger.stopRuntimeMeasurement(measurementDispatcher);
       debugger.stopRuntimeMeasurement(measurementHandle);
+    }
+  }
+
+  /**
+   * OData 4.01, Part 1: Protocol, section 11.2.12: a request MAY carry the <code>$schemaversion</code>
+   * system query option. If the service publishes a schema version (see
+   * {@link ServiceMetadata#getSchemaVersion()}) and the requested version is neither <code>*</code>
+   * (meaning "current version", which always matches) nor equal to the service's version, the
+   * requested version does not exist and the request MUST be rejected with 404 Not Found. A service
+   * that does not publish a schema version has no version to check against, so the option is
+   * accepted but has no effect (recorded decision: no version source = accept-and-ignore).
+   *
+   * @param localUriInfo the parsed URI info of the current request
+   * @throws ODataApplicationException with a 404 status if the requested schema version does not
+   * exist on this service
+   */
+  private void validateSchemaVersion(final UriInfo localUriInfo) throws ODataApplicationException {
+    final SchemaVersionOption schemaVersionOption = localUriInfo.getSchemaVersionOption();
+    if (schemaVersionOption == null) {
+      return;
+    }
+    final String serviceSchemaVersion = serviceMetadata.getSchemaVersion();
+    if (serviceSchemaVersion == null) {
+      return;
+    }
+    final String requestedSchemaVersion = schemaVersionOption.getSchemaVersion();
+    if (!"*".equals(requestedSchemaVersion) && !serviceSchemaVersion.equals(requestedSchemaVersion)) {
+      throw new ODataApplicationException("Schema version '" + requestedSchemaVersion + "' does not exist.",
+          HttpStatusCode.NOT_FOUND.getStatusCode(), Locale.ROOT);
     }
   }
 

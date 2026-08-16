@@ -21,6 +21,8 @@
  * Copyright 2026 SiteNetSoft - OLINGO-1433: Allow HEAD on media entity streams
  * Copyright 2026 SiteNetSoft - OpenType CRUD Task 2: dispatch dynamicProperty path segments
  * through the primitive-property dispatch path
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 2: pass the outer $batch request's
+ * $schemaversion to BatchHandler for batch-part inheritance
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -79,6 +81,7 @@ import org.sitenetsoft.olinguito.server.api.uri.UriResourcePartTyped;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourcePrimitiveProperty;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceProperty;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceSingleton;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SchemaVersionOption;
 import org.sitenetsoft.olinguito.server.core.batchhandler.BatchHandler;
 import org.sitenetsoft.olinguito.server.core.etag.PreconditionsValidator;
 
@@ -127,7 +130,9 @@ public class ODataDispatcher {
 
     case batch:
       checkMethod(request.getMethod(), HttpMethod.POST);
-      new BatchHandler(handler, handler.selectProcessor(BatchProcessor.class))
+      final SchemaVersionOption schemaVersionOption = uriInfo.getSchemaVersionOption();
+      final String outerSchemaVersion = schemaVersionOption == null ? null : schemaVersionOption.getSchemaVersion();
+      new BatchHandler(handler, handler.selectProcessor(BatchProcessor.class), outerSchemaVersion)
           .process(request, response, true);
       break;
 

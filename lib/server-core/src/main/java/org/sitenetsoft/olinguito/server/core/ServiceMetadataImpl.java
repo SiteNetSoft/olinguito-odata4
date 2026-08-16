@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 2: additive schema-version-carrying constructor
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -37,13 +39,33 @@ public class ServiceMetadataImpl implements ServiceMetadata {
   private final Edm edm;
   private final List<EdmxReference> references;
   private final ServiceMetadataETagSupport serviceMetadataETagSupport;
+  private final String schemaVersion;
 
   public ServiceMetadataImpl(final CsdlEdmProvider edmProvider, final List<EdmxReference> references,
       final ServiceMetadataETagSupport serviceMetadataETagSupport) {
+    this(edmProvider, references, serviceMetadataETagSupport, null);
+  }
+
+  /**
+   * Creates service metadata that additionally carries a schema version, for
+   * {@link ServiceMetadata#getSchemaVersion()} / the <code>$schemaversion</code> system query option
+   * (OData 4.01, Part 1: Protocol, section 11.2.12). Not exposed via {@link org.sitenetsoft.olinguito
+   * .server.api.OData#createServiceMetadata}: callers that want a versioned {@code ServiceMetadata}
+   * construct this class directly.
+   *
+   * @param edmProvider a custom or default implementation for creating metadata
+   * @param references list of edmx references
+   * @param serviceMetadataETagSupport ETag support for the metadata document (may be {@code null})
+   * @param schemaVersion the schema version this service's data model conforms to, or {@code null}
+   * if this service is unversioned
+   */
+  public ServiceMetadataImpl(final CsdlEdmProvider edmProvider, final List<EdmxReference> references,
+      final ServiceMetadataETagSupport serviceMetadataETagSupport, final String schemaVersion) {
     edm = new EdmProviderImpl(edmProvider);
     this.references = new ArrayList<>();
     this.references.addAll(references);
     this.serviceMetadataETagSupport = serviceMetadataETagSupport;
+    this.schemaVersion = schemaVersion;
   }
 
   @Override
@@ -64,5 +86,10 @@ public class ServiceMetadataImpl implements ServiceMetadata {
   @Override
   public ServiceMetadataETagSupport getServiceMetadataETagSupport() {
     return serviceMetadataETagSupport;
+  }
+
+  @Override
+  public String getSchemaVersion() {
+    return schemaVersion;
   }
 }

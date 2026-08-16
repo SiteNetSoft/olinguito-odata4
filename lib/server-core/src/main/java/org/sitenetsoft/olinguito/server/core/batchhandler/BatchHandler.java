@@ -17,6 +17,8 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Port OLINGO-1329: depend on the ODataHandler interface, not the impl
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 2: accept the outer request's $schemaversion so
+ * it can be inherited by parts that don't specify their own
  */
 package org.sitenetsoft.olinguito.server.core.batchhandler;
 
@@ -40,13 +42,27 @@ import org.sitenetsoft.olinguito.server.core.deserializer.batch.BatchParserCommo
 public class BatchHandler {
   private final BatchProcessor batchProcessor;
   private final ODataHandler oDataHandler;
+  private final String outerSchemaVersion;
   private static final String RETURN_MINIMAL = "return=minimal";
   private static final String RETURN_REPRESENTATION = "return=representation";
 
   public BatchHandler(final ODataHandler oDataHandler, final BatchProcessor batchProcessor) {
+    this(oDataHandler, batchProcessor, null);
+  }
 
+  /**
+   * @param oDataHandler handler used to dispatch each batch part
+   * @param batchProcessor the batch processor
+   * @param outerSchemaVersion the <code>$schemaversion</code> value carried by the outer
+   * <code>$batch</code> request, or {@code null} if the outer request carried none. Threaded down
+   * to {@link BatchPartHandler} so parts without their own <code>$schemaversion</code> inherit it
+   * (OData 4.01, Part 1: Protocol, section 11.2.12).
+   */
+  public BatchHandler(final ODataHandler oDataHandler, final BatchProcessor batchProcessor,
+      final String outerSchemaVersion) {
     this.batchProcessor = batchProcessor;
     this.oDataHandler = oDataHandler;
+    this.outerSchemaVersion = outerSchemaVersion;
   }
 
   public void process(final ODataRequest request, final ODataResponse response, final boolean isStrict)
@@ -54,7 +70,7 @@ public class BatchHandler {
     validateRequest(request);
     validatePreferHeader(request);
 
-    final BatchFacade operation = new BatchFacadeImpl(oDataHandler, batchProcessor, isStrict);
+    final BatchFacade operation = new BatchFacadeImpl(oDataHandler, batchProcessor, isStrict, outerSchemaVersion);
     batchProcessor.processBatch(operation, request, response);
   }
   

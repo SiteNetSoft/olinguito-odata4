@@ -15,6 +15,9 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 2: thread the outer $schemaversion through to
+ * BatchPartHandler for batch-part inheritance
  */
 package org.sitenetsoft.olinguito.server.core.batchhandler;
 
@@ -41,7 +44,23 @@ public class BatchFacadeImpl implements BatchFacade {
    */
   public BatchFacadeImpl(final ODataHandler oDataHandler, final BatchProcessor batchProcessor,
                          final boolean isStrict) {
-    partHandler = new BatchPartHandler(oDataHandler, batchProcessor, this);
+    this(oDataHandler, batchProcessor, isStrict, null);
+  }
+
+  /**
+   * Creates a new BatchFacade that threads the outer <code>$batch</code> request's
+   * <code>$schemaversion</code> down to the individual parts (OData 4.01, Part 1: Protocol,
+   * section 11.2.12: parts without their own <code>$schemaversion</code> inherit the outer value).
+   *
+   * @param oDataHandler   handler
+   * @param batchProcessor batch processor
+   * @param isStrict       mode switch (currently not used)
+   * @param outerSchemaVersion the outer request's <code>$schemaversion</code> value, or
+   * {@code null} if the outer request carried none
+   */
+  public BatchFacadeImpl(final ODataHandler oDataHandler, final BatchProcessor batchProcessor,
+                         final boolean isStrict, final String outerSchemaVersion) {
+    partHandler = new BatchPartHandler(oDataHandler, batchProcessor, this, outerSchemaVersion);
   }
 
   @Override
