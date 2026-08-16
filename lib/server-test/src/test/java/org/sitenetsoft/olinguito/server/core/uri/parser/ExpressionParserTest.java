@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - Added tests for $count($filter=...) and $count($search=...) in $filter expressions
+ * Copyright 2026 SiteNetSoft - Added tests for matchesPattern method parsing
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -1346,6 +1347,29 @@ class ExpressionParserTest {
         .left().isMethod(MethodKind.CONTAINS, 2)
         .goParameter(0).isLiteral("'Walldorf'")
         .root().left().goParameter(1).isLiteral("'Wall'");
+
+    testFilter.runOnETTwoKeyNav("matchesPattern(PropertyString,'^A.*e$')")
+        .is("<matchesPattern(<PropertyString>,<'^A.*e$'>)>")
+        .isType(EdmPrimitiveTypeKind.Boolean.getFullQualifiedName())
+        .isMethod(MethodKind.MATCHESPATTERN, 2)
+        .goParameter(0).goPath()
+        .first().isPrimitiveProperty("PropertyString", PropertyProvider.nameString, false).goUpFilterValidator()
+        .root().goParameter(1).isLiteral("'^A.*e$'");
+
+    testFilter.runOnETTwoKeyNav("matchesPattern(PropertyString,'^A.*e$') eq true")
+        .is("<<matchesPattern(<PropertyString>,<'^A.*e$'>)> eq <true>>")
+        .isBinary(BinaryOperatorKind.EQ)
+        .left().isMethod(MethodKind.MATCHESPATTERN, 2)
+        .goParameter(0).goPath()
+        .first().isPrimitiveProperty("PropertyString", PropertyProvider.nameString, false).goUpFilterValidator()
+        .root().left().goParameter(1).isLiteral("'^A.*e$'");
+
+    testFilter.runOnETTwoKeyNav("matchesPattern('Walldorf','Wall')")
+        .is("<matchesPattern(<'Walldorf'>,<'Wall'>)>")
+        .isType(EdmPrimitiveTypeKind.Boolean.getFullQualifiedName())
+        .isMethod(MethodKind.MATCHESPATTERN, 2)
+        .goParameter(0).isLiteral("'Walldorf'")
+        .root().goParameter(1).isLiteral("'Wall'");
 
     testFilter.runOnETTwoKeyNav("PropertyComp/PropertyComp/PropertyInt16 eq "
         + "$root/ESTwoKeyNav(PropertyInt16=1,PropertyString='2')/PropertyInt16")

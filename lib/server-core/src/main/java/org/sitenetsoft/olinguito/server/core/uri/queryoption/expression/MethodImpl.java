@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
+ * Copyright 2026 SiteNetSoft - Added matchesPattern method (OData 4.01 URL Conventions section 5.1.1.7.1)
  */
 package org.sitenetsoft.olinguito.server.core.uri.queryoption.expression;
 
@@ -57,6 +58,7 @@ public class MethodImpl implements Method {
     case STARTSWITH:
     case ENDSWITH:
     case SUBSTRINGOF:
+    case MATCHESPATTERN:
       kind = EdmPrimitiveTypeKind.Boolean;
       break;
     case LENGTH:

@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - Added tests for matchesPattern method parsing
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -263,6 +264,21 @@ class ExpressionParserTest {
     parseMethod(TokenKind.SubstringofMethod, "' '", "' '");
     parseMethod(TokenKind.SubstringofMethod, null, "'a'");
     wrongExpression("substringof('a',1)");
+
+    // matchesPattern's syntax string is camelCase, so parseMethod's TokenKind-derived
+    // (lower-cased) expression text would not tokenize; call the parser directly instead.
+    assertEquals("{matchesPattern ['a', 'b']}", parseExpression("matchesPattern('a','b')").toString());
+    assertEquals("{matchesPattern [null, 'b']}", parseExpression("matchesPattern(null,'b')").toString());
+    assertEquals("{matchesPattern ['a', null]}", parseExpression("matchesPattern('a',null)").toString());
+    wrongExpression("matchesPattern('a')");
+    wrongExpression("matchesPattern('a',1)");
+    wrongExpression("matchespattern('a','b')");
+    wrongExpression("MATCHESPATTERN('a','b')");
+
+    assertEquals("{{matchesPattern ['a', 'b']} AND {matchesPattern ['c', 'd']}}",
+        parseExpression("matchesPattern('a','b') and matchesPattern('c','d')").toString());
+    assertEquals("{{matchesPattern ['a', 'b']} OR {matchesPattern ['c', 'd']}}",
+        parseExpression("matchesPattern('a','b') or matchesPattern('c','d')").toString());
 }
 
   @Test

@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Converted switch statements to switch expressions
+ * Copyright 2026 SiteNetSoft - Added matchesPattern method (OData 4.01 URL Conventions section 5.1.1.7.1)
  */
 package org.sitenetsoft.olinguito.server.core.debug;
 
@@ -260,7 +261,7 @@ public class ExpressionJsonVisitor implements ExpressionVisitor<JsonNode> {
 
   private String getType(final MethodKind methodCall) {
     return switch (methodCall) {
-      case STARTSWITH, CONTAINS, ENDSWITH, ISOF, GEOINTERSECTS -> BOOLEAN_NAME;
+      case STARTSWITH, CONTAINS, ENDSWITH, ISOF, GEOINTERSECTS, MATCHESPATTERN -> BOOLEAN_NAME;
       case INDEXOF, LENGTH, ROUND, FLOOR, CEILING, YEAR, MONTH, DAY, HOUR, MINUTE, SECOND,
            FRACTIONALSECONDS, TOTALOFFSETMINUTES, TOTALSECONDS, GEODISTANCE, GEOLENGTH -> NUMBER_NAME;
       case CONCAT, SUBSTRING, TOLOWER, TOUPPER, TRIM -> STRING_NAME;

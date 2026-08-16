@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Added matchesPattern method (OData 4.01 URL Conventions section 5.1.1.7.1)
  */
 package org.sitenetsoft.olinguito.server.api.uri.queryoption.expression;
 
@@ -54,7 +56,8 @@ public enum MethodKind {
   GEOINTERSECTS("geo.intersects"),
   CAST("cast"),
   ISOF("isof"),
-  SUBSTRINGOF("substringof");
+  SUBSTRINGOF("substringof"),
+  MATCHESPATTERN("matchesPattern");
 
   private String syntax;
 

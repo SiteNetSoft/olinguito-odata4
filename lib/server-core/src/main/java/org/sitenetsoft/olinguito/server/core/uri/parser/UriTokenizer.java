@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - OLINGO-1566: Word boundary check for INF/NaN tokens
  * Copyright 2026 SiteNetSoft - OLINGO-1585: Accept unreserved chars in search words
+ * Copyright 2026 SiteNetSoft - Added matchesPattern method (OData 4.01 URL Conventions section 5.1.1.7.1)
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -158,6 +159,7 @@ public class UriTokenizer {
     IndexofMethod,
     IsofMethod,
     LengthMethod,
+    MatchesPatternMethod,
     MaxdatetimeMethod,
     MindatetimeMethod,
     MinuteMethod,
@@ -600,6 +602,9 @@ public class UriTokenizer {
       break;
     case LengthMethod:
       found = nextMethod("length");
+      break;
+    case MatchesPatternMethod:
+      found = nextMethod("matchesPattern");
       break;
     case MaxdatetimeMethod:
       found = nextMethod("maxdatetime");

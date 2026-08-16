@@ -28,6 +28,7 @@
  * Copyright 2026 SiteNetSoft - Parse dynamic-property members in filter and orderby on open types
  * Copyright 2026 SiteNetSoft - Fix NPE and non-dynamic-operand bypass narrowness in dynamic-member type checks
  * Copyright 2026 SiteNetSoft - Validate IN-candidate and add/sub non-dynamic operands when the other operand is dynamic
+ * Copyright 2026 SiteNetSoft - Added matchesPattern method (OData 4.01 URL Conventions section 5.1.1.7.1)
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -174,6 +175,7 @@ public class ExpressionParser {
     temp.put(TokenKind.HourMethod, MethodKind.HOUR);
     temp.put(TokenKind.IndexofMethod, MethodKind.INDEXOF);
     temp.put(TokenKind.LengthMethod, MethodKind.LENGTH);
+    temp.put(TokenKind.MatchesPatternMethod, MethodKind.MATCHESPATTERN);
     temp.put(TokenKind.MaxdatetimeMethod, MethodKind.MAXDATETIME);
     temp.put(TokenKind.MindatetimeMethod, MethodKind.MINDATETIME);
     temp.put(TokenKind.MinuteMethod, MethodKind.MINUTE);
@@ -697,6 +699,7 @@ public class ExpressionParser {
     case INDEXOF:
     case CONCAT:
     case SUBSTRINGOF:
+    case MATCHESPATTERN:
       ParserHelper.bws(tokenizer);
       final Expression stringParameter1 = parseExpression();
       checkType(stringParameter1, EdmPrimitiveTypeKind.String);

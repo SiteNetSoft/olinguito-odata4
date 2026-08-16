@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - OLINGO-1585: Updated Word token tests for unreserved chars
+ * Copyright 2026 SiteNetSoft - Added tests for matchesPattern method tokenization
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -522,8 +523,12 @@ class UriTokenizerTest {
     assertTrue(new UriTokenizer("maxdatetime()").next(TokenKind.MaxdatetimeMethod));
     assertTrue(new UriTokenizer("mindatetime()").next(TokenKind.MindatetimeMethod));
 
+    assertTrue(new UriTokenizer("matchesPattern(").next(TokenKind.MatchesPatternMethod));
+    assertFalse(new UriTokenizer("matchespattern(").next(TokenKind.MatchesPatternMethod));
+    assertFalse(new UriTokenizer("MATCHESPATTERN(").next(TokenKind.MatchesPatternMethod));
+
     for (final TokenKind tokenKind : TokenKind.values()) {
-      if (tokenKind.name().endsWith("Method")) {
+      if (tokenKind.name().endsWith("Method") && tokenKind != TokenKind.MatchesPatternMethod) {
         assertTrue(new UriTokenizer(
                 tokenKind.name().substring(0, tokenKind.name().indexOf("Method"))
                     .toLowerCase(Locale.ROOT).replace("geo", "geo.") + '(')
