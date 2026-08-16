@@ -18,6 +18,8 @@
  *
  * Copyright 2026 SiteNetSoft - Use Locale.ROOT for case conversion
  * Copyright 2026 SiteNetSoft - Convert anonymous classes to lambdas
+ * Copyright 2026 SiteNetSoft - Evaluate matchesPattern method (OData 4.01 URL Conventions
+ * section 5.1.1.7.1)
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operation;
 
@@ -99,6 +101,29 @@ public class MethodCallOperator {
 
   public VisitorOperand substringof() throws ODataApplicationException {
     return stringFunction(params -> params.get(1).contains(params.get(0)), primBoolean);
+  }
+
+  /**
+   * Evaluates the OData 4.01 {@code matchesPattern} filter function (URL Conventions section
+   * 5.1.1.7.1) using {@code java.util.regex} with {@link java.util.regex.Matcher#find()} -
+   * unanchored, match-anywhere semantics; patterns carry their own {@code ^}/{@code $} anchors
+   * when a full-string match is desired. Cannot reuse the {@code stringFunction} helper directly
+   * because an invalid pattern must surface as a 400 ({@link java.util.regex.PatternSyntaxException}),
+   * not the generic runtime exception the helper's lambda contract allows.
+   */
+  public VisitorOperand matchesPattern() throws ODataApplicationException {
+    List<String> stringParameters = getParametersAsString();
+    if (stringParameters.contains(null)) {
+      return new TypedOperand(null, EdmNull.getInstance());
+    }
+    try {
+      return new TypedOperand(
+          java.util.regex.Pattern.compile(stringParameters.get(1)).matcher(stringParameters.get(0)).find(),
+          primBoolean);
+    } catch (final java.util.regex.PatternSyntaxException e) {
+      throw new ODataApplicationException("Invalid pattern in matchesPattern.",
+          HttpStatusCode.BAD_REQUEST.getStatusCode(), Locale.ROOT, e);
+    }
   }
 
   public VisitorOperand toLower() throws ODataApplicationException {

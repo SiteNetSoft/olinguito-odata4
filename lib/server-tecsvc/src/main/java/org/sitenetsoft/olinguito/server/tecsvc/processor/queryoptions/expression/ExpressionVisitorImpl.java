@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Evaluate dynamic (open-type) properties at query-option runtime
  * Copyright 2026 SiteNetSoft - OpenType CRUD Task 3: extracted dynamic-property EdmPrimitiveTypeKind
  * resolution into DynamicPropertyTypeResolver, shared with the tecsvc GET-dispatch path
+ * Copyright 2026 SiteNetSoft - Dispatch matchesPattern to MethodCallOperator
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression;
 
@@ -153,6 +154,7 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
       case FLOOR -> methodCallOperation.floor();
       case CEILING -> methodCallOperation.ceiling();
       case SUBSTRINGOF -> methodCallOperation.substringof();
+      case MATCHESPATTERN -> methodCallOperation.matchesPattern();
       default -> throwNotImplemented();
     };
   }

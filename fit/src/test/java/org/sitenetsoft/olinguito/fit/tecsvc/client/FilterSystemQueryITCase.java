@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
+ * Copyright 2026 SiteNetSoft - Added matchesPattern filter function fit tests
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
@@ -750,6 +751,62 @@ public class FilterSystemQueryITCase extends AbstractParamTecSvcITCase {
 
     ClientEntity clientEntity = result.getBody().getEntities().get(0);
     assertShortOrInt(32767, clientEntity.getProperty("PropertyInt16").getPrimitiveValue().toValue());
+  }
+
+  @Test
+  public void matchesPattern() {
+    // ESAllPrim entity PropertyInt16=32767 has PropertyString="First Resource - positive values"
+    ODataRetrieveResponse<ClientEntitySet> result =
+        sendRequest(ES_ALL_PRIM, "matchesPattern(PropertyString,'^First.*positive.*$')");
+    assertEquals(1, result.getBody().getEntities().size());
+    final ClientEntity clientEntity = result.getBody().getEntities().get(0);
+    assertShortOrInt(32767, clientEntity.getProperty("PropertyInt16").getPrimitiveValue().toValue());
+  }
+
+  @Test
+  public void matchesPatternUnanchoredMatchesAnywhere() {
+    // Both PropertyInt16=32767 ("First Resource - positive values") and PropertyInt16=-32768
+    // ("Second Resource - negative values") contain "Resource"; matchesPattern is unanchored
+    // (Matcher.find()), so a pattern without ^/$ matches anywhere in the string.
+    ODataRetrieveResponse<ClientEntitySet> result =
+        sendRequest(ES_ALL_PRIM, "matchesPattern(PropertyString,'Resource')");
+    assertEquals(2, result.getBody().getEntities().size());
+  }
+
+  @Test
+  public void matchesPatternNoMatch() {
+    ODataRetrieveResponse<ClientEntitySet> result =
+        sendRequest(ES_ALL_PRIM, "matchesPattern(PropertyString,'^ZZZ-nothing$')");
+    assertEquals(0, result.getBody().getEntities().size());
+  }
+
+  @Test
+  public void matchesPatternCharacterClass() {
+    // Only PropertyInt16=10 ("Employee1@company.example") contains a digit.
+    ODataRetrieveResponse<ClientEntitySet> result =
+        sendRequest(ES_ALL_PRIM, "matchesPattern(PropertyString,'[0-9]')");
+    assertEquals(1, result.getBody().getEntities().size());
+    final ClientEntity clientEntity = result.getBody().getEntities().get(0);
+    assertShortOrInt(10, clientEntity.getProperty("PropertyInt16").getPrimitiveValue().toValue());
+  }
+
+  @Test
+  public void matchesPatternWithNull() {
+    // Second parameter null => null-propagation, so "eq null" is true for every entity,
+    // mirroring methodCallsWithNull()'s "endswith(PropertyString,null) eq null" case.
+    ODataRetrieveResponse<ClientEntitySet> result =
+        sendRequest(ES_ALL_PRIM, "matchesPattern(PropertyString,null) eq null");
+    assertEquals(4, result.getBody().getEntities().size());
+  }
+
+  @Test
+  public void matchesPatternInvalidRegexIsBadRequest() {
+    fail(ES_ALL_PRIM, "matchesPattern(PropertyString,'[unclosed')", HttpStatusCode.BAD_REQUEST);
+  }
+
+  @Test
+  public void matchesPatternNonStringParameterIsBadRequest() {
+    fail(ES_ALL_PRIM, "matchesPattern(PropertyInt16,'a')", HttpStatusCode.BAD_REQUEST);
   }
 
   @Test
