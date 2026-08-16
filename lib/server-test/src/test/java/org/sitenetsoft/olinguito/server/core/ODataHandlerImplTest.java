@@ -26,6 +26,8 @@
  * dynamic-property PUT/PATCH/DELETE
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 1 Task 6: tests for OData 4.01 POST /$query
  * (URL Conventions section 4.17)
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 1 Task 6 fix round 1: adapter-realistic rawRequestUri
+ * rebuild tests (merged query, not just a stripped /$query suffix)
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -1642,17 +1644,21 @@ class ODataHandlerImplTest {
   }
 
   @Test
-  void queryPostStripsRawRequestUriToo() throws Exception {
-    // Context-URL building consistency: rawRequestUri must lose the /$query suffix too, not just
-    // rawODataPath, since adapters populate both from the same incoming request line.
+  void queryPostRebuildsRawRequestUriWithMergedQuery() throws Exception {
+    // Adapter-realistic shape (RequestUriResolver / ODataNettyHandlerImpl both populate
+    // rawRequestUri as "<path>?<queryString>"): rawRequestUri must end up carrying the FULL merged
+    // query (URL $format + body $select), not just have /$query stripped, since downstream
+    // context-URL/next-link/delta-link generation reads rawRequestUri directly rather than
+    // recomputing it from rawODataPath/rawQueryPath.
     final String path = "ESAllPrim/$query";
     final EntityCollectionProcessor processor = mock(EntityCollectionProcessor.class);
     ODataRequest request = new ODataRequest();
     request.setMethod(HttpMethod.POST);
     request.setRawBaseUri(BASE_URI);
-    request.setRawRequestUri(BASE_URI + "/" + path);
+    request.setRawRequestUri(BASE_URI + "/" + path + "?$format=json");
     request.setRawODataPath(path);
-    request.setBody(new ByteArrayInputStream(new byte[0]));
+    request.setRawQueryPath("$format=json");
+    request.setBody(new ByteArrayInputStream("$select=PropertyString".getBytes(StandardCharsets.UTF_8)));
     request.addHeader(HttpHeader.CONTENT_TYPE,
         Collections.singletonList(ContentType.TEXT_PLAIN.toContentTypeString()));
 
@@ -1663,8 +1669,63 @@ class ODataHandlerImplTest {
 
     handler.process(request);
 
+    verify(processor).readEntityCollection(any(), any(), any(), any());
     assertEquals("ESAllPrim", request.getRawODataPath());
-    assertEquals(BASE_URI + "/ESAllPrim", request.getRawRequestUri());
+    assertEquals("$format=json&$select=PropertyString", request.getRawQueryPath());
+    assertEquals(BASE_URI + "/ESAllPrim?$format=json&$select=PropertyString", request.getRawRequestUri());
+  }
+
+  @Test
+  void queryPostRebuildsRawRequestUriWithBodyOnlyQuery() throws Exception {
+    // No URL query string at all: rawRequestUri must still gain the body's merged options
+    // (?$select=...), not merely lose the /$query suffix - otherwise a next-link built off this
+    // request would silently drop every option the client sent in the body.
+    final String path = "ESAllPrim/$query";
+    final EntityCollectionProcessor processor = mock(EntityCollectionProcessor.class);
+    ODataRequest request = new ODataRequest();
+    request.setMethod(HttpMethod.POST);
+    request.setRawBaseUri(BASE_URI);
+    request.setRawRequestUri(BASE_URI + "/" + path);
+    request.setRawODataPath(path);
+    request.setBody(new ByteArrayInputStream("$select=PropertyString".getBytes(StandardCharsets.UTF_8)));
+    request.addHeader(HttpHeader.CONTENT_TYPE,
+        Collections.singletonList(ContentType.TEXT_PLAIN.toContentTypeString()));
+
+    final OData odata = OData.newInstance();
+    final ServiceMetadata metadata = odata.createServiceMetadata(new EdmTechProvider(), Collections.emptyList());
+    final ODataHandlerImpl handler = new ODataHandlerImpl(odata, metadata, new ServerCoreDebugger(odata));
+    handler.register(processor);
+
+    handler.process(request);
+
+    verify(processor).readEntityCollection(any(), any(), any(), any());
+    assertEquals("ESAllPrim", request.getRawODataPath());
+    assertEquals("$select=PropertyString", request.getRawQueryPath());
+    assertEquals(BASE_URI + "/ESAllPrim?$select=PropertyString", request.getRawRequestUri());
+  }
+
+  @Test
+  void nonQueryRequestLeavesRawRequestUriUntouched() throws Exception {
+    // Pin: a request whose path does NOT end in /$query must have rawRequestUri left completely
+    // alone by handleQueryPathIfPresent's early no-op return.
+    final String path = "ESAllPrim";
+    final EntityCollectionProcessor processor = mock(EntityCollectionProcessor.class);
+    ODataRequest request = new ODataRequest();
+    request.setMethod(HttpMethod.GET);
+    request.setRawBaseUri(BASE_URI);
+    request.setRawRequestUri(BASE_URI + "/" + path + "?$top=1");
+    request.setRawODataPath(path);
+    request.setRawQueryPath("$top=1");
+
+    final OData odata = OData.newInstance();
+    final ServiceMetadata metadata = odata.createServiceMetadata(new EdmTechProvider(), Collections.emptyList());
+    final ODataHandlerImpl handler = new ODataHandlerImpl(odata, metadata, new ServerCoreDebugger(odata));
+    handler.register(processor);
+
+    handler.process(request);
+
+    verify(processor).readEntityCollection(any(), any(), any(), any());
+    assertEquals(BASE_URI + "/ESAllPrim?$top=1", request.getRawRequestUri());
   }
 
   private ODataResponse dispatchQueryPost(final String path, final String urlQuery, final String body,

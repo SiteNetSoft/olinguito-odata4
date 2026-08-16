@@ -21,6 +21,8 @@
  * Copyright 2026 SiteNetSoft - OLINGO-1372: Fix error responses ignoring Accept header
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 1 Task 6: OData 4.01 POST /$query interception
  * (URL Conventions section 4.17) - rewrite a /$query POST request into the equivalent GET
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 1 Task 6 fix round 1: rebuild rawRequestUri (not just
+ * strip it) so context-URL/next-link/delta-link generation sees the merged query, not a stale one
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -283,20 +285,66 @@ public class ODataHandlerImpl implements ODataHandler {
 
     final String body = readQueryBody(request).trim();
 
-    request.setRawODataPath(rawODataPath.substring(0, rawODataPath.length() - QUERY_PATH_SEGMENT.length()));
-
-    final String rawRequestUri = request.getRawRequestUri();
-    if (rawRequestUri != null && rawRequestUri.endsWith(QUERY_PATH_SEGMENT)) {
-      request.setRawRequestUri(rawRequestUri.substring(0, rawRequestUri.length() - QUERY_PATH_SEGMENT.length()));
-    }
+    final String strippedODataPath = rawODataPath.substring(0, rawODataPath.length() - QUERY_PATH_SEGMENT.length());
+    request.setRawODataPath(strippedODataPath);
 
     if (!body.isEmpty()) {
       final String rawQueryPath = request.getRawQueryPath();
       request.setRawQueryPath(
           rawQueryPath == null || rawQueryPath.isEmpty() ? body : rawQueryPath + "&" + body);
     }
+    final String mergedQuery = request.getRawQueryPath() == null ? "" : request.getRawQueryPath();
+
+    rebuildRawRequestUri(request, rawODataPath, strippedODataPath, mergedQuery);
 
     request.setMethod(HttpMethod.GET);
+  }
+
+  /**
+   * Real adapters (servlet, netty) populate <code>rawRequestUri</code> as
+   * <code>&lt;scheme-authority-and-path&gt; + ("?" + queryString)</code> - i.e. the full request
+   * path (base URI + OData path), with any query string appended verbatim. Since the query part of
+   * a <code>/$query</code> request changes (the body is merged in, replacing whatever query string
+   * was there before the rewrite), the whole field has to be rebuilt rather than merely having its
+   * trailing <code>/$query</code> segment stripped, otherwise context-URL / next-link / delta-link
+   * generation downstream (which reads this field directly) would either keep a stale
+   * <code>/$query</code> segment or silently drop the merged query options.
+   *
+   * @param request the request being rewritten; its <code>rawODataPath</code> has already been
+   * updated to <code>strippedODataPath</code> and its <code>rawQueryPath</code> to the final merged
+   * value by the time this is called
+   * @param originalODataPath the OData path as it was before stripping, i.e. still ending in
+   * <code>/$query</code>
+   * @param strippedODataPath the OData path with the trailing <code>/$query</code> segment removed
+   * @param mergedQuery the final merged query string (URL query options plus body options),
+   * possibly empty but never <code>null</code>
+   */
+  private static void rebuildRawRequestUri(final ODataRequest request, final String originalODataPath,
+      final String strippedODataPath, final String mergedQuery) {
+    final String rawRequestUri = request.getRawRequestUri();
+    if (rawRequestUri == null) {
+      return;
+    }
+
+    final int queryIndex = rawRequestUri.indexOf('?');
+    final String pathPart = queryIndex == -1 ? rawRequestUri : rawRequestUri.substring(0, queryIndex);
+
+    final String newPathPart;
+    if (pathPart.endsWith(originalODataPath)) {
+      // The common/adapter-populated case: rawRequestUri's path portion is base URI + rawODataPath,
+      // so replacing the original OData path suffix with the stripped one keeps everything else
+      // (scheme, authority, any path prefix) untouched.
+      newPathPart = pathPart.substring(0, pathPart.length() - originalODataPath.length()) + strippedODataPath;
+    } else if (pathPart.endsWith(QUERY_PATH_SEGMENT)) {
+      // Path portion ends in /$query but isn't literally base+rawODataPath (e.g. differing
+      // percent-encoding) - fall back to stripping just the segment.
+      newPathPart = pathPart.substring(0, pathPart.length() - QUERY_PATH_SEGMENT.length());
+    } else {
+      // Path portion doesn't reflect the /$query segment at all; leave it as-is rather than guess.
+      newPathPart = pathPart;
+    }
+
+    request.setRawRequestUri(mergedQuery.isEmpty() ? newPathPart : newPathPart + "?" + mergedQuery);
   }
 
   private static String readQueryBody(final ODataRequest request) throws ODataHandlerException {
