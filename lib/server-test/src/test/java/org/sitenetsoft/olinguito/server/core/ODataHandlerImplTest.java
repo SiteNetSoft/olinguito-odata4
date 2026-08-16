@@ -28,6 +28,8 @@
  * (URL Conventions section 4.17)
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 1 Task 6 fix round 1: adapter-realistic rawRequestUri
  * rebuild tests (merged query, not just a stripped /$query suffix)
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 2: tests for $schemaversion handler validation
+ * (OData 4.01, Part 1: Protocol, section 11.2.12)
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -1874,7 +1876,18 @@ class ODataHandlerImplTest {
   }
 
   private ServiceMetadata versionedMetadata(final String schemaVersion) {
-    return new ServiceMetadataImpl(new EdmTechProvider(), Collections.emptyList(), null, schemaVersion);
+    return OData.newInstance().createServiceMetadata(new EdmTechProvider(), Collections.emptyList(), null,
+        schemaVersion);
+  }
+
+  @Test
+  void versionedServiceMetadataDirectConstructionMatchesOdataOverload() {
+    // Keep the ServiceMetadataImpl constructor itself covered directly, alongside the
+    // OData#createServiceMetadata overload used by versionedMetadata(...) above.
+    final ServiceMetadata metadata =
+        new ServiceMetadataImpl(new EdmTechProvider(), Collections.emptyList(), null, "1.2.3");
+
+    assertEquals("1.2.3", metadata.getSchemaVersion());
   }
 
   private ODataResponse dispatchWithMetadata(final HttpMethod method, final String path, final String query,

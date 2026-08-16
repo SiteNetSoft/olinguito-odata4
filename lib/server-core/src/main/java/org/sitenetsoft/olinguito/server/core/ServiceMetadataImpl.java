@@ -17,6 +17,8 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 2: additive schema-version-carrying constructor
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 2 fix round 1: javadoc update now that the
+ * versioned constructor is reachable via OData#createServiceMetadata
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -49,9 +51,8 @@ public class ServiceMetadataImpl implements ServiceMetadata {
   /**
    * Creates service metadata that additionally carries a schema version, for
    * {@link ServiceMetadata#getSchemaVersion()} / the <code>$schemaversion</code> system query option
-   * (OData 4.01, Part 1: Protocol, section 11.2.12). Not exposed via {@link org.sitenetsoft.olinguito
-   * .server.api.OData#createServiceMetadata}: callers that want a versioned {@code ServiceMetadata}
-   * construct this class directly.
+   * (OData 4.01, Part 1: Protocol, section 11.2.12). Reachable via {@link org.sitenetsoft.olinguito
+   * .server.api.OData#createServiceMetadata(CsdlEdmProvider, List, ServiceMetadataETagSupport, String)}.
    *
    * @param edmProvider a custom or default implementation for creating metadata
    * @param references list of edmx references

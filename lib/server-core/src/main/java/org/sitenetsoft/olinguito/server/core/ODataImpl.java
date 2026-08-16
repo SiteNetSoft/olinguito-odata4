@@ -15,6 +15,9 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 2 fix round 1: override the versioned
+ * createServiceMetadata overload from OData
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -201,6 +204,13 @@ public class ODataImpl extends OData {
   public ServiceMetadata createServiceMetadata(final CsdlEdmProvider edmProvider,
       final List<EdmxReference> references, final ServiceMetadataETagSupport serviceMetadataETagSupport) {
     return new ServiceMetadataImpl(edmProvider, references, serviceMetadataETagSupport);
+  }
+
+  @Override
+  public ServiceMetadata createServiceMetadata(final CsdlEdmProvider edmProvider,
+      final List<EdmxReference> references, final ServiceMetadataETagSupport serviceMetadataETagSupport,
+      final String schemaVersion) {
+    return new ServiceMetadataImpl(edmProvider, references, serviceMetadataETagSupport, schemaVersion);
   }
 
   @Override

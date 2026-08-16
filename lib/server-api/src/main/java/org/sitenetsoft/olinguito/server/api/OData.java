@@ -17,6 +17,8 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Class.forName with ServiceLoader to eliminate circular dependency
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 2 fix round 1: additive versioned
+ * createServiceMetadata overload
  */
 package org.sitenetsoft.olinguito.server.api;
 
@@ -134,6 +136,28 @@ public abstract class OData {
    */
   public abstract ServiceMetadata createServiceMetadata(CsdlEdmProvider edmProvider, List<EdmxReference> references,
       ServiceMetadataETagSupport serviceMetadataETagSupport);
+
+  /**
+   * Creates a metadata object for this service that additionally carries a schema version, for
+   * {@link ServiceMetadata#getSchemaVersion()} / the <code>$schemaversion</code> system query option
+   * (OData 4.01, Part 1: Protocol, section 11.2.12 / <code>Core.SchemaVersion</code>).
+   * <p>This is a concrete, additive method with a default-throwing body so that existing {@code OData}
+   * subclasses keep compiling unchanged; implementations that support versioned metadata should
+   * override it.</p>
+   *
+   * @param edmProvider a custom or default implementation for creating metadata
+   * @param references list of edmx references
+   * @param serviceMetadataETagSupport ETag support for the metadata document (may be {@code null})
+   * @param schemaVersion the schema version this service's data model conforms to, or {@code null}
+   * if this service is unversioned
+   * @return a service metadata implementation carrying the given schema version
+   */
+  public ServiceMetadata createServiceMetadata(CsdlEdmProvider edmProvider, List<EdmxReference> references,
+      ServiceMetadataETagSupport serviceMetadataETagSupport, String schemaVersion) {
+    throw new UnsupportedOperationException(
+        "createServiceMetadata(CsdlEdmProvider, List, ServiceMetadataETagSupport, String) "
+            + "is not supported by this OData implementation.");
+  }
 
   /**
    * Creates a new URI helper object for performing URI-related tasks.
