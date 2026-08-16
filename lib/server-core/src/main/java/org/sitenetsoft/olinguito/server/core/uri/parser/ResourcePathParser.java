@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  * Copyright 2026 SiteNetSoft - Resolve dynamic path segments on open types
+ * Copyright 2026 SiteNetSoft - OData 4.01: map ambiguous optional-parameter overloads to a 400 response
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -445,7 +446,7 @@ public class ResourcePathParser {
     final List<String> names = ParserHelper.getParameterNames(parameters);
     EdmFunction function = null;
     if (edmFunctionImport != null) {
-      function = edmFunctionImport.getUnboundFunction(names);
+      function = ParserHelper.getUnboundFunction(edmFunctionImport, names);
       if (function == null) {
         throw new UriParserSemanticException(
             "Function of function import '" + edmFunctionImport.getName() + "' "
@@ -453,7 +454,7 @@ public class ResourcePathParser {
             UriParserSemanticException.MessageKeys.FUNCTION_NOT_FOUND, edmFunctionImport.getName(), names.toString());
       }
     } else {
-      function = edm.getBoundFunction(boundFunctionName,
+      function = ParserHelper.getBoundFunction(edm, boundFunctionName,
           bindingParameterTypeName, isBindingParameterCollection, names);
       if (function == null) {
         throw new UriParserSemanticException(

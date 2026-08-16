@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
  * Copyright 2026 SiteNetSoft - OLINGO-1586: Thread-safe annotation access
  * Copyright 2026 SiteNetSoft - OLINGO-972: Walk entity type hierarchy for bound operation binding
+ * Copyright 2026 SiteNetSoft - OData 4.01: covering-set overload resolution for optional parameters
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
@@ -642,6 +643,80 @@ public class EdmProviderImpl extends AbstractEdm {
     }
   }
 
+  /**
+   * Checks whether the specified parameter names are a subset of the given (non-binding) parameters
+   * and cover all of their non-optional parameters (OData 4.01, Protocol section 11.5.4.2).
+   * @param parameterNames the parameter names specified in the request
+   * @param parameters the parameters of one function overload, without the binding parameter
+   * @param operationName the full qualified name of the operation, used to look up annotations
+   * @return true if this overload is a candidate for the specified parameter names
+   */
+  private boolean coversAllRequiredParameters(final List<String> parameterNames,
+      final List<CsdlParameter> parameters, final FullQualifiedName operationName) {
+    final List<String> declaredNames = new ArrayList<>();
+    for (CsdlParameter parameter : parameters) {
+      declaredNames.add(parameter.getName());
+    }
+    if (!declaredNames.containsAll(parameterNames)) {
+      return false;
+    }
+    for (CsdlParameter parameter : parameters) {
+      if (!parameterNames.contains(parameter.getName()) && !isOptionalParameter(parameter, operationName)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Returns the single covering-set candidate, null if there is none, and throws if the request is
+   * ambiguous (OData 4.01, Protocol section 11.5.4.2, adopted MAY: reject ambiguous invocations).
+   */
+  private EdmFunction selectCoveringOverload(final List<CsdlFunction> candidates,
+      final FullQualifiedName functionName, final List<String> parameterNames) {
+    if (candidates.isEmpty()) {
+      return null;
+    }
+    if (candidates.size() > 1) {
+      throw new EdmException("Ambiguous function overload for '" + functionName
+          + "' with parameters " + parameterNames);
+    }
+    final CsdlFunction function = candidates.get(0);
+    addOperationsAnnotations(function, functionName);
+    addAnnotationsToParamsOfOperations(function, functionName);
+    return new EdmFunctionImpl(this, functionName, function);
+  }
+
+  /**
+   * Determines whether a parameter carries the Core.OptionalParameter annotation, either inline or
+   * out-of-line. Out-of-line annotations are only merged onto the parameter after an overload has
+   * been selected, so the annotations map has to be consulted directly while matching.
+   */
+  private boolean isOptionalParameter(final CsdlParameter parameter, final FullQualifiedName operationName) {
+    if (containsOptionalParameterTerm(parameter.getAnnotations())
+        || containsOptionalParameterTerm(getAnnotationsMap().get(
+            operationName.getFullQualifiedNameAsString() + SLASH + parameter.getName()))) {
+      return true;
+    }
+    final String aliasName = getAliasInfo(operationName.getNamespace());
+    return aliasName != null && containsOptionalParameterTerm(getAnnotationsMap().get(
+        aliasName + DOT + operationName.getName() + SLASH + parameter.getName()));
+  }
+
+  private static boolean containsOptionalParameterTerm(final List<CsdlAnnotation> annotations) {
+    if (annotations == null) {
+      return false;
+    }
+    for (CsdlAnnotation annotation : annotations) {
+      final String term = annotation.getTerm();
+      if (EdmParameterImpl.OPTIONAL_PARAMETER_TERM.equals(term)
+          || EdmParameterImpl.OPTIONAL_PARAMETER_TERM_ALIAS.equals(term)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public void addOperationsAnnotations(CsdlOperation operation, FullQualifiedName actionName) {
     String aliasName = getAliasInfo(actionName.getNamespace());
     List<CsdlAnnotation> annotations = getAnnotationsMap().get(actionName.getFullQualifiedNameAsString());
@@ -760,6 +835,7 @@ public class EdmProviderImpl extends AbstractEdm {
       }
       final List<String> parameterNamesCopy =
           parameterNames == null ? List.of() : parameterNames;
+      final List<CsdlFunction> coveringCandidates = new ArrayList<>();
       for (CsdlFunction function : functions) {
         if (function.isBound()) {
           List<CsdlParameter> providerParameters = function.getParameters();
@@ -771,21 +847,29 @@ public class EdmProviderImpl extends AbstractEdm {
               ||isEntityPreviousTypeCompatibleToBindingParam(bindingParameterTypeName, bindingParameter) ||
               isComplexPreviousTypeCompatibleToBindingParam(bindingParameterTypeName, bindingParameter, 
                   isBindingParameterCollection))
-              && isBindingParameterCollection.booleanValue() == bindingParameter.isCollection()
-              && parameterNamesCopy.size() == providerParameters.size() - 1) {
+              && isBindingParameterCollection.booleanValue() == bindingParameter.isCollection()) {
 
-            final List<String> providerParameterNames = new ArrayList<>();
-            for (int i = 1; i < providerParameters.size(); i++) {
-              providerParameterNames.add(providerParameters.get(i).getName());
+            final List<CsdlParameter> nonBindingParameters =
+                providerParameters.subList(1, providerParameters.size());
+            if (parameterNamesCopy.size() == nonBindingParameters.size()) {
+              final List<String> providerParameterNames = new ArrayList<>();
+              for (CsdlParameter nonBindingParameter : nonBindingParameters) {
+                providerParameterNames.add(nonBindingParameter.getName());
+              }
+              if (parameterNamesCopy.containsAll(providerParameterNames)) {
+                addOperationsAnnotations(function, functionName);
+                return new EdmFunctionImpl(this, functionName, function);
+              }
             }
-            if (parameterNamesCopy.containsAll(providerParameterNames)) {
-              addOperationsAnnotations(function, functionName);
-              return new EdmFunctionImpl(this, functionName, function);
+            // OData 4.01 section 11.5.4.2: an overload also matches if the specified parameters
+            // cover all of its non-optional parameters.
+            if (coversAllRequiredParameters(parameterNamesCopy, nonBindingParameters, functionName)) {
+              coveringCandidates.add(function);
             }
           }
         }
       }
-      return null;
+      return selectCoveringOverload(coveringCandidates, functionName, parameterNamesCopy);
     } catch (ODataException e) {
       throw new EdmException(e);
     }
@@ -882,6 +966,7 @@ public class EdmProviderImpl extends AbstractEdm {
 
       final List<String> parameterNamesCopy =
           parameterNames == null ? List.of() : parameterNames;
+      final List<CsdlFunction> coveringCandidates = new ArrayList<>();
       for (CsdlFunction function : functions) {
         if (!function.isBound()) {
           List<CsdlParameter> providerParameters = function.getParameters();
@@ -900,9 +985,14 @@ public class EdmProviderImpl extends AbstractEdm {
               return new EdmFunctionImpl(this, functionName, function);
             }
           }
+          // OData 4.01 section 11.5.4.2: an overload also matches if the specified parameters
+          // cover all of its non-optional parameters.
+          if (coversAllRequiredParameters(parameterNamesCopy, providerParameters, functionName)) {
+            coveringCandidates.add(function);
+          }
         }
       }
-      return null;
+      return selectCoveringOverload(coveringCandidates, functionName, parameterNamesCopy);
     } catch (ODataException e) {
       throw new EdmException(e);
     }

@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Port OLINGO-1334: propagate lambda-variable scope into function parameter parsing
+ * Copyright 2026 SiteNetSoft - OData 4.01: map ambiguous optional-parameter overloads to a 400 response
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -33,7 +34,9 @@ import java.util.Set;
 
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmException;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmFunction;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmFunctionImport;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmKeyPropertyRef;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationProperty;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmParameter;
@@ -658,5 +661,47 @@ public class ParserHelper {
         }
       }
     }
+  }
+
+  /**
+   * Resolves a bound function overload, mapping an ambiguous match (OData 4.01, Protocol
+   * section 11.5.4.2) to a semantic URI-parser error instead of letting it surface as a 500.
+   */
+  protected static EdmFunction getBoundFunction(final Edm edm, final FullQualifiedName functionName,
+      final FullQualifiedName bindingParameterTypeName, final boolean isBindingParameterCollection,
+      final List<String> parameterNames) throws UriParserSemanticException {
+    try {
+      return edm.getBoundFunction(functionName, bindingParameterTypeName, isBindingParameterCollection,
+          parameterNames);
+    } catch (final EdmException e) {
+      throw ambiguousFunction(e, functionName.getFullQualifiedNameAsString(), parameterNames);
+    }
+  }
+
+  /** Resolves an unbound function overload, see {@link #getBoundFunction}. */
+  protected static EdmFunction getUnboundFunction(final Edm edm, final FullQualifiedName functionName,
+      final List<String> parameterNames) throws UriParserSemanticException {
+    try {
+      return edm.getUnboundFunction(functionName, parameterNames);
+    } catch (final EdmException e) {
+      throw ambiguousFunction(e, functionName.getFullQualifiedNameAsString(), parameterNames);
+    }
+  }
+
+  /** Resolves a function-import overload, see {@link #getBoundFunction}. */
+  protected static EdmFunction getUnboundFunction(final EdmFunctionImport functionImport,
+      final List<String> parameterNames) throws UriParserSemanticException {
+    try {
+      return functionImport.getUnboundFunction(parameterNames);
+    } catch (final EdmException e) {
+      throw ambiguousFunction(e, functionImport.getName(), parameterNames);
+    }
+  }
+
+  private static UriParserSemanticException ambiguousFunction(final EdmException cause, final String functionName,
+      final List<String> parameterNames) {
+    return new UriParserSemanticException(
+        "Ambiguous function '" + functionName + "' with parameters " + parameterNames + ".", cause,
+        UriParserSemanticException.MessageKeys.FUNCTION_AMBIGUOUS, functionName, String.valueOf(parameterNames));
   }
 }

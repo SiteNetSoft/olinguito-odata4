@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  * Copyright 2026 SiteNetSoft - Dynamic property options for aggregate expressions (OLINGO PR#171)
+ * Copyright 2026 SiteNetSoft - OData 4.01: map ambiguous optional-parameter overloads to a 400 response
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -627,7 +628,7 @@ public class ApplyParser {
     final List<UriParameter> parameters =
         ParserHelper.parseFunctionParameters(tokenizer, edm, referencedType, true, aliases);
     final List<String> parameterNames = ParserHelper.getParameterNames(parameters);
-    final EdmFunction function = edm.getBoundFunction(functionName,
+    final EdmFunction function = ParserHelper.getBoundFunction(edm, functionName,
         referencedType.getFullQualifiedName(), true, parameterNames);
     if (function == null) {
       throw new UriParserSemanticException("No function '" + functionName + "' found.",

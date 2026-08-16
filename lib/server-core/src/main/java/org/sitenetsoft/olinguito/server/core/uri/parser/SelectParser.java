@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Add OpenType support ($select of dynamic properties)
+ * Copyright 2026 SiteNetSoft - OData 4.01: map ambiguous optional-parameter overloads to a 400 response
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -159,7 +160,7 @@ public class SelectParser {
         referencedIsCollection);
     if (boundAction == null) {
       final List<String> parameterNames = parseFunctionParameterNames(tokenizer);
-      final EdmFunction boundFunction = edm.getBoundFunction(qualifiedName,
+      final EdmFunction boundFunction = ParserHelper.getBoundFunction(edm, qualifiedName,
           referencedType.getFullQualifiedName(), referencedIsCollection, parameterNames);
       if (boundFunction == null) {
         throw new UriParserSemanticException("Function not found.",

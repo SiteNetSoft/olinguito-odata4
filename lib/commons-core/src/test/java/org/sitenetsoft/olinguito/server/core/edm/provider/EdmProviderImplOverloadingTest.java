@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - OLINGO-972: Test bound action inheritance across multiple levels
+ * Copyright 2026 SiteNetSoft - OData 4.01: covering-set overload resolution for optional parameters
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -40,10 +41,13 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmException;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmFunction;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAction;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotations;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEdmProvider;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityType;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlFunction;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlParameter;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlSchema;
 import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -231,6 +235,159 @@ class EdmProviderImplOverloadingTest {
     assertNotNull(fromChild, "Bound action must resolve from direct child");
     EdmAction fromGrandchild = localEdm.getBoundAction(actionName, grandchildType, false);
     assertNotNull(fromGrandchild, "Bound action must resolve from grandchild (OLINGO-972)");
+  }
+
+  private static CsdlParameter optionalParameter(final String name, final FullQualifiedName type) {
+    CsdlParameter parameter = new CsdlParameter().setName(name).setType(type);
+    parameter.setAnnotations(
+        new ArrayList<>(List.of(new CsdlAnnotation().setTerm("Org.OData.Core.V1.OptionalParameter"))));
+    return parameter;
+  }
+
+  /** Function 'n.opt' with a required parameter 'A' followed by an optional parameter 'B'. */
+  private Edm edmWithOptionalParameter(final FullQualifiedName functionName) throws Exception {
+    CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
+    CsdlFunction function = new CsdlFunction()
+        .setName(functionName.getName())
+        .setParameters(List.of(
+            new CsdlParameter().setName("A").setType(operationType1),
+            optionalParameter("B", operationType1)));
+    when(provider.getFunctions(functionName)).thenReturn(List.of(function));
+    when(provider.getEntityType(operationType1)).thenReturn(new CsdlEntityType().setProperties(new ArrayList<>()));
+    return new EdmProviderImpl(provider);
+  }
+
+  @Test
+  void unboundFunctionResolvesWithOmittedOptionalParameter() throws Exception {
+    final FullQualifiedName functionName = new FullQualifiedName("n", "opt");
+    final Edm localEdm = edmWithOptionalParameter(functionName);
+
+    // exact match (existing behaviour, pinned)
+    EdmFunction exact = localEdm.getUnboundFunction(functionName, List.of("A", "B"));
+    assertNotNull(exact);
+    assertEquals(2, exact.getParameterNames().size());
+
+    // covering set: the omitted parameter 'B' is optional
+    EdmFunction covering = localEdm.getUnboundFunction(functionName, List.of("A"));
+    assertNotNull(covering, "Overload must resolve when only the optional parameter is omitted");
+    assertTrue(covering.getParameter("B").isOptional());
+
+    // 'A' is required, so specifying only 'B' must not resolve
+    assertNull(localEdm.getUnboundFunction(functionName, List.of("B")));
+
+    // an unknown parameter name must not resolve either
+    assertNull(localEdm.getUnboundFunction(functionName, List.of("A", "X")));
+  }
+
+  @Test
+  void optionalParameterDeclaredAfterRequiredOnesResolves() throws Exception {
+    // CSDL authoring rule (OData 4.01, Core.OptionalParameter): optional parameters come last.
+    // The matcher itself is order-independent; this pins the compliant declaration order.
+    final FullQualifiedName functionName = new FullQualifiedName("n", "opt");
+    final Edm localEdm = edmWithOptionalParameter(functionName);
+    EdmFunction function = localEdm.getUnboundFunction(functionName, List.of("A"));
+    assertNotNull(function);
+    assertEquals(List.of("A", "B"), function.getParameterNames());
+    assertFalse(function.getParameter("A").isOptional());
+    assertTrue(function.getParameter("B").isOptional());
+  }
+
+  @Test
+  void unboundFunctionResolvesWithOutOfLineOptionalAnnotation() throws Exception {
+    final FullQualifiedName functionName = new FullQualifiedName("n", "opt");
+    CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
+    CsdlFunction function = new CsdlFunction()
+        .setName(functionName.getName())
+        .setParameters(List.of(
+            new CsdlParameter().setName("A").setType(operationType1),
+            new CsdlParameter().setName("B").setType(operationType1)));
+    when(provider.getFunctions(functionName)).thenReturn(List.of(function));
+    when(provider.getEntityType(operationType1)).thenReturn(new CsdlEntityType().setProperties(new ArrayList<>()));
+    CsdlSchema schema = new CsdlSchema().setNamespace("n").setAnnotationsGroup(List.of(
+        new CsdlAnnotations().setTarget("n.opt/B")
+            .setAnnotations(new ArrayList<>(
+                List.of(new CsdlAnnotation().setTerm("Org.OData.Core.V1.OptionalParameter"))))));
+    when(provider.getSchemas()).thenReturn(List.of(schema));
+    // the two-argument constructor populates the out-of-line annotations map
+    final Edm localEdm = new EdmProviderImpl(provider, new ArrayList<>());
+
+    EdmFunction covering = localEdm.getUnboundFunction(functionName, List.of("A"));
+    assertNotNull(covering, "Out-of-line Core.OptionalParameter must be honoured during matching");
+    assertTrue(covering.getParameter("B").isOptional());
+  }
+
+  @Test
+  void ambiguousOverloadWithOptionalParametersThrows() throws Exception {
+    final FullQualifiedName functionName = new FullQualifiedName("n", "opt");
+    CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
+    CsdlFunction functionB = new CsdlFunction()
+        .setName(functionName.getName())
+        .setParameters(List.of(
+            new CsdlParameter().setName("A").setType(operationType1),
+            optionalParameter("B", operationType1)));
+    CsdlFunction functionC = new CsdlFunction()
+        .setName(functionName.getName())
+        .setParameters(List.of(
+            new CsdlParameter().setName("A").setType(operationType1),
+            optionalParameter("C", operationType1)));
+    when(provider.getFunctions(functionName)).thenReturn(List.of(functionB, functionC));
+    when(provider.getEntityType(operationType1)).thenReturn(new CsdlEntityType().setProperties(new ArrayList<>()));
+    final Edm localEdm = new EdmProviderImpl(provider);
+
+    EdmException exception = assertThrows(EdmException.class,
+        () -> localEdm.getUnboundFunction(functionName, List.of("A")));
+    assertTrue(exception.getMessage().contains("Ambiguous function overload"), exception.getMessage());
+  }
+
+  @Test
+  void boundFunctionResolvesWithOmittedOptionalParameter() throws Exception {
+    final FullQualifiedName functionName = new FullQualifiedName("n", "boundOpt");
+    CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
+    CsdlFunction function = new CsdlFunction()
+        .setName(functionName.getName())
+        .setBound(true)
+        .setParameters(List.of(
+            new CsdlParameter().setName("bindingParam").setType(operationType1).setCollection(false),
+            new CsdlParameter().setName("A").setType(operationType1),
+            optionalParameter("B", operationType1)));
+    when(provider.getFunctions(functionName)).thenReturn(List.of(function));
+    when(provider.getEntityType(operationType1)).thenReturn(new CsdlEntityType().setProperties(new ArrayList<>()));
+    final Edm localEdm = new EdmProviderImpl(provider);
+
+    EdmFunction exact = localEdm.getBoundFunction(functionName, operationType1, false, List.of("A", "B"));
+    assertNotNull(exact);
+
+    EdmFunction covering = localEdm.getBoundFunction(functionName, operationType1, false, List.of("A"));
+    assertNotNull(covering, "Bound overload must resolve when only the optional parameter is omitted");
+    assertTrue(covering.getParameter("B").isOptional());
+
+    assertNull(localEdm.getBoundFunction(functionName, operationType1, false, List.of("B")));
+  }
+
+  @Test
+  void boundFunctionAmbiguousOverloadThrows() throws Exception {
+    final FullQualifiedName functionName = new FullQualifiedName("n", "boundOpt");
+    CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
+    CsdlFunction functionB = new CsdlFunction()
+        .setName(functionName.getName())
+        .setBound(true)
+        .setParameters(List.of(
+            new CsdlParameter().setName("bindingParam").setType(operationType1).setCollection(false),
+            new CsdlParameter().setName("A").setType(operationType1),
+            optionalParameter("B", operationType1)));
+    CsdlFunction functionC = new CsdlFunction()
+        .setName(functionName.getName())
+        .setBound(true)
+        .setParameters(List.of(
+            new CsdlParameter().setName("bindingParam").setType(operationType1).setCollection(false),
+            new CsdlParameter().setName("A").setType(operationType1),
+            optionalParameter("C", operationType1)));
+    when(provider.getFunctions(functionName)).thenReturn(List.of(functionB, functionC));
+    when(provider.getEntityType(operationType1)).thenReturn(new CsdlEntityType().setProperties(new ArrayList<>()));
+    final Edm localEdm = new EdmProviderImpl(provider);
+
+    assertThrows(EdmException.class,
+        () -> localEdm.getBoundFunction(functionName, operationType1, false, List.of("A")));
   }
 
 }

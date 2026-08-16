@@ -29,6 +29,7 @@
  * Copyright 2026 SiteNetSoft - Fix NPE and non-dynamic-operand bypass narrowness in dynamic-member type checks
  * Copyright 2026 SiteNetSoft - Validate IN-candidate and add/sub non-dynamic operands when the other operand is dynamic
  * Copyright 2026 SiteNetSoft - Added matchesPattern method (OData 4.01 URL Conventions section 5.1.1.7.1)
+ * Copyright 2026 SiteNetSoft - OData 4.01: map ambiguous optional-parameter overloads to a 400 response
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -1222,7 +1223,7 @@ public class ExpressionParser {
     final List<UriParameter> parameters =
         ParserHelper.parseFunctionParameters(tokenizer, edm, referringType, true, aliases, lambdaVariables);
     final List<String> parameterNames = ParserHelper.getParameterNames(parameters);
-    final EdmFunction boundFunction = edm.getBoundFunction(fullQualifiedName,
+    final EdmFunction boundFunction = ParserHelper.getBoundFunction(edm, fullQualifiedName,
         lastType.getFullQualifiedName(), lastIsCollection, parameterNames);
 
     if (boundFunction != null) {
@@ -1231,7 +1232,8 @@ public class ExpressionParser {
       return;
     }
 
-    final EdmFunction unboundFunction = edm.getUnboundFunction(fullQualifiedName, parameterNames);
+    final EdmFunction unboundFunction = ParserHelper.getUnboundFunction(edm, fullQualifiedName,
+        parameterNames);
     if (unboundFunction != null) {
       ParserHelper.validateFunctionParameters(unboundFunction, parameters, edm, referringType, aliases);
       parseFunctionRest(uriInfo, unboundFunction, parameters);
@@ -1249,7 +1251,7 @@ public class ExpressionParser {
     final List<UriParameter> parameters =
         ParserHelper.parseFunctionParameters(tokenizer, edm, referringType, true, aliases, lambdaVariables);
     final List<String> parameterNames = ParserHelper.getParameterNames(parameters);
-    final EdmFunction boundFunction = edm.getBoundFunction(fullQualifiedName,
+    final EdmFunction boundFunction = ParserHelper.getBoundFunction(edm, fullQualifiedName,
         type.getFullQualifiedName(), lastResource.isCollection(), parameterNames);
     if (boundFunction == null) {
       throw new UriParserSemanticException("Bound function '" + fullQualifiedName + "' not found.",

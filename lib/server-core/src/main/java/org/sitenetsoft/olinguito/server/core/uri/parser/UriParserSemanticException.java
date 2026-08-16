@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OData 4.01: FUNCTION_AMBIGUOUS message key for optional parameters
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -30,6 +32,8 @@ public class UriParserSemanticException extends UriParserException {
   public static enum MessageKeys implements MessageKey {
     /** parameters: function-import name, function parameters */
     FUNCTION_NOT_FOUND,
+    /** parameters: function name, function parameters */
+    FUNCTION_AMBIGUOUS,
     /** parameter: resource part */
     RESOURCE_PART_MUST_BE_PRECEDED_BY_STRUCTURAL_TYPE,
     /** parameter: property name */

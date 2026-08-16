@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - OData 4.01: tests for Core.OptionalParameter support
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -42,7 +43,14 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlComplexType;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEdmProvider;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEnumType;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlParameter;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlTypeDefinition;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlConstantExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlConstantExpression.ConstantExpressionType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlPropertyValue;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlRecord;
+import java.util.List;
+
 import org.sitenetsoft.olinguito.commons.core.edm.EdmParameterImpl;
 import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
 import org.junit.jupiter.api.Test;
@@ -173,6 +181,68 @@ class EdmParameterImplTest {
           final EdmParameter parameter = new EdmParameterImpl(edm, parameterProvider);
           parameter.getType();
       });
+  }
+
+  @Test
+  void unannotatedParameterIsNotOptional() {
+    final EdmParameter parameter = new EdmParameterImpl(mock(Edm.class), new CsdlParameter());
+    assertFalse(parameter.isOptional());
+    assertNull(parameter.getOptionalDefaultValue());
+  }
+
+  @Test
+  void optionalParameterWithoutDefaultValue() {
+    CsdlParameter parameterProvider = new CsdlParameter()
+        .setName("p")
+        .setType(EdmPrimitiveTypeKind.String.getFullQualifiedName());
+    parameterProvider.setAnnotations(
+        List.of(new CsdlAnnotation().setTerm("Org.OData.Core.V1.OptionalParameter")));
+    final EdmParameter parameter = new EdmParameterImpl(new EdmProviderImpl(mock(CsdlEdmProvider.class)),
+        parameterProvider);
+    assertTrue(parameter.isOptional());
+    assertNull(parameter.getOptionalDefaultValue());
+  }
+
+  @Test
+  void optionalParameterWithDefaultValue() {
+    CsdlParameter parameterProvider = new CsdlParameter()
+        .setName("p")
+        .setType(EdmPrimitiveTypeKind.String.getFullQualifiedName());
+    parameterProvider.setAnnotations(List.of(new CsdlAnnotation()
+        .setTerm("Org.OData.Core.V1.OptionalParameter")
+        .setExpression(new CsdlRecord()
+            .setType("Org.OData.Core.V1.OptionalParameterType")
+            .setPropertyValues(List.of(new CsdlPropertyValue()
+                .setProperty("DefaultValue")
+                .setValue(new CsdlConstantExpression(ConstantExpressionType.String, "42")))))));
+    final EdmParameter parameter = new EdmParameterImpl(new EdmProviderImpl(mock(CsdlEdmProvider.class)),
+        parameterProvider);
+    assertTrue(parameter.isOptional());
+    assertEquals("42", parameter.getOptionalDefaultValue());
+  }
+
+  @Test
+  void optionalParameterWithAliasedTermName() {
+    CsdlParameter parameterProvider = new CsdlParameter()
+        .setName("p")
+        .setType(EdmPrimitiveTypeKind.String.getFullQualifiedName());
+    parameterProvider.setAnnotations(List.of(new CsdlAnnotation().setTerm("Core.OptionalParameter")));
+    final EdmParameter parameter = new EdmParameterImpl(new EdmProviderImpl(mock(CsdlEdmProvider.class)),
+        parameterProvider);
+    assertTrue(parameter.isOptional());
+  }
+
+  @Test
+  void otherAnnotationDoesNotMakeParameterOptional() {
+    CsdlParameter parameterProvider = new CsdlParameter()
+        .setName("p")
+        .setType(EdmPrimitiveTypeKind.String.getFullQualifiedName());
+    parameterProvider.setAnnotations(
+        List.of(new CsdlAnnotation().setTerm("Org.OData.Core.V1.Description")));
+    final EdmParameter parameter = new EdmParameterImpl(new EdmProviderImpl(mock(CsdlEdmProvider.class)),
+        parameterProvider);
+    assertFalse(parameter.isOptional());
+    assertNull(parameter.getOptionalDefaultValue());
   }
 
 }

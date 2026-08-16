@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OData 4.01: optional function parameters (Core.OptionalParameter)
  */
 package org.sitenetsoft.olinguito.commons.api.edm;
 
@@ -49,4 +51,22 @@ public interface EdmParameter extends EdmElement, EdmMappable, EdmAnnotatable {
    * @return a non-negative integer or the special value <tt>variable</tt>
    */
   SRID getSrid();
+
+  /**
+   * Returns whether this parameter is annotated with Core.OptionalParameter (OData 4.01,
+   * Protocol section 11.5.4.1.1) and may therefore be omitted from function invocations.
+   * @return true if the parameter is optional
+   */
+  default boolean isOptional() {
+    return false;
+  }
+
+  /**
+   * Returns the Core.OptionalParameter annotation's DefaultValue for this parameter,
+   * or null when the parameter is not optional or no default is specified.
+   * @return the default value as String or null
+   */
+  default String getOptionalDefaultValue() {
+    return null;
+  }
 }

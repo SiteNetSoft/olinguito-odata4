@@ -15,18 +15,30 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OData 4.01: optional function parameters (Core.OptionalParameter)
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmAnnotation;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmException;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmMapping;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmParameter;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmTerm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmPropertyValue;
 import org.sitenetsoft.olinguito.commons.api.edm.geo.SRID;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlParameter;
 
 public class EdmParameterImpl extends AbstractEdmNamed implements EdmParameter {
+
+  /** Fully qualified name of the OData 4.01 Core.OptionalParameter term. */
+  public static final String OPTIONAL_PARAMETER_TERM = "Org.OData.Core.V1.OptionalParameter";
+  /** Alias form of the OData 4.01 Core.OptionalParameter term. */
+  public static final String OPTIONAL_PARAMETER_TERM_ALIAS = "Core.OptionalParameter";
+  private static final String DEFAULT_VALUE_PROPERTY = "DefaultValue";
 
   private final CsdlParameter parameter;
   private EdmType typeImpl;
@@ -84,5 +96,56 @@ public class EdmParameterImpl extends AbstractEdmNamed implements EdmParameter {
     }
 
     return typeImpl;
+  }
+
+  @Override
+  public boolean isOptional() {
+    return getOptionalParameterAnnotation() != null;
+  }
+
+  @Override
+  public String getOptionalDefaultValue() {
+    final EdmAnnotation annotation = getOptionalParameterAnnotation();
+    if (annotation == null) {
+      return null;
+    }
+    final EdmExpression expression = annotation.getExpression();
+    if (expression == null || !expression.isDynamic() || !expression.asDynamic().isRecord()) {
+      return null;
+    }
+    for (final EdmPropertyValue propertyValue : expression.asDynamic().asRecord().getPropertyValues()) {
+      if (DEFAULT_VALUE_PROPERTY.equals(propertyValue.getProperty())) {
+        final EdmExpression value = propertyValue.getValue();
+        return value != null && value.isConstant() ? value.asConstant().getValueAsString() : null;
+      }
+    }
+    return null;
+  }
+
+  private EdmAnnotation getOptionalParameterAnnotation() {
+    for (final EdmAnnotation annotation : getAnnotations()) {
+      if (isOptionalParameterTerm(annotation)) {
+        return annotation;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Matches the raw term name first (OLINGO-1399: the vocabulary may not be served, in which case
+   * the term cannot be resolved), then falls back to the resolved term's full qualified name.
+   */
+  private static boolean isOptionalParameterTerm(final EdmAnnotation annotation) {
+    final String termName = annotation.getTermName();
+    if (OPTIONAL_PARAMETER_TERM.equals(termName) || OPTIONAL_PARAMETER_TERM_ALIAS.equals(termName)) {
+      return true;
+    }
+    try {
+      final EdmTerm term = annotation.getTerm();
+      return term != null
+          && OPTIONAL_PARAMETER_TERM.equals(term.getFullQualifiedName().getFullQualifiedNameAsString());
+    } catch (final EdmException e) {
+      return false;
+    }
   }
 }
