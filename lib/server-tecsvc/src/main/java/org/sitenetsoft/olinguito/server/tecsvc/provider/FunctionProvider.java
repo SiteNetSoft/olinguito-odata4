@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - OData 4.01: functions with optional parameters
+ * Copyright 2026 SiteNetSoft - OData 4.01: author optional parameter defaults as URI literals
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
@@ -515,7 +516,7 @@ public class FunctionProvider {
                   new CsdlParameter().setName("ParameterString").setType(PropertyProvider.nameString)
                       .setNullable(false),
                   new CsdlParameter().setName("ParameterSuffix").setType(PropertyProvider.nameString)
-                      .setAnnotations(List.of(optionalParameterAnnotation("-default")))))
+                      .setAnnotations(List.of(optionalParameterAnnotation("'-default'")))))
               .setReturnType(
                   new CsdlReturnType().setType(PropertyProvider.nameString).setNullable(false)));
 
@@ -1200,8 +1201,10 @@ public class FunctionProvider {
   /**
    * Builds a Core.OptionalParameter annotation (OData 4.01, Core vocabulary) for an operation
    * parameter, optionally carrying a default value that a service applies when the parameter is
-   * omitted. The default value is the plain value, not a URI literal.
-   * @param defaultValue the default value, or null for an annotation without one
+   * omitted. Following the vocabulary, the default value is a URI literal ("using the same rules as
+   * the cast function in URLs"), so a string default is written with quotes and an enumeration
+   * default with its type prefix.
+   * @param defaultValue the default value as URI literal, or null for an annotation without one
    */
   static CsdlAnnotation optionalParameterAnnotation(final String defaultValue) {
     final CsdlAnnotation annotation = new CsdlAnnotation().setTerm(OPTIONAL_PARAMETER_TERM);

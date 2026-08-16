@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - OData 4.01: default values of omitted optional function parameters
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -31,9 +32,12 @@ import org.sitenetsoft.olinguito.commons.api.data.Property;
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmFunction;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.uri.UriParameter;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
+import org.sitenetsoft.olinguito.server.tecsvc.provider.SchemaProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -173,6 +177,43 @@ class DataProviderTest {
     dataProvider.setMedia(entity, new byte[] { 1, 2, 3, 4 }, "x/y");
     Assertions.assertArrayEquals(new byte[] { 1, 2, 3, 4 }, dataProvider.readMedia(entity));
     Assertions.assertEquals("x/y", entity.getMediaContentType());
+  }
+
+  @Test
+  void functionWithOmittedOptionalParameter() throws Exception {
+    final DataProvider dataProvider = new DataProvider(oData, edm);
+    final EdmFunction function = edm.getUnboundFunction(
+        new FullQualifiedName(SchemaProvider.NAMESPACE, "UFCRTStringOptionalParam"), List.of("ParameterString"));
+    Assertions.assertNotNull(function);
+    // The Core.OptionalParameter default value is a URI literal, so the quotes must not end up in
+    // the value (OData 4.01, Part 1: Protocol, section 11.5.4.1.1).
+    final Property property = dataProvider.readFunctionPrimitiveComplex(function,
+        List.of(mockParameter("ParameterString", "'base'")), null);
+    Assertions.assertEquals("base-default", property.getValue());
+  }
+
+  @Test
+  void functionWithSpecifiedOptionalParameter() throws Exception {
+    final DataProvider dataProvider = new DataProvider(oData, edm);
+    final EdmFunction function = edm.getUnboundFunction(
+        new FullQualifiedName(SchemaProvider.NAMESPACE, "UFCRTStringOptionalParam"),
+        List.of("ParameterString", "ParameterSuffix"));
+    Assertions.assertNotNull(function);
+    final Property property = dataProvider.readFunctionPrimitiveComplex(function,
+        List.of(mockParameter("ParameterString", "'base'"), mockParameter("ParameterSuffix", "'-explicit'")), null);
+    Assertions.assertEquals("base-explicit", property.getValue());
+  }
+
+  @Test
+  void functionWithOmittedOptionalParameterWithoutDefault() throws Exception {
+    final DataProvider dataProvider = new DataProvider(oData, edm);
+    final EdmFunction function = edm.getUnboundFunction(
+        new FullQualifiedName(SchemaProvider.NAMESPACE, "UFCRTStringOptionalNoDefault"),
+        List.of("ParameterString"));
+    Assertions.assertNotNull(function);
+    final Property property = dataProvider.readFunctionPrimitiveComplex(function,
+        List.of(mockParameter("ParameterString", "'base'")), null);
+    Assertions.assertEquals("base", property.getValue());
   }
 
   private static UriParameter mockParameter(final String name, final String text) {

@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - OData 4.01: action with optional parameters
+ * Copyright 2026 SiteNetSoft - OData 4.01: enum/Int16 and invalid optional parameter defaults
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
@@ -104,6 +105,8 @@ public class ActionProvider {
       "UARTString");
   public static final FullQualifiedName nameUARTStringOptionalParam =
       new FullQualifiedName(SchemaProvider.NAMESPACE, "UARTStringOptionalParam");
+  public static final FullQualifiedName nameUARTStringOptionalBadDefault =
+      new FullQualifiedName(SchemaProvider.NAMESPACE, "UARTStringOptionalBadDefault");
   public static final FullQualifiedName nameUARTCollStringTwoParam = new FullQualifiedName(SchemaProvider.NAMESPACE,
       "UARTCollStringTwoParam");
   public static final FullQualifiedName nameUARTCollCTTwoPrimParam = new FullQualifiedName(SchemaProvider.NAMESPACE,
@@ -193,9 +196,24 @@ public class ActionProvider {
                       .setNullable(false),
                   new CsdlParameter().setName("ParameterSuffix").setType(PropertyProvider.nameString)
                       .setAnnotations(List.of(
-                          FunctionProvider.optionalParameterAnnotation("-default"))),
+                          FunctionProvider.optionalParameterAnnotation("'-default'"))),
+                  new CsdlParameter().setName("ParameterEnum").setType(EnumTypeProvider.nameENString)
+                      .setAnnotations(List.of(FunctionProvider.optionalParameterAnnotation(
+                          SchemaProvider.NAMESPACE + ".ENString'String1'"))),
+                  new CsdlParameter().setName("ParameterInt16").setType(PropertyProvider.nameInt16)
+                      .setAnnotations(List.of(FunctionProvider.optionalParameterAnnotation("42"))),
                   new CsdlParameter().setName("ParameterOptionalNoDefault").setType(PropertyProvider.nameString)
                       .setAnnotations(List.of(FunctionProvider.optionalParameterAnnotation(null)))))
+              .setReturnType(new CsdlReturnType().setType(PropertyProvider.nameString)));
+
+    } else if (actionName.equals(nameUARTStringOptionalBadDefault)) {
+      // The default value is not a valid URI literal for the parameter type; a service must reject
+      // it instead of silently passing the raw annotation value on.
+      return List.of(
+          new CsdlAction().setName(nameUARTStringOptionalBadDefault.getName())
+              .setParameters(List.of(
+                  new CsdlParameter().setName("ParameterString").setType(PropertyProvider.nameString)
+                      .setAnnotations(List.of(FunctionProvider.optionalParameterAnnotation("-notALiteral")))))
               .setReturnType(new CsdlReturnType().setType(PropertyProvider.nameString)));
 
     } else if (actionName.equals(nameUARTCollStringTwoParam)) {

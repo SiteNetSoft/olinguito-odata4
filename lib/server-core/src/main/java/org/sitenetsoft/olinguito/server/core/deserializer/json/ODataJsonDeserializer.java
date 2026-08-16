@@ -38,6 +38,7 @@
  * properties instead of ignoring name@odata.type on arrays
  * Copyright 2026 SiteNetSoft - OpenType CRUD Task 1: implement ODataDeserializer.dynamicProperty
  * Copyright 2026 SiteNetSoft - OData 4.01: apply default values of omitted optional action parameters
+ * Copyright 2026 SiteNetSoft - OData 4.01: read optional parameter defaults as URI literals
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -657,9 +658,11 @@ public class ODataJsonDeserializer implements ODataDeserializer {
 
   /**
    * Creates a parameter from the default value of an omitted optional parameter (OData 4.01,
-   * Part 1: Protocol, section 11.5.5.1). The rule applies to omission only: an explicitly passed
-   * null value stays null. Returns null if the parameter has no applicable default value, in which
-   * case the regular handling of an omitted parameter applies.
+   * Part 1: Protocol, section 11.5.5.1). The default value of the Core.OptionalParameter annotation
+   * is a URI literal (Core vocabulary: "using the same rules as the cast function in URLs"), so it
+   * is read like a parameter value in a URL. The rule applies to omission only: an explicitly
+   * passed null value stays null. Returns null if the parameter has no applicable default value, in
+   * which case the regular handling of an omitted parameter applies.
    */
   private Parameter createDefaultParameter(final String paramName, final EdmParameter edmParameter)
       throws DeserializerException {
@@ -673,13 +676,14 @@ public class ODataJsonDeserializer implements ODataDeserializer {
     parameter.setType(type.getFullQualifiedName().getFullQualifiedNameAsString());
     final EdmMapping mapping = edmParameter.getMapping();
     try {
+      final String literal = primitiveType.fromUriLiteral(defaultValue);
       final Object value;
       if (mapping == null) {
-        value = primitiveType.valueOfString(defaultValue,
+        value = primitiveType.valueOfString(literal,
             edmParameter.isNullable(), edmParameter.getMaxLength(),
             edmParameter.getPrecision(), edmParameter.getScale(), true, primitiveType.getDefaultType());
       } else {
-        value = primitiveType.valueOfString(defaultValue,
+        value = primitiveType.valueOfString(literal,
             edmParameter.isNullable(), edmParameter.getMaxLength(),
             edmParameter.getPrecision(), edmParameter.getScale(), true, mapping.getMappedJavaClass());
       }

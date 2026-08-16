@@ -22,6 +22,7 @@
  * Copyright 2026 SiteNetSoft - Updated entity collection parameter test
  * to use List instead of EntityCollection (OLINGO-1638)
  * Copyright 2026 SiteNetSoft - OData 4.01: optional action parameters with default values
+ * Copyright 2026 SiteNetSoft - OData 4.01: enum/Int16 and invalid URI-literal defaults
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -247,11 +248,20 @@ class ODataJsonDeserializerActionParametersTest extends AbstractODataDeserialize
     final Map<String, Parameter> parameters = deserialize("{\"ParameterString\":\"Test\"}",
         "UARTStringOptionalParam", null);
     assertNotNull(parameters);
-    assertEquals(3, parameters.size());
+    assertEquals(5, parameters.size());
     final Parameter suffix = parameters.get("ParameterSuffix");
     assertNotNull(suffix);
     assertTrue(suffix.isPrimitive());
     assertEquals("-default", suffix.getValue());
+    // The default value is a URI literal, so the enumeration default carries its type prefix.
+    final Parameter enumeration = parameters.get("ParameterEnum");
+    assertNotNull(enumeration);
+    assertTrue(enumeration.isEnum());
+    assertEquals((short) 1, enumeration.getValue());
+    final Parameter int16 = parameters.get("ParameterInt16");
+    assertNotNull(int16);
+    assertTrue(int16.isPrimitive());
+    assertEquals((short) 42, int16.getValue());
     // An omitted optional parameter without default value is service-defined; here it stays null.
     final Parameter noDefault = parameters.get("ParameterOptionalNoDefault");
     assertNotNull(noDefault);
@@ -271,12 +281,21 @@ class ODataJsonDeserializerActionParametersTest extends AbstractODataDeserialize
   void optionalParameterExplicitNull() throws Exception {
     // The default-value rules apply to omission only, an explicitly passed null stays null.
     final Map<String, Parameter> parameters = deserialize(
-        "{\"ParameterString\":\"Test\",\"ParameterSuffix\":null}",
+        "{\"ParameterString\":\"Test\",\"ParameterSuffix\":null,\"ParameterEnum\":null}",
         "UARTStringOptionalParam", null);
     assertNotNull(parameters);
     final Parameter suffix = parameters.get("ParameterSuffix");
     assertNotNull(suffix);
     assertNull(suffix.getValue());
+    final Parameter enumeration = parameters.get("ParameterEnum");
+    assertNotNull(enumeration);
+    assertNull(enumeration.getValue());
+  }
+
+  @Test
+  void optionalParameterInvalidDefault() throws Exception {
+    // A default value that is not a valid URI literal for the parameter type must be rejected.
+    expectException("{}", "UARTStringOptionalBadDefault", null, MessageKeys.INVALID_VALUE_FOR_PROPERTY);
   }
 
   @Test
