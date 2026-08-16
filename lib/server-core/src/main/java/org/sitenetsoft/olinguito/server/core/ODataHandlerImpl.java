@@ -19,9 +19,14 @@
  * Copyright 2026 SiteNetSoft - OLINGO-1558: Thread-safe URI parsing
  * Copyright 2026 SiteNetSoft - OLINGO-1314: Don't echo raw header values in error messages (XSS)
  * Copyright 2026 SiteNetSoft - OLINGO-1372: Fix error responses ignoring Accept header
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 1 Task 6: OData 4.01 POST /$query interception
+ * (URL Conventions section 4.17) - rewrite a /$query POST request into the equivalent GET
  */
 package org.sitenetsoft.olinguito.server.core;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -65,6 +70,9 @@ import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidator;
  * Whenever used create a new instance per thread and not reuse the created instance.
  */
 public class ODataHandlerImpl implements ODataHandler {
+
+  /** OData 4.01 URL Conventions, section 4.17: the path suffix identifying a $query request. */
+  private static final String QUERY_PATH_SEGMENT = "/$query";
 
   private final OData odata;
   private final ServiceMetadata serviceMetadata;
@@ -148,6 +156,7 @@ public class ODataHandlerImpl implements ODataHandler {
     final int measurementUriParser = debugger.startRuntimeMeasurement("Parser", "parseUri");
     final UriInfo localUriInfo;
     try {
+      handleQueryPathIfPresent(request);
       localUriInfo = new Parser(serviceMetadata.getEdm(), odata)
           .parseUri(request.getRawODataPath(), request.getRawQueryPath(), null, request.getRawBaseUri());
       this.uriInfo = localUriInfo;
@@ -238,6 +247,69 @@ public class ODataHandlerImpl implements ODataHandler {
       return new FormatOptionImpl().setFormat(format);
     }
     return uriInfo.getFormatOption();
+  }
+
+  /**
+   * OData 4.01 URL Conventions, section 4.17: a request whose resource path ends in
+   * <code>/$query</code> MUST use the POST verb and MUST carry a <code>text/plain</code> body
+   * of percent-encoded query options. Those options are processed together with any query
+   * options already present in the request URL. This method rewrites such a request in place
+   * into the equivalent GET request (segment stripped, body merged into the raw query path,
+   * method forced to GET) before the URI is handed to the {@link Parser}.
+   *
+   * @param request the incoming request, mutated in place when its path ends in
+   * <code>/$query</code>
+   * @throws ODataHandlerException if the method is not POST or the Content-Type is not
+   * <code>text/plain</code>-compatible, or the body cannot be read
+   */
+  private void handleQueryPathIfPresent(final ODataRequest request) throws ODataHandlerException {
+    final String rawODataPath = request.getRawODataPath();
+    if (rawODataPath == null || !rawODataPath.endsWith(QUERY_PATH_SEGMENT)) {
+      return;
+    }
+
+    final HttpMethod method = request.getMethod();
+    if (method != HttpMethod.POST) {
+      throw new ODataHandlerException("HTTP method " + method + " is not allowed for a $query path.",
+          ODataHandlerException.MessageKeys.HTTP_METHOD_NOT_ALLOWED, method == null ? "null" : method.toString());
+    }
+
+    final String contentTypeHeader = request.getHeader(HttpHeader.CONTENT_TYPE);
+    final ContentType contentType = contentTypeHeader == null ? null : ContentType.parse(contentTypeHeader);
+    if (contentType == null || !ContentType.TEXT_PLAIN.isCompatible(contentType)) {
+      throw new ODataHandlerException("The $query request body must have content type text/plain.",
+          ODataHandlerException.MessageKeys.INVALID_QUERY_BODY_CONTENT_TYPE);
+    }
+
+    final String body = readQueryBody(request).trim();
+
+    request.setRawODataPath(rawODataPath.substring(0, rawODataPath.length() - QUERY_PATH_SEGMENT.length()));
+
+    final String rawRequestUri = request.getRawRequestUri();
+    if (rawRequestUri != null && rawRequestUri.endsWith(QUERY_PATH_SEGMENT)) {
+      request.setRawRequestUri(rawRequestUri.substring(0, rawRequestUri.length() - QUERY_PATH_SEGMENT.length()));
+    }
+
+    if (!body.isEmpty()) {
+      final String rawQueryPath = request.getRawQueryPath();
+      request.setRawQueryPath(
+          rawQueryPath == null || rawQueryPath.isEmpty() ? body : rawQueryPath + "&" + body);
+    }
+
+    request.setMethod(HttpMethod.GET);
+  }
+
+  private static String readQueryBody(final ODataRequest request) throws ODataHandlerException {
+    final InputStream body = request.getBody();
+    if (body == null) {
+      return "";
+    }
+    try {
+      return new String(body.readAllBytes(), StandardCharsets.UTF_8);
+    } catch (final IOException e) {
+      throw new ODataHandlerException("Could not read the $query request body.", e,
+          ODataHandlerException.MessageKeys.INVALID_PAYLOAD);
+    }
   }
 
   private void validateODataVersion(final ODataRequest request) throws ODataHandlerException {

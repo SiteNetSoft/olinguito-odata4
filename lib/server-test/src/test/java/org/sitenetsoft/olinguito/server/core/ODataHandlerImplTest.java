@@ -24,6 +24,8 @@
  * routing assertions now that ODataDispatcher dispatches dynamicProperty segments
  * Copyright 2026 SiteNetSoft - OpenType CRUD Task 2 fix: pin ETag precondition enforcement for
  * dynamic-property PUT/PATCH/DELETE
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 1 Task 6: tests for OData 4.01 POST /$query
+ * (URL Conventions section 4.17)
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -1539,6 +1541,157 @@ class ODataHandlerImplTest {
     }
 
     final ODataResponse response = handler.process(request);
+    return response;
+  }
+
+  // OData 4.01 URL Conventions section 4.17: a POST to a resource path ending in /$query carries
+  // query options in a text/plain body; those options are merged with any query options already
+  // present in the URL and the request is processed as the equivalent GET.
+
+  @Test
+  void queryPostDispatchesAsGet() throws Exception {
+    final PrimitiveProcessor processor = mock(PrimitiveProcessor.class);
+    dispatchQueryPost("ESAllPrim(32767)/PropertyString/$query",
+        null, "$format=json", ContentType.TEXT_PLAIN.toContentTypeString(), processor);
+    verify(processor).readPrimitive(any(), any(), any(), any());
+  }
+
+  @Test
+  void queryPostMergesUrlAndBodyOptions() throws Exception {
+    // URL carries $format, body carries $select - both must reach the parser.
+    final EntityCollectionProcessor processor = mock(EntityCollectionProcessor.class);
+    dispatchQueryPost("ESAllPrim/$query", "$format=json", "$select=PropertyString",
+        ContentType.TEXT_PLAIN.toContentTypeString(), processor);
+    verify(processor).readEntityCollection(any(), any(), any(), any());
+  }
+
+  @Test
+  void queryPostDuplicateOptionAcrossUrlAndBodyIsBadRequest() throws Exception {
+    // Duplicates across URL and body fall out as the parser's standing DOUBLE_SYSTEM_QUERY_OPTION
+    // 400 - merging never silently drops or prefers one source over the other.
+    final ODataResponse response = dispatchQueryPost("ESAllPrim/$query", "$select=PropertyInt16",
+        "$select=PropertyString", ContentType.TEXT_PLAIN.toContentTypeString(), null);
+    assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), response.getStatusCode());
+  }
+
+  @Test
+  void queryGetIsMethodNotAllowed() throws Exception {
+    // GET on a /$query path violates "Requests to paths ending in /$query MUST use the POST verb."
+    final OData odata = OData.newInstance();
+    final ServiceMetadata metadata = odata.createServiceMetadata(new EdmTechProvider(), Collections.emptyList());
+    ODataRequest request = new ODataRequest();
+    request.setMethod(HttpMethod.GET);
+    request.setRawBaseUri(BASE_URI);
+    request.setRawODataPath("ESAllPrim/$query");
+    final ODataResponse response = new ODataHandlerImpl(odata, metadata, new ServerCoreDebugger(odata))
+        .process(request);
+    assertEquals(HttpStatusCode.METHOD_NOT_ALLOWED.getStatusCode(), response.getStatusCode());
+  }
+
+  @Test
+  void queryPostWrongContentTypeIsUnsupportedMediaType() throws Exception {
+    final ODataResponse response = dispatchQueryPost("ESAllPrim/$query", null, "$top=1",
+        ContentType.APPLICATION_JSON.toContentTypeString(), null);
+    assertEquals(HttpStatusCode.UNSUPPORTED_MEDIA_TYPE.getStatusCode(), response.getStatusCode());
+  }
+
+  @Test
+  void queryPostMissingContentTypeIsUnsupportedMediaType() throws Exception {
+    // Content-Type absent entirely (not merely wrong) must also be rejected with 415.
+    final ODataResponse response = dispatchQueryPost("ESAllPrim/$query", null, "$top=1", null, null);
+    assertEquals(HttpStatusCode.UNSUPPORTED_MEDIA_TYPE.getStatusCode(), response.getStatusCode());
+  }
+
+  @Test
+  void queryPostEmptyBodyBehavesAsPlainGet() throws Exception {
+    // An empty text/plain body is legal: /$query with nothing to add is just the equivalent GET.
+    final EntityCollectionProcessor processor = mock(EntityCollectionProcessor.class);
+    dispatchQueryPost("ESAllPrim/$query", null, "", ContentType.TEXT_PLAIN.toContentTypeString(), processor);
+    verify(processor).readEntityCollection(any(), any(), any(), any());
+  }
+
+  @Test
+  void queryPostCaseVarianceNotStripped() throws Exception {
+    // Segment matching is exact: "$Query" (capital Q) is not "$query" and must not be rewritten.
+    // The request is left untouched - still POST, still an unrecognized path segment - and hits
+    // the parser's pre-existing 400 SYNTAX error exactly as it would have before this feature.
+    final ODataResponse response = dispatchQueryPost("ESAllPrim/$Query", null, "$top=1",
+        ContentType.TEXT_PLAIN.toContentTypeString(), null);
+    assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), response.getStatusCode());
+  }
+
+  @Test
+  void batchQueryPostIsUnaffectedByRewrite() throws Exception {
+    // $batch/$query rewrites to a GET on $batch; the batch dispatcher's own POST-only check then
+    // rejects it with the ordinary method-not-allowed error (405), observed and documented here.
+    final BatchProcessor processor = mock(BatchProcessor.class);
+    final ODataResponse response = dispatchQueryPost("$batch/$query", null, "",
+        ContentType.TEXT_PLAIN.toContentTypeString(), processor);
+    verifyNoInteractions(processor);
+    assertEquals(HttpStatusCode.METHOD_NOT_ALLOWED.getStatusCode(), response.getStatusCode());
+  }
+
+  @Test
+  void queryPostOnServiceRootPathDoesNotError() throws Exception {
+    // A /$query path with no preceding resource segment (the service-root case, using this
+    // codebase's "/" convention for the root resource path) must strip down to "" cleanly rather
+    // than throwing - it lands on the existing empty-path redirect branch.
+    final ODataResponse response = dispatchQueryPost("/$query", null, "",
+        ContentType.TEXT_PLAIN.toContentTypeString(), null);
+    assertEquals(HttpStatusCode.TEMPORARY_REDIRECT.getStatusCode(), response.getStatusCode());
+  }
+
+  @Test
+  void queryPostStripsRawRequestUriToo() throws Exception {
+    // Context-URL building consistency: rawRequestUri must lose the /$query suffix too, not just
+    // rawODataPath, since adapters populate both from the same incoming request line.
+    final String path = "ESAllPrim/$query";
+    final EntityCollectionProcessor processor = mock(EntityCollectionProcessor.class);
+    ODataRequest request = new ODataRequest();
+    request.setMethod(HttpMethod.POST);
+    request.setRawBaseUri(BASE_URI);
+    request.setRawRequestUri(BASE_URI + "/" + path);
+    request.setRawODataPath(path);
+    request.setBody(new ByteArrayInputStream(new byte[0]));
+    request.addHeader(HttpHeader.CONTENT_TYPE,
+        Collections.singletonList(ContentType.TEXT_PLAIN.toContentTypeString()));
+
+    final OData odata = OData.newInstance();
+    final ServiceMetadata metadata = odata.createServiceMetadata(new EdmTechProvider(), Collections.emptyList());
+    final ODataHandlerImpl handler = new ODataHandlerImpl(odata, metadata, new ServerCoreDebugger(odata));
+    handler.register(processor);
+
+    handler.process(request);
+
+    assertEquals("ESAllPrim", request.getRawODataPath());
+    assertEquals(BASE_URI + "/ESAllPrim", request.getRawRequestUri());
+  }
+
+  private ODataResponse dispatchQueryPost(final String path, final String urlQuery, final String body,
+      final String contentType, final Processor processor) {
+    ODataRequest request = new ODataRequest();
+    request.setMethod(HttpMethod.POST);
+    request.setRawBaseUri(BASE_URI);
+    request.setRawODataPath(path);
+    request.setRawQueryPath(urlQuery);
+    request.setBody(new ByteArrayInputStream((body == null ? "" : body).getBytes(StandardCharsets.UTF_8)));
+
+    if (contentType != null) {
+      request.addHeader(HttpHeader.CONTENT_TYPE, Collections.singletonList(contentType));
+    }
+
+    final OData odata = OData.newInstance();
+    final ServiceMetadata metadata = odata.createServiceMetadata(
+        new EdmTechProvider(), Collections.emptyList());
+
+    ODataHandlerImpl handler = new ODataHandlerImpl(odata, metadata, new ServerCoreDebugger(odata));
+
+    if (processor != null) {
+      handler.register(processor);
+    }
+
+    final ODataResponse response = handler.process(request);
+    assertNotNull(response);
     return response;
   }
 }

@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 1 Task 6: pin INVALID_QUERY_BODY_CONTENT_TYPE to 415
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -133,6 +134,8 @@ class ExceptionHelperTest {
         checkStatusCode(serverError, HttpStatusCode.NOT_IMPLEMENTED, e);
       } else if (key.equals(ODataHandlerException.MessageKeys.HTTP_METHOD_NOT_ALLOWED)) {
         checkStatusCode(serverError, HttpStatusCode.METHOD_NOT_ALLOWED, e);
+      } else if (key.equals(ODataHandlerException.MessageKeys.INVALID_QUERY_BODY_CONTENT_TYPE)) {
+        checkStatusCode(serverError, HttpStatusCode.UNSUPPORTED_MEDIA_TYPE, e);
       } else {
         checkStatusCode(serverError, HttpStatusCode.BAD_REQUEST, e);
       }

@@ -15,6 +15,9 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 1 Task 6: map INVALID_QUERY_BODY_CONTENT_TYPE to
+ * HTTP 415 (Unsupported Media Type) for OData 4.01 POST /$query (URL Conventions section 4.17)
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -106,6 +109,8 @@ public class ODataExceptionHelper {
       serverError.setStatusCode(HttpStatusCode.BAD_REQUEST.getStatusCode());
     } else if (ODataHandlerException.MessageKeys.HTTP_METHOD_NOT_ALLOWED.equals(e.getMessageKey())) {
       serverError.setStatusCode(HttpStatusCode.METHOD_NOT_ALLOWED.getStatusCode());
+    } else if (ODataHandlerException.MessageKeys.INVALID_QUERY_BODY_CONTENT_TYPE.equals(e.getMessageKey())) {
+      serverError.setStatusCode(HttpStatusCode.UNSUPPORTED_MEDIA_TYPE.getStatusCode());
     }
 
     return serverError;

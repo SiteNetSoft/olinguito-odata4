@@ -15,6 +15,9 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 1 Task 6: added INVALID_QUERY_BODY_CONTENT_TYPE
+ * message key for OData 4.01 POST /$query (URL Conventions section 4.17)
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -48,7 +51,9 @@ public class ODataHandlerException extends ODataLibraryException {
     /** parameter: prefer header */
     INVALID_PREFER_HEADER,
     /** invalid payload */
-    INVALID_PAYLOAD;
+    INVALID_PAYLOAD,
+    /** no parameter */
+    INVALID_QUERY_BODY_CONTENT_TYPE;
 
     @Override
     public String getKey() {
