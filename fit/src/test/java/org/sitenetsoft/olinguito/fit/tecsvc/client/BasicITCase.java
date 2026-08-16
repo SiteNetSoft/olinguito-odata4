@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
+ * Copyright 2026 SiteNetSoft - Added omit-values=nulls client round trip (OData 4.01, Protocol Section 8.2.8.6)
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
@@ -662,6 +663,32 @@ public class BasicITCase extends AbstractParamTecSvcITCase {
     final String location = SERVICE_URI + ES_TWO_PRIM + "(1)";
     assertEquals(location, response.getHeader(HttpHeader.LOCATION).iterator().next());
     assertEquals(location, response.getHeader(HttpHeader.ODATA_ENTITY_ID).iterator().next());
+  }
+
+  @Test
+  public void omitValuesNullsAppliedOnEntityGet() throws Exception {
+    // omit-values=nulls is implemented in ODataJsonSerializer only (Task 4); the XML serializer
+    // still writes an empty PropertyString element for the null value.
+    assumeTrue("omit-values=nulls is only implemented for the JSON serializer.", isJson());
+
+    // ESTwoPrim(-32766) has an explicit null PropertyString in the tecsvc seed data
+    // (DataCreator#createESTwoPrim); ESAllPrim's seed rows leave no property null.
+    ODataEntityRequest<ClientEntity> request = getClient().getRetrieveRequestFactory()
+        .getEntityRequest(getClient().newURIBuilder(SERVICE_URI)
+            .appendEntitySetSegment(ES_TWO_PRIM).appendKeySegment(-32766).build());
+    request.setPrefer(getClient().newPreferences().omitValuesNulls());
+
+    final ODataRetrieveResponse<ClientEntity> response = request.execute();
+    assertEquals(HttpStatusCode.OK.getStatusCode(), response.getStatusCode());
+    assertEquals("omit-values=nulls", response.getHeader(HttpHeader.PREFERENCE_APPLIED).iterator().next());
+
+    final ClientEntity entity = response.getBody();
+    assertNotNull(entity);
+    // The server omits the null PropertyString entirely from the payload; the client API surfaces an
+    // absent declared property as a plain Java null from getProperty(...) -- the same behavior already
+    // exercised for $select-excluded properties (see ExpandSelectITCase#..., OpenTypeITCase#...).
+    assertNull(entity.getProperty(PROPERTY_STRING));
+    assertShortOrInt(-32766, entity.getProperty(PROPERTY_INT16).getPrimitiveValue().toValue());
   }
 
   @Test

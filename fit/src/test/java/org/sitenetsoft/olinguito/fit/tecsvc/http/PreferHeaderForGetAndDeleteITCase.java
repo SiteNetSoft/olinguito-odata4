@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
+ * Copyright 2026 SiteNetSoft - Added omit-values=nulls read-path coverage (OData 4.01, Protocol Section 8.2.8.6)
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.http;
 
@@ -349,9 +350,98 @@ public class PreferHeaderForGetAndDeleteITCase extends AbstractBaseTestITCase {
     StringHelper.Stream resultBody = StringHelper.toStream(connection.getInputStream());
     String resBody = resultBody.asString();
     assertTrue(resBody.contains("The Prefer header 'return=minimal' is not supported for this HTTP Method."));
-    
+
   }
-  
+
+  // ESAllPrim's seed data (DataCreator#createESAllPrim) sets every one of ETAllPrim's 16 properties on
+  // every entity -- there is no seed row with a null primitive there. ESTwoPrim(-32766), by contrast,
+  // (DataCreator#createESTwoPrim) has an explicit null PropertyString, so it is used here instead.
+
+  @Test
+  public void omitValuesNulls_GetEntity() throws Exception {
+    URL url = new URL(SERVICE_URI + "ESTwoPrim(-32766)");
+
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod(HttpMethod.GET.name());
+    connection.setRequestProperty(HttpHeader.PREFER, "omit-values=nulls");
+    connection.connect();
+
+    assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
+    assertEquals("omit-values=nulls", connection.getHeaderField(HttpHeader.PREFERENCE_APPLIED));
+
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
+    assertFalse(content.contains("\"PropertyString\":null"));
+    assertFalse(content.contains("PropertyString"));
+    assertTrue(content.contains("\"PropertyInt16\":-32766"));
+  }
+
+  @Test
+  public void omitValuesNulls_GetEntity_NotRequested() throws Exception {
+    URL url = new URL(SERVICE_URI + "ESTwoPrim(-32766)");
+
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod(HttpMethod.GET.name());
+    connection.connect();
+
+    assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
+    assertNull(connection.getHeaderField(HttpHeader.PREFERENCE_APPLIED));
+
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
+    assertTrue(content.contains("\"PropertyString\":null"));
+  }
+
+  @Test
+  public void omitValuesNulls_PutEntity_NotAppliedOrEchoed() throws Exception {
+    URL url = new URL(SERVICE_URI + "ESTwoPrim(-32766)");
+
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod(HttpMethod.PUT.name());
+    connection.setRequestProperty(HttpHeader.PREFER, "omit-values=nulls");
+    connection.setRequestProperty(HttpHeader.CONTENT_TYPE, "application/json");
+    connection.setDoOutput(true);
+    final OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8);
+    writer.write("{\"PropertyString\":\"Put Value\"}");
+    writer.close();
+    connection.connect();
+
+    assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
+    // tecsvc applies omit-values on reads only; a write response must neither omit properties
+    // nor echo omit-values in Preference-Applied.
+    assertNull(connection.getHeaderField(HttpHeader.PREFERENCE_APPLIED));
+
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
+    assertTrue(content.contains("\"PropertyString\":\"Put Value\""));
+  }
+
+  @Test
+  public void omitValuesNulls_CombinedWithMaxPageSize_GetEntityCollection() throws Exception {
+    URL url = new URL(SERVICE_URI + "ESServerSidePaging");
+
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod(HttpMethod.GET.name());
+    connection.setRequestProperty(HttpHeader.PREFER, "omit-values=nulls, odata.maxpagesize=7");
+    connection.connect();
+
+    assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
+    assertEquals("odata.maxpagesize=7, omit-values=nulls", connection.getHeaderField(HttpHeader.PREFERENCE_APPLIED));
+  }
+
+  @Test
+  public void omitValuesNulls_CombinedWithTrackChanges_GetEntityCollection() throws Exception {
+    URL url = new URL(SERVICE_URI + "ESTwoPrim");
+
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod(HttpMethod.GET.name());
+    connection.setRequestProperty(HttpHeader.PREFER, "omit-values=nulls, odata.track-changes");
+    connection.connect();
+
+    assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
+    assertEquals("odata.track-changes, omit-values=nulls", connection.getHeaderField(HttpHeader.PREFERENCE_APPLIED));
+
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
+    assertFalse(content.contains("\"PropertyString\":null"));
+  }
+
   @Override
   protected ODataClient getClient() {
     return null;

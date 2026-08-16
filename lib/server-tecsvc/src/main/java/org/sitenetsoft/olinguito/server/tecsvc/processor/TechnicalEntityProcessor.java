@@ -17,6 +17,8 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
+ * Copyright 2026 SiteNetSoft - Apply omit-values=nulls on entity/entity-collection reads
+ * (OData 4.01, Protocol Section 8.2.8.6)
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
@@ -44,6 +46,7 @@ import org.sitenetsoft.olinguito.commons.api.data.ValueType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.format.PreferenceName;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
@@ -54,6 +57,7 @@ import org.sitenetsoft.olinguito.server.api.ODataResponse;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerResult;
 import org.sitenetsoft.olinguito.server.api.deserializer.ODataDeserializer;
+import org.sitenetsoft.olinguito.server.api.prefer.Preferences;
 import org.sitenetsoft.olinguito.server.api.prefer.Preferences.Return;
 import org.sitenetsoft.olinguito.server.api.prefer.PreferencesApplied;
 import org.sitenetsoft.olinguito.server.api.processor.CountEntityCollectionProcessor;
@@ -498,10 +502,15 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
     expandHandler.applyExpandQueryOptions(entitySerialization, edmEntitySet, expand, uriInfo,
         serviceMetadata.getEdm());
 
+    // omit-values=nulls is applied on reads only; write responses (create/update) never omit
+    // properties and never echo this preference in Preference-Applied.
+    final boolean omitNulls = odata.createPreferences(request.getHeaders(HttpHeader.PREFER)).getOmitValues()
+        == Preferences.OmitValues.NULLS;
+
     final SerializerResult serializerResult = isReference ?
         serializeReference(entity, edmEntitySet, requestedFormat) :
-        serializeEntity(request, entitySerialization, edmEntitySet, edmEntityType, 
-            requestedFormat, expand, select, iscontNav);
+        serializeEntity(request, entitySerialization, edmEntitySet, edmEntityType,
+            requestedFormat, expand, select, iscontNav, omitNulls);
 
     if (entity.getETag() != null) {
       response.setHeader(HttpHeader.ETAG, entity.getETag());
@@ -509,6 +518,11 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
     response.setContent(serializerResult.getContent());
     response.setStatusCode(HttpStatusCode.OK.getStatusCode());
     response.setHeader(HttpHeader.CONTENT_TYPE, requestedFormat.toContentTypeString());
+    if (omitNulls && !isReference) {
+      response.setHeader(HttpHeader.PREFERENCE_APPLIED,
+          PreferencesApplied.with().preference(PreferenceName.OMIT_VALUES.getName(), "nulls")
+              .build().toValueString());
+    }
   }
   
   private boolean checkIfContNavigation(UriInfo uriInfo) {
@@ -587,6 +601,12 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
     }
     //
 
+    // Shared Preferences view of the Prefer request header: reused below for maxpagesize,
+    // track-changes, and omit-values so that a Prefer header combining several of them results
+    // in a single, accumulated Preference-Applied response header.
+    final Preferences preferences = odata.createPreferences(request.getHeaders(HttpHeader.PREFER));
+    final boolean omitNulls = preferences.getOmitValues() == Preferences.OmitValues.NULLS;
+
     final EdmEntitySet edmEntitySet = getEdmEntitySet(uriInfo.asUriInfoResource());
     final boolean isContNav = checkIfContNavigation(uriInfo);
     EdmEntityType edmEntityType = null;
@@ -618,7 +638,7 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
     SkipHandler.applySkipSystemQueryHandler(uriInfo.getSkipOption(), entitySet);
     TopHandler.applyTopSystemQueryOption(uriInfo.getTopOption(), entitySet);
 
-    final Integer pageSize = odata.createPreferences(request.getHeaders(HttpHeader.PREFER)).getMaxPageSize();
+    final Integer pageSize = preferences.getMaxPageSize();
     final Integer serverPageSize = ServerSidePagingHandler.applyServerSidePaging(uriInfo.getSkipTokenOption(),
         entitySet,
         edmEntitySet,
@@ -676,7 +696,7 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
     } else {
       id = request.getRawBaseUri() + edmEntitySet.getName();
     }
-    if(odata.createPreferences(request.getHeaders(HttpHeader.PREFER)).hasTrackChanges()) {
+    if(preferences.hasTrackChanges()) {
       String deltaTokenValue = generateDeltaToken();
       entitySetSerialization.setDeltaLink(DeltaTokenHandler.createDeltaLink(
           request.getRawRequestUri(),
@@ -690,10 +710,12 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
       final SerializerStreamResult serializerResult =
           serializeEntityCollectionStreamed(request,
               entitySetSerialization, edmEntitySet, edmEntityType, requestedContentType,
-              expand, select, countOption, id);
+              expand, select, countOption, id, omitNulls);
 
       response.setODataContent(serializerResult.getODataContent());
-    } else if(delta != null){ 
+    } else if(delta != null){
+      // serializeDeltaPayloads intentionally never sees omitNulls: [OData-Protocol] Section 8.2.8.6
+      // requires modified null properties to appear in delta payloads regardless of this preference.
       final SerializerResult serializerResult =
           serializeDeltaPayloads(request,
           delta, edmEntitySet, edmEntityType, requestedContentType,
@@ -703,20 +725,32 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
       final SerializerResult serializerResult =
           serializeEntityCollection(request,
               entitySetSerialization, edmEntitySet, edmEntityType, requestedContentType,
-              expand, select, countOption, id, isContNav);
+              expand, select, countOption, id, isContNav, omitNulls);
       response.setContent(serializerResult.getContent());
     }
 
     //
     response.setStatusCode(HttpStatusCode.OK.getStatusCode());
     response.setHeader(HttpHeader.CONTENT_TYPE, requestedContentType.toContentTypeString());
+    final PreferencesApplied.Builder preferencesAppliedBuilder = PreferencesApplied.with();
+    boolean anyPreferenceApplied = false;
     if (pageSize != null) {
-      response.setHeader(HttpHeader.PREFERENCE_APPLIED,
-          PreferencesApplied.with().maxPageSize(serverPageSize).build().toValueString());
-    }else if (odata.createPreferences(request.getHeaders(HttpHeader.PREFER)).hasTrackChanges()) {
-      response.setHeader(HttpHeader.PREFERENCE_APPLIED,
-          PreferencesApplied.with().trackChanges().build().toValueString());
-    }  
+      preferencesAppliedBuilder.maxPageSize(serverPageSize);
+      anyPreferenceApplied = true;
+    }
+    if (preferences.hasTrackChanges()) {
+      preferencesAppliedBuilder.trackChanges();
+      anyPreferenceApplied = true;
+    }
+    if (omitNulls && delta == null) {
+      // Delta payloads never omit nulls (see above), so a delta response must not claim to have
+      // applied omit-values either.
+      preferencesAppliedBuilder.preference(PreferenceName.OMIT_VALUES.getName(), "nulls");
+      anyPreferenceApplied = true;
+    }
+    if (anyPreferenceApplied) {
+      response.setHeader(HttpHeader.PREFERENCE_APPLIED, preferencesAppliedBuilder.build().toValueString());
+    }
     if(delta!=null && request.getHeaders(HttpHeader.ODATA_MAX_VERSION) != null){
       response.setHeader(HttpHeader.ODATA_VERSION,request.getHeaders(HttpHeader.ODATA_MAX_VERSION).get(0));
     }
@@ -772,7 +806,8 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
   private SerializerResult serializeEntityCollection(final ODataRequest request, final EntityCollection
       entityCollection, final EdmEntitySet edmEntitySet, final EdmEntityType edmEntityType,
       final ContentType requestedFormat, final ExpandOption expand, final SelectOption select,
-      final CountOption countOption, String id, final boolean isContNav) throws ODataLibraryException {
+      final CountOption countOption, String id, final boolean isContNav, final boolean omitNulls)
+      throws ODataLibraryException {
 
     return odata.createSerializer(requestedFormat, request.getHeaders(HttpHeader.ODATA_VERSION))
         .entityCollection(
@@ -785,6 +820,7 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
             .count(countOption)
             .expand(expand).select(select)
             .id(id)
+            .omitNulls(omitNulls)
             .build());
   }
 
@@ -793,7 +829,7 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
       final EntityCollection entityCollection, final EdmEntitySet edmEntitySet,
       final EdmEntityType edmEntityType,
       final ContentType requestedFormat, final ExpandOption expand, final SelectOption select,
-      final CountOption countOption, final String id) throws ODataLibraryException {
+      final CountOption countOption, final String id, final boolean omitNulls) throws ODataLibraryException {
 
     EntityIterator streamCollection = new EntityIterator() {
       Iterator<Entity> entityIterator = entityCollection.iterator();
@@ -866,6 +902,7 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
             .count(countOption)
             .expand(expand).select(select)
             .id(id)
+            .omitNulls(omitNulls)
             .build());
   }
 
@@ -891,13 +928,24 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
   private SerializerResult serializeEntity(final ODataRequest request, final Entity entity,
       final EdmEntitySet edmEntitySet, final EdmEntityType edmEntityType,
       final ContentType requestedFormat) throws ODataLibraryException {
-    return serializeEntity(request, entity, edmEntitySet, edmEntityType, requestedFormat, null, null, false);
+    // Write responses (create/update) always go through this overload and never omit nulls.
+    return serializeEntity(request, entity, edmEntitySet, edmEntityType, requestedFormat, null, null, false, false);
   }
 
   private SerializerResult serializeEntity(final ODataRequest request, final Entity entity,
       final EdmEntitySet edmEntitySet, final EdmEntityType edmEntityType,
       final ContentType requestedFormat,
       final ExpandOption expand, final SelectOption select, final boolean isContNav)
+      throws ODataLibraryException {
+    // Write responses (create/update) always go through this overload and never omit nulls.
+    return serializeEntity(request, entity, edmEntitySet, edmEntityType, requestedFormat, expand, select,
+        isContNav, false);
+  }
+
+  private SerializerResult serializeEntity(final ODataRequest request, final Entity entity,
+      final EdmEntitySet edmEntitySet, final EdmEntityType edmEntityType,
+      final ContentType requestedFormat,
+      final ExpandOption expand, final SelectOption select, final boolean isContNav, final boolean omitNulls)
       throws ODataLibraryException {
 
     ContextURL contextUrl = isODataMetadataNone(requestedFormat) ? null :
@@ -909,6 +957,7 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
         EntitySerializerOptions.with()
             .contextURL(contextUrl)
             .expand(expand).select(select)
+            .omitNulls(omitNulls)
             .build());
   }
 

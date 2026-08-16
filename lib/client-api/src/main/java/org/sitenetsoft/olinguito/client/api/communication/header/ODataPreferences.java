@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Added the omit-values preference (OData 4.01, Protocol Section 8.2.8.6)
  */
 package org.sitenetsoft.olinguito.client.api.communication.header;
 
@@ -346,6 +348,23 @@ public class ODataPreferences {
    */
   public String returnMinimal() {
     return PreferenceName.RETURN.getName() + "=minimal";
+  }
+
+  /**
+   * The omit-values preference specifies values that MAY be omitted from a response payload. The only
+   * value currently recognized by this client is <code>nulls</code>, which requests that properties
+   * with a null value (and no instance annotation) be omitted from the response.
+   * <br/>
+   * If the service applies the omit-values preference it MAY include a Preference-Applied response
+   * header containing the omit-values preference.
+   * <br/><br/>
+   * Supported by OData version 4.01 only.
+   *
+   * @see HttpHeader#PREFER
+   * @return preference.
+   */
+  public String omitValuesNulls() {
+    return PreferenceName.OMIT_VALUES.getName() + "=nulls";
   }
 
   /**
