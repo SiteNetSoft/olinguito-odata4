@@ -34,7 +34,6 @@ import java.io.Serial;
 public class EdmAmbiguousOverloadException extends EdmException {
 
   @Serial
-
   private static final long serialVersionUID = 1L;
 
   public EdmAmbiguousOverloadException(final String msg) {

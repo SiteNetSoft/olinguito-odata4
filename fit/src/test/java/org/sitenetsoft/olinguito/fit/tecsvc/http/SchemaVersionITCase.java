@@ -23,6 +23,7 @@
 package org.sitenetsoft.olinguito.fit.tecsvc.http;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
@@ -151,7 +152,7 @@ public class SchemaVersionITCase extends AbstractBaseTestITCase {
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
     final String body = readResponse(connection);
     assertTrue("selected property must be present", body.contains("\"PropertyInt16\":"));
-    assertTrue("non-selected property must be absent", !body.contains("\"PropertyString\":"));
+    assertFalse("non-selected property must be absent", body.contains("\"PropertyString\":"));
   }
 
   @Test

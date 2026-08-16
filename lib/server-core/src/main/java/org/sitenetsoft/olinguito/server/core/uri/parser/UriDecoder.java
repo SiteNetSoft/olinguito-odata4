@@ -19,6 +19,8 @@
  * Copyright 2026 SiteNetSoft - Removed static mutable formEncoding state (thread-safety fix)
  * Copyright 2026 SiteNetSoft - OLINGO-1518: Parenthesis- and quote-aware splitter so function
  *   parameter values containing literal '/' (or '&' in options) are not broken up.
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2: exposed the paren-/quote-aware splitter so the batch
+ *   part handler can inspect raw query options with the same tokenization the parser uses
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -74,7 +76,7 @@ public class UriDecoder {
    * @param c character at which to split
    * @return list of elements (can be empty)
    */
-  private static List<String> split(final String input, final char c) {
+  public static List<String> split(final String input, final char c) {
     List<String> list = new LinkedList<>();
 
     int start = 0;

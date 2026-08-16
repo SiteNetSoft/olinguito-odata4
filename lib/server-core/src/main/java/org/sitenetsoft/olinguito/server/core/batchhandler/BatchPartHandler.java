@@ -19,10 +19,14 @@
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 2: inherit the outer batch request's
  * $schemaversion into parts that don't carry their own (OData 4.01, Part 1: Protocol,
  * section 11.2.12)
+ *
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 review: percent-decode option names before matching
+ * $schemaversion, so a part written by a client that encodes '$' as %24 keeps its own option
  */
 package org.sitenetsoft.olinguito.server.core.batchhandler;
 
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
+import org.sitenetsoft.olinguito.commons.core.Decoder;
 import org.sitenetsoft.olinguito.commons.core.Encoder;
 import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
 import org.sitenetsoft.olinguito.server.api.ODataHandler;
@@ -36,6 +40,7 @@ import org.sitenetsoft.olinguito.server.api.deserializer.batch.ODataResponsePart
 import org.sitenetsoft.olinguito.server.api.processor.BatchProcessor;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.SystemQueryOptionKind;
 import org.sitenetsoft.olinguito.server.core.batchhandler.referenceRewriting.BatchReferenceRewriter;
+import org.sitenetsoft.olinguito.server.core.uri.parser.UriDecoder;
 
 public class BatchPartHandler {
 
@@ -134,7 +139,12 @@ public class BatchPartHandler {
 
   /**
    * Checks whether a raw query path already contains a <code>$schemaversion</code> option, matching
-   * the option name (the segment before '=') rather than doing a substring search.
+   * the option name (the segment before '=') rather than doing a substring search. Option names are
+   * percent-decoded first, because clients may encode the leading '$' (a request built by
+   * <code>URIBuilderImpl</code> carries <code>%24schemaversion</code>); without decoding, such a
+   * part would inherit the outer option as well and be rejected for a duplicate system query option.
+   * Splitting uses the same parenthesis- and quote-aware tokenizer as the URI parser, so an '&amp;'
+   * inside a string literal does not start a new option.
    *
    * @param rawQueryPath the raw query path to check, may be {@code null} or empty
    * @return {@code true} if a <code>$schemaversion</code> option is already present
@@ -143,14 +153,26 @@ public class BatchPartHandler {
     if (rawQueryPath == null || rawQueryPath.isEmpty()) {
       return false;
     }
-    for (final String optionSegment : rawQueryPath.split("&")) {
+    for (final String optionSegment : UriDecoder.split(rawQueryPath, '&')) {
       final int equalsIndex = optionSegment.indexOf('=');
       final String optionName = equalsIndex == -1 ? optionSegment : optionSegment.substring(0, equalsIndex);
-      if (SCHEMAVERSION_OPTION.equals(optionName)) {
+      if (SCHEMAVERSION_OPTION.equals(decodeOptionName(optionName))) {
         return true;
       }
     }
     return false;
+  }
+
+  /**
+   * Percent-decodes an option name, falling back to the raw name if it is not validly encoded
+   * (the URI parser reports that as a syntax error later on).
+   */
+  private static String decodeOptionName(final String optionName) {
+    try {
+      return Decoder.decode(optionName).trim();
+    } catch (final IllegalArgumentException e) {
+      return optionName.trim();
+    }
   }
 
 }

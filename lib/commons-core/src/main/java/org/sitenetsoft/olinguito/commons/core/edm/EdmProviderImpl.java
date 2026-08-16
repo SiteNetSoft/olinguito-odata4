@@ -21,6 +21,8 @@
  * Copyright 2026 SiteNetSoft - OLINGO-1586: Thread-safe annotation access
  * Copyright 2026 SiteNetSoft - OLINGO-972: Walk entity type hierarchy for bound operation binding
  * Copyright 2026 SiteNetSoft - OData 4.01: covering-set overload resolution for optional parameters
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 review: match Core.OptionalParameter through any alias
+ *   the provider declares for Org.OData.Core.V1, not just the two conventional literals
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
@@ -704,18 +706,64 @@ public class EdmProviderImpl extends AbstractEdm {
         aliasName + DOT + operationName.getName() + SLASH + parameter.getName()));
   }
 
-  private static boolean containsOptionalParameterTerm(final List<CsdlAnnotation> annotations) {
+  private boolean containsOptionalParameterTerm(final List<CsdlAnnotation> annotations) {
     if (annotations == null) {
       return false;
     }
     for (CsdlAnnotation annotation : annotations) {
-      final String term = annotation.getTerm();
-      if (EdmParameterImpl.OPTIONAL_PARAMETER_TERM.equals(term)
-          || EdmParameterImpl.OPTIONAL_PARAMETER_TERM_ALIAS.equals(term)) {
+      if (isOptionalParameterTerm(annotation.getTerm())) {
         return true;
       }
     }
     return false;
+  }
+
+  /**
+   * Matches the Core.OptionalParameter term written with its full namespace, with the conventional
+   * <code>Core.</code> alias, or with any other alias the provider declares for
+   * <code>Org.OData.Core.V1</code> (aliasing a vocabulary to an arbitrary name is legal CSDL).
+   * The alias is resolved through the provider's alias infos; if the provider declares none (or
+   * they are not available yet), only the two conventional literals match, which is the behaviour
+   * this check had before and is what {@link EdmParameterImpl} falls back to as well.
+   * @param term the raw term name as written in the CSDL annotation
+   * @return true if the term denotes Org.OData.Core.V1.OptionalParameter
+   */
+  private boolean isOptionalParameterTerm(final String term) {
+    if (term == null) {
+      return false;
+    }
+    if (EdmParameterImpl.OPTIONAL_PARAMETER_TERM.equals(term)
+        || EdmParameterImpl.OPTIONAL_PARAMETER_TERM_ALIAS.equals(term)) {
+      return true;
+    }
+    final int separator = term.lastIndexOf('.');
+    if (separator <= 0) {
+      return false;
+    }
+    final String namespace = getNamespaceForAlias(term.substring(0, separator));
+    return namespace != null
+        && EdmParameterImpl.OPTIONAL_PARAMETER_TERM.equals(namespace + DOT + term.substring(separator + 1));
+  }
+
+  /**
+   * Resolves an alias to the namespace it stands for, the reverse direction of
+   * {@link #getAliasInfo(String)}.
+   * @param alias the alias used as a term-name prefix
+   * @return the namespace, or null if the provider declares no such alias
+   */
+  private String getNamespaceForAlias(final String alias) {
+    try {
+      if (null != provider.getAliasInfos()) {
+        for (CsdlAliasInfo aliasInfo : provider.getAliasInfos()) {
+          if (alias.equals(aliasInfo.getAlias())) {
+            return aliasInfo.getNamespace();
+          }
+        }
+      }
+    } catch (ODataException e) {
+      throw new EdmException(e);
+    }
+    return null;
   }
 
   public void addOperationsAnnotations(CsdlOperation operation, FullQualifiedName actionName) {

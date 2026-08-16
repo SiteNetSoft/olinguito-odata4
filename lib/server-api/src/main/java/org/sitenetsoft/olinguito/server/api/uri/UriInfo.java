@@ -99,8 +99,11 @@ UriInfoAll, UriInfoCrossjoin, UriInfoEntityId {
    * Part 1: Protocol, section 11.2.12, this option MAY be included in any request; it is therefore
    * declared once here on {@link UriInfo} rather than on each of the seven kind-specific
    * sub-interfaces (the per-kind {@code getFormatOption} pattern), since every consumer of URI
-   * information holds a {@link UriInfo} reference regardless of kind.
+   * information holds a {@link UriInfo} reference regardless of kind. Implementations that do not
+   * know about this option inherit the default, which reports the option as absent.
    * @return the $schemaversion option, or <code>null</code> if it was not used in the URI
    */
-  SchemaVersionOption getSchemaVersionOption();
+  default SchemaVersionOption getSchemaVersionOption() {
+    return null;
+  }
 }

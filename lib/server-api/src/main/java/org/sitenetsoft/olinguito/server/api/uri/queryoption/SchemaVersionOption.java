@@ -24,7 +24,7 @@ package org.sitenetsoft.olinguito.server.api.uri.queryoption;
  * Represents the system query option $schemaversion (OData 4.01, Part 1: Protocol, section 11.2.12).
  * Per the specification this option MAY be included in any request; the service returns metadata
  * consistent with the requested schema version, or an appropriate error if the version is unknown.
- * For example: http://.../ESAllPrim?$schemaversion=1.0
+ * For example: http://.../ESAllPrim?$schemaversion=1.0.0
  */
 public interface SchemaVersionOption extends SystemQueryOption {
 

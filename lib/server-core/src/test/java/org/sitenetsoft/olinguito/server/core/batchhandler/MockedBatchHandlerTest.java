@@ -24,6 +24,7 @@
 package org.sitenetsoft.olinguito.server.core.batchhandler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -298,6 +299,36 @@ class MockedBatchHandlerTest {
     // Part already carries its own $schemaversion, so it is left completely untouched (no
     // outer-value inheritance, no re-encoding of the value it already had).
     assertEquals("$schemaversion=*", partWithOwnOption.getRawQueryPath());
+  }
+
+  @Test
+  void batchPartWithPercentEncodedSchemaVersionKeepsItsOwn() throws Exception {
+    // Clients built on URIBuilderImpl percent-encode the leading '$' of system query options
+    // ("%24schemaversion"). Such a part already carries its own option, so the outer $batch value
+    // must not be appended (that would decode to two $schemaversion options -> 400).
+    final BatchHandler versionedBatchHandler = new BatchHandler(oDataHandler, batchProcessor, "1.0.0");
+
+    final String content = ""
+            + "--batch_12345" + CRLF
+            + "Content-Type: application/http" + CRLF
+            + "Content-Transfer-Encoding: binary" + CRLF
+            + CRLF
+            + "GET ESAllPrim(0)?%24schemaversion=%2A HTTP/1.1" + CRLF
+            + CRLF
+            + CRLF
+            + "--batch_12345--";
+
+    final Map<String, List<String>> header = getMimeHeader();
+    final ODataResponse response = new ODataResponse();
+    final ODataRequest request = buildODataRequest(content, header);
+
+    versionedBatchHandler.process(request, response, true);
+
+    final ArgumentCaptor<ODataRequest> captor = ArgumentCaptor.forClass(ODataRequest.class);
+    verify(oDataHandler, times(1)).process(captor.capture());
+    final String rawQueryPath = captor.getValue().getRawQueryPath();
+    assertEquals("%24schemaversion=%2A", rawQueryPath);
+    assertFalse(rawQueryPath.contains("1.0.0"), rawQueryPath);
   }
 
   @Test

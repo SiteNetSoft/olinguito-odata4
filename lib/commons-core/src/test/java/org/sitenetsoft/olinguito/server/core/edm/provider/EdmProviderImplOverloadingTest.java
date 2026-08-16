@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - OLINGO-972: Test bound action inheritance across multiple levels
  * Copyright 2026 SiteNetSoft - OData 4.01: covering-set overload resolution for optional parameters
  * Copyright 2026 SiteNetSoft - OData 4.01: assert the dedicated ambiguous-overload exception
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 review: cover Core vocabulary aliases other than Core.
  */
 package org.sitenetsoft.olinguito.server.core.edm.provider;
 
@@ -43,6 +44,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmException;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmFunction;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAction;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAliasInfo;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotations;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEdmProvider;
@@ -50,6 +52,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityType;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlFunction;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlParameter;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlSchema;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlTerm;
 import org.sitenetsoft.olinguito.commons.core.edm.EdmProviderImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -316,6 +319,57 @@ class EdmProviderImplOverloadingTest {
     EdmFunction covering = localEdm.getUnboundFunction(functionName, List.of("A"));
     assertNotNull(covering, "Out-of-line Core.OptionalParameter must be honoured during matching");
     assertTrue(covering.getParameter("B").isOptional());
+  }
+
+  /** Function 'n.opt' whose optional parameter 'B' is annotated with the given term name. */
+  private Edm edmWithOptionalParameterTerm(final FullQualifiedName functionName, final String term,
+      final List<CsdlAliasInfo> aliasInfos) throws Exception {
+    CsdlEdmProvider provider = mock(CsdlEdmProvider.class);
+    CsdlParameter optional = new CsdlParameter().setName("B").setType(operationType1);
+    optional.setAnnotations(new ArrayList<>(List.of(new CsdlAnnotation().setTerm(term))));
+    CsdlFunction function = new CsdlFunction()
+        .setName(functionName.getName())
+        .setParameters(List.of(new CsdlParameter().setName("A").setType(operationType1), optional));
+    when(provider.getFunctions(functionName)).thenReturn(List.of(function));
+    when(provider.getEntityType(operationType1)).thenReturn(new CsdlEntityType().setProperties(new ArrayList<>()));
+    when(provider.getAliasInfos()).thenReturn(aliasInfos);
+    // Serve the Core vocabulary term so that the EDM surface can resolve an aliased term name too
+    when(provider.getTerm(new FullQualifiedName("Org.OData.Core.V1", "OptionalParameter")))
+        .thenReturn(new CsdlTerm().setName("OptionalParameter").setType("Edm.Boolean"));
+    return new EdmProviderImpl(provider);
+  }
+
+  @Test
+  void optionalParameterWithConventionalCoreAliasResolves() throws Exception {
+    final FullQualifiedName functionName = new FullQualifiedName("n", "opt");
+    final Edm localEdm = edmWithOptionalParameterTerm(functionName, "Core.OptionalParameter", null);
+
+    EdmFunction covering = localEdm.getUnboundFunction(functionName, List.of("A"));
+    assertNotNull(covering, "The conventional 'Core.' alias must keep resolving");
+    assertTrue(covering.getParameter("B").isOptional());
+  }
+
+  @Test
+  void optionalParameterWithCustomCoreAliasResolves() throws Exception {
+    // A provider may alias Org.OData.Core.V1 to anything (legal CSDL); the covering-set matcher
+    // must resolve the alias instead of only accepting the two conventional literals.
+    final FullQualifiedName functionName = new FullQualifiedName("n", "opt");
+    final Edm localEdm = edmWithOptionalParameterTerm(functionName, "C.OptionalParameter",
+        List.of(new CsdlAliasInfo().setAlias("C").setNamespace("Org.OData.Core.V1")));
+
+    EdmFunction covering = localEdm.getUnboundFunction(functionName, List.of("A"));
+    assertNotNull(covering, "A custom alias for Org.OData.Core.V1 must resolve the optional parameter");
+    assertTrue(covering.getParameter("B").isOptional());
+  }
+
+  @Test
+  void unrelatedAliasedTermIsNotOptional() throws Exception {
+    final FullQualifiedName functionName = new FullQualifiedName("n", "opt");
+    final Edm localEdm = edmWithOptionalParameterTerm(functionName, "X.OptionalParameter",
+        List.of(new CsdlAliasInfo().setAlias("X").setNamespace("Some.Other.Vocabulary")));
+
+    assertNull(localEdm.getUnboundFunction(functionName, List.of("A")),
+        "A term from another vocabulary must not make a parameter optional");
   }
 
   @Test
