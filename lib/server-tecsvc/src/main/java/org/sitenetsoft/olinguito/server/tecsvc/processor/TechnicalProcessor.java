@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  * Copyright 2026 SiteNetSoft - Select the first entity explicitly when no key predicates are given
+ * Copyright 2026 SiteNetSoft - OData 4.01: referential-constraint key predicates from the source entity
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
@@ -201,16 +202,19 @@ public abstract class TechnicalProcessor implements Processor {
       if (navigationProperty.isCollection() && key.isEmpty()) { // handled in readEntityCollection()
         return entity;
       }
+      // Key predicates that a referential constraint of this navigation property completes take
+      // their value from the entity the navigation starts at, so it has to be kept across the step.
+      final Entity sourceEntity = entity;
       final Link link = entity.getNavigationLink(navigationProperty.getName());
       entity = link == null ? null :
           key.isEmpty() ?
               link.getInlineEntity() :
-              dataProvider.read(navigationProperty.getType(), link.getInlineEntitySet(), key);
+              dataProvider.read(navigationProperty.getType(), link.getInlineEntitySet(), key, sourceEntity);
       EdmEntityType edmEntityType = getEntityTypeBasedOnNavPropertyTypeCast(uriNavigationResource);
       if (edmEntityType != null) {
         entity = key.isEmpty()
             ? dataProvider.readFirst(edmEntityType)
-            : dataProvider.readDataFromEntity(edmEntityType, key);
+            : dataProvider.readDataFromEntity(edmEntityType, key, sourceEntity);
       }
       if (entity == null) {
         if (key.isEmpty() && (previous != null || navigationResCount == 1)) {

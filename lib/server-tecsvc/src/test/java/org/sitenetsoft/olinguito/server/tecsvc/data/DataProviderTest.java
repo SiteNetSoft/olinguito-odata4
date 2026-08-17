@@ -22,6 +22,7 @@
  * Copyright 2026 SiteNetSoft - OData 4.01: resolve entities through alternate keys
  * Copyright 2026 SiteNetSoft - OData 4.01: bound actions through alternate keys
  * Copyright 2026 SiteNetSoft - Empty key lists address no entity; first entity selected explicitly
+ * Copyright 2026 SiteNetSoft - OData 4.01: referential-constraint key predicates from the source entity
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -249,6 +250,47 @@ class DataProviderTest {
   }
 
   @Test
+  void readResolvesReferencedKeyPropertyFromTheSourceEntity() throws Exception {
+    final DataProvider dataProvider = new DataProvider(oData, edm);
+    final EdmEntitySet esKeyNav = entityContainer.getEntitySet("ESKeyNav");
+    final Entity source = dataProvider.read(esKeyNav, List.of(mockParameter("PropertyInt16", "1")));
+    Assertions.assertNotNull(source);
+
+    final EdmEntitySet esTwoKeyNav = entityContainer.getEntitySet("ESTwoKeyNav");
+    final Entity target = dataProvider.read(esTwoKeyNav.getEntityType(), dataProvider.readAll(esTwoKeyNav),
+        List.of(referencedParameter("PropertyInt16", "PropertyInt16"), mockParameter("PropertyString", "'1'")),
+        source);
+
+    Assertions.assertNotNull(target);
+    Assertions.assertEquals((short) 1, target.getProperty("PropertyInt16").getValue());
+    Assertions.assertEquals("1", target.getProperty("PropertyString").getValue());
+  }
+
+  @Test
+  void readWithReferencedKeyPropertyPicksTheRightSourceValue() throws Exception {
+    final DataProvider dataProvider = new DataProvider(oData, edm);
+    final EdmEntitySet esKeyNav = entityContainer.getEntitySet("ESKeyNav");
+    // ESKeyNav(3).PropertyInt16 == 3, so the same PropertyString must now select ESTwoKeyNav(3,'1').
+    final Entity source = dataProvider.read(esKeyNav, List.of(mockParameter("PropertyInt16", "3")));
+
+    final EdmEntitySet esTwoKeyNav = entityContainer.getEntitySet("ESTwoKeyNav");
+    final Entity target = dataProvider.read(esTwoKeyNav.getEntityType(), dataProvider.readAll(esTwoKeyNav),
+        List.of(referencedParameter("PropertyInt16", "PropertyInt16"), mockParameter("PropertyString", "'1'")),
+        source);
+
+    Assertions.assertNotNull(target);
+    Assertions.assertEquals((short) 3, target.getProperty("PropertyInt16").getValue());
+  }
+
+  @Test
+  void readWithReferencedKeyPropertyAndNoSourceEntityMatchesNothing() throws Exception {
+    final DataProvider dataProvider = new DataProvider(oData, edm);
+    final EdmEntitySet esTwoKeyNav = entityContainer.getEntitySet("ESTwoKeyNav");
+    Assertions.assertNull(dataProvider.read(esTwoKeyNav.getEntityType(), dataProvider.readAll(esTwoKeyNav),
+        List.of(referencedParameter("PropertyInt16", "PropertyInt16"), mockParameter("PropertyString", "'1'"))));
+  }
+
+  @Test
   void unknownAlternateKeyValueReturnsNull() throws Exception {
     final DataProvider dataProvider = new DataProvider(oData, edm);
     Assertions.assertNull(dataProvider.read(esAllPrim,
@@ -304,6 +346,10 @@ class DataProviderTest {
     Mockito.when(parameter.getName()).thenReturn(name);
     Mockito.when(parameter.getText()).thenReturn(text);
     return parameter;
+  }
+
+  private static UriParameter referencedParameter(final String name, final String referencedProperty) {
+    return new UriParameterImpl().setName(name).setReferencedProperty(referencedProperty);
   }
 
   private static UriParameter alternateKeyParameter(final String name, final String text,

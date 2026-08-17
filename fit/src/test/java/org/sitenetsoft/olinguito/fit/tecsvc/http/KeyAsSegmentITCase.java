@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 3: fit-level round trips against the
  * key-as-segment tecsvc endpoint (OData 4.01, Part 2: URL Conventions, section 4.3.6)
+ * Copyright 2026 SiteNetSoft - OData 4.01: referential-constraint key predicates from the source entity
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.http;
 
@@ -96,26 +97,34 @@ public class KeyAsSegmentITCase extends AbstractBaseTestITCase {
   }
 
   /**
-   * Key properties that a referential constraint of the traversed navigation property already fixes
-   * are omitted from the segment sequence: ETTwoKeyNav's partner of NavPropertyETTwoKeyNavMany
-   * constrains PropertyInt16, so a single segment supplies PropertyString alone and completes the
-   * key. The request therefore leaves the URI parser and reaches the data layer, where tecsvc's
-   * in-memory data provider cannot resolve a key predicate that carries a referenced property
-   * instead of a literal - exactly as it already fails for the equivalent, long-established
-   * parenthesized address with the constrained key omitted. Both shapes must fail identically.
+   * A key property covered by a referential constraint of the navigation property is omitted from the
+   * URL (URL Conventions section 4.3.6 MUST) and its value is taken from the source entity's
+   * referencing property. ESKeyNav(1) has PropertyInt16 == 1, so the single segment '1' completes the
+   * key of ESTwoKeyNav to (PropertyInt16 = 1, PropertyString = '1'). Both URL conventions must resolve
+   * the very same entity.
    */
   @Test
   public void referentialConstraintKeyIsOmitted() throws Exception {
     final HttpURLConnection keyAsSegment = get(KAS_URI + "ESKeyNav/1/NavPropertyETTwoKeyNavMany/1");
-    assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), keyAsSegment.getResponseCode());
+    assertEquals(HttpStatusCode.OK.getStatusCode(), keyAsSegment.getResponseCode());
     final String body = readResponse(keyAsSegment);
-    assertTrue("the single segment must complete the key and reach the data layer",
-        body.contains("Wrong key!"));
+    assertTrue("the referenced key property must come from the source entity",
+        body.contains("\"PropertyInt16\":1"));
+    assertTrue("the segment-supplied key property must be applied",
+        body.contains("\"PropertyString\":\"1\""));
 
     final HttpURLConnection parenthesized = get(DEFAULT_URI + "ESKeyNav(1)/NavPropertyETTwoKeyNavMany('1')");
     assertEquals("omitting a constrained key must behave the same in both URL conventions",
         parenthesized.getResponseCode(), keyAsSegment.getResponseCode());
-    assertEquals(readResponse(parenthesized), body);
+    assertEquals("both conventions must serve the very same entity",
+        withoutContextUrl(readResponse(parenthesized)), withoutContextUrl(body));
+  }
+
+  /** An unmatchable segment for the free key part is a plain 404, not a 400. */
+  @Test
+  public void referentialConstraintKeyWithUnknownRemainderIsNotFound() throws Exception {
+    final HttpURLConnection connection = get(KAS_URI + "ESKeyNav/1/NavPropertyETTwoKeyNavMany/9");
+    assertEquals(HttpStatusCode.NOT_FOUND.getStatusCode(), connection.getResponseCode());
   }
 
   /**
@@ -253,6 +262,15 @@ public class KeyAsSegmentITCase extends AbstractBaseTestITCase {
     }
     connection.connect();
     return connection;
+  }
+
+  /**
+   * Strips the context URL from a response body. It is served relative to the request URL, so the
+   * two URL conventions legitimately differ in how far it climbs up to $metadata; everything else
+   * about the entity must be identical.
+   */
+  private static String withoutContextUrl(final String body) {
+    return body.replaceFirst("\"@odata\\.context\":\"[^\"]*\",", "");
   }
 
   private static String readResponse(final HttpURLConnection connection) throws IOException {

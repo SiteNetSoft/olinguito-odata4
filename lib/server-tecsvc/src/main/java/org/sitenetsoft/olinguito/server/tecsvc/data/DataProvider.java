@@ -27,6 +27,7 @@
  * Copyright 2026 SiteNetSoft - OData 4.01: resolve entities through alternate-key predicates
  * Copyright 2026 SiteNetSoft - OData 4.01: share alternate-key property resolution with bound actions
  * Copyright 2026 SiteNetSoft - Empty key lists address no entity; added explicit readFirst
+ * Copyright 2026 SiteNetSoft - OData 4.01: referential-constraint key predicates from the source entity
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -166,13 +167,25 @@ public class DataProvider {
   
   public Entity read(final EdmEntityType edmEntityType, final EntityCollection entitySet,
       final List<UriParameter> keys) throws DataProviderException {
+    return read(edmEntityType, entitySet, keys, null);
+  }
+
+  /**
+   * Reads a single entity by key predicates.
+   * @param sourceEntity the entity the navigation leading here started from; it supplies the values
+   *                     of key predicates completed by a referential constraint
+   *                     ({@link UriParameter#getReferencedProperty()}), and may be <code>null</code>
+   *                     when there is no such entity - such a predicate then matches nothing.
+   */
+  public Entity read(final EdmEntityType edmEntityType, final EntityCollection entitySet,
+      final List<UriParameter> keys, final Entity sourceEntity) throws DataProviderException {
     if (keys.isEmpty()) {
       // An empty key list addresses no entity: matching every entity would silently return the
       // first one. Callers that deliberately want the first entity call readFirst instead.
       return null;
     }
     for (final Entity entity : entitySet.getEntities()) {
-      if (entityMatchesKeys(edmEntityType, entity, keys)) {
+      if (entityMatchesKeys(edmEntityType, entity, keys, sourceEntity)) {
         return entity;
       }
     }
@@ -194,9 +207,12 @@ public class DataProvider {
    * Tells whether the entity matches all given key predicates (primary key or alternate key).
    * Callers guarantee a non-empty key list; {@link #read} and {@link #readDataFromEntity} reject an
    * empty one before reaching here.
+   * @param sourceEntity the entity a navigation to this entity started from, or <code>null</code>;
+   *                     it supplies the value of a key predicate that a referential constraint
+   *                     completes instead of a URI literal
    */
   private boolean entityMatchesKeys(final EdmEntityType edmEntityType, final Entity entity,
-      final List<UriParameter> keys) throws DataProviderException {
+      final List<UriParameter> keys, final Entity sourceEntity) throws DataProviderException {
     try {
       for (final UriParameter key : keys) {
         // The property is looked up through keyProperty because a key-reference name can be a path
@@ -207,6 +223,19 @@ public class DataProvider {
         final Object value = findPropertyValue(entity, propertyPath);
         if (value == null) {
           return false;
+        }
+        if (key.getReferencedProperty() != null) {
+          // The predicate carries no literal: its value comes from the referencing property of the
+          // entity the navigation started from (URL Conventions section 4.3.6, referential
+          // constraints). Both sides are already typed model values, so they compare directly and no
+          // URI-literal round trip is needed.
+          if (sourceEntity == null) {
+            return false;
+          }
+          if (!value.equals(findPropertyValue(sourceEntity, key.getReferencedProperty()))) {
+            return false;
+          }
+          continue;
         }
         final EdmProperty property = keyProperty(edmEntityType, key);
         final EdmPrimitiveType type = (EdmPrimitiveType) property.getType();
@@ -1056,7 +1085,8 @@ public class DataProvider {
     
     
     for (Entity entity : rootEntity) {
-      if (entityMatchesKeys(edmEntitySet.getEntityType(), entity, keys)) {
+      // The root entity is addressed by its own key predicates, so there is no source entity here.
+      if (entityMatchesKeys(edmEntitySet.getEntityType(), entity, keys, null)) {
         String id = entity.getId().toASCIIString() + "/" + navPropertyName + 
             appendKeys(newEntity.getProperties(), edmEntityType.getKeyPredicateNames());
         newEntity.setId(URI.create(id));
@@ -1104,6 +1134,18 @@ public class DataProvider {
 
   public Entity readDataFromEntity(final EdmEntityType edmEntityType,
       final List<UriParameter> keys) throws DataProviderException {
+    return readDataFromEntity(edmEntityType, keys, null);
+  }
+
+  /**
+   * Reads a single entity of an entity type's own collection by key predicates.
+   * @param sourceEntity the entity the navigation leading here started from; it supplies the values
+   *                     of key predicates completed by a referential constraint
+   *                     ({@link UriParameter#getReferencedProperty()}), and may be <code>null</code>
+   *                     when there is no such entity - such a predicate then matches nothing.
+   */
+  public Entity readDataFromEntity(final EdmEntityType edmEntityType,
+      final List<UriParameter> keys, final Entity sourceEntity) throws DataProviderException {
     if (keys.isEmpty()) {
       // An empty key list addresses no entity: matching every entity would silently return the
       // first one. Callers that deliberately want the first entity call readFirst instead.
@@ -1111,7 +1153,7 @@ public class DataProvider {
     }
     final EntityCollection coll = data.get(edmEntityType.getName());
     for (final Entity entity : coll.getEntities()) {
-      if (entityMatchesKeys(edmEntityType, entity, keys)) {
+      if (entityMatchesKeys(edmEntityType, entity, keys, sourceEntity)) {
         return entity;
       }
     }
