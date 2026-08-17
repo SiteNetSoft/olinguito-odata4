@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - OData 4.01: default values of omitted optional function parameters
+ * Copyright 2026 SiteNetSoft - OData 4.01: resolve entities through alternate keys
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -36,6 +37,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmFunction;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.uri.UriParameter;
+import org.sitenetsoft.olinguito.server.core.uri.UriParameterImpl;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.SchemaProvider;
 import org.junit.jupiter.api.Assertions;
@@ -216,10 +218,50 @@ class DataProviderTest {
     Assertions.assertEquals("base", property.getValue());
   }
 
+  @Test
+  void readByAlternateKeyResolvesEntity() throws Exception {
+    final DataProvider dataProvider = new DataProvider(oData, edm);
+    final Entity entity = dataProvider.read(esAllPrim,
+        List.of(alternateKeyParameter("PropertyString", "'Employee1@company.example'", "PropertyString")));
+    Assertions.assertNotNull(entity);
+    Assertions.assertEquals((short) 10, entity.getProperty("PropertyInt16").getValue());
+  }
+
+  @Test
+  void readByAliasedMultiPartAlternateKey() throws Exception {
+    final DataProvider dataProvider = new DataProvider(oData, edm);
+    final Entity entity = dataProvider.read(esAllPrim, List.of(
+        alternateKeyParameter("StringPart", "'First Resource - positive values'", "PropertyString"),
+        alternateKeyParameter("PropertyGuid", "01234567-89ab-cdef-0123-456789abcdef", "PropertyGuid")));
+    Assertions.assertNotNull(entity);
+    Assertions.assertEquals(Short.MAX_VALUE, entity.getProperty("PropertyInt16").getValue());
+  }
+
+  @Test
+  void readByPrimaryKeyUnchanged() throws Exception {
+    final DataProvider dataProvider = new DataProvider(oData, edm);
+    final Entity entity = dataProvider.read(esAllPrim, List.of(mockParameter("PropertyInt16", "10")));
+    Assertions.assertNotNull(entity);
+    Assertions.assertEquals("Employee1@company.example", entity.getProperty("PropertyString").getValue());
+  }
+
+  @Test
+  void unknownAlternateKeyValueReturnsNull() throws Exception {
+    final DataProvider dataProvider = new DataProvider(oData, edm);
+    Assertions.assertNull(dataProvider.read(esAllPrim,
+        List.of(alternateKeyParameter("PropertyString", "'nope'", "PropertyString"))));
+  }
+
   private static UriParameter mockParameter(final String name, final String text) {
     UriParameter parameter = Mockito.mock(UriParameter.class);
     Mockito.when(parameter.getName()).thenReturn(name);
     Mockito.when(parameter.getText()).thenReturn(text);
     return parameter;
+  }
+
+  private static UriParameter alternateKeyParameter(final String name, final String text,
+      final String alternateKeyPropertyName) {
+    return new UriParameterImpl().setName(name).setText(text)
+        .setAlternateKeyPropertyName(alternateKeyPropertyName);
   }
 }

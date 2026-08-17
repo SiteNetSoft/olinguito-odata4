@@ -24,6 +24,7 @@
  * Copyright 2026 SiteNetSoft - OData 4.01: read optional parameter defaults as URI literals
  * Copyright 2026 SiteNetSoft - OpenType CRUD Task 4: extract single dynamic-property
  * upsert/remove helpers, reused by the direct dynamic-property PUT/PATCH/DELETE path
+ * Copyright 2026 SiteNetSoft - OData 4.01: resolve entities through alternate-key predicates
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -56,7 +57,6 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEnumType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmFunction;
-import org.sitenetsoft.olinguito.commons.api.edm.EdmKeyPropertyRef;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationProperty;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmParameter;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
@@ -111,9 +111,8 @@ public class DataProvider {
     return entitySet == null ? null : read(edmEntitySet.getEntityType(), entitySet, keys);
   }
   
-  private Object findPropertyRefValue(Entity entity, EdmKeyPropertyRef refType) {
+  private Object findPropertyValue(Entity entity, final String propertyPath) {
     final int INDEX_ERROR_CODE = -1;
-    final String propertyPath = refType.getName();
     String tmpPropertyName;
     int lastIndex;
     int index = propertyPath.indexOf('/');
@@ -138,43 +137,58 @@ public class DataProvider {
   
   public Entity read(final EdmEntityType edmEntityType, final EntityCollection entitySet,
       final List<UriParameter> keys) throws DataProviderException {
+    for (final Entity entity : entitySet.getEntities()) {
+      if (entityMatchesKeys(edmEntityType, entity, keys)) {
+        return entity;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Resolves the entity-type property a key predicate addresses. For an alternate-key predicate the
+   * property is looked up by the property name the parser resolved (the predicate name may be an alias),
+   * for a primary-key predicate by its key reference.
+   */
+  private EdmProperty keyProperty(final EdmEntityType edmEntityType, final UriParameter key) {
+    return key.getAlternateKeyPropertyName() != null
+        ? edmEntityType.getStructuralProperty(key.getAlternateKeyPropertyName())
+        : edmEntityType.getKeyPropertyRef(key.getName()).getProperty();
+  }
+
+  /** Tells whether the entity matches all given key predicates (primary key or alternate key). */
+  private boolean entityMatchesKeys(final EdmEntityType edmEntityType, final Entity entity,
+      final List<UriParameter> keys) throws DataProviderException {
     try {
-      for (final Entity entity : entitySet.getEntities()) {
-        boolean found = true;
-        for (final UriParameter key : keys) {
-          EdmKeyPropertyRef refType = edmEntityType.getKeyPropertyRef(key.getName());
-          Object value =  findPropertyRefValue(entity, refType);
-          
-          final EdmProperty property = refType.getProperty();
-          final EdmPrimitiveType type = (EdmPrimitiveType) property.getType();
-          
-          if (key.getExpression() != null && !(key.getExpression() instanceof Literal)) {
-            throw new DataProviderException("Expression in key value is not supported yet!",
-                HttpStatusCode.NOT_IMPLEMENTED);
-          }
-          Object keyValue = null;
-          final String text = key.getAlias() == null
-              ? key.getText()
-              : (key.getExpression() instanceof Literal literal ? literal.getText() : null);
-          if (Calendar.class.isAssignableFrom(value.getClass())) {
-            keyValue = type.valueOfString(type.fromUriLiteral(text),
-                property.isNullable(), property.getMaxLength(), property.getPrecision(), property.getScale(),
-                property.isUnicode(), Calendar.class);
-          } else {
-            keyValue = type.valueOfString(type.fromUriLiteral(text),
-                property.isNullable(), property.getMaxLength(), property.getPrecision(), property.getScale(),
-                property.isUnicode(), value.getClass());
-          }
-          if (!value.equals(keyValue)) {
-            found = false;
-            break;
-          }
+      for (final UriParameter key : keys) {
+        final String propertyPath = key.getAlternateKeyPropertyName() != null
+            ? key.getAlternateKeyPropertyName()
+            : edmEntityType.getKeyPropertyRef(key.getName()).getName();
+        final Object value = findPropertyValue(entity, propertyPath);
+        if (value == null) {
+          return false;
         }
-        if (found) {
-          return entity;
+        final EdmProperty property = keyProperty(edmEntityType, key);
+        final EdmPrimitiveType type = (EdmPrimitiveType) property.getType();
+
+        if (key.getExpression() != null && !(key.getExpression() instanceof Literal)) {
+          throw new DataProviderException("Expression in key value is not supported yet!",
+              HttpStatusCode.NOT_IMPLEMENTED);
+        }
+        final String text = key.getAlias() == null
+            ? key.getText()
+            : (key.getExpression() instanceof Literal literal ? literal.getText() : null);
+        final Class<?> targetClass = Calendar.class.isAssignableFrom(value.getClass())
+            ? Calendar.class
+            : value.getClass();
+        final Object keyValue = type.valueOfString(type.fromUriLiteral(text),
+            property.isNullable(), property.getMaxLength(), property.getPrecision(), property.getScale(),
+            property.isUnicode(), targetClass);
+        if (!value.equals(keyValue)) {
+          return false;
         }
       }
-      return null;
+      return true;
     } catch (final EdmPrimitiveTypeException e) {
       throw new DataProviderException("Wrong key!", HttpStatusCode.BAD_REQUEST, e);
     }
@@ -1002,7 +1016,7 @@ public class DataProvider {
     
     
     for (Entity entity : rootEntity) {
-      if (isRootEntity(entity, keys)){
+      if (entityMatchesKeys(edmEntitySet.getEntityType(), entity, keys)) {
         String id = entity.getId().toASCIIString() + "/" + navPropertyName + 
             appendKeys(newEntity.getProperties(), edmEntityType.getKeyPredicateNames());
         newEntity.setId(URI.create(id));
@@ -1048,61 +1062,14 @@ public class DataProvider {
     return keyValue.toString();
   }
 
-  private boolean isRootEntity(Entity entity, List<UriParameter> keys) {
-    boolean found = false;
-    for (UriParameter key : keys) {
-      if (entity.getProperty(key.getName()).getValue().toString().equals(key.getText())) {
-        found = true;
-      } else {
-        found = false;
-      }
-    }
-    return found;
-  }
-  
   public Entity readDataFromEntity(final EdmEntityType edmEntityType,
       final List<UriParameter> keys) throws DataProviderException {
-    EntityCollection coll = data.get(edmEntityType.getName());
-    List<Entity> entities = coll.getEntities();
-    try {
-      for (final Entity entity : entities) {
-        boolean found = true;
-        for (final UriParameter key : keys) {
-          EdmKeyPropertyRef refType = edmEntityType.getKeyPropertyRef(key.getName());
-          Object value =  findPropertyRefValue(entity, refType);
-          
-          final EdmProperty property = refType.getProperty();
-          final EdmPrimitiveType type = (EdmPrimitiveType) property.getType();
-          
-          if (key.getExpression() != null && !(key.getExpression() instanceof Literal)) {
-            throw new DataProviderException("Expression in key value is not supported yet!",
-                HttpStatusCode.NOT_IMPLEMENTED);
-          }
-          final String text = key.getAlias() == null
-              ? key.getText()
-              : (key.getExpression() instanceof Literal literal ? literal.getText() : null);
-          Object keyValue = null;
-          if (Calendar.class.isAssignableFrom(value.getClass())) {
-            keyValue = type.valueOfString(type.fromUriLiteral(text),
-                property.isNullable(), property.getMaxLength(), property.getPrecision(), property.getScale(),
-                property.isUnicode(), Calendar.class);
-          } else {
-            keyValue = type.valueOfString(type.fromUriLiteral(text),
-                property.isNullable(), property.getMaxLength(), property.getPrecision(), property.getScale(),
-                property.isUnicode(), value.getClass());
-          }
-          if (!value.equals(keyValue)) {
-            found = false;
-            break;
-          }
-        }
-        if (found) {
-          return entity;
-        }
+    final EntityCollection coll = data.get(edmEntityType.getName());
+    for (final Entity entity : coll.getEntities()) {
+      if (entityMatchesKeys(edmEntityType, entity, keys)) {
+        return entity;
       }
-      return null;
-    } catch (final EdmPrimitiveTypeException e) {
-      throw new DataProviderException("Wrong key!", HttpStatusCode.BAD_REQUEST, e);
     }
+    return null;
   }
 }
