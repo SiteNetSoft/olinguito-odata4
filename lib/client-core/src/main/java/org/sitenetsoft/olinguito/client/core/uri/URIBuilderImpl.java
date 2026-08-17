@@ -21,13 +21,17 @@
  * Copyright 2026 SiteNetSoft - Port OLINGO-1369: percent-encode blank spaces in path segments
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 4: implemented schemaVersion(String)
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 4: emit key-as-segment URLs
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 4 fix round 1: reject key values that cannot be
+ * expressed as a path segment and percent-encode key segments per RFC 3986 pchar
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.HexFormat;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -167,27 +171,59 @@ public class URIBuilderImpl implements URIBuilder {
   }
 
   /**
+   * Characters that are allowed unencoded in a path segment on top of the unreserved characters,
+   * per the RFC 3986 {@code pchar} rule: the sub-delimiters plus {@code :} and {@code @}. Note that
+   * this keeps a single quote literal, as the OData key-as-segment convention requires.
+   */
+  private static final String PCHAR_ALLOWED = "-._~!$&\'()*+,;=:@";
+
+  /**
    * Renders a key value as an unquoted path segment, as required by the OData 4.01 key-as-segment
    * URL convention: a {@code String} is taken verbatim (no surrounding quotes, no doubled embedded
-   * quote), any other value uses the same literal text {@link URIUtils#escape(Object)} produces,
-   * minus its surrounding single quotes when it has any. A {@code /} in the value is
-   * percent-encoded so that it does not split the path.
+   * quote) and then percent-encoded per RFC 3986 {@code pchar}, so that a {@code /}, {@code ?},
+   * {@code #}, {@code %}, a blank space or a non-ASCII character cannot break out of the segment.
+   * Any other value uses the same literal text {@link URIUtils#escape(Object)} produces, minus its
+   * surrounding single quotes when it has any; that text is already URI-safe and is not encoded
+   * again.
    *
    * @param val key value
    * @return the value as a single path segment
+   * @throws IllegalArgumentException if the value is an empty string, which has no path-segment
+   * representation that survives URI normalization
    */
   private String keyAsSegmentValue(final Object val) {
-    String literal;
     if (val instanceof String s) {
-      literal = s;
-    } else {
-      literal = URIUtils.escape(val);
-      if (literal.length() > 1 && literal.charAt(0) == '\''
-          && literal.charAt(literal.length() - 1) == '\'') {
-        literal = literal.substring(1, literal.length() - 1);
+      if (s.isEmpty()) {
+        throw new IllegalArgumentException("Empty key value cannot be expressed as a path segment");
+      }
+      return encodePathSegment(s);
+    }
+
+    final String literal = URIUtils.escape(val);
+    return literal.length() > 1 && literal.charAt(0) == '\''
+        && literal.charAt(literal.length() - 1) == '\''
+        ? literal.substring(1, literal.length() - 1)
+        : literal;
+  }
+
+  /**
+   * Percent-encodes the UTF-8 form of the given text so that it is a single RFC 3986 path segment.
+   *
+   * @param value raw text
+   * @return the percent-encoded path segment
+   */
+  private static String encodePathSegment(final String value) {
+    final StringBuilder encoded = new StringBuilder(value.length());
+    for (final byte b : value.getBytes(StandardCharsets.UTF_8)) {
+      final char c = (char) (b & 0xFF);
+      if (b > 0 && (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9'
+          || PCHAR_ALLOWED.indexOf(c) >= 0)) {
+        encoded.append(c);
+      } else {
+        encoded.append('%').append(HexFormat.of().withUpperCase().toHexDigits(b));
       }
     }
-    return literal.replace("/", "%2F");
+    return encoded.toString();
   }
 
   @Override
@@ -416,6 +452,13 @@ public class URIBuilderImpl implements URIBuilder {
   @Override
   public URIBuilder appendKeySegment(final Map<String, Map.Entry<EdmEnumType, String>> enumValues,
       final Map<String, Object> segmentValues) {
+
+    if (configuration.isKeyAsSegment()) {
+      // Two separate maps carry no combined order, but in key-as-segment mode the order of the key
+      // values IS the semantics of the URL, so there is nothing sensible to emit here.
+      throw new IllegalStateException("Key-as-segment mode needs the key values in metadata key order; "
+          + "use appendKeySegment(Map<String, Object>) with EdmEnumType.toUriLiteral(...) values instead");
+    }
 
     final Map<String, Object> values = new LinkedHashMap<>();
     for (Map.Entry<String, Map.Entry<EdmEnumType, String>> entry : enumValues.entrySet()) {

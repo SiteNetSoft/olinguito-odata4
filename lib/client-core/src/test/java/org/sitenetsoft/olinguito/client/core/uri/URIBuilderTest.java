@@ -21,12 +21,17 @@
  * Copyright 2026 SiteNetSoft - Port OLINGO-1369: tests for blank-space and embedded-quote encoding
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 4: test for $schemaversion client URI builder
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 4: tests for key-as-segment URI building
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 4 fix round 1: tests for key-segment encoding,
+ * empty/null key values and the enum key overload
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
 import java.io.Serial;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -46,6 +51,7 @@ import org.sitenetsoft.olinguito.client.api.uri.QueryOption;
 import org.sitenetsoft.olinguito.client.api.uri.URIBuilder;
 import org.sitenetsoft.olinguito.client.core.AbstractTest;
 import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEnumType;
 import org.junit.jupiter.api.Test;
 
 class URIBuilderTest extends AbstractTest {
@@ -649,5 +655,64 @@ class URIBuilderTest extends AbstractTest {
     key.put("ItemNo", 2);
     assertEquals(SERVICE_ROOT + "/OrderItems(OrderID=1,ItemNo=2)", client.newURIBuilder(SERVICE_ROOT).
         appendEntitySetSegment("OrderItems").appendKeySegment(key).build().toASCIIString());
+  }
+
+  @Test
+  void keyAsSegmentReservedCharactersAreEncoded() {
+    assertEquals(SERVICE_ROOT + "/Categories/a%3Fb%23c", keyAsSegmentClient().newURIBuilder(SERVICE_ROOT).
+        appendEntitySetSegment("Categories").appendKeySegment("a?b#c").build().toASCIIString());
+    assertEquals(SERVICE_ROOT + "/Categories/50%25", keyAsSegmentClient().newURIBuilder(SERVICE_ROOT).
+        appendEntitySetSegment("Categories").appendKeySegment("50%").build().toASCIIString());
+    assertEquals(SERVICE_ROOT + "/Categories/a%5Bb%5D%20c", keyAsSegmentClient().newURIBuilder(SERVICE_ROOT).
+        appendEntitySetSegment("Categories").appendKeySegment("a[b] c").build().toASCIIString());
+  }
+
+  @Test
+  void keyAsSegmentNonAsciiIsUtf8PercentEncoded() {
+    final URI uri = keyAsSegmentClient().newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("Categories").
+        appendKeySegment("\u00dcn\u00efcode").build();
+
+    assertEquals(SERVICE_ROOT + "/Categories/%C3%9Cn%C3%AFcode", uri.toASCIIString());
+  }
+
+  @Test
+  void keyAsSegmentEmptyStringIsRejected() {
+    final URIBuilder builder = keyAsSegmentClient().newURIBuilder(SERVICE_ROOT).
+        appendEntitySetSegment("People");
+
+    final IllegalArgumentException e =
+        assertThrows(IllegalArgumentException.class, () -> builder.appendKeySegment(""));
+    assertEquals("Empty key value cannot be expressed as a path segment", e.getMessage());
+  }
+
+  @Test
+  void keyAsSegmentNullValueRendersNullLiteral() {
+    // Same literal the parenthesized form uses for a null key value.
+    final URI uri = keyAsSegmentClient().newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("People").
+        appendKeySegment((Object) null).build();
+
+    assertEquals(SERVICE_ROOT + "/People/null", uri.toASCIIString());
+  }
+
+  @Test
+  void keyAsSegmentNullOrEmptyMapAddsNoSegment() {
+    assertEquals(SERVICE_ROOT + "/People", keyAsSegmentClient().newURIBuilder(SERVICE_ROOT).
+        appendEntitySetSegment("People").appendKeySegment((Map<String, Object>) null).
+        build().toASCIIString());
+    assertEquals(SERVICE_ROOT + "/People", keyAsSegmentClient().newURIBuilder(SERVICE_ROOT).
+        appendEntitySetSegment("People").appendKeySegment(Collections.<String, Object> emptyMap()).
+        build().toASCIIString());
+  }
+
+  @Test
+  void keyAsSegmentEnumKeyOverloadIsRejected() {
+    final URIBuilder builder = keyAsSegmentClient().newURIBuilder(SERVICE_ROOT).
+        appendEntitySetSegment("Orders");
+    final Map<String, Map.Entry<EdmEnumType, String>> enumValues = Collections.emptyMap();
+    final Map<String, Object> values = Collections.emptyMap();
+
+    final IllegalStateException e =
+        assertThrows(IllegalStateException.class, () -> builder.appendKeySegment(enumValues, values));
+    assertThat(e.getMessage(), containsString("appendKeySegment(Map<String, Object>)"));
   }
 }

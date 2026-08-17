@@ -19,6 +19,8 @@
  * Copyright 2026 SiteNetSoft - Replaced commons-lang3 Pair with Map.Entry in public API
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 4: added schemaVersion(String)
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 4: documented key-as-segment key rendering
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 4 fix round 1: documented key-segment encoding and
+ * the key-as-segment restrictions on empty and enum key values
  */
 package org.sitenetsoft.olinguito.client.api.uri;
 
@@ -83,11 +85,15 @@ public interface URIBuilder {
    * {@code Configuration.setKeyAsSegment(true)} is set, the key is written as its own path segment
    * using the OData 4.01 key-as-segment convention, e.g. {@code Employees/A1}: a {@code String}
    * value is taken verbatim (no surrounding quotes and no doubled embedded quote), any other value
-   * uses its usual URI literal text minus the surrounding single quotes when it has any. A
-   * {@code /} inside the value is percent-encoded as {@code %2F}.
+   * uses its usual URI literal text minus the surrounding single quotes when it has any. A string
+   * value is percent-encoded per the RFC 3986 {@code pchar} rule, so {@code /} becomes {@code %2F},
+   * {@code ?} becomes {@code %3F} and non-ASCII characters become their UTF-8 percent form, while a
+   * single quote stays literal.
    *
    * @param val segment value.
    * @return current URIBuilder instance
+   * @throws IllegalArgumentException in key-as-segment mode if the value is an empty string, which
+   * cannot be expressed as a path segment
    */
   URIBuilder appendKeySegment(Object val);
 
@@ -99,6 +105,7 @@ public interface URIBuilder {
    * set, each key value is written as its own path segment in map iteration order, e.g.
    * {@code OrderItems/1/2}; pass a {@link java.util.LinkedHashMap} holding the key values in the
    * order the key properties are declared in the metadata, since the names are not part of the URL.
+   * A {@code null} or empty map adds no segment at all in key-as-segment mode.
    *
    * @param segmentValues segment values.
    * @return current URIBuilder instance
@@ -282,10 +289,15 @@ public interface URIBuilder {
 
   /**
    * Appends key segment to the URI, for multiple keys.
+   * <br/>
+   * This overload is not supported when {@code Configuration.setKeyAsSegment(true)} is set: the two
+   * maps carry no combined order, while a key-as-segment URL is ordered by definition. Use
+   * {@link #appendKeySegment(Map)} with {@code EdmEnumType.toUriLiteral(...)} values instead.
    *
    * @param enumValues enum segment values.
    * @param segmentValues segment values.
    * @return current URIBuilder instance
+   * @throws IllegalStateException in key-as-segment mode
    */
   URIBuilder appendKeySegment(Map<String, Map.Entry<EdmEnumType, String>> enumValues,
       Map<String, Object> segmentValues);

@@ -18,12 +18,12 @@
  *
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 4: client key-as-segment round trip
  * (OData 4.01, Part 2: URL Conventions, section 4.3.1)
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 4 fix round 1: exact seeded count assertion
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.net.URI;
@@ -119,7 +119,8 @@ public class KeyAsSegmentITCase extends AbstractTecSvcITCase {
     final ODataRetrieveResponse<ClientPrimitiveValue> response = request.execute();
     saveCookieHeader(response);
     assertEquals(HttpStatusCode.OK.getStatusCode(), response.getStatusCode());
-    assertTrue(Integer.parseInt(response.getBody().toValue().toString()) >= 0);
+    // DataCreator#linkESTwoKeyNav links ESTwoKeyNav(1,'1') to two ESTwoKeyNav entities.
+    assertEquals("2", response.getBody().toValue().toString());
   }
 
   @Test
