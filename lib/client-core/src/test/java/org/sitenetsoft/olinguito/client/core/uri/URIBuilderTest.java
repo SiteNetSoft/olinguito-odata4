@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - Port OLINGO-1369: tests for blank-space and embedded-quote encoding
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 4: test for $schemaversion client URI builder
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 4: tests for key-as-segment URI building
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
@@ -29,10 +30,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TimeZone;
+import java.util.UUID;
 
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.domain.ClientPrimitiveValue;
@@ -561,5 +565,89 @@ class URIBuilderTest extends AbstractTest {
     final ODataClient client = ODataClientFactory.getClient();
     final URI uri = client.newURIBuilder(SERVICE_ROOT).appendMetadataSegment().schemaVersion("*").build();
     assertEquals("http://host/service/$metadata?%24schemaversion=%2A", uri.toASCIIString());
+  }
+
+  private static ODataClient keyAsSegmentClient() {
+    final ODataClient client = ODataClientFactory.getClient();
+    client.getConfiguration().setKeyAsSegment(true);
+    return client;
+  }
+
+  @Test
+  void keyAsSegmentSingle() {
+    // Tier 5 Wave 3: a string key is emitted raw - no surrounding quotes, no doubled quote
+    final URI uri = keyAsSegmentClient().newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("People").
+        appendKeySegment("O'Neil").build();
+
+    assertEquals(SERVICE_ROOT + "/People/O'Neil", uri.toASCIIString());
+    assertEquals("/service/People/O'Neil", uri.getPath());
+  }
+
+  @Test
+  void keyAsSegmentSlashEncoded() {
+    final URI uri = keyAsSegmentClient().newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("Categories").
+        appendKeySegment("Smartphone/Tablet").build();
+
+    assertEquals(SERVICE_ROOT + "/Categories/Smartphone%2FTablet", uri.toASCIIString());
+  }
+
+  @Test
+  void keyAsSegmentInt() {
+    final URI uri = keyAsSegmentClient().newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("Employees").
+        appendKeySegment(1).build();
+
+    assertEquals(SERVICE_ROOT + "/Employees/1", uri.toASCIIString());
+  }
+
+  @Test
+  void keyAsSegmentGuid() {
+    final UUID uuid = UUID.fromString("01234567-89ab-cdef-0123-456789abcdef");
+    final URI uri = keyAsSegmentClient().newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("Orders").
+        appendKeySegment(uuid).build();
+
+    assertEquals(SERVICE_ROOT + "/Orders/01234567-89ab-cdef-0123-456789abcdef", uri.toASCIIString());
+  }
+
+  @Test
+  void keyAsSegmentDateTimeOffset() {
+    final Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+    cal.clear();
+    cal.set(2012, Calendar.FEBRUARY, 29, 1, 2, 3);
+    final URI uri = keyAsSegmentClient().newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("Events").
+        appendKeySegment(cal).build();
+
+    assertEquals(SERVICE_ROOT + "/Events/2012-02-29T01%3A02%3A03Z", uri.toASCIIString());
+  }
+
+  @Test
+  void keyAsSegmentMultiPart() {
+    final Map<String, Object> key = new LinkedHashMap<>();
+    key.put("OrderID", 1);
+    key.put("ItemNo", 2);
+    final URI uri = keyAsSegmentClient().newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("OrderItems").
+        appendKeySegment(key).build();
+
+    assertEquals(SERVICE_ROOT + "/OrderItems/1/2", uri.toASCIIString());
+  }
+
+  @Test
+  void keyAsSegmentCountAfterKey() {
+    final URI uri = keyAsSegmentClient().newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("Employees").
+        appendKeySegment(1).appendNavigationSegment("Orders").appendCountSegment().build();
+
+    assertEquals(SERVICE_ROOT + "/Employees/1/Orders/$count", uri.toASCIIString());
+  }
+
+  @Test
+  void keyAsSegmentOffUnchanged() {
+    final ODataClient client = ODataClientFactory.getClient();
+    assertEquals(SERVICE_ROOT + "/Employees('A1')", client.newURIBuilder(SERVICE_ROOT).
+        appendEntitySetSegment("Employees").appendKeySegment("A1").build().toASCIIString());
+
+    final Map<String, Object> key = new LinkedHashMap<>();
+    key.put("OrderID", 1);
+    key.put("ItemNo", 2);
+    assertEquals(SERVICE_ROOT + "/OrderItems(OrderID=1,ItemNo=2)", client.newURIBuilder(SERVICE_ROOT).
+        appendEntitySetSegment("OrderItems").appendKeySegment(key).build().toASCIIString());
   }
 }

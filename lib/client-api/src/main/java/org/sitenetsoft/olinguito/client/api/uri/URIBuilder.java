@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Replaced commons-lang3 Pair with Map.Entry in public API
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 4: added schemaVersion(String)
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 4: documented key-as-segment key rendering
  */
 package org.sitenetsoft.olinguito.client.api.uri;
 
@@ -77,6 +78,13 @@ public interface URIBuilder {
 
   /**
    * Appends key segment to the URI.
+   * <br/>
+   * By default the key is written in parentheses, e.g. {@code Employees('A1')}. When
+   * {@code Configuration.setKeyAsSegment(true)} is set, the key is written as its own path segment
+   * using the OData 4.01 key-as-segment convention, e.g. {@code Employees/A1}: a {@code String}
+   * value is taken verbatim (no surrounding quotes and no doubled embedded quote), any other value
+   * uses its usual URI literal text minus the surrounding single quotes when it has any. A
+   * {@code /} inside the value is percent-encoded as {@code %2F}.
    *
    * @param val segment value.
    * @return current URIBuilder instance
@@ -85,6 +93,12 @@ public interface URIBuilder {
 
   /**
    * Appends key segment to the URI, for multiple keys.
+   * <br/>
+   * By default all key values are written in one parenthesized segment, e.g.
+   * {@code OrderItems(OrderID=1,ItemNo=2)}. When {@code Configuration.setKeyAsSegment(true)} is
+   * set, each key value is written as its own path segment in map iteration order, e.g.
+   * {@code OrderItems/1/2}; pass a {@link java.util.LinkedHashMap} holding the key values in the
+   * order the key properties are declared in the metadata, since the names are not part of the URL.
    *
    * @param segmentValues segment values.
    * @return current URIBuilder instance

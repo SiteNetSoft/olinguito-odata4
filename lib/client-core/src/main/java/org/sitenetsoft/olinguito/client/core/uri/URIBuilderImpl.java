@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Removed HttpComponents dependency (replaced NameValuePair with Map.Entry)
  * Copyright 2026 SiteNetSoft - Port OLINGO-1369: percent-encode blank spaces in path segments
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 4: implemented schemaVersion(String)
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 4: emit key-as-segment URLs
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
@@ -136,18 +137,24 @@ public class URIBuilderImpl implements URIBuilder {
 
   @Override
   public URIBuilder appendKeySegment(final Object val) {
-    final String segValue = URIUtils.escape(val);
-
-    segments.add(configuration.isKeyAsSegment()
-        ? new Segment(SegmentType.KEY_AS_SEGMENT, segValue)
-        : new Segment(SegmentType.KEY, "(" + segValue + ")"));
+    if (configuration.isKeyAsSegment()) {
+      segments.add(new Segment(SegmentType.KEY_AS_SEGMENT, keyAsSegmentValue(val)));
+    } else {
+      segments.add(new Segment(SegmentType.KEY, "(" + URIUtils.escape(val) + ")"));
+    }
 
     return this;
   }
 
   @Override
   public URIBuilder appendKeySegment(final Map<String, Object> segmentValues) {
-    if (!configuration.isKeyAsSegment()) {
+    if (configuration.isKeyAsSegment()) {
+      if (segmentValues != null) {
+        for (Object value : segmentValues.values()) {
+          segments.add(new Segment(SegmentType.KEY_AS_SEGMENT, keyAsSegmentValue(value)));
+        }
+      }
+    } else {
       final String key = buildMultiKeySegment(segmentValues, true, ',');
       if (key == null || key.isEmpty()) {
         segments.add(new Segment(SegmentType.KEY, noKeysWrapper()));
@@ -157,6 +164,30 @@ public class URIBuilderImpl implements URIBuilder {
     }
 
     return this;
+  }
+
+  /**
+   * Renders a key value as an unquoted path segment, as required by the OData 4.01 key-as-segment
+   * URL convention: a {@code String} is taken verbatim (no surrounding quotes, no doubled embedded
+   * quote), any other value uses the same literal text {@link URIUtils#escape(Object)} produces,
+   * minus its surrounding single quotes when it has any. A {@code /} in the value is
+   * percent-encoded so that it does not split the path.
+   *
+   * @param val key value
+   * @return the value as a single path segment
+   */
+  private String keyAsSegmentValue(final Object val) {
+    String literal;
+    if (val instanceof String s) {
+      literal = s;
+    } else {
+      literal = URIUtils.escape(val);
+      if (literal.length() > 1 && literal.charAt(0) == '\''
+          && literal.charAt(literal.length() - 1) == '\'') {
+        literal = literal.substring(1, literal.length() - 1);
+      }
+    }
+    return literal.replace("/", "%2F");
   }
 
   @Override
