@@ -19,6 +19,8 @@
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 1 Task 7: fit-level round trips for /$query POST
  * requests through real Tomcat (OData 4.01 URL Conventions section 4.17)
  * Copyright 2026 SiteNetSoft - Pinned the /$query x omit-values=nulls cross-feature seam
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 1 follow-up Task 7: pinned the three-way /$query x
+ * omit-values=nulls x matchesPattern composition
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.http;
 
@@ -156,6 +158,73 @@ public class QueryPostITCase extends AbstractBaseTestITCase {
     assertFalse("omitted property must not merely be null-valued", body.contains("\"PropertyString\":null"));
     assertFalse("omitted property's field name must be absent entirely", body.contains("PropertyString"));
     assertTrue("non-null key property must remain present", body.contains("\"PropertyInt16\":-32766"));
+  }
+
+  /**
+   * Three-way composition pin: <tt>/$query</tt> POST (URL Conventions section 4.17) x
+   * <tt>Prefer: omit-values=nulls</tt> (Protocol section 8.2.8.6) x the 4.01 <tt>matchesPattern</tt>
+   * filter function, with a pattern built entirely from regex metacharacters that are also URL
+   * metacharacters, so the body's percent-encoding is genuinely stressed:
+   * <tt>^Test+String?[0-9]+$</tt> sent as <tt>%5ETest%2BString%3F%5B0-9%5D%2B%24</tt>.
+   * <tt>matchesPattern</tt> over a null input is null, so <tt>eq null</tt> selects exactly
+   * ESTwoPrim(-32766) - the one entity whose PropertyString is null and therefore the one entity for
+   * which omit-values=nulls has anything to omit.
+   */
+  @Test
+  public void queryPostOmitValuesAndMatchesPatternComposeOnNullMatch() throws Exception {
+    final HttpURLConnection connection = getConnection(HttpMethod.POST, "ESTwoPrim/$query",
+        "$filter=matchesPattern(PropertyString,'%5ETest%2BString%3F%5B0-9%5D%2B%24') eq null",
+        TEXT_PLAIN, "omit-values=nulls");
+    assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
+    assertEquals("omit-values=nulls", connection.getHeaderField(HttpHeader.PREFERENCE_APPLIED));
+
+    final String body = readResponse(connection);
+    assertEquals("exactly one entity has a null PropertyString", 1, countOccurrences(body, "\"PropertyInt16\":"));
+    assertTrue("the null-valued entity must be the one selected", body.contains("\"PropertyInt16\":-32766"));
+    assertFalse("the null property must be omitted, not written as null", body.contains("PropertyString"));
+  }
+
+  /**
+   * The same percent-encoded metacharacters must reach the filter parser intact: with the literal
+   * space instead of <tt>+</tt> the pattern <tt>^Test String[0-9]+$</tt> matches the three entities
+   * whose PropertyString is "Test String1", "Test String2" and "Test String4". The filter is closed
+   * with an explicit <tt>eq true</tt> - deliberately, not for symmetry with the previous test: a bare
+   * <tt>matchesPattern(...)</tt> is evaluated by tecsvc's {@code FilterHandler} against every entity
+   * in the set, including ESTwoPrim(-32766) whose PropertyString is null; <tt>matchesPattern</tt>
+   * over a null input is null, not a boolean, and {@code FilterHandler} 400s on any non-boolean
+   * per-entity result rather than treating it as non-matching (observed: an unguarded
+   * <tt>matchesPattern</tt> filter over this set always fails with 400 - see
+   * {@link #queryPostOmitValuesEchoedOnEmptyMatchesPatternResult} for the same reason). Wrapping in
+   * <tt>eq true</tt> gives every entity, including the null one, a genuine boolean comparison result.
+   */
+  @Test
+  public void queryPostMatchesPatternMetacharactersSurviveBodyEncoding() throws Exception {
+    final HttpURLConnection connection = getConnection(HttpMethod.POST, "ESTwoPrim/$query",
+        "$filter=matchesPattern(PropertyString,'%5ETest%20String%5B0-9%5D%2B%24') eq true",
+        TEXT_PLAIN, "omit-values=nulls");
+    assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
+    assertEquals("omit-values=nulls", connection.getHeaderField(HttpHeader.PREFERENCE_APPLIED));
+
+    final String body = readResponse(connection);
+    assertEquals("three seeded entities match the pattern", 3, countOccurrences(body, "\"PropertyInt16\":"));
+    assertTrue("non-null strings are untouched by omit-values", body.contains("\"PropertyString\":\"Test String1\""));
+    assertFalse("the null-valued entity must not match", body.contains("\"PropertyInt16\":-32766"));
+  }
+
+  /**
+   * An empty result still honors the preference: the Preference-Applied header is driven by the
+   * request, not by whether any property happened to be omitted. Also closed with <tt>eq true</tt>
+   * for the same reason as {@link #queryPostMatchesPatternMetacharactersSurviveBodyEncoding}: a bare
+   * <tt>matchesPattern(...)</tt> filter would 400 once tecsvc's {@code FilterHandler} reaches
+   * ESTwoPrim(-32766)'s null PropertyString, regardless of the pattern.
+   */
+  @Test
+  public void queryPostOmitValuesEchoedOnEmptyMatchesPatternResult() throws Exception {
+    final HttpURLConnection connection = getConnection(HttpMethod.POST, "ESTwoPrim/$query",
+        "$filter=matchesPattern(PropertyString,'%5EZZZ%5B0-9%5D%2B%24') eq true", TEXT_PLAIN, "omit-values=nulls");
+    assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
+    assertEquals("omit-values=nulls", connection.getHeaderField(HttpHeader.PREFERENCE_APPLIED));
+    assertTrue("the result must be empty", readResponse(connection).contains("\"value\":[]"));
   }
 
   private static int countOccurrences(final String haystack, final String needle) {

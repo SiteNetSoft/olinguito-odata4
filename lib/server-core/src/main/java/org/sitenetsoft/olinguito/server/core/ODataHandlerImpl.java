@@ -26,6 +26,8 @@
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 2: validate $schemaversion against the service's
  * schema version (OData 4.01, Part 1: Protocol, section 11.2.12) before dispatch
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 1 fix round 1: implement setKeyAsSegment
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 1 follow-up Task 7: documented the /$query
+ * trailing-slash edge (exact-suffix match is deliberate, not an oversight)
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -310,6 +312,11 @@ public class ODataHandlerImpl implements ODataHandler {
    */
   private void handleQueryPathIfPresent(final ODataRequest request) throws ODataHandlerException {
     final String rawODataPath = request.getRawODataPath();
+    // OData 4.01 URL Conventions section 4.17 names the segment "/$query" and this match is on the
+    // path's exact suffix, deliberately: a trailing slash ("ESAllPrim/$query/") is NOT a $query
+    // request. It is left untouched here and the URI parser then rejects the literal "$query"
+    // segment with a 400, which is the intended outcome - silently accepting the variant would make
+    // the rewritten path ambiguous with a real resource segment named "$query".
     if (rawODataPath == null || !rawODataPath.endsWith(QUERY_PATH_SEGMENT)) {
       return;
     }

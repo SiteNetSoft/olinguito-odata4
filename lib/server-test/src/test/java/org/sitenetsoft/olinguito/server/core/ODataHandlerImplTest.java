@@ -32,6 +32,8 @@
  * (OData 4.01, Part 1: Protocol, section 11.2.12)
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 1 fix round 1: tests for the key-as-segment handler
  * flag reaching the URI parser (OData 4.01, URL Conventions section 4.3.6)
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 1 follow-up Task 7: pin the /$query trailing-slash edge
+ * (a literal trailing slash is not the /$query segment and must reach the URI parser's 400)
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -1625,6 +1627,19 @@ class ODataHandlerImplTest {
     final ODataResponse response = dispatchQueryPost("ESAllPrim/$Query", null, "$top=1",
         ContentType.TEXT_PLAIN.toContentTypeString(), null);
     assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), response.getStatusCode());
+  }
+
+  @Test
+  void queryPostTrailingSlashIsNotAQueryPathAndIsRejected() throws Exception {
+    // Deliberate: section 4.17 names the segment "/$query", and the segment-match is on the path's
+    // exact suffix, so "ESAllPrim/$query/" is not rewritten. It then reaches the URI parser as a
+    // path with a literal "$query" segment after an entity collection, which is not a resource -
+    // a 400, and the processor is never reached.
+    final EntityCollectionProcessor processor = mock(EntityCollectionProcessor.class);
+    final ODataResponse response = dispatchQueryPost("ESAllPrim/$query/", null, "$top=1",
+        ContentType.TEXT_PLAIN.toContentTypeString(), processor);
+    assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), response.getStatusCode());
+    verifyNoInteractions(processor);
   }
 
   @Test
