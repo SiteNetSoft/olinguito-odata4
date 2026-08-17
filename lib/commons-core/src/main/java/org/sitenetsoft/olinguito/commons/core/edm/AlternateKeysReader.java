@@ -21,7 +21,9 @@
 package org.sitenetsoft.olinguito.commons.core.edm;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.sitenetsoft.olinguito.commons.api.edm.EdmAlternateKey;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmAlternateKeyPropertyRef;
@@ -95,6 +97,13 @@ final class AlternateKeysReader {
     }
   }
 
+  /**
+   * Reads one AlternateKey record. The group is skipped (null) when it is malformed: no or non-collection
+   * {@code Key}, an empty {@code Key} collection, an unusable PropertyRef, or url-names that are not unique
+   * within the group. The vocabulary requires an Alias to "be unique within the set of aliases, structural and
+   * navigation properties of the containing entity type", so a group with a repeated url-name - or with an
+   * alias shadowing another reference's declared property name - would make the key predicate ambiguous.
+   */
   private static EdmAlternateKey readAlternateKey(final EdmExpression item, final EdmEntityType entityType) {
     final EdmRecord record = asRecord(item);
     if (record == null) {
@@ -112,7 +121,24 @@ final class AlternateKeysReader {
       }
       refs.add(ref);
     }
-    return refs.isEmpty() ? null : new EdmAlternateKeyImpl(refs);
+    return refs.isEmpty() || hasAmbiguousUrlNames(refs) ? null : new EdmAlternateKeyImpl(refs);
+  }
+
+  private static boolean hasAmbiguousUrlNames(final List<EdmAlternateKeyPropertyRef> refs) {
+    final Set<String> urlNames = new HashSet<>();
+    for (final EdmAlternateKeyPropertyRef ref : refs) {
+      if (!urlNames.add(ref.getUrlName())) {
+        return true;
+      }
+    }
+    for (final EdmAlternateKeyPropertyRef ref : refs) {
+      for (final EdmAlternateKeyPropertyRef other : refs) {
+        if (ref != other && ref.getAlias() != null && ref.getAlias().equals(other.getName())) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   private static EdmAlternateKeyPropertyRef readPropertyRef(final EdmExpression item,

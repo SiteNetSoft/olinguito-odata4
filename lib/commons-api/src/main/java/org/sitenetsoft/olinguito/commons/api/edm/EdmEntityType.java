@@ -61,6 +61,9 @@ public interface EdmEntityType extends EdmStructuredType {
    * <br/>
    * Alternate keys may be declared on the entity type and on the entity set; the URI parser considers both
    * ({@link EdmEntitySet#getAlternateKeys()} for the set-level declarations of a specific entity set).
+   * <br/>
+   * The list reflects the annotations declared on this entity type only: alternate keys are not inherited
+   * from base entity types.
    *
    * @return the declared alternate keys, in declaration order; never null, empty when none are declared
    */

@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - OData 4.01: tests for Core.AlternateKeys support
+ * Copyright 2026 SiteNetSoft - OData 4.01: tests for malformed and ambiguous alternate-key declarations
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
@@ -50,6 +51,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlCollect
 import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlConstantExpression;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlConstantExpression.ConstantExpressionType;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlPath;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlPropertyPath;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlPropertyValue;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlRecord;
@@ -198,5 +200,118 @@ class EdmAlternateKeysTest {
   void fullyQualifiedTermNameAlsoMatches() throws Exception {
     final CsdlEntityType csdlType = entityType(typeLevelAnnotations("Org.OData.Core.V1.AlternateKeys"));
     assertEquals(3, edmEntityType(provider(csdlType), csdlType).getAlternateKeys().size());
+  }
+
+  /** A PropertyRef record built from raw property values, for the malformed / tolerance cases. */
+  private static CsdlRecord rawPropertyRef(final CsdlPropertyValue... values) {
+    return new CsdlRecord().setPropertyValues(List.of(values));
+  }
+
+  /** An AlternateKey record whose Key property carries the given (possibly malformed) expression. */
+  private static CsdlRecord alternateKeyWithKey(final CsdlExpression key) {
+    return new CsdlRecord()
+        .setPropertyValues(List.of(new CsdlPropertyValue().setProperty("Key").setValue(key)));
+  }
+
+  /** Reads the alternate keys of an entity type annotated with the given annotations. */
+  private static List<EdmAlternateKey> alternateKeysOf(final List<CsdlAnnotation> annotations) throws Exception {
+    final CsdlEntityType csdlType = entityType(annotations);
+    return edmEntityType(provider(csdlType), csdlType).getAlternateKeys();
+  }
+
+  /** The sentinel group that must survive next to a skipped one. */
+  private static CsdlRecord validGroup() {
+    return alternateKey(propertyRef("Code", null));
+  }
+
+  private static void assertOnlySentinelSurvives(final List<EdmAlternateKey> keys) {
+    assertEquals(1, keys.size());
+    assertEquals("Code", keys.get(0).getPropertyRefs().get(0).getName());
+  }
+
+  @Test
+  void keyThatIsNotACollectionIsSkipped() throws Exception {
+    assertOnlySentinelSurvives(alternateKeysOf(List.of(alternateKeys("Core.AlternateKeys",
+        alternateKeyWithKey(new CsdlConstantExpression(ConstantExpressionType.String, "Code")),
+        validGroup()))));
+  }
+
+  @Test
+  void recordWithoutKeyPropertyIsSkipped() throws Exception {
+    assertOnlySentinelSurvives(alternateKeysOf(List.of(alternateKeys("Core.AlternateKeys",
+        new CsdlRecord().setPropertyValues(List.of(new CsdlPropertyValue().setProperty("NotKey")
+            .setValue(new CsdlConstantExpression(ConstantExpressionType.String, "x")))),
+        validGroup()))));
+  }
+
+  @Test
+  void emptyKeyCollectionIsSkipped() throws Exception {
+    assertOnlySentinelSurvives(alternateKeysOf(List.of(alternateKeys("Core.AlternateKeys",
+        alternateKeyWithKey(new CsdlCollection().setItems(List.of())),
+        validGroup()))));
+  }
+
+  @Test
+  void propertyRefWithoutNameInvalidatesTheWholeGroup() throws Exception {
+    assertOnlySentinelSurvives(alternateKeysOf(List.of(alternateKeys("Core.AlternateKeys",
+        alternateKey(propertyRef("Code", null), rawPropertyRef(new CsdlPropertyValue().setProperty("Alias")
+            .setValue(new CsdlConstantExpression(ConstantExpressionType.String, "A")))),
+        validGroup()))));
+  }
+
+  @Test
+  void propertyRefWithEmptyNameInvalidatesTheWholeGroup() throws Exception {
+    assertOnlySentinelSurvives(alternateKeysOf(List.of(alternateKeys("Core.AlternateKeys",
+        alternateKey(propertyRef("", null), propertyRef("Nr", null)),
+        validGroup()))));
+  }
+
+  @Test
+  void annotationWithoutCollectionExpressionYieldsNoGroups() throws Exception {
+    assertTrue(alternateKeysOf(List.of(new CsdlAnnotation().setTerm("Core.AlternateKeys"))).isEmpty());
+    assertTrue(alternateKeysOf(List.of(new CsdlAnnotation().setTerm("Core.AlternateKeys")
+        .setExpression(new CsdlConstantExpression(ConstantExpressionType.String, "Code")))).isEmpty());
+  }
+
+  @Test
+  void unrelatedTermIsIgnored() throws Exception {
+    assertTrue(alternateKeysOf(List.of(alternateKeys("Core.Description", validGroup()))).isEmpty());
+  }
+
+  @Test
+  void constantStringNameIsTolerated() throws Exception {
+    final List<EdmAlternateKey> keys = alternateKeysOf(List.of(alternateKeys("Core.AlternateKeys",
+        alternateKeyWithKey(new CsdlCollection().setItems(List.<CsdlExpression> of(
+            rawPropertyRef(new CsdlPropertyValue().setProperty("Name")
+                .setValue(new CsdlConstantExpression(ConstantExpressionType.String, "Code")))))))));
+    assertEquals(1, keys.size());
+    final EdmAlternateKeyPropertyRef ref = keys.get(0).getPropertyRefs().get(0);
+    assertEquals("Code", ref.getName());
+    assertNotNull(ref.getProperty());
+    assertEquals("Code", ref.getProperty().getName());
+  }
+
+  @Test
+  void pathExpressionNameIsTolerated() throws Exception {
+    final List<EdmAlternateKey> keys = alternateKeysOf(List.of(alternateKeys("Core.AlternateKeys",
+        alternateKeyWithKey(new CsdlCollection().setItems(List.<CsdlExpression> of(
+            rawPropertyRef(new CsdlPropertyValue().setProperty("Name")
+                .setValue(new CsdlPath().setValue("Code")))))))));
+    assertEquals(1, keys.size());
+    final EdmAlternateKeyPropertyRef ref = keys.get(0).getPropertyRefs().get(0);
+    assertEquals("Code", ref.getName());
+    assertNotNull(ref.getProperty());
+  }
+
+  @Test
+  void ambiguousUrlNamesInOneGroupSkipTheGroup() throws Exception {
+    // two references sharing the same alias
+    assertOnlySentinelSurvives(alternateKeysOf(List.of(alternateKeys("Core.AlternateKeys",
+        alternateKey(propertyRef("Region", "X"), propertyRef("Nr", "X")),
+        validGroup()))));
+    // an alias shadowing another reference's declared property name
+    assertOnlySentinelSurvives(alternateKeysOf(List.of(alternateKeys("Core.AlternateKeys",
+        alternateKey(propertyRef("Region", "Nr"), propertyRef("Nr", null)),
+        validGroup()))));
   }
 }
