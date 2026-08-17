@@ -15,10 +15,15 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OData 4.01: expose Core.AlternateKeys on the entity set
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
+import java.util.List;
+
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmAlternateKey;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntitySet;
@@ -26,6 +31,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntitySet;
 public class EdmEntitySetImpl extends AbstractEdmBindingTarget implements EdmEntitySet {
 
   private CsdlEntitySet entitySet;
+  private volatile List<EdmAlternateKey> alternateKeys;
 
   public EdmEntitySetImpl(final Edm edm, final EdmEntityContainer container, final CsdlEntitySet entitySet) {
     super(edm, container, entitySet);
@@ -40,5 +46,13 @@ public class EdmEntitySetImpl extends AbstractEdmBindingTarget implements EdmEnt
   @Override
   public boolean isKeyAsSegmentAllowed() {
     return entitySet.isKeyAsSegmentAllowed();
+  }
+
+  @Override
+  public List<EdmAlternateKey> getAlternateKeys() {
+    if (alternateKeys == null) {
+      alternateKeys = AlternateKeysReader.read(this, getEntityType());
+    }
+    return alternateKeys;
   }
 }

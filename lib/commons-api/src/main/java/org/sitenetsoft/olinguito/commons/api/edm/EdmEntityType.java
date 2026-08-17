@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OData 4.01: expose Core.AlternateKeys on the entity type
  */
 package org.sitenetsoft.olinguito.commons.api.edm;
 
@@ -53,6 +55,18 @@ public interface EdmEntityType extends EdmStructuredType {
    * @return <code>true</code> if the entity type is a Media Link Entry
    */
   boolean hasStream();
+
+  /**
+   * Gets the alternate keys declared with the {@code Core.AlternateKeys} term (OData 4.01 URL Conventions 4.3.5).
+   * <br/>
+   * Alternate keys may be declared on the entity type and on the entity set; the URI parser considers both
+   * ({@link EdmEntitySet#getAlternateKeys()} for the set-level declarations of a specific entity set).
+   *
+   * @return the declared alternate keys, in declaration order; never null, empty when none are declared
+   */
+  default List<EdmAlternateKey> getAlternateKeys() {
+    return List.of();
+  }
 
   /*
    * (non-Javadoc)

@@ -15,8 +15,12 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OData 4.01: expose Core.AlternateKeys on the entity set
  */
 package org.sitenetsoft.olinguito.commons.api.edm;
+
+import java.util.List;
 
 /**
  * A CSDL EntitySet element.
@@ -35,4 +39,17 @@ public interface EdmEntitySet extends EdmBindingTarget {
    * @return true if the entity set allows for the next segment to be the key.
    */
   boolean isKeyAsSegmentAllowed();
+
+  /**
+   * Gets the alternate keys declared on this entity set with the {@code Core.AlternateKeys} term
+   * (OData 4.01 URL Conventions 4.3.5).
+   * <br/>
+   * These are the set-level declarations only; the URI parser considers them together with the type-level
+   * declarations of {@link EdmEntityType#getAlternateKeys()}.
+   *
+   * @return the declared alternate keys, in declaration order; never null, empty when none are declared
+   */
+  default List<EdmAlternateKey> getAlternateKeys() {
+    return List.of();
+  }
 }

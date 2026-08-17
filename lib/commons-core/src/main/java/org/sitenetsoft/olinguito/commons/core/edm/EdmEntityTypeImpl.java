@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Thread-safe EDM caches using ConcurrentHashMap
  * Copyright 2026 SiteNetSoft - Port OLINGO-1289: detect cyclic base-type chains
+ * Copyright 2026 SiteNetSoft - OData 4.01: expose Core.AlternateKeys on the entity type
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
@@ -29,6 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmAlternateKey;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmException;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmKeyPropertyRef;
@@ -48,6 +50,7 @@ public class EdmEntityTypeImpl extends AbstractEdmStructuredType implements EdmE
   private final Map<String, EdmKeyPropertyRef> keyPropertyRefs =
       new ConcurrentHashMap<>();
   private volatile List<EdmKeyPropertyRef> keyPropertyRefsList;
+  private volatile List<EdmAlternateKey> alternateKeys;
 
   public EdmEntityTypeImpl(final Edm edm, final FullQualifiedName name, final CsdlEntityType entityType) {
     super(edm, name, EdmTypeKind.ENTITY, entityType);
@@ -137,6 +140,14 @@ public class EdmEntityTypeImpl extends AbstractEdmStructuredType implements EdmE
       return entityBaseType.getKeyPropertyRef(keyPredicateName);
     }
     return edmKeyPropertyRef;
+  }
+
+  @Override
+  public List<EdmAlternateKey> getAlternateKeys() {
+    if (alternateKeys == null) {
+      alternateKeys = AlternateKeysReader.read(this, this);
+    }
+    return alternateKeys;
   }
 
   @Override
