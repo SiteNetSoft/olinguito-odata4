@@ -26,6 +26,7 @@
  * upsert/remove helpers, reused by the direct dynamic-property PUT/PATCH/DELETE path
  * Copyright 2026 SiteNetSoft - OData 4.01: resolve entities through alternate-key predicates
  * Copyright 2026 SiteNetSoft - OData 4.01: share alternate-key property resolution with bound actions
+ * Copyright 2026 SiteNetSoft - Empty key lists address no entity; added explicit readFirst
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -107,6 +108,33 @@ public class DataProvider {
     return entityCollection;
   }
 
+  /**
+   * Returns the first entity of an entity set, or <code>null</code> when it is empty. A
+   * collection-bound operation (<code>ESAllPrim/olingo.odata.test1.BFCESAllPrimRT...()</code>)
+   * addresses a collection without a key predicate; this reference service then works on the first
+   * entity of that collection. That choice is made here, explicitly, and never by key matching.
+   * @param edmEntitySet the entity set to read from
+   * @return the first entity, or <code>null</code>
+   */
+  public Entity readFirst(final EdmEntitySet edmEntitySet) throws DataProviderException {
+    final EntityCollection entityCollection = readAll(edmEntitySet);
+    return entityCollection.getEntities().isEmpty() ? null : entityCollection.getEntities().get(0);
+  }
+
+  /**
+   * Returns the first entity stored under an entity type's own name, or <code>null</code>.
+   * Containment collections are keyed by entity-type name (see {@code DataCreator}); a derived-type
+   * cast on a single-valued navigation reaches the data layer without a key predicate and then
+   * works on the first entity of that collection, see {@link #readFirst(EdmEntitySet)}.
+   * @param edmEntityType the entity type whose collection is read
+   * @return the first entity, or <code>null</code>
+   */
+  public Entity readFirst(final EdmEntityType edmEntityType) {
+    final EntityCollection entityCollection = data.get(edmEntityType.getName());
+    return entityCollection == null || entityCollection.getEntities().isEmpty()
+        ? null : entityCollection.getEntities().get(0);
+  }
+
   public Entity read(final EdmEntitySet edmEntitySet, final List<UriParameter> keys) throws DataProviderException {
     final EntityCollection entitySet = readAll(edmEntitySet);
     return entitySet == null ? null : read(edmEntitySet.getEntityType(), entitySet, keys);
@@ -138,6 +166,11 @@ public class DataProvider {
   
   public Entity read(final EdmEntityType edmEntityType, final EntityCollection entitySet,
       final List<UriParameter> keys) throws DataProviderException {
+    if (keys.isEmpty()) {
+      // An empty key list addresses no entity: matching every entity would silently return the
+      // first one. Callers that deliberately want the first entity call readFirst instead.
+      return null;
+    }
     for (final Entity entity : entitySet.getEntities()) {
       if (entityMatchesKeys(edmEntityType, entity, keys)) {
         return entity;
@@ -159,9 +192,8 @@ public class DataProvider {
 
   /**
    * Tells whether the entity matches all given key predicates (primary key or alternate key).
-   * An <b>empty</b> key list matches every entity on purpose: a collection-bound operation
-   * (<code>ESAllPrim/ns.BFNESAllPrimRTCTAllPrim()</code>) reaches this method without key predicates
-   * and tecsvc then works on the first entity of the collection.
+   * Callers guarantee a non-empty key list; {@link #read} and {@link #readDataFromEntity} reject an
+   * empty one before reaching here.
    */
   private boolean entityMatchesKeys(final EdmEntityType edmEntityType, final Entity entity,
       final List<UriParameter> keys) throws DataProviderException {
@@ -1072,6 +1104,11 @@ public class DataProvider {
 
   public Entity readDataFromEntity(final EdmEntityType edmEntityType,
       final List<UriParameter> keys) throws DataProviderException {
+    if (keys.isEmpty()) {
+      // An empty key list addresses no entity: matching every entity would silently return the
+      // first one. Callers that deliberately want the first entity call readFirst instead.
+      return null;
+    }
     final EntityCollection coll = data.get(edmEntityType.getName());
     for (final Entity entity : coll.getEntities()) {
       if (entityMatchesKeys(edmEntityType, entity, keys)) {

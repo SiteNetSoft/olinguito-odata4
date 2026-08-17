@@ -21,6 +21,7 @@
  * Copyright 2026 SiteNetSoft - OData 4.01: default values of omitted optional function parameters
  * Copyright 2026 SiteNetSoft - OData 4.01: resolve entities through alternate keys
  * Copyright 2026 SiteNetSoft - OData 4.01: bound actions through alternate keys
+ * Copyright 2026 SiteNetSoft - Empty key lists address no entity; first entity selected explicitly
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -255,12 +256,34 @@ class DataProviderTest {
   }
 
   @Test
-  void readWithoutKeysMatchesTheFirstEntity() throws Exception {
-    // Deliberate: a collection-bound operation reaches the data layer without key predicates and
-    // tecsvc then works on the first entity of the collection.
+  void readWithoutKeysMatchesNothing() throws Exception {
+    // An empty key list addresses no entity. The "first entity of the collection" choice that
+    // collection-bound operations rely on is made explicitly by the processor through readFirst.
+    final DataProvider dataProvider = new DataProvider(oData, edm);
+    Assertions.assertNull(dataProvider.read(esAllPrim, Collections.<UriParameter> emptyList()));
+  }
+
+  @Test
+  void readFirstReturnsTheFirstEntityOfTheEntitySet() throws Exception {
     final DataProvider dataProvider = new DataProvider(oData, edm);
     Assertions.assertEquals(dataProvider.readAll(esAllPrim).getEntities().get(0),
-        dataProvider.read(esAllPrim, Collections.<UriParameter> emptyList()));
+        dataProvider.readFirst(esAllPrim));
+  }
+
+  @Test
+  void readDataFromEntityWithoutKeysMatchesNothing() throws Exception {
+    final DataProvider dataProvider = new DataProvider(oData, edm);
+    Assertions.assertNull(dataProvider.readDataFromEntity(
+        edm.getEntityType(new FullQualifiedName(SchemaProvider.NAMESPACE, "ETCont")),
+        Collections.<UriParameter> emptyList()));
+  }
+
+  @Test
+  void readFirstByEntityTypeReturnsTheFirstContainmentEntity() throws Exception {
+    // Containment collections are keyed by entity-type name in the data map (DataCreator line 118).
+    final DataProvider dataProvider = new DataProvider(oData, edm);
+    Assertions.assertNotNull(dataProvider.readFirst(
+        edm.getEntityType(new FullQualifiedName(SchemaProvider.NAMESPACE, "ETCont"))));
   }
 
   @Test

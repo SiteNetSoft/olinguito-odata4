@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
+ * Copyright 2026 SiteNetSoft - Select the first entity explicitly when no key predicates are given
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
@@ -147,7 +148,12 @@ public abstract class TechnicalProcessor implements Processor {
     Entity entity = null;
     if (resourcePaths.get(0) instanceof UriResourceEntitySet uriResource) {
       EdmEntitySet entitySet = getEntitySetBasedOnTypeCast(uriResource);
-      entity = dataProvider.read(entitySet, uriResource.getKeyPredicates());
+      final List<UriParameter> keyPredicates = uriResource.getKeyPredicates();
+      // A collection-bound operation or a $ref on the collection reaches here without key
+      // predicates; this service then operates on the first entity of the collection.
+      entity = keyPredicates.isEmpty()
+          ? dataProvider.readFirst(entitySet)
+          : dataProvider.read(entitySet, keyPredicates);
     }else if (resourcePaths.get(0) instanceof UriResourceSingleton uriResource) {
       entity = dataProvider.read( uriResource.getSingleton());
     } else if (resourcePaths.get(0) instanceof UriResourceFunction uriResource) {
@@ -201,7 +207,11 @@ public abstract class TechnicalProcessor implements Processor {
               link.getInlineEntity() :
               dataProvider.read(navigationProperty.getType(), link.getInlineEntitySet(), key);
       EdmEntityType edmEntityType = getEntityTypeBasedOnNavPropertyTypeCast(uriNavigationResource);
-      entity = edmEntityType != null ? dataProvider.readDataFromEntity(edmEntityType, key) : entity;
+      if (edmEntityType != null) {
+        entity = key.isEmpty()
+            ? dataProvider.readFirst(edmEntityType)
+            : dataProvider.readDataFromEntity(edmEntityType, key);
+      }
       if (entity == null) {
         if (key.isEmpty() && (previous != null || navigationResCount == 1)) {
           throw new ODataApplicationException("No Content", HttpStatusCode.NO_CONTENT.getStatusCode(), Locale.ROOT);
