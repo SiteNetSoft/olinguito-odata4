@@ -17,7 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 4: client key-as-segment round trip
- * (OData 4.01, Part 2: URL Conventions, section 4.3.1)
+ * (OData 4.01, Part 2: URL Conventions, section 4.3.6)
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 4 fix round 1: exact seeded count assertion
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.client;

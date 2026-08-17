@@ -672,13 +672,20 @@ URI compound = client.newURIBuilder(serviceRoot)
 ```
 
 * `appendKeySegment(Object)` writes a string value **raw** — no surrounding quotes and no doubled
-  embedded quote. Non-string values keep their existing URI-literal formatting.
+  embedded quote. Non-string values keep their URI-literal formatting minus the quoted form a segment
+  never carries: `Edm.Duration`, `Edm.Binary` and enumeration values lose their type prefix
+  (`duration'P1D'` → `P1D`, `binary'0a0b'` → `0a0b`, `ns.Enum'A'` → `A`), because the server builds the
+  literal from the segment text again; numbers, `Edm.Guid` and `Edm.DateTimeOffset` are unchanged.
+  `appendKeySegment(EdmEnumType, String)` emits the bare member name in key-as-segment mode.
 * `appendKeySegment(Map<String, Object>)` writes one segment per map *value*, in map iteration order —
   the key names are not part of the URL, so pass a `LinkedHashMap` in metadata key order.
 * String key values are percent-encoded per RFC 3986 `pchar`: unreserved characters, the sub-delimiters
   `!$&'()*+,;=`, `:` and `@` stay literal (so `'` is literal per §4.3.6), while `/`, `?`, `#`, `%`,
   `[`, `]`, space, control characters and non-ASCII are encoded (`Smartphone/Tablet` →
   `Smartphone%2FTablet`, `Ünïcode` → `%C3%9Cn%C3%AFcode`).
+* A percent-encoded slash (`%2F`) in a key segment may never reach the OData handler: servlet
+  containers reject or normalize it by default (Tomcat's `ALLOW_ENCODED_SLASH` is off), so a service
+  whose keys can contain `/` needs the container configured accordingly, or the parenthesized form.
 * An empty string key throws `IllegalArgumentException` — an empty segment would silently address a
   different resource. A `null` value renders the literal `null` segment, as the parenthesized form
   does; a null or empty map adds no segment.
@@ -696,8 +703,9 @@ With the configuration flag off, both overloads emit the parenthesized form exac
   added to the trimmed Core vocabulary the fork ships, so the annotation works without the service
   serving the vocabulary; a service that aliases the Core vocabulary to some *other* prefix is not
   recognized.
-* Resolving an unqualified segment calls `edm.getSchemas()`, which materializes the whole EDM. It is
-  cached, and it only happens when key-as-segment is effective and the segment is a bare identifier.
+* Resolving an unqualified segment calls `edm.getSchemas()`, which materializes the whole EDM. It only
+  happens when key-as-segment is effective and the segment is a bare identifier, and the resulting list
+  of default namespaces is computed once per parsed URI.
 * The flag reaches the URI parser through `ODataHandler` only. `UriHelper.parseEntityId(...)` and
   `server-core-ext`'s `ServiceRequest` construct their own `Parser` without it, so an entity id written
   in key-as-segment form is not parsed by those two entry points.
@@ -847,7 +855,7 @@ URI uri = client.newURIBuilder(serviceRoot)
     .appendEntitySetSegment("ESAllPrim")
     .appendKeySegment(Collections.singletonMap("PropertyString", "Employee1@company.example"))
     .build();
-// http://host/service/ESAllPrim(PropertyString='Employee1%40company.example')
+// http://host/service/ESAllPrim(PropertyString='Employee1@company.example')
 ```
 
 The returned entity's id and edit link carry the primary key, so a follow-up write through
@@ -861,9 +869,10 @@ The returned entity's id and edit link carry the primary key, so a follow-up wri
   function-return predicate resolves type-level groups only, because the binding target is not
   available at those call sites.
 * Alternate keys are not inherited from base entity types.
-* Bound actions in tecsvc are still resolved through **primary keys only** — `ActionData` looks up the
-  binding key with `getKeyPropertyRef(...)`, so invoking a bound action through an alternate-key
-  predicate is not supported.
+* Identical alternate-key groups declared on both the entity type and the entity set count as one; two
+  groups that map the same URL name to *different* properties are ambiguous and never resolve.
+* A `null` value is rejected as an alternate-key value (`INVALID_KEY_VALUE`) even for a nullable
+  property, because it can never identify an entity.
 * Alternate keys are never resolvable through key-as-segment URLs (spec exclusion).
 
 ## See Also

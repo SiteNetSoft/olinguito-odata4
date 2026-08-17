@@ -18,7 +18,7 @@
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 3: build a versioned ServiceMetadata so the
  * $schemaversion system query option is enforced (OData 4.01, Part 1: Protocol, section 11.2.12)
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 3: optionally serve the OData 4.01
- * key-as-segment URL convention (Part 2: URL Conventions, section 4.3.1)
+ * key-as-segment URL convention (Part 2: URL Conventions, section 4.3.6)
  */
 package org.sitenetsoft.olinguito.server.tecsvc.quarkus;
 

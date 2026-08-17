@@ -17,7 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 3: fit-level round trips against the
- * key-as-segment tecsvc endpoint (OData 4.01, Part 2: URL Conventions, section 4.3.1)
+ * key-as-segment tecsvc endpoint (OData 4.01, Part 2: URL Conventions, section 4.3.6)
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.http;
 
@@ -41,7 +41,7 @@ import org.junit.Test;
 
 /**
  * Raw-HTTP round trips against a real Tomcat instance for OData 4.01 key-as-segment URLs
- * (Part 2: URL Conventions, section 4.3.1). tecsvc publishes the very same technical service twice:
+ * (Part 2: URL Conventions, section 4.3.6). tecsvc publishes the very same technical service twice:
  * at {@link TecSvcConst#BASE_URI} with the default (parenthesized-key) convention, and at
  * {@link TecSvcConst#KEY_AS_SEGMENT_BASE_URI} with the key-as-segment convention switched on for
  * the whole service. These tests pin the segment-key parsing, the precedence rules that keep
@@ -192,10 +192,10 @@ public class KeyAsSegmentITCase extends AbstractBaseTestITCase {
   }
 
   /**
-   * The per-entity-set model flag (Core.KeyAsSegmentSupported, tecsvc's
-   * {@code ESKeyAsSegmentInt}) keeps working on the default endpoint even though the service-wide
-   * flag is off there. tecsvc seeds no data for that entity set, so the request gets as far as the
-   * data provider and fails there rather than in the URI parser.
+   * The per-entity-set model flag (the fork's non-standard {@code keyAsSegmentAllowed} CSDL flag, set
+   * on tecsvc's {@code ESKeyAsSegmentInt}) keeps working on the default endpoint even though the
+   * service-wide flag is off there. tecsvc seeds no data for that entity set, so the request gets as
+   * far as the data provider and fails there rather than in the URI parser.
    */
   @Test
   public void defaultEndpointHonoursModelFlag() throws Exception {

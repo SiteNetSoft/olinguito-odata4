@@ -17,7 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 3: second tecsvc deployment serving the OData
- * 4.01 key-as-segment URL convention (Part 2: URL Conventions, section 4.3.1)
+ * 4.01 key-as-segment URL convention (Part 2: URL Conventions, section 4.3.6)
  */
 package org.sitenetsoft.olinguito.server.tecsvc;
 
