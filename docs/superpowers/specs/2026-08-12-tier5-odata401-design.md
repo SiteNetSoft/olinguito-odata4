@@ -53,6 +53,10 @@ Decisions on spec-silent points:
 
 Tests: preference parsing units; serializer units (null declared omitted + header applied, non-null kept, instance-annotated null kept, dynamic null kept, defaults → no-op + no Preference-Applied); fit round trip (GET with preference → body lacks nulls + Preference-Applied present; same GET without preference → nulls present, pin); write-response pin (PUT with preference → no omission, no Preference-Applied).
 
+Implementation notes (Tier 5 follow-up sweep, 2026-08-17):
+- `PreferencesApplied.Builder.omitValues(Preferences.OmitValues)` added as a typed builder method (mirrors `returnRepresentation(Return)`; renders byte-identically to the generic `preference("omit-values", ...)` form). tecsvc uses it at both call sites.
+- tecsvc no longer echoes `odata.track-changes` in `Preference-Applied` for `$ref` collections — a reference collection carries no delta link, so the echo was a false claim (§8.2.8.6 / RFC 7240). `odata.maxpagesize` is still echoed there, because paging genuinely applies.
+
 ## Feature 3: `/$query` — query options in the request body (OLINGO-1643) — Wave 1
 
 Normative: [OData-URL] §4.17 (quoted in full in the citations file). Requests to paths ending in `/$query` MUST use POST; body MUST be `text/plain`, percent-encoded exactly like a URL query string; **URL query options and body query options are processed together (merged)** — the spec states this unconditionally. Scoped to GET-style read requests. No status codes prescribed.
@@ -69,6 +73,9 @@ Decisions on spec-silent points (status codes ours, consistent with codebase con
 - `/$query` applies to resource read paths, including `$metadata` (a GET-style request — `$schemaversion` in a `/$query` body must work once Wave 2 lands). It does not apply to `$batch`.
 
 Tests: fit equivalence (POST `ESAllPrim/$query` body `$filter=…&$select=…` ≡ the GET form, byte-identical payload), URL+body merge test, duplicate-option 400, 405/415/400 pins, client round trip via the new toggle.
+
+Implementation notes (Tier 5 follow-up sweep, 2026-08-17):
+- Three-way composition of `/$query` with `omit-values` and `matchesPattern` is now pinned end to end; a trailing slash after `/$query` is deliberately *not* a `/$query` path and is rejected with 400 (documented by comment in `ODataHandlerImpl` and pinned in `ODataHandlerImplTest`).
 
 ## Feature 4: `$schemaversion` (OLINGO-1326) — Wave 2
 
@@ -107,6 +114,7 @@ Implementation notes (Wave 2, as built — deviations from this section's letter
 - **DefaultValue is read as a URI literal** (Core vocabulary: "same rules as the `cast` function in URLs") — `'-default'`, `Ns.Enum'Member'`, `42` — and run through `fromUriLiteral` before use.
 - **server-core does not inject defaults for URL-invoked functions.** It exposes `EdmParameter.isOptional()/getOptionalDefaultValue()` and the *service* materializes defaults; tecsvc's `DataProvider.getFunctionParameters` shows the pattern using the fixed-format deserializer. The JSON action-body deserializer does inject, but only for OMITTED parameters — an explicit JSON `null` stays null; an omitted optional without a default is left absent. Only primitive/enum non-collection defaults are applied.
 - Ambiguity is signalled by a new additive `EdmAmbiguousOverloadException` (commons-api, extends `EdmException`) so that genuine model errors keep their 500 treatment; the URI parser maps only that type to 400 `FUNCTION_AMBIGUOUS`.
+- **RESOLVED (Tier 5 follow-up sweep, 2026-08-17):** the "malformed `DefaultValue` is a 500 on the URL path" asymmetry is gone. A single `OptionalParameterDefaults` resolver in `server-core`'s `uri.parser` package now serves the parser and both deserializers, and the parser rejects a `DefaultValue` that is not a valid URI literal for an omitted optional parameter with `UriValidationException` / `INVALID_VALUE_FOR_PROPERTY` (400) — matching the action-body path. tecsvc gained `FICRTStringOptionalBadDefault` and `AIRTStringOptionalBadDefault` so both paths are reachable over HTTP, and its own bypass branch reports 400 instead of 500.
 
 ## Feature 6: Key-as-segment convention (OLINGO-1084) — Wave 3, first
 
@@ -126,11 +134,11 @@ Decisions on spec-silent points:
 Tests: parser units for each precedence step (a `$`-segment, a bound operation name, a type-cast name, a default-namespace unqualified name, then a key), single-part and multi-part segment keys, percent-encoded slash and literal quote, referential-constraint omission, flag-off pins (all of the above 404/behave exactly as today), fit round trips both modes, client URI-builder units + fit.
 
 Implementation notes (Wave 3, as built — deviations from this section's letter):
-- The opt-in flag is an additive `ODataHandler.setKeyAsSegment(boolean)` (default method throwing `UnsupportedOperationException`; implemented by `ODataHandlerImpl`, forwarded by `ODataRequestHandlerImpl` and `ODataNettyHandlerImpl`) — no configuration object was introduced. `UriHelper.parseEntityId` and `server-core-ext`'s `ServiceRequest` build their own `Parser` without the flag (known seam).
+- The opt-in flag is an additive `ODataHandler.setKeyAsSegment(boolean)` (default method throwing `UnsupportedOperationException`; implemented by `ODataHandlerImpl`, forwarded by `ODataRequestHandlerImpl` and `ODataNettyHandlerImpl`) — no configuration object was introduced. `UriHelper.parseEntityId` and `server-core-ext`'s `ServiceRequest` build their own `Parser` without the flag (known seam). **Partly resolved (Tier 5 follow-up sweep, 2026-08-17):** `parseEntityId` now honors the convention via the concrete `UriHelperImpl.setKeyAsSegment(boolean)` and the concrete `OData.createUriHelper(boolean)` overload (the `UriHelper` interface is untouched); tecsvc does not wire it into its key-as-segment endpoint because the `DataProvider` calling `parseEntityId` is session-scoped and shared by both endpoints. `server-core-ext` stays a documented seam — that module has no `ODataHandler`, and its per-model `keyAsSegmentAllowed` flags keep working.
 - The pre-existing non-standard model flags (`CsdlEntitySet`/`CsdlNavigationProperty.setKeyAsSegmentAllowed`) coexist with the service flag (segment keys apply when either is set); a model-flagged **single-valued** navigation property keeps its old fallback semantics (property/navigation resolution first, key only for non-member names), while the standard path is strictly collection-only.
 - Precedence step 3 matches `Core.DefaultNamespace` by raw annotation **term name** only (`Org.OData.Core.V1.DefaultNamespace` / `Core.DefaultNamespace`); the term is deliberately not added to the trimmed Core vocabulary, and an unqualified name only wins if it resolves in that namespace.
 - Referential-constraint-covered key properties are **prefilled** by the parser as referenced-property predicates, so they cannot be supplied as segments at all; an incomplete multi-part key is reported at end-of-path as 400 `WRONG_NUMBER_OF_KEY_PROPERTIES`.
-- In tecsvc a constraint-completed key answers 400 "Wrong key!" for the segment *and* the parenthesized form alike — a pre-existing `DataProvider` limitation, pinned as identical behavior rather than fixed.
+- ~~In tecsvc a constraint-completed key answers 400 "Wrong key!" for the segment *and* the parenthesized form alike — a pre-existing `DataProvider` limitation, pinned as identical behavior rather than fixed.~~ **RESOLVED (Tier 5 follow-up sweep, 2026-08-17):** tecsvc now resolves a constraint-completed key predicate from the entity the navigation started at (typed model values compared directly, no URI-literal round trip), so `ESKeyNav(1)/NavPropertyETTwoKeyNavMany('1')` and `ESKeyNav/1/NavPropertyETTwoKeyNavMany/1` both answer 200 with `ESTwoKeyNav(1,'1')`; an unmatched remainder is a 404.
 - Client: `appendKeySegment(Map)` writes one segment per value in map iteration order; key segments are RFC 3986 pchar-encoded (`'` literal, `/`→`%2F`); an empty string key throws `IllegalArgumentException` and the enum+values overload throws `IllegalStateException` in key-as-segment mode (no correct segment order derivable).
 
 ## Feature 7: Alternate keys (OLINGO-1570) — Wave 3, second

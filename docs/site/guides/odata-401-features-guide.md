@@ -134,12 +134,22 @@ reads — including streamed collections.
   delta payloads regardless of the preference; Olinguito's delta serialization path is untouched
   by `omitNulls` entirely.
 * **Never on `$ref` / reference reads** — a reference payload has no properties to omit, so
-  `Preference-Applied` is not echoed even if requested.
+  `Preference-Applied` is not echoed even if requested. The reference service gates
+  `odata.track-changes` the same way on a reference collection: a `$ref` payload carries no delta
+  link, so claiming the preference was applied would be a false claim (§8.2.8.6 / RFC 7240 allow
+  `Preference-Applied` to name only preferences that really were applied). `odata.maxpagesize` *is*
+  still echoed on `$ref` collections, because server-side paging genuinely applies there.
 * `omit-values=defaults` is **accepted but not applied** (a declined MAY): the preference parses
   and would render correctly in `Preference-Applied` if it were ever set, but no code path
   currently omits default-valued properties or sends the header for it — the data layer has no
   notion of an EDM-declared instance default to compare against.
 * JSON only. The XML/Atom serializer has no omit-values support.
+
+A processor that applies the preference renders the response header with
+`PreferencesApplied.with().omitValues(Preferences.OmitValues.NULLS).build()` — a typed builder
+method alongside `returnRepresentation(Return)`, `maxPageSize(Integer)` and the generic
+`preference(String, String)`. It lowercases the enum constant, so it renders the unquoted
+`omit-values=nulls` token, byte-identical to the generic form; a `null` argument adds nothing.
 
 ### Dynamic Properties (Spec-Silent Decision)
 
@@ -468,8 +478,20 @@ fixed-format deserializer the URL values go through:
 odata.createFixedFormatDeserializer().parameter(parameter.getOptionalDefaultValue(), parameter);
 ```
 
-An omitted optional parameter *without* a default is left absent. A default that fails to parse is
-the service's own model error, so it is reported as 500, not as a 400 like bad client input.
+An omitted optional parameter *without* a default is left absent. A `DefaultValue` that is not a
+valid URI literal for the parameter's type is rejected by the **URI parser**, before the service is
+ever reached: the parser walks the optional parameters that the URL did not supply and raises
+`UriValidationException` / `INVALID_VALUE_FOR_PROPERTY` — **400 Bad Request**, the same status the
+action-body path already returned. (The reference service keeps a defense-in-depth 400 on the same
+condition for callers that bypass the parser.) The check only looks at parameters the URL omitted,
+so a malformed default is irrelevant when the caller supplies the parameter explicitly.
+
+Both the URL path and the action-body path share one resolver,
+`OptionalParameterDefaults` in `server-core`'s `uri.parser` package, which owns reading the
+annotation literal, deciding whether the parameter type can take a default (primitive, type
+definition or enum, non-collection), and running the literal through `fromUriLiteral`. Each call
+site keeps its own exception translation (`UriValidationException` in the parser,
+`DeserializerException` in the two deserializers).
 
 **Action bodies — defaults are injected by the JSON deserializer.** For actions, the JSON parameter
 deserializer applies a `DefaultValue` when a parameter is **omitted** from the body, for primitive
@@ -645,11 +667,13 @@ The servlet deployment adds a `configureHandler(ODataHandler)` hook on `Technica
 `TechnicalKeyAsSegmentServlet` overrides; the Quarkus deployment registers a second route with a
 handler constructed with `keyAsSegment = true`.
 
-One reference-service caveat: a request whose key is completed by a referential constraint
-(`ESKeyNav/1/NavPropertyETTwoKeyNavMany/1`) answers **400 `Wrong key!`** — the URI parses correctly,
-but the in-memory `DataProvider` cannot resolve a key predicate whose value comes from a referenced
-property. The parenthesized equivalent returns the identical status and body, so this is a
-pre-existing data-layer limitation of tecsvc, not a difference between the two conventions.
+A request whose key is completed by a referential constraint is served in both conventions:
+`ESKeyNav(1)/NavPropertyETTwoKeyNavMany('1')` and `ESKeyNav/1/NavPropertyETTwoKeyNavMany/1` both
+return **200** with `ESTwoKeyNav(PropertyInt16=1,PropertyString='1')`. tecsvc's `DataProvider` takes
+the constraint-covered value from the entity the navigation started at and compares the two typed
+model values directly, instead of round-tripping a predicate that carries no literal through the
+URI-literal path (which used to fail with 400 `Wrong key!`). A remaining segment that matches no
+related entity is a plain **404**.
 
 ### Client Usage
 
@@ -706,10 +730,20 @@ With the configuration flag off, both overloads emit the parenthesized form exac
 * Resolving an unqualified segment calls `edm.getSchemas()`, which materializes the whole EDM. It only
   happens when key-as-segment is effective and the segment is a bare identifier, and the resulting list
   of default namespaces is computed once per parsed URI.
-* The flag reaches the URI parser through `ODataHandler` only. `UriHelper.parseEntityId(...)` and
-  `server-core-ext`'s `ServiceRequest` construct their own `Parser` without it, so an entity id written
-  in key-as-segment form is not parsed by those two entry points.
-* A key value covered by a referential constraint cannot be supplied as a segment (see above).
+* `UriHelper.parseEntityId(...)` honors the convention when the helper is built for it:
+  `OData.createUriHelper(boolean keyAsSegment)` (a concrete overload defaulting to
+  `createUriHelper()`) and the concrete `UriHelperImpl.setKeyAsSegment(boolean)` set the flag the
+  parser then uses. The `UriHelper` interface itself is unchanged, so no implementor breaks. The
+  reference service does not wire this into its key-as-segment endpoint: the `DataProvider` that
+  calls `parseEntityId` is created once per session and shared by both deployed endpoints, while the
+  opt-in lives on the per-request handler.
+* `server-core-ext` remains a documented seam: that module contains no `ODataHandler`, so there is no
+  service-level flag to thread — `ServiceRequest` and `ServiceDispatcher` build their own `Parser`
+  without it, and an entity id or link written in key-as-segment form is not parsed there. The
+  per-model `keyAsSegmentAllowed` flags still work in that module, because `ResourcePathParser`
+  consults them independently of the service flag.
+* A key value covered by a referential constraint cannot be *supplied* as a segment — the parser
+  prefills it, so it MUST be omitted from the URL (see above).
 
 ## Alternate Keys
 
