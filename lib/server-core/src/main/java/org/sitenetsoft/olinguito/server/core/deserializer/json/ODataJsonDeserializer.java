@@ -39,6 +39,7 @@
  * Copyright 2026 SiteNetSoft - OpenType CRUD Task 1: implement ODataDeserializer.dynamicProperty
  * Copyright 2026 SiteNetSoft - OData 4.01: apply default values of omitted optional action parameters
  * Copyright 2026 SiteNetSoft - OData 4.01: read optional parameter defaults as URI literals
+ * Copyright 2026 SiteNetSoft - OData 4.01: shared resolver for optional-parameter default values
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -111,6 +112,7 @@ import org.sitenetsoft.olinguito.server.core.deserializer.DeserializerResultImpl
 import org.sitenetsoft.olinguito.server.core.deserializer.helper.ExpandTreeBuilder;
 import org.sitenetsoft.olinguito.server.core.deserializer.helper.ExpandTreeBuilderImpl;
 import org.sitenetsoft.olinguito.server.core.serializer.utils.ContentTypeHelper;
+import org.sitenetsoft.olinguito.server.core.uri.parser.OptionalParameterDefaults;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -666,7 +668,7 @@ public class ODataJsonDeserializer implements ODataDeserializer {
    */
   private Parameter createDefaultParameter(final String paramName, final EdmParameter edmParameter)
       throws DeserializerException {
-    final String defaultValue = edmParameter.isOptional() ? edmParameter.getOptionalDefaultValue() : null;
+    final String defaultValue = OptionalParameterDefaults.defaultLiteral(edmParameter);
     final EdmType type = edmParameter.getType();
     if (defaultValue == null || edmParameter.isCollection() || !(type instanceof EdmPrimitiveType primitiveType)) {
       return null;
@@ -674,19 +676,8 @@ public class ODataJsonDeserializer implements ODataDeserializer {
     final Parameter parameter = new Parameter();
     parameter.setName(paramName);
     parameter.setType(type.getFullQualifiedName().getFullQualifiedNameAsString());
-    final EdmMapping mapping = edmParameter.getMapping();
     try {
-      final String literal = primitiveType.fromUriLiteral(defaultValue);
-      final Object value;
-      if (mapping == null) {
-        value = primitiveType.valueOfString(literal,
-            edmParameter.isNullable(), edmParameter.getMaxLength(),
-            edmParameter.getPrecision(), edmParameter.getScale(), true, primitiveType.getDefaultType());
-      } else {
-        value = primitiveType.valueOfString(literal,
-            edmParameter.isNullable(), edmParameter.getMaxLength(),
-            edmParameter.getPrecision(), edmParameter.getScale(), true, mapping.getMappedJavaClass());
-      }
+      final Object value = OptionalParameterDefaults.valueOfUriLiteral(edmParameter, primitiveType, defaultValue);
       parameter.setValue(type.getKind() == EdmTypeKind.ENUM ? ValueType.ENUM : ValueType.PRIMITIVE, value);
     } catch (final EdmPrimitiveTypeException e) {
       throw new DeserializerException("Invalid default value for parameter: " + paramName, e,

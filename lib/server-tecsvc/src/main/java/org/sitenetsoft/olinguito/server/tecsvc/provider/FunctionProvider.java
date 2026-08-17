@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - OData 4.01: functions with optional parameters
  * Copyright 2026 SiteNetSoft - OData 4.01: author optional parameter defaults as URI literals
+ * Copyright 2026 SiteNetSoft - OData 4.01: malformed optional-parameter default values are rejected with 400
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
@@ -192,6 +193,9 @@ public class FunctionProvider {
 
   public static final FullQualifiedName nameUFCRTStringOptionalNoDefault =
       new FullQualifiedName(SchemaProvider.NAMESPACE, "UFCRTStringOptionalNoDefault");
+
+  public static final FullQualifiedName nameUFCRTStringOptionalBadDefault =
+      new FullQualifiedName(SchemaProvider.NAMESPACE, "UFCRTStringOptionalBadDefault");
 
   public static final FullQualifiedName nameUFCRTStringTwoParam =
       new FullQualifiedName(SchemaProvider.NAMESPACE, "UFCRTStringTwoParam");
@@ -530,6 +534,21 @@ public class FunctionProvider {
                       .setNullable(false),
                   new CsdlParameter().setName("ParameterSuffix").setType(PropertyProvider.nameString)
                       .setAnnotations(List.of(optionalParameterAnnotation(null)))))
+              .setReturnType(
+                  new CsdlReturnType().setType(PropertyProvider.nameString).setNullable(false)));
+
+    } else if (functionName.equals(nameUFCRTStringOptionalBadDefault)) {
+      // The default value is not a valid Edm.String URI literal (no quotes); invoking this function
+      // must be a 400.
+      return List.of(
+          new CsdlFunction()
+              .setName(nameUFCRTStringOptionalBadDefault.getName())
+              .setComposable(true)
+              .setParameters(List.of(
+                  new CsdlParameter().setName("ParameterString").setType(PropertyProvider.nameString)
+                      .setNullable(false),
+                  new CsdlParameter().setName("ParameterSuffix").setType(PropertyProvider.nameString)
+                      .setAnnotations(List.of(optionalParameterAnnotation("-notALiteral")))))
               .setReturnType(
                   new CsdlReturnType().setType(PropertyProvider.nameString).setNullable(false)));
 

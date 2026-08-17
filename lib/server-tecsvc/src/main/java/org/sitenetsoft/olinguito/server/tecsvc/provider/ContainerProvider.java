@@ -23,6 +23,7 @@
  * Copyright 2026 SiteNetSoft - Add OpenType support (tecsvc ETOpen model)
  * Copyright 2026 SiteNetSoft - OData 4.01: function imports with optional parameters
  * Copyright 2026 SiteNetSoft - OData 4.01: alternate keys on ESAllPrim
+ * Copyright 2026 SiteNetSoft - OData 4.01: malformed optional-parameter default values are rejected with 400
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
@@ -52,6 +53,8 @@ public class ContainerProvider {
 
   public static final FullQualifiedName nameContainer = new FullQualifiedName(SchemaProvider.NAMESPACE, "Container");
   public static final String AIRT_STRING = "AIRTString";
+  /** Action import of an action whose optional parameter declares a malformed default value. */
+  public static final String AIRT_STRING_OPTIONAL_BAD_DEFAULT = "AIRTStringOptionalBadDefault";
   public static final String AIRT_COLL_STRING_TWO_PARAM = "AIRTCollStringTwoParam";
   public static final String AIRTCT_TWO_PRIM_PARAM = "AIRTCTTwoPrimParam";
   public static final String AIRT_COLL_CT_TWO_PRIM_PARAM = "AIRTCollCTTwoPrimParam";
@@ -142,6 +145,7 @@ public class ContainerProvider {
     container.setActionImports(actionImports);
     actionImports.add(prov.getActionImport(ContainerProvider.nameContainer, AIRT_STRING));
     actionImports.add(prov.getActionImport(ContainerProvider.nameContainer, AIRT_COLL_STRING_TWO_PARAM));
+    actionImports.add(prov.getActionImport(ContainerProvider.nameContainer, AIRT_STRING_OPTIONAL_BAD_DEFAULT));
     actionImports.add(prov.getActionImport(ContainerProvider.nameContainer, AIRTCT_TWO_PRIM_PARAM));
     actionImports.add(prov.getActionImport(ContainerProvider.nameContainer, AIRT_COLL_CT_TWO_PRIM_PARAM));
     actionImports.add(prov.getActionImport(ContainerProvider.nameContainer, AIRTET_TWO_KEY_TWO_PRIM_PARAM));
@@ -177,6 +181,7 @@ public class ContainerProvider {
     functionImports.add(prov.getFunctionImport(ContainerProvider.nameContainer, "FICRTString"));
     functionImports.add(prov.getFunctionImport(ContainerProvider.nameContainer, "FICRTStringOptionalParam"));
     functionImports.add(prov.getFunctionImport(ContainerProvider.nameContainer, "FICRTStringOptionalNoDefault"));
+    functionImports.add(prov.getFunctionImport(ContainerProvider.nameContainer, "FICRTStringOptionalBadDefault"));
     functionImports.add(prov.getFunctionImport(ContainerProvider.nameContainer, "FICRTCollESTwoKeyNavParam"));
     functionImports.add(prov.getFunctionImport(ContainerProvider.nameContainer, "FICRTCollCTTwoPrimTwoParam"));
     functionImports.add(prov.getFunctionImport(ContainerProvider.nameContainer, "FINRTCollCTNavFiveProp"));
@@ -834,6 +839,11 @@ public class ContainerProvider {
             .setName(AIRT_COLL_STRING_TWO_PARAM)
             .setAction(ActionProvider.nameUARTCollStringTwoParam);
 
+      } else if (name.equals(AIRT_STRING_OPTIONAL_BAD_DEFAULT)) {
+        return new CsdlActionImport()
+            .setName(AIRT_STRING_OPTIONAL_BAD_DEFAULT)
+            .setAction(ActionProvider.nameUARTStringOptionalBadDefault);
+
       } else if (name.equals(AIRTCT_TWO_PRIM_PARAM)) {
         return new CsdlActionImport()
             .setName(AIRTCT_TWO_PRIM_PARAM)
@@ -1044,6 +1054,12 @@ public class ContainerProvider {
         return new CsdlFunctionImport()
             .setName(name)
             .setFunction(FunctionProvider.nameUFCRTStringOptionalNoDefault)
+            .setIncludeInServiceDocument(true);
+
+      } else if (name.equals("FICRTStringOptionalBadDefault")) {
+        return new CsdlFunctionImport()
+            .setName(name)
+            .setFunction(FunctionProvider.nameUFCRTStringOptionalBadDefault)
             .setIncludeInServiceDocument(true);
 
       } else if (name.equals("FICRTCollESTwoKeyNavParam")) {

@@ -24,6 +24,7 @@
  * Copyright 2026 SiteNetSoft - OData 4.01: key-as-segment omits key values covered by referential constraints
  * Copyright 2026 SiteNetSoft - OData 4.01: alternate keys in parenthesized key predicates
  * Copyright 2026 SiteNetSoft - OData 4.01: null key values and prefixed literal key segments
+ * Copyright 2026 SiteNetSoft - OData 4.01: malformed optional-parameter default values are rejected with 400
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -2293,6 +2294,30 @@ class ResourcePathParserTest {
         .isFunction("UFCRTStringOptionalNoDefault")
         .isType(PropertyProvider.nameString)
         .isParameter(0, "ParameterString", "'x'");
+  }
+
+  @Test
+  void functionImportWithMalformedOptionalParameterDefault() {
+    // A Core.OptionalParameter DefaultValue that is not a valid URI literal for the parameter type
+    // is bad input to this call, so the URI parser rejects it with 400 instead of letting the
+    // service fail later with 500.
+    testUri.runEx("FICRTStringOptionalBadDefault(ParameterString='x')")
+        .isExValidation(UriValidationException.MessageKeys.INVALID_VALUE_FOR_PROPERTY);
+  }
+
+  @Test
+  void malformedOptionalParameterDefaultIsIrrelevantIfTheParameterIsSpecified() throws Exception {
+    // Only an omitted optional parameter takes its default value, so a specified value is enough.
+    testRes.run("FICRTStringOptionalBadDefault(ParameterString='x',ParameterSuffix='y')")
+        .isFunctionImport("FICRTStringOptionalBadDefault")
+        .isParameter(0, "ParameterString", "'x'")
+        .isParameter(1, "ParameterSuffix", "'y'");
+  }
+
+  @Test
+  void functionImportWithValidOptionalParameterDefaultStillParses() throws Exception {
+    testRes.run("FICRTStringOptionalParam(ParameterString='x')")
+        .isFunctionImport("FICRTStringOptionalParam");
   }
 
   @Test

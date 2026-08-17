@@ -22,6 +22,7 @@
  * Copyright 2026 SiteNetSoft - OData 4.01: opened key-value helpers to the key-as-segment parser
  * Copyright 2026 SiteNetSoft - OData 4.01: resolve alternate keys in parenthesized key predicates
  * Copyright 2026 SiteNetSoft - OData 4.01: dedupe alternate-key declarations, reject null key values
+ * Copyright 2026 SiteNetSoft - OData 4.01: malformed optional-parameter default values are rejected with 400
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -829,12 +830,12 @@ public class ParserHelper {
   protected static void validateFunctionParameterFacets(final EdmFunction function, 
       final List<UriParameter> parameters, Edm edm, Map<String, AliasQueryOption> aliases) 
           throws UriParserException, UriValidationException {
+    final Set<String> supplied = new HashSet<>();
     for (UriParameter parameter : parameters) {
+      supplied.add(parameter.getName());
       EdmParameter edmParameter = function.getParameter(parameter.getName());
       final EdmType type = edmParameter.getType();
-      final EdmTypeKind kind = type.getKind();
-      if ((kind == EdmTypeKind.PRIMITIVE || kind == EdmTypeKind.DEFINITION || kind == EdmTypeKind.ENUM)
-          && !edmParameter.isCollection()) {
+      if (OptionalParameterDefaults.isPrimitiveLike(edmParameter)) {
         final EdmPrimitiveType primitiveType = (EdmPrimitiveType) type;
         String text = null;
         try {
@@ -844,20 +845,34 @@ public class ParserHelper {
                     parseAliasValue(parameter.getAlias(),
                         edmParameter.getType(), edmParameter.isNullable(), edmParameter.isCollection(),
                         edm, type, aliases).getText() : null;
-                        if (edmParameter.getMapping() == null) {
-                          primitiveType.valueOfString(primitiveType.fromUriLiteral(text),
-                              edmParameter.isNullable(), edmParameter.getMaxLength(), edmParameter.getPrecision(), 
-                              edmParameter.getScale(), true, primitiveType.getDefaultType());
-                        } else {
-                          primitiveType.valueOfString(primitiveType.fromUriLiteral(text),
-                              edmParameter.isNullable(), edmParameter.getMaxLength(), edmParameter.getPrecision(), 
-                              edmParameter.getScale(), true, edmParameter.getMapping().getMappedJavaClass());
-                        }
+          OptionalParameterDefaults.valueOfUriLiteral(edmParameter, primitiveType, text);
         } catch (final EdmPrimitiveTypeException e) {
           throw new UriValidationException(
               "Invalid value '" + text + "' for parameter " + parameter.getName(), e,
               UriValidationException.MessageKeys.INVALID_VALUE_FOR_PROPERTY, parameter.getName());
         }
+      }
+    }
+
+    // OData 4.01, Part 1: Protocol section 11.5.4.1.1 -- an optional parameter omitted from the URL
+    // takes its Core.OptionalParameter DefaultValue. A default that is not a valid URI literal is
+    // rejected here, as bad input to this call (400), rather than surfacing later as a 500.
+    for (final String name : function.getParameterNames()) {
+      if (supplied.contains(name)) {
+        continue;
+      }
+      final EdmParameter edmParameter = function.getParameter(name);
+      final String defaultLiteral = OptionalParameterDefaults.defaultLiteral(edmParameter);
+      if (defaultLiteral == null || !OptionalParameterDefaults.isPrimitiveLike(edmParameter)) {
+        continue;
+      }
+      try {
+        OptionalParameterDefaults.valueOfUriLiteral(edmParameter,
+            (EdmPrimitiveType) edmParameter.getType(), defaultLiteral);
+      } catch (final EdmPrimitiveTypeException e) {
+        throw new UriValidationException(
+            "Invalid default value '" + defaultLiteral + "' for parameter " + name, e,
+            UriValidationException.MessageKeys.INVALID_VALUE_FOR_PROPERTY, name);
       }
     }
   }

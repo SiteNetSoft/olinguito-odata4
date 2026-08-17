@@ -24,6 +24,7 @@
  * Core.SchemaVersion annotation (OData 4.01, Part 1: Protocol, section 11.2.12)
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 6: register the operations with optional
  * parameters, including the invalid-default action
+ * Copyright 2026 SiteNetSoft - OData 4.01: malformed optional-parameter default values are rejected with 400
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
@@ -193,6 +194,7 @@ public class SchemaProvider {
     functions.addAll(prov.getFunctions(FunctionProvider.nameUFCRTStringTwoParam));
     functions.addAll(prov.getFunctions(FunctionProvider.nameUFCRTStringOptionalParam));
     functions.addAll(prov.getFunctions(FunctionProvider.nameUFCRTStringOptionalNoDefault));
+    functions.addAll(prov.getFunctions(FunctionProvider.nameUFCRTStringOptionalBadDefault));
     functions.addAll(prov.getFunctions(FunctionProvider.nameUFCRTCollETTwoKeyNavParam));
     functions.addAll(prov.getFunctions(FunctionProvider.nameUFCRTString));
     functions.addAll(prov.getFunctions(FunctionProvider.nameUFCRTCollStringTwoParam));

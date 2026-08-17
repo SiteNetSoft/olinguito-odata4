@@ -28,6 +28,7 @@
  * Copyright 2026 SiteNetSoft - OData 4.01: share alternate-key property resolution with bound actions
  * Copyright 2026 SiteNetSoft - Empty key lists address no entity; added explicit readFirst
  * Copyright 2026 SiteNetSoft - OData 4.01: referential-constraint key predicates from the source entity
+ * Copyright 2026 SiteNetSoft - OData 4.01: malformed optional-parameter default values are rejected with 400
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -841,7 +842,9 @@ public class DataProvider {
    * section 11.5.4.1.1). The default value of the Core.OptionalParameter annotation is a URI
    * literal, which is exactly what the fixed-format deserializer reads. An omitted optional
    * parameter without default value is left absent, which this service interprets as
-   * "no value given".
+   * "no value given". The URI parser already rejects a malformed default
+   * (ParserHelper#validateFunctionParameterFacets), so this branch is defense in depth for callers
+   * that bypass the parser; it reports 400 for the same reason.
    */
   private void addOptionalParameterDefaults(final EdmFunction function, final Map<String, Parameter> values)
       throws DataProviderException {
@@ -858,7 +861,7 @@ public class DataProvider {
         values.put(name, odata.createFixedFormatDeserializer().parameter(defaultValue, edmParameter));
       } catch (final DeserializerException e) {
         throw new DataProviderException("Invalid default value for function parameter " + name + ".",
-            HttpStatusCode.INTERNAL_SERVER_ERROR, e);
+            HttpStatusCode.BAD_REQUEST, e);
       }
     }
   }

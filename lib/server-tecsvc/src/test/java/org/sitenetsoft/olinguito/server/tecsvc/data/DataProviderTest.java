@@ -23,6 +23,7 @@
  * Copyright 2026 SiteNetSoft - OData 4.01: bound actions through alternate keys
  * Copyright 2026 SiteNetSoft - Empty key lists address no entity; first entity selected explicitly
  * Copyright 2026 SiteNetSoft - OData 4.01: referential-constraint key predicates from the source entity
+ * Copyright 2026 SiteNetSoft - OData 4.01: malformed optional-parameter default values are rejected with 400
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -39,6 +40,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmFunction;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.uri.UriParameter;
 import org.sitenetsoft.olinguito.server.core.uri.UriParameterImpl;
@@ -220,6 +222,22 @@ class DataProviderTest {
     final Property property = dataProvider.readFunctionPrimitiveComplex(function,
         List.of(mockParameter("ParameterString", "'base'")), null);
     Assertions.assertEquals("base", property.getValue());
+  }
+
+  @Test
+  void functionWithMalformedOptionalParameterDefaultIsBadRequest() {
+    // The URI parser already rejects such a call; if a caller bypasses the parser, the malformed
+    // model value is still bad input to the call (400), not a server error.
+    final DataProvider dataProvider = new DataProvider(oData, edm);
+    final EdmFunction function = edm.getUnboundFunction(
+        new FullQualifiedName(SchemaProvider.NAMESPACE, "UFCRTStringOptionalBadDefault"),
+        List.of("ParameterString"));
+    Assertions.assertNotNull(function);
+    final DataProvider.DataProviderException exception =
+        Assertions.assertThrows(DataProvider.DataProviderException.class,
+            () -> dataProvider.readFunctionPrimitiveComplex(function,
+                List.of(mockParameter("ParameterString", "'x'")), null));
+    Assertions.assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), exception.getStatusCode());
   }
 
   @Test

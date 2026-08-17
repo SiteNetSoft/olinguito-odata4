@@ -21,6 +21,7 @@
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - Use Valuable.asCollection() for entity collection parameters (OLINGO-1638)
  * Copyright 2026 SiteNetSoft - OData 4.01: functions with optional parameters
+ * Copyright 2026 SiteNetSoft - OData 4.01: malformed optional-parameter default values are rejected with 400
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -117,7 +118,8 @@ public class FunctionData {
       return DataCreator.createPrimitive(name, "UFCRTString string value");
     }else if ( name.equals("BFNESTwoKeyNavRTString") ) {
       return DataCreator.createPrimitive(name, "BFNESTwoKeyNavRTString string value");
-    } else if (name.equals("UFCRTStringOptionalParam") || name.equals("UFCRTStringOptionalNoDefault")) {
+    } else if (name.equals("UFCRTStringOptionalParam") || name.equals("UFCRTStringOptionalNoDefault")
+        || name.equals("UFCRTStringOptionalBadDefault")) {
       // An omitted optional parameter is either replaced by its default value before we are called
       // or simply absent (if it has no default value), in which case no suffix is appended.
       return DataCreator.createPrimitive(name, getParameterString(parameters) + getParameterSuffix(parameters));

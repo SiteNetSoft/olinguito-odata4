@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed resource leak and hardcoded charset string
+ * Copyright 2026 SiteNetSoft - OData 4.01: shared resolver for operation-parameter URI literals
  */
 package org.sitenetsoft.olinguito.server.core.deserializer;
 
@@ -44,6 +45,7 @@ import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchOptions;
 import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchRequestPart;
 import org.sitenetsoft.olinguito.server.core.deserializer.batch.BatchParser;
 import org.sitenetsoft.olinguito.server.core.deserializer.json.ODataJsonDeserializer;
+import org.sitenetsoft.olinguito.server.core.uri.parser.OptionalParameterDefaults;
 
 public class FixedFormatDeserializerImpl implements FixedFormatDeserializer {
 
@@ -93,28 +95,15 @@ public class FixedFormatDeserializerImpl implements FixedFormatDeserializer {
   @Override
   public Parameter parameter(final String content, final EdmParameter parameter) throws DeserializerException {
     final EdmType type = parameter.getType();
-    final EdmTypeKind kind = type.getKind();
-    if ((kind == EdmTypeKind.PRIMITIVE || kind == EdmTypeKind.DEFINITION || kind == EdmTypeKind.ENUM)
-        && !parameter.isCollection()) {
+    if (OptionalParameterDefaults.isPrimitiveLike(parameter)) {
       // The content is a primitive URI literal.
       Parameter result = new Parameter();
       result.setName(parameter.getName());
       result.setType(type.getFullQualifiedName().getFullQualifiedNameAsString());
       final EdmPrimitiveType primitiveType = (EdmPrimitiveType) type;
       try {
-        if (parameter.getMapping() == null) {
-          result.setValue(type.getKind() == EdmTypeKind.ENUM ? ValueType.ENUM : ValueType.PRIMITIVE,
-              primitiveType.valueOfString(primitiveType.fromUriLiteral(content),
-                  parameter.isNullable(), parameter.getMaxLength(), 
-                  parameter.getPrecision(), parameter.getScale(), true,
-                   primitiveType.getDefaultType()));
-        } else {
-          result.setValue(type.getKind() == EdmTypeKind.ENUM ? ValueType.ENUM : ValueType.PRIMITIVE,
-              primitiveType.valueOfString(primitiveType.fromUriLiteral(content),
-                  parameter.isNullable(), parameter.getMaxLength(), 
-                  parameter.getPrecision(), parameter.getScale(), true,
-                        parameter.getMapping().getMappedJavaClass()));
-        }
+        result.setValue(type.getKind() == EdmTypeKind.ENUM ? ValueType.ENUM : ValueType.PRIMITIVE,
+            OptionalParameterDefaults.valueOfUriLiteral(parameter, primitiveType, content));
       } catch (final EdmPrimitiveTypeException e) {
         throw new DeserializerException(
             "Invalid value '" + content + "' for parameter " + parameter.getName(), e,
