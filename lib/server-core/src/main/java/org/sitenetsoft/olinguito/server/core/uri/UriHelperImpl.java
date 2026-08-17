@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - OLINGO-1331: Validate key predicates in parseEntityId
+ * Copyright 2026 SiteNetSoft - Ticket D: honor the key-as-segment convention in parseEntityId
  */
 package org.sitenetsoft.olinguito.server.core.uri;
 
@@ -49,6 +50,21 @@ import org.sitenetsoft.olinguito.server.core.serializer.utils.ContextURLHelper;
 import org.sitenetsoft.olinguito.server.core.uri.parser.Parser;
 
 public class UriHelperImpl implements UriHelper {
+
+  private boolean keyAsSegment;
+
+  /**
+   * Enables the OData 4.01 key-as-segment URL convention (URL Conventions section 4.3.6) for
+   * {@link #parseEntityId(Edm, String, String)}. A service that serves key-as-segment URLs also
+   * receives entity ids and binding links written that way, so the entity-id parser has to be told
+   * about the convention explicitly; it is off by default, exactly as on {@code ODataHandler}.
+   * @param enabled whether key-as-segment entity ids are parsed
+   * @return this helper
+   */
+  public UriHelperImpl setKeyAsSegment(final boolean enabled) {
+    this.keyAsSegment = enabled;
+    return this;
+  }
 
   @Override
   public String buildContextURLSelectList(final EdmStructuredType type,
@@ -153,7 +169,8 @@ public class UriHelperImpl implements UriHelper {
 
     try {
       final List<UriResource> uriResourceParts =
-          new Parser(edm, new ODataImpl()).parseUri(oDataPath, null, null, rawServiceRoot).getUriResourceParts();
+          new Parser(edm, new ODataImpl()).setKeyAsSegment(keyAsSegment)
+              .parseUri(oDataPath, null, null, rawServiceRoot).getUriResourceParts();
       if (uriResourceParts.size() == 1 && uriResourceParts.get(0).getKind() == UriResourceKind.entitySet) {
         final UriResourceEntitySet entityUriResource = (UriResourceEntitySet) uriResourceParts.get(0);
 

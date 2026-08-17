@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Replaced Class.forName with ServiceLoader to eliminate circular dependency
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 2 fix round 1: additive versioned
  * createServiceMetadata overload
+ * Copyright 2026 SiteNetSoft - Ticket D: added createUriHelper(boolean) key-as-segment overload
  */
 package org.sitenetsoft.olinguito.server.api;
 
@@ -164,6 +165,18 @@ public abstract class OData {
    * It can be used in Processor implementations.
    */
   public abstract UriHelper createUriHelper();
+
+  /**
+   * Creates a URI helper. Unlike {@link #createUriHelper()} the returned helper parses entity ids
+   * written in the OData 4.01 key-as-segment form (URL Conventions section 4.3.6) when
+   * <code>keyAsSegment</code> is <code>true</code>. The default implementation ignores the flag and
+   * returns {@link #createUriHelper()}.
+   * @param keyAsSegment whether entity ids may use the key-as-segment convention
+   * @return a URI helper
+   */
+  public UriHelper createUriHelper(final boolean keyAsSegment) {
+    return createUriHelper();
+  }
 
   /**
    * Creates a new deserializer object for reading content in the specified format.

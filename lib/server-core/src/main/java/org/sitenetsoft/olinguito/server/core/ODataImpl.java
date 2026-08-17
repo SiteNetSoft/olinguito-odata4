@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 2 fix round 1: override the versioned
  * createServiceMetadata overload from OData
+ * Copyright 2026 SiteNetSoft - Ticket D: override createUriHelper(boolean) key-as-segment overload
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -221,6 +222,11 @@ public class ODataImpl extends OData {
   @Override
   public UriHelper createUriHelper() {
     return new UriHelperImpl();
+  }
+
+  @Override
+  public UriHelper createUriHelper(final boolean keyAsSegment) {
+    return new UriHelperImpl().setKeyAsSegment(keyAsSegment);
   }
 
   @Override

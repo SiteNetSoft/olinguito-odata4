@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - OLINGO-1331: Added parseEntityId tests
+ * Copyright 2026 SiteNetSoft - Ticket D: Added key-as-segment parseEntityId tests
  */
 package org.sitenetsoft.olinguito.server.core.uri;
 
@@ -36,10 +37,12 @@ import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
 import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
 import org.sitenetsoft.olinguito.server.api.uri.UriHelper;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceEntitySet;
+import org.sitenetsoft.olinguito.server.core.uri.UriHelperImpl;
 import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class UriHelperTest {
@@ -129,5 +132,36 @@ class UriHelperTest {
         helper.parseEntityId(edm, "http://localhost/service/ESAllPrim(32767)", "http://localhost/service/");
     Assertions.assertNotNull(result);
     Assertions.assertFalse(result.getKeyPredicates().isEmpty());
+  }
+
+  @Test
+  void parseEntityIdKeyAsSegmentIsOffByDefault() {
+    // The convention is a MAY and off unless the service opts in, so a bare key segment is not a key.
+    assertThrows(DeserializerException.class, () -> helper.parseEntityId(edm, "ESAllPrim/32767", null));
+  }
+
+  @Test
+  void parseEntityIdKeyAsSegmentWhenEnabled() throws Exception {
+    final UriResourceEntitySet result =
+        new UriHelperImpl().setKeyAsSegment(true).parseEntityId(edm, "ESAllPrim/32767", null);
+    assertEquals("ESAllPrim", result.getEntitySet().getName());
+    assertEquals(1, result.getKeyPredicates().size());
+    assertEquals("PropertyInt16", result.getKeyPredicates().get(0).getName());
+    assertEquals("32767", result.getKeyPredicates().get(0).getText());
+  }
+
+  @Test
+  void parseEntityIdParenthesizedStillWorksWithKeyAsSegmentEnabled() throws Exception {
+    final UriResourceEntitySet result =
+        new UriHelperImpl().setKeyAsSegment(true).parseEntityId(edm, "ESAllPrim(32767)", null);
+    assertEquals("ESAllPrim", result.getEntitySet().getName());
+    assertEquals("32767", result.getKeyPredicates().get(0).getText());
+  }
+
+  @Test
+  void createUriHelperWithKeyAsSegmentParsesSegmentKeys() throws Exception {
+    final UriResourceEntitySet result =
+        OData.newInstance().createUriHelper(true).parseEntityId(edm, "ESAllPrim/32767", null);
+    assertEquals("32767", result.getKeyPredicates().get(0).getText());
   }
 }

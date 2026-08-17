@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
+ * Copyright 2026 SiteNetSoft - Ticket D: documented the key-as-segment seam (javadoc only)
  */
 
 package org.sitenetsoft.olinguito.server.core;
@@ -342,7 +343,11 @@ public abstract class ServiceRequest {
       rawPath = rawPath.substring(e+path.length());
     }
 
-    UriInfo reqUriInfo = new Parser(serviceMetadata.getEdm(), odata).parseUri(rawPath, uri.getQuery(), null, 
+    // Documented seam: this module has no ODataHandler, so there is no service-level key-as-segment
+    // flag (OData 4.01 URL Conventions section 4.3.6) to thread here; the parser is built with the
+    // convention off. Per-entity-set and per-navigation-property keyAsSegmentAllowed model flags are
+    // still honored, because ResourcePathParser consults them independently of the service flag.
+    UriInfo reqUriInfo = new Parser(serviceMetadata.getEdm(), odata).parseUri(rawPath, uri.getQuery(), null,
         getODataRequest().getRawBaseUri());
     ServiceDispatcher dispatcher = new ServiceDispatcher(odata, serviceMetadata, null, customContentType);
     dispatcher.visit(reqUriInfo);

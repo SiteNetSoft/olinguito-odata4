@@ -21,6 +21,7 @@
  * Copyright 2026 SiteNetSoft - Moved the dynamic-property 404 check to a pre-check over the
  * parsed URI resource parts in internalExecute (instead of a RequestURLVisitor#visit override),
  * so RequestURLVisitor's existing visit(UriInfo)/visit(UriInfoResource) signatures need not widen
+ * Copyright 2026 SiteNetSoft - Ticket D: documented the key-as-segment seam (javadoc only)
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -102,6 +103,11 @@ public class ServiceDispatcher extends RequestURLHierarchyVisitor {
       if(path.indexOf("$entity") != -1) {
         executeIdOption(query, odRequest, odResponse);
       } else {
+        // Documented seam: this module has no ODataHandler, so there is no service-level
+        // key-as-segment flag (OData 4.01 URL Conventions section 4.3.6) to thread here; the
+        // parser is built with the convention off. Per-entity-set and per-navigation-property
+        // keyAsSegmentAllowed model flags are still honored, because ResourcePathParser consults
+        // them independently of the service flag.
         UriInfo uriInfo = new Parser(this.metadata.getEdm(), odata)
           .parseUri(path, query, null, odRequest.getRawBaseUri());
         
