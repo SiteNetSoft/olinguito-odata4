@@ -157,15 +157,22 @@ public class EdmSchemaImpl extends AbstractEdmAnnotatable implements EdmSchema {
       final EdmEntityContainer cached = edm.cachedEntityContainer(containerFQN);
       if (cached != null) {
         // Another route already built and populated this container; reusing it keeps container
-        // identity stable and preserves the caches that instance has already filled.
+        // identity stable and preserves the caches that instance has already filled. Still (re-)link
+        // the default alias -- harmless if it is already linked, necessary if this schema's lookup is
+        // what first observed the container the other route is still in the middle of publishing.
         edm.cacheEntityContainerIfAbsent(null, cached);
         return cached;
       }
       edm.addEntityContainerAnnotations(schema.getEntityContainer(), containerFQN);
       EdmEntityContainer impl = new EdmEntityContainerImpl(edm, provider, containerFQN, schema.getEntityContainer());
-      final EdmEntityContainer effective = edm.cacheEntityContainerIfAbsent(containerFQN, impl);
-      edm.cacheEntityContainerIfAbsent(null, effective);
-      return effective;
+      // Resolve the real FQN key first, and always return that resolved winner: an Edm can have
+      // several schema-declared containers side by side (e.g. extended/cross-referenced containers),
+      // so linking the default alias here is only ever a best-effort courtesy write for whichever
+      // container turns out to be the actual default -- it must never be allowed to override the
+      // instance this call returns for ITS OWN, distinct FQN key.
+      final EdmEntityContainer winner = edm.cacheEntityContainerIfAbsent(containerFQN, impl);
+      edm.cacheEntityContainerIfAbsent(null, winner);
+      return winner;
     }
     return null;
   }

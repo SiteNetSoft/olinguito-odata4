@@ -17,13 +17,23 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - tests for entity container cache identity across build routes
+ * Copyright 2026 SiteNetSoft - pin the FQN-key-canonical fix (round 1) with a deterministic and a
+ *                               best-effort concurrent regression test
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.junit.jupiter.api.Test;
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
@@ -122,5 +132,63 @@ class EdmEntityContainerCacheTest {
 
     assertSame(fromSchema, edm.getEntityContainer());
     assertSame(fromSchema, edm.getEntityContainer(CONTAINER));
+  }
+
+  /**
+   * Deterministic pin for fix round 1: pre-populates the FQN-keyed slot directly (simulating a writer
+   * that got there first), then drives the default-alias route. The FQN-keyed slot must win over a
+   * freshly built instance, and the default alias must end up pointing at that same winner -- not at
+   * whatever {@code getEntityContainer()} built for itself before consulting the cache.
+   */
+  @Test
+  void preCachedFqnSlotWinsOverFreshDefaultBuild() {
+    final AbstractEdm edm = new EdmProviderImpl(new LocalProvider());
+    final EdmEntityContainer preCached = mock(EdmEntityContainer.class);
+    when(preCached.getNamespace()).thenReturn(NAMESPACE);
+    when(preCached.getName()).thenReturn(CONTAINER.getName());
+
+    final EdmEntityContainer winner = edm.cacheEntityContainerIfAbsent(CONTAINER, preCached);
+    assertSame(preCached, winner);
+
+    final EdmEntityContainer resolved = edm.getEntityContainer();
+
+    assertSame(preCached, resolved,
+        "a container already cached under the FQN-keyed slot must win over a freshly built default");
+    assertSame(preCached, edm.getEntityContainer(CONTAINER));
+    assertSame(preCached, edm.cachedEntityContainer(null),
+        "the default alias must be linked to the FQN-keyed winner, not to a fresh instance");
+  }
+
+  /**
+   * Best-effort concurrent regression test: many threads race to materialize the container through
+   * both routes at once. The assertion (identity) is deterministic regardless of whether the race
+   * actually gets exercised on a given run -- it never passes on a split brain.
+   */
+  @Test
+  void concurrentBuildersConvergeOnOneInstance() throws Exception {
+    final int threadCount = 16;
+    final ExecutorService pool = Executors.newFixedThreadPool(threadCount);
+    try {
+      final Edm edm = new EdmProviderImpl(new LocalProvider());
+      final CyclicBarrier barrier = new CyclicBarrier(threadCount);
+      final List<Callable<EdmEntityContainer>> tasks = new ArrayList<>();
+      for (int i = 0; i < threadCount; i++) {
+        final boolean viaSchema = i % 2 == 0;
+        tasks.add(() -> {
+          barrier.await();
+          return viaSchema ? edm.getSchemas().get(0).getEntityContainer() : edm.getEntityContainer();
+        });
+      }
+
+      final List<Future<EdmEntityContainer>> results = pool.invokeAll(tasks);
+      final EdmEntityContainer first = results.get(0).get();
+      assertNotNull(first);
+      for (final Future<EdmEntityContainer> result : results) {
+        assertSame(first, result.get(), "all build routes must converge on the same container instance");
+      }
+      assertSame(first, edm.getEntityContainer(CONTAINER));
+    } finally {
+      pool.shutdownNow();
+    }
   }
 }

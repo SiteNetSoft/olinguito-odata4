@@ -158,16 +158,24 @@ public abstract class AbstractEdm implements Edm {
   @Override
   public EdmEntityContainer getEntityContainer(final FullQualifiedName namespaceOrAliasFQN) {
     final FullQualifiedName fqn = resolvePossibleAlias(namespaceOrAliasFQN);
-    final FullQualifiedName key = fqn != null ? fqn : NULL_CONTAINER_KEY;
-    EdmEntityContainer container = entityContainers.get(key);
+    EdmEntityContainer container = cachedEntityContainer(fqn);
     if (container == null) {
       container = createEntityContainer(fqn);
       if (container != null) {
-        EdmEntityContainer existing = entityContainers.putIfAbsent(key, container);
-        if (existing != null) {
-          container = existing;
-        } else if (fqn == null) {
-          entityContainers.putIfAbsent(new FullQualifiedName(container.getNamespace(), container.getName()), container);
+        if (fqn != null) {
+          // A specific, non-default container (e.g. one in a foreign namespace, cross-service): only
+          // the FQN-keyed slot is this container's identity -- never link the default alias to it.
+          container = cacheEntityContainerIfAbsent(fqn, container);
+        } else {
+          // The default container: resolve the real, namespace-qualified key FIRST, then link the
+          // null alias to whichever instance actually won that key. This ordering -- and always
+          // propagating the resolved winner, never the locally-built instance, into the alias write
+          // -- is what lets getEntityContainer(FullQualifiedName) and getSchemas() converge on the
+          // same instance no matter which route runs first, or how the two race.
+          final FullQualifiedName canonicalKey =
+              new FullQualifiedName(container.getNamespace(), container.getName());
+          final EdmEntityContainer winner = cacheEntityContainerIfAbsent(canonicalKey, container);
+          container = cacheEntityContainerIfAbsent(null, winner);
         }
       }
     }
@@ -525,11 +533,15 @@ public abstract class AbstractEdm implements Edm {
 
   /**
    * Caches the entity container under the given key unless one is already cached there, and returns
-   * the instance that is in effect afterwards. The EDM is reachable through two independent build
-   * routes ({@link #getEntityContainer(FullQualifiedName)} and {@link #getSchemas()}); both must end
-   * up handing out the very same container instance, because a second instance would silently
-   * discard the caches populated on the first one and would break identity comparisons.
-   * @param containerFQN the container name; <code>null</code> addresses the default container
+   * the instance that is in effect afterwards. Only the given key is written -- a container that
+   * doubles as the EDM's default container must additionally be linked under the null/default alias
+   * by a separate call with <code>containerFQN == null</code>, and only after this call has resolved
+   * the real, namespace-qualified key, propagating the WINNER (not necessarily {@code container}
+   * itself) into that alias write. That ordering -- real key first, alias second, always propagating
+   * the resolved winner -- is what lets {@link #getEntityContainer(FullQualifiedName)} and
+   * {@link #getSchemas()} converge on the same default-container instance no matter which route runs
+   * first, or how the two race; see the two call sites for the concrete sequencing.
+   * @param containerFQN the container name; <code>null</code> caches directly under the default alias
    * @param container the container to cache when the key is still free
    * @return the cached container, which may be a previously cached instance
    */
@@ -541,12 +553,26 @@ public abstract class AbstractEdm implements Edm {
   }
 
   /**
-   * Looks the entity container up in the cache without creating one.
-   * @param containerFQN the container name; <code>null</code> addresses the default container
+   * Looks the entity container up in the cache without creating one. Checks the real,
+   * namespace-qualified key first; when that is still empty, falls back to the default alias, but
+   * only if the alias happens to already hold the very container this key would resolve to (i.e. the
+   * default-alias write from a concurrent {@link #cacheEntityContainerIfAbsent} landed first) -- this
+   * avoids ever handing out an unrelated container cached under a different name.
+   * @param containerFQN the container name; <code>null</code> looks up the default alias directly
    * @return the cached container, or <code>null</code> when none is cached yet
    */
   public EdmEntityContainer cachedEntityContainer(final FullQualifiedName containerFQN) {
-    return entityContainers.get(containerFQN != null ? containerFQN : NULL_CONTAINER_KEY);
+    if (containerFQN == null) {
+      return entityContainers.get(NULL_CONTAINER_KEY);
+    }
+    final EdmEntityContainer viaKey = entityContainers.get(containerFQN);
+    if (viaKey != null) {
+      return viaKey;
+    }
+    final EdmEntityContainer viaDefault = entityContainers.get(NULL_CONTAINER_KEY);
+    return viaDefault != null
+        && containerFQN.equals(new FullQualifiedName(viaDefault.getNamespace(), viaDefault.getName()))
+        ? viaDefault : null;
   }
 
   protected abstract EdmEnumType createEnumType(FullQualifiedName enumName);
