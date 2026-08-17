@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  * Copyright 2026 SiteNetSoft - Added the omit-values preference (OData 4.01, Protocol Section 8.2.8.6)
+ * Copyright 2026 SiteNetSoft - Added PreferencesApplied.Builder#omitValues convenience method
  */
 package org.sitenetsoft.olinguito.server.api.prefer;
 
@@ -134,6 +135,19 @@ public final class PreferencesApplied {
     /** Sets <code>odata.track-changes</code>. */
     public Builder trackChanges() {
       add(PreferenceName.TRACK_CHANGES.getName(), null);
+      return this;
+    }
+
+    /**
+     * Sets the value of the applied preference <code>omit-values</code>
+     * (OData 4.01, Part 1: Protocol, section 8.2.8.6). A <code>null</code> argument adds nothing.
+     * @param omitValues the omit-values variant that was applied
+     * @return this builder
+     */
+    public Builder omitValues(final Preferences.OmitValues omitValues) {
+      if (omitValues != null) {
+        add(PreferenceName.OMIT_VALUES.getName(), omitValues.name().toLowerCase(Locale.ROOT));
+      }
       return this;
     }
 

@@ -21,6 +21,8 @@
  * Copyright 2026 SiteNetSoft - Pinned maxpagesize/track-changes co-occurrence and omit-values
  * exclusion on reference-collection reads
  * Copyright 2026 SiteNetSoft - Pinned omit-values=nulls on a streamed-collection response
+ * Copyright 2026 SiteNetSoft - Pinned that track-changes is not echoed on reference-collection
+ * reads while maxpagesize still is (OData 4.01, Protocol Section 8.2.8.6)
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.http;
 
@@ -481,6 +483,57 @@ public class PreferHeaderForGetAndDeleteITCase extends AbstractBaseTestITCase {
 
     final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
     assertTrue(content.contains("\"@odata.context\":\"../$metadata#Collection($ref)"));
+  }
+
+  // ODataJsonSerializer#referenceCollection writes only the context URL, the count, the @odata.id
+  // array and the next link -- never a delta link. Claiming odata.track-changes was applied to a
+  // $ref collection is therefore false; it is gated the same way omit-values already is.
+  @Test
+  public void trackChanges_NotEchoedOnReferenceCollection() throws Exception {
+    URL url = new URL(SERVICE_URI + "ESAllPrim/$ref");
+
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod(HttpMethod.GET.name());
+    connection.setRequestProperty(HttpHeader.PREFER, "odata.track-changes");
+    connection.connect();
+
+    assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
+    assertNull(connection.getHeaderField(HttpHeader.PREFERENCE_APPLIED));
+
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
+    assertFalse("a reference collection never carries a delta link", content.contains("@odata.deltaLink"));
+  }
+
+  // odata.maxpagesize IS genuinely applied to a $ref collection: server-side paging runs before the
+  // reference branch and referenceCollection does write a next link. It must keep being echoed.
+  @Test
+  public void maxPageSize_EchoedOnReferenceCollection() throws Exception {
+    URL url = new URL(SERVICE_URI + "ESServerSidePaging/$ref");
+
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod(HttpMethod.GET.name());
+    connection.setRequestProperty(HttpHeader.PREFER, "odata.maxpagesize=7");
+    connection.connect();
+
+    assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
+    assertEquals("odata.maxpagesize=7", connection.getHeaderField(HttpHeader.PREFERENCE_APPLIED));
+
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
+    assertTrue("the page must be followable", content.contains("@odata.nextLink"));
+  }
+
+  // Both together on a $ref collection: only the one that was really applied is echoed.
+  @Test
+  public void maxPageSizeWithTrackChanges_OnlyMaxPageSizeEchoedOnReferenceCollection() throws Exception {
+    URL url = new URL(SERVICE_URI + "ESServerSidePaging/$ref");
+
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod(HttpMethod.GET.name());
+    connection.setRequestProperty(HttpHeader.PREFER, "odata.maxpagesize=7, odata.track-changes");
+    connection.connect();
+
+    assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
+    assertEquals("odata.maxpagesize=7", connection.getHeaderField(HttpHeader.PREFERENCE_APPLIED));
   }
 
   // The serialization guide claims omit-values=nulls covers "including streamed collections",

@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - Added a test for the omit-values preference (OData 4.01, Protocol Section 8.2.8.6)
+ * Copyright 2026 SiteNetSoft - Added tests for the PreferencesApplied.Builder#omitValues convenience method
  */
 package org.sitenetsoft.olinguito.server.api.prefer;
 
@@ -55,6 +56,23 @@ class PreferencesAppliedTest {
   void omitValuesDefaultsRendersUnquoted() {
     assertEquals("omit-values=defaults",
         PreferencesApplied.with().preference("omit-values", "defaults").build().toValueString());
+  }
+
+  @Test
+  void omitValuesBuilderRendersNulls() {
+    assertEquals("omit-values=nulls",
+        PreferencesApplied.with().omitValues(Preferences.OmitValues.NULLS).build().toValueString());
+  }
+
+  @Test
+  void omitValuesBuilderRendersDefaults() {
+    assertEquals("omit-values=defaults",
+        PreferencesApplied.with().omitValues(Preferences.OmitValues.DEFAULTS).build().toValueString());
+  }
+
+  @Test
+  void omitValuesBuilderIgnoresNull() {
+    assertEquals("", PreferencesApplied.with().omitValues(null).build().toValueString());
   }
 
   @Test

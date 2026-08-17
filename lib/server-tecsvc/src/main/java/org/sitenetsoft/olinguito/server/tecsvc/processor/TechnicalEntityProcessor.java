@@ -21,6 +21,8 @@
  * (OData 4.01, Protocol Section 8.2.8.6)
  * Copyright 2026 SiteNetSoft - Gate omit-values Preference-Applied on !isReference in
  * readEntityCollection, symmetric with readEntity
+ * Copyright 2026 SiteNetSoft - Gate track-changes Preference-Applied on !isReference (a reference
+ * collection never carries a delta link) and switch to PreferencesApplied.Builder#omitValues
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
@@ -48,7 +50,6 @@ import org.sitenetsoft.olinguito.commons.api.data.ValueType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
-import org.sitenetsoft.olinguito.commons.api.format.PreferenceName;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
@@ -522,7 +523,7 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
     response.setHeader(HttpHeader.CONTENT_TYPE, requestedFormat.toContentTypeString());
     if (omitNulls && !isReference) {
       response.setHeader(HttpHeader.PREFERENCE_APPLIED,
-          PreferencesApplied.with().preference(PreferenceName.OMIT_VALUES.getName(), "nulls")
+          PreferencesApplied.with().omitValues(Preferences.OmitValues.NULLS)
               .build().toValueString());
     }
   }
@@ -698,7 +699,7 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
     } else {
       id = request.getRawBaseUri() + edmEntitySet.getName();
     }
-    if(preferences.hasTrackChanges()) {
+    if(preferences.hasTrackChanges() && !isReference) {
       String deltaTokenValue = generateDeltaToken();
       entitySetSerialization.setDeltaLink(DeltaTokenHandler.createDeltaLink(
           request.getRawRequestUri(),
@@ -740,7 +741,11 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
       preferencesAppliedBuilder.maxPageSize(serverPageSize);
       anyPreferenceApplied = true;
     }
-    if (preferences.hasTrackChanges()) {
+    if (preferences.hasTrackChanges() && !isReference) {
+      // A reference collection carries no delta link (ODataJsonSerializer#referenceCollection writes
+      // only the context URL, the count, the @odata.id array and the next link), so track-changes is
+      // not applied there and must not be echoed -- symmetric with the omit-values gate below.
+      // odata.maxpagesize above stays ungated: paging really is applied to $ref collections.
       preferencesAppliedBuilder.trackChanges();
       anyPreferenceApplied = true;
     }
@@ -750,7 +755,7 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
       // either (serializeReferenceCollection only ever writes @odata.id), so an omit-values
       // request against a $ref collection must not claim to have been applied there -- symmetric
       // with readEntity's `!isReference` gate on the single-entity $ref case.
-      preferencesAppliedBuilder.preference(PreferenceName.OMIT_VALUES.getName(), "nulls");
+      preferencesAppliedBuilder.omitValues(Preferences.OmitValues.NULLS);
       anyPreferenceApplied = true;
     }
     if (anyPreferenceApplied) {
