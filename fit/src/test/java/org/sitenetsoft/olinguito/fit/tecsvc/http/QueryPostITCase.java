@@ -187,20 +187,13 @@ public class QueryPostITCase extends AbstractBaseTestITCase {
   /**
    * The same percent-encoded metacharacters must reach the filter parser intact: with the literal
    * space instead of <tt>+</tt> the pattern <tt>^Test String[0-9]+$</tt> matches the three entities
-   * whose PropertyString is "Test String1", "Test String2" and "Test String4". The filter is closed
-   * with an explicit <tt>eq true</tt> - deliberately, not for symmetry with the previous test: a bare
-   * <tt>matchesPattern(...)</tt> is evaluated by tecsvc's {@code FilterHandler} against every entity
-   * in the set, including ESTwoPrim(-32766) whose PropertyString is null; <tt>matchesPattern</tt>
-   * over a null input is null, not a boolean, and {@code FilterHandler} 400s on any non-boolean
-   * per-entity result rather than treating it as non-matching (observed: an unguarded
-   * <tt>matchesPattern</tt> filter over this set always fails with 400 - see
-   * {@link #queryPostOmitValuesEchoedOnEmptyMatchesPatternResult} for the same reason). Wrapping in
-   * <tt>eq true</tt> gives every entity, including the null one, a genuine boolean comparison result.
+   * whose PropertyString is "Test String1", "Test String2" and "Test String4". ESTwoPrim(-32766),
+   * whose PropertyString is null, yields a null filter result and is excluded by null propagation.
    */
   @Test
   public void queryPostMatchesPatternMetacharactersSurviveBodyEncoding() throws Exception {
     final HttpURLConnection connection = getConnection(HttpMethod.POST, "ESTwoPrim/$query",
-        "$filter=matchesPattern(PropertyString,'%5ETest%20String%5B0-9%5D%2B%24') eq true",
+        "$filter=matchesPattern(PropertyString,'%5ETest%20String%5B0-9%5D%2B%24')",
         TEXT_PLAIN, "omit-values=nulls");
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
     assertEquals("omit-values=nulls", connection.getHeaderField(HttpHeader.PREFERENCE_APPLIED));
@@ -213,15 +206,13 @@ public class QueryPostITCase extends AbstractBaseTestITCase {
 
   /**
    * An empty result still honors the preference: the Preference-Applied header is driven by the
-   * request, not by whether any property happened to be omitted. Also closed with <tt>eq true</tt>
-   * for the same reason as {@link #queryPostMatchesPatternMetacharactersSurviveBodyEncoding}: a bare
-   * <tt>matchesPattern(...)</tt> filter would 400 once tecsvc's {@code FilterHandler} reaches
-   * ESTwoPrim(-32766)'s null PropertyString, regardless of the pattern.
+   * request, not by whether any property happened to be omitted. No entity matches the pattern, and
+   * ESTwoPrim(-32766)'s null PropertyString propagates to a null result that is likewise excluded.
    */
   @Test
   public void queryPostOmitValuesEchoedOnEmptyMatchesPatternResult() throws Exception {
     final HttpURLConnection connection = getConnection(HttpMethod.POST, "ESTwoPrim/$query",
-        "$filter=matchesPattern(PropertyString,'%5EZZZ%5B0-9%5D%2B%24') eq true", TEXT_PLAIN, "omit-values=nulls");
+        "$filter=matchesPattern(PropertyString,'%5EZZZ%5B0-9%5D%2B%24')", TEXT_PLAIN, "omit-values=nulls");
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
     assertEquals("omit-values=nulls", connection.getHeaderField(HttpHeader.PREFERENCE_APPLIED));
     assertTrue("the result must be empty", readResponse(connection).contains("\"value\":[]"));

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Treated null filter results as non-matching instead of a 400
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.options;
 
@@ -57,7 +59,12 @@ public final class FilterHandler {
             .accept(new ExpressionVisitorImpl(iter.next(), uriInfo, edm));
         final TypedOperand typedOperand = operand.asTypedOperand();
 
-        if (typedOperand.is(primBoolean)) {
+        if (typedOperand.isNull()) {
+          // OData null propagation: a filter expression that evaluates to null (for example a
+          // string function applied to a null-valued property) neither matches nor is an error;
+          // the entity is simply not part of the result.
+          iter.remove();
+        } else if (typedOperand.is(primBoolean)) {
           if (Boolean.FALSE.equals(typedOperand.getTypedValue(Boolean.class))) {
             iter.remove();
           }

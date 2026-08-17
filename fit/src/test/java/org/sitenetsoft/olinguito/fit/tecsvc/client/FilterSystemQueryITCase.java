@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  * Copyright 2026 SiteNetSoft - Added matchesPattern filter function fit tests
+ * Copyright 2026 SiteNetSoft - Pinned null-propagating filter results over ESTwoPrim
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
@@ -49,6 +50,7 @@ public class FilterSystemQueryITCase extends AbstractParamTecSvcITCase {
   private static final String ES_COMP_ALL_PRIM = "ESCompAllPrim";
   private static final String ES_TWO_KEY_NAV = "ESTwoKeyNav";
   private static final String ES_ALL_PRIM = "ESAllPrim";
+  private static final String ES_TWO_PRIM = "ESTwoPrim";
   private static final String ES_MIX_ENUM_DEF_COLL_COMP = "ESMixEnumDefCollComp";
 
   
@@ -797,6 +799,30 @@ public class FilterSystemQueryITCase extends AbstractParamTecSvcITCase {
     ODataRetrieveResponse<ClientEntitySet> result =
         sendRequest(ES_ALL_PRIM, "matchesPattern(PropertyString,null) eq null");
     assertEquals(4, result.getBody().getEntities().size());
+  }
+
+  @Test
+  public void matchesPatternOverNullPropertyExcludesTheEntity() {
+    // ESTwoPrim(-32766) has a null PropertyString. Per OData null propagation the function call
+    // yields null for that entity, which is neither true nor an error: the entity is simply left
+    // out of the result. The three entities with a non-null "Test String..." value match.
+    final ODataRetrieveResponse<ClientEntitySet> result =
+        sendRequest(ES_TWO_PRIM, "matchesPattern(PropertyString,'^Test')");
+    assertEquals(3, result.getBody().getEntities().size());
+    for (final ClientEntity entity : result.getBody().getEntities()) {
+      assertTrue(entity.getProperty("PropertyString").getPrimitiveValue().toValue().toString()
+          .startsWith("Test"));
+    }
+  }
+
+  @Test
+  public void containsOverNullPropertyExcludesTheEntity() {
+    // Same null propagation as matchesPatternOverNullPropertyExcludesTheEntity, for the pre-4.01
+    // string function: every string function returns null for a null input, and a null filter
+    // result must not turn the whole request into a 400.
+    final ODataRetrieveResponse<ClientEntitySet> result =
+        sendRequest(ES_TWO_PRIM, "contains(PropertyString,'Test')");
+    assertEquals(3, result.getBody().getEntities().size());
   }
 
   @Test
