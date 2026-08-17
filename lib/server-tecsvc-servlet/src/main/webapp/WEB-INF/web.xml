@@ -40,6 +40,17 @@
 	</servlet-mapping>
 
 	<servlet>
+		<servlet-name>ODataKeyAsSegmentServlet</servlet-name>
+		<servlet-class>org.sitenetsoft.olinguito.server.tecsvc.TechnicalKeyAsSegmentServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>ODataKeyAsSegmentServlet</servlet-name>
+		<url-pattern>/odata-kas.svc/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
 		<servlet-name>StatusMonitorServlet</servlet-name>
 		<servlet-class>org.sitenetsoft.olinguito.server.tecsvc.async.TechnicalStatusMonitorServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>

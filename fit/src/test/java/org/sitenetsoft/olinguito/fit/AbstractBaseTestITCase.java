@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Added VFS reset in test teardown for test isolation
  * Copyright 2026 SiteNetSoft - Removed servlet types from test infrastructure
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 3: register the key-as-segment tecsvc endpoint
  */
 package org.sitenetsoft.olinguito.fit;
 
@@ -55,6 +56,8 @@ public abstract class AbstractBaseTestITCase {
     server = TomcatTestServer.init(DEFAULT_PORT)
         .addServlet("org.sitenetsoft.olinguito.server.tecsvc.TechnicalServlet",
             "/odata-server-tecsvc/odata.svc/*")
+        .addServlet("org.sitenetsoft.olinguito.server.tecsvc.TechnicalKeyAsSegmentServlet",
+            "/odata-server-tecsvc/odata-kas.svc/*")
         .addServlet("org.sitenetsoft.olinguito.server.tecsvc.async.TechnicalStatusMonitorServlet",
             "/odata-server-tecsvc/status/*")
         .addAuthServlet("org.sitenetsoft.olinguito.server.tecsvc.TechnicalServlet",

@@ -20,6 +20,8 @@
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 3: build a versioned ServiceMetadata so the
  * $schemaversion system query option is enforced (OData 4.01, Part 1: Protocol, section 11.2.12)
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 3: configureHandler hook so subclasses can serve
+ * the same technical service with a different URL convention
  */
 package org.sitenetsoft.olinguito.server.tecsvc;
 
@@ -38,6 +40,7 @@ import jakarta.servlet.http.HttpSession;
 import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
 import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReferenceInclude;
 import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ODataHandler;
 import org.sitenetsoft.olinguito.server.api.ODataRequestHandler;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider;
@@ -91,6 +94,7 @@ public class TechnicalServlet extends HttpServlet {
       }
 
       ODataRequestHandler core = odata.createHandler(serviceMetadata);
+      configureHandler(core);
       ODataServletHandler servlet = new ServletODataAdapter(core);
       // Register processors.
       core.register(new TechnicalEntityProcessor(dataProvider, serviceMetadata));
@@ -105,5 +109,16 @@ public class TechnicalServlet extends HttpServlet {
       LOG.error("Server Error", e);
       throw new ServletException(e);
     }
+  }
+
+  /**
+   * Applies request handler settings that are specific to this deployment of the technical service.
+   * Called once per request, right after the handler has been created and before any processor is
+   * registered. Does nothing by default.
+   *
+   * @param handler the freshly created request handler
+   */
+  protected void configureHandler(final ODataHandler handler) {
+    // Nothing to configure for the default deployment.
   }
 }

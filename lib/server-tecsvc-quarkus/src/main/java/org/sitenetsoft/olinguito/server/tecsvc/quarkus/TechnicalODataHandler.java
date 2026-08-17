@@ -17,6 +17,8 @@
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 3: build a versioned ServiceMetadata so the
  * $schemaversion system query option is enforced (OData 4.01, Part 1: Protocol, section 11.2.12)
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 3: optionally serve the OData 4.01
+ * key-as-segment URL convention (Part 2: URL Conventions, section 4.3.1)
  */
 package org.sitenetsoft.olinguito.server.tecsvc.quarkus;
 
@@ -72,13 +74,20 @@ public class TechnicalODataHandler implements Handler<RoutingContext> {
     private final SessionManager sessionManager;
     private final String basePath;
     private final int split;
+    private final boolean keyAsSegment;
 
     // Cached OData and ServiceMetadata (they are stateless)
     private final OData odata;
     private final ServiceMetadata serviceMetadata;
 
     public TechnicalODataHandler(SessionManager sessionManager, String basePath, int split) {
+        this(sessionManager, basePath, split, false);
+    }
+
+    public TechnicalODataHandler(SessionManager sessionManager, String basePath, int split,
+            boolean keyAsSegment) {
         this.sessionManager = sessionManager;
+        this.keyAsSegment = keyAsSegment;
         this.basePath = normalizePath(basePath);
         this.split = split;
 
@@ -116,6 +125,9 @@ public class TechnicalODataHandler implements Handler<RoutingContext> {
             // Create a new handler with processors for this request
             ODataRequestHandler handler = odata.createHandler(serviceMetadata);
             handler.setSplit(split);
+            if (keyAsSegment) {
+                handler.setKeyAsSegment(true);
+            }
 
             // Register processors
             handler.register(new TechnicalEntityProcessor(dataProvider, serviceMetadata));
