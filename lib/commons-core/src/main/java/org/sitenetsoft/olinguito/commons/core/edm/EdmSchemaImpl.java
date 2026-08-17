@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Reuse the cached entity container across both build routes
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
@@ -152,11 +154,18 @@ public class EdmSchemaImpl extends AbstractEdmAnnotatable implements EdmSchema {
   protected EdmEntityContainer createEntityContainer() {
     if (schema.getEntityContainer() != null) {
       FullQualifiedName containerFQN = new FullQualifiedName(namespace, schema.getEntityContainer().getName());
+      final EdmEntityContainer cached = edm.cachedEntityContainer(containerFQN);
+      if (cached != null) {
+        // Another route already built and populated this container; reusing it keeps container
+        // identity stable and preserves the caches that instance has already filled.
+        edm.cacheEntityContainerIfAbsent(null, cached);
+        return cached;
+      }
       edm.addEntityContainerAnnotations(schema.getEntityContainer(), containerFQN);
       EdmEntityContainer impl = new EdmEntityContainerImpl(edm, provider, containerFQN, schema.getEntityContainer());
-      edm.cacheEntityContainer(containerFQN, impl);
-      edm.cacheEntityContainer(null, impl);
-      return impl;
+      final EdmEntityContainer effective = edm.cacheEntityContainerIfAbsent(containerFQN, impl);
+      edm.cacheEntityContainerIfAbsent(null, effective);
+      return effective;
     }
     return null;
   }

@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Thread-safe EDM caches using ConcurrentHashMap
+ * Copyright 2026 SiteNetSoft - Reuse the cached entity container across both build routes
  */
 package org.sitenetsoft.olinguito.commons.core.edm;
 
@@ -519,8 +520,33 @@ public abstract class AbstractEdm implements Edm {
   protected abstract EdmEntityContainer createEntityContainer(FullQualifiedName containerName);
 
   public void cacheEntityContainer(final FullQualifiedName containerFQN, final EdmEntityContainer container) {
+    cacheEntityContainerIfAbsent(containerFQN, container);
+  }
+
+  /**
+   * Caches the entity container under the given key unless one is already cached there, and returns
+   * the instance that is in effect afterwards. The EDM is reachable through two independent build
+   * routes ({@link #getEntityContainer(FullQualifiedName)} and {@link #getSchemas()}); both must end
+   * up handing out the very same container instance, because a second instance would silently
+   * discard the caches populated on the first one and would break identity comparisons.
+   * @param containerFQN the container name; <code>null</code> addresses the default container
+   * @param container the container to cache when the key is still free
+   * @return the cached container, which may be a previously cached instance
+   */
+  public EdmEntityContainer cacheEntityContainerIfAbsent(final FullQualifiedName containerFQN,
+      final EdmEntityContainer container) {
     final FullQualifiedName key = containerFQN != null ? containerFQN : NULL_CONTAINER_KEY;
-    entityContainers.put(key, container);
+    final EdmEntityContainer existing = entityContainers.putIfAbsent(key, container);
+    return existing != null ? existing : container;
+  }
+
+  /**
+   * Looks the entity container up in the cache without creating one.
+   * @param containerFQN the container name; <code>null</code> addresses the default container
+   * @return the cached container, or <code>null</code> when none is cached yet
+   */
+  public EdmEntityContainer cachedEntityContainer(final FullQualifiedName containerFQN) {
+    return entityContainers.get(containerFQN != null ? containerFQN : NULL_CONTAINER_KEY);
   }
 
   protected abstract EdmEnumType createEnumType(FullQualifiedName enumName);
