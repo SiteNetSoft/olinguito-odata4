@@ -23,6 +23,7 @@
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 4: tests for key-as-segment URI building
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 4 fix round 1: tests for key-segment encoding,
  * empty/null key values and the enum key overload
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 fix wave: tests for prefixed-literal key segments
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
@@ -43,6 +44,9 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
 
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.Duration;
+
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.domain.ClientPrimitiveValue;
 import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
@@ -53,6 +57,7 @@ import org.sitenetsoft.olinguito.client.core.AbstractTest;
 import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEnumType;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 class URIBuilderTest extends AbstractTest {
 
@@ -702,6 +707,45 @@ class URIBuilderTest extends AbstractTest {
     assertEquals(SERVICE_ROOT + "/People", keyAsSegmentClient().newURIBuilder(SERVICE_ROOT).
         appendEntitySetSegment("People").appendKeySegment(Collections.<String, Object> emptyMap()).
         build().toASCIIString());
+  }
+
+  @Test
+  void keyAsSegmentDurationDropsTypePrefix() throws Exception {
+    final Duration duration = DatatypeFactory.newInstance().newDuration("P1D");
+    final URI uri = keyAsSegmentClient().newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("Tasks").
+        appendKeySegment(duration).build();
+
+    // the server builds duration'P1D' from the segment text again, so the prefix must not be in the URL
+    assertEquals(SERVICE_ROOT + "/Tasks/P1D", uri.toASCIIString());
+  }
+
+  @Test
+  void keyAsSegmentBinaryDropsTypePrefix() {
+    final URI uri = keyAsSegmentClient().newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("Files").
+        appendKeySegment(new byte[] {0x0a, 0x0b}).build();
+
+    assertEquals(SERVICE_ROOT + "/Files/0a0b", uri.toASCIIString());
+  }
+
+  @Test
+  void keyAsSegmentEnumMemberIsBare() {
+    final EdmEnumType enumType = Mockito.mock(EdmEnumType.class);
+    Mockito.when(enumType.toUriLiteral("String1")).thenReturn("olingo.odata.test1.ENString'String1'");
+    final URI uri = keyAsSegmentClient().newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("ESMixEnumDefCollComp").
+        appendKeySegment(enumType, "String1").build();
+
+    assertEquals(SERVICE_ROOT + "/ESMixEnumDefCollComp/String1", uri.toASCIIString());
+  }
+
+  @Test
+  void enumKeySegmentUnchangedWithoutKeyAsSegment() {
+    final EdmEnumType enumType = Mockito.mock(EdmEnumType.class);
+    Mockito.when(enumType.toUriLiteral("String1")).thenReturn("olingo.odata.test1.ENString'String1'");
+    final URI uri = client.newURIBuilder(SERVICE_ROOT).appendEntitySetSegment("ESMixEnumDefCollComp").
+        appendKeySegment(enumType, "String1").build();
+
+    assertEquals(SERVICE_ROOT + "/ESMixEnumDefCollComp(olingo.odata.test1.ENString'String1')",
+        uri.toASCIIString());
   }
 
   @Test

@@ -23,6 +23,8 @@
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 4: emit key-as-segment URLs
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 4 fix round 1: reject key values that cannot be
  * expressed as a path segment and percent-encode key segments per RFC 3986 pchar
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 fix wave: emit prefixed literals (duration, binary, enum)
+ * as bare key segments
  */
 package org.sitenetsoft.olinguito.client.core.uri;
 
@@ -35,6 +37,8 @@ import java.util.HexFormat;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.sitenetsoft.olinguito.client.api.Configuration;
 import org.sitenetsoft.olinguito.client.api.uri.QueryOption;
@@ -182,9 +186,12 @@ public class URIBuilderImpl implements URIBuilder {
    * URL convention: a {@code String} is taken verbatim (no surrounding quotes, no doubled embedded
    * quote) and then percent-encoded per RFC 3986 {@code pchar}, so that a {@code /}, {@code ?},
    * {@code #}, {@code %}, a blank space or a non-ASCII character cannot break out of the segment.
-   * Any other value uses the same literal text {@link URIUtils#escape(Object)} produces, minus its
-   * surrounding single quotes when it has any; that text is already URI-safe and is not encoded
-   * again.
+   * Any other value uses the literal text {@link URIUtils#escape(Object)} produces, stripped of the
+   * quoted form a key value never has in a segment: surrounding single quotes and, for the prefixed
+   * literals of {@code Edm.Duration}, {@code Edm.Binary} and enumeration types
+   * ({@code duration'P1D'}, {@code binary'0A'}, {@code ns.Enum'A'}), the type prefix as well, because
+   * the server builds the literal from the bare segment text again. Numbers, {@code Edm.Guid} and
+   * {@code Edm.DateTimeOffset} values have no such prefix and are unchanged.
    *
    * @param val key value
    * @return the value as a single path segment
@@ -200,11 +207,16 @@ public class URIBuilderImpl implements URIBuilder {
     }
 
     final String literal = URIUtils.escape(val);
-    return literal.length() > 1 && literal.charAt(0) == '\''
-        && literal.charAt(literal.length() - 1) == '\''
-        ? literal.substring(1, literal.length() - 1)
-        : literal;
+    if (literal.length() > 1 && literal.charAt(0) == '\''
+        && literal.charAt(literal.length() - 1) == '\'') {
+      return literal.substring(1, literal.length() - 1);
+    }
+    final Matcher prefixed = PREFIXED_LITERAL.matcher(literal);
+    return prefixed.matches() ? encodePathSegment(prefixed.group(1)) : literal;
   }
+
+  /** A URI literal written as a type prefix followed by the value in single quotes. */
+  private static final Pattern PREFIXED_LITERAL = Pattern.compile("[A-Za-z][A-Za-z0-9_.]*'(.*)'");
 
   /**
    * Percent-encodes the UTF-8 form of the given text so that it is a single RFC 3986 path segment.
@@ -446,6 +458,11 @@ public class URIBuilderImpl implements URIBuilder {
 
   @Override
   public URIBuilder appendKeySegment(final EdmEnumType enumType, final String memberName) {
+    if (configuration.isKeyAsSegment()) {
+      // A key segment carries the bare member name; the server prefixes the enumeration type itself.
+      segments.add(new Segment(SegmentType.KEY_AS_SEGMENT, encodePathSegment(memberName)));
+      return this;
+    }
     return appendKeySegment(enumType.toUriLiteral(memberName));
   }
 
