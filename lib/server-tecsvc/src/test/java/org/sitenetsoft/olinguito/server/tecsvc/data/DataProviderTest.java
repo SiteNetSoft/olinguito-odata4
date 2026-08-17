@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - OData 4.01: default values of omitted optional function parameters
  * Copyright 2026 SiteNetSoft - OData 4.01: resolve entities through alternate keys
+ * Copyright 2026 SiteNetSoft - OData 4.01: bound actions through alternate keys
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -29,6 +30,7 @@ import java.util.List;
 import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
 import org.sitenetsoft.olinguito.commons.api.data.Entity;
 import org.sitenetsoft.olinguito.commons.api.data.EntityCollection;
+import org.sitenetsoft.olinguito.commons.api.data.Parameter;
 import org.sitenetsoft.olinguito.commons.api.data.Property;
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
@@ -250,6 +252,28 @@ class DataProviderTest {
     final DataProvider dataProvider = new DataProvider(oData, edm);
     Assertions.assertNull(dataProvider.read(esAllPrim,
         List.of(alternateKeyParameter("PropertyString", "'nope'", "PropertyString"))));
+  }
+
+  @Test
+  void readWithoutKeysMatchesTheFirstEntity() throws Exception {
+    // Deliberate: a collection-bound operation reaches the data layer without key predicates and
+    // tecsvc then works on the first entity of the collection.
+    final DataProvider dataProvider = new DataProvider(oData, edm);
+    Assertions.assertEquals(dataProvider.readAll(esAllPrim).getEntities().get(0),
+        dataProvider.read(esAllPrim, Collections.<UriParameter> emptyList()));
+  }
+
+  @Test
+  void boundActionThroughAlternateKey() throws Exception {
+    final DataProvider dataProvider = new DataProvider(oData, edm);
+    final EdmEntitySet esKeyNav = entityContainer.getEntitySet("ESKeyNav");
+    // ETKeyNav declares the type-level alternate key {PropertyString}
+    final EntityActionResult result = dataProvider.processBoundActionEntity("BA_RTETTwoKeyNav",
+        Collections.<String, Parameter> emptyMap(),
+        List.of(alternateKeyParameter("PropertyString", "'I am String Property 2'", "PropertyString")),
+        esKeyNav);
+    Assertions.assertNotNull(result);
+    Assertions.assertNotNull(result.getEntity());
   }
 
   private static UriParameter mockParameter(final String name, final String text) {

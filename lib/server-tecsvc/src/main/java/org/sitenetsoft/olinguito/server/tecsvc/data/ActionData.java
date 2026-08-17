@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Replaced Calendar.getInstance() with GregorianCalendar.from()
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - OData 4.01: action with optional parameters
+ * Copyright 2026 SiteNetSoft - OData 4.01: resolve bound-action binding keys through alternate keys
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -44,7 +45,6 @@ import org.sitenetsoft.olinguito.commons.api.data.ValueType;
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
-import org.sitenetsoft.olinguito.commons.api.edm.EdmKeyPropertyRef;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationProperty;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
@@ -455,15 +455,16 @@ public class ActionData {
   private static void setBindingPropertyKeyNameAndValue(List<UriParameter> keyList, EdmEntitySet edmEntitySet,
       List<Object> values, List<String> propertyNames) throws DataProviderException {
     for (final UriParameter key : keyList) {
-      EdmKeyPropertyRef refType = edmEntitySet.getEntityType().getKeyPropertyRef(key.getName());
-      final EdmProperty property = refType.getProperty();
+      // The predicate name is an alias for an alternate key, so the property is resolved the same way
+      // DataProvider resolves it and the entity property is addressed by its real name.
+      final EdmProperty property = DataProvider.keyProperty(edmEntitySet.getEntityType(), key);
       final EdmPrimitiveType type = (EdmPrimitiveType) property.getType();
       try {
         values.add(type.fromUriLiteral(key.getText()));
       } catch (EdmPrimitiveTypeException e) {
         throw new DataProviderException("Wrong key!", HttpStatusCode.BAD_REQUEST, e);
       }
-      propertyNames.add(key.getName());
+      propertyNames.add(property.getName());
     }
   }
 

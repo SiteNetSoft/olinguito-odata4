@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 7: alternate-key CRUD round trips
  * (OData 4.01, Part 1: Protocol, section 4.1.1)
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 fix wave: bound action through an alternate key
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
@@ -32,6 +33,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -43,15 +45,18 @@ import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataDelet
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataEntityCreateRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.ODataEntityUpdateRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.cud.UpdateType;
+import org.sitenetsoft.olinguito.client.api.communication.request.invoke.ODataInvokeRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntityRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataRawRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataDeleteResponse;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataEntityCreateResponse;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataEntityUpdateResponse;
+import org.sitenetsoft.olinguito.client.api.communication.response.ODataInvokeResponse;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRawResponse;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataResponse;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
 import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
+import org.sitenetsoft.olinguito.client.api.domain.ClientValue;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
@@ -226,6 +231,19 @@ public class AlternateKeyITCase extends AbstractTecSvcITCase {
     final ClientEntity entity = readEntity(alternateKeyUri(ES_ALL_PRIM, PROPERTY_STRING, createdString),
         sessionCookie(createResponse));
     assertEquals(1, ((Number) entity.getProperty(PROPERTY_INT16).getPrimitiveValue().toValue()).intValue());
+  }
+
+  @Test
+  public void boundActionThroughAlternateKey() {
+    // ETKeyNav's type-level alternate key addresses the binding parameter of a bound action.
+    final URI uri = getClient().newURIBuilder(SERVICE_URI).appendEntitySetSegment(ES_KEY_NAV)
+        .appendKeySegment(Map.of(PROPERTY_STRING, (Object) "I am String Property 2"))
+        .appendActionCallSegment(SERVICE_NAMESPACE + ".BA_RTETTwoKeyNav").build();
+    final ODataInvokeRequest<ClientEntity> request = getClient().getInvokeRequestFactory()
+        .getActionInvokeRequest(uri, ClientEntity.class, Collections.<String, ClientValue> emptyMap());
+    final ODataInvokeResponse<ClientEntity> response = request.execute();
+    assertEquals(HttpStatusCode.OK.getStatusCode(), response.getStatusCode());
+    assertNotNull(response.getBody());
   }
 
   private URI alternateKeyUri(final String entitySet, final String keyName, final String keyValue) {

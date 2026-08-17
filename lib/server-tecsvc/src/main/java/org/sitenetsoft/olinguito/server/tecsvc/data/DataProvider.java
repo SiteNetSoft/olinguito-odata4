@@ -25,6 +25,7 @@
  * Copyright 2026 SiteNetSoft - OpenType CRUD Task 4: extract single dynamic-property
  * upsert/remove helpers, reused by the direct dynamic-property PUT/PATCH/DELETE path
  * Copyright 2026 SiteNetSoft - OData 4.01: resolve entities through alternate-key predicates
+ * Copyright 2026 SiteNetSoft - OData 4.01: share alternate-key property resolution with bound actions
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -150,17 +151,24 @@ public class DataProvider {
    * property is looked up by the property name the parser resolved (the predicate name may be an alias),
    * for a primary-key predicate by its key reference.
    */
-  private EdmProperty keyProperty(final EdmEntityType edmEntityType, final UriParameter key) {
+  static EdmProperty keyProperty(final EdmEntityType edmEntityType, final UriParameter key) {
     return key.getAlternateKeyPropertyName() != null
         ? edmEntityType.getStructuralProperty(key.getAlternateKeyPropertyName())
         : edmEntityType.getKeyPropertyRef(key.getName()).getProperty();
   }
 
-  /** Tells whether the entity matches all given key predicates (primary key or alternate key). */
+  /**
+   * Tells whether the entity matches all given key predicates (primary key or alternate key).
+   * An <b>empty</b> key list matches every entity on purpose: a collection-bound operation
+   * (<code>ESAllPrim/ns.BFNESAllPrimRTCTAllPrim()</code>) reaches this method without key predicates
+   * and tecsvc then works on the first entity of the collection.
+   */
   private boolean entityMatchesKeys(final EdmEntityType edmEntityType, final Entity entity,
       final List<UriParameter> keys) throws DataProviderException {
     try {
       for (final UriParameter key : keys) {
+        // The property is looked up through keyProperty because a key-reference name can be a path
+        // into a complex property (Comp/Prop) while an alternate key names the property directly.
         final String propertyPath = key.getAlternateKeyPropertyName() != null
             ? key.getAlternateKeyPropertyName()
             : edmEntityType.getKeyPropertyRef(key.getName()).getName();
