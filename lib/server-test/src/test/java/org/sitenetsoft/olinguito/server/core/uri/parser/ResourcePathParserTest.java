@@ -21,6 +21,7 @@
  * Copyright 2026 SiteNetSoft - OData 4.01: key-as-segment URL convention
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 1 fix round 1: tests for collection navigation and for
  * the model-flag fallback on single-valued navigation
+ * Copyright 2026 SiteNetSoft - OData 4.01: key-as-segment omits key values covered by referential constraints
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -339,17 +340,46 @@ class ResourcePathParserTest {
 
   @Test
   void keyAsSegmentOnCollectionNavigationWhenServiceEnabled() throws Exception {
-    kasRes.run("ESKeyNav/1/NavPropertyETTwoKeyNavMany/1/abc")
+    // NavPropertyETKeyNavMany has no referential constraint, so both key values come from segments
+    kasRes.run("ESKeyNav/1/NavPropertyETKeyNavMany/2/NavPropertyETTwoKeyNavMany/abc")
         .isEntitySet("ESKeyNav")
         .isKeyPredicate(0, "PropertyInt16", "1")
         .n()
+        .isNavProperty("NavPropertyETKeyNavMany", EntityTypeProvider.nameETKeyNav, false)
+        .isKeyPredicate(0, "PropertyInt16", "2")
+        .n()
         .isNavProperty("NavPropertyETTwoKeyNavMany", EntityTypeProvider.nameETTwoKeyNav, false)
-        .isKeyPredicate(0, "PropertyInt16", "1")
+        .isKeyPredicateRef(0, "PropertyInt16", "PropertyInt16")
         .isKeyPredicate(1, "PropertyString", "'abc'");
-    // an incomplete key on the navigation is rejected as well
-    // (Task 2 will allow omitting key values covered by a referential constraint)
-    kasUri.runEx("ESKeyNav/1/NavPropertyETTwoKeyNavMany/1")
+    // ETTwoKeyNav/NavPropertyETTwoKeyNavMany has neither a partner nor a referential constraint,
+    // so both key values are expected from segments and an incomplete key is rejected
+    kasRes.run("ESTwoKeyNav/1/abc/NavPropertyETTwoKeyNavMany/2/def")
+        .isEntitySet("ESTwoKeyNav")
+        .isKeyPredicate(0, "PropertyInt16", "1")
+        .isKeyPredicate(1, "PropertyString", "'abc'")
+        .n()
+        .isNavProperty("NavPropertyETTwoKeyNavMany", EntityTypeProvider.nameETTwoKeyNav, false)
+        .isKeyPredicate(0, "PropertyInt16", "2")
+        .isKeyPredicate(1, "PropertyString", "'def'");
+    kasUri.runEx("ESTwoKeyNav/1/abc/NavPropertyETTwoKeyNavMany/2")
         .isExSemantic(MessageKeys.WRONG_NUMBER_OF_KEY_PROPERTIES);
+  }
+
+  @Test
+  void keyAsSegmentOmitsReferentialConstraintKeys() throws Exception {
+    // the partner navigation property NavPropertyETKeyNavOne constrains PropertyInt16, so only the
+    // remaining key property is addressed with a segment (URL Conventions 4.3.6)
+    kasUri.run("ESKeyNav/1/NavPropertyETTwoKeyNavMany/2").goPath()
+        .first().isEntitySet("ESKeyNav").isKeyPredicate(0, "PropertyInt16", "1")
+        .n().isNavProperty("NavPropertyETTwoKeyNavMany", EntityTypeProvider.nameETTwoKeyNav, false)
+        .isKeyPredicateRef(0, "PropertyInt16", "PropertyInt16")
+        .isKeyPredicate(1, "PropertyString", "'2'");
+    // supplying the constrained key value as an extra segment is not the key-as-segment form: the key of
+    // the navigation is already complete, so the last segment is a segment following a single entity
+    // (and, not being an identifier, a syntax error)
+    kasUri.runEx("ESKeyNav/1/NavPropertyETTwoKeyNavMany/1/2")
+        .isExSyntax(UriParserSyntaxException.MessageKeys.SYNTAX);
+    kasUri.runEx("ESKeyNav/1/NavPropertyETTwoKeyNavMany/1/abc").isExSemantic(MessageKeys.PROPERTY_NOT_IN_TYPE);
   }
 
   @Test

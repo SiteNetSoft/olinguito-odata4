@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
+ * Copyright 2026 SiteNetSoft - Extracted referential-constraint key computation for key-as-segment URLs
  * Copyright 2026 SiteNetSoft - Port OLINGO-1334: propagate lambda-variable scope into function parameter parsing
  * Copyright 2026 SiteNetSoft - OData 4.01: map ambiguous optional-parameter overloads to a 400 response
  * Copyright 2026 SiteNetSoft - OData 4.01: opened key-value helpers to the key-as-segment parser
@@ -323,16 +324,9 @@ public class ParserHelper {
           Integer.toString(keyPropertyRefs.size()), "0");
     }
     List<UriParameter> keys = new ArrayList<>();
-    Map<String, String> referencedNames = new HashMap<>();
+    final Map<String, String> referencedNames = referencedKeyNames(edmEntityType, partner);
 
     if (partner != null) {
-      // Prepare list of potentially missing keys to be filled from referential constraints.
-      for (final String name : edmEntityType.getKeyPredicateNames()) {
-        final String referencedName = partner.getReferencingPropertyName(name);
-        if (referencedName != null) {
-          referencedNames.put(name, referencedName);
-        }
-      }
       for (final EdmKeyPropertyRef candidate : keyPropertyRefs) {
     	  final UriParameter simpleKey = simpleKey(tokenizer, candidate, edm, referringType, aliases);
           if (simpleKey != null) {
@@ -386,6 +380,27 @@ public class ParserHelper {
     } else {
       return keys;
     }
+  }
+
+  /**
+   * Determines the key properties of an entity type whose values are determined by referential constraints
+   * of the navigation property that leads to it, so that they must not be given in the URI.
+   * @param edmEntityType the entity type whose key is addressed
+   * @param partner the partner of the navigation property leading to the entity type, may be <code>null</code>
+   * @return a map from key-property name to the name of the referencing property, empty if there are none
+   */
+  protected static Map<String, String> referencedKeyNames(final EdmEntityType edmEntityType,
+      final EdmNavigationProperty partner) {
+    final Map<String, String> referencedNames = new HashMap<>();
+    if (partner != null) {
+      for (final String name : edmEntityType.getKeyPredicateNames()) {
+        final String referencedName = partner.getReferencingPropertyName(name);
+        if (referencedName != null) {
+          referencedNames.put(name, referencedName);
+        }
+      }
+    }
+    return referencedNames;
   }
 
   private static UriParameter simpleKey(UriTokenizer tokenizer, final EdmKeyPropertyRef edmKeyPropertyRef,

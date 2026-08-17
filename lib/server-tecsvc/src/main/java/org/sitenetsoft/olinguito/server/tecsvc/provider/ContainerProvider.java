@@ -16,6 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  *
+ * Copyright 2026 SiteNetSoft - Compare the container name by value like the other lookups do
+ *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  *
  * Copyright 2026 SiteNetSoft - Add OpenType support (tecsvc ETOpen model)
@@ -185,7 +187,7 @@ public class ContainerProvider {
   }
 
   public CsdlEntitySet getEntitySet(final FullQualifiedName entityContainer, final String name) throws ODataException {
-    if (entityContainer == nameContainer) {
+    if (entityContainer.equals(nameContainer)) {
       if (name.equals("ESAllPrimDefaultValues")) {
         return new CsdlEntitySet()
             .setName("ESAllPrimDefaultValues")

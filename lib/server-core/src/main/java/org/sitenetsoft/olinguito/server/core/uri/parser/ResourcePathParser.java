@@ -21,6 +21,8 @@
  * Copyright 2026 SiteNetSoft - OData 4.01: map ambiguous optional-parameter overloads to a 400 response
  * Copyright 2026 SiteNetSoft - OData 4.01: key-as-segment URL convention (URL Conventions section 4.3.6)
  * Copyright 2026 SiteNetSoft - Kept fallback semantics for the model flag on single-valued navigation
+ * Copyright 2026 SiteNetSoft - OData 4.01: referential-constraint omission and default namespaces in
+ * key-as-segment URLs
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -31,6 +33,7 @@ import java.util.Map;
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmAction;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmActionImport;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmAnnotation;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
@@ -39,6 +42,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmFunctionImport;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationProperty;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmSchema;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmSingleton;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmStructuredType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
@@ -51,6 +55,7 @@ import org.sitenetsoft.olinguito.server.api.uri.UriResourceFunction;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceNavigation;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourcePartTyped;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.AliasQueryOption;
+import org.sitenetsoft.olinguito.server.core.uri.UriParameterImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceActionImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceComplexPropertyImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceCountImpl;
@@ -69,6 +74,11 @@ import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidationExceptio
 
 public class ResourcePathParser {
 
+  /** Term marking a schema whose names may be used unqualified (URL Conventions 4.3.6). */
+  private static final String DEFAULT_NAMESPACE_TERM = "Org.OData.Core.V1.DefaultNamespace";
+  /** The same term written with the usual alias of the core vocabulary. */
+  private static final String DEFAULT_NAMESPACE_TERM_ALIAS = "Core.DefaultNamespace";
+
   private final Edm edm;
   private final EdmEntityContainer edmEntityContainer;
   private final Map<String, AliasQueryOption> aliases;
@@ -83,6 +93,8 @@ public class ResourcePathParser {
   private List<String> pendingKeyNames;
   /** Key values collected so far for {@link #pendingKeyResource}. */
   private List<UriParameter> pendingKeyPredicates;
+  /** Key properties of {@link #pendingKeyType} that are determined by referential constraints. */
+  private Map<String, String> pendingReferencedKeyNames;
 
   public ResourcePathParser(final Edm edm, final Map<String, AliasQueryOption> aliases) {
     this(edm, aliases, false);
@@ -132,9 +144,12 @@ public class ResourcePathParser {
       } else if (tokenizer.next(TokenKind.QualifiedName)) {
         return boundOperationOrTypeCast(previous);
       } else if (!pathSegment.startsWith("$") && isKeyAsSegmentTarget(previous)) {
-        final UriResource defaultNamespaceSegment = resolveDefaultNamespaceSegment(pathSegment, previous);
-        if (defaultNamespaceSegment != null) {
-          return defaultNamespaceSegment;
+        final String defaultNamespace = resolveDefaultNamespace(pathSegment, previous);
+        if (defaultNamespace != null) {
+          // Re-parse the segment with the namespace prefixed: from here on it is an ordinary qualified name.
+          tokenizer = new UriTokenizer(defaultNamespace + '.' + pathSegment);
+          ParserHelper.requireNext(tokenizer, TokenKind.QualifiedName);
+          return boundOperationOrTypeCast(previous);
         }
         startKeySegments(pathSegment, (UriResourceWithKeysImpl) previous);
         return null;
@@ -246,15 +261,70 @@ public class ResourcePathParser {
   }
 
   /**
-   * Resolves a segment as an unqualified bound operation or type name defined in a default namespace
-   * (URL Conventions 4.3.6 rule 3). Default-namespace resolution is added by the next task, so this
-   * always returns {@code null} and the segment is resolved as a key value.
+   * Determines whether a segment is an unqualified bound-operation or type name defined in a default
+   * namespace (URL Conventions 4.3.6 rule 3). A schema is a default namespace if it is annotated with
+   * the term <code>Org.OData.Core.V1.DefaultNamespace</code>; the annotation is matched by its raw term
+   * name (also accepting the usual alias <code>Core.DefaultNamespace</code>) because that term does not
+   * have to be part of the vocabularies served by this library.
    * @param pathSegment the current path segment
    * @param previous the preceding resource-path segment
-   * @return the resolved resource or {@code null} if the segment is not an unqualified name
+   * @return the namespace the name belongs to, or {@code null} if the segment is not such a name
    */
-  private UriResource resolveDefaultNamespaceSegment(final String pathSegment, final UriResource previous) {
+  private String resolveDefaultNamespace(final String pathSegment, final UriResource previous) {
+    if (!(previous instanceof UriResourcePartTyped previousTyped)) {
+      return null;
+    }
+    final UriTokenizer nameTokenizer = new UriTokenizer(pathSegment);
+    if (!nameTokenizer.next(TokenKind.ODataIdentifier)) {
+      return null;
+    }
+    final String name = nameTokenizer.getText();
+    if (!nameTokenizer.next(TokenKind.EOF) && !nameTokenizer.next(TokenKind.OPEN)) {
+      return null;
+    }
+    final EdmType previousTypeFilter = getPreviousTypeFilter(previousTyped);
+    final EdmType previousType = previousTypeFilter == null ? previousTyped.getType() : previousTypeFilter;
+    for (final EdmSchema schema : edm.getSchemas()) {
+      if (isDefaultNamespace(schema)
+          && isBoundOperationOrTypeName(new FullQualifiedName(schema.getNamespace(), name),
+              previousType, previousTyped.isCollection())) {
+        return schema.getNamespace();
+      }
+    }
     return null;
+  }
+
+  /** Determines whether the given schema is annotated as a default namespace. */
+  private boolean isDefaultNamespace(final EdmSchema schema) {
+    for (final EdmAnnotation annotation : schema.getAnnotations()) {
+      final String term = annotation.getTermName();
+      if (DEFAULT_NAMESPACE_TERM.equals(term) || DEFAULT_NAMESPACE_TERM_ALIAS.equals(term)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Determines whether the given name is the name of a bound action, of an entity type, or of a bound
+   * function that can follow the given previous type, tried in the same order as for qualified names.
+   * (The previous segment is an entity collection, so only entity types can be meant.)
+   */
+  private boolean isBoundOperationOrTypeName(final FullQualifiedName name, final EdmType previousType,
+      final boolean isCollection) {
+    if (edm.getBoundAction(name, previousType.getFullQualifiedName(), isCollection) != null) {
+      return true;
+    }
+    if (edm.getEntityType(name) != null) {
+      return true;
+    }
+    for (final EdmFunction function :
+        edm.getBoundFunctionsWithBindingType(previousType.getFullQualifiedName(), isCollection)) {
+      if (name.equals(function.getFullQualifiedName())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -268,9 +338,25 @@ public class ResourcePathParser {
       throws UriParserException, UriValidationException {
     pendingKeyResource = resource;
     pendingKeyType = keySegmentEntityType(resource);
+    final EdmNavigationProperty partner = resource instanceof UriResourceNavigationPropertyImpl navigation ?
+        navigation.getProperty().getPartner() :
+        null;
+    pendingReferencedKeyNames = ParserHelper.referencedKeyNames(pendingKeyType, partner);
     // The key-predicate names are the only source of the metadata key order (and carry key aliases).
-    pendingKeyNames = pendingKeyType.getKeyPredicateNames();
+    // Key values that are determined by referential constraints are not given in the URI.
+    pendingKeyNames = new ArrayList<>();
+    for (final String name : pendingKeyType.getKeyPredicateNames()) {
+      if (!pendingReferencedKeyNames.containsKey(name)) {
+        pendingKeyNames.add(name);
+      }
+    }
     pendingKeyPredicates = new ArrayList<>();
+    if (pendingKeyNames.isEmpty()) {
+      // All key values are determined by referential constraints, so this segment cannot be a key value.
+      clearKeySegments();
+      throw new UriParserSemanticException("There are too many key properties.",
+          UriParserSemanticException.MessageKeys.WRONG_NUMBER_OF_KEY_PROPERTIES, "0", "1");
+    }
     consumeKeySegment(pathSegment);
   }
 
@@ -283,9 +369,30 @@ public class ResourcePathParser {
     }
     pendingKeyPredicates.add(keySegmentParameter(pendingKeyNames.get(pendingKeyPredicates.size()), pathSegment));
     if (pendingKeyPredicates.size() == pendingKeyNames.size()) {
-      pendingKeyResource.setKeyPredicates(pendingKeyPredicates);
+      pendingKeyResource.setKeyPredicates(allKeyPredicates());
       clearKeySegments();
     }
+  }
+
+  /**
+   * Combines the key values given as segments with the key values determined by referential constraints,
+   * in metadata key order.
+   */
+  private List<UriParameter> allKeyPredicates() {
+    if (pendingReferencedKeyNames.isEmpty()) {
+      return pendingKeyPredicates;
+    }
+    final List<UriParameter> keys = new ArrayList<>();
+    int given = 0;
+    for (final String name : pendingKeyType.getKeyPredicateNames()) {
+      final String referencedName = pendingReferencedKeyNames.get(name);
+      if (referencedName == null) {
+        keys.add(pendingKeyPredicates.get(given++));
+      } else {
+        keys.add(new UriParameterImpl().setName(name).setReferencedProperty(referencedName));
+      }
+    }
+    return keys;
   }
 
   /**
@@ -338,6 +445,7 @@ public class ResourcePathParser {
     pendingKeyType = null;
     pendingKeyNames = null;
     pendingKeyPredicates = null;
+    pendingReferencedKeyNames = null;
   }
 
   private UriResource ref(final UriResource previous) throws UriParserException {
