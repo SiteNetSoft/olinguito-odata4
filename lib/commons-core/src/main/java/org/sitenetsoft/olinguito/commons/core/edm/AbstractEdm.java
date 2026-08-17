@@ -527,6 +527,14 @@ public abstract class AbstractEdm implements Edm {
 
   protected abstract EdmEntityContainer createEntityContainer(FullQualifiedName containerName);
 
+  /**
+   * Caches the entity container under the given key. This has putIfAbsent semantics: an already
+   * cached container for that key is kept and is <em>not</em> overwritten; see
+   * {@link #cacheEntityContainerIfAbsent(FullQualifiedName, EdmEntityContainer)}, which additionally
+   * returns the instance that is in effect afterwards.
+   * @param containerFQN the container's key, or <code>null</code> for the default container
+   * @param container the container to cache
+   */
   public void cacheEntityContainer(final FullQualifiedName containerFQN, final EdmEntityContainer container) {
     cacheEntityContainerIfAbsent(containerFQN, container);
   }

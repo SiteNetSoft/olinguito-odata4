@@ -116,8 +116,18 @@ public class KeyAsSegmentITCase extends AbstractBaseTestITCase {
     final HttpURLConnection parenthesized = get(DEFAULT_URI + "ESKeyNav(1)/NavPropertyETTwoKeyNavMany('1')");
     assertEquals("omitting a constrained key must behave the same in both URL conventions",
         parenthesized.getResponseCode(), keyAsSegment.getResponseCode());
+
+    // The two conventions differ only in the context URL, which is relative to the request path and
+    // therefore climbs a different number of segments: one for ESKeyNav(1)/NavProperty...('1'),
+    // three for the key-as-segment form ESKeyNav/1/NavProperty.../1, whose keys are segments of
+    // their own. Assert each one for its own convention, then compare the remaining payload.
+    final String parenthesizedBody = readResponse(parenthesized);
+    assertTrue("the parenthesized context URL climbs one segment",
+        parenthesizedBody.contains("\"@odata.context\":\"../$metadata#ESTwoKeyNav/$entity\""));
+    assertTrue("the key-as-segment context URL climbs three segments",
+        body.contains("\"@odata.context\":\"../../../$metadata#ESTwoKeyNav/$entity\""));
     assertEquals("both conventions must serve the very same entity",
-        withoutContextUrl(readResponse(parenthesized)), withoutContextUrl(body));
+        withoutContextUrl(parenthesizedBody), withoutContextUrl(body));
   }
 
   /** An unmatchable segment for the free key part is a plain 404, not a 400. */

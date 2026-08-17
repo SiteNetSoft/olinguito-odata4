@@ -230,6 +230,11 @@ public class DataProvider {
           // entity the navigation started from (URL Conventions section 4.3.6, referential
           // constraints). Both sides are already typed model values, so they compare directly and no
           // URI-literal round trip is needed.
+          // Note: UriParameter#getReferencedProperty() currently carries the name that
+          // EdmNavigationPropertyImpl#getReferencingPropertyName returns, i.e. the CSDL
+          // ReferentialConstraint's Property, not its ReferencedProperty - the naming is inverted
+          // with respect to the CSDL wording. Both names coincide in tecsvc's model, so the two
+          // readings are indistinguishable here; recorded as a follow-up for the server-core side.
           if (sourceEntity == null) {
             return false;
           }
@@ -842,9 +847,10 @@ public class DataProvider {
    * section 11.5.4.1.1). The default value of the Core.OptionalParameter annotation is a URI
    * literal, which is exactly what the fixed-format deserializer reads. An omitted optional
    * parameter without default value is left absent, which this service interprets as
-   * "no value given". The URI parser already rejects a malformed default
-   * (ParserHelper#validateFunctionParameterFacets), so this branch is defense in depth for callers
-   * that bypass the parser; it reports 400 for the same reason.
+   * "no value given". The URI parser already rejects a malformed default for functions in the
+   * resource path (ParserHelper#validateFunctionParameterFacets), but functions invoked inside a
+   * $filter or $orderby expression are not facet-validated at parse time, so for those this branch
+   * is the only check; it reports the same 400.
    */
   private void addOptionalParameterDefaults(final EdmFunction function, final Map<String, Parameter> values)
       throws DataProviderException {
@@ -853,6 +859,9 @@ public class DataProvider {
         continue;
       }
       final EdmParameter edmParameter = function.getParameter(name);
+      // Deliberately spelled out through the public EDM API instead of reusing server-core's
+      // internal OptionalParameterDefaults helper: tecsvc is a service implementation and only ever
+      // uses what any application could use.
       final String defaultValue = edmParameter.isOptional() ? edmParameter.getOptionalDefaultValue() : null;
       if (defaultValue == null) {
         continue;

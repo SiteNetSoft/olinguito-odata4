@@ -480,11 +480,17 @@ odata.createFixedFormatDeserializer().parameter(parameter.getOptionalDefaultValu
 
 An omitted optional parameter *without* a default is left absent. A `DefaultValue` that is not a
 valid URI literal for the parameter's type is rejected by the **URI parser**, before the service is
-ever reached: the parser walks the optional parameters that the URL did not supply and raises
-`UriValidationException` / `INVALID_VALUE_FOR_PROPERTY` — **400 Bad Request**, the same status the
-action-body path already returned. (The reference service keeps a defense-in-depth 400 on the same
-condition for callers that bypass the parser.) The check only looks at parameters the URL omitted,
+ever reached, **for function calls in the resource path** — function imports and bound functions
+addressed as a path segment: the parser walks the optional parameters that the URL did not supply
+and raises `UriValidationException` / `INVALID_VALUE_FOR_PROPERTY` — **400 Bad Request**, the same
+status the action-body path already returned. The check only looks at parameters the URL omitted,
 so a malformed default is irrelevant when the caller supplies the parameter explicitly.
+
+Functions invoked **inside a `$filter` or `$orderby` expression** are *not* checked at parse time —
+the expression parser does not run the optional-parameter facet validation — so a malformed default
+there falls through to the service, which is where it is caught. That is why the reference service
+keeps its own 400 on the same condition (`DataProvider.addOptionalParameterDefaults`); it is not
+merely defense in depth for callers that bypass the parser, it is the only check on that path.
 
 Both the URL path and the action-body path share one resolver,
 `OptionalParameterDefaults` in `server-core`'s `uri.parser` package, which owns reading the

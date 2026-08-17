@@ -290,6 +290,7 @@ class DataProviderTest {
     final EdmEntitySet esKeyNav = entityContainer.getEntitySet("ESKeyNav");
     // ESKeyNav(3).PropertyInt16 == 3, so the same PropertyString must now select ESTwoKeyNav(3,'1').
     final Entity source = dataProvider.read(esKeyNav, List.of(mockParameter("PropertyInt16", "3")));
+    Assertions.assertNotNull(source);
 
     final EdmEntitySet esTwoKeyNav = entityContainer.getEntitySet("ESTwoKeyNav");
     final Entity target = dataProvider.read(esTwoKeyNav.getEntityType(), dataProvider.readAll(esTwoKeyNav),

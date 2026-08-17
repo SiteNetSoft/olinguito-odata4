@@ -58,6 +58,8 @@ public class UriHelperImpl implements UriHelper {
    * {@link #parseEntityId(Edm, String, String)}. A service that serves key-as-segment URLs also
    * receives entity ids and binding links written that way, so the entity-id parser has to be told
    * about the convention explicitly; it is off by default, exactly as on {@code ODataHandler}.
+   * <p>This flag is plain mutable state and carries no synchronization: set it once during setup,
+   * before the helper instance is shared, and do not mutate it after publication.
    * @param enabled whether key-as-segment entity ids are parsed
    * @return this helper
    */

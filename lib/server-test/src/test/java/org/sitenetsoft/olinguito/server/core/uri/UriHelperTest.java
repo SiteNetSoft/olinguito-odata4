@@ -37,7 +37,6 @@ import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
 import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
 import org.sitenetsoft.olinguito.server.api.uri.UriHelper;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceEntitySet;
-import org.sitenetsoft.olinguito.server.core.uri.UriHelperImpl;
 import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
 import org.junit.jupiter.api.Assertions;
