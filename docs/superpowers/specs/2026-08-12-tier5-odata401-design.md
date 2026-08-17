@@ -125,6 +125,14 @@ Decisions on spec-silent points:
 
 Tests: parser units for each precedence step (a `$`-segment, a bound operation name, a type-cast name, a default-namespace unqualified name, then a key), single-part and multi-part segment keys, percent-encoded slash and literal quote, referential-constraint omission, flag-off pins (all of the above 404/behave exactly as today), fit round trips both modes, client URI-builder units + fit.
 
+Implementation notes (Wave 3, as built — deviations from this section's letter):
+- The opt-in flag is an additive `ODataHandler.setKeyAsSegment(boolean)` (default method throwing `UnsupportedOperationException`; implemented by `ODataHandlerImpl`, forwarded by `ODataRequestHandlerImpl` and `ODataNettyHandlerImpl`) — no configuration object was introduced. `UriHelper.parseEntityId` and `server-core-ext`'s `ServiceRequest` build their own `Parser` without the flag (known seam).
+- The pre-existing non-standard model flags (`CsdlEntitySet`/`CsdlNavigationProperty.setKeyAsSegmentAllowed`) coexist with the service flag (segment keys apply when either is set); a model-flagged **single-valued** navigation property keeps its old fallback semantics (property/navigation resolution first, key only for non-member names), while the standard path is strictly collection-only.
+- Precedence step 3 matches `Core.DefaultNamespace` by raw annotation **term name** only (`Org.OData.Core.V1.DefaultNamespace` / `Core.DefaultNamespace`); the term is deliberately not added to the trimmed Core vocabulary, and an unqualified name only wins if it resolves in that namespace.
+- Referential-constraint-covered key properties are **prefilled** by the parser as referenced-property predicates, so they cannot be supplied as segments at all; an incomplete multi-part key is reported at end-of-path as 400 `WRONG_NUMBER_OF_KEY_PROPERTIES`.
+- In tecsvc a constraint-completed key answers 400 "Wrong key!" for the segment *and* the parenthesized form alike — a pre-existing `DataProvider` limitation, pinned as identical behavior rather than fixed.
+- Client: `appendKeySegment(Map)` writes one segment per value in map iteration order; key segments are RFC 3986 pchar-encoded (`'` literal, `/`→`%2F`); an empty string key throws `IllegalArgumentException` and the enum+values overload throws `IllegalStateException` in key-as-segment mode (no correct segment order derivable).
+
 ## Feature 7: Alternate keys (OLINGO-1570) — Wave 3, second
 
 Normative: [OData-URL] §4.3.5 (quoted in full in the citations file); Core vocabulary `Core.AlternateKeys` / `AlternateKey` / `PropertyRef{Name: Edm.PropertyPath, Alias}`. Addressing uses the same parenthesized convention as the canonical key; **single-part alternate keys MUST name the key property** (`Employees(SSN='123-45-6789')` — never the bare short form). Multi-part follows the same convention by cross-reference (comma-separated name=value; no standalone normative sentence — noted). Not a conformance item. Spec is SILENT on writes via alternate-key URLs and on an explicit canonical-URL/primary-key statement (inferable only).
@@ -139,6 +147,15 @@ Design:
 - Interaction pin: with key-as-segment enabled, segments still never resolve alternate keys (Feature 6's exclusion, tested here too).
 
 Tests: EDM units (annotation surfacing, Alias); parser units (single-part named alternate key, multi-part, bare short form stays primary, unknown name set still fails, nested-path group rejected); tecsvc/fit CRUD round trips via alternate key incl. canonical-URL-uses-primary-key assertion; key-as-segment exclusion pin.
+
+Implementation notes (Wave 3, as built — deviations from this section's letter):
+- EDM surface: `EdmEntityType.getAlternateKeys()` / `EdmEntitySet.getAlternateKeys()` (`default` returning `List.of()`), `EdmAlternateKey`, `EdmAlternateKeyPropertyRef` (`getName`/`getAlias`/`getUrlName`/`getProperty`). Groups are read from the annotations of the type or set itself and are **not inherited from base entity types**; malformed groups and groups with ambiguous url-names (including alias shadowing) are skipped rather than failing the model.
+- Parser: the URL name set must match **exactly one** candidate group; primary-key name sets are excluded structurally so the primary path always wins. Set-level groups are only candidates on the **leading entity-set segment** — navigation, type-cast and function-return predicates see type-level groups only (the binding target is not available there).
+- Alternate keys are **not attempted** on a navigation predicate covered by a referential constraint (there the URI supplies only part of the primary key). Nested `PropertyRef` paths stay out of scope: such groups are dropped from the candidates.
+- Once a URL name resolves to an alternate-key reference, a badly typed value raises `INVALID_KEY_VALUE` instead of falling back to today's validation error.
+- Processors read `UriParameter.getAlternateKeyPropertyName()` (additive `default`, null for primary keys) — `getName()` remains the URL alias/name.
+- tecsvc: `@odata.id`, edit/navigation links, `Location` **and** property-level `@odata.context` all use the **primary** key (they are built from the entity, not from the request predicate) — better than this section's "canonical/context built from the primary key" expectation, which assumed the context URL would echo the request. `UriHelper.buildContextURLKeyPredicate(List<UriParameter>)` still echoes request predicates for services that call it (only `server-core-ext` does); recorded, unchanged.
+- Bound actions addressed through an alternate key are **not** supported in tecsvc: `ActionData` resolves binding keys through primary keys only.
 
 ---
 

@@ -16,6 +16,11 @@ delivered by the 4.01 compliance milestone.
 * [`$schemaversion` — requesting a specific schema version](#schemaversion--requesting-a-specific-schema-version)
 * [Optional function parameters](#optional-function-parameters)
 
+**Tier 5, Wave 3:**
+
+* [Key-as-segment URLs](#key-as-segment-urls)
+* [Alternate keys](#alternate-keys)
+
 Each section names the governing [OASIS OData 4.01](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html)
 clause, describes server behavior including status codes, gives a client usage snippet, and
 records any deviations or spec-silent decisions made along the way. These features are additive:
@@ -510,6 +515,356 @@ ODataInvokeResponse<ClientProperty> response = request.execute();
 
 Omitting a *required* parameter fails the overload match and surfaces as an
 `ODataClientErrorException` with status 400.
+
+## Key-as-Segment URLs
+
+Normative reference: [OData-URL] §4.3.6 (Key-as-Segment Convention); conformance §13.2.1 item 9.l
+(supporting the convention is a MAY; a service that does support it must also support canonical
+parenthesized URLs — Olinguito always does).
+
+The key-as-segment convention addresses an entity by appending its key value as an ordinary path
+segment instead of a parenthesized predicate:
+
+```
+GET ESAllPrim/32767      ≡  GET ESAllPrim(32767)
+GET ESTwoKeyNav/1/abc    ≡  GET ESTwoKeyNav(PropertyInt16=1,PropertyString='abc')
+```
+
+Because §4.3.6 changes how *every* segment following an entity collection is interpreted, the
+convention is **opt-in per service and off by default**. With it off, every URI parses exactly as it
+did before — pinned by tests.
+
+```java
+ODataHandler handler = odata.createHandler(serviceMetadata);
+handler.setKeyAsSegment(true);      // whole-service switch, default false
+```
+
+`setKeyAsSegment(boolean)` is an additive `default` method on `ODataHandler` whose base implementation
+throws `UnsupportedOperationException`; `ODataHandlerImpl` implements it, and both
+`ODataRequestHandlerImpl` (server-core) and `ODataNettyHandlerImpl` (server-adapter-netty) forward it
+to the handler they wrap. There is no other server-side configuration object to thread it through.
+
+### Segment Precedence
+
+A segment following an entity **collection** is resolved by the four §4.3.6 rules, in order:
+
+| # | Segment shape | Interpretation |
+|---|---|---|
+| 1 | `$`-prefixed OData segment (`$count`, `$ref`, `$value`, …) | The OData segment. A `$…` segment is *never* a key value — including in the middle of a multi-part key, where it is rejected as an invalid key value rather than quoted into a string |
+| 2 | Qualified name of a bound function/action or of a derived type | Bound operation or type cast |
+| 3 | Unqualified name of a bound function/action or type declared in a schema annotated `Core.DefaultNamespace` | Bound operation or type cast |
+| 4 | Anything else | Key value |
+
+Rule 3 is opt-in per schema: the schema must carry a `Core.DefaultNamespace` annotation, and the
+unqualified name must actually resolve *in that namespace* to a bound operation that binds to the
+current collection, or to an entity type. Otherwise the segment falls through to rule 4 and is read as
+a key value.
+
+The precedence applies to entity **collections** only — entity sets and collection-valued navigation
+properties. A segment after a single entity is a property or navigation segment as before, and an
+entity that already carries key predicates is never a key-as-segment target, so
+`ESAllPrim(32767)/PropertyString` and `ESAllPrim/32767/PropertyString` behave identically.
+
+### Multi-Part Keys
+
+A compound key takes one segment per key value, **in metadata key order** (the order key properties
+are declared in the CSDL, using key aliases where the model declares them):
+
+```
+GET ESTwoKeyNav/1/abc
+GET ESKeyNav/1/NavPropertyETKeyNavMany/2/NavPropertyETTwoKeyNavMany/abc
+```
+
+A type filter in front of the key selects the type whose key is addressed
+(`ESTwoKeyNav/olingo.odata.test1.ETBaseTwoKeyNav/1/abc`).
+
+A key that runs out of segments before it is complete is a **400 Bad Request**
+(`WRONG_NUMBER_OF_KEY_PROPERTIES` — *There are 1 key properties instead of the expected 2.*), reported
+when the resource path ends.
+
+### Referential Constraints
+
+Key properties of a related entity that a referential constraint already fixes MUST be omitted from a
+key-as-segment URL, so a constrained navigation consumes only the segments for the remaining key
+properties:
+
+```
+GET ESKeyNav(1)/NavPropertyETTwoKeyNavMany('1')   parenthesized: constrained key omitted
+GET ESKeyNav/1/NavPropertyETTwoKeyNavMany/1       key-as-segment: one segment, same key
+```
+
+The omitted values are prefilled by the parser as referenced-property predicates, exactly as the
+parenthesized form does. A consequence: a constraint-covered key value can no longer be *supplied* as
+a segment (there is no way to tell it apart from the next path segment) — supplying an extra segment
+is a parse error. The parenthesized form still accepts both shapes.
+
+### Key Values in Segments
+
+* Values are written **unquoted**: `ESAllPrim/32767`, `Categories/Smartphone`. Single quotes inside a
+  value are **literal** characters, not delimiters (`People/O'Neil` addresses the key `O'Neil`).
+* A forward slash inside a key value MUST be percent-encoded (`Categories/Smartphone%2FTablet`);
+  after decoding it is part of the key value, not a path separator.
+* Type conversion and facet validation follow the key property's EDM type, exactly as for the
+  parenthesized form.
+
+### Server Behavior and Status Codes
+
+| Condition | Result |
+|---|---|
+| Flag off, `ESAllPrim/32767` | Unchanged pre-4.01 behavior — a syntax error, or `PROPERTY_AFTER_COLLECTION` for an identifier-shaped segment (**400**) |
+| Flag on, complete key | Resolved like the parenthesized address; response bodies are byte-identical apart from the relative context URL (`../$metadata#ESAllPrim/$entity`, one path level deeper) |
+| Incomplete multi-part key | **400 Bad Request** — `WRONG_NUMBER_OF_KEY_PROPERTIES` |
+| Value of the wrong type, or out of range for the property's facets | **400 Bad Request** — `INVALID_KEY_VALUE` / `INVALID_KEY_PROPERTY`, the same errors the parenthesized form raises |
+| `$`-segment where a key value was expected | **400 Bad Request** — `INVALID_KEY_VALUE` |
+| Parenthesized address on a key-as-segment service | Still works — both conventions are live at once |
+
+Enabling the flag changes the *error kind* for malformed URLs on every collection
+(`ESAllPrim/PropertyString` becomes an invalid key value instead of "property after collection"). That
+is what rule 4 mandates, and it only happens for a service that opts in.
+
+### Model-Level Key-as-Segment Flags (Pre-Existing, Non-Standard)
+
+The fork already carried `CsdlEntitySet.setKeyAsSegmentAllowed(boolean)` and
+`CsdlNavigationProperty.setKeyAsSegmentAllowed(boolean)`, which enable segment keys for a single
+entity set or navigation property. They are **not** part of §4.3.6 and are kept for compatibility: a
+segment is treated as a key when the service flag **or** the model flag applies. Two differences from
+the standard path:
+
+* Multi-part model-flagged sets now work (`ESComplexKeyAsSegment/thisIsAKey/42`), and an incomplete
+  key reports `WRONG_NUMBER_OF_KEY_PROPERTIES` instead of `PROPERTY_AFTER_COLLECTION`.
+* A model-flagged **single-valued** navigation property keeps its old *fallback* semantics: a segment
+  is resolved as a property or navigation property first, and only a name that is not a member of the
+  target type is taken as a key. The standard service flag never does this — it applies to entity
+  collections only, per the spec.
+
+### Reference Service
+
+The technical service is deployed twice: unchanged at `/odata.svc`, and with the flag on at
+`/odata-kas.svc` (`http://localhost:9080/odata-server-tecsvc/odata-kas.svc` in the integration tests).
+The servlet deployment adds a `configureHandler(ODataHandler)` hook on `TechnicalServlet` that
+`TechnicalKeyAsSegmentServlet` overrides; the Quarkus deployment registers a second route with a
+handler constructed with `keyAsSegment = true`.
+
+One reference-service caveat: a request whose key is completed by a referential constraint
+(`ESKeyNav/1/NavPropertyETTwoKeyNavMany/1`) answers **400 `Wrong key!`** — the URI parses correctly,
+but the in-memory `DataProvider` cannot resolve a key predicate whose value comes from a referenced
+property. The parenthesized equivalent returns the identical status and body, so this is a
+pre-existing data-layer limitation of tecsvc, not a difference between the two conventions.
+
+### Client Usage
+
+```java
+client.getConfiguration().setKeyAsSegment(true);
+
+URI single = client.newURIBuilder(serviceRoot)
+    .appendEntitySetSegment("ESAllPrim")
+    .appendKeySegment(32767)
+    .build();                                   // .../ESAllPrim/32767
+
+Map<String, Object> key = new LinkedHashMap<>();  // metadata key order
+key.put("PropertyInt16", 1);
+key.put("PropertyString", "1");
+
+URI compound = client.newURIBuilder(serviceRoot)
+    .appendEntitySetSegment("ESTwoKeyNav")
+    .appendKeySegment(key)
+    .build();                                   // .../ESTwoKeyNav/1/1
+```
+
+* `appendKeySegment(Object)` writes a string value **raw** — no surrounding quotes and no doubled
+  embedded quote. Non-string values keep their existing URI-literal formatting.
+* `appendKeySegment(Map<String, Object>)` writes one segment per map *value*, in map iteration order —
+  the key names are not part of the URL, so pass a `LinkedHashMap` in metadata key order.
+* String key values are percent-encoded per RFC 3986 `pchar`: unreserved characters, the sub-delimiters
+  `!$&'()*+,;=`, `:` and `@` stay literal (so `'` is literal per §4.3.6), while `/`, `?`, `#`, `%`,
+  `[`, `]`, space, control characters and non-ASCII are encoded (`Smartphone/Tablet` →
+  `Smartphone%2FTablet`, `Ünïcode` → `%C3%9Cn%C3%AFcode`).
+* An empty string key throws `IllegalArgumentException` — an empty segment would silently address a
+  different resource. A `null` value renders the literal `null` segment, as the parenthesized form
+  does; a null or empty map adds no segment.
+* `appendKeySegment(Map<String, Map.Entry<EdmEnumType, String>>, Map<String, Object>)` throws
+  `IllegalStateException` in key-as-segment mode: its two maps carry no combined ordering, so no
+  correct segment order can be derived. Use the single-map overload with
+  `EdmEnumType.toUriLiteral(...)` values instead.
+
+With the configuration flag off, both overloads emit the parenthesized form exactly as before.
+
+### Recorded Deviations and Limitations
+
+* **`Core.DefaultNamespace` is matched by term name only** (`Org.OData.Core.V1.DefaultNamespace` or the
+  `Core.DefaultNamespace` alias), using the raw annotation term text. The term is deliberately **not**
+  added to the trimmed Core vocabulary the fork ships, so the annotation works without the service
+  serving the vocabulary; a service that aliases the Core vocabulary to some *other* prefix is not
+  recognized.
+* Resolving an unqualified segment calls `edm.getSchemas()`, which materializes the whole EDM. It is
+  cached, and it only happens when key-as-segment is effective and the segment is a bare identifier.
+* The flag reaches the URI parser through `ODataHandler` only. `UriHelper.parseEntityId(...)` and
+  `server-core-ext`'s `ServiceRequest` construct their own `Parser` without it, so an entity id written
+  in key-as-segment form is not parsed by those two entry points.
+* A key value covered by a referential constraint cannot be supplied as a segment (see above).
+
+## Alternate Keys
+
+Normative reference: [OData-URL] §4.3.5 (Addressing Entities by Alternate Key); Core vocabulary terms
+`Core.AlternateKeys`, `Core.AlternateKey` and `Core.PropertyRef`.
+
+An alternate key is a second, equally unique way to address an entity — a natural key such as an
+e-mail address or an SSN — declared as a `Core.AlternateKeys` annotation on an entity type or an
+entity set:
+
+```xml
+<Annotation Term="Core.AlternateKeys">
+  <Collection>
+    <Record Type="Core.AlternateKey">
+      <PropertyValue Property="Key">
+        <Collection>
+          <Record Type="Core.PropertyRef">
+            <PropertyValue Property="Name" PropertyPath="PropertyString"/>
+            <PropertyValue Property="Alias" String="StringPart"/>
+          </Record>
+          <Record Type="Core.PropertyRef">
+            <PropertyValue Property="Name" PropertyPath="PropertyGuid"/>
+          </Record>
+        </Collection>
+      </PropertyValue>
+    </Record>
+  </Collection>
+</Annotation>
+```
+
+The `AlternateKeys` term and the `AlternateKey`/`PropertyRef` complex types are now part of the Core
+vocabulary the fork serves (`lib/odata-vocabularies`, `lib/server-core-ext`, `lib/test-fixtures` and
+the fit copy).
+
+### Addressing
+
+Alternate keys use the same parenthesized predicate syntax as the canonical key, and a single-part
+alternate key MUST name its property — the bare short form is always the primary key:
+
+```
+GET ESAllPrim(PropertyString='Employee1@company.example')            alternate key
+GET ESAllPrim(StringPart='First Resource - positive values',
+              PropertyGuid=01234567-89ab-cdef-0123-456789abcdef)     aliased multi-part alternate key
+GET ESAllPrim(32767)                                                 always the primary key
+```
+
+`Alias`, when present, is the name used in the URL; `Name` stays the property the value addresses.
+
+### EDM Surface
+
+```java
+List<EdmAlternateKey> groups = edmEntityType.getAlternateKeys();   // and EdmEntitySet.getAlternateKeys()
+for (EdmAlternateKeyPropertyRef ref : groups.get(0).getPropertyRefs()) {
+  ref.getName();      // declared property name
+  ref.getAlias();     // alias, or null
+  ref.getUrlName();   // alias when present, else name — the name used in the URL
+  ref.getProperty();  // resolved EdmProperty, or null when it cannot be resolved
+}
+```
+
+Both `getAlternateKeys()` methods are `default` methods returning `List.of()`, so existing EDM
+implementations are unaffected. Annotations are matched by raw term name first
+(`Org.OData.Core.V1.AlternateKeys` / `Core.AlternateKeys`) and only then by resolved term, so a service
+that does not serve the Core vocabulary still gets its alternate keys read.
+
+A group is **skipped** — silently, rather than failing the model — when it is malformed (no `Key`, a
+`Key` that is not a collection, an empty collection, a `PropertyRef` without a usable `Name`), or when
+its references do not have unique URL names (including an `Alias` that shadows another reference's
+`Name`). Alternate keys are read from the annotations of the type or set itself and are **not
+inherited from base entity types**.
+
+### Parser Rules
+
+A name=value predicate set that is not the primary key is matched against the candidate groups:
+
+* Candidates are the entity type's own groups plus, on the **leading entity-set segment**, the entity
+  set's groups. Navigation, type-cast and function-return key predicates see type-level groups only.
+* The set of names in the URL must match **exactly one** candidate group, completely. Order in the URL
+  does not matter; the parsed predicates are returned in the group's declared order.
+* Primary key names always win: a group whose URL names equal the primary key's names is not a
+  candidate, and the bare short form `ESAllPrim(32767)` is never an alternate key.
+* A group containing a reference that cannot be resolved to a single primitive property — notably a
+  nested path such as `Address/City`, which is **out of scope for this milestone** — is dropped from
+  the candidates.
+* Alternate keys are not attempted on a navigation predicate covered by a **referential constraint**:
+  there the URI supplies only the remaining part of the *primary* key, whereas an alternate key always
+  addresses the entity completely.
+* **Key-as-segment never resolves alternate keys** (§4.3.6's exclusion) — a segment key is always the
+  canonical key.
+
+Processors read which property a predicate addresses from the parsed `UriParameter`:
+
+```java
+String urlName  = key.getName();                       // the URL name — alias when aliased
+String property = key.getAlternateKeyPropertyName();    // the entity-type property, null for a primary key
+```
+
+`getAlternateKeyPropertyName()` is an additive `default` method on `UriParameter` returning `null`, so
+a primary-key predicate and every existing implementation are unchanged.
+
+### Server Behavior and Status Codes
+
+| Condition | Result |
+|---|---|
+| Complete match of exactly one alternate-key group | Resolved; the request proceeds as if addressed by the primary key |
+| Name set matching no group (or more than one) | Unchanged pre-4.01 errors — **400 Bad Request** (`Unknown key property …`, `WRONG_NUMBER_OF_KEY_PROPERTIES`, …) |
+| Partial group (`ESAllPrim(StringPart='…')` of a two-part group) | **400 Bad Request**, as an unmatched name set |
+| Value of the wrong type for an alternate-key property | **400 Bad Request** — `INVALID_KEY_VALUE`. Once a URL name resolves to an alternate-key reference the alternate interpretation is the only one that can succeed, so the parser fails loudly rather than falling back |
+| Duplicate URL name in the predicate | **400 Bad Request** — `DOUBLE_KEY_PROPERTY`, as for the primary key |
+| No entity has the given alternate-key value | **404 Not Found** |
+
+### Writes and Canonical URLs (Spec-Silent Decisions)
+
+The spec is silent on writing through an alternate-key URL. Since alternate-key addressing resolves to
+the same entity, **GET, PATCH and DELETE all work through alternate keys** in the reference service.
+
+Response payloads always identify entities by their **primary** key: `@odata.id`, edit links,
+navigation links and the `Location` header of a POST are built from the entity itself
+(`UriHelper.buildKeyPredicate(EdmEntityType, Entity)`), never from the request predicate. So
+`GET ESAllPrim(PropertyString='Employee1@company.example')` answers with `"@odata.id":"ESAllPrim(10)"`,
+matching §4.3.1's definition of the canonical URL. Property-level `@odata.context` URLs in tecsvc are
+built the same way and also show the primary key (`$metadata#ESAllPrim(10)/PropertyInt16`).
+
+Downstream services should note that `UriHelper.buildContextURLKeyPredicate(List<UriParameter>)` builds
+its key path from the *request* predicates, so a service that feeds it the parsed key predicates emits
+context URLs carrying the alternate-key names. It was left unchanged; tecsvc builds its property-level
+context URLs from the entity instead (`UriHelper.buildKeyPredicate(EdmEntityType, Entity)`), and only
+`server-core-ext`'s `DataRequest` uses the request-predicate form.
+
+### Reference Service
+
+`ESAllPrim` carries two set-level groups — `[{PropertyString}]` and
+`[{PropertyString Alias StringPart}, {PropertyGuid}]` — and `ETKeyNav` carries the type-level group
+`[{PropertyString}]`. `DataProvider` resolves both primary and alternate keys through one matching
+path, so every entity-set read/write site honors them.
+
+### Client Usage
+
+No new client API is needed — the URI builder already emits named key predicates:
+
+```java
+URI uri = client.newURIBuilder(serviceRoot)
+    .appendEntitySetSegment("ESAllPrim")
+    .appendKeySegment(Collections.singletonMap("PropertyString", "Employee1@company.example"))
+    .build();
+// http://host/service/ESAllPrim(PropertyString='Employee1%40company.example')
+```
+
+The returned entity's id and edit link carry the primary key, so a follow-up write through
+`getUpdateRequest(entity.getEditLink(), …)` addresses the canonical URL.
+
+### Limitations
+
+* Nested `PropertyRef` paths (`Address/City`) are out of scope: such a group is dropped and the
+  predicate fails as an unmatched name set.
+* Set-level groups apply on the leading entity-set segment only. A navigation, type-cast or
+  function-return predicate resolves type-level groups only, because the binding target is not
+  available at those call sites.
+* Alternate keys are not inherited from base entity types.
+* Bound actions in tecsvc are still resolved through **primary keys only** — `ActionData` looks up the
+  binding key with `getKeyPropertyRef(...)`, so invoking a bound action through an alternate-key
+  predicate is not supported.
+* Alternate keys are never resolvable through key-as-segment URLs (spec exclusion).
 
 ## See Also
 
