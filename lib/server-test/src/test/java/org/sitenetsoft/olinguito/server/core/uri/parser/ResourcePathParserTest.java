@@ -23,6 +23,7 @@
  * the model-flag fallback on single-valued navigation
  * Copyright 2026 SiteNetSoft - OData 4.01: key-as-segment omits key values covered by referential constraints
  * Copyright 2026 SiteNetSoft - OData 4.01: alternate keys in parenthesized key predicates
+ * Copyright 2026 SiteNetSoft - OData 4.01: null key values and prefixed literal key segments
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -394,6 +395,35 @@ class ResourcePathParserTest {
   @Test
   void alternateKeyValueTypeIsValidated() {
     testUri.runEx("ESAllPrim(PropertyString=1)").isExSemantic(MessageKeys.INVALID_KEY_VALUE);
+  }
+
+  @Test
+  void alternateKeyNullValueIsRejected() {
+    // PropertyString is nullable, but a null value can never identify an entity
+    testUri.runEx("ESAllPrim(PropertyString=null)").isExSemantic(MessageKeys.INVALID_KEY_VALUE);
+    testUri.runEx("ESAllPrim(StringPart=null,PropertyGuid=01234567-89ab-cdef-0123-456789abcdef)")
+        .isExSemantic(MessageKeys.INVALID_KEY_VALUE);
+  }
+
+  @Test
+  void keyAsSegmentNullTextIsAStringValue() throws Exception {
+    // quotes are not delimiters in a segment (URL 4.3.6), so 'null' is the four-character key value,
+    // not a null value; a null value is rejected for every other key type by the same parsing step
+    kasUri.run("ESKeyAsSegmentString/null").goPath().first()
+        .isEntitySet("ESKeyAsSegmentString")
+        .isKeyPredicate(0, "PropertyString", "'null'");
+  }
+
+  @Test
+  void keyAsSegmentAcceptsPrefixedLiteralTypesAsBareText() throws Exception {
+    // ETAllKey key order ends with PropertyDuration, PropertyGuid, PropertyTimeOfDay; the segment text of
+    // a duration is the bare value the client emits, the parser builds the prefixed literal from it
+    kasUri.run("ESAllKey/a/true/1/1/1/1/1/1/2000-01-01/2000-01-01T00:00:00Z/P1D"
+        + "/01234567-89ab-cdef-0123-456789abcdef/00:00:00").goPath().first()
+        .isEntitySet("ESAllKey")
+        .isKeyPredicate(0, "PropertyString", "'a'")
+        .isKeyPredicate(10, "PropertyDuration", "duration'P1D'")
+        .isKeyPredicate(12, "PropertyTimeOfDay", "00:00:00");
   }
 
   @Test

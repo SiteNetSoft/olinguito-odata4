@@ -24,6 +24,7 @@
  * Copyright 2026 SiteNetSoft - OData 4.01: referential-constraint omission and default namespaces in
  * key-as-segment URLs
  * Copyright 2026 SiteNetSoft - OData 4.01: pass the entity set to the key-predicate parser for alternate keys
+ * Copyright 2026 SiteNetSoft - OData 4.01: memoize default namespaces, reject null key-value segments
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -85,6 +86,8 @@ public class ResourcePathParser {
   private final Map<String, AliasQueryOption> aliases;
   private final boolean keyAsSegment;
   private UriTokenizer tokenizer;
+  /** Namespaces of the schemas annotated as default namespaces, computed on first use. */
+  private List<String> defaultNamespaces;
 
   /** Resource whose multi-part key is currently being collected from consecutive path segments. */
   private UriResourceWithKeysImpl pendingKeyResource;
@@ -285,14 +288,30 @@ public class ResourcePathParser {
     }
     final EdmType previousTypeFilter = getPreviousTypeFilter(previousTyped);
     final EdmType previousType = previousTypeFilter == null ? previousTyped.getType() : previousTypeFilter;
-    for (final EdmSchema schema : edm.getSchemas()) {
-      if (isDefaultNamespace(schema)
-          && isBoundOperationOrTypeName(new FullQualifiedName(schema.getNamespace(), name),
-              previousType, previousTyped.isCollection())) {
-        return schema.getNamespace();
+    for (final String namespace : defaultNamespaces()) {
+      if (isBoundOperationOrTypeName(new FullQualifiedName(namespace, name),
+          previousType, previousTyped.isCollection())) {
+        return namespace;
       }
     }
     return null;
+  }
+
+  /**
+   * @return the namespaces of all schemas annotated as default namespaces, determined once per parser
+   *         instance because it materializes all schemas of the EDM
+   */
+  private List<String> defaultNamespaces() {
+    if (defaultNamespaces == null) {
+      final List<String> namespaces = new ArrayList<>();
+      for (final EdmSchema schema : edm.getSchemas()) {
+        if (isDefaultNamespace(schema)) {
+          namespaces.add(schema.getNamespace());
+        }
+      }
+      defaultNamespaces = namespaces;
+    }
+    return defaultNamespaces;
   }
 
   /** Determines whether the given schema is annotated as a default namespace. */
@@ -418,7 +437,8 @@ public class ResourcePathParser {
     final EdmPrimitiveType type = (EdmPrimitiveType) property.getType();
     final String literal = type.toUriLiteral(pathSegment);
     final UriTokenizer keyTokenizer = new UriTokenizer(literal);
-    if (!ParserHelper.nextPrimitiveTypeValue(keyTokenizer, type, property.isNullable())
+    // A null value can never identify an entity, so it is rejected even for a nullable key property.
+    if (!ParserHelper.nextPrimitiveTypeValue(keyTokenizer, type, false)
         || !keyTokenizer.next(TokenKind.EOF)) {
       throw new UriParserSemanticException(keyPredicateName + " has not a valid key value.",
           UriParserSemanticException.MessageKeys.INVALID_KEY_VALUE, keyPredicateName);

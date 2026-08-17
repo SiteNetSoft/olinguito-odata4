@@ -21,6 +21,7 @@
  * Copyright 2026 SiteNetSoft - OData 4.01: map ambiguous optional-parameter overloads to a 400 response
  * Copyright 2026 SiteNetSoft - OData 4.01: opened key-value helpers to the key-as-segment parser
  * Copyright 2026 SiteNetSoft - OData 4.01: resolve alternate keys in parenthesized key predicates
+ * Copyright 2026 SiteNetSoft - OData 4.01: dedupe alternate-key declarations, reject null key values
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -370,13 +371,16 @@ public class ParserHelper {
       // tried when no key value is determined by a referential constraint of the navigation property
       // leading here; in that case the primary key is the only key that can be completed from the URI.
       if (referencedNames.isEmpty()) {
-        tokenizer.saveState();
-        final List<UriParameter> alternateKeys =
-            alternateKey(tokenizer, edmEntityType, bindingTarget, edm, referringType, aliases);
-        if (alternateKeys != null) {
-          return alternateKeys;
+        final List<EdmAlternateKey> candidates = alternateKeyCandidates(edmEntityType, bindingTarget);
+        if (!candidates.isEmpty()) {
+          // UriTokenizer has a single save slot, so it is only claimed when an attempt really follows.
+          tokenizer.saveState();
+          final List<UriParameter> alternateKeys = alternateKey(tokenizer, candidates, edm, referringType, aliases);
+          if (alternateKeys != null) {
+            return alternateKeys;
+          }
+          tokenizer.returnToSavedState();
         }
-        tokenizer.returnToSavedState();
       }
       if (tokenizer.next(TokenKind.ODataIdentifier)) {
         keys.addAll(compoundKey(tokenizer, edmEntityType, edm, referringType, aliases));
@@ -454,16 +458,12 @@ public class ParserHelper {
    * The parsed set of URL names must be exactly the set of one declared alternate key; otherwise
    * <code>null</code> is returned so that the caller can fall back to the primary-key parsing
    * (which then produces the errors it always produced). The tokenizer may have been advanced.
+   * @param candidates the addressable alternate keys, never empty
    * @return the key predicates in the declaration order of the matched alternate key, or <code>null</code>
    */
-  private static List<UriParameter> alternateKey(UriTokenizer tokenizer, final EdmEntityType edmEntityType,
-      final EdmBindingTarget bindingTarget,
+  private static List<UriParameter> alternateKey(UriTokenizer tokenizer, final List<EdmAlternateKey> candidates,
       final Edm edm, final EdmType referringType, final Map<String, AliasQueryOption> aliases)
       throws UriParserException, UriValidationException {
-    final List<EdmAlternateKey> candidates = alternateKeyCandidates(edmEntityType, bindingTarget);
-    if (candidates.isEmpty()) {
-      return null;
-    }
     final List<EdmAlternateKey> viable = new ArrayList<>(candidates);
     final Map<String, UriParameter> parsed = new LinkedHashMap<>();
     boolean hasComma;
@@ -484,8 +484,9 @@ public class ParserHelper {
       if (tokenizer.next(TokenKind.COMMA) || tokenizer.next(TokenKind.CLOSE) || tokenizer.next(TokenKind.EOF)) {
         return null;
       }
-      if (!nextPrimitiveTypeValue(tokenizer, (EdmPrimitiveType) edmProperty.getType(), edmProperty.isNullable())) {
-        throw new UriParserSemanticException(urlName + " has not a valid  key value.",
+      // A null value can never identify an entity, so it is rejected even for a nullable property.
+      if (!nextPrimitiveTypeValue(tokenizer, (EdmPrimitiveType) edmProperty.getType(), false)) {
+        throw new UriParserSemanticException(urlName + " has not a valid key value.",
             UriParserSemanticException.MessageKeys.INVALID_KEY_VALUE, urlName);
       }
       parsed.put(urlName,
@@ -521,12 +522,25 @@ public class ParserHelper {
     }
     final Set<String> primaryKeyNames = new HashSet<>(edmEntityType.getKeyPredicateNames());
     final List<EdmAlternateKey> candidates = new ArrayList<>();
+    final Set<Map<String, String>> seen = new HashSet<>();
     for (final EdmAlternateKey alternateKey : declared) {
-      if (isResolvable(alternateKey) && !urlNames(alternateKey).equals(primaryKeyNames)) {
+      // The same group may be declared on the entity type and on the entity set; identical declarations
+      // must count as one, otherwise a correct URL would find more than one match and be rejected.
+      if (isResolvable(alternateKey) && !urlNames(alternateKey).equals(primaryKeyNames)
+          && seen.add(signature(alternateKey))) {
         candidates.add(alternateKey);
       }
     }
     return candidates;
+  }
+
+  /** @return the mapping from URL name to addressed property name that identifies a group's declaration */
+  private static Map<String, String> signature(final EdmAlternateKey alternateKey) {
+    final Map<String, String> signature = new HashMap<>();
+    for (final EdmAlternateKeyPropertyRef ref : alternateKey.getPropertyRefs()) {
+      signature.put(ref.getUrlName(), ref.getProperty().getName());
+    }
+    return signature;
   }
 
   private static boolean isResolvable(final EdmAlternateKey alternateKey) {
@@ -643,7 +657,7 @@ public class ParserHelper {
     if (nextPrimitiveTypeValue(tokenizer, (EdmPrimitiveType) edmProperty.getType(), edmProperty.isNullable())) {
       return createUriParameter(edmProperty, keyPredicateName, tokenizer.getText(), edm, referringType, aliases);
     } else {
-      throw new UriParserSemanticException(keyPredicateName + " has not a valid  key value.",
+      throw new UriParserSemanticException(keyPredicateName + " has not a valid key value.",
           UriParserSemanticException.MessageKeys.INVALID_KEY_VALUE, keyPredicateName);
     }
   }
