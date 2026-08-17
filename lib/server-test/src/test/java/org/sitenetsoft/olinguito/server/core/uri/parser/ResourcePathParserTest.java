@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - OData 4.01: optional function parameters
+ * Copyright 2026 SiteNetSoft - OData 4.01: key-as-segment URL convention
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -48,6 +49,10 @@ class ResourcePathParserTest {
 
   private final TestUriValidator testUri = new TestUriValidator().setEdm(edm);
   private final ResourceValidator testRes = new ResourceValidator().setEdm(edm);
+
+  /** Validators with the service-wide key-as-segment convention (URL Conventions 4.3.6) switched on. */
+  private final TestUriValidator kasUri = new TestUriValidator().setEdm(edm).setKeyAsSegment(true);
+  private final ResourceValidator kasRes = new ResourceValidator().setEdm(edm).setKeyAsSegment(true);
 
   @Test
   void esName() throws Exception {
@@ -207,8 +212,15 @@ class ResourcePathParserTest {
             .isEntitySet("ESKeyAsSegmentInt")
             .isKeyPredicate(0, "PropertyInt16", "1001");
 
+    testRes.run("ESComplexKeyAsSegment/thisIsAKey/42")
+            .isEntitySet("ESComplexKeyAsSegment")
+            .isKeyPredicate(0, "PropertyString", "'thisIsAKey'")
+            .isKeyPredicate(1, "PropertyInt16", "42");
+
     testUri.runEx("ESKeyAsSegmentString('thisIsAKey')/thisIsAnotherKey").isExSemantic(MessageKeys.PROPERTY_NOT_IN_TYPE);
-    testUri.runEx("ESComplexKeyAsSegment/thisIsAKey").isExSemantic(MessageKeys.PROPERTY_AFTER_COLLECTION);
+    testUri.runEx("ESComplexKeyAsSegment/thisIsAKey")
+            .isExSemantic(MessageKeys.WRONG_NUMBER_OF_KEY_PROPERTIES);
+    testUri.runEx("ESKeyAsSegmentInt/notANumber").isExSemantic(MessageKeys.INVALID_KEY_VALUE);
   }
 
   @Test
@@ -219,6 +231,117 @@ class ResourcePathParserTest {
             .n() // this means move to the next property.
             .isNavProperty("NavPropertyKeyAsSegment", PropertyProvider.navPropertyKeyAsSegment.getTypeFQN(), false)
             .isKeyPredicate(0, "PropertyString", "'navKey'");
+  }
+
+  @Test
+  void keyAsSegmentSingleKeyWhenServiceEnabled() throws Exception {
+    kasUri.run("ESAllPrim/32767").goPath().first()
+        .isEntitySet("ESAllPrim")
+        .isKeyPredicate(0, "PropertyInt16", "32767");
+    kasUri.run("ESKeyNav/1").goPath().first()
+        .isEntitySet("ESKeyNav")
+        .isKeyPredicate(0, "PropertyInt16", "1");
+  }
+
+  @Test
+  void keyAsSegmentStringKeyQuotesAreLiteral() throws Exception {
+    // string key: unquoted in the URL, quotes literal (URL 4.3.6) -> stored as URI literal 'O''Neil'
+    kasUri.run("ESKeyAsSegmentString/O'Neil").goPath().first()
+        .isEntitySet("ESKeyAsSegmentString")
+        .isKeyPredicate(0, "PropertyString", "'O''Neil'");
+    kasUri.run("ESKeyAsSegmentString/Smartphone%2FTablet").goPath().first()
+        .isEntitySet("ESKeyAsSegmentString")
+        .isKeyPredicate(0, "PropertyString", "'Smartphone/Tablet'");
+  }
+
+  @Test
+  void keyAsSegmentMultiPartKeyInMetadataOrder() throws Exception {
+    // ETTwoKeyNav key order: PropertyInt16, PropertyString
+    kasUri.run("ESTwoKeyNav/1/abc").goPath().first()
+        .isEntitySet("ESTwoKeyNav")
+        .isKeyPredicate(0, "PropertyInt16", "1")
+        .isKeyPredicate(1, "PropertyString", "'abc'");
+
+    kasRes.run("ESTwoKeyNav/1/abc/NavPropertyETKeyNavOne")
+        .isEntitySet("ESTwoKeyNav")
+        .isKeyPredicate(0, "PropertyInt16", "1")
+        .isKeyPredicate(1, "PropertyString", "'abc'")
+        .n()
+        .isNavProperty("NavPropertyETKeyNavOne", EntityTypeProvider.nameETKeyNav, false);
+  }
+
+  @Test
+  void keyAsSegmentIncompleteMultiPartKeyIsRejected() {
+    kasUri.runEx("ESTwoKeyNav/1").isExSemantic(MessageKeys.WRONG_NUMBER_OF_KEY_PROPERTIES);
+    kasUri.runEx("ESTwoKeyNav/1/$count").isExSemantic(MessageKeys.INVALID_KEY_VALUE);
+  }
+
+  @Test
+  void keyAsSegmentPrecedenceDollarSegmentAndQualifiedNamesWin() throws Exception {
+    kasUri.run("ESAllPrim/$count").goPath().first().isEntitySet("ESAllPrim").n().isCount();
+    kasUri.run("ESTwoKeyNav/olingo.odata.test1.BFCESTwoKeyNavRTString()").goPath().first()
+        .isEntitySet("ESTwoKeyNav")
+        .n()
+        .isFunction("BFCESTwoKeyNavRTString");
+    kasUri.run("ESTwoKeyNav/olingo.odata.test1.ETBaseTwoKeyNav").goPath().first()
+        .isEntitySet("ESTwoKeyNav")
+        .isTypeFilterOnCollection(EntityTypeProvider.nameETBaseTwoKeyNav);
+  }
+
+  @Test
+  void keyAsSegmentAfterTypeFilterUsesTheFilteredType() throws Exception {
+    kasUri.run("ESTwoKeyNav/olingo.odata.test1.ETBaseTwoKeyNav/1/abc").goPath().first()
+        .isEntitySet("ESTwoKeyNav")
+        .isTypeFilterOnCollection(EntityTypeProvider.nameETBaseTwoKeyNav)
+        .isKeyPredicate(0, "PropertyInt16", "1")
+        .isKeyPredicate(1, "PropertyString", "'abc'");
+  }
+
+  @Test
+  void keyAsSegmentTypeMismatchIsInvalidKey() {
+    kasUri.runEx("ESAllPrim/notANumber").isExSemantic(MessageKeys.INVALID_KEY_VALUE);
+    // out-of-range but syntactically valid: same error as the parenthesized form
+    kasUri.runEx("ESAllPrim/2147483647").isExValidation(UriValidationException.MessageKeys.INVALID_KEY_PROPERTY);
+  }
+
+  @Test
+  void keyAsSegmentIsNotAppliedAfterAnAddressedEntity() {
+    kasUri.runEx("ESAllPrim(32767)/notAProperty").isExSemantic(MessageKeys.PROPERTY_NOT_IN_TYPE);
+    kasUri.runEx("ESTwoKeyNav/1/abc/notAProperty").isExSemantic(MessageKeys.PROPERTY_NOT_IN_TYPE);
+  }
+
+  @Test
+  void keyAsSegmentParenthesizedFormStillWorksWhenEnabled() throws Exception {
+    kasUri.run("ESAllPrim(32767)").goPath().first()
+        .isEntitySet("ESAllPrim")
+        .isKeyPredicate(0, "PropertyInt16", "32767");
+    kasUri.run("ESTwoKeyNav(PropertyInt16=1,PropertyString='abc')").goPath().first()
+        .isEntitySet("ESTwoKeyNav")
+        .isKeyPredicate(0, "PropertyInt16", "1")
+        .isKeyPredicate(1, "PropertyString", "'abc'");
+  }
+
+  @Test
+  void keyAsSegmentModelFlagStillWorksWithoutServiceFlag() throws Exception {
+    testRes.run("ESKeyAsSegmentString/thisIsAKey")
+        .isKeyPredicate(0, "PropertyString", "'thisIsAKey'");
+    testRes.run("ESKeyAsSegmentInt/1001")
+        .isKeyPredicate(0, "PropertyInt16", "1001");
+    testRes.run("ESComplexKeyAsSegment/thisIsAKey/42")
+        .isKeyPredicate(0, "PropertyString", "'thisIsAKey'")
+        .isKeyPredicate(1, "PropertyInt16", "42");
+    testUri.runEx("ESComplexKeyAsSegment/thisIsAKey")
+        .isExSemantic(MessageKeys.WRONG_NUMBER_OF_KEY_PROPERTIES);
+    testUri.runEx("ESKeyAsSegmentInt/notANumber").isExSemantic(MessageKeys.INVALID_KEY_VALUE);
+  }
+
+  @Test
+  void keyAsSegmentOffKeepsTodayBehavior() {
+    testUri.runEx("ESAllPrim/32767").isExSyntax(UriParserSyntaxException.MessageKeys.SYNTAX);
+    testUri.runEx("ESAllPrim/notANumber").isExSemantic(MessageKeys.PROPERTY_AFTER_COLLECTION);
+    testUri.runEx("ESTwoKeyNav/1/abc").isExSyntax(UriParserSyntaxException.MessageKeys.SYNTAX);
+    testUri.runEx("ESTwoKeyNav/olingo.odata.test1.ETBaseTwoKeyNav/1/abc")
+        .isExSyntax(UriParserSyntaxException.MessageKeys.SYNTAX);
   }
 
   @Test

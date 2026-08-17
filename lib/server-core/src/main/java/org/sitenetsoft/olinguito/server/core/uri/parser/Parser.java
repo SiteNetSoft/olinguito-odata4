@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
  * Copyright 2026 SiteNetSoft - OLINGO-1324: Tolerate trailing slash in URI paths
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 1: $schemaversion system query option
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 1: key-as-segment URL convention
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -89,10 +90,23 @@ public class Parser {
 
   private final Edm edm;
   private final OData odata;
+  private boolean keyAsSegment;
 
   public Parser(final Edm edm, final OData odata) {
     this.edm = edm;
     this.odata = odata;
+  }
+
+  /**
+   * Enables or disables the key-as-segment URL convention (URL Conventions section 4.3.6) for all
+   * entity collections. Off by default; entity sets and navigation properties flagged in the model
+   * support the convention regardless of this setting.
+   * @param enabled whether the convention is enabled service-wide
+   * @return this parser
+   */
+  public Parser setKeyAsSegment(final boolean enabled) {
+    keyAsSegment = enabled;
+    return this;
   }
 
   public UriInfo parseUri(final String path, final String query, final String fragment, String baseUri)
@@ -190,11 +204,11 @@ public class Parser {
            * olingo.odata.test1.ETAllPrim?$id=ESAllPrim(32767)
            */
           final ResourcePathParser resourcePathParser = new ResourcePathParser
-            (edm, contextUriInfo.getAliasMap());
+            (edm, contextUriInfo.getAliasMap(), keyAsSegment);
           String typeCastSegment = pathSegmentsDecoded.get(1);
           ensureLastSegment(typeCastSegment, 2, numberOfSegments);
           contextType = resourcePathParser.parseDollarEntityTypeCast(typeCastSegment);
-          contextUriInfo = (UriInfoImpl) new Parser(edm, odata).
+          contextUriInfo = (UriInfoImpl) new Parser(edm, odata).setKeyAsSegment(keyAsSegment).
               parseUri("/" + idOptionText, query, fragment, baseUri);
           contextUriInfo.setEntityTypeCast((EdmEntityType) contextType);
         } else if (numberOfSegments == 1) {
@@ -202,7 +216,7 @@ public class Parser {
            * If url is of the form 
            * http://localhost:8080/odata-server-tecsvc/odata.svc/$entity?$id=ESAllPrim(32527)
            */
-          contextUriInfo = (UriInfoImpl) new Parser(edm, odata).
+          contextUriInfo = (UriInfoImpl) new Parser(edm, odata).setKeyAsSegment(keyAsSegment).
                   parseUri("/" + idOptionText, query, fragment, baseUri);
         }
         contextType = contextUriInfo.getEntityTypeCast();
@@ -224,8 +238,9 @@ public class Parser {
     } else if (firstSegment.startsWith("$crossjoin")) {
       ensureLastSegment(firstSegment, 1, numberOfSegments);
       contextUriInfo.setKind(UriInfoKind.crossjoin);
-      final List<String> entitySetNames = new ResourcePathParser(edm, contextUriInfo.getAliasMap())
-          .parseCrossjoinSegment(firstSegment);
+      final List<String> entitySetNames =
+          new ResourcePathParser(edm, contextUriInfo.getAliasMap(), keyAsSegment)
+              .parseCrossjoinSegment(firstSegment);
       for (final String name : entitySetNames) {
         contextUriInfo.addEntitySetName(name);
       }
@@ -233,7 +248,8 @@ public class Parser {
 
     } else {
       contextUriInfo.setKind(UriInfoKind.resource);
-      final ResourcePathParser resourcePathParser = new ResourcePathParser(edm, contextUriInfo.getAliasMap());
+      final ResourcePathParser resourcePathParser =
+          new ResourcePathParser(edm, contextUriInfo.getAliasMap(), keyAsSegment);
       int count = 0;
       UriResource lastSegment = null;
       for (final String pathSegment : pathSegmentsDecoded) {
@@ -272,6 +288,8 @@ public class Parser {
           }
         }
       }
+
+      resourcePathParser.requireCompleteKeySegments();
 
       if (lastSegment instanceof UriResourcePartTyped typed) {
         contextType = ParserHelper.getTypeInformation(typed);

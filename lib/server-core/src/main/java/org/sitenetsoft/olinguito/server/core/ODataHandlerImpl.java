@@ -89,6 +89,7 @@ public class ODataHandlerImpl implements ODataHandler {
   private CustomContentTypeSupport customContentTypeSupport;
   private CustomETagSupport customETagSupport;
 
+  private boolean keyAsSegment;
   private UriInfo uriInfo;
   private Exception lastThrownException;
 
@@ -165,6 +166,7 @@ public class ODataHandlerImpl implements ODataHandler {
     try {
       handleQueryPathIfPresent(request);
       localUriInfo = new Parser(serviceMetadata.getEdm(), odata)
+          .setKeyAsSegment(keyAsSegment)
           .parseUri(request.getRawODataPath(), request.getRawQueryPath(), null, request.getRawBaseUri());
       this.uriInfo = localUriInfo;
     } catch (final ODataLibraryException e) {

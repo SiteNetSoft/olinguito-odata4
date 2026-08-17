@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  * Copyright 2026 SiteNetSoft - Resolve dynamic path segments on open types
  * Copyright 2026 SiteNetSoft - OData 4.01: map ambiguous optional-parameter overloads to a 400 response
+ * Copyright 2026 SiteNetSoft - OData 4.01: key-as-segment URL convention (URL Conventions section 4.3.6)
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -35,14 +36,13 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmFunction;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmFunctionImport;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmSingleton;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmStructuredType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
-import org.sitenetsoft.olinguito.commons.api.edm.EdmKeyPropertyRef;
 import org.sitenetsoft.olinguito.commons.api.edm.constants.EdmTypeKind;
-import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmString;
 import org.sitenetsoft.olinguito.server.api.uri.UriParameter;
 import org.sitenetsoft.olinguito.server.api.uri.UriResource;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceEntitySet;
@@ -63,7 +63,6 @@ import org.sitenetsoft.olinguito.server.core.uri.UriResourceSingletonImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceTypedImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceValueImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceWithKeysImpl;
-import org.sitenetsoft.olinguito.server.core.uri.UriParameterImpl;
 import org.sitenetsoft.olinguito.server.core.uri.parser.UriTokenizer.TokenKind;
 import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidationException;
 
@@ -72,16 +71,39 @@ public class ResourcePathParser {
   private final Edm edm;
   private final EdmEntityContainer edmEntityContainer;
   private final Map<String, AliasQueryOption> aliases;
+  private final boolean keyAsSegment;
   private UriTokenizer tokenizer;
 
+  /** Resource whose multi-part key is currently being collected from consecutive path segments. */
+  private UriResourceWithKeysImpl pendingKeyResource;
+  /** Entity type whose key is addressed with segments. */
+  private EdmEntityType pendingKeyType;
+  /** Names of all key predicates expected for {@link #pendingKeyResource}, in metadata order. */
+  private List<String> pendingKeyNames;
+  /** Key values collected so far for {@link #pendingKeyResource}. */
+  private List<UriParameter> pendingKeyPredicates;
+
   public ResourcePathParser(final Edm edm, final Map<String, AliasQueryOption> aliases) {
+    this(edm, aliases, false);
+  }
+
+  public ResourcePathParser(final Edm edm, final Map<String, AliasQueryOption> aliases,
+      final boolean keyAsSegment) {
     this.edm = edm;
     this.aliases = aliases;
+    this.keyAsSegment = keyAsSegment;
     edmEntityContainer = edm.getEntityContainer();
   }
 
   public UriResource parsePathSegment(final String pathSegment, UriResource previous)
       throws UriParserException, UriValidationException {
+    if (pendingKeyResource != null) {
+      // A multi-part key is being collected: this segment is the next key value
+      // (URL Conventions 4.3.6: one segment per key value, in metadata key order).
+      consumeKeySegment(pathSegment);
+      return null;
+    }
+
     tokenizer = new UriTokenizer(pathSegment);
 
     // The order is important.
@@ -97,35 +119,26 @@ public class ResourcePathParser {
       }
 
     } else {
-      try {
-        if (tokenizer.next(TokenKind.REF)) {
-          return ref(previous);
-        } else if (tokenizer.next(TokenKind.VALUE)) {
-          return value(previous);
-        } else if (tokenizer.next(TokenKind.COUNT)) {
-          return count(previous);
-        } else if (tokenizer.next(TokenKind.QualifiedName)) {
-          return boundOperationOrTypeCast(previous);
-        } else if (tokenizer.next(TokenKind.ODataIdentifier)) {
-          return navigationOrProperty(previous);
-        } else if (canParseKeyFromSegment(pathSegment, previous)) {
-          /*
-           * This should only be reached if the path segment is an integer. If it can be parsed as a key segment,
-           * null is returned so that this portion of the path is skipped.
-           */
-          return null;
+      // Precedence rules of URL Conventions 4.3.6 for a segment following an entity collection:
+      // 1. a defined OData segment (starting with '$'), 2. a qualified bound operation or type name,
+      // 3. an unqualified bound operation or type name in a default namespace, 4. a key value.
+      if (tokenizer.next(TokenKind.REF)) {
+        return ref(previous);
+      } else if (tokenizer.next(TokenKind.VALUE)) {
+        return value(previous);
+      } else if (tokenizer.next(TokenKind.COUNT)) {
+        return count(previous);
+      } else if (tokenizer.next(TokenKind.QualifiedName)) {
+        return boundOperationOrTypeCast(previous);
+      } else if (!pathSegment.startsWith("$") && isKeyAsSegmentTarget(previous)) {
+        final UriResource defaultNamespaceSegment = resolveDefaultNamespaceSegment(pathSegment, previous);
+        if (defaultNamespaceSegment != null) {
+          return defaultNamespaceSegment;
         }
-      } catch (UriParserException e) {
-        /*
-         * This exception will be caught if the path segment is a string. It will first try to be parsed as a navigation
-         * or property. That will fail if the path segment is not part of the schema. If it can be parsed as a key
-         * segment, null is returned so that this portion of the path is skipped. If it can not be parsed as a key
-         * segment, then the original exception is re-thrown.
-         */
-        if (canParseKeyFromSegment(pathSegment,previous)) {
-          return null;
-        }
-        throw e;
+        startKeySegments(pathSegment, (UriResourceWithKeysImpl) previous);
+        return null;
+      } else if (tokenizer.next(TokenKind.ODataIdentifier)) {
+        return navigationOrProperty(previous);
       }
     }
 
@@ -168,26 +181,119 @@ public class ResourcePathParser {
     return entitySetNames;
   }
 
-  /*
-   * This logic is to handle our use case of supporting keys as segments.
-   * If all the existing parsing fails, then we check if the previous segment is an entity set, or navigation.
-   * If it is, and it has the flag set allow keys as segments, then we check if the entity set already has
-   * the key parameter set. If it does, then we return the original parse exception (ie /entitySet('key')/un-parseable).
-   * If there is no key set, then we pass the current segment back to the previous segment as the key.
-   * With this logic, /entitySet('key') and /entitySet/key should be equivalent.
+  /**
+   * Determines whether a segment following the given resource has to be resolved as a key value
+   * (URL Conventions 4.3.6). This is the case for an entity collection that has not been addressed
+   * with a key yet, if the convention is enabled for the whole service or the (non-standard)
+   * model flag opts the entity set or navigation property in.
+   * @param previous the preceding resource-path segment
+   * @return whether key-as-segment resolution applies
    */
-  private boolean canParseKeyFromSegment(final String pathSegment, UriResource previous) {
+  private boolean isKeyAsSegmentTarget(final UriResource previous) {
     if (previous instanceof UriResourceEntitySetImpl entitySet) {
-      if (entitySet.getEntitySet().isKeyAsSegmentAllowed()) {
-        return didSetKeySegmentAsKey(pathSegment, entitySet, entitySet.getEntitySet().getEntityType());
-      }
-    } else if (previous instanceof UriResourceNavigationPropertyImpl navProp) {
-      EdmNavigationProperty edmNavProperty = navProp.getProperty();
-      if (edmNavProperty.isKeyAsSegmentAllowed()) {
-        return didSetKeySegmentAsKey(pathSegment, navProp, edmNavProperty.getType());
-      }
+      return entitySet.getKeyPredicates().isEmpty()
+          && (keyAsSegment || entitySet.getEntitySet().isKeyAsSegmentAllowed());
+    } else if (previous instanceof UriResourceNavigationPropertyImpl navigation) {
+      final EdmNavigationProperty navigationProperty = navigation.getProperty();
+      return navigation.getKeyPredicates().isEmpty()
+          && (keyAsSegment && navigation.isCollection() || navigationProperty.isKeyAsSegmentAllowed());
     }
     return false;
+  }
+
+  /**
+   * Resolves a segment as an unqualified bound operation or type name defined in a default namespace
+   * (URL Conventions 4.3.6 rule 3). Default-namespace resolution is added by the next task, so this
+   * always returns {@code null} and the segment is resolved as a key value.
+   * @param pathSegment the current path segment
+   * @param previous the preceding resource-path segment
+   * @return the resolved resource or {@code null} if the segment is not an unqualified name
+   */
+  private UriResource resolveDefaultNamespaceSegment(final String pathSegment, final UriResource previous) {
+    return null;
+  }
+
+  /**
+   * Starts to resolve path segments as the key of the given resource. The first key value is the
+   * current segment; if the entity type has a multi-part key, the following segments provide the
+   * remaining key values, one segment per key value in metadata key order.
+   * @param pathSegment the segment holding the first key value
+   * @param resource the entity collection to be addressed
+   */
+  private void startKeySegments(final String pathSegment, final UriResourceWithKeysImpl resource)
+      throws UriParserException, UriValidationException {
+    pendingKeyResource = resource;
+    pendingKeyType = keySegmentEntityType(resource);
+    // The key-predicate names are the only source of the metadata key order (and carry key aliases).
+    pendingKeyNames = pendingKeyType.getKeyPredicateNames();
+    pendingKeyPredicates = new ArrayList<>();
+    consumeKeySegment(pathSegment);
+  }
+
+  /** Consumes one path segment as the next key value of the resource currently being addressed. */
+  private void consumeKeySegment(final String pathSegment) throws UriParserException, UriValidationException {
+    if (pathSegment.startsWith("$")) {
+      // Defined OData segments never are key values (precedence rule 1), so the key stays incomplete.
+      throw new UriParserSemanticException("A key value must not start with '$'.",
+          UriParserSemanticException.MessageKeys.INVALID_KEY_VALUE, pathSegment);
+    }
+    pendingKeyPredicates.add(keySegmentParameter(pendingKeyNames.get(pendingKeyPredicates.size()), pathSegment));
+    if (pendingKeyPredicates.size() == pendingKeyNames.size()) {
+      pendingKeyResource.setKeyPredicates(pendingKeyPredicates);
+      clearKeySegments();
+    }
+  }
+
+  /**
+   * Determines the entity type whose key is addressed with segments, taking a preceding type filter
+   * on the collection into account.
+   */
+  private EdmEntityType keySegmentEntityType(final UriResourceWithKeysImpl resource) {
+    final EdmType typeFilter = getPreviousTypeFilter(resource);
+    return typeFilter instanceof EdmEntityType filterEntityType ?
+        filterEntityType :
+        (EdmEntityType) resource.getType();
+  }
+
+  /**
+   * Converts one path segment into a key predicate. The segment text is already percent-decoded;
+   * single quotes in it are part of the key value (URL Conventions 4.3.6), therefore the text is
+   * converted into its URI-literal representation before the usual key-value validation is applied.
+   */
+  private UriParameter keySegmentParameter(final String keyPredicateName, final String pathSegment)
+      throws UriParserException, UriValidationException {
+    final EdmProperty property = pendingKeyType.getKeyPropertyRef(keyPredicateName).getProperty();
+    final EdmPrimitiveType type = (EdmPrimitiveType) property.getType();
+    final String literal = type.toUriLiteral(pathSegment);
+    final UriTokenizer keyTokenizer = new UriTokenizer(literal);
+    if (!ParserHelper.nextPrimitiveTypeValue(keyTokenizer, type, property.isNullable())
+        || !keyTokenizer.next(TokenKind.EOF)) {
+      throw new UriParserSemanticException(keyPredicateName + " has not a valid key value.",
+          UriParserSemanticException.MessageKeys.INVALID_KEY_VALUE, keyPredicateName);
+    }
+    return ParserHelper.createUriParameter(property, keyPredicateName, literal, edm, null, aliases);
+  }
+
+  /**
+   * Requires that no multi-part key is left half-way addressed at the end of the resource path.
+   * @throws UriParserSemanticException if key values are missing
+   */
+  public void requireCompleteKeySegments() throws UriParserSemanticException {
+    if (pendingKeyResource != null) {
+      final int expected = pendingKeyNames.size();
+      final int given = pendingKeyPredicates.size();
+      clearKeySegments();
+      throw new UriParserSemanticException("There are too few key properties.",
+          UriParserSemanticException.MessageKeys.WRONG_NUMBER_OF_KEY_PROPERTIES,
+          String.valueOf(expected), String.valueOf(given));
+    }
+  }
+
+  private void clearKeySegments() {
+    pendingKeyResource = null;
+    pendingKeyType = null;
+    pendingKeyNames = null;
+    pendingKeyPredicates = null;
   }
 
   private UriResource ref(final UriResource previous) throws UriParserException {
@@ -479,29 +585,5 @@ public class ResourcePathParser {
     }
     ParserHelper.requireTokenEnd(tokenizer);
     return resource;
-  }
-
-  private boolean didSetKeySegmentAsKey(
-    final String pathSegment,
-    UriResourceWithKeysImpl resourceWithKeys,
-    EdmEntityType entityType) {
-    List<EdmKeyPropertyRef> keys = entityType.getKeyPropertyRefs();
-    if (keys != null && keys.size() == 1) {
-      // Currently only supports types with a single key.
-      EdmKeyPropertyRef propertyRef = keys.get(0);
-      String keyName = propertyRef.getName();
-      List<UriParameter> parameterList = new ArrayList<>(resourceWithKeys.getKeyPredicates());
-      if (parameterList.stream().noneMatch(u -> keyName.equals(u.getName()))) {
-        String value = pathSegment;
-        if (propertyRef.getProperty().getType() instanceof EdmString) {
-          value = "'" + value + "'";
-        }
-        parameterList.add(new UriParameterImpl().setName(keyName).setText(value));
-        resourceWithKeys.setKeyPredicates(parameterList);
-        return true;
-      }
-    }
-
-    return false;
   }
 }

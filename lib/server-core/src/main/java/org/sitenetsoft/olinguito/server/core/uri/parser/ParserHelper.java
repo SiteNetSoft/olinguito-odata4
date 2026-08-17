@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Port OLINGO-1334: propagate lambda-variable scope into function parameter parsing
  * Copyright 2026 SiteNetSoft - OData 4.01: map ambiguous optional-parameter overloads to a 400 response
+ * Copyright 2026 SiteNetSoft - OData 4.01: opened key-value helpers to the key-as-segment parser
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -463,7 +464,7 @@ public class ParserHelper {
     }
   }
 
-  private static UriParameter createUriParameter(final EdmProperty edmProperty, final String parameterName,
+  protected static UriParameter createUriParameter(final EdmProperty edmProperty, final String parameterName,
       final String literalValue, final Edm edm, final EdmType referringType,
       final Map<String, AliasQueryOption> aliases) throws UriParserException, UriValidationException {
     final AliasQueryOption alias = literalValue.startsWith("@") ?
@@ -503,7 +504,7 @@ public class ParserHelper {
     }
   }
 
-  private static boolean nextPrimitiveTypeValue(UriTokenizer tokenizer,
+  protected static boolean nextPrimitiveTypeValue(UriTokenizer tokenizer,
       final EdmPrimitiveType primitiveType, final boolean nullable) {
     final EdmPrimitiveType type = primitiveType instanceof EdmTypeDefinition typeDef ?
         typeDef.getUnderlyingType() :

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 1: key-as-segment URL convention
  */
 package org.sitenetsoft.olinguito.server.core.uri.testutil;
 
@@ -56,6 +58,7 @@ import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidator;
 public class ResourceValidator implements TestValidator {
   private final OData odata = OData.newInstance();
   private Edm edm;
+  private boolean keyAsSegment;
   private TestValidator invokedBy;
   private UriInfoResource uriInfo = null;
 
@@ -74,6 +77,12 @@ public class ResourceValidator implements TestValidator {
     return this;
   }
 
+  /** Enables the key-as-segment URL convention for the whole service. */
+  public ResourceValidator setKeyAsSegment(final boolean keyAsSegment) {
+    this.keyAsSegment = keyAsSegment;
+    return this;
+  }
+
   public ResourceValidator setUriInfoPath(final UriInfoResource uriInfoPath) {
     uriInfo = uriInfoPath;
     first();
@@ -85,7 +94,7 @@ public class ResourceValidator implements TestValidator {
   public ResourceValidator run(final String path) {
     UriInfo uriInfoTmp = null;
     try {
-      uriInfoTmp = new Parser(edm, odata).parseUri(path, null, null, null);
+      uriInfoTmp = new Parser(edm, odata).setKeyAsSegment(keyAsSegment).parseUri(path, null, null, null);
     } catch (final ODataLibraryException e) {
       fail("Exception occurred while parsing the URI: " + path + "\n"
           + " Message: " + e.getMessage());

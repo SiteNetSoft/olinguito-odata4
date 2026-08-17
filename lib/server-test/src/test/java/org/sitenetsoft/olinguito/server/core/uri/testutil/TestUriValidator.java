@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 1: $schemaversion system query option
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 1: key-as-segment URL convention
  */
 package org.sitenetsoft.olinguito.server.core.uri.testutil;
 
@@ -49,6 +50,7 @@ import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidator;
 public class TestUriValidator implements TestValidator {
   private final OData odata = OData.newInstance();
   private Edm edm;
+  private boolean keyAsSegment;
 
   private UriInfo uriInfo;
   private ODataLibraryException exception;
@@ -56,6 +58,12 @@ public class TestUriValidator implements TestValidator {
   // Setup
   public TestUriValidator setEdm(final Edm edm) {
     this.edm = edm;
+    return this;
+  }
+
+  /** Enables the key-as-segment URL convention for the whole service. */
+  public TestUriValidator setKeyAsSegment(final boolean keyAsSegment) {
+    this.keyAsSegment = keyAsSegment;
     return this;
   }
 
@@ -71,7 +79,7 @@ public class TestUriValidator implements TestValidator {
   public TestUriValidator run(final String path, final String query, final String fragment, final String baseUri)
       throws UriParserException, UriValidationException {
     try {
-      uriInfo = new Parser(edm, odata).parseUri(path, query, fragment, baseUri);
+      uriInfo = new Parser(edm, odata).setKeyAsSegment(keyAsSegment).parseUri(path, query, fragment, baseUri);
       new UriValidator().validate(uriInfo, HttpMethod.GET);
       return this;
     } catch (UriParserException e) {
@@ -82,7 +90,7 @@ public class TestUriValidator implements TestValidator {
   
   public TestUriValidator run(final String path, final String query, final String fragment)
       throws UriParserException, UriValidationException {
-    uriInfo = new Parser(edm, odata).parseUri(path, query, fragment, null);
+    uriInfo = new Parser(edm, odata).setKeyAsSegment(keyAsSegment).parseUri(path, query, fragment, null);
     new UriValidator().validate(uriInfo, HttpMethod.GET);
     return this;
   }
@@ -115,6 +123,7 @@ public class TestUriValidator implements TestValidator {
     return new ResourceValidator()
         .setUpValidator(this)
         .setEdm(edm)
+        .setKeyAsSegment(keyAsSegment)
         .setUriInfoPath(uriInfo);
   }
 
@@ -137,6 +146,7 @@ public class TestUriValidator implements TestValidator {
     return new ResourceValidator()
         .setUpValidator(this)
         .setEdm(edm)
+        .setKeyAsSegment(keyAsSegment)
         .setUriInfoPath(item.getResourcePath());
   }
 

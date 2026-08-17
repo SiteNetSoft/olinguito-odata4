@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OData 4.01: key-as-segment URL convention service flag
  */
 package org.sitenetsoft.olinguito.server.api;
 
@@ -53,4 +55,19 @@ public interface ODataHandler {
    * different ODataHandler implementations/extensions.</p>
    */
   void register(OlingoExtension extension);
+
+  /**
+   * Enables or disables the OData 4.01 key-as-segment URL convention (URL Conventions section 4.3.6)
+   * for every entity collection served by this handler. Off by default (support is a MAY).
+   * When enabled, a segment following an entity collection is resolved with the specification's
+   * precedence rules: a {@code $}-segment, a qualified bound operation or type name, an unqualified
+   * bound operation or type name in a default namespace, else a key value; multi-part keys use one
+   * segment per key value in metadata key order. The canonical parenthesized form stays supported.
+   * Individual entity sets and navigation properties may additionally opt in through the
+   * (non-standard) {@code keyAsSegmentAllowed} model flag regardless of this setting.
+   * @param enabled whether the convention is enabled service-wide
+   */
+  default void setKeyAsSegment(final boolean enabled) {
+    throw new UnsupportedOperationException("key-as-segment configuration is not supported by this handler");
+  }
 }
