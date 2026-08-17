@@ -23,6 +23,7 @@
  * Copyright 2026 SiteNetSoft - Kept fallback semantics for the model flag on single-valued navigation
  * Copyright 2026 SiteNetSoft - OData 4.01: referential-constraint omission and default namespaces in
  * key-as-segment URLs
+ * Copyright 2026 SiteNetSoft - OData 4.01: pass the entity set to the key-predicate parser for alternate keys
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -512,7 +513,8 @@ public class ResourcePathParser {
 
       if (tokenizer.next(TokenKind.OPEN)) {
         final List<UriParameter> keyPredicates =
-            ParserHelper.parseKeyPredicate(tokenizer, entitySetResource.getEntityType(), null, edm, null, aliases);
+            ParserHelper.parseKeyPredicate(tokenizer, entitySetResource.getEntityType(), null, edm, null, aliases,
+                edmEntitySet);
         entitySetResource.setKeyPredicates(keyPredicates);
       }
 

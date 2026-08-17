@@ -20,6 +20,7 @@
  *
  * Copyright 2026 SiteNetSoft - Add OpenType support (tecsvc ETOpen model)
  * Copyright 2026 SiteNetSoft - OpenType: give ETOpen a declared open complex property PropertyComp
+ * Copyright 2026 SiteNetSoft - OData 4.01: a type-level alternate key on ETKeyNav
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
@@ -378,6 +379,8 @@ public class EntityTypeProvider {
                   new CsdlProperty()
                       .setName("PropertyCompCompNav").setType(ComplexTypeProvider.nameCTCompNav)
                   ))
+          .setAnnotations(List.of(ContainerProvider.alternateKeysAnnotation(
+              List.of(List.<String[]> of(new String[] { "PropertyString", null })))))
           .setNavigationProperties(
               List.of(
                   PropertyProvider.navPropertyETTwoKeyNavOne_ETTwoKeyNav_NotNullable,

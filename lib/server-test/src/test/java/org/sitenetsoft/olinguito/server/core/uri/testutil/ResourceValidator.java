@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 1: key-as-segment URL convention
+ * Copyright 2026 SiteNetSoft - OData 4.01: assertion for alternate-key key predicates
  */
 package org.sitenetsoft.olinguito.server.core.uri.testutil;
 
@@ -254,6 +255,16 @@ public class ResourceValidator implements TestValidator {
 	    assertEquals(text, keyPredicate.getText());
 	    return this;
 	  }
+
+  /**
+   * Asserts which entity-type property an alternate-key predicate addresses.
+   * @param index the index of the key predicate
+   * @param expectedPropertyName the expected property name, or <code>null</code> for a primary-key predicate
+   */
+  public ResourceValidator isKeyPredicateAlternateKeyProperty(final int index, final String expectedPropertyName) {
+    assertEquals(expectedPropertyName, getKeyPredicate(index).getAlternateKeyPropertyName());
+    return this;
+  }
 
   private UriParameter getKeyPredicate(final int index) {
     assertTrue(uriPathInfo instanceof UriResourceWithKeysImpl,

@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OData 4.01: alternate-key key predicates
  */
 package org.sitenetsoft.olinguito.server.core.uri;
 
@@ -27,6 +29,7 @@ public class UriParameterImpl implements UriParameter {
   private String alias;
   private Expression expression;
   private String referencedProperty;
+  private String alternateKeyPropertyName;
 
   @Override
   public String getName() {
@@ -75,6 +78,16 @@ public class UriParameterImpl implements UriParameter {
 
   public UriParameterImpl setReferencedProperty(final String referencedProperty) {
     this.referencedProperty = referencedProperty;
+    return this;
+  }
+
+  @Override
+  public String getAlternateKeyPropertyName() {
+    return alternateKeyPropertyName;
+  }
+
+  public UriParameterImpl setAlternateKeyPropertyName(final String alternateKeyPropertyName) {
+    this.alternateKeyPropertyName = alternateKeyPropertyName;
     return this;
   }
 

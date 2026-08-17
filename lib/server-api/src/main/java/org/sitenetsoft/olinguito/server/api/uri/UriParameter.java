@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OData 4.01: alternate-key key predicates
  */
 package org.sitenetsoft.olinguito.server.api.uri;
 
@@ -49,4 +51,14 @@ public interface UriParameter {
    * @return Name of the referenced property when referential constraints are used
    */
   String getReferencedProperty();
+
+  /**
+   * When this key predicate addresses the entity through an alternate key (Core.AlternateKeys),
+   * the name of the entity-type property the predicate value applies to; {@link #getName()} is then
+   * the URL-facing name (alias or property name). <code>null</code> for primary-key predicates.
+   * @return the name of the addressed entity-type property, or <code>null</code>
+   */
+  default String getAlternateKeyPropertyName() {
+    return null;
+  }
 }

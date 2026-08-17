@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Port OLINGO-1334: propagate lambda-variable scope into function parameter parsing
  * Copyright 2026 SiteNetSoft - OData 4.01: map ambiguous optional-parameter overloads to a 400 response
  * Copyright 2026 SiteNetSoft - OData 4.01: opened key-value helpers to the key-as-segment parser
+ * Copyright 2026 SiteNetSoft - OData 4.01: resolve alternate keys in parenthesized key predicates
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -29,13 +30,18 @@ import java.util.Deque;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmAlternateKey;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmAlternateKeyPropertyRef;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmAmbiguousOverloadException;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmBindingTarget;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmFunction;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmFunctionImport;
@@ -316,6 +322,19 @@ public class ParserHelper {
       final EdmNavigationProperty partner,
       final Edm edm, final EdmType referringType, final Map<String, AliasQueryOption> aliases)
       throws UriParserException, UriValidationException {
+    return parseKeyPredicate(tokenizer, edmEntityType, partner, edm, referringType, aliases, null);
+  }
+
+  /**
+   * Parses a parenthesized key predicate.
+   * @param bindingTarget the binding target the entity type is addressed through, may be <code>null</code>;
+   *                      it contributes the alternate keys declared on the entity set itself
+   */
+  protected static List<UriParameter> parseKeyPredicate(UriTokenizer tokenizer, final EdmEntityType edmEntityType,
+      final EdmNavigationProperty partner,
+      final Edm edm, final EdmType referringType, final Map<String, AliasQueryOption> aliases,
+      final EdmBindingTarget bindingTarget)
+      throws UriParserException, UriValidationException {
     final List<EdmKeyPropertyRef> keyPropertyRefs = edmEntityType.getKeyPropertyRefs();
     if (tokenizer.next(TokenKind.CLOSE)) {
       throw new UriParserSemanticException(
@@ -347,6 +366,18 @@ public class ParserHelper {
       }
     }
     if (keys.isEmpty()) {
+      // An alternate key (URL Conventions 4.3.5) always addresses the entity completely, so it is only
+      // tried when no key value is determined by a referential constraint of the navigation property
+      // leading here; in that case the primary key is the only key that can be completed from the URI.
+      if (referencedNames.isEmpty()) {
+        tokenizer.saveState();
+        final List<UriParameter> alternateKeys =
+            alternateKey(tokenizer, edmEntityType, bindingTarget, edm, referringType, aliases);
+        if (alternateKeys != null) {
+          return alternateKeys;
+        }
+        tokenizer.returnToSavedState();
+      }
       if (tokenizer.next(TokenKind.ODataIdentifier)) {
         keys.addAll(compoundKey(tokenizer, edmEntityType, edm, referringType, aliases));
       } else {
@@ -416,6 +447,144 @@ public class ParserHelper {
     } else {
       return null;
     }
+  }
+
+  /**
+   * Tries to read the key predicate as an alternate key (OData 4.01 URL Conventions 4.3.5).
+   * The parsed set of URL names must be exactly the set of one declared alternate key; otherwise
+   * <code>null</code> is returned so that the caller can fall back to the primary-key parsing
+   * (which then produces the errors it always produced). The tokenizer may have been advanced.
+   * @return the key predicates in the declaration order of the matched alternate key, or <code>null</code>
+   */
+  private static List<UriParameter> alternateKey(UriTokenizer tokenizer, final EdmEntityType edmEntityType,
+      final EdmBindingTarget bindingTarget,
+      final Edm edm, final EdmType referringType, final Map<String, AliasQueryOption> aliases)
+      throws UriParserException, UriValidationException {
+    final List<EdmAlternateKey> candidates = alternateKeyCandidates(edmEntityType, bindingTarget);
+    if (candidates.isEmpty()) {
+      return null;
+    }
+    final List<EdmAlternateKey> viable = new ArrayList<>(candidates);
+    final Map<String, UriParameter> parsed = new LinkedHashMap<>();
+    boolean hasComma;
+    do {
+      if (!tokenizer.next(TokenKind.ODataIdentifier)) {
+        return null;
+      }
+      final String urlName = tokenizer.getText();
+      if (parsed.containsKey(urlName)) {
+        throw new UriValidationException("Duplicated key property " + urlName,
+            UriValidationException.MessageKeys.DOUBLE_KEY_PROPERTY, urlName);
+      }
+      viable.removeIf(group -> propertyRef(group, urlName) == null);
+      final EdmProperty edmProperty = uniqueProperty(viable, urlName);
+      if (edmProperty == null || !tokenizer.next(TokenKind.EQ)) {
+        return null;
+      }
+      if (tokenizer.next(TokenKind.COMMA) || tokenizer.next(TokenKind.CLOSE) || tokenizer.next(TokenKind.EOF)) {
+        return null;
+      }
+      if (!nextPrimitiveTypeValue(tokenizer, (EdmPrimitiveType) edmProperty.getType(), edmProperty.isNullable())) {
+        throw new UriParserSemanticException(urlName + " has not a valid  key value.",
+            UriParserSemanticException.MessageKeys.INVALID_KEY_VALUE, urlName);
+      }
+      parsed.put(urlName,
+          createUriParameter(edmProperty, urlName, tokenizer.getText(), edm, referringType, aliases));
+      hasComma = tokenizer.next(TokenKind.COMMA);
+    } while (hasComma);
+    if (!tokenizer.next(TokenKind.CLOSE)) {
+      return null;
+    }
+    final EdmAlternateKey matched = matchAlternateKey(candidates, parsed.keySet());
+    if (matched == null) {
+      return null;
+    }
+    final List<UriParameter> keys = new ArrayList<>();
+    for (final EdmAlternateKeyPropertyRef ref : matched.getPropertyRefs()) {
+      keys.add(((UriParameterImpl) parsed.get(ref.getUrlName()))
+          .setAlternateKeyPropertyName(ref.getProperty().getName()));
+    }
+    return keys;
+  }
+
+  /**
+   * Collects the alternate keys that can be addressed: those declared on the entity type and, if the
+   * entity type is addressed through an entity set, those declared on that entity set. Groups with an
+   * unresolvable property reference (for example a path into a complex property) are not addressable,
+   * and a group that consists of exactly the primary-key properties is left to the primary-key parsing.
+   */
+  private static List<EdmAlternateKey> alternateKeyCandidates(final EdmEntityType edmEntityType,
+      final EdmBindingTarget bindingTarget) {
+    final List<EdmAlternateKey> declared = new ArrayList<>(edmEntityType.getAlternateKeys());
+    if (bindingTarget instanceof EdmEntitySet entitySet) {
+      declared.addAll(entitySet.getAlternateKeys());
+    }
+    final Set<String> primaryKeyNames = new HashSet<>(edmEntityType.getKeyPredicateNames());
+    final List<EdmAlternateKey> candidates = new ArrayList<>();
+    for (final EdmAlternateKey alternateKey : declared) {
+      if (isResolvable(alternateKey) && !urlNames(alternateKey).equals(primaryKeyNames)) {
+        candidates.add(alternateKey);
+      }
+    }
+    return candidates;
+  }
+
+  private static boolean isResolvable(final EdmAlternateKey alternateKey) {
+    for (final EdmAlternateKeyPropertyRef ref : alternateKey.getPropertyRefs()) {
+      if (ref.getProperty() == null) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private static Set<String> urlNames(final EdmAlternateKey alternateKey) {
+    final Set<String> names = new HashSet<>();
+    for (final EdmAlternateKeyPropertyRef ref : alternateKey.getPropertyRefs()) {
+      names.add(ref.getUrlName());
+    }
+    return names;
+  }
+
+  private static EdmAlternateKeyPropertyRef propertyRef(final EdmAlternateKey alternateKey, final String urlName) {
+    for (final EdmAlternateKeyPropertyRef ref : alternateKey.getPropertyRefs()) {
+      if (ref.getUrlName().equals(urlName)) {
+        return ref;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * @return the property the URL name addresses if all remaining candidate groups agree on it,
+   *         <code>null</code> if there is no candidate left or they disagree
+   */
+  private static EdmProperty uniqueProperty(final List<EdmAlternateKey> viable, final String urlName) {
+    EdmProperty edmProperty = null;
+    for (final EdmAlternateKey alternateKey : viable) {
+      final EdmProperty candidate = propertyRef(alternateKey, urlName).getProperty();
+      if (edmProperty == null) {
+        edmProperty = candidate;
+      } else if (!edmProperty.getName().equals(candidate.getName())) {
+        return null;
+      }
+    }
+    return edmProperty;
+  }
+
+  /** @return the single alternate key with exactly the given URL names, <code>null</code> if there is not one */
+  private static EdmAlternateKey matchAlternateKey(final List<EdmAlternateKey> candidates,
+      final Set<String> parsedNames) {
+    EdmAlternateKey matched = null;
+    for (final EdmAlternateKey alternateKey : candidates) {
+      if (urlNames(alternateKey).equals(parsedNames)) {
+        if (matched != null) {
+          return null;
+        }
+        matched = alternateKey;
+      }
+    }
+    return matched;
   }
 
   private static List<UriParameter> compoundKey(UriTokenizer tokenizer, final EdmEntityType edmEntityType,

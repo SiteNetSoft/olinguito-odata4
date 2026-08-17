@@ -22,6 +22,7 @@
  *
  * Copyright 2026 SiteNetSoft - Add OpenType support (tecsvc ETOpen model)
  * Copyright 2026 SiteNetSoft - OData 4.01: function imports with optional parameters
+ * Copyright 2026 SiteNetSoft - OData 4.01: alternate keys on ESAllPrim
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
@@ -38,8 +39,13 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntitySet;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlFunctionImport;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlNavigationPropertyBinding;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlSingleton;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlCollection;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlConstantExpression;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlConstantExpression.ConstantExpressionType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlPropertyPath;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlPropertyValue;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlRecord;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
 
 public class ContainerProvider {
@@ -62,6 +68,8 @@ public class ContainerProvider {
   public static final String ES_STREAM_SERVER_PAGINATION = "ESStreamServerSidePaging";
   public static final String ES_MEDIA = "ESMedia";
   public static final String ES_MEDIA_STREAM = "ESMediaStream";
+
+  static final String ALTERNATE_KEYS_TERM = "Core.AlternateKeys";
 
   private final CsdlEdmProvider prov;
 
@@ -186,6 +194,31 @@ public class ContainerProvider {
     return container;
   }
 
+  /**
+   * Builds a <code>Core.AlternateKeys</code> annotation (OData 4.01 URL Conventions 4.3.5).
+   * @param keys one entry per alternate key; each entry lists its property references as
+   *             <code>{ propertyName, alias }</code> pairs with a <code>null</code> alias when there is none
+   */
+  static CsdlAnnotation alternateKeysAnnotation(final List<List<String[]>> keys) {
+    final List<CsdlExpression> groups = new ArrayList<>();
+    for (final List<String[]> key : keys) {
+      final List<CsdlExpression> refs = new ArrayList<>();
+      for (final String[] ref : key) {
+        final List<CsdlPropertyValue> values = new ArrayList<>();
+        values.add(new CsdlPropertyValue().setProperty("Name").setValue(new CsdlPropertyPath().setValue(ref[0])));
+        if (ref[1] != null) {
+          values.add(new CsdlPropertyValue().setProperty("Alias")
+              .setValue(new CsdlConstantExpression(ConstantExpressionType.String, ref[1])));
+        }
+        refs.add(new CsdlRecord().setPropertyValues(values));
+      }
+      groups.add(new CsdlRecord().setPropertyValues(List.of(
+          new CsdlPropertyValue().setProperty("Key").setValue(new CsdlCollection().setItems(refs)))));
+    }
+    return new CsdlAnnotation().setTerm(ALTERNATE_KEYS_TERM)
+        .setExpression(new CsdlCollection().setItems(groups));
+  }
+
   public CsdlEntitySet getEntitySet(final FullQualifiedName entityContainer, final String name) throws ODataException {
     if (entityContainer.equals(nameContainer)) {
       if (name.equals("ESAllPrimDefaultValues")) {
@@ -212,7 +245,10 @@ public class ContainerProvider {
                 new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String,
                     "Contains entities with all primitive types")),
                 new CsdlAnnotation().setTerm(TermProvider.TERM_DATA.getFullQualifiedNameAsString()).setExpression(
-                    new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.Bool, "true"))
+                    new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.Bool, "true")),
+                alternateKeysAnnotation(List.of(
+                    List.<String[]> of(new String[] { "PropertyString", null }),
+                    List.of(new String[] { "PropertyString", "StringPart" }, new String[] { "PropertyGuid", null })))
                 ));
 
       } else if (name.equals("ESCollAllPrim")) {

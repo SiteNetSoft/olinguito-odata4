@@ -22,6 +22,7 @@
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 1 fix round 1: tests for collection navigation and for
  * the model-flag fallback on single-valued navigation
  * Copyright 2026 SiteNetSoft - OData 4.01: key-as-segment omits key values covered by referential constraints
+ * Copyright 2026 SiteNetSoft - OData 4.01: alternate keys in parenthesized key predicates
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -336,6 +337,69 @@ class ResourcePathParserTest {
     testUri.runEx("ESComplexKeyAsSegment/thisIsAKey")
         .isExSemantic(MessageKeys.WRONG_NUMBER_OF_KEY_PROPERTIES);
     testUri.runEx("ESKeyAsSegmentInt/notANumber").isExSemantic(MessageKeys.INVALID_KEY_VALUE);
+  }
+
+  @Test
+  void alternateKeySinglePartNamed() throws Exception {
+    testUri.run("ESAllPrim(PropertyString='First Resource - positive values')").goPath().first()
+        .isEntitySet("ESAllPrim")
+        .isKeyPredicate(0, "PropertyString", "'First Resource - positive values'")
+        .isKeyPredicateAlternateKeyProperty(0, "PropertyString");
+    testUri.run("ESKeyNav(PropertyString='I am String Property 1')").goPath().first()
+        .isEntitySet("ESKeyNav")
+        .isKeyPredicateAlternateKeyProperty(0, "PropertyString");
+  }
+
+  @Test
+  void alternateKeyMultiPartWithAlias() throws Exception {
+    testUri.run("ESAllPrim(StringPart='x',PropertyGuid=01234567-89ab-cdef-0123-456789abcdef)").goPath().first()
+        .isKeyPredicate(0, "StringPart", "'x'")
+        .isKeyPredicateAlternateKeyProperty(0, "PropertyString")
+        .isKeyPredicate(1, "PropertyGuid", "01234567-89ab-cdef-0123-456789abcdef")
+        .isKeyPredicateAlternateKeyProperty(1, "PropertyGuid");
+
+    // the predicates may be given in any order but are returned in the order the alternate key declares
+    testUri.run("ESAllPrim(PropertyGuid=01234567-89ab-cdef-0123-456789abcdef,StringPart='x')").goPath().first()
+        .isKeyPredicate(0, "StringPart", "'x'")
+        .isKeyPredicate(1, "PropertyGuid", "01234567-89ab-cdef-0123-456789abcdef");
+  }
+
+  @Test
+  void primaryKeyStillPrimary() throws Exception {
+    testUri.run("ESAllPrim(32767)").goPath().first()
+        .isKeyPredicate(0, "PropertyInt16", "32767")
+        .isKeyPredicateAlternateKeyProperty(0, null);
+    testUri.run("ESAllPrim(PropertyInt16=32767)").goPath().first()
+        .isKeyPredicateAlternateKeyProperty(0, null);
+  }
+
+  @Test
+  void alternateKeyBareShortFormIsNotAlternate() {
+    // 'abc' is not a valid PropertyInt16 -> exactly today's error; the short form never resolves alternate keys
+    testUri.runEx("ESAllPrim('abc')").isExSemantic(MessageKeys.INVALID_KEY_VALUE);
+  }
+
+  @Test
+  void alternateKeyNonMatchingSetsFailAsToday() {
+    testUri.runEx("ESAllPrim(PropertyInt16=1,Invalid='1')").isExSemantic(MessageKeys.WRONG_NUMBER_OF_KEY_PROPERTIES);
+    // partial multi-part group
+    testUri.runEx("ESAllPrim(StringPart='x')").isExValidation(UriValidationException.MessageKeys.INVALID_KEY_PROPERTY);
+    // the alias is mandatory once declared
+    testUri.runEx("ESAllPrim(PropertyString='x',PropertyGuid=01234567-89ab-cdef-0123-456789abcdef)")
+        .isExValidation(UriValidationException.MessageKeys.INVALID_KEY_PROPERTY);
+    testUri.runEx("ESAllPrim(PropertyDate=2000-01-01)")
+        .isExValidation(UriValidationException.MessageKeys.INVALID_KEY_PROPERTY);
+  }
+
+  @Test
+  void alternateKeyValueTypeIsValidated() {
+    testUri.runEx("ESAllPrim(PropertyString=1)").isExSemantic(MessageKeys.INVALID_KEY_VALUE);
+  }
+
+  @Test
+  void keyAsSegmentNeverResolvesAlternateKeys() {
+    // URL 4.3.6 exclusion: with the convention on, the segment is a PRIMARY key value -> Int16 conversion fails
+    kasUri.runEx("ESAllPrim/First%20Resource%20-%20positive%20values").isExSemantic(MessageKeys.INVALID_KEY_VALUE);
   }
 
   @Test
