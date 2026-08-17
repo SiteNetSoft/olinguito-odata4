@@ -25,6 +25,7 @@
  * strip it) so context-URL/next-link/delta-link generation sees the merged query, not a stale one
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 2: validate $schemaversion against the service's
  * schema version (OData 4.01, Part 1: Protocol, section 11.2.12) before dispatch
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 1 fix round 1: implement setKeyAsSegment
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -444,6 +445,11 @@ public class ODataHandlerImpl implements ODataHandler {
       throw new ODataRuntimeException("Got not supported exception with class name " +
           extension.getClass().getSimpleName());
     }
+  }
+
+  @Override
+  public void setKeyAsSegment(final boolean enabled) {
+    this.keyAsSegment = enabled;
   }
 
   public CustomContentTypeSupport getCustomContentTypeSupport() {

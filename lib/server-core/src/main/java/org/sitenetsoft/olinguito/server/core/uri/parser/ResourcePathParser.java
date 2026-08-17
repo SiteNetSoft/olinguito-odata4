@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Resolve dynamic path segments on open types
  * Copyright 2026 SiteNetSoft - OData 4.01: map ambiguous optional-parameter overloads to a 400 response
  * Copyright 2026 SiteNetSoft - OData 4.01: key-as-segment URL convention (URL Conventions section 4.3.6)
+ * Copyright 2026 SiteNetSoft - Kept fallback semantics for the model flag on single-valued navigation
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -138,7 +139,14 @@ public class ResourcePathParser {
         startKeySegments(pathSegment, (UriResourceWithKeysImpl) previous);
         return null;
       } else if (tokenizer.next(TokenKind.ODataIdentifier)) {
+        if (isKeyAsSegmentFallbackTarget(previous) && !isStructuralMemberName(previous, tokenizer.getText())) {
+          startKeySegments(pathSegment, (UriResourceWithKeysImpl) previous);
+          return null;
+        }
         return navigationOrProperty(previous);
+      } else if (!pathSegment.startsWith("$") && isKeyAsSegmentFallbackTarget(previous)) {
+        startKeySegments(pathSegment, (UriResourceWithKeysImpl) previous);
+        return null;
       }
     }
 
@@ -195,8 +203,44 @@ public class ResourcePathParser {
           && (keyAsSegment || entitySet.getEntitySet().isKeyAsSegmentAllowed());
     } else if (previous instanceof UriResourceNavigationPropertyImpl navigation) {
       final EdmNavigationProperty navigationProperty = navigation.getProperty();
-      return navigation.getKeyPredicates().isEmpty()
-          && (keyAsSegment && navigation.isCollection() || navigationProperty.isKeyAsSegmentAllowed());
+      return navigation.getKeyPredicates().isEmpty() && navigation.isCollection()
+          && (keyAsSegment || navigationProperty.isKeyAsSegmentAllowed());
+    }
+    return false;
+  }
+
+  /**
+   * Determines whether a segment following the given resource may be resolved as a key value only if it
+   * does not name a property or navigation property. This applies to the (non-standard) model flag on a
+   * single-valued navigation property, where the previous behaviour of this fork was to try the key
+   * interpretation only after property resolution had failed.
+   * @param previous the preceding resource-path segment
+   * @return whether key-as-segment resolution applies as a fallback
+   */
+  private boolean isKeyAsSegmentFallbackTarget(final UriResource previous) {
+    return previous instanceof UriResourceNavigationPropertyImpl navigation
+        && !navigation.isCollection()
+        && navigation.getKeyPredicates().isEmpty()
+        && navigation.getProperty().isKeyAsSegmentAllowed();
+  }
+
+  /**
+   * Determines whether the given name is a structural or navigation property of the type addressed by the
+   * given resource (an open type accepts every name as a dynamic property).
+   * @param previous the preceding resource-path segment
+   * @param name the name to look up
+   * @return whether the name is a member of the addressed type
+   */
+  private boolean isStructuralMemberName(final UriResource previous, final String name) {
+    if (previous instanceof UriResourcePartTyped previousTyped
+        && previousTyped.getType() instanceof EdmStructuredType previousStructuredType) {
+      final EdmType typeFilter = getPreviousTypeFilter(previousTyped);
+      final EdmStructuredType type = typeFilter instanceof EdmStructuredType filteredType ?
+          filteredType :
+          previousStructuredType;
+      return type.getStructuralProperty(name) != null
+          || type.getNavigationProperty(name) != null
+          || type.isOpenType();
     }
     return false;
   }

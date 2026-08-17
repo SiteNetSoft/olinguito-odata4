@@ -12,6 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OData 4.01: forward the key-as-segment flag to the wrapped handler
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -50,5 +52,10 @@ public class ODataRequestHandlerImpl implements ODataRequestHandler {
   @Override
   public void register(OlingoExtension extension) {
     handler.register(extension);
+  }
+
+  @Override
+  public void setKeyAsSegment(final boolean enabled) {
+    handler.setKeyAsSegment(enabled);
   }
 }

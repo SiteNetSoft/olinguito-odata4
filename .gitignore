@@ -18,3 +18,4 @@ dependency-reduced-pom.xml
 .idea/
 /site/
 .venv/
+.mcp.json

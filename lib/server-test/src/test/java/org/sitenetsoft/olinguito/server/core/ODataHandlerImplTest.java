@@ -30,6 +30,8 @@
  * rebuild tests (merged query, not just a stripped /$query suffix)
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 2: tests for $schemaversion handler validation
  * (OData 4.01, Part 1: Protocol, section 11.2.12)
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 1 fix round 1: tests for the key-as-segment handler
+ * flag reaching the URI parser (OData 4.01, URL Conventions section 4.3.6)
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -71,6 +73,7 @@ import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
 import org.sitenetsoft.olinguito.server.api.ODataRequest;
+import org.sitenetsoft.olinguito.server.api.ODataRequestHandler;
 import org.sitenetsoft.olinguito.server.api.ODataResponse;
 import org.sitenetsoft.olinguito.server.api.ODataServerError;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
@@ -1912,5 +1915,61 @@ class ODataHandlerImplTest {
     final ODataResponse response = handler.process(request);
     assertNotNull(response);
     return response;
+  }
+  @Test
+  void keyAsSegmentFlagReachesTheUriParser() throws Exception {
+    final EntityProcessor processor = mock(EntityProcessor.class);
+    dispatchWithKeyAsSegment("ESAllPrim/32767", true, processor);
+
+    // the segment is resolved as the entity key, so the request reaches the entity processor
+    verify(processor).readEntity(
+        any(ODataRequest.class), any(ODataResponse.class), any(UriInfo.class), any(ContentType.class));
+  }
+
+  @Test
+  void keyAsSegmentFlagOffKeepsTheUriInvalid() {
+    final EntityProcessor processor = mock(EntityProcessor.class);
+    final ODataResponse response = dispatchWithKeyAsSegment("ESAllPrim/32767", false, processor);
+
+    assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), response.getStatusCode());
+    verifyNoInteractions(processor);
+  }
+
+  @Test
+  void keyAsSegmentFlagIsForwardedByTheRequestHandler() throws Exception {
+    final EntityProcessor processor = mock(EntityProcessor.class);
+    final OData odata = OData.newInstance();
+    final ODataRequestHandler handler = new ODataRequestHandlerImpl(odata,
+        odata.createServiceMetadata(new EdmTechProvider(), Collections.emptyList()));
+    handler.setKeyAsSegment(true);
+    handler.register(processor);
+
+    handler.process(keyAsSegmentRequest("ESAllPrim/32767"));
+
+    verify(processor).readEntity(
+        any(ODataRequest.class), any(ODataResponse.class), any(UriInfo.class), any(ContentType.class));
+  }
+
+  private ODataResponse dispatchWithKeyAsSegment(final String path, final boolean keyAsSegment,
+      final Processor processor) {
+    final OData odata = OData.newInstance();
+    final ODataHandlerImpl handler = new ODataHandlerImpl(odata,
+        odata.createServiceMetadata(new EdmTechProvider(), Collections.emptyList()),
+        new ServerCoreDebugger(odata));
+    handler.setKeyAsSegment(keyAsSegment);
+    handler.register(processor);
+
+    final ODataResponse response = handler.process(keyAsSegmentRequest(path));
+    assertNotNull(response);
+    return response;
+  }
+
+  private ODataRequest keyAsSegmentRequest(final String path) {
+    final ODataRequest request = new ODataRequest();
+    request.setMethod(HttpMethod.GET);
+    request.setRawBaseUri(BASE_URI);
+    request.setRawODataPath(path);
+    request.addHeader(HttpHeader.CONTENT_TYPE, Collections.singletonList(ContentType.JSON.toContentTypeString()));
+    return request;
   }
 }

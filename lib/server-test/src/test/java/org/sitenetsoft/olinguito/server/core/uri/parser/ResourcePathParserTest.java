@@ -19,6 +19,8 @@
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - OData 4.01: optional function parameters
  * Copyright 2026 SiteNetSoft - OData 4.01: key-as-segment URL convention
+ * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 1 fix round 1: tests for collection navigation and for
+ * the model-flag fallback on single-valued navigation
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -333,6 +335,42 @@ class ResourcePathParserTest {
     testUri.runEx("ESComplexKeyAsSegment/thisIsAKey")
         .isExSemantic(MessageKeys.WRONG_NUMBER_OF_KEY_PROPERTIES);
     testUri.runEx("ESKeyAsSegmentInt/notANumber").isExSemantic(MessageKeys.INVALID_KEY_VALUE);
+  }
+
+  @Test
+  void keyAsSegmentOnCollectionNavigationWhenServiceEnabled() throws Exception {
+    kasRes.run("ESKeyNav/1/NavPropertyETTwoKeyNavMany/1/abc")
+        .isEntitySet("ESKeyNav")
+        .isKeyPredicate(0, "PropertyInt16", "1")
+        .n()
+        .isNavProperty("NavPropertyETTwoKeyNavMany", EntityTypeProvider.nameETTwoKeyNav, false)
+        .isKeyPredicate(0, "PropertyInt16", "1")
+        .isKeyPredicate(1, "PropertyString", "'abc'");
+    // an incomplete key on the navigation is rejected as well
+    // (Task 2 will allow omitting key values covered by a referential constraint)
+    kasUri.runEx("ESKeyNav/1/NavPropertyETTwoKeyNavMany/1")
+        .isExSemantic(MessageKeys.WRONG_NUMBER_OF_KEY_PROPERTIES);
+  }
+
+  @Test
+  void keyAsSegmentModelFlagOnSingleValuedNavigationResolvesPropertiesFirst() throws Exception {
+    // the (non-standard) model flag on a single-valued navigation property keeps fallback semantics:
+    // a name that the target type declares is a property, not a key value
+    testRes.run("ESKeyAsSegmentStringNavKeyAsSegment/thisIsAKey/NavPropertyKeyAsSegment/PropertyString")
+        .isEntitySet("ESKeyAsSegmentStringNavKeyAsSegment")
+        .isKeyPredicate(0, "PropertyString", "'thisIsAKey'")
+        .n()
+        .isNavProperty("NavPropertyKeyAsSegment", PropertyProvider.navPropertyKeyAsSegment.getTypeFQN(), false)
+        .n()
+        .isPrimitiveProperty("PropertyString", PropertyProvider.nameString, false);
+
+    // a name that is not a member of the target type is a key value
+    testRes.run("ESKeyAsSegmentStringNavKeyAsSegment/thisIsAKey/NavPropertyKeyAsSegment/navKey")
+        .isEntitySet("ESKeyAsSegmentStringNavKeyAsSegment")
+        .isKeyPredicate(0, "PropertyString", "'thisIsAKey'")
+        .n()
+        .isNavProperty("NavPropertyKeyAsSegment", PropertyProvider.navPropertyKeyAsSegment.getTypeFQN(), false)
+        .isKeyPredicate(0, "PropertyString", "'navKey'");
   }
 
   @Test
