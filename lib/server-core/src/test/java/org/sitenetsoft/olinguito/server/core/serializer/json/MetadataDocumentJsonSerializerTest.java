@@ -535,19 +535,24 @@ class MetadataDocumentJsonSerializerTest {
   /**
    * OData 4.01, CSDL JSON section 4: a metadata document of a service MUST carry $EntityContainer,
    * and it is the one place in the whole format where the namespace-qualified name is required even
-   * though the schema declares an alias.
+   * though the schema declares an alias. It must also name a container that is genuinely present in
+   * the document -- not a dangling reference.
    *
-   * <p>{@code LocalProvider.getEntityContainerInfo(null)} (the lookup {@code Edm.getEntityContainer()}
-   * uses) resolves the default container to {@code org.olingo.container} rather than
-   * {@code namespace.container} -- a pre-existing quirk of this test fixture, not of the code under
-   * test -- so that is the namespace-qualified name asserted here.
+   * <p>{@code LocalProvider} declares an entity container in each of three schemas
+   * ({@code namespace1.container1}, {@code namespace2.container2}, {@code namespace.container});
+   * {@code MetadataDocumentJsonSerializer} picks the first schema-owned container it finds while
+   * walking {@code Edm#getSchemas()}, which is {@code namespace1}'s {@code container1} (schema1 is
+   * first in provider order) -- so that, namespace-qualified from the owning schema, is what is
+   * asserted. Namespace {@code namespace1} declares alias {@code Alias1}, so the negative assertion
+   * (alias-qualified form absent) is load-bearing: an implementation that alias-resolved here would
+   * emit {@code "Alias1.container1"} instead, and the assertion would catch it.
    */
   @Test
   void documentCarriesNamespaceQualifiedEntityContainer() throws Exception {
     final String metadata = localMetadata();
-    assertTrue(metadata.contains("\"$EntityContainer\":\"org.olingo.container\""),
+    assertTrue(metadata.contains("\"$EntityContainer\":\"namespace1.container1\""),
         "the document object must name the service's container with its namespace, not its alias");
-    assertFalse(metadata.contains("\"$EntityContainer\":\"Alias.container\""),
+    assertFalse(metadata.contains("\"$EntityContainer\":\"Alias1.container1\""),
         "the alias-qualified form is explicitly not allowed for $EntityContainer");
   }
 
@@ -603,6 +608,24 @@ class MetadataDocumentJsonSerializerTest {
   @Test
   void versionIsTheServedVersion() throws Exception {
     assertTrue(localMetadata().startsWith("{\"$Version\":\"4.0\","), "the served version is 4.0");
+  }
+
+  /**
+   * Sections 13.5/13.6: $EntitySet on an action/function import is "either the unqualified name of an
+   * entity set in the same entity container or a path to an entity set in a different entity
+   * container." {@code LocalProvider}'s main container ({@code namespace.container}) has both shapes:
+   * {@code AIRTPrimParam} binds to {@code ESTwoKeyNav} in its own container (asserted unqualified by
+   * {@code aliasTest}), and the fixture-added {@code AIRTPrimParamCrossContainer} binds to
+   * {@code ESContainer2}, which is declared in the unrelated {@code namespace2.container2} -- a
+   * different container than the one importing it, so the value must be the target container's
+   * namespace-qualified name followed by a slash and the entity set's name.
+   */
+  @Test
+  void actionImportEntitySetIsQualifiedPathAcrossContainers() throws Exception {
+    assertTrue(localMetadata().contains(
+        "\"AIRTPrimParamCrossContainer\":{\"$Action\":\"Alias.UARTPrimParam\","
+        + "\"$EntitySet\":\"namespace2.container2/ESContainer2\"}"),
+        "an entity set in a different container must be named by a container-qualified path");
   }
 
   private String localMetadata() throws SerializerException, IOException {
@@ -909,6 +932,9 @@ class MetadataDocumentJsonSerializerTest {
                     .setNavigationPropertyBindings(Collections.singletonList(new CsdlNavigationPropertyBinding()
                             .setPath("NavPropertyETOne")
                             .setTarget("ESOne")));
+            case "ESContainer2" -> new CsdlEntitySet()
+                    .setName("ESContainer2")
+                    .setType(nameETOne);
             default -> null;
         };
     }
@@ -939,6 +965,14 @@ class MetadataDocumentJsonSerializerTest {
           .setName("AIRTPrimParam")
           .setAction(nameUARTPrimParam)
           .setEntitySet("ESTwoKeyNav");
+        }
+        if (actionImportName.equals("AIRTPrimParamCrossContainer")) {
+          // Tier 6 Wave 1, finding 3: $EntitySet must be a container-FQN-qualified path when the
+          // returned entity set lives in a different entity container than the one importing it.
+          return new CsdlActionImport()
+          .setName("AIRTPrimParamCrossContainer")
+          .setAction(nameUARTPrimParam)
+          .setEntitySet(nameContainer2.getFullQualifiedNameAsString() + "/ESContainer2");
         }
       }
       return null;
@@ -1060,9 +1094,12 @@ class MetadataDocumentJsonSerializerTest {
       return container;
     }
     
-    public CsdlEntityContainer getEntityContainer2() {
+    public CsdlEntityContainer getEntityContainer2() throws ODataException {
       CsdlEntityContainer container = new CsdlEntityContainer();
       container.setName("container2");
+      // Target of the cross-container action import below (Tier 6 Wave 1, finding 3): an entity set
+      // that lives in a container other than the one importing it.
+      container.setEntitySets(Collections.singletonList(getEntitySet(nameContainer2, "ESContainer2")));
 
       return container;
     }
@@ -1070,7 +1107,10 @@ class MetadataDocumentJsonSerializerTest {
     @Override
     public CsdlEntityContainerInfo getEntityContainerInfo(final FullQualifiedName entityContainerName) {
       if (entityContainerName == null) {
-        return new CsdlEntityContainerInfo().setContainerName(new FullQualifiedName("org.olingo", "container"));
+        // Namespace-consistent with the container actually declared in schema "namespace" below, so the
+        // document-level $EntityContainer test is load-bearing (namespace "namespace" carries alias
+        // "Alias", so an implementation that alias-resolved would be caught).
+        return new CsdlEntityContainerInfo().setContainerName(nameContainer);
       }
       return null;
     }
@@ -1092,7 +1132,8 @@ class MetadataDocumentJsonSerializerTest {
           getSingleton(nameContainer, "SIBinding")));
 
       // ActionImports
-      container.setActionImports(Collections.singletonList(getActionImport(nameContainer, "AIRTPrimParam")));
+      container.setActionImports(List.of(getActionImport(nameContainer, "AIRTPrimParam"),
+          getActionImport(nameContainer, "AIRTPrimParamCrossContainer")));
 
       // FunctionImports
       container.setFunctionImports(List.of(getFunctionImport(nameContainer, "FINRTInt16"),

@@ -161,17 +161,43 @@ public class MetadataDocumentJsonSerializer {
         ODataServiceVersion.V401 == dataServiceVersion ? ODataServiceVersion.V401.toString()
             : ODataServiceVersion.V40.toString());
     // Section 4: a metadata document of an OData service MUST name its entity container, and this is
-    // the only reference in the document that MUST NOT use the alias.
-    final EdmEntityContainer container = serviceMetadata.getEdm().getEntityContainer();
-    if (container != null) {
-      json.writeStringField(ENTITY_CONTAINER_MEMBER,
-          container.getNamespace() + "." + container.getName());
+    // the only reference in the document that MUST NOT use the alias. The container that is actually
+    // serialized into the schema tree gets its namespace from the schema that declares it
+    // (EdmSchema#getEntityContainer()); Edm#getEntityContainer() resolves the *default* container via
+    // the provider's container-info lookup, which is not guaranteed to agree with that namespace (and
+    // does not, for a provider whose default-container lookup answers with a different namespace than
+    // the schema the container is actually declared in) -- naming that container here would dangle. So
+    // this walks the schemas for the one that owns the served container and names it from there,
+    // falling back to Edm#getEntityContainer() only when no schema carries one.
+    final String entityContainerName = documentEntityContainerName();
+    if (entityContainerName != null) {
+      json.writeStringField(ENTITY_CONTAINER_MEMBER, entityContainerName);
     }
     if (!serviceMetadata.getReferences().isEmpty()) {
       appendReference(json);
     }
     appendDataServices(json);
     json.writeEndObject();
+  }
+
+  /**
+   * Section 4: the document-level $EntityContainer value must name the container that is actually
+   * present in the served schema tree, namespace-qualified from the owning schema -- never the alias,
+   * and never a container the document doesn't otherwise contain.
+   *
+   * @return the namespace-qualified name of the first schema-owned entity container found, falling back
+   *         to {@code Edm#getEntityContainer()} only when no schema carries one, or {@code null} when
+   *         there is no container in the EDM at all
+   */
+  private String documentEntityContainerName() {
+    for (EdmSchema schema : serviceMetadata.getEdm().getSchemas()) {
+      EdmEntityContainer schemaContainer = schema.getEntityContainer();
+      if (schemaContainer != null) {
+        return schema.getNamespace() + "." + schemaContainer.getName();
+      }
+    }
+    EdmEntityContainer container = serviceMetadata.getEdm().getEntityContainer();
+    return container == null ? null : container.getNamespace() + "." + container.getName();
   }
 
   private void appendDataServices(JsonGenerator json) throws SerializerException, IOException {
@@ -316,8 +342,10 @@ public class MetadataDocumentJsonSerializer {
 
       EdmEntitySet returnedEntitySet = functionImport.getReturnedEntitySet();
       if (returnedEntitySet != null) {
-        // Section 13.6: an entity set in the same container is named by its unqualified name.
-        json.writeStringField(DOLLAR + Kind.EntitySet.name(), returnedEntitySet.getName());
+        // Section 13.6: "either the unqualified name of an entity set in the same entity container or
+        // a path to an entity set in a different entity container."
+        json.writeStringField(DOLLAR + Kind.EntitySet.name(),
+            entitySetReferenceValue(functionImport.getEntityContainer(), returnedEntitySet));
       }
       // Default is false and we do not write the default
       if (functionImport.isIncludeInServiceDocument()) {
@@ -335,14 +363,35 @@ public class MetadataDocumentJsonSerializer {
       json.writeObjectFieldStart(actionImport.getName());
       // Section 13.5: the action import object MUST contain $Action; $Kind is not defined for it.
       json.writeStringField(DOLLAR + Kind.Action.name(), getAliasedFullQualifiedName(actionImport.getUnboundAction()));
-      if (actionImport.getReturnedEntitySet() != null) {
-        // Section 13.5: an entity set in the same container is named by its unqualified name.
-        json.writeStringField(DOLLAR + Kind.EntitySet.name(), actionImport.getReturnedEntitySet().getName());
+      EdmEntitySet returnedEntitySet = actionImport.getReturnedEntitySet();
+      if (returnedEntitySet != null) {
+        // Section 13.5: "either the unqualified name of an entity set in the same entity container or
+        // a path to an entity set in a different entity container."
+        json.writeStringField(DOLLAR + Kind.EntitySet.name(),
+            entitySetReferenceValue(actionImport.getEntityContainer(), returnedEntitySet));
       }
       appendAnnotations(json, actionImport, null);
       json.writeEndObject();
     }
-    
+
+  }
+
+  /**
+   * Sections 13.5/13.6: the value of $EntitySet is "either the unqualified name of an entity set in the
+   * same entity container or a path to an entity set in a different entity container." A target path to
+   * a model element in a different container is namespace-qualified-container-name/element-name (see
+   * the general target-path syntax, section 14.5.2 / Example 42:
+   * {@code MySchema.MyEntityContainer/MyEntitySet/...}), never alias- or container-namespace-of-the-
+   * import-prefixed as the pre-conformance code wrote it.
+   */
+  private String entitySetReferenceValue(final EdmEntityContainer importContainer,
+      final EdmEntitySet returnedEntitySet) {
+    EdmEntityContainer targetContainer = returnedEntitySet.getEntityContainer();
+    if (targetContainer != null
+        && !targetContainer.getFullQualifiedName().equals(importContainer.getFullQualifiedName())) {
+      return targetContainer.getFullQualifiedName().getFullQualifiedNameAsString() + "/" + returnedEntitySet.getName();
+    }
+    return returnedEntitySet.getName();
   }
 
   private void appendEntitySets(final JsonGenerator json, 
