@@ -19,6 +19,7 @@
   under the License.
 
   Copyright 2026 SiteNetSoft - Removed unused jakarta.annotation-api and odata-vocabularies dependencies
+  Copyright 2026 SiteNetSoft - Declared Jackson for the CSDL JSON metadata parser
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -67,6 +68,10 @@
       <artifactId>test-fixtures</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>

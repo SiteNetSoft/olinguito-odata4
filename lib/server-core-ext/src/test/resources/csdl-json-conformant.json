@@ -1,0 +1,87 @@
+{
+  "$Version": "4.01",
+  "$EntityContainer": "ns.Container",
+  "$Reference": {
+    "http://localhost/vocabularies/Org.OData.Core.V1.xml": {
+      "$Include": [
+        { "$Namespace": "Org.OData.Core.V1", "$Alias": "Core" }
+      ],
+      "$IncludeAnnotations": [
+        { "$TermNamespace": "Org.OData.Core.V1", "$Qualifier": "Tablet", "$TargetNamespace": "ns" }
+      ]
+    }
+  },
+  "ns": {
+    "$Alias": "self",
+    "Colour": {
+      "$Kind": "EnumType",
+      "$UnderlyingType": "Edm.Int16",
+      "$IsFlags": true,
+      "Red": 1,
+      "Blue": 2
+    },
+    "Weight": {
+      "$Kind": "TypeDefinition",
+      "$UnderlyingType": "Edm.Decimal",
+      "$Precision": 7,
+      "$Scale": 3
+    },
+    "Info": {
+      "$Kind": "ComplexType",
+      "$OpenType": true,
+      "ID": { "$Type": "Edm.Int32" },
+      "Label": {}
+    },
+    "Category": {
+      "$Kind": "EntityType",
+      "$Key": [
+        { "CategoryInfoID": "Info/ID" },
+        "Code"
+      ],
+      "Code": { "$Type": "Edm.Int32" },
+      "Info": { "$Type": "self.Info" },
+      "Name": { "$Nullable": true, "$MaxLength": 40 },
+      "Tags": { "$Collection": true, "$Nullable": true },
+      "Shade": { "$Type": "self.Colour" },
+      "Products": {
+        "$Kind": "NavigationProperty",
+        "$Collection": true,
+        "$Type": "self.Product",
+        "$Partner": "Category",
+        "$OnDelete": "Cascade"
+      }
+    },
+    "Product": {
+      "$Kind": "EntityType",
+      "$HasStream": true,
+      "$Key": [ "ID" ],
+      "ID": { "$Type": "Edm.Int32" },
+      "CategoryCode": { "$Type": "Edm.Int32", "$Nullable": true },
+      "Category": {
+        "$Kind": "NavigationProperty",
+        "$Type": "self.Category",
+        "$Nullable": true,
+        "$Partner": "Products",
+        "$ContainsTarget": false,
+        "$ReferentialConstraint": {
+          "CategoryCode": "Code"
+        }
+      }
+    },
+    "Container": {
+      "$Kind": "EntityContainer",
+      "$Extends": "self.BaseContainer",
+      "Categories": {
+        "$Collection": true,
+        "$Type": "self.Category",
+        "$NavigationPropertyBinding": { "Products": "Products" }
+      },
+      "Products": {
+        "$Collection": true,
+        "$Type": "self.Product",
+        "$IncludeInServiceDocument": false
+      },
+      "Best": { "$Type": "self.Product" }
+    }
+  }
+}

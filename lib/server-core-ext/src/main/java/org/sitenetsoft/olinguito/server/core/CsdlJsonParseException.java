@@ -1,0 +1,56 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Added the CSDL JSON parse exception
+ */
+package org.sitenetsoft.olinguito.server.core;
+
+import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
+
+/**
+ * Reports a CSDL JSON document that cannot be parsed. The exception carries the JSON member path of
+ * the failing member, so callers can point at the offending part of the document.
+ */
+public class CsdlJsonParseException extends ODataException {
+
+  private static final long serialVersionUID = 1L;
+
+  private final String jsonPath;
+
+  public CsdlJsonParseException(final String jsonPath, final String message) {
+    super(render(jsonPath, message));
+    this.jsonPath = jsonPath;
+  }
+
+  public CsdlJsonParseException(final String jsonPath, final String message, final Throwable cause) {
+    super(render(jsonPath, message), cause);
+    this.jsonPath = jsonPath;
+  }
+
+  /**
+   * @return the path of the failing JSON member, members separated by a forward slash; the empty
+   *         string when the failure is the document itself.
+   */
+  public String getJsonPath() {
+    return this.jsonPath;
+  }
+
+  private static String render(final String jsonPath, final String message) {
+    return "Failed to parse CSDL JSON at " + jsonPath + ": " + message;
+  }
+}

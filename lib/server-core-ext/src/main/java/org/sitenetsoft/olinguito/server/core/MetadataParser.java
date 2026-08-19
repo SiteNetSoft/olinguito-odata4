@@ -21,6 +21,7 @@
  * Copyright 2026 SiteNetSoft - Cached compiled regex pattern for split()
  * Copyright 2026 SiteNetSoft - OLINGO-1466/1520: Handle Scale="variable"
  * Copyright 2026 SiteNetSoft - Shared the reference loader, accepted 4.01 and fixed Nullable defaults
+ * Copyright 2026 SiteNetSoft - Exposed the default reference resolver to the CSDL JSON parser
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -1233,6 +1234,14 @@ public class MetadataParser {
         throws XMLStreamException;
   }
   
+  /**
+   * The resolver used when no other one is configured. Shared with the CSDL JSON parser so that both
+   * parsers resolve references the same way.
+   */
+  static ReferenceResolver defaultReferenceResolver() {
+    return new DefaultReferenceResolver();
+  }
+
   private static class DefaultReferenceResolver implements ReferenceResolver {
     @Override
     public InputStream resolveReference(URI referenceUri, String xmlBase) {
