@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Added the CSDL JSON metadata parser tests
  * Copyright 2026 SiteNetSoft - Pinned the include-alias resolution of qualified names
+ * Copyright 2026 SiteNetSoft - Added the operation, import and entity container parser tests
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -36,11 +37,16 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAction;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityContainer;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntitySet;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityType;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEnumType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlFunction;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlNavigationProperty;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlOnDeleteAction;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlPropertyRef;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlSingleton;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlTypeDefinition;
 import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
 import org.junit.jupiter.api.BeforeEach;
@@ -253,5 +259,182 @@ class MetadataJsonParserTest {
   void bothVersionsAreAccepted() throws Exception {
     assertNotNull(new MetadataJsonParser().buildEdmProvider(new StringReader("{\"$Version\":\"4.0\"}")));
     assertNotNull(new MetadataJsonParser().buildEdmProvider(new StringReader("{\"$Version\":\"4.01\"}")));
+  }
+
+  @Test
+  void entityContainerFromTheConformantFixture() throws Exception {
+    final CsdlEntityContainer container = provider.getEntityContainer();
+    assertEquals("Container", container.getName());
+    assertEquals("ns.BaseContainer", container.getExtendsContainer());
+
+    final CsdlEntitySet categories = container.getEntitySet("Categories");
+    assertEquals("ns.Category", categories.getType());
+    assertTrue(categories.isIncludeInServiceDocument(), "absence of the member means true for an entity set");
+    assertEquals("Products", categories.getNavigationPropertyBindings().get(0).getPath());
+    assertEquals("Products", categories.getNavigationPropertyBindings().get(0).getTarget());
+    assertFalse(container.getEntitySet("Products").isIncludeInServiceDocument());
+
+    final CsdlSingleton best = container.getSingleton("Best");
+    assertEquals("ns.Product", best.getType());
+  }
+
+  @Test
+  void actionAndFunctionOverloadsAreArrays() throws Exception {
+    final String csdl = "{\"$Version\":\"4.01\",\"ns\":{"
+        + "\"Reset\":[{\"$Kind\":\"Action\"},"
+        + "{\"$Kind\":\"Action\",\"$IsBound\":true,\"$EntitySetPath\":\"b/Nav\","
+        + "\"$Parameter\":[{\"$Name\":\"b\",\"$Type\":\"ns.ET\"},{\"$Name\":\"n\"}],"
+        + "\"$ReturnType\":{\"$Type\":\"ns.ET\",\"$Collection\":true}}],"
+        + "\"Top\":[{\"$Kind\":\"Function\",\"$IsComposable\":true,"
+        + "\"$Parameter\":[{\"$Name\":\"Year\",\"$Type\":\"Edm.Decimal\",\"$Precision\":4,\"$Scale\":0}],"
+        + "\"$ReturnType\":{\"$Type\":\"Edm.Int32\",\"$Nullable\":true}}]}}";
+    final SchemaBasedEdmProvider parsed =
+        new MetadataJsonParser().buildEdmProvider(new StringReader(csdl));
+
+    final List<CsdlAction> actions = parsed.getActions(new FullQualifiedName("ns", "Reset"));
+    assertEquals(2, actions.size());
+    assertFalse(actions.get(0).isBound(), "absence of $IsBound means false");
+    assertNull(actions.get(0).getReturnType(), "$ReturnType is optional for an action");
+    assertTrue(actions.get(1).isBound());
+    assertEquals("b/Nav", actions.get(1).getEntitySetPath());
+    assertEquals(2, actions.get(1).getParameters().size());
+    assertEquals("Edm.String", actions.get(1).getParameters().get(1).getType());
+    assertTrue(actions.get(1).getReturnType().isCollection());
+
+    final CsdlFunction function = parsed.getFunctions(new FullQualifiedName("ns", "Top")).get(0);
+    assertTrue(function.isComposable());
+    assertEquals(Integer.valueOf(4), function.getParameters().get(0).getPrecision());
+    assertTrue(function.getReturnType().isNullable());
+  }
+
+  /** Section 12.4: "It MUST contain the member $ReturnType" - for functions only. */
+  @Test
+  void functionWithoutReturnTypeIsRejected() {
+    final CsdlJsonParseException thrown = assertThrows(CsdlJsonParseException.class,
+        () -> new MetadataJsonParser().buildEdmProvider(new StringReader(
+            "{\"$Version\":\"4.01\",\"ns\":{\"F\":[{\"$Kind\":\"Function\"}]}}")));
+    assertEquals("ns/F[0]/$ReturnType", thrown.getJsonPath());
+  }
+
+  /**
+   * The brief pinned the raw {@code self.} prefix here, but that predates the document-global alias
+   * resolution Task 5 had to add (and which the brief's own $Extends expectation relies on): a
+   * qualified name only resolves against the provider once the alias is mapped back to its namespace.
+   */
+  @Test
+  void actionAndFunctionImports() throws Exception {
+    final String csdl = "{\"$Version\":\"4.01\",\"$EntityContainer\":\"ns.C\",\"ns\":{\"$Alias\":\"self\","
+        + "\"C\":{\"$Kind\":\"EntityContainer\","
+        + "\"Reset\":{\"$Action\":\"self.Reset\"},"
+        + "\"Top\":{\"$Function\":\"self.Top\",\"$EntitySet\":\"Products\","
+        + "\"$IncludeInServiceDocument\":true}}}}";
+    final CsdlEntityContainer container =
+        new MetadataJsonParser().buildEdmProvider(new StringReader(csdl)).getEntityContainer();
+    assertEquals("ns.Reset", container.getActionImports().get(0).getAction());
+    assertEquals("Reset", container.getActionImports().get(0).getName());
+    assertNull(container.getActionImports().get(0).getEntitySet());
+    assertEquals("ns.Top", container.getFunctionImports().get(0).getFunction());
+    assertEquals("Products", container.getFunctionImports().get(0).getEntitySet());
+    assertTrue(container.getFunctionImports().get(0).isIncludeInServiceDocument());
+  }
+
+  /** A cross-container $EntitySet target path keeps both of its segments. */
+  @Test
+  void entitySetTargetPathIsNotStripped() throws Exception {
+    final String csdl = "{\"$Version\":\"4.01\",\"$EntityContainer\":\"ns.C\",\"ns\":{"
+        + "\"C\":{\"$Kind\":\"EntityContainer\","
+        + "\"Top\":{\"$Function\":\"ns.Top\",\"$EntitySet\":\"other.Container/Products\"}}}}";
+    assertEquals("other.Container/Products",
+        new MetadataJsonParser().buildEdmProvider(new StringReader(csdl))
+            .getEntityContainer().getFunctionImports().get(0).getEntitySet());
+  }
+
+  /** Section 13.6: a function import that says nothing is NOT in the service document (13.2 is the
+   * other way round for entity sets). */
+  @Test
+  void functionImportDefaultsToNotIncludedInServiceDocument() throws Exception {
+    final String csdl = "{\"$Version\":\"4.01\",\"$EntityContainer\":\"ns.C\",\"ns\":{"
+        + "\"C\":{\"$Kind\":\"EntityContainer\",\"Top\":{\"$Function\":\"ns.Top\"}}}}";
+    assertFalse(new MetadataJsonParser().buildEdmProvider(new StringReader(csdl))
+        .getEntityContainer().getFunctionImports().get(0).isIncludeInServiceDocument());
+  }
+
+  /**
+   * Legacy tolerance: the shapes the old Olinguito JSON writer produced are accepted on input and
+   * normalized. They are never written - Tasks 1-3 removed them from the writer.
+   */
+  @Test
+  void legacyWriterShapesAreTolerated() throws Exception {
+    final String csdl = "{\"$Version\":\"4.01\",\"ns\":{"
+        + "\"C\":{\"$Kind\":\"EntityContainer\","
+        + "\"Extending\":{\"$Kind\":\"EntityContainer\",\"$Extends\":\"ns.Base\"},"
+        + "\"ES\":{\"$Kind\":\"EntitySet\",\"$Type\":\"ns.ET\"},"
+        + "\"S\":{\"$Kind\":\"Singleton\",\"$Type\":\"ns.ET\"},"
+        + "\"AI\":{\"$Kind\":\"ActionImport\",\"$Action\":\"ns.A\",\"$EntitySet\":\"Alias.ES\"}}}}";
+    final CsdlEntityContainer container =
+        new MetadataJsonParser().buildEdmProvider(new StringReader(csdl)).getEntityContainer();
+    assertEquals("C", container.getName(), "the container is found without a top-level $EntityContainer");
+    assertEquals("ns.Base", container.getExtendsContainer(), "the nested Extending object is normalized");
+    assertEquals("ns.ET", container.getEntitySet("ES").getType(), "an entity set without $Collection");
+    assertEquals("ns.ET", container.getSingleton("S").getType());
+    assertEquals("ES", container.getActionImports().get(0).getEntitySet(), "the alias prefix is stripped");
+  }
+
+  @Test
+  void twoContainersWithoutEntityContainerMemberAreRejected() {
+    final String csdl = "{\"$Version\":\"4.01\",\"ns\":{\"C1\":{\"$Kind\":\"EntityContainer\"},"
+        + "\"C2\":{\"$Kind\":\"EntityContainer\"}}}";
+    assertThrows(CsdlJsonParseException.class,
+        () -> new MetadataJsonParser().buildEdmProvider(new StringReader(csdl)));
+  }
+
+  /** $EntityContainer picks the service container out of a document that declares more than one. */
+  @Test
+  void entityContainerMemberSelectsTheServiceContainer() throws Exception {
+    final String csdl = "{\"$Version\":\"4.01\",\"$EntityContainer\":\"ns.C2\",\"ns\":{"
+        + "\"C1\":{\"$Kind\":\"EntityContainer\"},\"C2\":{\"$Kind\":\"EntityContainer\"}}}";
+    assertEquals("C2", new MetadataJsonParser().buildEdmProvider(new StringReader(csdl))
+        .getEntityContainer().getName());
+  }
+
+  /** An entity container member that is none of the four child kinds is an error, with its path. */
+  @Test
+  void unknownEntityContainerMemberIsRejected() {
+    final String csdl = "{\"$Version\":\"4.01\",\"ns\":{\"C\":{\"$Kind\":\"EntityContainer\","
+        + "\"Odd\":{\"$Whatever\":true}}}}";
+    final CsdlJsonParseException thrown = assertThrows(CsdlJsonParseException.class,
+        () -> new MetadataJsonParser().buildEdmProvider(new StringReader(csdl)));
+    assertEquals("ns/C/Odd", thrown.getJsonPath());
+  }
+
+  /** A parameter object MUST carry $Name; the error names the failing array item. */
+  @Test
+  void parameterWithoutNameIsRejected() {
+    final CsdlJsonParseException thrown = assertThrows(CsdlJsonParseException.class,
+        () -> new MetadataJsonParser().buildEdmProvider(new StringReader(
+            "{\"$Version\":\"4.01\",\"ns\":{\"A\":[{\"$Kind\":\"Action\",\"$Parameter\":[{}]}]}}")));
+    assertEquals("ns/A[0]/$Parameter[0]/$Name", thrown.getJsonPath());
+  }
+
+  /** An overload array item MUST carry $Kind with Action or Function. */
+  @Test
+  void overloadWithoutKindIsRejected() {
+    final CsdlJsonParseException thrown = assertThrows(CsdlJsonParseException.class,
+        () -> new MetadataJsonParser().buildEdmProvider(new StringReader(
+            "{\"$Version\":\"4.01\",\"ns\":{\"A\":[{\"$IsBound\":true}]}}")));
+    assertEquals("ns/A[0]/$Kind", thrown.getJsonPath());
+  }
+
+  /** Legacy tolerance: the pre-conformance writer's "OnDelete" object beside the conformant string. */
+  @Test
+  void legacyOnDeleteObjectIsTolerated() throws Exception {
+    final String csdl = "{\"$Version\":\"4.01\",\"ns\":{\"ET\":{\"$Kind\":\"EntityType\","
+        + "\"$Key\":[\"ID\"],\"ID\":{\"$Type\":\"Edm.Int32\"},"
+        + "\"Nav\":{\"$Kind\":\"NavigationProperty\",\"$Type\":\"ns.ET\","
+        + "\"OnDelete\":{\"Action\":\"Cascade\"}}}}}";
+    final CsdlEntityType type = new MetadataJsonParser().buildEdmProvider(new StringReader(csdl))
+        .getEntityType(new FullQualifiedName("ns", "ET"));
+    assertEquals(CsdlOnDeleteAction.Cascade,
+        type.getNavigationProperty("Nav").getOnDelete().getAction());
   }
 }

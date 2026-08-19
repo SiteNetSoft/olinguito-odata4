@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Added a CSDL JSON metadata parser for the structural model
+ * Copyright 2026 SiteNetSoft - Delegated the operations and the entity container to a collaborator
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -70,55 +71,57 @@ import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
  */
 public class MetadataJsonParser {
 
-  private static final String DOLLAR = "$";
-  private static final String AT = "@";
-  private static final String VERSION = DOLLAR + "Version";
-  private static final String REFERENCES = DOLLAR + "Reference";
-  private static final String INCLUDE = DOLLAR + "Include";
-  private static final String NAMESPACE = DOLLAR + "Namespace";
-  private static final String ALIAS = DOLLAR + "Alias";
-  private static final String INCLUDE_ANNOTATIONS = DOLLAR + "IncludeAnnotations";
-  private static final String TERM_NAMESPACE = DOLLAR + "TermNamespace";
-  private static final String TARGET_NAMESPACE = DOLLAR + "TargetNamespace";
-  private static final String QUALIFIER = DOLLAR + "Qualifier";
-  private static final String IS_FLAGS = DOLLAR + "IsFlags";
-  private static final String UNDERLYING_TYPE = DOLLAR + "UnderlyingType";
-  private static final String KIND = DOLLAR + "Kind";
-  private static final String MAX_LENGTH = DOLLAR + "MaxLength";
-  private static final String PRECISION = DOLLAR + "Precision";
-  private static final String SCALE = DOLLAR + "Scale";
-  private static final String SRID_MEMBER = DOLLAR + "SRID";
-  private static final String COLLECTION = DOLLAR + "Collection";
-  private static final String BASE_TYPE = DOLLAR + "BaseType";
-  private static final String HAS_STREAM = DOLLAR + "HasStream";
-  private static final String KEY = DOLLAR + "Key";
-  private static final String ABSTRACT = DOLLAR + "Abstract";
-  private static final String OPEN_TYPE = DOLLAR + "OpenType";
-  private static final String TYPE = DOLLAR + "Type";
-  private static final String NULLABLE = DOLLAR + "Nullable";
-  private static final String UNICODE = DOLLAR + "Unicode";
-  private static final String DEFAULT_VALUE = DOLLAR + "DefaultValue";
-  private static final String PARTNER = DOLLAR + "Partner";
-  private static final String CONTAINS_TARGET = DOLLAR + "ContainsTarget";
-  private static final String REFERENTIAL_CONSTRAINT = DOLLAR + "ReferentialConstraint";
-  private static final String ON_DELETE = DOLLAR + "OnDelete";
-  private static final String ENTITY_CONTAINER = DOLLAR + "EntityContainer";
-  private static final String ANNOTATIONS = DOLLAR + "Annotations";
-  private static final String BASE_TERM = DOLLAR + "BaseTerm";
-  private static final String APPLIES_TO = DOLLAR + "AppliesTo";
+  static final String DOLLAR = "$";
+  static final String AT = "@";
+  static final String VERSION = DOLLAR + "Version";
+  static final String REFERENCES = DOLLAR + "Reference";
+  static final String INCLUDE = DOLLAR + "Include";
+  static final String NAMESPACE = DOLLAR + "Namespace";
+  static final String ALIAS = DOLLAR + "Alias";
+  static final String INCLUDE_ANNOTATIONS = DOLLAR + "IncludeAnnotations";
+  static final String TERM_NAMESPACE = DOLLAR + "TermNamespace";
+  static final String TARGET_NAMESPACE = DOLLAR + "TargetNamespace";
+  static final String QUALIFIER = DOLLAR + "Qualifier";
+  static final String IS_FLAGS = DOLLAR + "IsFlags";
+  static final String UNDERLYING_TYPE = DOLLAR + "UnderlyingType";
+  static final String KIND = DOLLAR + "Kind";
+  static final String MAX_LENGTH = DOLLAR + "MaxLength";
+  static final String PRECISION = DOLLAR + "Precision";
+  static final String SCALE = DOLLAR + "Scale";
+  static final String SRID_MEMBER = DOLLAR + "SRID";
+  static final String COLLECTION = DOLLAR + "Collection";
+  static final String BASE_TYPE = DOLLAR + "BaseType";
+  static final String HAS_STREAM = DOLLAR + "HasStream";
+  static final String KEY = DOLLAR + "Key";
+  static final String ABSTRACT = DOLLAR + "Abstract";
+  static final String OPEN_TYPE = DOLLAR + "OpenType";
+  static final String TYPE = DOLLAR + "Type";
+  static final String NULLABLE = DOLLAR + "Nullable";
+  static final String UNICODE = DOLLAR + "Unicode";
+  static final String DEFAULT_VALUE = DOLLAR + "DefaultValue";
+  static final String PARTNER = DOLLAR + "Partner";
+  static final String CONTAINS_TARGET = DOLLAR + "ContainsTarget";
+  static final String REFERENTIAL_CONSTRAINT = DOLLAR + "ReferentialConstraint";
+  static final String ON_DELETE = DOLLAR + "OnDelete";
+  static final String ENTITY_CONTAINER = DOLLAR + "EntityContainer";
+  static final String ANNOTATIONS = DOLLAR + "Annotations";
+  static final String BASE_TERM = DOLLAR + "BaseTerm";
+  static final String APPLIES_TO = DOLLAR + "AppliesTo";
+  static final String LEGACY_ON_DELETE = "OnDelete";
+  static final String LEGACY_ON_DELETE_ACTION = "Action";
 
-  private static final String KIND_ENTITY_TYPE = "EntityType";
-  private static final String KIND_COMPLEX_TYPE = "ComplexType";
-  private static final String KIND_ENUM_TYPE = "EnumType";
-  private static final String KIND_TYPE_DEFINITION = "TypeDefinition";
-  private static final String KIND_TERM = "Term";
-  private static final String KIND_ENTITY_CONTAINER = "EntityContainer";
-  private static final String KIND_NAVIGATION_PROPERTY = "NavigationProperty";
+  static final String KIND_ENTITY_TYPE = "EntityType";
+  static final String KIND_COMPLEX_TYPE = "ComplexType";
+  static final String KIND_ENUM_TYPE = "EnumType";
+  static final String KIND_TYPE_DEFINITION = "TypeDefinition";
+  static final String KIND_TERM = "Term";
+  static final String KIND_ENTITY_CONTAINER = "EntityContainer";
+  static final String KIND_NAVIGATION_PROPERTY = "NavigationProperty";
 
-  private static final String EDM_STRING = "Edm.String";
-  private static final String EDM_INT32 = "Edm.Int32";
-  private static final String SCALE_VARIABLE = "variable";
-  private static final String SCALE_FLOATING = "floating";
+  static final String EDM_STRING = "Edm.String";
+  static final String EDM_INT32 = "Edm.Int32";
+  static final String SCALE_VARIABLE = "variable";
+  static final String SCALE_FLOATING = "floating";
   private static final java.util.regex.Pattern WHITESPACE = java.util.regex.Pattern.compile("\\s+");
 
   private boolean parseAnnotations = false;
@@ -134,6 +137,9 @@ public class MetadataJsonParser {
 
   /** Document-global aliases, mapped to the namespace they stand for. */
   private final Map<String, String> aliasToNamespace = new HashMap<>();
+
+  /** Reads the operation overloads and the entity container; see {@link MetadataJsonContainerReader}. */
+  private final MetadataJsonContainerReader containerReader = new MetadataJsonContainerReader(this);
 
   public MetadataJsonParser() {
     this(new HashMap<>());
@@ -338,6 +344,7 @@ public class MetadataJsonParser {
       readReferences(objectNode(document, REFERENCES, path), provider, child(path, REFERENCES));
     }
     collectAliases(document);
+    this.containerReader.reset();
     final Iterator<Map.Entry<String, JsonNode>> members = document.fields();
     while (members.hasNext()) {
       final Map.Entry<String, JsonNode> member = members.next();
@@ -384,7 +391,7 @@ public class MetadataJsonParser {
   }
 
   /** Replaces an alias-qualified name with its namespace-qualified form; other names pass through. */
-  private String resolveName(final String qualifiedName) {
+  String resolveName(final String qualifiedName) {
     if (qualifiedName == null) {
       return null;
     }
@@ -462,7 +469,10 @@ public class MetadataJsonParser {
   private void readSchemaMember(final CsdlSchema schema, final String name, final JsonNode value, final String path)
       throws CsdlJsonParseException {
     if (value.isArray()) {
-      return; // action and function overloads
+      // Sections 12.2 and 12.4: an action or a function is a schema member whose value is the array of
+      // its overloads.
+      this.containerReader.readOverloads(schema, name, (ArrayNode) value, path);
+      return;
     }
     final ObjectNode node = objectNode(value, path);
     final String kind = text(node, KIND, null);
@@ -486,7 +496,8 @@ public class MetadataJsonParser {
         schema.getTerms().add(readTerm(name, node, path));
         break;
       case KIND_ENTITY_CONTAINER:
-        break; // the entity container and its children
+        this.containerReader.readContainer(schema, name, node, path);
+        break;
       default:
         throw new CsdlJsonParseException(child(path, KIND), "unknown schema member kind " + kind);
     }
@@ -596,16 +607,31 @@ public class MetadataJsonParser {
     property.setPartner(text(node, PARTNER, null));
     property.setContainsTarget(flag(node, CONTAINS_TARGET));
     property.setReferentialConstraints(readReferentialConstraints(node, path));
-    if (node.has(ON_DELETE)) {
-      final String action = requireText(node, ON_DELETE, path);
+    final String onDelete = onDeleteAction(node, path);
+    if (onDelete != null) {
       try {
-        property.setOnDelete(new CsdlOnDelete().setAction(CsdlOnDeleteAction.valueOf(action)));
+        property.setOnDelete(new CsdlOnDelete().setAction(CsdlOnDeleteAction.valueOf(onDelete)));
       } catch (IllegalArgumentException e) {
         throw new CsdlJsonParseException(child(path, ON_DELETE),
             "$OnDelete is one of Cascade, None, SetNull or SetDefault", e);
       }
     }
     return property;
+  }
+
+  /**
+   * Section 8.4: "The value of $OnDelete is a string". The pre-conformance Olinguito writer emitted an
+   * "OnDelete" object with an "Action" member instead, which is tolerated on input and never written.
+   */
+  private static String onDeleteAction(final ObjectNode node, final String path) throws CsdlJsonParseException {
+    if (node.has(ON_DELETE)) {
+      return requireText(node, ON_DELETE, path);
+    }
+    final JsonNode legacy = node.get(LEGACY_ON_DELETE);
+    if (legacy != null && legacy.isObject() && legacy.get(LEGACY_ON_DELETE_ACTION) != null) {
+      return legacy.get(LEGACY_ON_DELETE_ACTION).asText();
+    }
+    return null;
   }
 
   private List<CsdlReferentialConstraint> readReferentialConstraints(final ObjectNode node, final String path)
@@ -810,7 +836,7 @@ public class MetadataJsonParser {
     };
   }
 
-  private void readFacets(final ObjectNode node, final FacetSink sink, final String path)
+  void readFacets(final ObjectNode node, final FacetSink sink, final String path)
       throws CsdlJsonParseException {
     if (node.has(MAX_LENGTH)) {
       final JsonNode maxLength = node.get(MAX_LENGTH);
@@ -849,7 +875,7 @@ public class MetadataJsonParser {
     }
   }
 
-  private static String requireText(final ObjectNode node, final String member, final String path)
+  static String requireText(final ObjectNode node, final String member, final String path)
       throws CsdlJsonParseException {
     final JsonNode value = node.get(member);
     if (value == null || !value.isTextual()) {
@@ -858,17 +884,17 @@ public class MetadataJsonParser {
     return value.asText();
   }
 
-  private static String text(final ObjectNode node, final String member, final String defaultValue) {
+  static String text(final ObjectNode node, final String member, final String defaultValue) {
     final JsonNode value = node.get(member);
     return value != null && value.isTextual() ? value.asText() : defaultValue;
   }
 
-  private static boolean flag(final ObjectNode node, final String member) {
+  static boolean flag(final ObjectNode node, final String member) {
     final JsonNode value = node.get(member);
     return value != null && value.asBoolean(false);
   }
 
-  private static Integer integer(final ObjectNode node, final String member, final String path)
+  static Integer integer(final ObjectNode node, final String member, final String path)
       throws CsdlJsonParseException {
     final JsonNode value = node.get(member);
     if (value == null || !value.canConvertToInt()) {
@@ -877,24 +903,24 @@ public class MetadataJsonParser {
     return value.intValue();
   }
 
-  private static ObjectNode objectNode(final ObjectNode parent, final String member, final String path)
+  static ObjectNode objectNode(final ObjectNode parent, final String member, final String path)
       throws CsdlJsonParseException {
     return objectNode(parent.get(member), child(path, member));
   }
 
-  private static ObjectNode objectNode(final Map.Entry<String, JsonNode> member, final String path)
+  static ObjectNode objectNode(final Map.Entry<String, JsonNode> member, final String path)
       throws CsdlJsonParseException {
     return objectNode(member.getValue(), child(path, member.getKey()));
   }
 
-  private static ObjectNode objectNode(final JsonNode node, final String path) throws CsdlJsonParseException {
+  static ObjectNode objectNode(final JsonNode node, final String path) throws CsdlJsonParseException {
     if (node == null || !node.isObject()) {
       throw new CsdlJsonParseException(path, "a JSON object is expected here");
     }
     return (ObjectNode) node;
   }
 
-  private static ArrayNode arrayNode(final ObjectNode parent, final String member, final String path)
+  static ArrayNode arrayNode(final ObjectNode parent, final String member, final String path)
       throws CsdlJsonParseException {
     final JsonNode node = parent.get(member);
     if (node == null || !node.isArray()) {
@@ -903,7 +929,7 @@ public class MetadataJsonParser {
     return (ArrayNode) node;
   }
 
-  private static String child(final String path, final String member) {
+  static String child(final String path, final String member) {
     return path.isEmpty() ? member : path + "/" + member;
   }
 }
