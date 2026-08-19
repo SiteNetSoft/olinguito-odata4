@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Added the CSDL JSON metadata parser tests
+ * Copyright 2026 SiteNetSoft - Pinned the include-alias resolution of qualified names
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -30,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -48,6 +50,36 @@ class MetadataJsonParserTest {
 
   private static final FullQualifiedName CATEGORY = new FullQualifiedName("ns", "Category");
   private static final FullQualifiedName PRODUCT = new FullQualifiedName("ns", "Product");
+
+  /**
+   * A document whose qualified names use an alias declared by an $Include (Core, A), an alias declared
+   * by a schema of the document itself (self) and a prefix that is neither (Foo).
+   */
+  private static final String ALIASED_CSDL = "{\"$Version\":\"4.01\",\"$Reference\":{"
+      + "\"http://docs.oasis-open.org/odata/odata/v4.0/errata03/csd01/complete/vocabularies/"
+      + "Org.OData.Core.V1.xml\":{\"$Include\":[{\"$Namespace\":\"Org.OData.Core.V1\","
+      + "\"$Alias\":\"Core\"}]},"
+      + "\"http://localhost/a.xml\":{\"$Include\":[{\"$Namespace\":\"org.sitenetsoft.olinguito.a\","
+      + "\"$Alias\":\"A\"}]}},"
+      + "\"ns\":{\"$Alias\":\"self\",\"ET\":{\"$Kind\":\"EntityType\",\"$Key\":[\"ID\"],"
+      + "\"ID\":{\"$Type\":\"Edm.Int32\"},"
+      + "\"Description\":{\"$Type\":\"Core.Tag\"},"
+      + "\"Extended\":{\"$Type\":\"A.ExtendedInfo\"},"
+      + "\"Own\":{\"$Type\":\"self.Info\"},"
+      + "\"Unknown\":{\"$Type\":\"Foo.Bar\"}},"
+      + "\"Info\":{\"$Kind\":\"ComplexType\"}}}";
+
+  /** Resolves the http://localhost/ references of {@link #ALIASED_CSDL} from the test classpath. */
+  private final ReferenceResolver localResolver = new ReferenceResolver() {
+    @Override
+    public InputStream resolveReference(final URI uri, final String base) {
+      final String str = uri.toASCIIString();
+      if (str.startsWith("http://localhost/")) {
+        return getClass().getClassLoader().getResourceAsStream(str.substring("http://localhost/".length()));
+      }
+      return null;
+    }
+  };
 
   private SchemaBasedEdmProvider provider;
 
@@ -158,6 +190,50 @@ class MetadataJsonParserTest {
     final CsdlJsonParseException thrown = assertThrows(CsdlJsonParseException.class,
         () -> new MetadataJsonParser().buildEdmProvider(new StringReader(csdl)));
     assertEquals("ns/ET/Nav/$Type", thrown.getJsonPath());
+  }
+
+  /**
+   * Section 4.2: "If an included schema specifies an alias, the alias MUST be used in qualified names
+   * throughout the document to identify model elements of the included schema." The model keeps
+   * namespace-qualified names, so both include aliases must be mapped back.
+   */
+  @Test
+  void includeAliasResolvesToTheIncludedNamespace() throws Exception {
+    final CsdlEntityType type = aliasedProvider().getEntityType(new FullQualifiedName("ns", "ET"));
+    assertEquals("Org.OData.Core.V1.Tag", type.getProperty("Description").getType());
+    assertEquals("org.sitenetsoft.olinguito.a.ExtendedInfo", type.getProperty("Extended").getType());
+    assertEquals("ns.Info", type.getProperty("Own").getType());
+  }
+
+  /** A prefix that is neither an include alias nor a schema alias is a namespace, and passes through. */
+  @Test
+  void unknownPrefixPassesThroughUnchanged() throws Exception {
+    assertEquals("Foo.Bar",
+        aliasedProvider().getEntityType(new FullQualifiedName("ns", "ET")).getProperty("Unknown").getType());
+  }
+
+  /**
+   * Two layers look like they could resolve an include alias: this parser rewrites alias-qualified names
+   * while reading, and {@link ReferenceLoader} additionally registers every referenced provider under its
+   * alias. The parser is the authoritative - in fact the only - one: provider lookups match a schema by
+   * its namespace ({@code SchemaBasedEdmProvider#getSchemaDirectly}), so the loader's alias key never
+   * resolves anything, and an alias-qualified name that reached the model would be unresolvable.
+   */
+  @Test
+  void parseTimeAliasResolutionIsAuthoritative() throws Exception {
+    final SchemaBasedEdmProvider aliased = aliasedProvider();
+    assertNotNull(aliased.getSchema("org.sitenetsoft.olinguito.a", true), "the reference was loaded");
+    assertNull(aliased.getSchema("A", true),
+        "the loader's alias registration does not make a schema findable by alias");
+    assertEquals("org.sitenetsoft.olinguito.a.ExtendedInfo",
+        aliased.getEntityType(new FullQualifiedName("ns", "ET")).getProperty("Extended").getType(),
+        "the parser resolves the alias, so no alias-qualified name ever reaches the provider lookup");
+  }
+
+  private SchemaBasedEdmProvider aliasedProvider() throws Exception {
+    return new MetadataJsonParser()
+        .referenceResolver(this.localResolver)
+        .buildEdmProvider(new StringReader(ALIASED_CSDL));
   }
 
   @Test
