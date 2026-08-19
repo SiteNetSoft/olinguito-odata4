@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Fixed resource leaks, replaced wildcard import
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - Pinned the 4.01 metadata version gate and the Nullable defaults
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -29,9 +30,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
 
 import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
@@ -272,5 +276,58 @@ class MetadataParserTest {
       Assertions.assertNotNull(provider.getVocabularySchema("Org.OData.Core.V1"));
       Assertions.assertNotNull(provider.getSchema("Org.OData.Core.V1"));
     }
+  }
+
+  private static final String MINIMAL_CSDL_PREFIX =
+      "<edmx:Edmx Version=\"%s\" xmlns:edmx=\"http://docs.oasis-open.org/odata/ns/edmx\">"
+      + "<edmx:DataServices>"
+      + "<Schema Namespace=\"ns\" xmlns=\"http://docs.oasis-open.org/odata/ns/edm\">"
+      + "<EntityType Name=\"ET\"><Key><PropertyRef Name=\"ID\"/></Key>"
+      + "<Property Name=\"ID\" Type=\"Edm.Int32\" Nullable=\"false\"/>"
+      + "<NavigationProperty Name=\"Nav\" Type=\"ns.ET\"/></EntityType>"
+      + "<Function Name=\"F\"><ReturnType Type=\"Edm.String\"/></Function>"
+      + "<Action Name=\"A\"><Parameter Name=\"P\" Type=\"Edm.String\"/></Action>"
+      + "<Term Name=\"T\" Type=\"Edm.String\"/>"
+      + "</Schema></edmx:DataServices></edmx:Edmx>";
+
+  private SchemaBasedEdmProvider parse(final String version) throws Exception {
+    return new MetadataParser().buildEdmProvider(new StringReader(String.format(MINIMAL_CSDL_PREFIX, version)));
+  }
+
+  /** A 4.01 metadata document is not an error in a 4.01 library. */
+  @Test
+  void version401IsAccepted() throws Exception {
+    assertNotNull(parse("4.01").getEntityType(new FullQualifiedName("ns", "ET")));
+  }
+
+  /** 4.0 keeps working exactly as before - this is the closed pin for the widened gate. */
+  @Test
+  void version40IsStillAccepted() throws Exception {
+    assertNotNull(parse("4.0").getEntityType(new FullQualifiedName("ns", "ET")));
+  }
+
+  /** Anything else is still rejected with the existing error taxonomy. */
+  @Test
+  void unknownVersionIsStillRejected() {
+    final XMLStreamException thrown = Assertions.assertThrows(XMLStreamException.class, () -> parse("3.0"));
+    Assertions.assertTrue(thrown.getMessage().contains("supported"));
+  }
+
+  /**
+   * CSDL XML defaults the Nullable attribute of a return type, a parameter and a term to true, and
+   * the Csdl* model classes agree (CsdlReturnType/CsdlParameter/CsdlTerm all initialise
+   * nullable = true). The parser used to overwrite that default with false whenever the attribute was
+   * absent - the PR#11 defect, which the navigation-property and property readers already avoid.
+   */
+  @Test
+  void absentNullableDefaultsToTrue() throws Exception {
+    final SchemaBasedEdmProvider parsed = parse("4.0");
+    assertTrue(parsed.getFunctions(new FullQualifiedName("ns", "F")).get(0).getReturnType().isNullable());
+    assertTrue(parsed.getActions(new FullQualifiedName("ns", "A")).get(0).getParameters().get(0).isNullable());
+    assertTrue(parsed.getTerm(new FullQualifiedName("ns", "T")).isNullable());
+    assertTrue(parsed.getEntityType(new FullQualifiedName("ns", "ET"))
+        .getNavigationProperties().get(0).isNullable());
+    assertFalse(parsed.getEntityType(new FullQualifiedName("ns", "ET"))
+        .getProperties().get(0).isNullable());
   }
 }

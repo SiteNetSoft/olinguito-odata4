@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  * Copyright 2026 SiteNetSoft - Cached compiled regex pattern for split()
  * Copyright 2026 SiteNetSoft - OLINGO-1466/1520: Handle Scale="variable"
+ * Copyright 2026 SiteNetSoft - Shared the reference loader, accepted 4.01 and fixed Nullable defaults
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -48,6 +49,7 @@ import javax.xml.stream.events.XMLEvent;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmException;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.commons.api.edm.geo.SRID;
+import org.sitenetsoft.olinguito.commons.api.edm.constants.ODataServiceVersion;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAction;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlActionImport;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotatable;
@@ -97,6 +99,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlUrlRef;
 import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
 import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReferenceInclude;
 import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReferenceIncludeAnnotation;
+import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 
 /**
@@ -110,7 +113,27 @@ public class MetadataParser {
   private boolean useLocalCoreVocabularies = true;
   private boolean implicitlyLoadCoreVocabularies = false;
   private boolean recursivelyLoadReferences = false;
-  private Map<String, SchemaBasedEdmProvider> globalReferenceMap = new HashMap<>();
+  private final Map<String, SchemaBasedEdmProvider> globalReferenceMap;
+  private final ReferenceLoader referenceLoader;
+
+  public MetadataParser() {
+    this(new HashMap<>());
+  }
+
+  MetadataParser(final Map<String, SchemaBasedEdmProvider> globalReferenceMap) {
+    this.globalReferenceMap = globalReferenceMap;
+    this.referenceLoader = new ReferenceLoader(globalReferenceMap, this::buildEdmProviderFromStream);
+  }
+
+  private SchemaBasedEdmProvider buildEdmProviderFromStream(final InputStream csdl, final ReferenceResolver resolver,
+      final boolean loadCore, final boolean useLocal, final boolean loadReferenceSchemas, final String namespace)
+      throws ODataException {
+    try {
+      return buildEdmProvider(csdl, resolver, loadCore, useLocal, loadReferenceSchemas, namespace);
+    } catch (XMLStreamException e) {
+      throw new ODataException(e.getMessage(), e);
+    }
+  }
   
   /**
    * Avoid reading the annotations in the $metadata 
@@ -221,10 +244,13 @@ public class MetadataParser {
           xmlBase.append(attrNS(element, XML_LINK_NS, "base"));
         }
         String version = attr(element, "Version");
-        if ("4.0".equals(version)) {
+        // OData 4.01 is a valid metadata document version for a 4.01 library; CSDL JSON section 4
+        // allows exactly "4.0" and "4.01" and the XML gate now matches it.
+        if (ODataServiceVersion.V40.toString().equals(version)
+            || ODataServiceVersion.V401.toString().equals(version)) {
           readDataServicesAndReference(reader, element, provider);
         } else {
-          throw new XMLStreamException("Currently only V4 is supported.");
+          throw new XMLStreamException("Only OData 4.0 and 4.01 metadata documents are supported.");
         }
       }
     }.read(reader, null, provider, "Edmx");
@@ -239,21 +265,22 @@ public class MetadataParser {
                   event.asEndElement().getName().getLocalPart()));
     }
     
-    //load core vocabularies even though they are not defined in the references
-    if (loadCore) {
-      loadCoreVocabulary(provider, "Org.OData.Core.V1");
-      loadCoreVocabulary(provider, "Org.OData.Capabilities.V1");
-      loadCoreVocabulary(provider, "Org.OData.Measures.V1");
-    }
+    try {
+      //load core vocabularies even though they are not defined in the references
+      if (loadCore) {
+        this.referenceLoader.loadCoreVocabularies(provider);
+      }
 
-    if (namespace != null && !namespace.isEmpty() && !globalReferenceMap.containsKey(namespace)) {
-      globalReferenceMap.put(namespace, provider);
-    }
+      this.referenceLoader.rememberProvider(namespace, provider);
 
-    // load all the reference schemas
-    if (resolver != null && loadReferenceSchemas) {
-      loadReferencesSchemas(provider, xmlBase.isEmpty() ? null
-          : fixXmlBase(xmlBase.toString()), resolver, loadCore, useLocal);
+      // load all the reference schemas
+      if (resolver != null && loadReferenceSchemas) {
+        this.referenceLoader.loadReferenceSchemas(provider, xmlBase.isEmpty() ? null
+            : ReferenceLoader.fixBase(xmlBase.toString()), resolver, loadCore, useLocal,
+            this.recursivelyLoadReferences);
+      }
+    } catch (ODataException e) {
+      throw new XMLStreamException(e);
     }
     return provider;
   }
@@ -265,99 +292,15 @@ public class MetadataParser {
     return factory;
   }
 
-  private void loadReferencesSchemas(SchemaBasedEdmProvider provider,
-      String xmlBase, ReferenceResolver resolver, boolean loadCore,
-      boolean useLocal) {    
-
-    for (EdmxReference reference:provider.getReferences()) {
-      try {
-        SchemaBasedEdmProvider refProvider = null;
-
-        for (EdmxReferenceInclude include : reference.getIncludes()) {
-
-          // check if the schema is already loaded before in current provider.
-          if (provider.getSchemaDirectly(include.getNamespace()) != null) {
-            continue;
-          }
-          
-          if (isCoreVocabulary(include.getNamespace()) && useLocal) {
-            loadCoreVocabulary(provider, include.getNamespace());
-            continue;
-          }
-
-          // check if the schema is already loaded before in parent providers
-          refProvider = this.globalReferenceMap.get(include.getNamespace());
-
-          if (refProvider == null) {
-            InputStream is = this.referenceResolver.resolveReference(reference.getUri(), xmlBase);
-            if (is == null) {
-              throw new EdmException("Failed to load Reference "+reference.getUri()+" loading failed");
-            } else {
-              // do not implicitly load core vocabularies any more. But if the
-              // references loading the core vocabularies try to use local if we can
-              refProvider = buildEdmProvider(is, resolver, false, useLocal,
-                      this.recursivelyLoadReferences, include.getNamespace());
-            }
-          }
-          
-          if (refProvider != null) {
-            CsdlSchema refSchema = refProvider.getSchema(include.getNamespace(), false);
-            provider.addReferenceSchema(include.getNamespace(), refProvider);
-            if (include.getAlias() != null) {
-              refSchema.setAlias(include.getAlias());
-              provider.addReferenceSchema(include.getAlias(), refProvider);
-            }
-          }
-        }
-      } catch (XMLStreamException e) {
-        throw new EdmException("Failed to load Reference "+reference.getUri()+" parsing failed");
-      }
-    }
-  }
-  
   public void loadCoreVocabulary(SchemaBasedEdmProvider provider,
       String namespace) throws XMLStreamException {
-    if("Org.OData.Core.V1".equalsIgnoreCase(namespace)) {
-      loadLocalVocabularySchema(provider, "Org.OData.Core.V1", "Org.OData.Core.V1.xml");
-    } else if ("Org.OData.Capabilities.V1".equalsIgnoreCase(namespace)) {
-      loadLocalVocabularySchema(provider, "Org.OData.Capabilities.V1", "Org.OData.Capabilities.V1.xml");
-    } else if ("Org.OData.Measures.V1".equalsIgnoreCase(namespace)) {
-      loadLocalVocabularySchema(provider, "Org.OData.Measures.V1", "Org.OData.Measures.V1.xml");
-    } else {
-    	throw new XMLStreamException("Unknown namespace to load vocabulary");
+    try {
+      this.referenceLoader.loadCoreVocabulary(provider, namespace);
+    } catch (ODataException e) {
+      throw new XMLStreamException(e);
     }
   }
 
-  private boolean isCoreVocabulary(String namespace) {
-    if("Org.OData.Core.V1".equalsIgnoreCase(namespace) || 
-        "Org.OData.Capabilities.V1".equalsIgnoreCase(namespace) || 
-        "Org.OData.Measures.V1".equalsIgnoreCase(namespace)) {
-      return true;
-    }
-    return false;
-  }
-
-  private String fixXmlBase(String base) {
-    if (base.endsWith("/")) {
-      return base;
-    } 
-    return base+"/";
-  }  
-  
-  private void loadLocalVocabularySchema(SchemaBasedEdmProvider provider, String namespace,
-      String resource) throws XMLStreamException {
-    CsdlSchema schema = provider.getVocabularySchema(namespace);
-    if (schema == null) {
-      InputStream is = this.getClass().getClassLoader().getResourceAsStream(resource);
-      if (is != null) {
-        SchemaBasedEdmProvider childProvider = buildEdmProvider(is, null, false, false, true, "");
-        provider.addVocabularySchema(namespace, childProvider);
-      } else {
-        throw new XMLStreamException("failed to load "+resource+" core vocabulary");
-      }
-    }
-  }  
-  
   private void readDataServicesAndReference(XMLEventReader reader,
       StartElement element, SchemaBasedEdmProvider provider)
       throws XMLStreamException {
@@ -497,7 +440,8 @@ public class MetadataParser {
     CsdlReturnType returnType = new CsdlReturnType();
     returnType.setType(readType(element));
     returnType.setCollection(isCollectionType(element));
-    returnType.setNullable(Boolean.parseBoolean(attr(element, "Nullable")));
+    returnType.setNullable(attr(element, "Nullable") == null
+        || Boolean.parseBoolean(attr(element, "Nullable")));
 
     String maxLength = attr(element, "MaxLength");
     if (maxLength != null) {
@@ -526,7 +470,8 @@ public class MetadataParser {
     parameter.setName(attr(element, "Name"));
     parameter.setType(readType(element));
     parameter.setCollection(isCollectionType(element));
-    parameter.setNullable(Boolean.parseBoolean(attr(element, "Nullable")));
+    parameter.setNullable(attr(element, "Nullable") == null
+        || Boolean.parseBoolean(attr(element, "Nullable")));
 
     String maxLength = attr(element, "MaxLength");
     if (maxLength != null) {
@@ -594,7 +539,8 @@ public class MetadataParser {
       String[] appliesTo = WHITESPACE.split(attr(element, "AppliesTo"));
       term.setAppliesTo(List.of(appliesTo));
     }
-    term.setNullable(Boolean.parseBoolean(attr(element, "Nullable")));
+    term.setNullable(attr(element, "Nullable") == null
+        || Boolean.parseBoolean(attr(element, "Nullable")));
     String maxLength = attr(element, "MaxLength");
     if (maxLength != null) {
       term.setMaxLength(Integer.parseInt(maxLength));
