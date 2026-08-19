@@ -24,6 +24,8 @@
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: CSDL JSON facet defaults ($Nullable polarity,
  * omitted $Type for Edm.String, numeric enum values and type-definition facets, $OnDelete,
  * single $ReferentialConstraint object)
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: CSDL JSON bare-value constant expressions and
+ * record @type control information
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -542,17 +544,17 @@ class MetadataDocumentJsonSerializerTest {
         + "\"PropertyString@Core.Description#Target\":\"Description of Complex Type\","
         + "\"PropertyInt16\":\"PropertyInt16\"}}}"));
     assertTrue(metadata.contains("\"$Annotations\":{\"Alias.ETAbstract#Tablett\":"
-        + "{\"@ns.term#T1\":{\"$Binary\":\"qrvM3e7_\"},"
+        + "{\"@ns.term#T1\":\"qrvM3e7_\","
         + "\"@ns.term#T2\":true,"
-        + "\"@ns.term#T3\":{\"$Date\":\"2012-02-29\"},"
-        + "\"@ns.term#T4\":{\"$DateTimeOffset\":\"2012-02-29T01:02:03Z\"},"
-        + "\"@ns.term#T5\":{\"$Decimal\":\"-12345678901234567234567890\"},"
-        + "\"@ns.term#T6\":{\"$Duration\":\"PT10S\"},"
-        + "\"@ns.term#T7\":{\"$EnumMember\":\"enumMember\"},"
-        + "\"@ns.term#T8\":{\"$Float\":\"1.42\"},"
-        + "\"@ns.term#T9\":{\"$Guid\":\"aabbccdd-aabb-ccdd-eeff-aabbccddeeff\"},"
-        + "\"@ns.term#T10\":{\"$Int\":\"42\"},\"@ns.term#T11\":\"ABCD\","
-        + "\"@ns.term#T12\":{\"$TimeOfDay\":\"00:00:00.999\"},"
+        + "\"@ns.term#T3\":\"2012-02-29\","
+        + "\"@ns.term#T4\":\"2012-02-29T01:02:03Z\","
+        + "\"@ns.term#T5\":-12345678901234567234567890,"
+        + "\"@ns.term#T6\":\"PT10S\","
+        + "\"@ns.term#T7\":\"enumMember\","
+        + "\"@ns.term#T8\":1.42,"
+        + "\"@ns.term#T9\":\"aabbccdd-aabb-ccdd-eeff-aabbccddeeff\","
+        + "\"@ns.term#T10\":42,\"@ns.term#T11\":\"ABCD\","
+        + "\"@ns.term#T12\":\"00:00:00.999\","
         + "\"@ns.term#T13\":{\"$And\":[true,false],\"@ns.term\":true},"
         + "\"@ns.term#T14\":{\"$Or\":[true,false],\"@ns.term\":true}"));
     assertTrue(metadata.contains("\"@ns.term#T15\":{\"$Eq\":[true,false],\"@ns.term\":true},"
@@ -578,7 +580,7 @@ class MetadataDocumentJsonSerializerTest {
         + "\"$MaxLength\":1,\"$Precision\":2,\"$Scale\":3,\"@ns.term\":true}"));
     assertTrue(metadata.contains("\"@ns.term#T32\":{\"$LabeledElement\":\"value\","
         + "\"$Name\":\"NameAtt\",\"@ns.term\":true}"));
-    assertTrue(metadata.contains("\"@ns.term#T33\":{\"$Type\":\"Alias.ETAbstract\","
+    assertTrue(metadata.contains("\"@ns.term#T33\":{\"@type\":\"#Alias.ETAbstract\","
         + "\"PropName\":\"value\",\"PropName@ns.term\":true,\"@ns.term\":true},"
         + "\"@ns.term#T34\":{\"$UrlRef\":\"URLRefValue\",\"@ns.term\":true}"));
   }
@@ -810,6 +812,83 @@ class MetadataDocumentJsonSerializerTest {
         "\"AIRTPrimParamCrossContainer\":{\"$Action\":\"Alias.UARTPrimParam\","
         + "\"$EntitySet\":\"namespace2.container2/ESContainer2\"}"),
         "an entity set in a different container must be named by a container-qualified path");
+  }
+
+  /**
+   * OData 4.01, CSDL JSON section 14.3: constants are bare JSON values. The $Binary/$Date/$Int/...
+   * member names this writer used to emit are CSDL XML element names and do not exist in CSDL JSON at
+   * all (citations digest, Gaps), so a conformant reader could not interpret them.
+   */
+  @Test
+  void constantExpressionsAreBareJsonValues() throws Exception {
+    final String metadata = localMetadata();
+    for (String xmlOnlyMember : List.of("$Binary", "$Date", "$DateTimeOffset", "$Decimal", "$Duration",
+        "$EnumMember", "$Float", "$Guid", "$Int", "$String", "$TimeOfDay")) {
+      assertFalse(metadata.contains("\"" + xmlOnlyMember + "\":"),
+          xmlOnlyMember + " is a CSDL XML element name and must never appear in CSDL JSON");
+    }
+    assertTrue(metadata.contains("\"@ns.term#T10\":42,"), "an integer constant is a JSON number");
+    assertTrue(metadata.contains("\"@ns.term#T9\":\"aabbccdd-aabb-ccdd-eeff-aabbccddeeff\","),
+        "a guid constant is a JSON string");
+  }
+
+  /** Section 14.4.12: a record is a bare object whose type rides on the @type control information. */
+  @Test
+  void recordExpressionsCarryAtType() throws Exception {
+    final String metadata = localMetadata();
+    assertTrue(metadata.contains("\"@ns.term#T33\":{\"@type\":\"#Alias.ETAbstract\","));
+    assertFalse(metadata.contains("\"$Record\""), "there is no $Record wrapper in CSDL JSON");
+  }
+
+  /** Sections 14.3.5/14.3.8: the three special numeric values stay strings. */
+  @Test
+  void specialFloatingPointValuesStayStrings() throws Exception {
+    for (String special : List.of("INF", "-INF", "NaN")) {
+      final String written = writeSingleAnnotation(EdmExpressionType.Float, special);
+      assertTrue(written.contains("\"@ns.term\":\"" + special + "\""), special + " is written as a string");
+    }
+    assertTrue(writeSingleAnnotation(EdmExpressionType.Float, "1.5").contains("\"@ns.term\":1.5"));
+  }
+
+  /**
+   * Section 14.3.10 plus its IEEE754Compatible note: an integer that a JSON number cannot carry
+   * exactly (|value| > 2^53 - 1) is written as a string, as in the spec's own Example 55.
+   */
+  @Test
+  void integersBeyondTheSafeRangeAreWrittenAsStrings() throws Exception {
+    assertTrue(writeSingleAnnotation(EdmExpressionType.Int, "9007199254740992")
+        .contains("\"@ns.term\":\"9007199254740992\""));
+    assertTrue(writeSingleAnnotation(EdmExpressionType.Int, "9007199254740991")
+        .contains("\"@ns.term\":9007199254740991"));
+  }
+
+  /**
+   * Serializes a schema carrying exactly one annotation whose value is the given constant, so a
+   * single constant's wire form can be asserted without threading it through LocalProvider.
+   */
+  private String writeSingleAnnotation(final EdmExpressionType type, final String value) throws Exception {
+    final EdmSchema schema = mock(EdmSchema.class);
+    when(schema.getNamespace()).thenReturn("MyNamespace");
+    final Edm edm = mock(Edm.class);
+    when(edm.getSchemas()).thenReturn(List.of(schema));
+    final ServiceMetadata serviceMetadata = mock(ServiceMetadata.class);
+    when(serviceMetadata.getEdm()).thenReturn(edm);
+
+    final EdmAnnotation annotation = mock(EdmAnnotation.class);
+    when(schema.getAnnotations()).thenReturn(Collections.singletonList(annotation));
+    final EdmTerm term = mock(EdmTerm.class);
+    when(term.getFullQualifiedName()).thenReturn(new FullQualifiedName("ns", "term"));
+    when(annotation.getTerm()).thenReturn(term);
+    final EdmConstantExpression expression = mock(EdmConstantExpression.class);
+    when(expression.isConstant()).thenReturn(true);
+    when(expression.asConstant()).thenReturn(expression);
+    when(expression.getExpressionType()).thenReturn(type);
+    when(expression.getExpressionName()).thenReturn(type.name());
+    when(expression.getValueAsString()).thenReturn(value);
+    when(annotation.getExpression()).thenReturn(expression);
+
+    return new String(serializer.metadataDocument(serviceMetadata).getContent().readAllBytes(),
+        StandardCharsets.UTF_8);
   }
 
   private String localMetadata() throws SerializerException, IOException {

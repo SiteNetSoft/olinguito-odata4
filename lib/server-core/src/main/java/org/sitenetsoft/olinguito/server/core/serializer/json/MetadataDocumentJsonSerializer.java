@@ -24,10 +24,13 @@
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: CSDL JSON facet defaults ($Nullable polarity,
  * omitted $Type for Edm.String, numeric enum values and type-definition facets, $OnDelete,
  * single $ReferentialConstraint object)
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: CSDL JSON bare-value constant expressions and
+ * record @type control information
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -146,6 +149,11 @@ public class MetadataDocumentJsonSerializer {
   private static final String ON_DELETE_MEMBER = DOLLAR + "OnDelete";
   private static final String TYPE_DEFINITION_KIND = "TypeDefinition";
   private static final String EDM_STRING = "Edm.String";
+  private static final String AT_TYPE = "@type";
+  private static final long MAX_SAFE_INTEGER = 9007199254740991L;
+  private static final String INF = "INF";
+  private static final String NEGATIVE_INF = "-INF";
+  private static final String NAN = "NaN";
 
   public MetadataDocumentJsonSerializer(final ServiceMetadata serviceMetadata) throws SerializerException {
     if (serviceMetadata == null || serviceMetadata.getEdm() == null) {
@@ -1162,12 +1170,14 @@ public class MetadataDocumentJsonSerializer {
       try {
         EdmStructuredType structuredType = asRecord.getType();
         if (structuredType != null) {
-          json.writeStringField(TYPE, getAliasedFullQualifiedName(structuredType));
+          // Section 14.4.12: "The type of a record expression is represented as the @type control
+          // information" - there is no $Type member (and no $Record wrapper) on a record.
+          json.writeStringField(AT_TYPE, "#" + getAliasedFullQualifiedName(structuredType));
         }
       } catch (EdmException e) {
         FullQualifiedName type = asRecord.getTypeFQN();
         if (type != null) {
-          json.writeStringField(TYPE, getAliasedFullQualifiedName(type));
+          json.writeStringField(AT_TYPE, "#" + getAliasedFullQualifiedName(type));
         }
       }
       for (EdmPropertyValue propValue : asRecord.getPropertyValues()) {
@@ -1208,44 +1218,69 @@ public class MetadataDocumentJsonSerializer {
     json.writeEndObject();
   }
 
-  private void appendConstantExpression(final JsonGenerator json, 
-      final EdmConstantExpression constExp, String termName) throws SerializerException, IOException {
+  private void appendConstantExpression(final JsonGenerator json,
+      final EdmConstantExpression constExp, final String termName) throws SerializerException, IOException {
+    if (termName != null && !termName.isEmpty()) {
+      json.writeFieldName(termName);
+    }
+    final String value = constExp.getValueAsString();
     switch (constExp.getExpressionType()) {
+    case Bool:
+      // Section 14.3.2: "Boolean expressions are represented as the literals true or false."
+      json.writeBoolean(Boolean.parseBoolean(value));
+      break;
+    case Int:
+      writeIntegerConstant(json, value);
+      break;
+    case Decimal:
+    case Float:
+      writeNumericConstant(json, value);
+      break;
     case Binary:
     case Date:
     case DateTimeOffset:
-    case Decimal:
-    case Float:
-    case Int:
     case Duration:
     case EnumMember:
     case Guid:
-    case TimeOfDay:
-      if (termName != null && !termName.isEmpty()) {
-        json.writeObjectFieldStart(termName);
-      } else {
-        json.writeStartObject();
-      }
-      json.writeStringField(DOLLAR + constExp.getExpressionName(), constExp.getValueAsString());
-      json.writeEndObject();
-      break;
-    case Bool:
-      if (termName != null && !termName.isEmpty()) {
-        json.writeBooleanField(termName, Boolean.parseBoolean(constExp.getValueAsString()));
-      } else {
-        json.writeBoolean(Boolean.parseBoolean(constExp.getValueAsString()));
-      }
-      break;
     case String:
-      if (termName != null && !termName.isEmpty()) {
-        json.writeStringField(termName, constExp.getValueAsString());
-      } else {
-        json.writeString(constExp.getValueAsString());
-      }
+    case TimeOfDay:
+      // Sections 14.3.1/.3/.4/.6/.7/.9/.11/.12: all of these are plain JSON strings. CSDL JSON has no
+      // $Binary/$Date/$Int/... members at all - those are CSDL XML element names.
+      json.writeString(value);
       break;
     default:
-      throw new IllegalArgumentException("Unkown ExpressionType "
+      throw new IllegalArgumentException("Unknown ExpressionType "
           + "for constant expression: " + constExp.getExpressionType());
+    }
+  }
+
+  private void writeIntegerConstant(final JsonGenerator json, final String value) throws IOException {
+    // Section 14.3.10: an integer is a JSON number unless IEEE754Compatible=true was requested, which
+    // this service does not offer. An integer outside the IEEE-754 exactly-representable range would
+    // lose precision as a JSON number, so it goes out as a string - the spec's own Example 55.
+    try {
+      final long parsed = Long.parseLong(value);
+      if (parsed > MAX_SAFE_INTEGER || parsed < -MAX_SAFE_INTEGER) {
+        json.writeString(value);
+      } else {
+        json.writeNumber(parsed);
+      }
+    } catch (NumberFormatException e) {
+      json.writeString(value);
+    }
+  }
+
+  private void writeNumericConstant(final JsonGenerator json, final String value) throws IOException {
+    // Sections 14.3.5/14.3.8: "The special values INF, -INF, or NaN are represented as strings."
+    if (INF.equals(value) || NEGATIVE_INF.equals(value) || NAN.equals(value)) {
+      json.writeString(value);
+    } else {
+      try {
+        json.writeNumber(new BigDecimal(value));
+      } catch (NumberFormatException e) {
+        // A value the model claims is numeric but is not: write it verbatim rather than corrupt it.
+        json.writeString(value);
+      }
     }
   }
 
