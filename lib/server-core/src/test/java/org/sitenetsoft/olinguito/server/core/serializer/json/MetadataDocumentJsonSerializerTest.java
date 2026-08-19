@@ -535,25 +535,48 @@ class MetadataDocumentJsonSerializerTest {
   /**
    * OData 4.01, CSDL JSON section 4: a metadata document of a service MUST carry $EntityContainer,
    * and it is the one place in the whole format where the namespace-qualified name is required even
-   * though the schema declares an alias. It must also name a container that is genuinely present in
-   * the document -- not a dangling reference.
+   * though the schema declares an alias. Its value must name the entity container "of that service"
+   * (Section 4) -- not just any schema-owned container -- namespace-qualified the way the document
+   * itself spells it.
    *
    * <p>{@code LocalProvider} declares an entity container in each of three schemas
-   * ({@code namespace1.container1}, {@code namespace2.container2}, {@code namespace.container});
-   * {@code MetadataDocumentJsonSerializer} picks the first schema-owned container it finds while
-   * walking {@code Edm#getSchemas()}, which is {@code namespace1}'s {@code container1} (schema1 is
-   * first in provider order) -- so that, namespace-qualified from the owning schema, is what is
-   * asserted. Namespace {@code namespace1} declares alias {@code Alias1}, so the negative assertion
-   * (alias-qualified form absent) is load-bearing: an implementation that alias-resolved here would
-   * emit {@code "Alias1.container1"} instead, and the assertion would catch it.
+   * ({@code namespace1.container1}, {@code namespace2.container2}, {@code namespace.container}), and
+   * {@code getEntityContainerInfo(null)} identifies {@code namespace.container} (local name
+   * {@code "container"}) as the service's default container. {@code MetadataDocumentJsonSerializer}
+   * matches that local name against the schema-owned containers and finds it on schema
+   * {@code namespace} (not schema1's same-shaped-but-differently-named {@code container1}), so the
+   * asserted value is namespace-qualified from schema {@code namespace}: {@code namespace.container}.
+   * Namespace {@code namespace} declares alias {@code Alias}, so the negative assertion (alias-
+   * qualified form absent) is load-bearing: an implementation that alias-resolved here would emit
+   * {@code "Alias.container"} instead, and the assertion would catch it.
    */
   @Test
   void documentCarriesNamespaceQualifiedEntityContainer() throws Exception {
     final String metadata = localMetadata();
-    assertTrue(metadata.contains("\"$EntityContainer\":\"namespace1.container1\""),
+    assertTrue(metadata.contains("\"$EntityContainer\":\"namespace.container\""),
         "the document object must name the service's container with its namespace, not its alias");
-    assertFalse(metadata.contains("\"$EntityContainer\":\"Alias1.container1\""),
+    assertFalse(metadata.contains("\"$EntityContainer\":\"Alias.container\""),
         "the alias-qualified form is explicitly not allowed for $EntityContainer");
+  }
+
+  /**
+   * Section 4 makes $EntityContainer a MUST only "if the CSDL JSON document is the metadata document
+   * of an OData service" -- an EDM with schemas but no entity container anywhere has none to name, so
+   * the document must omit the member entirely rather than invent or dangle a reference.
+   */
+  @Test
+  void documentOmitsEntityContainerWhenNoSchemaDeclaresOne() throws Exception {
+    final EdmSchema schema = mock(EdmSchema.class);
+    when(schema.getNamespace()).thenReturn("MyNamespace");
+    final Edm edm = mock(Edm.class);
+    when(edm.getSchemas()).thenReturn(List.of(schema));
+    final ServiceMetadata serviceMetadata = mock(ServiceMetadata.class);
+    when(serviceMetadata.getEdm()).thenReturn(edm);
+
+    final InputStream metadata = serializer.metadataDocument(serviceMetadata).getContent();
+    final String metadataString = new String(metadata.readAllBytes(), StandardCharsets.UTF_8);
+    assertFalse(metadataString.contains("$EntityContainer"),
+        "no schema and no default container means nothing to name");
   }
 
   /**

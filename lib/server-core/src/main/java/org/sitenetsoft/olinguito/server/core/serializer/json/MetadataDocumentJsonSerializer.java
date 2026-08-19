@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmAction;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmActionImport;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmAnnotatable;
@@ -181,23 +182,47 @@ public class MetadataDocumentJsonSerializer {
   }
 
   /**
-   * Section 4: the document-level $EntityContainer value must name the container that is actually
-   * present in the served schema tree, namespace-qualified from the owning schema -- never the alias,
-   * and never a container the document doesn't otherwise contain.
+   * Section 4: the document-level $EntityContainer value must name the entity container "of that
+   * service" -- {@code Edm#getEntityContainer()} identifies which container that is (via the
+   * provider's default-container lookup) -- but namespace-qualified the way the document itself
+   * spells it, i.e. from the schema that declares a same-named container, never from whatever
+   * namespace the provider's lookup happens to report. Order of resolution:
+   * <ol>
+   * <li>Ask {@code Edm#getEntityContainer()} for the service's container; take its local name.</li>
+   * <li>Find the schema whose {@code getEntityContainer()} is non-null and whose container's name
+   * equals that local name; use that schema's namespace.</li>
+   * <li>If no schema-owned container matches by name, fall back to the first schema-owned
+   * container found while walking the schemas.</li>
+   * <li>If no schema carries a container at all, fall back to the {@code Edm#getEntityContainer()}
+   * FQN as-is; if there is no container at all, there is nothing to name.</li>
+   * </ol>
    *
-   * @return the namespace-qualified name of the first schema-owned entity container found, falling back
-   *         to {@code Edm#getEntityContainer()} only when no schema carries one, or {@code null} when
-   *         there is no container in the EDM at all
+   * @return the namespace-qualified name of the service's entity container as the document spells
+   *         it, or {@code null} when the EDM has no entity container at all
    */
   private String documentEntityContainerName() {
-    for (EdmSchema schema : serviceMetadata.getEdm().getSchemas()) {
-      EdmEntityContainer schemaContainer = schema.getEntityContainer();
-      if (schemaContainer != null) {
-        return schema.getNamespace() + "." + schemaContainer.getName();
+    final Edm edm = serviceMetadata.getEdm();
+    final EdmEntityContainer defaultContainer = edm.getEntityContainer();
+    final String defaultLocalName = defaultContainer == null ? null : defaultContainer.getName();
+    String firstSchemaOwnedName = null;
+    for (EdmSchema schema : edm.getSchemas()) {
+      final EdmEntityContainer schemaContainer = schema.getEntityContainer();
+      if (schemaContainer == null) {
+        continue;
+      }
+      final String candidateName = schema.getNamespace() + "." + schemaContainer.getName();
+      if (defaultLocalName != null && defaultLocalName.equals(schemaContainer.getName())) {
+        return candidateName;
+      }
+      if (firstSchemaOwnedName == null) {
+        firstSchemaOwnedName = candidateName;
       }
     }
-    EdmEntityContainer container = serviceMetadata.getEdm().getEntityContainer();
-    return container == null ? null : container.getNamespace() + "." + container.getName();
+    if (firstSchemaOwnedName != null) {
+      return firstSchemaOwnedName;
+    }
+    return defaultContainer == null ? null
+        : defaultContainer.getNamespace() + "." + defaultContainer.getName();
   }
 
   private void appendDataServices(JsonGenerator json) throws SerializerException, IOException {
