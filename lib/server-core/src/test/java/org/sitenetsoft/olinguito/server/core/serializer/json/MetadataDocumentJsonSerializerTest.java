@@ -21,6 +21,9 @@
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: CSDL JSON conformant $EntityContainer, flat $Extends,
  * structural container children (no $Kind) and served $Version
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: CSDL JSON facet defaults ($Nullable polarity,
+ * omitted $Type for Edm.String, numeric enum values and type-definition facets, $OnDelete,
+ * single $ReferentialConstraint object)
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -280,8 +283,8 @@ class MetadataDocumentJsonSerializerTest {
     assertTrue(metadataString.contains(
         "{\"$Version\":\"4.0\","
         + "\"MyNamespace\":{\"MyEnum\":"
-        + "{\"$Kind\":\"EnumType\",\"$IsFlags\":false,"
-        + "\"$UnderlyingType\":\"Edm.Int32\",\"MyMember\":\"0\","
+        + "{\"$Kind\":\"EnumType\","
+        + "\"$UnderlyingType\":\"Edm.Int32\",\"MyMember\":0,"
         + "\"MyMember#Core.Description\":\"MyDescription\"}}}"));
 
   }
@@ -400,10 +403,10 @@ class MetadataDocumentJsonSerializerTest {
     assertEquals("{\"$Version\":\"4.0\","
         + "\"MyNamespace\":"
         + "{\"MyTypeDefinition\":{"
-        + "\"$Kind\":\"DEFINITION\","
+        + "\"$Kind\":\"TypeDefinition\","
         + "\"$UnderlyingType\":\"Edm.Int32\","
-        + "\"$MaxLength\":\"10\",\"$Precision\":\"10\","
-        + "\"$Scale\":\"2\",\"$SRID\":\"123\","
+        + "\"$MaxLength\":10,\"$Precision\":10,"
+        + "\"$Scale\":2,\"$SRID\":\"123\","
         + "\"@Measures.Unit\":\"Centimeters\"}}}",
         metadataStr);
   }
@@ -412,65 +415,77 @@ class MetadataDocumentJsonSerializerTest {
   void aliasTest() throws Exception {
     String metadata = localMetadata();
     assertTrue(metadata.contains("\"ENString\":{\"$Kind\":\"EnumType\",\"$IsFlags\":true,"
-        + "\"$UnderlyingType\":\"Edm.Int16\",\"String1\":\"1\","
+        + "\"$UnderlyingType\":\"Edm.Int16\",\"String1\":1,"
         + "\"String1@Core.Description#Target\":\"Description of Enum Member\"}"));
     assertTrue(metadata.contains("\"ETAbstract\":{\"$Kind\":\"EntityType\",\"$Abstract\":true,"
-        + "\"PropertyString\":{\"$Type\":\"Edm.String\"},\"NavPropertyETTwoKeyNavOne\":"
-        + "{\"$Kind\":\"NavigationProperty\",\"$Type\":\"Alias.ETTwoKeyNavOne\"}},"
+        + "\"PropertyString\":{\"$Nullable\":true},\"NavPropertyETTwoKeyNavOne\":"
+        + "{\"$Kind\":\"NavigationProperty\",\"$Type\":\"Alias.ETTwoKeyNavOne\","
+        + "\"$Nullable\":true}},"
         + "\"ETAbstractBase\":{\"$Kind\":\"EntityType\",\"$BaseType\":\"Alias.ETAbstract\","
         + "\"$Key\":[\"PropertyInt16\"],\"PropertyInt16\":{\"$Type\":\"Edm.Int16\","
-        + "\"$Nullable\":false,\"@Core.Description#Target\":\"Description of Type\"},"
+        + "\"@Core.Description#Target\":\"Description of Type\"},"
         + "\"@Core.Description#Target\":\"Description of Type\"}"));
     assertTrue(metadata.contains("\"CTTwoPrim\":{\"$Kind\":\"ComplexType\","
         + "\"$Abstract\":true,\"PropertyInt16\":"
-        + "{\"$Type\":\"Edm.Int16\",\"$Nullable\":false,"
+        + "{\"$Type\":\"Edm.Int16\","
         + "\"@Core.Description#Target\":\"Description of Type\"},"
-        + "\"PropertyString\":{\"$Type\":\"Edm.String\"}},"
+        + "\"PropertyString\":{\"$Nullable\":true}},"
         + "\"CTTwoPrimBase\":{\"$Kind\":\"ComplexType\",\"$BaseType\":\"Alias.CTTwoPrim\","
         + "\"@Core.Description#Target\":\"Description of Complex Type\"}"));
     assertTrue(metadata.contains("\"ET\":{\"$Kind\":\"EntityType\","
         + "\"$Key\":[{\"EntityInfoID\":\"Info/ID\"},\"name\"],"
-        + "\"name\":{\"$Type\":\"Edm.String\""
+        + "\"name\":{\"$Nullable\":true"
         + "},\"Info\":"
-        + "{\"$Type\":\"Alias.CTEntityInfo\"},"
+        + "{\"$Type\":\"Alias.CTEntityInfo\",\"$Nullable\":true},"
         + "\"NavPropertyETOne\":{\"$Kind\":\"NavigationProperty\","
-        + "\"$Type\":\"Alias.ETOne\"},\"NavProperty\":{\"$Kind\":\"NavigationProperty\","
-        + "\"$Type\":\"Alias.ETAbstract\",\"$Nullable\":false,"
-        + "\"OnDelete\":{\"Action\":\"Cascade\",\"@core.Term\":true}}}"));
+        + "\"$Type\":\"Alias.ETOne\",\"$Nullable\":true},"
+        + "\"NavProperty\":{\"$Kind\":\"NavigationProperty\","
+        + "\"$Type\":\"Alias.ETAbstract\","
+        + "\"$OnDelete\":\"Cascade\",\"$OnDelete@core.Term\":true}}"));
     assertTrue(metadata.contains("\"BAETTwoKeyNavRTETTwoKeyNavParam\":"
         + "[{\"$Kind\":\"Action\",\"$EntitySetPath\":\"BindingParam/NavPropertyETTwoKeyNavOne\","
-        + "\"$IsBound\":true,\"$Parameter\":[{\"$Name\":\"BindingParam\",\"$Type\":\"Alias.ETTwoKeyNav\"},"
-        + "{\"$Name\":\"PropertyComp\",\"$Type\":\"Alias.CTPrimComp\"}],\"$ReturnType\":"
-        + "{\"$Type\":\"Alias.ETTwoKeyNav\",\"$Collection\":true}},{\"$Kind\":\"Action\","
+        + "\"$IsBound\":true,\"$Parameter\":[{\"$Name\":\"BindingParam\",\"$Type\":\"Alias.ETTwoKeyNav\","
+        + "\"$Nullable\":true},"
+        + "{\"$Name\":\"PropertyComp\",\"$Type\":\"Alias.CTPrimComp\",\"$Nullable\":true}],"
+        + "\"$ReturnType\":"
+        + "{\"$Type\":\"Alias.ETTwoKeyNav\",\"$Collection\":true,\"$Nullable\":true}},"
+        + "{\"$Kind\":\"Action\","
         + "\"$EntitySetPath\":\"BindingParam/NavPropertyET\",\"$IsBound\":true,\"$Parameter\":"
-        + "[{\"$Name\":\"BindingParam\",\"$Type\":\"Alias.ET\"}],\"$ReturnType\":{\"$Type\":"
-        + "\"Alias.ET\",\"$Nullable\":false}},{\"$Kind\":\"Action\",\"$IsBound\":false,"
-        + "\"$Parameter\":[{\"$Name\":\"PropertyComp\",\"$Type\":\"Alias.CTPrimComp\"}],"
-        + "\"$ReturnType\":{\"$Type\":\"Alias.ET\",\"$Nullable\":false}}]"));
+        + "[{\"$Name\":\"BindingParam\",\"$Type\":\"Alias.ET\",\"$Nullable\":true}],"
+        + "\"$ReturnType\":{\"$Type\":"
+        + "\"Alias.ET\"}},{\"$Kind\":\"Action\","
+        + "\"$Parameter\":[{\"$Name\":\"PropertyComp\",\"$Type\":\"Alias.CTPrimComp\","
+        + "\"$Nullable\":true}],"
+        + "\"$ReturnType\":{\"$Type\":\"Alias.ET\"}}]"));
     assertTrue(metadata.contains("\"UARTPrimParam\":[{\"$Kind\":\"Action\","
-        + "\"$IsBound\":false,\"$Parameter\":[{\"$Name\":\"ParameterInt16\","
-        + "\"$Type\":\"Edm.Int16\"}],\"$ReturnType\":{\"$Type\":\"Edm.String\"}}]"));
+        + "\"$Parameter\":[{\"$Name\":\"ParameterInt16\","
+        + "\"$Type\":\"Edm.Int16\",\"$Nullable\":true}],"
+        + "\"$ReturnType\":{\"$Type\":\"Edm.String\",\"$Nullable\":true}}]"));
     assertTrue(metadata.contains("\"UFNRTInt16\":"
         + "[{\"$Kind\":\"Function\","
-        + "\"$ReturnType\":{\"$Type\":\"Edm.Int16\"}}]"));
+        + "\"$ReturnType\":{\"$Type\":\"Edm.Int16\",\"$Nullable\":true}}]"));
     assertTrue(metadata.contains("\"BFETTwoKeyNavRTETTwoKeyNavParam\":"
         + "[{\"$Kind\":\"Function\",\"$EntitySetPath\":"
         + "\"BindingParam/NavPropertyETTwoKeyNavOne\",\"$IsBound\":true,"
         + "\"$IsComposable\":true,\"$Parameter\":[{\"$Name\":\"BindingParam\","
-        + "\"$Type\":\"Alias.ETTwoKeyNav\"},{\"$Name\":\"PropertyComp\","
-        + "\"$Type\":\"Alias.CTPrimComp\"}],\"$ReturnType\":{\"$Type\":"
-        + "\"Alias.ETTwoKeyNav\",\"$Collection\":true}},{\"$Kind\":\"Function\","
+        + "\"$Type\":\"Alias.ETTwoKeyNav\",\"$Nullable\":true},{\"$Name\":\"PropertyComp\","
+        + "\"$Type\":\"Alias.CTPrimComp\",\"$Nullable\":true}],\"$ReturnType\":{\"$Type\":"
+        + "\"Alias.ETTwoKeyNav\",\"$Collection\":true,\"$Nullable\":true}},"
+        + "{\"$Kind\":\"Function\","
         + "\"$EntitySetPath\":\"BindingParam/NavPropertyET\",\"$IsBound\":true,"
-        + "\"$Parameter\":[{\"$Name\":\"BindingParam\",\"$Type\":\"Alias.ET\"}],"
-        + "\"$ReturnType\":{\"$Type\":\"Alias.ET\",\"$Nullable\":false}}]"));
-    assertTrue(metadata.contains("\"term\":{\"$Kind\":\"Term\",\"$Type\":\"Edm.String\"},"
-        + "\"Term1\":{\"$Kind\":\"Term\",\"$Type\":\"Edm.String\"},"
-        + "\"Term2\":{\"$Kind\":\"Term\",\"$Type\":\"Edm.String\",\"$Nullable\":false,"
+        + "\"$Parameter\":[{\"$Name\":\"BindingParam\",\"$Type\":\"Alias.ET\","
+        + "\"$Nullable\":true}],"
+        + "\"$ReturnType\":{\"$Type\":\"Alias.ET\"}}]"));
+    assertTrue(metadata.contains("\"term\":{\"$Kind\":\"Term\",\"$Type\":\"Edm.String\","
+        + "\"$Nullable\":true},"
+        + "\"Term1\":{\"$Kind\":\"Term\",\"$Type\":\"Edm.String\",\"$Nullable\":true},"
+        + "\"Term2\":{\"$Kind\":\"Term\",\"$Type\":\"Edm.String\","
         + "\"$DefaultValue\":\"default\",\"$MaxLength\":1,"
         + "\"$Precision\":2,\"$Scale\":3},"
         + "\"Term3\":{\"$Kind\":\"Term\",\"$Type\":\"Edm.String\","
-        + "\"$AppliesTo\":\"Property EntitySet Schema\"},"
-        + "\"Term4\":{\"$Kind\":\"Term\",\"$Type\":\"Edm.String\",\"$BaseTerm\":\"Alias.Term1\"}"));
+        + "\"$AppliesTo\":\"Property EntitySet Schema\",\"$Nullable\":true},"
+        + "\"Term4\":{\"$Kind\":\"Term\",\"$Type\":\"Edm.String\",\"$BaseTerm\":\"Alias.Term1\","
+        + "\"$Nullable\":true}"));
     assertTrue(metadata.contains("\"ESTwoKeyNav\":{\"$Collection\":true,"
         + "\"$Type\":\"Alias.ETTwoKeyNav\",\"$NavigationPropertyBinding\":{"
         + "\"NavPropertyETTwoKeyNavOne/namespace.ETOne/NavPropertyET\":\"ES\","
@@ -484,10 +499,10 @@ class MetadataDocumentJsonSerializerTest {
         + "\"$IncludeInServiceDocument\":true}"));
     assertTrue(metadata.contains("\"ETTwoKeyNavOne\":{\"$Kind\":\"EntityType\","
         + "\"$HasStream\":true,\"$BaseType\":\"Alias.ETOne\","
-        + "\"PropertyString\":{\"$Type\":\"Edm.String\"},"
+        + "\"PropertyString\":{\"$Nullable\":true},"
         + "\"NavPropertyETAbstract\":{\"$Kind\":\"NavigationProperty\","
         + "\"$Type\":\"Alias.ETAbstract\",\"$Collection\":true,"
-        + "\"$Nullable\":false,\"$Partner\":"
+        + "\"$Partner\":"
         + "\"NavPropertyETTwoKeyNavOne\",\"$ContainsTarget\":true,\"$ReferentialConstraint\":"
         + "{\"PropertyString\":\"PropertyString\"}}}"));
     assertTrue(metadata.contains("\"$Annotations\":{\"Alias.ETAbstract#Tablett\":"
@@ -531,6 +546,64 @@ class MetadataDocumentJsonSerializerTest {
         + "\"PropName\":\"value\",\"PropName@ns.term\":true,\"@ns.term\":true},"
         + "\"@ns.term#T34\":{\"$UrlRef\":\"URLRefValue\",\"@ns.term\":true}"));
   }
+
+  /**
+   * CSDL JSON section 7.2.1: "The value of $Nullable is one of the Boolean literals true or false.
+   * Absence of the member means false." This is the exact inverse of the CSDL XML attribute, whose
+   * absence means true - writing XML polarity into a JSON document silently turns every nullable
+   * property into a non-nullable one for any conformant reader.
+   */
+  @Test
+  void nullableIsWrittenWithJsonPolarity() throws Exception {
+    final String metadata = localMetadata();
+    assertTrue(metadata.contains("\"Info\":{\"$Type\":\"Alias.CTEntityInfo\",\"$Nullable\":true}"),
+        "a nullable property must say so explicitly");
+    assertTrue(metadata.contains("\"PropertyInt16\":{\"$Type\":\"Edm.Int16\","),
+        "a non-nullable property omits the member entirely");
+    assertFalse(metadata.contains("\"$Nullable\":false"),
+        "false is the default and must never be written");
+  }
+
+  /**
+   * Section 7.1: "Absence of the $Type member means the type is Edm.String. This member SHOULD be
+   * omitted for string properties to reduce document size." The reader applies the same default, so
+   * nothing is lost - Task 5's parser pins the reading side.
+   */
+  @Test
+  void stringPropertiesOmitTheirType() throws Exception {
+    final String metadata = localMetadata();
+    assertTrue(metadata.contains("\"PropertyString\":{\"$Nullable\":true}"),
+        "a nullable string property carries neither $Type nor $Kind");
+    assertFalse(metadata.contains("\"PropertyString\":{\"$Type\":\"Edm.String\""),
+        "no structural property writes the default type");
+    assertFalse(metadata.contains("\"name\":{\"$Type\":\"Edm.String\""),
+        "no structural property writes the default type");
+    assertTrue(metadata.contains("\"$ReturnType\":{\"$Type\":\"Edm.String\",\"$Nullable\":true}"),
+        "return types keep $Type - section 12.8 states the default but no SHOULD-omit rule");
+  }
+
+  /** Section 10.3: enumeration member values are JSON numbers, not strings. */
+  @Test
+  void enumMemberValuesAreNumbers() throws Exception {
+    assertTrue(localMetadata().contains("\"String1\":1,"), "an enum member value is a number");
+  }
+
+  /** Section 8.5: one $ReferentialConstraint object carrying one member per constraint. */
+  @Test
+  void referentialConstraintsShareOneObject() throws Exception {
+    final String metadata = localMetadata();
+    assertEquals(1, countOccurrences(metadata, "\"$ReferentialConstraint\":"),
+        "the constraints of one navigation property live in a single object");
+  }
+
+  private static int countOccurrences(final String haystack, final String needle) {
+    int count = 0;
+    for (int i = haystack.indexOf(needle); i >= 0; i = haystack.indexOf(needle, i + needle.length())) {
+      count++;
+    }
+    return count;
+  }
+
 
   /**
    * OData 4.01, CSDL JSON section 4: a metadata document of a service MUST carry $EntityContainer,

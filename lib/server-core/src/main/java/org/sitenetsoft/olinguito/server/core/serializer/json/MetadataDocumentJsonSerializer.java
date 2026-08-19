@@ -21,6 +21,9 @@
  * Copyright 2026 SiteNetSoft - OLINGO-1399: fall back to raw term name for unresolvable annotation terms
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: CSDL JSON conformant $EntityContainer, flat $Extends,
  * structural container children (no $Kind) and served $Version
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: CSDL JSON facet defaults ($Nullable polarity,
+ * omitted $Type for Edm.String, numeric enum values and type-definition facets, $OnDelete,
+ * single $ReferentialConstraint object)
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -140,8 +143,9 @@ public class MetadataDocumentJsonSerializer {
   private static final String ANNOTATION_PATH = DOLLAR + "Path";
   private static final String NAME = DOLLAR + "Name";
   private static final String ENTITY_CONTAINER_MEMBER = DOLLAR + "EntityContainer";
-  private static final String ON_DELETE = "OnDelete";
-  private static final String ON_DELETE_PROPERTY = "Action";
+  private static final String ON_DELETE_MEMBER = DOLLAR + "OnDelete";
+  private static final String TYPE_DEFINITION_KIND = "TypeDefinition";
+  private static final String EDM_STRING = "Edm.String";
 
   public MetadataDocumentJsonSerializer(final ServiceMetadata serviceMetadata) throws SerializerException {
     if (serviceMetadata == null || serviceMetadata.getEdm() == null) {
@@ -476,8 +480,10 @@ public class MetadataDocumentJsonSerializer {
       }
 
       // Facets
-      if (!term.isNullable()) {
-        json.writeBooleanField(NULLABLE, term.isNullable());
+      // Section 7.2.1: absence of $Nullable means false in CSDL JSON (the XML attribute defaults the
+      // other way), so the member is written when the value is nullable and omitted otherwise.
+      if (term.isNullable()) {
+        json.writeBooleanField(NULLABLE, true);
       }
 
       if (term.getDefaultValue() != null) {
@@ -569,7 +575,10 @@ public class MetadataDocumentJsonSerializer {
         if (action.getEntitySetPath() != null) {
           json.writeStringField(ENTITY_SET_PATH, action.getEntitySetPath());
         }
-        json.writeBooleanField(ISBOUND, action.isBound());
+        // Section 12.5: "Absence of the member means false", so the default is omitted.
+        if (action.isBound()) {
+          json.writeBooleanField(ISBOUND, true);
+        }
 
         appendOperationParameters(json, action);
 
@@ -606,8 +615,10 @@ public class MetadataDocumentJsonSerializer {
 
   private void appendReturnTypeFacets(final JsonGenerator json, 
       final EdmReturnType returnType) throws SerializerException, IOException {
-    if (!returnType.isNullable()) {
-      json.writeBooleanField(NULLABLE, returnType.isNullable());
+    // Section 12.8/7.2.1: absence of $Nullable means false in CSDL JSON, the inverse of the XML
+    // attribute, so the member is only written when the return type is nullable.
+    if (returnType.isNullable()) {
+      json.writeBooleanField(NULLABLE, true);
     }
     if (returnType.getMaxLength() != null) {
       json.writeNumberField(MAX_LENGTH, returnType.getMaxLength());
@@ -652,8 +663,10 @@ public class MetadataDocumentJsonSerializer {
 
   private void appendParameterFacets(final JsonGenerator json, 
       final EdmParameter parameter) throws SerializerException, IOException {
-    if (!parameter.isNullable()) {
-      json.writeBooleanField(NULLABLE, parameter.isNullable());
+    // Section 12.9/7.2.1: absence of $Nullable means false in CSDL JSON, the inverse of the XML
+    // attribute, so the member is only written when the parameter is nullable.
+    if (parameter.isNullable()) {
+      json.writeBooleanField(NULLABLE, true);
     }
     if (parameter.getMaxLength() != null) {
       json.writeNumberField(MAX_LENGTH, parameter.getMaxLength());
@@ -735,8 +748,10 @@ public class MetadataDocumentJsonSerializer {
         json.writeBooleanField(COLLECTION, navigationProperty.isCollection());
       }
       
-      if (!navigationProperty.isNullable()) {
-        json.writeBooleanField(NULLABLE, navigationProperty.isNullable());
+      // Section 8.2/7.2.1: absence of $Nullable means false in CSDL JSON (the XML attribute defaults
+      // the other way), so the member is written when the value is nullable and omitted otherwise.
+      if (navigationProperty.isNullable()) {
+        json.writeBooleanField(NULLABLE, true);
       }
 
       if (navigationProperty.getPartner() != null) {
@@ -748,22 +763,25 @@ public class MetadataDocumentJsonSerializer {
         json.writeBooleanField(CONTAINS_TARGET, navigationProperty.containsTarget());
       }
 
-      if (navigationProperty.getReferentialConstraints() != null) {
-        for (EdmReferentialConstraint constraint : navigationProperty.getReferentialConstraints()) {
-          json.writeObjectFieldStart(REFERENTIAL_CONSTRAINT);
+      final List<EdmReferentialConstraint> constraints = navigationProperty.getReferentialConstraints();
+      if (constraints != null && !constraints.isEmpty()) {
+        // Section 8.5: "The value of $ReferentialConstraint is an object with one member per
+        // referential constraint." One object per constraint would repeat the member name.
+        json.writeObjectFieldStart(REFERENTIAL_CONSTRAINT);
+        for (EdmReferentialConstraint constraint : constraints) {
           json.writeStringField(constraint.getPropertyName(), constraint.getReferencedPropertyName());
           for (EdmAnnotation annotation : constraint.getAnnotations()) {
-            appendAnnotations(json, annotation, null);
+            appendAnnotations(json, annotation, constraint.getPropertyName());
           }
-          json.writeEndObject();
         }
+        json.writeEndObject();
       }
       
       if (navigationProperty.getOnDelete() != null) {
-        json.writeObjectFieldStart(ON_DELETE);
-        json.writeStringField(ON_DELETE_PROPERTY, navigationProperty.getOnDelete().getAction());
-        appendAnnotations(json, navigationProperty.getOnDelete(), null);
-        json.writeEndObject();
+        // Section 8.6: "The value of $OnDelete is a string with one of the values Cascade, None,
+        // SetNull, or SetDefault." / "Annotations for $OnDelete are prefixed with $OnDelete."
+        json.writeStringField(ON_DELETE_MEMBER, navigationProperty.getOnDelete().getAction());
+        appendAnnotations(json, navigationProperty.getOnDelete(), ON_DELETE_MEMBER);
       }
 
       appendAnnotations(json, navigationProperty, null);
@@ -781,22 +799,27 @@ public class MetadataDocumentJsonSerializer {
     for (String propertyName : propertyNames) {
       EdmProperty property = type.getStructuralProperty(propertyName);
       json.writeObjectFieldStart(propertyName);
-      String fqnString;
-      if (property.isPrimitive()) {
-        fqnString = getFullQualifiedName(property.getType());
-      } else {
-        fqnString = getAliasedFullQualifiedName(property.getType());
+      // Section 7.1: "Absence of the $Type member means the type is Edm.String. This member SHOULD be
+      // omitted for string properties to reduce document size." For a collection-valued property the
+      // rule applies to the item type, which is what getType() returns here.
+      final String fqnString = property.isPrimitive()
+          ? getFullQualifiedName(property.getType()) : getAliasedFullQualifiedName(property.getType());
+      if (!EDM_STRING.equals(fqnString)) {
+        json.writeStringField(TYPE, fqnString);
       }
-      json.writeStringField(TYPE, fqnString);
       if (property.isCollection()) {
         json.writeBooleanField(COLLECTION, property.isCollection());
       }
 
       // Facets
-      if (!property.isNullable()) {
-        json.writeBooleanField(NULLABLE, property.isNullable());
+      // Section 7.2.1: absence of $Nullable means false in CSDL JSON (the XML attribute defaults the
+      // other way), so the member is written when the value is nullable and omitted otherwise.
+      if (property.isNullable()) {
+        json.writeBooleanField(NULLABLE, true);
       }
 
+      // Section 7.2.5 defaults $Unicode the other way round -- "Absence of the member means true" --
+      // so, unlike $Nullable above, this member is the one written when the value is false.
       if (!property.isUnicode()) {
         json.writeBooleanField(UNICODE, property.isUnicode());
       }
@@ -859,20 +882,23 @@ public class MetadataDocumentJsonSerializer {
       final List<EdmTypeDefinition> typeDefinitions) throws SerializerException, IOException {
     for (EdmTypeDefinition definition : typeDefinitions) {
       json.writeObjectFieldStart(definition.getName());
-      json.writeStringField(KIND, definition.getKind().name());
+      // Section 11: "The type definition object MUST contain the member $Kind with a string value of
+      // TypeDefinition" -- EdmTypeKind.DEFINITION.name() leaked a Java enum name into the wire format.
+      json.writeStringField(KIND, TYPE_DEFINITION_KIND);
       json.writeStringField(UNDERLYING_TYPE, getFullQualifiedName(definition.getUnderlyingType()));
       
-      // Facets
+      // Facets, section 7.2: $MaxLength, $Precision and $Scale are numbers; $SRID stays a string
+      // ("a string containing a number or the symbolic value variable").
       if (definition.getMaxLength() != null) {
-        json.writeStringField(MAX_LENGTH, "" + definition.getMaxLength());
+        json.writeNumberField(MAX_LENGTH, definition.getMaxLength());
       }
 
       if (definition.getPrecision() != null) {
-        json.writeStringField(PRECISION, "" + definition.getPrecision());
+        json.writeNumberField(PRECISION, definition.getPrecision());
       }
 
       if (definition.getScale() != null) {
-        json.writeStringField(SCALE, "" + definition.getScale());
+        json.writeNumberField(SCALE, definition.getScale());
       }
       
       if (definition.getSrid() != null) {
@@ -889,14 +915,20 @@ public class MetadataDocumentJsonSerializer {
     for (EdmEnumType enumType : enumTypes) {
       json.writeObjectFieldStart(enumType.getName());
       json.writeStringField(KIND, Kind.EnumType.name());
-      json.writeBooleanField(IS_FLAGS, enumType.isFlags());
+      // Section 10.2: absence of $IsFlags means false, and defaults are omitted (section 2.2).
+      if (enumType.isFlags()) {
+        json.writeBooleanField(IS_FLAGS, true);
+      }
       json.writeStringField(UNDERLYING_TYPE, getFullQualifiedName(enumType.getUnderlyingType()));
 
       for (String memberName : enumType.getMemberNames()) {
 
         EdmMember member = enumType.getMember(memberName);
         if (member.getValue() != null) {
-          json.writeStringField(memberName, member.getValue());
+          // Section 10.3: "Each member MUST specify an associated numeric value." A value that is not
+          // a valid long is a broken model; the NumberFormatException is preferable to writing a
+          // string that no conformant reader can use.
+          json.writeNumberField(memberName, Long.parseLong(member.getValue()));
         }
 
         appendAnnotations(json, member, memberName);
