@@ -19,6 +19,8 @@
  * Copyright 2026 SiteNetSoft - Replaced Apache Commons with Java standard library
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: CSDL JSON conformant $EntityContainer, flat $Extends,
+ * structural container children (no $Kind) and served $Version
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -129,7 +131,7 @@ class MetadataDocumentJsonSerializerTest {
     ServiceMetadata metadata = mock(ServiceMetadata.class);
     when(metadata.getEdm()).thenReturn(edm);
 
-    assertEquals("{\"$Version\":\"4.01\"}",
+    assertEquals("{\"$Version\":\"4.0\"}",
         new String(serializer.metadataDocument(metadata).getContent().readAllBytes(), StandardCharsets.UTF_8));
   }
   
@@ -276,7 +278,7 @@ class MetadataDocumentJsonSerializerTest {
 
 
     assertTrue(metadataString.contains(
-        "{\"$Version\":\"4.01\","
+        "{\"$Version\":\"4.0\","
         + "\"MyNamespace\":{\"MyEnum\":"
         + "{\"$Kind\":\"EnumType\",\"$IsFlags\":false,"
         + "\"$UnderlyingType\":\"Edm.Int32\",\"MyMember\":\"0\","
@@ -340,7 +342,7 @@ class MetadataDocumentJsonSerializerTest {
 
     InputStream metadata = serializer.metadataDocument(serviceMetadata).getContent();
     assertNotNull(metadata);
-    assertEquals("{\"$Version\":\"4.01\",\"MyNamespace\":{}}",
+    assertEquals("{\"$Version\":\"4.0\",\"MyNamespace\":{}}",
         new String(metadata.readAllBytes(), StandardCharsets.UTF_8));
   }
   
@@ -395,7 +397,7 @@ class MetadataDocumentJsonSerializerTest {
     InputStream metadata = serializer.metadataDocument(serviceMetadata).getContent();
     assertNotNull(metadata);
     String metadataStr = new String(metadata.readAllBytes(), StandardCharsets.UTF_8);
-    assertEquals("{\"$Version\":\"4.01\","
+    assertEquals("{\"$Version\":\"4.0\","
         + "\"MyNamespace\":"
         + "{\"MyTypeDefinition\":{"
         + "\"$Kind\":\"DEFINITION\","
@@ -469,16 +471,16 @@ class MetadataDocumentJsonSerializerTest {
         + "\"Term3\":{\"$Kind\":\"Term\",\"$Type\":\"Edm.String\","
         + "\"$AppliesTo\":\"Property EntitySet Schema\"},"
         + "\"Term4\":{\"$Kind\":\"Term\",\"$Type\":\"Edm.String\",\"$BaseTerm\":\"Alias.Term1\"}"));
-    assertTrue(metadata.contains("\"ESTwoKeyNav\":{\"$Kind\":\"EntitySet\","
+    assertTrue(metadata.contains("\"ESTwoKeyNav\":{\"$Collection\":true,"
         + "\"$Type\":\"Alias.ETTwoKeyNav\",\"$NavigationPropertyBinding\":{"
         + "\"NavPropertyETTwoKeyNavOne/namespace.ETOne/NavPropertyET\":\"ES\","
         + "\"NavPropertyETOne\":\"ESOne\"}}"));
-    assertTrue(metadata.contains("\"SIBinding\":{\"$Kind\":\"Singleton\","
+    assertTrue(metadata.contains("\"SIBinding\":{"
         + "\"$Type\":\"Alias.ET\",\"$NavigationPropertyBinding\":{\"NavPropertyETOne\":\"ESOne\"}}"));
-    assertTrue(metadata.contains("\"AIRTPrimParam\":{\"$Kind\":\"ActionImport\","
-        + "\"$Action\":\"Alias.UARTPrimParam\",\"$EntitySet\":\"Alias.ESTwoKeyNav\"}"));
-    assertTrue(metadata.contains("\"FINRTInt16\":{\"$Kind\":\"FunctionImport\","
-        + "\"$Function\":\"Alias.UFNRTInt16\",\"$EntitySet\":\"Alias.ESTwoKeyNavOne\","
+    assertTrue(metadata.contains("\"AIRTPrimParam\":{"
+        + "\"$Action\":\"Alias.UARTPrimParam\",\"$EntitySet\":\"ESTwoKeyNav\"}"));
+    assertTrue(metadata.contains("\"FINRTInt16\":{"
+        + "\"$Function\":\"Alias.UFNRTInt16\",\"$EntitySet\":\"ESTwoKeyNavOne\","
         + "\"$IncludeInServiceDocument\":true}"));
     assertTrue(metadata.contains("\"ETTwoKeyNavOne\":{\"$Kind\":\"EntityType\","
         + "\"$HasStream\":true,\"$BaseType\":\"Alias.ETOne\","
@@ -529,7 +531,80 @@ class MetadataDocumentJsonSerializerTest {
         + "\"PropName\":\"value\",\"PropName@ns.term\":true,\"@ns.term\":true},"
         + "\"@ns.term#T34\":{\"$UrlRef\":\"URLRefValue\",\"@ns.term\":true}"));
   }
-  
+
+  /**
+   * OData 4.01, CSDL JSON section 4: a metadata document of a service MUST carry $EntityContainer,
+   * and it is the one place in the whole format where the namespace-qualified name is required even
+   * though the schema declares an alias.
+   *
+   * <p>{@code LocalProvider.getEntityContainerInfo(null)} (the lookup {@code Edm.getEntityContainer()}
+   * uses) resolves the default container to {@code org.olingo.container} rather than
+   * {@code namespace.container} -- a pre-existing quirk of this test fixture, not of the code under
+   * test -- so that is the namespace-qualified name asserted here.
+   */
+  @Test
+  void documentCarriesNamespaceQualifiedEntityContainer() throws Exception {
+    final String metadata = localMetadata();
+    assertTrue(metadata.contains("\"$EntityContainer\":\"org.olingo.container\""),
+        "the document object must name the service's container with its namespace, not its alias");
+    assertFalse(metadata.contains("\"$EntityContainer\":\"Alias.container\""),
+        "the alias-qualified form is explicitly not allowed for $EntityContainer");
+  }
+
+  /**
+   * CSDL JSON section 13.1: $Extends is a member of the container object. The nested
+   * {"Extending":{"$Kind":"EntityContainer","$Extends":...}} object Olinguito used to write does not
+   * exist in the format at all.
+   *
+   * <p>{@code LocalProvider} chains two extended containers: schema {@code namespace}'s {@code
+   * container} extends {@code namespace1.container1} (written aliased, as {@code Alias1.container1},
+   * since {@code namespace1} declares alias {@code Alias1}), and schema {@code namespace1}'s {@code
+   * container1} in turn extends {@code namespace2.container2} (written unaliased, since {@code
+   * namespace2} declares none). Either flattened pair demonstrates the fix; this asserts the
+   * {@code container1} one.
+   */
+  @Test
+  void containerExtendsIsWrittenFlat() throws Exception {
+    final String metadata = localMetadata();
+    assertTrue(metadata.contains("\"container1\":{\"$Kind\":\"EntityContainer\","
+        + "\"$Extends\":\"namespace2.container2\""),
+        "$Extends must sit directly on the container object");
+    assertFalse(metadata.contains("Extending"), "the nested Extending object must be gone");
+  }
+
+  /** CSDL JSON section 13.2: the entity set object MUST contain $Collection with the value true. */
+  @Test
+  void entitySetCarriesCollectionTrue() throws Exception {
+    assertTrue(localMetadata().contains("\"ESOne\":{\"$Collection\":true,\"$Type\":"),
+        "an entity set is a collection and must say so");
+  }
+
+  /**
+   * CSDL JSON sections 13.2/13.3/13.5/13.6 list the members of each container child, and $Kind is in
+   * none of the four lists - container children are told apart structurally ($Collection+$Type,
+   * $Type, $Action, $Function). Schema-level elements keep the $Kind the spec does define for them.
+   */
+  @Test
+  void containerChildrenCarryNoKindMember() throws Exception {
+    final String metadata = localMetadata();
+    assertFalse(metadata.contains("\"$Kind\":\"EntitySet\""), "an entity set has no $Kind");
+    assertFalse(metadata.contains("\"$Kind\":\"Singleton\""), "a singleton has no $Kind");
+    assertFalse(metadata.contains("\"$Kind\":\"ActionImport\""), "an action import has no $Kind");
+    assertFalse(metadata.contains("\"$Kind\":\"FunctionImport\""), "a function import has no $Kind");
+    assertTrue(metadata.contains("\"$Kind\":\"EntityContainer\""), "the container itself keeps $Kind");
+    assertTrue(metadata.contains("\"$Kind\":\"EntityType\""), "schema-level elements keep $Kind");
+  }
+
+  /**
+   * $Version reports the version the service serves. Every Olinguito service reports
+   * ODataServiceVersion.V40 today (ServiceMetadataImpl#getDataServiceVersion), which matches the XML
+   * serializer's Version="4.0" and the OData-Version response header.
+   */
+  @Test
+  void versionIsTheServedVersion() throws Exception {
+    assertTrue(localMetadata().startsWith("{\"$Version\":\"4.0\","), "the served version is 4.0");
+  }
+
   private String localMetadata() throws SerializerException, IOException {
     CsdlEdmProvider provider = new LocalProvider();
     ServiceMetadata serviceMetadata = new ServiceMetadataImpl(provider, Collections.emptyList(), null);

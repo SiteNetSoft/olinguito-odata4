@@ -19,6 +19,8 @@
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  * Copyright 2026 SiteNetSoft - OLINGO-1534: Null-safe field writing for constant expressions in logical/comparison
  * Copyright 2026 SiteNetSoft - OLINGO-1399: fall back to raw term name for unresolvable annotation terms
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: CSDL JSON conformant $EntityContainer, flat $Extends,
+ * structural container children (no $Kind) and served $Version
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -79,6 +81,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmPropertyValue;
 import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmRecord;
 import org.sitenetsoft.olinguito.commons.api.edm.annotation.EdmUrlRef;
 import org.sitenetsoft.olinguito.commons.api.edm.constants.EdmTypeKind;
+import org.sitenetsoft.olinguito.commons.api.edm.constants.ODataServiceVersion;
 import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
 import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReferenceInclude;
 import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReferenceIncludeAnnotation;
@@ -135,6 +138,7 @@ public class MetadataDocumentJsonSerializer {
   private static final String ANNOTATION = DOLLAR + "Annotations";
   private static final String ANNOTATION_PATH = DOLLAR + "Path";
   private static final String NAME = DOLLAR + "Name";
+  private static final String ENTITY_CONTAINER_MEMBER = DOLLAR + "EntityContainer";
   private static final String ON_DELETE = "OnDelete";
   private static final String ON_DELETE_PROPERTY = "Action";
 
@@ -148,7 +152,21 @@ public class MetadataDocumentJsonSerializer {
   
   public void writeMetadataDocument(final JsonGenerator json) throws SerializerException, IOException {
     json.writeStartObject();
-    json.writeStringField(VERSION, "4.01");
+    // OData 4.01, CSDL JSON section 4: "The value of $Version is a string containing either 4.0 or
+    // 4.01." The version written is the one the service serves; every other value (and a service
+    // that reports none) is written as 4.0, which is the version the handler advertises in the
+    // OData-Version response header and the XML serializer writes as Version="4.0".
+    final ODataServiceVersion dataServiceVersion = serviceMetadata.getDataServiceVersion();
+    json.writeStringField(VERSION,
+        ODataServiceVersion.V401 == dataServiceVersion ? ODataServiceVersion.V401.toString()
+            : ODataServiceVersion.V40.toString());
+    // Section 4: a metadata document of an OData service MUST name its entity container, and this is
+    // the only reference in the document that MUST NOT use the alias.
+    final EdmEntityContainer container = serviceMetadata.getEdm().getEntityContainer();
+    if (container != null) {
+      json.writeStringField(ENTITY_CONTAINER_MEMBER,
+          container.getNamespace() + "." + container.getName());
+    }
     if (!serviceMetadata.getReferences().isEmpty()) {
       appendReference(json);
     }
@@ -241,26 +259,19 @@ public class MetadataDocumentJsonSerializer {
         } else {
           parentContainerNameString = parentContainerName.getFullQualifiedNameAsString();
         }
-        json.writeObjectFieldStart(Kind.Extending.name());
-        json.writeStringField(KIND, Kind.EntityContainer.name());
+        // Section 13.1: "The value of $Extends is the qualified name of the entity container to be
+        // extended." It is a member of the container object; there is no Extending object in CSDL JSON.
         json.writeStringField(EXTENDS, parentContainerNameString);
-        json.writeEndObject();
       }
 
       // EntitySets
       appendEntitySets(json, container.getEntitySets());
 
-      String containerNamespace;
-      if (namespaceToAlias.get(container.getNamespace()) != null) {
-        containerNamespace = namespaceToAlias.get(container.getNamespace());
-      } else {
-        containerNamespace = container.getNamespace();
-      }
       // ActionImports
-      appendActionImports(json, container.getActionImports(), containerNamespace);
-     
+      appendActionImports(json, container.getActionImports());
+
       // FunctionImports
-      appendFunctionImports(json, container.getFunctionImports(), containerNamespace);
+      appendFunctionImports(json, container.getFunctionImports());
 
        
       // Singletons
@@ -278,7 +289,8 @@ public class MetadataDocumentJsonSerializer {
       final List<EdmSingleton> singletons) throws SerializerException, IOException {
     for (EdmSingleton singleton : singletons) {
       json.writeObjectFieldStart(singleton.getName());
-      json.writeStringField(KIND, Kind.Singleton.name());
+      // Section 13.3: the singleton object's only defined members are $Type, $Nullable and
+      // $NavigationPropertyBinding (plus annotations); $Kind is not one of them.
       json.writeStringField(TYPE, getAliasedFullQualifiedName(singleton.getEntityType()));
       
       appendNavigationPropertyBindings(json, singleton);
@@ -287,12 +299,12 @@ public class MetadataDocumentJsonSerializer {
     }
   }
 
-  private void appendFunctionImports(final JsonGenerator json, final List<EdmFunctionImport> functionImports,
-      final String containerNamespace) throws SerializerException, IOException {
+  private void appendFunctionImports(final JsonGenerator json, final List<EdmFunctionImport> functionImports)
+      throws SerializerException, IOException {
     for (EdmFunctionImport functionImport : functionImports) {
       json.writeObjectFieldStart(functionImport.getName());
 
-      json.writeStringField(KIND, Kind.FunctionImport.name());
+      // Section 13.6: the function import object MUST contain $Function; $Kind is not defined for it.
       String functionFQNString;
       FullQualifiedName functionFqn = functionImport.getFunctionFqn();
       if (namespaceToAlias.get(functionFqn.getNamespace()) != null) {
@@ -304,8 +316,8 @@ public class MetadataDocumentJsonSerializer {
 
       EdmEntitySet returnedEntitySet = functionImport.getReturnedEntitySet();
       if (returnedEntitySet != null) {
-        json.writeStringField(DOLLAR + Kind.EntitySet.name(), 
-            containerNamespace + "." + returnedEntitySet.getName());
+        // Section 13.6: an entity set in the same container is named by its unqualified name.
+        json.writeStringField(DOLLAR + Kind.EntitySet.name(), returnedEntitySet.getName());
       }
       // Default is false and we do not write the default
       if (functionImport.isIncludeInServiceDocument()) {
@@ -316,16 +328,16 @@ public class MetadataDocumentJsonSerializer {
     }
   }
 
-  private void appendActionImports(final JsonGenerator json, 
-      final List<EdmActionImport> actionImports, String containerNamespace) 
+  private void appendActionImports(final JsonGenerator json,
+      final List<EdmActionImport> actionImports)
           throws SerializerException, IOException {
     for (EdmActionImport actionImport : actionImports) {
       json.writeObjectFieldStart(actionImport.getName());
-      json.writeStringField(KIND, Kind.ActionImport.name());
+      // Section 13.5: the action import object MUST contain $Action; $Kind is not defined for it.
       json.writeStringField(DOLLAR + Kind.Action.name(), getAliasedFullQualifiedName(actionImport.getUnboundAction()));
       if (actionImport.getReturnedEntitySet() != null) {
-        json.writeStringField(DOLLAR + Kind.EntitySet.name(), 
-            containerNamespace + "." + actionImport.getReturnedEntitySet().getName());
+        // Section 13.5: an entity set in the same container is named by its unqualified name.
+        json.writeStringField(DOLLAR + Kind.EntitySet.name(), actionImport.getReturnedEntitySet().getName());
       }
       appendAnnotations(json, actionImport, null);
       json.writeEndObject();
@@ -337,7 +349,9 @@ public class MetadataDocumentJsonSerializer {
       final List<EdmEntitySet> entitySets) throws SerializerException, IOException {
     for (EdmEntitySet entitySet : entitySets) {
       json.writeObjectFieldStart(entitySet.getName());
-      json.writeStringField(KIND, Kind.EntitySet.name());
+      // Section 13.2: "The entity set object MUST contain the members $Collection and $Type." $Kind is
+      // not one of the members section 13.2 defines for an entity set, so it is not written.
+      json.writeBooleanField(COLLECTION, true);
       json.writeStringField(TYPE, getAliasedFullQualifiedName(entitySet.getEntityType()));
       if (!entitySet.isIncludeInServiceDocument()) {
         json.writeBooleanField(INCLUDE_IN_SERV_DOC, entitySet.isIncludeInServiceDocument());
