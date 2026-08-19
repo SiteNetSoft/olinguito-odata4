@@ -17,13 +17,16 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Added the CSDL JSON annotation and annotation expression reader
+ * Copyright 2026 SiteNetSoft - Kept the collection cast type and rejected unknown expression members
  */
 package org.sitenetsoft.olinguito.server.core;
 
 import static org.sitenetsoft.olinguito.server.core.MetadataJsonParser.AT;
+import static org.sitenetsoft.olinguito.server.core.MetadataJsonParser.COLLECTION;
 import static org.sitenetsoft.olinguito.server.core.MetadataJsonParser.DOLLAR;
 import static org.sitenetsoft.olinguito.server.core.MetadataJsonParser.TYPE;
 import static org.sitenetsoft.olinguito.server.core.MetadataJsonParser.child;
+import static org.sitenetsoft.olinguito.server.core.MetadataJsonParser.flag;
 import static org.sitenetsoft.olinguito.server.core.MetadataJsonParser.objectNode;
 import static org.sitenetsoft.olinguito.server.core.MetadataJsonParser.requireText;
 
@@ -96,7 +99,9 @@ final class MetadataJsonAnnotationReader {
    * Section 14.4.12: "The type of a record expression is represented as the @type control
    * information". These member names are JSON control information, never annotation terms.
    */
-  private static final Set<String> CONTROL_INFORMATION = Set.of("@type", "@odata.type");
+  private static final String AT_TYPE = "@type";
+  private static final String ODATA_AT_TYPE = "@odata.type";
+  private static final Set<String> CONTROL_INFORMATION = Set.of(AT_TYPE, ODATA_AT_TYPE);
 
   /**
    * Section 14.4.2: the operators whose value is an array of two operand expressions. $Has and $In are
@@ -315,7 +320,7 @@ final class MetadataJsonAnnotationReader {
     if (node.has(CAST)) {
       final CsdlCast cast = new CsdlCast()
           .setValue(readExpression(node.get(CAST), child(path, CAST)))
-          .setType(this.parser.resolveName(requireText(node, TYPE, path)));
+          .setType(castType(node, path));
       this.parser.readFacets(node, facets(cast), path);
       readAnnotations(node, cast, "", path);
       return cast;
@@ -323,7 +328,7 @@ final class MetadataJsonAnnotationReader {
     if (node.has(IS_OF)) {
       final CsdlIsOf isOf = new CsdlIsOf()
           .setValue(readExpression(node.get(IS_OF), child(path, IS_OF)))
-          .setType(this.parser.resolveName(requireText(node, TYPE, path)));
+          .setType(castType(node, path));
       this.parser.readFacets(node, facets(isOf), path);
       readAnnotations(node, isOf, "", path);
       return isOf;
@@ -357,7 +362,51 @@ final class MetadataJsonAnnotationReader {
       return urlRef;
     }
     final CsdlExpression legacy = readLegacyConstant(node, path);
-    return legacy != null ? legacy : readRecord(node, path);
+    if (legacy != null) {
+      return legacy;
+    }
+    rejectUnknownExpression(node, path);
+    return readRecord(node, path);
+  }
+
+  /**
+   * Sections 14.4.5 and 14.4.8: "a member $Type whose value is a string containing the qualified type
+   * name, and optionally a member $Collection with a value of true". The Csdl model has no collection
+   * flag on a cast, it keeps the same {@code Collection(...)} type expression the CSDL XML attribute
+   * carries, which is what {@code EdmCastImpl} parses; dropping $Collection would turn a cast to a
+   * collection into a cast to a scalar.
+   */
+  private String castType(final ObjectNode node, final String path) throws CsdlJsonParseException {
+    final String type = this.parser.resolveName(requireText(node, TYPE, path));
+    return flag(node, COLLECTION) ? "Collection(" + type + ")" : type;
+  }
+
+  /**
+   * Section 14.4.12: a record is "an object with one member per property value expression", and a
+   * property name is a simple identifier - it never starts with a dollar. So an object whose only
+   * members are $-prefixed ones is not a record; it is a dynamic expression this reader does not know,
+   * either a form the Csdl model has no class for (such as $ModelElementPath) or a misspelling. It is
+   * reported rather than silently turned into an empty record. The legacy record's $Type is the one
+   * $-member that does belong to a record.
+   */
+  private static void rejectUnknownExpression(final ObjectNode node, final String path)
+      throws CsdlJsonParseException {
+    String unknown = null;
+    final Iterator<Map.Entry<String, JsonNode>> members = node.fields();
+    while (members.hasNext()) {
+      final String name = members.next().getKey();
+      if (!name.startsWith(DOLLAR)) {
+        if (!name.contains(AT)) {
+          return; // a property value expression, so this really is a record
+        }
+      } else if (unknown == null && !TYPE.equals(name)) {
+        unknown = name;
+      }
+    }
+    if (unknown != null) {
+      throw new CsdlJsonParseException(child(path, unknown),
+          "the member " + unknown + " is not a constant or dynamic expression this parser knows");
+    }
   }
 
   /**
@@ -459,8 +508,10 @@ final class MetadataJsonAnnotationReader {
    */
   private static String recordType(final ObjectNode node) {
     JsonNode type = null;
-    for (final String member : CONTROL_INFORMATION) {
-      if (node.hasNonNull(member) && node.get(member).isTextual()) {
+    // The order is fixed: @type is the control information section 14.4.12 names, @odata.type is its
+    // 4.0 spelling. Iterating the set would be salted per JVM and nondeterministic when both appear.
+    for (final String member : new String[] {AT_TYPE, ODATA_AT_TYPE}) {
+      if (type == null && node.hasNonNull(member) && node.get(member).isTextual()) {
         type = node.get(member);
       }
     }

@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Pinned the include-alias resolution of qualified names
  * Copyright 2026 SiteNetSoft - Added the operation, import and entity container parser tests
  * Copyright 2026 SiteNetSoft - Added the annotation and annotation expression parser tests
+ * Copyright 2026 SiteNetSoft - Pinned the collection cast type and the unknown expression member
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -57,6 +58,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlCollect
 import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlConstantExpression.ConstantExpressionType;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlExpression;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlIf;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlIsOf;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlLabeledElement;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlLogicalOrComparisonExpression;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlNull;
@@ -695,6 +697,62 @@ class MetadataJsonParserTest {
     assertEquals("set", term(container.getEntitySet("ES").getAnnotations()));
     assertEquals("singleton", term(container.getSingleton("SI").getAnnotations()));
     assertEquals("import", term(container.getFunctionImport("FI").getAnnotations()));
+  }
+
+  /**
+   * Sections 14.4.5 and 14.4.8: $Collection beside $Type means the cast targets a collection. The Csdl
+   * model keeps that in the type expression itself, the way the CSDL XML Type attribute carries it, so
+   * dropping the member would silently turn the cast into a cast to a scalar.
+   */
+  @Test
+  void collectionCastAndIsOfKeepTheirCollectionType() throws Exception {
+    final String csdl = "{\"$Version\":\"4.01\",\"ns\":{\"$Alias\":\"self\","
+        + "\"ET\":{\"$Kind\":\"EntityType\","
+        + "\"@ns.T1\":{\"$Cast\":{\"$Path\":\"P\"},\"$Type\":\"self.CT\",\"$Collection\":true},"
+        + "\"@ns.T2\":{\"$Cast\":{\"$Path\":\"P\"},\"$Type\":\"self.CT\"},"
+        + "\"@ns.T3\":{\"$IsOf\":{\"$Path\":\"P\"},\"$Type\":\"Edm.String\",\"$Collection\":true},"
+        + "\"@ns.T4\":{\"$IsOf\":{\"$Path\":\"P\"},\"$Type\":\"Edm.String\"}}}}";
+    final List<CsdlAnnotation> annotations = new MetadataJsonParser().parseAnnotations(true)
+        .buildEdmProvider(new StringReader(csdl))
+        .getEntityType(new FullQualifiedName("ns", "ET")).getAnnotations();
+    assertEquals("Collection(ns.CT)", ((CsdlCast) expression(annotations, "ns.T1")).getType());
+    assertEquals("ns.CT", ((CsdlCast) expression(annotations, "ns.T2")).getType());
+    assertEquals("Collection(Edm.String)", ((CsdlIsOf) expression(annotations, "ns.T3")).getType());
+    assertEquals("Edm.String", ((CsdlIsOf) expression(annotations, "ns.T4")).getType());
+  }
+
+  /**
+   * Section 14.4.12: a record's members are property names, which are simple identifiers. An object
+   * whose only members are $-prefixed is an expression this parser does not know - a form with no Csdl
+   * class, such as $ModelElementPath, or a misspelling - and is reported rather than read as an empty
+   * record.
+   */
+  @Test
+  void unknownDollarExpressionMemberIsRejected() {
+    for (final String member : List.of("$ModelElementPath", "$Pathh")) {
+      final CsdlJsonParseException thrown = assertThrows(CsdlJsonParseException.class,
+          () -> new MetadataJsonParser().parseAnnotations(true).buildEdmProvider(new StringReader(
+              "{\"$Version\":\"4.01\",\"ns\":{\"ET\":{\"$Kind\":\"EntityType\","
+                  + "\"@ns.T\":{\"" + member + "\":\"x\"}}}}")), member);
+      assertEquals("ns/ET/@ns.T/" + member, thrown.getJsonPath(), member);
+    }
+  }
+
+  /** The rejection above must not touch a genuine record, with or without its @type. */
+  @Test
+  void recordsWithRealMembersStillParse() throws Exception {
+    final String csdl = "{\"$Version\":\"4.01\",\"ns\":{\"ET\":{\"$Kind\":\"EntityType\","
+        + "\"@ns.T1\":{\"@type\":\"#ns.Manager\",\"GivenName\":{\"$Path\":\"F\"}},"
+        + "\"@ns.T2\":{\"GivenName\":{\"$Path\":\"F\"}},"
+        + "\"@ns.T3\":{\"@type\":\"#ns.Manager\"},"
+        + "\"@ns.T4\":{\"$Type\":\"ns.Manager\"}}}}";
+    final List<CsdlAnnotation> annotations = new MetadataJsonParser().parseAnnotations(true)
+        .buildEdmProvider(new StringReader(csdl))
+        .getEntityType(new FullQualifiedName("ns", "ET")).getAnnotations();
+    assertEquals(1, ((CsdlRecord) expression(annotations, "ns.T1")).getPropertyValues().size());
+    assertEquals(1, ((CsdlRecord) expression(annotations, "ns.T2")).getPropertyValues().size());
+    assertEquals("ns.Manager", ((CsdlRecord) expression(annotations, "ns.T3")).getType());
+    assertEquals("ns.Manager", ((CsdlRecord) expression(annotations, "ns.T4")).getType());
   }
 
   private static String term(final List<CsdlAnnotation> annotations) {

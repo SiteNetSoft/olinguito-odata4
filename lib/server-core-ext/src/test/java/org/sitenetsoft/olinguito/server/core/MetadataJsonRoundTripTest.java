@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Added the CSDL JSON writer/parser round trip
+ * Copyright 2026 SiteNetSoft - Asserted the fixture's annotations survive the round trip
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -29,17 +30,22 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotatable;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityContainer;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntitySet;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityType;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlNavigationProperty;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlCollection;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlConstantExpression;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlConstantExpression.ConstantExpressionType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlPropertyPath;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlRecord;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
@@ -130,6 +136,77 @@ class MetadataJsonRoundTripTest {
       assertEquals(set.getNavigationPropertyBindings().size(),
           json.getEntitySet(set.getName()).getNavigationPropertyBindings().size(), set.getName());
     }
+  }
+
+  /**
+   * The annotations of the fixture itself survive writer and reader. trippin.xml carries 37 of them -
+   * EnumMember and Bool constants on properties, Records and Collections on entity sets - and this is
+   * what exercises the whole chain end to end: the writer alias-qualifies every term name against the
+   * implicitly loaded vocabularies, and the reader has to map those aliases back through the document's
+   * own $Alias members before the terms compare equal.
+   */
+  @Test
+  void annotationsSurviveTheRoundTrip() throws Exception {
+    final CsdlEntityType xml = fromXml.getEntityType(new FullQualifiedName(NS, "Person"));
+    final CsdlEntityType json = fromJson.getEntityType(new FullQualifiedName(NS, "Person"));
+    assertEquals(terms(xml), terms(json), "Person");
+    for (CsdlProperty property : xml.getProperties()) {
+      assertEquals(terms(property), terms(json.getProperty(property.getName())), property.getName());
+    }
+    for (CsdlNavigationProperty nav : xml.getNavigationProperties()) {
+      assertEquals(terms(nav), terms(json.getNavigationProperty(nav.getName())), nav.getName());
+    }
+    assertEquals(List.of("Org.OData.Core.V1.Permissions"),
+        terms(json.getProperty("UserName")), "the fixture must carry the annotations being compared");
+
+    final CsdlEntityContainer container = fromXml.getEntityContainer();
+    for (CsdlEntitySet set : container.getEntitySets()) {
+      assertEquals(terms(set), terms(fromJson.getEntityContainer().getEntitySet(set.getName())),
+          set.getName());
+    }
+  }
+
+  /** The nested shapes - a Collection of paths and a Record of Records - survive with their contents. */
+  @Test
+  void nestedAnnotationExpressionsSurviveTheRoundTrip() throws Exception {
+    final CsdlEntitySet people = fromJson.getEntityContainer().getEntitySet("People");
+
+    final CsdlCollection concurrency = (CsdlCollection) annotation(people,
+        "Org.OData.Core.V1.OptimisticConcurrency").getExpression();
+    assertEquals(1, concurrency.getItems().size());
+    assertEquals("Concurrency", ((CsdlPropertyPath) concurrency.getItems().get(0)).getValue());
+
+    final CsdlRecord restrictions = (CsdlRecord) annotation(people,
+        "Org.OData.Capabilities.V1.NavigationRestrictions").getExpression();
+    assertEquals(2, restrictions.getPropertyValues().size());
+    assertEquals("Navigability", restrictions.getPropertyValues().get(0).getProperty());
+    assertEquals("RestrictedProperties", restrictions.getPropertyValues().get(1).getProperty());
+    final CsdlCollection restricted =
+        (CsdlCollection) restrictions.getPropertyValues().get(1).getValue();
+    assertEquals(1, restricted.getItems().size());
+    final CsdlRecord entry = (CsdlRecord) restricted.getItems().get(0);
+    assertEquals(2, entry.getPropertyValues().size());
+    assertEquals("NavigationProperty", entry.getPropertyValues().get(0).getProperty());
+  }
+
+  private static CsdlAnnotation annotation(final CsdlAnnotatable annotatable, final String term) {
+    for (final CsdlAnnotation annotation : annotatable.getAnnotations()) {
+      if (term.equals(annotation.getTerm())) {
+        return annotation;
+      }
+    }
+    throw new AssertionError("no annotation for the term " + term);
+  }
+
+  /** The annotations of one model element as "term" or "term#qualifier", in document order. */
+  private static List<String> terms(final CsdlAnnotatable annotatable) {
+    assertNotNull(annotatable);
+    final List<String> terms = new ArrayList<>();
+    for (final CsdlAnnotation annotation : annotatable.getAnnotations()) {
+      terms.add(annotation.getQualifier() == null ? annotation.getTerm()
+          : annotation.getTerm() + "#" + annotation.getQualifier());
+    }
+    return terms;
   }
 
   /**

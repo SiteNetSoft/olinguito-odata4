@@ -18,11 +18,13 @@
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - Pinned that an annotation keeps its Qualifier
  */
 package org.sitenetsoft.olinguito.server.core;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.InputStream;
@@ -92,6 +94,18 @@ class MetadataParserAnnotationsTest {
     assertTrue(a.getExpression() instanceof CsdlConstantExpression);
     assertEquals("2000-01-01T16:00:00.000-09:00", ((CsdlConstantExpression)a.getExpression()).getValue());
     assertEquals(ConstantExpressionType.DateTimeOffset, ((CsdlConstantExpression)a.getExpression()).getType());
+  }
+
+  /**
+   * Section 14.2.1: "A term can be applied multiple times to the same model element by providing a
+   * qualifier to distinguish the annotations." The qualifier used to be dropped on the floor.
+   */
+  @Test
+  void testQualifier() throws ODataException {
+    CsdlAnnotation a = annotation("UI.CollectionFacet");
+    assertNotNull(a);
+    assertEquals("Contacts", a.getQualifier());
+    assertNull(annotation("Core.Description").getQualifier());
   }
 
   @Test
