@@ -616,8 +616,12 @@ public class MetadataDocumentJsonSerializer {
   private void appendReturnTypeFacets(final JsonGenerator json, 
       final EdmReturnType returnType) throws SerializerException, IOException {
     // Section 12.8/7.2.1: absence of $Nullable means false in CSDL JSON, the inverse of the XML
-    // attribute, so the member is only written when the return type is nullable.
-    if (returnType.isNullable()) {
+    // attribute, so the member is only written when the return type is nullable. Section 12.8 also
+    // says "If the return type is a collection of entity types, the $Nullable member has no meaning
+    // and MUST NOT be specified", so that one case is suppressed even when the model reports true.
+    final boolean entityCollection = returnType.isCollection()
+        && EdmTypeKind.ENTITY == returnType.getType().getKind();
+    if (returnType.isNullable() && !entityCollection) {
       json.writeBooleanField(NULLABLE, true);
     }
     if (returnType.getMaxLength() != null) {
@@ -750,7 +754,11 @@ public class MetadataDocumentJsonSerializer {
       
       // Section 8.2/7.2.1: absence of $Nullable means false in CSDL JSON (the XML attribute defaults
       // the other way), so the member is written when the value is nullable and omitted otherwise.
-      if (navigationProperty.isNullable()) {
+      // Section 8.2 also forbids it outright on collections: "Nullable MUST NOT be specified for a
+      // collection-valued navigation property, a collection is allowed to have zero items." The model
+      // defaults nullable to true, so without this guard every collection navigation property that
+      // leaves the default would emit a MUST-NOT member.
+      if (!navigationProperty.isCollection() && navigationProperty.isNullable()) {
         json.writeBooleanField(NULLABLE, true);
       }
 
@@ -770,9 +778,10 @@ public class MetadataDocumentJsonSerializer {
         json.writeObjectFieldStart(REFERENTIAL_CONSTRAINT);
         for (EdmReferentialConstraint constraint : constraints) {
           json.writeStringField(constraint.getPropertyName(), constraint.getReferencedPropertyName());
-          for (EdmAnnotation annotation : constraint.getAnnotations()) {
-            appendAnnotations(json, annotation, constraint.getPropertyName());
-          }
+          // Section 8.5 / Example 23: annotations of a referential constraint are members of the same
+          // object, prefixed with the constraint's member name. The constraint itself is the
+          // annotatable -- passing each annotation instead would write its *nested* annotations.
+          appendAnnotations(json, constraint, constraint.getPropertyName());
         }
         json.writeEndObject();
       }
@@ -926,9 +935,9 @@ public class MetadataDocumentJsonSerializer {
         EdmMember member = enumType.getMember(memberName);
         if (member.getValue() != null) {
           // Section 10.3: "Each member MUST specify an associated numeric value." A value that is not
-          // a valid long is a broken model; the NumberFormatException is preferable to writing a
-          // string that no conformant reader can use.
-          json.writeNumberField(memberName, Long.parseLong(member.getValue()));
+          // numeric is a broken model; failing is preferable to writing a string that no conformant
+          // reader can use.
+          json.writeNumberField(memberName, enumMemberValue(enumType, memberName, member.getValue()));
         }
 
         appendAnnotations(json, member, memberName);
@@ -937,6 +946,23 @@ public class MetadataDocumentJsonSerializer {
     }
   }
   
+  /**
+   * Reads an enumeration member value as the numeric value section 10.3 requires it to be, reporting a
+   * non-numeric one through this module's error contract instead of an unchecked
+   * {@link NumberFormatException} that would escape the serializer uncaught.
+   */
+  private long enumMemberValue(final EdmEnumType enumType, final String memberName, final String value)
+      throws SerializerException {
+    try {
+      return Long.parseLong(value);
+    } catch (final NumberFormatException e) {
+      throw new SerializerException("The value '" + value + "' of enumeration member '" + memberName
+          + "' of type '" + enumType.getFullQualifiedName().getFullQualifiedNameAsString()
+          + "' is not numeric.", e, SerializerException.MessageKeys.WRONG_PROPERTY_VALUE,
+          memberName, value);
+    }
+  }
+
   private void appendAnnotations(JsonGenerator json, 
       final EdmAnnotatable annotatable, String memberName) throws SerializerException, IOException {
     List<EdmAnnotation> annotations = annotatable.getAnnotations();

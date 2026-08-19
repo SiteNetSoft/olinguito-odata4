@@ -289,6 +289,40 @@ class MetadataDocumentJsonSerializerTest {
 
   }
 
+  /**
+   * Section 10.3: "Each member MUST specify an associated numeric value." A model that violates it can
+   * no longer be serialized, and the failure is reported through this module's error contract -- an
+   * unchecked NumberFormatException would escape {@code ODataJsonSerializer#metadataDocument}, which
+   * catches only IOException.
+   */
+  @Test
+  void nonNumericEnumMemberValueIsReportedAsSerializerException() {
+    EdmSchema schema = mock(EdmSchema.class);
+    when(schema.getNamespace()).thenReturn("MyNamespace");
+    Edm edm = mock(Edm.class);
+    when(edm.getSchemas()).thenReturn(List.of(schema));
+
+    ServiceMetadata serviceMetadata = mock(ServiceMetadata.class);
+    when(serviceMetadata.getEdm()).thenReturn(edm);
+
+    EdmEnumType enumType = mock(EdmEnumType.class);
+    when(schema.getEnumTypes()).thenReturn(Collections.singletonList(enumType));
+    when(enumType.getName()).thenReturn("MyEnum");
+    when(enumType.getFullQualifiedName()).thenReturn(new FullQualifiedName("MyNamespace", "MyEnum"));
+    when(enumType.getKind()).thenReturn(EdmTypeKind.ENUM);
+    when(enumType.getUnderlyingType())
+        .thenReturn(OData.newInstance().createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Int32));
+    when(enumType.getMemberNames()).thenReturn(Collections.singletonList("MyMember"));
+    EdmMember member = mock(EdmMember.class);
+    when(enumType.getMember("MyMember")).thenReturn(member);
+    when(member.getName()).thenReturn("MyMember");
+    when(member.getValue()).thenReturn("notANumber");
+
+    final SerializerException exception = assertThrows(SerializerException.class,
+        () -> serializer.metadataDocument(serviceMetadata).getContent());
+    assertEquals(SerializerException.MessageKeys.WRONG_PROPERTY_VALUE, exception.getMessageKey());
+  }
+
   @Test
   void annotationWithUnresolvableTermFallsBackToRawName() throws Exception {
     EdmSchema schema = mock(EdmSchema.class);
@@ -448,7 +482,7 @@ class MetadataDocumentJsonSerializerTest {
         + "\"$Nullable\":true},"
         + "{\"$Name\":\"PropertyComp\",\"$Type\":\"Alias.CTPrimComp\",\"$Nullable\":true}],"
         + "\"$ReturnType\":"
-        + "{\"$Type\":\"Alias.ETTwoKeyNav\",\"$Collection\":true,\"$Nullable\":true}},"
+        + "{\"$Type\":\"Alias.ETTwoKeyNav\",\"$Collection\":true}},"
         + "{\"$Kind\":\"Action\","
         + "\"$EntitySetPath\":\"BindingParam/NavPropertyET\",\"$IsBound\":true,\"$Parameter\":"
         + "[{\"$Name\":\"BindingParam\",\"$Type\":\"Alias.ET\",\"$Nullable\":true}],"
@@ -470,7 +504,7 @@ class MetadataDocumentJsonSerializerTest {
         + "\"$IsComposable\":true,\"$Parameter\":[{\"$Name\":\"BindingParam\","
         + "\"$Type\":\"Alias.ETTwoKeyNav\",\"$Nullable\":true},{\"$Name\":\"PropertyComp\","
         + "\"$Type\":\"Alias.CTPrimComp\",\"$Nullable\":true}],\"$ReturnType\":{\"$Type\":"
-        + "\"Alias.ETTwoKeyNav\",\"$Collection\":true,\"$Nullable\":true}},"
+        + "\"Alias.ETTwoKeyNav\",\"$Collection\":true}},"
         + "{\"$Kind\":\"Function\","
         + "\"$EntitySetPath\":\"BindingParam/NavPropertyET\",\"$IsBound\":true,"
         + "\"$Parameter\":[{\"$Name\":\"BindingParam\",\"$Type\":\"Alias.ET\","
@@ -504,7 +538,9 @@ class MetadataDocumentJsonSerializerTest {
         + "\"$Type\":\"Alias.ETAbstract\",\"$Collection\":true,"
         + "\"$Partner\":"
         + "\"NavPropertyETTwoKeyNavOne\",\"$ContainsTarget\":true,\"$ReferentialConstraint\":"
-        + "{\"PropertyString\":\"PropertyString\"}}}"));
+        + "{\"PropertyString\":\"PropertyString\","
+        + "\"PropertyString@Core.Description#Target\":\"Description of Complex Type\","
+        + "\"PropertyInt16\":\"PropertyInt16\"}}}"));
     assertTrue(metadata.contains("\"$Annotations\":{\"Alias.ETAbstract#Tablett\":"
         + "{\"@ns.term#T1\":{\"$Binary\":\"qrvM3e7_\"},"
         + "\"@ns.term#T2\":true,"
@@ -574,6 +610,8 @@ class MetadataDocumentJsonSerializerTest {
     final String metadata = localMetadata();
     assertTrue(metadata.contains("\"PropertyString\":{\"$Nullable\":true}"),
         "a nullable string property carries neither $Type nor $Kind");
+    // The two negatives name every Edm.String structural property LocalProvider declares; they are
+    // fixture-specific by construction and must be extended when the fixture grows a new one.
     assertFalse(metadata.contains("\"PropertyString\":{\"$Type\":\"Edm.String\""),
         "no structural property writes the default type");
     assertFalse(metadata.contains("\"name\":{\"$Type\":\"Edm.String\""),
@@ -588,12 +626,62 @@ class MetadataDocumentJsonSerializerTest {
     assertTrue(localMetadata().contains("\"String1\":1,"), "an enum member value is a number");
   }
 
-  /** Section 8.5: one $ReferentialConstraint object carrying one member per constraint. */
+  /**
+   * Section 8.5: "The value of $ReferentialConstraint is an object with one member per referential
+   * constraint." {@code NavPropertyETAbstract} declares two constraints, so a writer that opened one
+   * object per constraint would emit the member name twice.
+   */
   @Test
   void referentialConstraintsShareOneObject() throws Exception {
     final String metadata = localMetadata();
     assertEquals(1, countOccurrences(metadata, "\"$ReferentialConstraint\":"),
         "the constraints of one navigation property live in a single object");
+    assertTrue(metadata.contains("\"$ReferentialConstraint\":{\"PropertyString\":\"PropertyString\","
+        + "\"PropertyString@Core.Description#Target\":\"Description of Complex Type\","
+        + "\"PropertyInt16\":\"PropertyInt16\"}"),
+        "both constraints are members of the same object");
+  }
+
+  /**
+   * Section 8.5 / Example 23: a referential constraint may carry annotations, and they are members of
+   * the same object prefixed with the constraint's member name.
+   */
+  @Test
+  void referentialConstraintAnnotationsArePrefixedWithTheConstraintName() throws Exception {
+    assertTrue(localMetadata().contains(
+        "\"PropertyString@Core.Description#Target\":\"Description of Complex Type\""),
+        "the annotation of a referential constraint is written, prefixed with its member name");
+  }
+
+  /**
+   * Section 8.2: "Nullable MUST NOT be specified for a collection-valued navigation property, a
+   * collection is allowed to have zero items." The model defaults nullable to true, so the guard is
+   * what keeps {@code NavPropertyETAbstractMany} -- collection-valued and left at that default -- from
+   * emitting a forbidden member.
+   */
+  @Test
+  void collectionValuedNavigationPropertiesNeverWriteNullable() throws Exception {
+    final String metadata = localMetadata();
+    assertTrue(metadata.contains("\"NavPropertyETAbstractMany\":{\"$Kind\":\"NavigationProperty\","
+        + "\"$Type\":\"Alias.ETAbstract\",\"$Collection\":true}"),
+        "a nullable collection navigation property is written without $Nullable");
+  }
+
+  /**
+   * Section 12.8: "If the return type is a collection of entity types, the $Nullable member has no
+   * meaning and MUST NOT be specified." Both {@code ETTwoKeyNav}-returning operations are declared
+   * with the default nullable=true, so only the guard keeps the member out.
+   */
+  @Test
+  void entityCollectionReturnTypesNeverWriteNullable() throws Exception {
+    final String metadata = localMetadata();
+    assertTrue(metadata.contains("\"$ReturnType\":{\"$Type\":\"Alias.ETTwoKeyNav\",\"$Collection\":true}"),
+        "an entity-collection return type is written without $Nullable");
+    // Scoped to entity collections on purpose: for a collection-valued *property* section 7.2.1 says
+    // "$Nullable applies to items of the collection", so e.g. CTEntityInfo/ID (a collection of
+    // Edm.Int16) legitimately keeps the member.
+    assertFalse(metadata.contains("\"$Type\":\"Alias.ETTwoKeyNav\",\"$Collection\":true,\"$Nullable\""),
+        "neither ETTwoKeyNav-returning operation writes $Nullable on its entity collection");
   }
 
   private static int countOccurrences(final String haystack, final String needle) {
@@ -861,7 +949,11 @@ class MetadataDocumentJsonSerializerTest {
                 new CsdlPropertyRef().setName("PropertyString")))
             .setNavigationProperties(List.of(
                 new CsdlNavigationProperty().setName("NavPropertyETTwoKeyNavOne").setType(nameETTwoKeyNavOne),
-                new CsdlNavigationProperty().setName("NavPropertyETOne").setType(nameETOne)))
+                new CsdlNavigationProperty().setName("NavPropertyETOne").setType(nameETOne),
+                // Collection-valued and left at the model default nullable=true, so that the
+                // section 8.2 "MUST NOT be specified" guard has something to suppress.
+                new CsdlNavigationProperty().setName("NavPropertyETAbstractMany").setType(nameETAbstract)
+                    .setCollection(true)))
             .setProperties(List.of(propertyInt16_NotNullable, propertyString));
       } else if (entityTypeName.equals(nameETOne)) {
         return new CsdlEntityType()
@@ -880,14 +972,19 @@ class MetadataDocumentJsonSerializerTest {
                     new CsdlNavigationProperty().setName("NavPropertyETAbstract")
                             .setCollection(true).setType(nameETAbstract)
                             .setContainsTarget(true).setPartner("NavPropertyETTwoKeyNavOne").setNullable(false)
-                            .setReferentialConstraints(Collections.singletonList(new CsdlReferentialConstraint()
+                            .setReferentialConstraints(List.of(new CsdlReferentialConstraint()
                                     .setProperty("PropertyString").setReferencedProperty("PropertyString")
                                     .setAnnotations(Collections.singletonList(new CsdlAnnotation()
                                             .setTerm("Core.Description")
                                             .setQualifier("Target")
                                             .setExpression(new CsdlConstantExpression(
                                                     ConstantExpressionType.String,
-                                                    "Description of Complex Type"))))))));
+                                                    "Description of Complex Type")))),
+                                    // A second constraint on the same navigation property: section 8.5
+                                    // requires both to be members of ONE $ReferentialConstraint object.
+                                    new CsdlReferentialConstraint()
+                                    .setProperty("PropertyInt16")
+                                    .setReferencedProperty("PropertyInt16")))));
       }
       return null;
     }
