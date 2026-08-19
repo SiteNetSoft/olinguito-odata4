@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Added a CSDL JSON metadata parser for the structural model
  * Copyright 2026 SiteNetSoft - Delegated the operations and the entity container to a collaborator
+ * Copyright 2026 SiteNetSoft - Delegated the annotations and their expressions to a collaborator
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -141,6 +142,9 @@ public class MetadataJsonParser {
   /** Reads the operation overloads and the entity container; see {@link MetadataJsonContainerReader}. */
   private final MetadataJsonContainerReader containerReader = new MetadataJsonContainerReader(this);
 
+  /** Reads annotations and their expressions; see {@link MetadataJsonAnnotationReader}. */
+  private final MetadataJsonAnnotationReader annotationReader = new MetadataJsonAnnotationReader(this);
+
   public MetadataJsonParser() {
     this(new HashMap<>());
   }
@@ -198,6 +202,11 @@ public class MetadataJsonParser {
   public MetadataJsonParser implicitlyLoadCoreVocabularies(final boolean load) {
     this.implicitlyLoadCoreVocabularies = load;
     return this;
+  }
+
+  /** @return the annotation reader, shared with {@link MetadataJsonContainerReader}. */
+  MetadataJsonAnnotationReader annotations() {
+    return this.annotationReader;
   }
 
   /** @return whether annotations are read; consulted by the annotation reader. */
@@ -455,14 +464,20 @@ public class MetadataJsonParser {
       if (ALIAS.equals(name)) {
         continue;
       }
-      if (ANNOTATIONS.equals(name) || name.startsWith(AT)) {
-        continue; // externally targeted annotations and annotations on the schema itself
+      if (ANNOTATIONS.equals(name)) {
+        // Section 5.2: externally targeted annotations, one member per annotation target.
+        this.annotationReader.readAnnotationGroups(objectNode(member, path), schema, child(path, name));
+        continue;
+      }
+      if (name.startsWith(AT)) {
+        continue; // annotations on the schema itself, read below in one pass
       }
       if (name.startsWith(DOLLAR)) {
         continue;
       }
       readSchemaMember(schema, name, member.getValue(), child(path, name));
     }
+    this.annotationReader.readAnnotations(schemaNode, schema, "", path);
     return schema;
   }
 
@@ -517,6 +532,7 @@ public class MetadataJsonParser {
       type.setKey(readKey(arrayNode(node, KEY, path), child(path, KEY)));
     }
     readStructuralTypeMembers(type, node, path);
+    this.annotationReader.readAnnotations(node, type, "", path);
     return type;
   }
 
@@ -530,6 +546,7 @@ public class MetadataJsonParser {
     type.setAbstract(flag(node, ABSTRACT));
     type.setOpenType(flag(node, OPEN_TYPE));
     readStructuralTypeMembers(type, node, path);
+    this.annotationReader.readAnnotations(node, type, "", path);
     return type;
   }
 
@@ -593,6 +610,7 @@ public class MetadataJsonParser {
       property.setDefaultValue(node.get(DEFAULT_VALUE).asText());
     }
     readFacets(node, facets(property), path);
+    this.annotationReader.readAnnotations(node, property, "", path);
     return property;
   }
 
@@ -615,7 +633,10 @@ public class MetadataJsonParser {
         throw new CsdlJsonParseException(child(path, ON_DELETE),
             "$OnDelete is one of Cascade, None, SetNull or SetDefault", e);
       }
+      // Section 8.4: "Annotations for $OnDelete are prefixed with $OnDelete."
+      this.annotationReader.readAnnotations(node, property.getOnDelete(), ON_DELETE, path);
     }
+    this.annotationReader.readAnnotations(node, property, "", path);
     return property;
   }
 
@@ -652,9 +673,12 @@ public class MetadataJsonParser {
         throw new CsdlJsonParseException(child(constraintPath, member.getKey()),
             "a referential constraint maps the dependent property to the path of the principal property");
       }
-      constraints.add(new CsdlReferentialConstraint()
+      final CsdlReferentialConstraint constraint = new CsdlReferentialConstraint()
           .setProperty(member.getKey())
-          .setReferencedProperty(member.getValue().asText()));
+          .setReferencedProperty(member.getValue().asText());
+      // Section 8.5: "Annotations ... are prefixed with the name of the dependent property."
+      this.annotationReader.readAnnotations(value, constraint, member.getKey(), constraintPath);
+      constraints.add(constraint);
     }
     return constraints;
   }
@@ -678,9 +702,14 @@ public class MetadataJsonParser {
         throw new CsdlJsonParseException(child(path, memberName),
             "an enumeration member value is a number valid for the underlying type");
       }
-      members.add(new CsdlEnumMember().setName(memberName).setValue(field.getValue().asText()));
+      final CsdlEnumMember enumMember =
+          new CsdlEnumMember().setName(memberName).setValue(field.getValue().asText());
+      // Section 10.3: "Annotations for enumeration members are prefixed with the member name."
+      this.annotationReader.readAnnotations(node, enumMember, memberName, path);
+      members.add(enumMember);
     }
     type.setMembers(members);
+    this.annotationReader.readAnnotations(node, type, "", path);
     return type;
   }
 
@@ -691,6 +720,7 @@ public class MetadataJsonParser {
     // Section 11: the type definition object MUST contain $UnderlyingType.
     definition.setUnderlyingType(resolveName(requireText(node, UNDERLYING_TYPE, path)));
     readFacets(node, facets(definition), path);
+    this.annotationReader.readAnnotations(node, definition, "", path);
     return definition;
   }
 
@@ -711,6 +741,7 @@ public class MetadataJsonParser {
       term.setAppliesTo(readAppliesTo(node.get(APPLIES_TO), child(path, APPLIES_TO)));
     }
     readFacets(node, facets(term), path);
+    this.annotationReader.readAnnotations(node, term, "", path);
     return term;
   }
 

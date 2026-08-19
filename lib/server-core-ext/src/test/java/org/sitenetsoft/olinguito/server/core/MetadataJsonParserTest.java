@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Added the CSDL JSON metadata parser tests
  * Copyright 2026 SiteNetSoft - Pinned the include-alias resolution of qualified names
  * Copyright 2026 SiteNetSoft - Added the operation, import and entity container parser tests
+ * Copyright 2026 SiteNetSoft - Added the annotation and annotation expression parser tests
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -38,6 +39,8 @@ import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAction;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotations;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityContainer;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntitySet;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityType;
@@ -48,6 +51,18 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlOnDeleteAction;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlPropertyRef;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlSingleton;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlTypeDefinition;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlApply;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlCast;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlCollection;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlConstantExpression.ConstantExpressionType;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlIf;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlLabeledElement;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlLogicalOrComparisonExpression;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlNull;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlPath;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlRecord;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.annotation.CsdlUrlRef;
 import org.sitenetsoft.olinguito.commons.api.edmx.EdmxReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -436,5 +451,267 @@ class MetadataJsonParserTest {
         .getEntityType(new FullQualifiedName("ns", "ET"));
     assertEquals(CsdlOnDeleteAction.Cascade,
         type.getNavigationProperty("Nav").getOnDelete().getAction());
+  }
+
+  @Test
+  void annotationsAreSkippedUnlessRequested() throws Exception {
+    final String csdl = "{\"$Version\":\"4.01\",\"ns\":{\"ET\":{\"$Kind\":\"EntityType\","
+        + "\"@Core.Description\":\"d\"}}}";
+    assertTrue(new MetadataJsonParser().buildEdmProvider(new StringReader(csdl))
+        .getEntityType(new FullQualifiedName("ns", "ET")).getAnnotations().isEmpty());
+    assertEquals(1, new MetadataJsonParser().parseAnnotations(true)
+        .buildEdmProvider(new StringReader(csdl))
+        .getEntityType(new FullQualifiedName("ns", "ET")).getAnnotations().size());
+  }
+
+  @Test
+  void constantAnnotationValuesAreBareJson() throws Exception {
+    final String csdl = "{\"$Version\":\"4.01\",\"ns\":{\"ET\":{\"$Kind\":\"EntityType\","
+        + "\"@UI.ReadOnly\":true,"
+        + "\"@UI.Thumbnail\":\"T0RhdGE\","
+        + "\"@UI.Width\":3.14,"
+        + "\"@A.Very.Long.Int\":42,"
+        + "\"@UI.DisplayName\":null,"
+        + "\"@UI.Tags\":[\"a\",\"b\"],"
+        + "\"@Core.Description#Tablet\":\"d\"}}}";
+    final List<CsdlAnnotation> annotations = new MetadataJsonParser().parseAnnotations(true)
+        .buildEdmProvider(new StringReader(csdl))
+        .getEntityType(new FullQualifiedName("ns", "ET")).getAnnotations();
+    assertEquals(ConstantExpressionType.Bool, expression(annotations, "UI.ReadOnly").asConstant().getType());
+    assertEquals(ConstantExpressionType.String, expression(annotations, "UI.Thumbnail").asConstant().getType());
+    assertEquals(ConstantExpressionType.Float, expression(annotations, "UI.Width").asConstant().getType());
+    assertEquals(ConstantExpressionType.Int, expression(annotations, "A.Very.Long.Int").asConstant().getType());
+    assertTrue(expression(annotations, "UI.DisplayName") instanceof CsdlNull);
+    assertEquals(2, ((CsdlCollection) expression(annotations, "UI.Tags")).getItems().size());
+    assertEquals("Tablet", annotation(annotations, "Core.Description").getQualifier());
+  }
+
+  @Test
+  void dynamicExpressionsAreRead() throws Exception {
+    final String csdl = "{\"$Version\":\"4.01\",\"ns\":{\"ET\":{\"$Kind\":\"EntityType\","
+        + "\"@ns.T1\":{\"$Path\":\"FirstName\"},"
+        + "\"@ns.T2\":{\"$And\":[true,false]},"
+        + "\"@ns.T3\":{\"$Not\":true},"
+        + "\"@ns.T4\":{\"$Apply\":[\"a\",\"b\"],\"$Function\":\"odata.concat\"},"
+        + "\"@ns.T5\":{\"$If\":[true,\"t\",\"e\"]},"
+        + "\"@ns.T6\":{\"$LabeledElement\":{\"$Path\":\"F\"},\"$Name\":\"L\"},"
+        + "\"@ns.T7\":{\"$Cast\":\"v\",\"$Type\":\"Edm.String\",\"$MaxLength\":3},"
+        + "\"@ns.T8\":{\"GivenName\":{\"$Path\":\"FirstName\"},\"@type\":\"ns.Manager\"},"
+        + "\"@ns.T9\":{\"$UrlRef\":\"http://example.org\"}}}}";
+    final List<CsdlAnnotation> annotations = new MetadataJsonParser().parseAnnotations(true)
+        .buildEdmProvider(new StringReader(csdl))
+        .getEntityType(new FullQualifiedName("ns", "ET")).getAnnotations();
+    assertEquals("FirstName", ((CsdlPath) expression(annotations, "ns.T1")).getValue());
+    assertEquals(CsdlLogicalOrComparisonExpression.LogicalOrComparisonExpressionType.And,
+        ((CsdlLogicalOrComparisonExpression) expression(annotations, "ns.T2")).getType());
+    assertEquals(CsdlLogicalOrComparisonExpression.LogicalOrComparisonExpressionType.Not,
+        ((CsdlLogicalOrComparisonExpression) expression(annotations, "ns.T3")).getType());
+    assertEquals("odata.concat", ((CsdlApply) expression(annotations, "ns.T4")).getFunction());
+    assertNotNull(((CsdlIf) expression(annotations, "ns.T5")).getElse());
+    assertEquals("L", ((CsdlLabeledElement) expression(annotations, "ns.T6")).getName());
+    assertEquals(Integer.valueOf(3), ((CsdlCast) expression(annotations, "ns.T7")).getMaxLength());
+    final CsdlRecord record = (CsdlRecord) expression(annotations, "ns.T8");
+    assertEquals("ns.Manager", record.getType());
+    assertEquals("GivenName", record.getPropertyValues().get(0).getProperty());
+    assertNotNull(((CsdlUrlRef) expression(annotations, "ns.T9")).getValue());
+  }
+
+  /** Section 5.2: $Annotations is an object with one member per external annotation target. */
+  @Test
+  void externalTargetingAnnotationGroups() throws Exception {
+    final String csdl = "{\"$Version\":\"4.01\",\"ns\":{\"$Annotations\":{"
+        + "\"ns.ET#Tablet\":{\"@Core.Description\":\"d\"}},"
+        + "\"ET\":{\"$Kind\":\"EntityType\"}}}";
+    final CsdlAnnotations group = new MetadataJsonParser().parseAnnotations(true)
+        .buildEdmProvider(new StringReader(csdl))
+        .getAnnotationsGroup(new FullQualifiedName("ns", "ET"), "Tablet");
+    assertNotNull(group);
+    assertEquals(1, group.getAnnotations().size());
+  }
+
+  /** Section 10.3 / 8.6 / 8.5: annotations on an enum member, on $OnDelete and on a constraint are
+   * prefixed with the thing they annotate. */
+  @Test
+  void prefixedAnnotationsLandOnTheirTarget() throws Exception {
+    final String csdl = "{\"$Version\":\"4.01\",\"ns\":{"
+        + "\"E\":{\"$Kind\":\"EnumType\",\"Red\":1,\"Red@Core.Description\":\"the red one\"},"
+        + "\"ET\":{\"$Kind\":\"EntityType\",\"Dep\":{\"$Type\":\"Edm.Int32\"},"
+        + "\"Nav\":{\"$Kind\":\"NavigationProperty\",\"$Type\":\"ns.ET\","
+        + "\"$OnDelete\":\"Cascade\",\"$OnDelete@Core.Description\":\"why\","
+        + "\"$ReferentialConstraint\":{\"Dep\":\"Principal\","
+        + "\"Dep@Core.Description\":\"constraint\"}}}}}";
+    final SchemaBasedEdmProvider parsed =
+        new MetadataJsonParser().parseAnnotations(true).buildEdmProvider(new StringReader(csdl));
+    assertEquals(1, parsed.getEnumType(new FullQualifiedName("ns", "E"))
+        .getMember("Red").getAnnotations().size());
+    final CsdlNavigationProperty nav =
+        parsed.getEntityType(new FullQualifiedName("ns", "ET")).getNavigationProperty("Nav");
+    assertEquals(1, nav.getOnDelete().getAnnotations().size());
+    assertEquals(1, nav.getReferentialConstraints().get(0).getAnnotations().size());
+    assertEquals("Principal", nav.getReferentialConstraints().get(0).getReferencedProperty());
+  }
+
+  /** Section 14.2: "An annotation can itself be annotated" - the member name gains a second @term. */
+  @Test
+  void annotationsOnAnnotationsLandOnTheAnnotation() throws Exception {
+    final String csdl = "{\"$Version\":\"4.01\",\"ns\":{\"ET\":{\"$Kind\":\"EntityType\","
+        + "\"@Measures.ISOCurrency\":\"USD\","
+        + "\"@Measures.ISOCurrency@Core.Description\":\"The parent company's currency\"}}}";
+    final List<CsdlAnnotation> annotations = new MetadataJsonParser().parseAnnotations(true)
+        .buildEdmProvider(new StringReader(csdl))
+        .getEntityType(new FullQualifiedName("ns", "ET")).getAnnotations();
+    assertEquals(1, annotations.size());
+    assertEquals("Core.Description", annotations.get(0).getAnnotations().get(0).getTerm());
+  }
+
+  /** Section 14.2: the term name is a qualified name, so a document alias is resolved. */
+  @Test
+  void annotationTermNamesAreAliasResolved() throws Exception {
+    final String csdl = "{\"$Version\":\"4.01\",\"ns\":{\"$Alias\":\"self\","
+        + "\"ET\":{\"$Kind\":\"EntityType\",\"@self.Tag\":\"x\"},"
+        + "\"Tag\":{\"$Kind\":\"Term\",\"$Type\":\"Edm.String\"}}}";
+    final List<CsdlAnnotation> annotations = new MetadataJsonParser().parseAnnotations(true)
+        .buildEdmProvider(new StringReader(csdl))
+        .getEntityType(new FullQualifiedName("ns", "ET")).getAnnotations();
+    assertEquals("ns.Tag", annotations.get(0).getTerm());
+  }
+
+  /** Section 14.4.1: a path value is a path, never an alias-qualified name, so it is left verbatim. */
+  @Test
+  void pathExpressionValuesAreNotAliasResolved() throws Exception {
+    final String csdl = "{\"$Version\":\"4.01\",\"ns\":{\"$Alias\":\"self\","
+        + "\"ET\":{\"$Kind\":\"EntityType\",\"@ns.T\":{\"$Path\":\"self.Thing/Name\"}}}}";
+    final List<CsdlAnnotation> annotations = new MetadataJsonParser().parseAnnotations(true)
+        .buildEdmProvider(new StringReader(csdl))
+        .getEntityType(new FullQualifiedName("ns", "ET")).getAnnotations();
+    assertEquals("self.Thing/Name", ((CsdlPath) annotations.get(0).getExpression()).getValue());
+  }
+
+  /** Section 14.4.11: a $Null object carries the annotations a bare null cannot. */
+  @Test
+  void annotatedNullExpression() throws Exception {
+    final String csdl = "{\"$Version\":\"4.01\",\"ns\":{\"ET\":{\"$Kind\":\"EntityType\","
+        + "\"@UI.Address\":{\"$Null\":null,\"@self.Reason\":\"Private\"}}}}";
+    final CsdlExpression value = new MetadataJsonParser().parseAnnotations(true)
+        .buildEdmProvider(new StringReader(csdl))
+        .getEntityType(new FullQualifiedName("ns", "ET")).getAnnotations().get(0).getExpression();
+    assertTrue(value instanceof CsdlNull);
+    assertEquals(1, ((CsdlNull) value).getAnnotations().size());
+  }
+
+  /** Section 14.4.12: the record's @type is the JSON control information, possibly a URI#fragment. */
+  @Test
+  void recordTypeComesFromTheTypeControlInformation() throws Exception {
+    final String csdl = "{\"$Version\":\"4.01\",\"ns\":{\"$Alias\":\"self\","
+        + "\"ET\":{\"$Kind\":\"EntityType\","
+        + "\"@person.Employee\":{\"@type\":\"https://example.org/vocabs/person#self.Manager\","
+        + "\"@Core.Description\":\"Annotation on record\","
+        + "\"GivenName\":{\"$Path\":\"FirstName\"},"
+        + "\"GivenName@Core.Description\":\"Annotation on record member\"},"
+        + "\"@person.Short\":{\"@type\":\"#self.Manager\",\"X\":1},"
+        + "\"@person.Legacy\":{\"$Type\":\"self.Manager\",\"X\":1}}}}";
+    final List<CsdlAnnotation> annotations = new MetadataJsonParser().parseAnnotations(true)
+        .buildEdmProvider(new StringReader(csdl))
+        .getEntityType(new FullQualifiedName("ns", "ET")).getAnnotations();
+    final CsdlRecord record = (CsdlRecord) expression(annotations, "person.Employee");
+    assertEquals("ns.Manager", record.getType());
+    assertEquals(1, record.getAnnotations().size());
+    assertEquals(1, record.getPropertyValues().size());
+    assertEquals(1, record.getPropertyValues().get(0).getAnnotations().size());
+    assertEquals("ns.Manager", ((CsdlRecord) expression(annotations, "person.Short")).getType());
+    assertEquals("ns.Manager", ((CsdlRecord) expression(annotations, "person.Legacy")).getType());
+  }
+
+  /**
+   * Legacy tolerance: the pre-conformance writer emitted the CSDL XML element names as members. They
+   * are read back with their declared constant type; nothing writes them any more.
+   */
+  @Test
+  void legacyTypedConstantMembersAreTolerated() throws Exception {
+    final String csdl = "{\"$Version\":\"4.01\",\"ns\":{\"ET\":{\"$Kind\":\"EntityType\","
+        + "\"@ns.B\":{\"$Binary\":\"T0RhdGE\"},"
+        + "\"@ns.D\":{\"$Date\":\"2012-02-29\"},"
+        + "\"@ns.I\":{\"$Int\":\"42\"},"
+        + "\"@ns.E\":{\"$EnumMember\":\"Red\"}}}}";
+    final List<CsdlAnnotation> annotations = new MetadataJsonParser().parseAnnotations(true)
+        .buildEdmProvider(new StringReader(csdl))
+        .getEntityType(new FullQualifiedName("ns", "ET")).getAnnotations();
+    assertEquals(ConstantExpressionType.Binary, expression(annotations, "ns.B").asConstant().getType());
+    assertEquals("2012-02-29", expression(annotations, "ns.D").asConstant().getValue());
+    assertEquals(ConstantExpressionType.Int, expression(annotations, "ns.I").asConstant().getType());
+    assertEquals(ConstantExpressionType.EnumMember, expression(annotations, "ns.E").asConstant().getType());
+  }
+
+  /**
+   * Section 14.4.2 lists $Has and $In among the comparison operators, but this codebase's
+   * LogicalOrComparisonExpressionType has no constant for either. A recorded limitation: the parser
+   * reports it rather than dropping the expression.
+   */
+  @Test
+  void hasAndInComparisonsAreRejected() {
+    final CsdlJsonParseException thrown = assertThrows(CsdlJsonParseException.class,
+        () -> new MetadataJsonParser().parseAnnotations(true).buildEdmProvider(new StringReader(
+            "{\"$Version\":\"4.01\",\"ns\":{\"ET\":{\"$Kind\":\"EntityType\","
+                + "\"@ns.T\":{\"$Has\":[{\"$Path\":\"P\"},\"Red\"]}}}}")));
+    assertEquals("ns/ET/@ns.T/$Has", thrown.getJsonPath());
+  }
+
+  /** Annotations on the schema, on properties, on operations and on container children all land. */
+  @Test
+  void annotationsLandOnEveryModelElement() throws Exception {
+    final String csdl = "{\"$Version\":\"4.01\",\"$EntityContainer\":\"ns.C\",\"ns\":{"
+        + "\"@Core.Description\":\"schema\","
+        + "\"ET\":{\"$Kind\":\"EntityType\",\"P\":{\"@Core.Description\":\"property\"},"
+        + "\"Nav\":{\"$Kind\":\"NavigationProperty\",\"$Type\":\"ns.ET\","
+        + "\"@Core.Description\":\"nav\"}},"
+        + "\"TD\":{\"$Kind\":\"TypeDefinition\",\"$UnderlyingType\":\"Edm.String\","
+        + "\"@Core.Description\":\"td\"},"
+        + "\"E\":{\"$Kind\":\"EnumType\",\"@Core.Description\":\"enum\"},"
+        + "\"T\":{\"$Kind\":\"Term\",\"$Type\":\"Edm.String\",\"@Core.Description\":\"term\"},"
+        + "\"CT\":{\"$Kind\":\"ComplexType\",\"@Core.Description\":\"complex\"},"
+        + "\"F\":[{\"$Kind\":\"Function\",\"@Core.Description\":\"function\","
+        + "\"$Parameter\":[{\"$Name\":\"p\",\"@Core.Description\":\"parameter\"}],"
+        + "\"$ReturnType\":{\"$Type\":\"Edm.String\",\"@Core.Description\":\"return\"}}],"
+        + "\"C\":{\"$Kind\":\"EntityContainer\",\"@Core.Description\":\"container\","
+        + "\"ES\":{\"$Collection\":true,\"$Type\":\"ns.ET\",\"@Core.Description\":\"set\"},"
+        + "\"SI\":{\"$Type\":\"ns.ET\",\"@Core.Description\":\"singleton\"},"
+        + "\"FI\":{\"$Function\":\"ns.F\",\"@Core.Description\":\"import\"}}}}";
+    final SchemaBasedEdmProvider parsed =
+        new MetadataJsonParser().parseAnnotations(true).buildEdmProvider(new StringReader(csdl));
+    assertEquals("schema", term(parsed.getSchema("ns").getAnnotations()));
+    final CsdlEntityType entityType = parsed.getEntityType(new FullQualifiedName("ns", "ET"));
+    assertEquals("property", term(entityType.getProperty("P").getAnnotations()));
+    assertEquals("nav", term(entityType.getNavigationProperty("Nav").getAnnotations()));
+    assertEquals("td", term(parsed.getTypeDefinition(new FullQualifiedName("ns", "TD")).getAnnotations()));
+    assertEquals("enum", term(parsed.getEnumType(new FullQualifiedName("ns", "E")).getAnnotations()));
+    assertEquals("term", term(parsed.getTerm(new FullQualifiedName("ns", "T")).getAnnotations()));
+    assertEquals("complex", term(parsed.getComplexType(new FullQualifiedName("ns", "CT")).getAnnotations()));
+    final CsdlFunction function = parsed.getFunctions(new FullQualifiedName("ns", "F")).get(0);
+    assertEquals("function", term(function.getAnnotations()));
+    assertEquals("parameter", term(function.getParameters().get(0).getAnnotations()));
+    assertEquals("return", term(function.getReturnType().getAnnotations()));
+    final CsdlEntityContainer container = parsed.getEntityContainer();
+    assertEquals("container", term(container.getAnnotations()));
+    assertEquals("set", term(container.getEntitySet("ES").getAnnotations()));
+    assertEquals("singleton", term(container.getSingleton("SI").getAnnotations()));
+    assertEquals("import", term(container.getFunctionImport("FI").getAnnotations()));
+  }
+
+  private static String term(final List<CsdlAnnotation> annotations) {
+    assertEquals(1, annotations.size());
+    return annotations.get(0).getExpression().asConstant().getValue();
+  }
+
+  private static CsdlAnnotation annotation(final List<CsdlAnnotation> annotations, final String term) {
+    for (final CsdlAnnotation annotation : annotations) {
+      if (term.equals(annotation.getTerm())) {
+        return annotation;
+      }
+    }
+    throw new AssertionError("no annotation for the term " + term);
+  }
+
+  private static CsdlExpression expression(final List<CsdlAnnotation> annotations, final String term) {
+    return annotation(annotations, term).getExpression();
   }
 }

@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Added the CSDL JSON operation and entity container reader
+ * Copyright 2026 SiteNetSoft - Read the annotations of the operations, imports and container children
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -174,6 +175,7 @@ final class MetadataJsonContainerReader {
     if (node.has(RETURN_TYPE)) {
       operation.setReturnType(readReturnType(objectNode(node, RETURN_TYPE, path), child(path, RETURN_TYPE)));
     }
+    this.parser.annotations().readAnnotations(node, operation, "", path);
   }
 
   /** Section 12.9: an ordered array of objects, each carrying its own $Name. */
@@ -189,6 +191,7 @@ final class MetadataJsonContainerReader {
       parameter.setCollection(flag(item, COLLECTION));
       parameter.setNullable(flag(item, NULLABLE));
       this.parser.readFacets(item, facets(parameter), itemPath);
+      this.parser.annotations().readAnnotations(item, parameter, "", itemPath);
       parameters.add(parameter);
     }
     return parameters;
@@ -201,6 +204,7 @@ final class MetadataJsonContainerReader {
     returnType.setCollection(flag(node, COLLECTION));
     returnType.setNullable(flag(node, NULLABLE));
     this.parser.readFacets(node, facets(returnType), path);
+    this.parser.annotations().readAnnotations(node, returnType, "", path);
     return returnType;
   }
 
@@ -253,6 +257,7 @@ final class MetadataJsonContainerReader {
       final ObjectNode value = objectNode(member.getValue(), memberPath);
       readContainerMember(container, memberName, value, memberPath);
     }
+    this.parser.annotations().readAnnotations(node, container, "", path);
     return container;
   }
 
@@ -290,6 +295,7 @@ final class MetadataJsonContainerReader {
     entitySet.setIncludeInServiceDocument(!node.has(INCLUDE_IN_SERVICE_DOCUMENT)
         || flag(node, INCLUDE_IN_SERVICE_DOCUMENT));
     entitySet.setNavigationPropertyBindings(readNavigationPropertyBindings(node, path));
+    this.parser.annotations().readAnnotations(node, entitySet, "", path);
     return entitySet;
   }
 
@@ -301,6 +307,7 @@ final class MetadataJsonContainerReader {
     // Section 13.3 also allows $Nullable on a 4.01 singleton; CsdlSingleton has no place for it, and
     // the CSDL XML parser drops the equivalent attribute too.
     singleton.setNavigationPropertyBindings(readNavigationPropertyBindings(node, path));
+    this.parser.annotations().readAnnotations(node, singleton, "", path);
     return singleton;
   }
 
@@ -314,6 +321,7 @@ final class MetadataJsonContainerReader {
     if (node.has(ENTITY_SET)) {
       actionImport.setEntitySet(unqualified(requireText(node, ENTITY_SET, path)));
     }
+    this.parser.annotations().readAnnotations(node, actionImport, "", path);
     return actionImport;
   }
 
@@ -327,6 +335,7 @@ final class MetadataJsonContainerReader {
     }
     // Section 13.6: "If not explicitly indicated, it is not included." - the opposite of section 13.2.
     functionImport.setIncludeInServiceDocument(flag(node, INCLUDE_IN_SERVICE_DOCUMENT));
+    this.parser.annotations().readAnnotations(node, functionImport, "", path);
     return functionImport;
   }
 

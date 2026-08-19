@@ -22,6 +22,7 @@
  * Copyright 2026 SiteNetSoft - OLINGO-1466/1520: Handle Scale="variable"
  * Copyright 2026 SiteNetSoft - Shared the reference loader, accepted 4.01 and fixed Nullable defaults
  * Copyright 2026 SiteNetSoft - Exposed the default reference resolver to the CSDL JSON parser
+ * Copyright 2026 SiteNetSoft - Kept the Qualifier of an annotation, which was silently dropped
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -613,6 +614,10 @@ public class MetadataParser {
     }
     final CsdlAnnotation annotation = new CsdlAnnotation();
     annotation.setTerm(attr(element, "Term"));
+    // CSDL XML section 14.2.1: "A term can be applied multiple times to the same model element by
+    // providing a qualifier to distinguish the annotations." Without it two applications of one term
+    // are indistinguishable, and the CSDL JSON writer emits the same member name twice.
+    annotation.setQualifier(attr(element, "Qualifier"));
     for (ConstantExpressionType type:ConstantExpressionType.values()) {
       if (attr(element, type.name()) != null) {
         annotation.setExpression(new CsdlConstantExpression(
