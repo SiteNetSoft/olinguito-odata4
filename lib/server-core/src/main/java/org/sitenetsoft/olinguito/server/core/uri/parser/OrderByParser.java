@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - OLINGO-1557: $it in $expand resolves to parent entity type
+ * Copyright 2026 SiteNetSoft - Refuse sorting by a geo value
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -30,6 +31,8 @@ import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.AliasQueryOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.OrderByOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Expression;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Literal;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Member;
 import org.sitenetsoft.olinguito.server.core.uri.parser.UriTokenizer.TokenKind;
 import org.sitenetsoft.olinguito.server.core.uri.queryoption.OrderByItemImpl;
 import org.sitenetsoft.olinguito.server.core.uri.queryoption.OrderByOptionImpl;
@@ -61,6 +64,17 @@ public class OrderByParser {
           .parse(tokenizer, referencedType, crossjoinEntitySetNames, aliases, rootType);
       OrderByItemImpl item = new OrderByItemImpl();
       item.setExpression(orderByExpression);
+      // [OData-Protocol] section 11.2.6.2: "Values of type Edm.Stream or any of the Geo types cannot
+      // be sorted."
+      final EdmType orderByType = orderByExpression instanceof Member member
+          ? member.getType()
+          : orderByExpression instanceof Literal literal ? literal.getType() : null;
+      if (ExpressionParser.isGeoType(orderByType)) {
+        throw new UriParserSemanticException("A Geo type cannot be sorted.",
+            UriParserSemanticException.MessageKeys.TYPES_NOT_COMPATIBLE,
+            orderByType.getFullQualifiedName().getFullQualifiedNameAsString(),
+            "", orderByExpression.toString(), "");
+      }
       if (tokenizer.next(TokenKind.AscSuffix)) {
         item.setDescending(false);
       } else if (tokenizer.next(TokenKind.DescSuffix)) {

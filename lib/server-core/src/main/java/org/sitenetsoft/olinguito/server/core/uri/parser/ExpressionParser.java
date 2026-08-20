@@ -30,6 +30,7 @@
  * Copyright 2026 SiteNetSoft - Validate IN-candidate and add/sub non-dynamic operands when the other operand is dynamic
  * Copyright 2026 SiteNetSoft - Added matchesPattern method (OData 4.01 URL Conventions section 5.1.1.7.1)
  * Copyright 2026 SiteNetSoft - OData 4.01: map ambiguous optional-parameter overloads to a 400 response
+ * Copyright 2026 SiteNetSoft - Refuse comparing geo values except against null (eq/ne)
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -1446,6 +1447,25 @@ public class ExpressionParser {
     }
   }
 
+  /**
+   * Whether the given type is one of the sixteen Edm.Geography and Edm.Geometry primitive types
+   * (the literal star-slash spelling must not appear inside this javadoc).
+   * [OData-URL] section 5.1.1.1 and [OData-Protocol] section 11.2.6.2 both single them out, so the
+   * test lives in one place and is shared with {@link OrderByParser}.
+   */
+  static boolean isGeoType(final EdmType type) {
+    if (!(type instanceof EdmPrimitiveType primitiveType)) {
+      return false;
+    }
+    try {
+      return EdmPrimitiveTypeKind.valueOfFQN(
+          primitiveType.getFullQualifiedName().getFullQualifiedNameAsString()).isGeospatial();
+    } catch (final IllegalArgumentException e) {
+      // Not an Edm.* primitive type name at all (a type definition, for instance).
+      return false;
+    }
+  }
+
   protected void checkIntegerType(final Expression expression) throws UriParserException {
     checkNoCollection(expression);
     checkType(expression,
@@ -1464,6 +1484,21 @@ public class ExpressionParser {
   private void checkEqualityTypes(final Expression left, final Expression right) throws UriParserException {
     checkNoCollection(left);
     checkNoCollection(right);
+
+    // [OData-URL] section 5.1.1.1: "Edm.Binary, Edm.Stream, and the Edm.Geo types can only be
+    // compared to the null value using the eq and ne operators." A null literal parses with a null
+    // type, so a geo operand is legal only opposite an operand whose type is null.
+    final EdmType leftGeoCheck = getType(left);
+    final EdmType rightGeoCheck = getType(right);
+    if (isGeoType(leftGeoCheck) && rightGeoCheck != null
+        || isGeoType(rightGeoCheck) && leftGeoCheck != null) {
+      throw new UriParserSemanticException("A Geo type can only be compared to null.",
+          UriParserSemanticException.MessageKeys.TYPES_NOT_COMPATIBLE,
+          leftGeoCheck == null ? "null" : leftGeoCheck.getFullQualifiedName().getFullQualifiedNameAsString(),
+          rightGeoCheck == null ? "null" : rightGeoCheck.getFullQualifiedName().getFullQualifiedNameAsString(),
+          left.toString(),
+          referringTypeName());
+    }
 
     final boolean dynLeft = isDynamicUntypedMember(left);
     final boolean dynRight = isDynamicUntypedMember(right);

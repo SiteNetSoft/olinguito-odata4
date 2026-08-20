@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - Added tests for $count($filter=...) and $count($search=...) in $filter expressions
  * Copyright 2026 SiteNetSoft - Added tests for matchesPattern method parsing
+ * Copyright 2026 SiteNetSoft - Added tests for geo comparison and ordering restrictions
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -2475,6 +2476,37 @@ class ExpressionParserTest {
     testFilter.runOnETAllPrim("geo.intersects(geometry'SRID=0;Point(0 0)',null)")
         .isMethod(MethodKind.GEOINTERSECTS, 2)
         .goParameter(0).isLiteralType(oData.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.GeometryPoint));
+  }
+
+  /**
+   * [OData-URL] section 5.1.1.1: "Edm.Binary, Edm.Stream, and the Edm.Geo types can only be compared
+   * to the null value using the eq and ne operators." The relational operators were already refused
+   * by ExpressionParser.RELATION_KINDS; equality against a non-null geo operand was not.
+   */
+  @Test
+  void geoValuesAreNotComparable() throws Exception {
+    // Already refused today - this is the closed pin on RELATION_KINDS.
+    testFilter.runUriEx("ESAllPrim", "$filter=geometry'SRID=0;Point(0 0)' lt geometry'SRID=0;Point(1 1)'")
+        .isExSemantic(MessageKeys.TYPES_NOT_COMPATIBLE);
+    testFilter.runUriEx("ESAllPrim", "$filter=geometry'SRID=0;Point(0 0)' ge geometry'SRID=0;Point(1 1)'")
+        .isExSemantic(MessageKeys.TYPES_NOT_COMPATIBLE);
+
+    // Newly refused.
+    testFilter.runUriEx("ESAllPrim", "$filter=geometry'SRID=0;Point(0 0)' eq geometry'SRID=0;Point(1 1)'")
+        .isExSemantic(MessageKeys.TYPES_NOT_COMPATIBLE);
+    testFilter.runUriEx("ESAllPrim", "$filter=geometry'SRID=0;Point(0 0)' ne geometry'SRID=0;Point(1 1)'")
+        .isExSemantic(MessageKeys.TYPES_NOT_COMPATIBLE);
+
+    // Still allowed: comparison to the null value with eq and ne.
+    testFilter.runOnETAllPrim("geometry'SRID=0;Point(0 0)' eq null").isBinary(BinaryOperatorKind.EQ);
+    testFilter.runOnETAllPrim("null ne geometry'SRID=0;Point(0 0)'").isBinary(BinaryOperatorKind.NE);
+  }
+
+  /** [OData-Protocol] section 11.2.6.2: "Values of type Edm.Stream or any of the Geo types cannot be sorted." */
+  @Test
+  void geoValuesCannotBeSorted() throws Exception {
+    testFilter.runUriEx("ESAllPrim", "$orderby=geometry'SRID=0;Point(0 0)'")
+        .isExSemantic(MessageKeys.TYPES_NOT_COMPATIBLE);
   }
 
   @Test
