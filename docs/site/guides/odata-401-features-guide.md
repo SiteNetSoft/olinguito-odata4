@@ -923,8 +923,9 @@ The returned entity's id and edit link carry the primary key, so a follow-up wri
 
 Normative reference: [OData-CSDLJSON] §1.1 (conformance), §2.2 (defaults), §4 (document object),
 §5.1 (aliases), §7.1/§7.2 (properties and facets), §8.1/§8.2/§8.5/§8.6 (navigation properties),
-§6.3/§9.3 (open entity and complex types), §10.3 (enumeration members), §11 (type definitions), §12.8/§12.9 (return types
-and parameters), §13.1–§13.6 (entity container), §14.3/§14.4 (annotations and expressions);
+§6.3/§9.3 (open entity and complex types), §10.3 (enumeration members), §11 (type definitions),
+§12.8/§12.9 (return types and parameters), §13.1–§13.6 (entity container),
+§14.3/§14.4 (annotations and expressions);
 [OData-Protocol] §11.1.2 (metadata format selection).
 
 CSDL JSON is the JSON representation of the metadata document. A service `MAY` support it at
@@ -932,12 +933,18 @@ CSDL JSON is the JSON representation of the metadata document. A service `MAY` s
 4.01-Advanced (§1.1). Olinguito now serves a conformant CSDL JSON document, and reads one on both
 the server and the client.
 
-Ask for it with the `Accept` header — no `$format` query option is involved:
+Ask for it with the `Accept` header:
 
 ```
 GET /service/$metadata
 Accept: application/json
 ```
+
+`$format=json` works too: `ContentNegotiator` applies the query option to the metadata
+representation exactly as it does to a data payload, and it wins over `Accept`
+([OData-Protocol] §11.1.2). `SchemaVersionITCase` exercises `$metadata?$format=json`. What is not
+wired to `$format` is the *client*: the client asks for a representation through
+`Configuration.getMetadataFormat()` and the `Accept` header, never through a query option.
 
 `ContentNegotiator` lists `application/xml` and `application/json` for the metadata representation,
 and `application/xml` stays the default: a request that expresses no format preference still gets
@@ -966,6 +973,7 @@ bytes an existing consumer sees, so read them before upgrading a consumer that p
 | `$ReferentialConstraint` | one object per constraint | one object with one member per constraint | §8.5 |
 | `$OnDelete` | an object | a string, with `$OnDelete`-prefixed annotations | §8.6 |
 | constant expressions | `{"$String": "x"}`-style wrappers | bare JSON values (`"x"`, `42`, `true`) | §14.3 |
+| enumeration member constants | the CSDL XML form, `Ns.Enum/Red Ns.Enum/Striped` | the spec form: unqualified members joined with a comma, `"Red,Striped"` | §14.3.7 |
 | records | `$Type` member | the `@type` control information, `#`-prefixed short form | §14.4.12 |
 
 Two decisions the writer records explicitly:
@@ -1077,6 +1085,20 @@ return type; and the entity container's sets, singletons, imports and navigation
 * **`$Annotations` groups are read only under `parseAnnotations(true)`**, while the CSDL XML parser
   always creates the (empty) group. Anything depending on the group existing without its annotations
   sees a difference.
+* **An enumeration member constant loses its enumeration type.** §14.3.7 puts only "a string
+  containing the numeric or symbolic enumeration value" on the wire (Example 51 is `"Red,Striped"`),
+  so the writer strips the `Ns.Enum/` qualification the `Csdl*` model carries from the CSDL XML form.
+  A reader recovers the member names but neither the enumeration type nor the fact that the string is
+  an enumeration value at all — both come from the declared type of the applied term. This is the same
+  loss as the constant type marker above. Both readers still accept the old qualified form through the
+  legacy `$EnumMember` member; nothing writes it any more.
+* **The XML parser's corrected `Nullable` defaults change XML `$metadata` bytes for a service whose
+  EDM comes from `MetadataParser`.** `MetadataDocumentXmlSerializer` is unchanged and, given a fixed
+  model, writes byte-identical XML — but the model is no longer the same one. The PR#11 family fix
+  gives operation return types, parameters and terms the CSDL default `Nullable="true"` instead of
+  `false`, and the XML serializer writes `Nullable` only when it is `false`, so those `Nullable="false"`
+  attributes disappear from the re-serialized document. A service that builds its EDM in code is
+  unaffected; only the parser → serializer pipeline is.
 * **XML-parsed annotations now expose a non-null `getQualifier()`.** The CSDL XML parser dropped the
   `Qualifier` attribute; it no longer does. This is a downstream-visible change from a real bug fix —
   two annotations of the same term that differ only by qualifier used to collapse.
