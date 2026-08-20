@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Port OLINGO-1587: configurable response timeout
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 1 Task 9: metadata format setting
  */
 package org.sitenetsoft.olinguito.client.core;
 
@@ -24,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 
 /** OLINGO-1587: the streamed/batch response timeout is configurable (default 300s). */
 class ConfigurationImplTest {
@@ -45,5 +47,18 @@ class ConfigurationImplTest {
     final ConfigurationImpl configuration = new ConfigurationImpl();
     assertThrows(IllegalArgumentException.class, () -> configuration.setResponseTimeoutInSec(0));
     assertThrows(IllegalArgumentException.class, () -> configuration.setResponseTimeoutInSec(-1));
+  }
+
+  /** Protocol section 11.1.2: XML is what a client gets when it says nothing. */
+  @Test
+  void metadataFormatDefaultsToXml() {
+    assertEquals(ContentType.APPLICATION_XML, new ConfigurationImpl().getMetadataFormat());
+  }
+
+  @Test
+  void metadataFormatIsConfigurable() {
+    final ConfigurationImpl configuration = new ConfigurationImpl();
+    configuration.setMetadataFormat(ContentType.APPLICATION_JSON);
+    assertEquals(ContentType.APPLICATION_JSON, configuration.getMetadataFormat());
   }
 }

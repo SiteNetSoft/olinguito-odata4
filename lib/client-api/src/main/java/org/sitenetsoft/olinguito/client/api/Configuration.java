@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Port OLINGO-1587: configurable streamed/batch response timeout
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 1 Task 7: configurable $query POST retrieve requests
  * (OData 4.01 URL Conventions section 4.17)
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: metadata document format setting
  */
 package org.sitenetsoft.olinguito.client.api;
 
@@ -99,6 +100,36 @@ public interface Configuration {
    * @param format default format.
    */
   void setDefaultMediaFormat(ContentType format);
+
+  /**
+   * Gets the format the metadata document is requested in.
+   * <br/>
+   * OData 4.01, Part 1: Protocol section 11.1.2: "If a request for metadata does not specify a format
+   * preference (via Accept header or $format) then the XML representation MUST be returned", so this
+   * defaults to {@link ContentType#APPLICATION_XML} and a client that never calls
+   * {@link #setMetadataFormat(ContentType)} behaves exactly as it did before this setting existed.
+   * <br/>
+   * This is a <tt>default</tt> method so that implementations written against earlier versions of this
+   * interface keep compiling.
+   *
+   * @return configured metadata format; APPLICATION_XML otherwise.
+   */
+  default ContentType getMetadataFormat() {
+    return ContentType.APPLICATION_XML;
+  }
+
+  /**
+   * Sets the format the metadata document is requested in: {@link ContentType#APPLICATION_XML} for
+   * [OData-CSDLXML] or {@link ContentType#APPLICATION_JSON} for [OData-CSDLJSON].
+   * <br/>
+   * This is a <tt>default</tt> method so that implementations written against earlier versions of this
+   * interface keep compiling; they simply do not support overriding the metadata format.
+   *
+   * @param contentType metadata format.
+   */
+  default void setMetadataFormat(final ContentType contentType) {
+    throw new UnsupportedOperationException("This configuration does not support a metadata format override");
+  }
 
   /**
    * Gets the HttpClient factory to be used for executing requests.

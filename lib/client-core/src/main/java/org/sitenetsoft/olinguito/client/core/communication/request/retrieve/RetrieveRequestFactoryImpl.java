@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: CSDL JSON metadata request factory method
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.retrieve;
 
@@ -24,6 +25,7 @@ import java.net.URI;
 
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.EdmMetadataRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.JSONMetadataRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataDeltaRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntityRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntitySetIteratorRequest;
@@ -91,6 +93,11 @@ public class RetrieveRequestFactoryImpl implements RetrieveRequestFactory {
   @Override
   public XMLMetadataRequest getXMLMetadataRequest(final String serviceRoot) {
     return new XMLMetadataRequestImpl(client, client.newURIBuilder(serviceRoot).appendMetadataSegment().build());
+  }
+
+  @Override
+  public JSONMetadataRequest getJSONMetadataRequest(final String serviceRoot) {
+    return new JSONMetadataRequestImpl(client, client.newURIBuilder(serviceRoot).appendMetadataSegment().build());
   }
 
   @Override

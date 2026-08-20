@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: honour the configured metadata document format
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.retrieve;
 
@@ -24,10 +26,11 @@ import java.util.Collection;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.EdmMetadataRequest;
-import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.XMLMetadataRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataRetrieveRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
 import org.sitenetsoft.olinguito.client.api.edm.xml.XMLMetadata;
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 
 /**
  * This class implements a metadata query request.
@@ -45,7 +48,12 @@ class EdmMetadataRequestImpl extends AbstractMetadataRequestImpl<Edm> implements
 
   private EdmMetadataResponseImpl getPrivateResponse() {
     if (privateResponse == null) {
-      XMLMetadataRequest request = odataClient.getRetrieveRequestFactory().getXMLMetadataRequest(serviceRoot);
+      // OData 4.01, Part 1: Protocol section 11.1.2 - XML unless the caller asked for CSDL JSON.
+      final ContentType metadataFormat = odataClient.getConfiguration().getMetadataFormat();
+      final ODataRetrieveRequest<XMLMetadata> request =
+          metadataFormat != null && ContentType.APPLICATION_JSON.isCompatible(metadataFormat)
+              ? odataClient.getRetrieveRequestFactory().getJSONMetadataRequest(serviceRoot)
+              : odataClient.getRetrieveRequestFactory().getXMLMetadataRequest(serviceRoot);
       if (getPrefer() != null) {
         request.setPrefer(getPrefer());
       }

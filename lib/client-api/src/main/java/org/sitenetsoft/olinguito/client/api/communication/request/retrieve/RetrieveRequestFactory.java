@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: CSDL JSON metadata request factory method
  */
 package org.sitenetsoft.olinguito.client.api.communication.request.retrieve;
 
@@ -38,6 +40,25 @@ public interface RetrieveRequestFactory {
    * @return new {@link XMLMetadataRequest} instance.
    */
   XMLMetadataRequest getXMLMetadataRequest(String serviceRoot);
+
+  /**
+   * Gets a CSDL JSON metadata request instance.
+   * <br/>
+   * OData 4.01, Part 1: Protocol section 11.1.2 defines two metadata representations; this one asks
+   * for the [OData-CSDLJSON] representation with <tt>Accept: application/json</tt>. The returned
+   * request deserializes into the same {@link org.sitenetsoft.olinguito.client.api.edm.xml.XMLMetadata}
+   * holder {@link #getXMLMetadataRequest(String)} produces.
+   * <br/>
+   * This is a <tt>default</tt> method so that implementations written against earlier versions of
+   * this interface keep compiling; they simply do not support CSDL JSON.
+   *
+   * @param serviceRoot absolute URL (schema, host and port included) representing the location of the root of the data
+   * service.
+   * @return new {@link JSONMetadataRequest} instance.
+   */
+  default JSONMetadataRequest getJSONMetadataRequest(final String serviceRoot) {
+    throw new UnsupportedOperationException("This factory does not support CSDL JSON metadata requests");
+  }
 
   /**
    * Gets a metadata request instance.

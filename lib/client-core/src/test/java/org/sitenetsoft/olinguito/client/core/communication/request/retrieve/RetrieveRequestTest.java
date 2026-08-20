@@ -17,21 +17,28 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 1 Task 9: CSDL JSON metadata request coverage
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.retrieve;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 
+import org.mockito.Mockito;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.JSONMetadataRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataRawRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.RetrieveRequestFactory;
 import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
 import org.sitenetsoft.olinguito.client.core.ODataClientImpl;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.junit.jupiter.api.Test;
 
 class RetrieveRequestTest {
@@ -208,4 +215,55 @@ class RetrieveRequestTest {
     assertNotNull(req.getDefaultFormat());
    }
   
+
+  /**
+   * OData 4.01, Part 1: Protocol section 11.1.2 - a request that expresses no format preference gets
+   * XML. The XML metadata request must stay byte-identical to what it sent before the format-aware
+   * constructor existed, including the no-op setters.
+   */
+  @Test
+  void xmlMetadataRequestStillForcesApplicationXml() {
+    final ODataClientImpl client = (ODataClientImpl) ODataClientFactory.getClient();
+    final XMLMetadataRequestImpl request = (XMLMetadataRequestImpl) client.getRetrieveRequestFactory()
+        .getXMLMetadataRequest("http://host/svc");
+    assertEquals(ContentType.APPLICATION_XML, request.getDefaultFormat());
+    assertEquals(ContentType.APPLICATION_XML.toContentTypeString(), request.getAccept());
+    request.setAccept(ContentType.APPLICATION_JSON.toContentTypeString());
+    assertEquals(ContentType.APPLICATION_XML.toContentTypeString(), request.getAccept(),
+        "the XML metadata request ignores Accept overrides, as it always has");
+    request.setContentType(ContentType.APPLICATION_JSON.toContentTypeString());
+    assertEquals(ContentType.APPLICATION_XML.toContentTypeString(),
+        request.getHeader(HttpHeader.CONTENT_TYPE));
+  }
+
+  @Test
+  void jsonMetadataRequestAsksForApplicationJson() {
+    final ODataClientImpl client = (ODataClientImpl) ODataClientFactory.getClient();
+    final JSONMetadataRequest request = client.getRetrieveRequestFactory()
+        .getJSONMetadataRequest("http://host/svc");
+    assertNotNull(request);
+    assertEquals(ContentType.APPLICATION_JSON.toContentTypeString(),
+        ((JSONMetadataRequestImpl) request).getAccept());
+    assertEquals(ContentType.APPLICATION_JSON, ((JSONMetadataRequestImpl) request).getDefaultFormat());
+    assertEquals(ContentType.APPLICATION_JSON.toContentTypeString(),
+        ((JSONMetadataRequestImpl) request).getHeader(HttpHeader.CONTENT_TYPE));
+    assertTrue(request.getURI().toASCIIString().endsWith("/$metadata"));
+  }
+
+  /** A factory that does not implement the new default method still compiles and fails loudly. */
+  @Test
+  void factoryDefaultMethodIsUnsupportedUntilImplemented() {
+    final RetrieveRequestFactory bare = Mockito.mock(RetrieveRequestFactory.class, Mockito.CALLS_REAL_METHODS);
+    assertThrows(UnsupportedOperationException.class, () -> bare.getJSONMetadataRequest("http://host/svc"));
+  }
+
+  /** Protocol section 11.1.2: the Edm convenience request keeps using XML unless the caller opts in. */
+  @Test
+  void edmMetadataRequestFollowsTheConfiguredMetadataFormat() {
+    final ODataClientImpl client = (ODataClientImpl) ODataClientFactory.getClient();
+    assertEquals(ContentType.APPLICATION_XML, client.getConfiguration().getMetadataFormat());
+    client.getConfiguration().setMetadataFormat(ContentType.APPLICATION_JSON);
+    assertEquals(ContentType.APPLICATION_JSON, client.getConfiguration().getMetadataFormat());
+  }
+
 }

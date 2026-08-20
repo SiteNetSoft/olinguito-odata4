@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Port OLINGO-1587: configurable streamed/batch response timeout
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 1 Task 7: configurable $query POST retrieve requests
  * (OData 4.01 URL Conventions section 4.17)
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: metadata document format setting
  */
 package org.sitenetsoft.olinguito.client.core;
 
@@ -45,6 +46,8 @@ public class ConfigurationImpl implements Configuration {
   private static final String DEFAULT_BATCH_ACCEPT_FORMAT = "batchAcceptFormat";
 
   private static final String DEFAULT_MEDIA_FORMAT = "valueFormat";
+
+  private static final String METADATA_FORMAT = "metadataFormat";
 
   private static final String HTTP_CLIENT_FACTORY = "httpClientFactory";
 
@@ -153,6 +156,16 @@ public class ConfigurationImpl implements Configuration {
   @Override
   public void setDefaultMediaFormat(final ContentType contentType) {
     setProperty(DEFAULT_MEDIA_FORMAT, contentType);
+  }
+
+  @Override
+  public ContentType getMetadataFormat() {
+    return (ContentType) getProperty(METADATA_FORMAT, ContentType.APPLICATION_XML);
+  }
+
+  @Override
+  public void setMetadataFormat(final ContentType contentType) {
+    setProperty(METADATA_FORMAT, contentType);
   }
 
   @Override
