@@ -21,6 +21,8 @@
  * Copyright 2026 SiteNetSoft - OpenType CRUD Task 3: extracted dynamic-property EdmPrimitiveTypeKind
  * resolution into DynamicPropertyTypeResolver, shared with the tecsvc GET-dispatch path
  * Copyright 2026 SiteNetSoft - Dispatch matchesPattern to MethodCallOperator
+ * Copyright 2026 SiteNetSoft - OData 4.01: dispatch geo.distance, geo.length and geo.intersects,
+ * and type geo literals while their EdmType is still known
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression;
 
@@ -37,6 +39,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmComplexType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEnumType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmFunction;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
@@ -70,6 +73,7 @@ import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression
 import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operand.UntypedOperand;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operand.VisitorOperand;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operation.BinaryOperator;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operation.GeoOperator;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operation.MethodCallOperator;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operation.UnaryOperator;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.primitive.EdmNull;
@@ -155,6 +159,9 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
       case CEILING -> methodCallOperation.ceiling();
       case SUBSTRINGOF -> methodCallOperation.substringof();
       case MATCHESPATTERN -> methodCallOperation.matchesPattern();
+      case GEODISTANCE -> new GeoOperator(parameters).distance();
+      case GEOLENGTH -> new GeoOperator(parameters).length();
+      case GEOINTERSECTS -> new GeoOperator(parameters).intersects();
       default -> throwNotImplemented();
     };
   }
@@ -167,7 +174,23 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
 
   @Override
   public VisitorOperand visitLiteral(final Literal literal) throws ExpressionVisitException, ODataApplicationException {
+    // A geo literal must be typed here, while its EdmType is still known: UntypedOperand's own type
+    // inference tries Edm.String first (UntypedOperand#determineType), which would classify
+    // geography'SRID=4326;Point(1 2)' as a string. Every other literal keeps its existing handling.
+    final EdmType type = literal.getType();
+    if (type instanceof EdmPrimitiveType primitiveType && isGeoType(primitiveType)) {
+      return new UntypedOperand(literal.getText()).asTypedOperand(primitiveType);
+    }
     return new UntypedOperand(literal.getText());
+  }
+
+  private static boolean isGeoType(final EdmPrimitiveType type) {
+    try {
+      return EdmPrimitiveTypeKind.valueOfFQN(
+          type.getFullQualifiedName().getFullQualifiedNameAsString()).isGeospatial();
+    } catch (final IllegalArgumentException e) {
+      return false;
+    }
   }
 
   @SuppressWarnings("unchecked")
