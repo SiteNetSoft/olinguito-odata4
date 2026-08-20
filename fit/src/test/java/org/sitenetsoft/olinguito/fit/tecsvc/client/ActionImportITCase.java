@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  * Copyright 2026 SiteNetSoft - Added entity-typed action parameter tests
+ * Copyright 2026 SiteNetSoft - Corrected what the absent-Location assertion proves
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
@@ -344,7 +345,9 @@ public class ActionImportITCase extends AbstractParamTecSvcITCase {
     assertNotNull(body);
     assertShortOrInt(7, body.getProperty("PropertyInt16").getPrimitiveValue().toValue());
     assertEquals("echo me (2)", body.getProperty("PropertyString").getPrimitiveValue().toValue());
-    // The action import declares no entity set, so the returned entity is transient: no Location.
+    // A 200 carries no Location header. This only pins that the action answered 200 with the entity
+    // in the body rather than a 201 pointing somewhere - the entity is transient, since the action
+    // import declares no entity set to create it in.
     assertTrue(response.getHeader(HttpHeader.LOCATION) == null
         || response.getHeader(HttpHeader.LOCATION).isEmpty());
   }

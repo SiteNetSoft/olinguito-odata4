@@ -1227,7 +1227,11 @@ Three things follow from that grammar, and all three are implemented:
 * **A position may carry 3 or 4 elements**, not just 2: `positionLiteral` allows an optional
   altitude and an optional linear-referencing measure. `UriTokenizer.nextPosition()` accepts 2–4
   space-separated coordinates; the third becomes the point's `Z`, and the fourth is validated and
-  then dropped (the geo model has no M coordinate).
+  then dropped (the geo model has no M coordinate). One consequence of the variable length: a `.`
+  that corrupts a position separator can be re-absorbed as part of a still-valid position, so
+  `LineString(1 2,3 4)` disturbed into `LineString(1 2.3 4)` re-parses as a legal 3-element position
+  instead of failing — which is why `UriTokenizerTest`'s `wrongToken` pin had to switch its disturb
+  character from `.` to one that is not itself part of the position grammar.
 
 `fromUriLiteral` returns the *wrapped* form rather than the bare literal, because that is what
 `valueOfString` consumes in this codebase and what `VisitorOperand.tryCast` chains into. It
@@ -1259,7 +1263,7 @@ entity set `ESGeo`:
 |---|---|
 | `PropertyInt16` | `Edm.Int16` — the key |
 | `PropertyGeography…` (7) | `Edm.GeographyPoint`, `…LineString`, `…Polygon`, `…MultiPoint`, `…MultiLineString`, `…MultiPolygon`, `…Collection` |
-| `PropertyGeometry…` (7) | the eight `Edm.Geometry*` counterparts, less the abstract kind |
+| `PropertyGeometry…` (7) | the seven concrete `Edm.Geometry*` counterparts (the abstract `Edm.Geometry` has no value representation) |
 | `CollPropertyGeometryPoint` | `Collection(Edm.GeometryPoint)`, declared `SRID="0"` |
 
 The key is `Edm.Int16` because [OData-CSDL] §4.1 does not list any geospatial type among the
@@ -1331,10 +1335,26 @@ Point point = (Point) entity.getProperty("PropertyGeometryPoint").getPrimitiveVa
 
 ### Recorded Deviations and Limitations
 
-* **`ESGeo` is JSON-only.** `ODataXmlSerializer` throws `UNSUPPORTED_PROPERTY_TYPE` for geospatial
-  values, scalar and collection alike, so requesting a geo entity as `application/xml` answers a
-  **400** (*The type of the property 'PropertyGeographyPoint' is not yet supported.*). No GML
-  serializer was written; Atom is not on the 4.01 conformance ladder this milestone targets.
+* **Geo values are JSON-only, and that is a behavior change for every existing service.** Before
+  this wave a geo value read from a payload arrived as a plain `ValueType.PRIMITIVE` string and the
+  XML/Atom and JSON-delta writers happily emitted it as a (non-conformant) WKT string. The JSON
+  deserializer now tags **any** geo value `ValueType.GEOSPATIAL`, and the writers that cannot render
+  that refuse it: `ODataXmlSerializer` throws `UNSUPPORTED_PROPERTY_TYPE`, and so do
+  `JsonDeltaSerializer` (lines 335-337, 374-379) and `JsonDeltaSerializerWithNavigations` (lines
+  399-404, 444-446), scalar and collection alike. Requesting a geo entity as `application/xml`
+  answers a **400** (*The type of the property 'PropertyGeographyPoint' is not yet supported.*), and
+  a delta payload carrying a geo property does the same. This is **not** confined to the reference
+  `ESGeo` set — any service whose entities carry geospatial properties and are served as Atom/XML or
+  as a delta response changes from emitting WKT to answering an error. No GML serializer was
+  written; Atom is not on the 4.01 conformance ladder this milestone targets.
+* **`Valuable.asPrimitive()` returns `null` for a deserialized geo property**, because the value is
+  now tagged `GEOSPATIAL` rather than `PRIMITIVE`; a custom processor that reads geo that way gets a
+  silent null instead of the old string, and must call `asGeospatial()` (or check `getValueType()`).
+* **A type definition over a geospatial underlying type is still tagged `PRIMITIVE`.**
+  `valueTypeFor` returns `PRIMITIVE` for `EdmTypeKind.DEFINITION`, matching `readPrimitiveValue`,
+  which also only treats `kind == PRIMITIVE` as geo — so such a property serializes as a WKT string
+  rather than as GeoJSON. Widening one side without the other would break the pair; widening both
+  was out of scope for this wave.
 * **The reference service's geo math is a reference implementation, not a geodesy library** —
   haversine rather than an ellipsoidal geodesic (up to ~0.5 % off), planar polygon containment in
   degree space for geography (exact for small axis-aligned shapes, wrong near the poles or across
