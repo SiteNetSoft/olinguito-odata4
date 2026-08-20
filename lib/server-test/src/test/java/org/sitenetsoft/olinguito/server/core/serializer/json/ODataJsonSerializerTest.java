@@ -2911,6 +2911,65 @@ class ODataJsonSerializerTest {
   }
 
   /**
+   * At metadata=full the entity-typed value's type control information belongs *inside* the object
+   * ([OData-JSON] section 4.5.3), written by writeEntity from the instance's own type name - never
+   * as a sibling "P@odata.type", which would duplicate and could contradict it. Mirrors how a
+   * non-collection complex property is handled.
+   */
+  @Test
+  void entityTypedValueAtFullMetadataHasNoSiblingTypeControlInformation() throws Exception {
+    final EdmEntityType holder = mockEntityTypedPropertyHolder(false);
+    final Entity value = new Entity();
+    value.setType("olingo.odata.test1.ETTwoPrim");
+    value.addProperty(new Property(null, "PropertyInt16", ValueType.PRIMITIVE, (short) 42));
+    value.addProperty(new Property(null, "PropertyString", ValueType.PRIMITIVE, "Yes"));
+    final Entity entity = new Entity();
+    entity.setType("namespace.entityType");
+    entity.addProperty(new Property(null, holder.getPropertyNames().get(0), ValueType.ENTITY, value));
+    Assertions.assertEquals("{\"@odata.context\":\"$metadata#ESHolder/$entity\","
+        + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
+        + "\"@odata.type\":\"#namespace.entityType\",\"@odata.id\":null,"
+        // No "ParameterETTwoPrim@odata.type" sibling here - the type is inside the object below.
+        + "\"ParameterETTwoPrim\":{\"@odata.type\":\"#olingo.odata.test1.ETTwoPrim\","
+        + "\"@odata.id\":null,\"PropertyInt16@odata.type\":\"#Int16\","
+        + "\"PropertyInt16\":42,\"PropertyString\":\"Yes\"}}",
+        new String(serializerFullMetadata.entity(metadata, holder, entity, fullMetadataOptions())
+            .getContent().readAllBytes(), StandardCharsets.UTF_8));
+  }
+
+  /**
+   * The collection arm keeps the sibling "P@odata.type", exactly as writeComplexCollection does:
+   * the array itself is not an object and has nowhere else to carry its type.
+   */
+  @Test
+  void entityCollectionTypedValueAtFullMetadataKeepsTheCollectionTypeControlInformation() throws Exception {
+    final EdmEntityType holder = mockEntityTypedPropertyHolder(true);
+    final Entity first = new Entity();
+    first.setType("olingo.odata.test1.ETTwoPrim");
+    first.addProperty(new Property(null, "PropertyInt16", ValueType.PRIMITIVE, (short) 1));
+    first.addProperty(new Property(null, "PropertyString", ValueType.PRIMITIVE, "One"));
+    final Entity entity = new Entity();
+    entity.setType("namespace.entityType");
+    entity.addProperty(new Property(null, holder.getPropertyNames().get(0),
+        ValueType.COLLECTION_ENTITY, List.of(first)));
+    Assertions.assertEquals("{\"@odata.context\":\"$metadata#ESHolder/$entity\","
+        + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\","
+        + "\"@odata.type\":\"#namespace.entityType\",\"@odata.id\":null,"
+        + "\"CollParameterETTwoPrim@odata.type\":\"#Collection(olingo.odata.test1.ETTwoPrim)\","
+        + "\"CollParameterETTwoPrim\":[{\"@odata.type\":\"#olingo.odata.test1.ETTwoPrim\","
+        + "\"@odata.id\":null,\"PropertyInt16@odata.type\":\"#Int16\","
+        + "\"PropertyInt16\":1,\"PropertyString\":\"One\"}]}",
+        new String(serializerFullMetadata.entity(metadata, holder, entity, fullMetadataOptions())
+            .getContent().readAllBytes(), StandardCharsets.UTF_8));
+  }
+
+  private EntitySerializerOptions fullMetadataOptions() {
+    return EntitySerializerOptions.with()
+        .contextURL(ContextURL.with().entitySetOrSingletonOrType("ESHolder").suffix(Suffix.ENTITY).build())
+        .build();
+  }
+
+  /**
    * Mocks an entity type with one entity-typed structural property. CSDL forbids that shape
    * ([OData-CSDL] section 7.1), which is exactly why it has to be mocked: the serializer branch under
    * test serves action parameter and return values, whose Property objects look like this.

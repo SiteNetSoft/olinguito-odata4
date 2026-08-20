@@ -1022,11 +1022,14 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
             "#Collection(" + type.getFullQualifiedName().getFullQualifiedNameAsString() + ")");
       }
     } else if (type.getKind() == EdmTypeKind.ENTITY) {
-      // [OData-JSON] section 4.5.3: the type control information of an entity value, written at
-      // metadata=full like every other declared type.
-      json.writeStringField(typeName, edmProperty.isCollection()
-          ? "#Collection(" + type.getFullQualifiedName().getFullQualifiedNameAsString() + ")"
-          : "#" + type.getFullQualifiedName().getFullQualifiedNameAsString());
+      // Non-collection case written in writeEntity directly, exactly as for a complex value above:
+      // an object-valued item carries its type control information *inside* the object
+      // ([OData-JSON] section 4.5.3), so a sibling "P@odata.type" would duplicate - and could
+      // contradict - the "@odata.type" writeEntity writes from the instance's own type name.
+      if (edmProperty.isCollection()) {
+        json.writeStringField(typeName,
+            "#Collection(" + type.getFullQualifiedName().getFullQualifiedNameAsString() + ")");
+      }
     } else {
       throw new SerializerException("Property type not yet supported: a property value must be "
           + "primitive, enumeration, type definition, complex or entity typed, but "
