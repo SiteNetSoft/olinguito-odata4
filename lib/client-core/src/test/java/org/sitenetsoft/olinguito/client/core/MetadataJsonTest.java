@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Read CSDL JSON metadata in the client deserializer
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: pinned the collection navigation property $Nullable
+ * Copyright 2026 SiteNetSoft - Pinned the section 14.3.7 enumeration member constant on input
  */
 package org.sitenetsoft.olinguito.client.core;
 
@@ -536,6 +537,28 @@ class MetadataJsonTest extends AbstractTest {
     assertEquals(ConstantExpressionType.Int,
         ((CsdlConstantExpression) group.getAnnotation("a.Legacy").getExpression()).getType());
     assertEquals("ns.T", ((CsdlRecord) group.getAnnotation("a.Rec").getExpression()).getType());
+  }
+
+  /**
+   * Section 14.3.7: an enumeration member constant is a plain string, Example 51 being
+   * {@code "Red,Striped"}. The JSON form does not say a string is an enumeration value, so it is read
+   * verbatim as a String constant; the legacy qualified form stays readable through $EnumMember.
+   */
+  @Test
+  void enumMemberConstantsAreReadVerbatim() {
+    final CsdlSchema schema = parse("{\"$Version\":\"4.01\",\"ns\":{\"$Annotations\":{\"ns.T\":{"
+        + "\"@a.Spec\":\"Red,Striped\","
+        + "\"@a.Legacy\":{\"$EnumMember\":\"ns.Pattern/Red ns.Pattern/Striped\"}}}}}")
+        .getSchema(ALIASED_NS);
+    final CsdlAnnotations group = schema.getAnnotationGroup("ns.T", null);
+    final CsdlConstantExpression spec =
+        (CsdlConstantExpression) group.getAnnotation("a.Spec").getExpression();
+    assertEquals(ConstantExpressionType.String, spec.getType());
+    assertEquals("Red,Striped", spec.getValue());
+    final CsdlConstantExpression legacy =
+        (CsdlConstantExpression) group.getAnnotation("a.Legacy").getExpression();
+    assertEquals(ConstantExpressionType.EnumMember, legacy.getType());
+    assertEquals("ns.Pattern/Red ns.Pattern/Striped", legacy.getValue());
   }
 
   // ------------------------------------------------------------------------------- the error paths

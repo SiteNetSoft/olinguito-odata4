@@ -22,6 +22,7 @@
  * Copyright 2026 SiteNetSoft - Added the annotation and annotation expression parser tests
  * Copyright 2026 SiteNetSoft - Pinned the collection cast type and the unknown expression member
  * Copyright 2026 SiteNetSoft - Pinned the collection navigation property $Nullable prohibition
+ * Copyright 2026 SiteNetSoft - Pinned the section 14.3.7 enumeration member constant on input
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -666,6 +667,29 @@ class MetadataJsonParserTest {
     assertEquals("2012-02-29", expression(annotations, "ns.D").asConstant().getValue());
     assertEquals(ConstantExpressionType.Int, expression(annotations, "ns.I").asConstant().getType());
     assertEquals(ConstantExpressionType.EnumMember, expression(annotations, "ns.E").asConstant().getType());
+  }
+
+  /**
+   * Section 14.3.7: an enumeration member constant is "a string containing the numeric or symbolic
+   * enumeration value" - Example 51 is {@code "Red,Striped"}. Nothing in the JSON form says the string
+   * is an enumeration value rather than any other string, so it is read as a String constant, verbatim
+   * and unmangled; what it means is given by the declared type of the applied term. The legacy
+   * qualified form stays readable through the $EnumMember member.
+   */
+  @Test
+  void enumMemberConstantsAreReadVerbatim() throws Exception {
+    final String csdl = "{\"$Version\":\"4.01\",\"ns\":{\"ET\":{\"$Kind\":\"EntityType\","
+        + "\"@ns.Spec\":\"Red,Striped\","
+        + "\"@ns.Legacy\":{\"$EnumMember\":\"ns.Pattern/Red ns.Pattern/Striped\"}}}}";
+    final List<CsdlAnnotation> annotations = new MetadataJsonParser().parseAnnotations(true)
+        .buildEdmProvider(new StringReader(csdl))
+        .getEntityType(new FullQualifiedName("ns", "ET")).getAnnotations();
+    assertEquals(ConstantExpressionType.String, expression(annotations, "ns.Spec").asConstant().getType());
+    assertEquals("Red,Striped", expression(annotations, "ns.Spec").asConstant().getValue());
+    assertEquals(ConstantExpressionType.EnumMember,
+        expression(annotations, "ns.Legacy").asConstant().getType());
+    assertEquals("ns.Pattern/Red ns.Pattern/Striped",
+        expression(annotations, "ns.Legacy").asConstant().getValue());
   }
 
   /**

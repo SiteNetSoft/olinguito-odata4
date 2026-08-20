@@ -27,6 +27,8 @@
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: CSDL JSON bare-value constant expressions and
  * record @type control information
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: write $OpenType for open entity and complex types
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: null-safe numeric constants and section 14.3.7
+ * enumeration member constants
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -1250,15 +1252,17 @@ public class MetadataDocumentJsonSerializer {
     case Float:
       writeNumericConstant(json, value);
       break;
+    case EnumMember:
+      writeEnumMemberConstant(json, value);
+      break;
     case Binary:
     case Date:
     case DateTimeOffset:
     case Duration:
-    case EnumMember:
     case Guid:
     case String:
     case TimeOfDay:
-      // Sections 14.3.1/.3/.4/.6/.7/.9/.11/.12: all of these are plain JSON strings. CSDL JSON has no
+      // Sections 14.3.1/.3/.4/.6/.9/.11/.12: all of these are plain JSON strings. CSDL JSON has no
       // $Binary/$Date/$Int/... members at all - those are CSDL XML element names.
       json.writeString(value);
       break;
@@ -1286,7 +1290,9 @@ public class MetadataDocumentJsonSerializer {
 
   private void writeNumericConstant(final JsonGenerator json, final String value) throws IOException {
     // Sections 14.3.5/14.3.8: "The special values INF, -INF, or NaN are represented as strings."
-    if (INF.equals(value) || NEGATIVE_INF.equals(value) || NAN.equals(value)) {
+    // A null value is written as a JSON null (OLINGO-1534); new BigDecimal(null) would throw a
+    // NullPointerException, which the NumberFormatException fallback below does not catch.
+    if (value == null || INF.equals(value) || NEGATIVE_INF.equals(value) || NAN.equals(value)) {
       json.writeString(value);
     } else {
       try {
@@ -1296,6 +1302,32 @@ public class MetadataDocumentJsonSerializer {
         json.writeString(value);
       }
     }
+  }
+
+  /**
+   * Section 14.3.7: "Enumeration member expressions are represented as a string containing the numeric
+   * or symbolic enumeration value" - the spec's Example 51 is {@code "@self.HasPattern": "Red,Striped"}.
+   * The Csdl model carries the CSDL XML form instead, a space-separated list of
+   * {@code Namespace.EnumType/Member}, so each member is stripped of its type qualification and the
+   * members are joined with the comma of the OData ABNF enumValue rule. The enumeration type itself is
+   * not part of the JSON wire form; it is given by the declared type of the applied term.
+   */
+  private void writeEnumMemberConstant(final JsonGenerator json, final String value) throws IOException {
+    if (value == null) {
+      json.writeString(value);
+      return;
+    }
+    final StringBuilder members = new StringBuilder();
+    for (final String member : value.split("[\\s,]+")) {
+      if (member.isEmpty()) {
+        continue;
+      }
+      if (members.length() > 0) {
+        members.append(',');
+      }
+      members.append(member.substring(member.lastIndexOf('/') + 1));
+    }
+    json.writeString(members.toString());
   }
 
   private String getAliasedFullQualifiedName(final FullQualifiedName fqn) {

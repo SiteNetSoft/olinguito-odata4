@@ -27,6 +27,8 @@
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: CSDL JSON bare-value constant expressions and
  * record @type control information
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: pinned $OpenType on entity and complex types
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: pinned null-safe numeric and section 14.3.7 enumeration
+ * member constants
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -662,6 +664,81 @@ class MetadataDocumentJsonSerializerTest {
         "a closed type stays silent - false is the default");
     assertFalse(document.contains("$OpenType\":false"),
         "the default is never written");
+  }
+
+  /**
+   * Section 14.3.7: "Enumeration member expressions are represented as a string containing the numeric
+   * or symbolic enumeration value", the spec's Example 51 being {@code "@self.HasPattern": "Red,Striped"}.
+   * The Csdl model carries the CSDL XML form - qualified members separated by spaces - which a
+   * conformant third-party reader cannot interpret, so the writer emits the spec form.
+   */
+  @Test
+  void enumMemberConstantsAreWrittenInTheSpecForm() throws Exception {
+    assertEquals("\"Red,Striped\"",
+        constantAnnotation(EdmExpressionType.EnumMember,
+            "MyNamespace.Pattern/Red MyNamespace.Pattern/Striped"),
+        "the members lose their type qualification and are joined with a comma");
+  }
+
+  /** Section 14.3.7: a single member and an already unqualified value are written unchanged. */
+  @Test
+  void enumMemberConstantsKeepASingleMember() throws Exception {
+    assertEquals("\"Red\"", constantAnnotation(EdmExpressionType.EnumMember, "MyNamespace.Pattern/Red"));
+    assertEquals("\"Red\"", constantAnnotation(EdmExpressionType.EnumMember, "Red"));
+  }
+
+  /**
+   * OLINGO-1534: a constant whose value is null is written as a JSON null. {@code new BigDecimal(null)}
+   * throws a NullPointerException, which the writer's NumberFormatException fallback does not catch.
+   */
+  @Test
+  void nullNumericConstantsAreWrittenAsJsonNull() throws Exception {
+    assertEquals("null", constantAnnotation(EdmExpressionType.Decimal, null));
+    assertEquals("null", constantAnnotation(EdmExpressionType.Float, null));
+  }
+
+  /**
+   * Serializes a schema carrying a single annotated enumeration member and returns the JSON text of the
+   * annotation value, so a constant expression can be pinned on its own.
+   */
+  private String constantAnnotation(final EdmExpressionType type, final String value) throws Exception {
+    EdmSchema schema = mock(EdmSchema.class);
+    when(schema.getNamespace()).thenReturn("MyNamespace");
+    Edm edm = mock(Edm.class);
+    when(edm.getSchemas()).thenReturn(List.of(schema));
+    ServiceMetadata serviceMetadata = mock(ServiceMetadata.class);
+    when(serviceMetadata.getEdm()).thenReturn(edm);
+
+    EdmEnumType enumType = mock(EdmEnumType.class);
+    when(schema.getEnumTypes()).thenReturn(Collections.singletonList(enumType));
+    when(enumType.getName()).thenReturn("MyEnum");
+    when(enumType.getKind()).thenReturn(EdmTypeKind.ENUM);
+    when(enumType.getUnderlyingType())
+        .thenReturn(OData.newInstance().createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Int32));
+    when(enumType.getMemberNames()).thenReturn(Collections.singletonList("MyMember"));
+    EdmMember member = mock(EdmMember.class);
+    when(enumType.getMember("MyMember")).thenReturn(member);
+    when(member.getName()).thenReturn("MyMember");
+    when(member.getValue()).thenReturn("0");
+
+    EdmAnnotation annotation = mock(EdmAnnotation.class);
+    when(member.getAnnotations()).thenReturn(Collections.singletonList(annotation));
+    when(annotation.getQualifier()).thenReturn("Pinned");
+    EdmConstantExpression expression = mock(EdmConstantExpression.class);
+    when(expression.isConstant()).thenReturn(true);
+    when(expression.asConstant()).thenReturn(expression);
+    when(expression.getExpressionType()).thenReturn(type);
+    when(expression.getExpressionName()).thenReturn(type.name());
+    when(expression.getValueAsString()).thenReturn(value);
+    when(annotation.getExpression()).thenReturn(expression);
+
+    final String document = new String(serializer.metadataDocument(serviceMetadata).getContent()
+        .readAllBytes(), StandardCharsets.UTF_8);
+    final String prefix = "\"MyMember#Pinned\":";
+    final int start = document.indexOf(prefix) + prefix.length();
+    assertTrue(start > prefix.length(), "the annotated member must be in " + document);
+    final int end = document.indexOf('}', start);
+    return document.substring(start, end);
   }
 
   /** Section 10.3: enumeration member values are JSON numbers, not strings. */

@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Added the CSDL JSON writer/parser round trip
  * Copyright 2026 SiteNetSoft - Asserted the fixture's annotations survive the round trip
+ * Copyright 2026 SiteNetSoft - Pinned the section 14.3.7 enumeration member constant round trip
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -206,6 +207,31 @@ class MetadataJsonRoundTripTest {
     final CsdlRecord entry = (CsdlRecord) restricted.getItems().get(0);
     assertEquals(2, entry.getPropertyValues().size());
     assertEquals("NavigationProperty", entry.getPropertyValues().get(0).getProperty());
+  }
+
+  /**
+   * Section 14.3.7: "Enumeration member expressions are represented as a string containing the numeric
+   * or symbolic enumeration value" - Example 51 is {@code "Red,Striped"}. The CSDL XML form the model
+   * holds, {@code Org.OData.Core.V1.Permission/Read}, is not the wire form, so the writer strips the
+   * enumeration type. What the round trip therefore recovers is the member name, not the enumeration
+   * type it belongs to and not the fact that the string is an enumeration value at all: JSON has no
+   * per-value type marker, exactly as for the other constants above, and the type is given by the
+   * declared type of the applied term.
+   */
+  @Test
+  void enumMemberConstantsSurviveInTheSpecForm() throws Exception {
+    final CsdlConstantExpression before = (CsdlConstantExpression) annotation(
+        fromXml.getEntityType(new FullQualifiedName(NS, "Photo")).getProperty("Id"),
+        "Org.OData.Core.V1.Permissions").getExpression();
+    assertEquals(ConstantExpressionType.EnumMember, before.getType());
+    assertEquals("Org.OData.Core.V1.Permission/Read", before.getValue(), "the CSDL XML form");
+
+    final CsdlConstantExpression after = (CsdlConstantExpression) annotation(
+        fromJson.getEntityType(new FullQualifiedName(NS, "Photo")).getProperty("Id"),
+        "Org.OData.Core.V1.Permissions").getExpression();
+    assertEquals("Read", after.getValue(), "the symbolic enumeration value, unqualified");
+    assertEquals(ConstantExpressionType.String, after.getType(),
+        "a JSON string says nothing about being an enumeration value");
   }
 
   private static CsdlAnnotation annotation(final CsdlAnnotatable annotatable, final String term) {
