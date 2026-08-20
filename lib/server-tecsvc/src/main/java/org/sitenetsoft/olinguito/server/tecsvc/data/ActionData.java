@@ -359,21 +359,31 @@ public class ActionData {
     if (value == null || !value.getProperties().isEmpty() || value.getId() == null) {
       return value;
     }
-    // [OData-JSON] section 4.5.8 says only that "By convention the entity-id is identical to the
-    // canonical URL of the entity", so a client may send either the relative form ESTwoPrim(32767)
-    // or the absolute canonical URL. Matching on the suffix accepts both without inventing a
-    // base-URL rule the specification does not state.
     final String id = value.getId().toASCIIString();
     final EntityCollection collection = data.get(entitySetName);
     if (collection != null) {
       for (final Entity candidate : collection.getEntities()) {
-        if (candidate.getId() != null && candidate.getId().toASCIIString().endsWith(id)) {
+        if (candidate.getId() != null && referencesEntity(id, candidate.getId().toASCIIString())) {
           return candidate;
         }
       }
     }
     throw new DataProviderException("Cannot resolve the entity reference '" + id + "'.",
         HttpStatusCode.BAD_REQUEST);
+  }
+
+  /**
+   * Whether the entity-id a client sent addresses the entity this service stores under the given
+   * canonical id. [OData-JSON] section 4.5.8 says only that "By convention the entity-id is
+   * identical to the canonical URL of the entity", so a client may legitimately send either the
+   * relative form (ESTwoPrim(32767), which is what this service itself writes) or the absolute
+   * canonical URL. Both are accepted, without inventing a base-URL rule the specification does not
+   * state: the reference matches when it is the canonical id, or when it ends with the canonical id
+   * on a path-segment boundary. The boundary matters - a bare suffix test would let "(32767)" and
+   * "Prim(32767)" address ESTwoPrim(32767).
+   */
+  private static boolean referencesEntity(final String reference, final String canonicalId) {
+    return reference.equals(canonicalId) || reference.endsWith('/' + canonicalId);
   }
 
   protected static EntityActionResult entityBoundAction(final String name, final Map<String, Parameter> parameters,

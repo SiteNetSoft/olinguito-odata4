@@ -21,6 +21,8 @@
  * Copyright 2026 SiteNetSoft - OLINGO-1590: Test enum types with "Geo" prefix
  * Copyright 2026 SiteNetSoft - Tests for the geospatial value type, collection member dimension
  * and the GeoJSON CRS "type: name" requirement
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 2 Task 9: the id control information stays ignored on
+ * an ordinary 4.0 entity payload
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -235,6 +237,12 @@ class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTest {
     List<Property> properties = entity.getProperties();
     assertNotNull(properties);
     assertEquals(2, properties.size());
+    // [OData-JSON] 4.0 section 4.5: control information is ignored for requests. "@odata.id" is no
+    // exception on an ordinary entity payload - it must not become the entity-id, which a processor
+    // could echo back into the OData-EntityId response header. The entity-reference form of an
+    // entity-typed action parameter value is the one place the id is read
+    // (ODataJsonDeserializerActionParametersTest#entityByReference).
+    assertNull(entity.getId());
   }
 
   @Test

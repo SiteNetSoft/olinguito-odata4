@@ -506,6 +506,70 @@ class DataProviderTest {
     Assertions.assertEquals("Test String4 (0)", result.getProperty("PropertyString").getValue());
   }
 
+  /**
+   * [OData-JSON] section 4.5.8: "By convention the entity-id is identical to the canonical URL of
+   * the entity." A client may therefore send the absolute canonical URL where this service stores
+   * the relative form, and both must address the same entity.
+   */
+  @Test
+  void echoActionResolvesAnAbsoluteEntityReference() throws Exception {
+    final DataProvider dataProvider = new DataProvider(oData, edm);
+    final Entity reference = new Entity();
+    reference.setId(URI.create("http://localhost:9080/odata-server-tecsvc/odata.svc/ESTwoPrim(32767)"));
+    final Parameter parameter = new Parameter();
+    parameter.setName("ParameterETTwoPrim");
+    parameter.setValue(ValueType.ENTITY, reference);
+
+    final Entity result = dataProvider.processActionEntity("UARTETTwoPrimEchoParam",
+        Map.of("ParameterETTwoPrim", parameter)).getEntity();
+    Assertions.assertEquals((short) 32767, result.getProperty("PropertyInt16").getValue());
+    Assertions.assertEquals("Test String4 (0)", result.getProperty("PropertyString").getValue());
+  }
+
+  /**
+   * The reference must match the canonical id whole, or end with it on a path-segment boundary: a
+   * bare suffix test would let "(32767)" address ESTwoPrim(32767).
+   */
+  @Test
+  void echoActionRefusesAPartialSuffixOfAnEntityReference() {
+    final DataProvider dataProvider = new DataProvider(oData, edm);
+    for (final String bogus : List.of("(32767)", "Prim(32767)", "ESTwoPrim(32767)/extra")) {
+      final Entity reference = new Entity();
+      reference.setId(URI.create(bogus));
+      final Parameter parameter = new Parameter();
+      parameter.setName("ParameterETTwoPrim");
+      parameter.setValue(ValueType.ENTITY, reference);
+
+      Assertions.assertThrows(DataProvider.DataProviderException.class,
+          () -> dataProvider.processActionEntity("UARTETTwoPrimEchoParam",
+              Map.of("ParameterETTwoPrim", parameter)),
+          "'" + bogus + "' must not address ESTwoPrim(32767)");
+    }
+  }
+
+  /**
+   * Recorded decision: an id sent alongside properties is ignored, and the properties given are the
+   * value. [OData-JSON] section 18 lets a value be a subset of the properties OR the entity
+   * reference; a value carrying properties is read as the former, so no lookup happens and the
+   * unresolvable-reference 400 does not apply to it.
+   */
+  @Test
+  void echoActionIgnoresAnIdSentAlongsideProperties() throws Exception {
+    final DataProvider dataProvider = new DataProvider(oData, edm);
+    final Entity value = new Entity()
+        .addProperty(new Property(null, "PropertyInt16", ValueType.PRIMITIVE, (short) 7))
+        .addProperty(new Property(null, "PropertyString", ValueType.PRIMITIVE, "echo me"));
+    value.setId(URI.create("ESTwoPrim(4711)"));
+    final Parameter parameter = new Parameter();
+    parameter.setName("ParameterETTwoPrim");
+    parameter.setValue(ValueType.ENTITY, value);
+
+    final Entity result = dataProvider.processActionEntity("UARTETTwoPrimEchoParam",
+        Map.of("ParameterETTwoPrim", parameter)).getEntity();
+    Assertions.assertEquals((short) 7, result.getProperty("PropertyInt16").getValue());
+    Assertions.assertEquals("echo me (0)", result.getProperty("PropertyString").getValue());
+  }
+
   /** Design deviation 9: an unresolvable entity reference is a 400, not a null-valued echo. */
   @Test
   void echoActionRefusesAnUnresolvableReference() {

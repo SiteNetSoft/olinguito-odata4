@@ -42,7 +42,8 @@
  * Copyright 2026 SiteNetSoft - OData 4.01: shared resolver for optional-parameter default values
  * Copyright 2026 SiteNetSoft - Keep geo values geospatial: value type, collection member
  * dimension and the GeoJSON CRS "type: name" requirement
- * Copyright 2026 SiteNetSoft - Tier 6 Wave 2 Task 9: read the id control information in both format versions
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 2 Task 9: read the entity reference of an entity-typed
+ * action parameter value in both format versions
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -544,12 +545,14 @@ public class ODataJsonDeserializer implements ODataDeserializer {
 
   private void consumeId(ObjectNode node, Entity entity) 
       throws DeserializerException {
-    // [OData-JSON] section 4.5.8: the id control information carries the entity-id, spelled
-    // "@odata.id" in the 4.0 format and "@id" in the 4.01 one - "constants" already resolves the
-    // right name. It is read in both versions, because an entity-typed action parameter value may
-    // be "just the entity reference" ([OData-JSON] section 18) and dropping the id would leave the
-    // service an empty object it cannot resolve.
-    if (node.get(constants.getId()) != null && node.get(constants.getId()).isTextual()) {
+    // [OData-JSON] 4.0 section 4.5: control information is ignored for requests, so an ordinary
+    // 4.0 entity payload must not have its "@odata.id" promoted to the entity-id. The 4.01 format
+    // does read "@id" here, as it always has. The entity-reference form of an action parameter
+    // value is a different case and is handled by readEntityReference, called from createParameter.
+    // The isTextual() guard matters: new URI(null) throws NullPointerException, not
+    // URISyntaxException, so a non-string "@id" used to be a 500.
+    if (node.get(constants.getId()) != null && constants instanceof Constantsv01
+        && node.get(constants.getId()).isTextual()) {
       try {
         entity.setId(new URI(node.get(constants.getId()).textValue()));
         node.remove(constants.getId());
@@ -557,6 +560,30 @@ public class ODataJsonDeserializer implements ODataDeserializer {
         throw new DeserializerException("Could not form Id", e,
             DeserializerException.MessageKeys.UNKNOWN_CONTENT);
       }
+    }
+  }
+
+  /**
+   * Reads the id control information off an entity-typed action parameter value, in both format
+   * versions. [OData-JSON] section 18 allows such a value to be "just the entity reference", and
+   * section 4.5.8 makes that reference the id ("@odata.id" in 4.0, "@id" in 4.01). Unlike an
+   * ordinary entity payload, where the id is control information the service ignores
+   * ([OData-JSON] 4.0 section 4.5), here the id IS the value - dropping it would leave the service
+   * an empty object it cannot resolve. Returns null when the value carries no textual id.
+   */
+  private URI readEntityReference(final JsonNode node) throws DeserializerException {
+    if (node == null || !node.isObject()) {
+      return null;
+    }
+    final JsonNode id = node.get(constants.getId());
+    if (id == null || !id.isTextual()) {
+      return null;
+    }
+    try {
+      return new URI(id.textValue());
+    } catch (final URISyntaxException e) {
+      throw new DeserializerException("Could not form Id", e,
+          DeserializerException.MessageKeys.UNKNOWN_CONTENT);
     }
   }
 
@@ -648,11 +675,29 @@ public class ODataJsonDeserializer implements ODataDeserializer {
       parameter.setValue(ValueType.PRIMITIVE, null);
     } else if (edmParameter.getType().getKind() == EdmTypeKind.ENTITY) {
       if (edmParameter.isCollection()) {
+        // The references are read before consumeEntitySetArray, which strips the control
+        // information off each element ([OData-JSON] section 13: every element is a representation
+        // of an entity or of an entity reference).
+        final List<URI> references = new ArrayList<>();
+        if (node.isArray()) {
+          for (final JsonNode element : node) {
+            references.add(readEntityReference(element));
+          }
+        }
         final List<Entity> entities =
             consumeEntitySetArray((EdmEntityType) edmParameter.getType(), node, null);
+        for (int i = 0; i < entities.size() && i < references.size(); i++) {
+          if (entities.get(i).getId() == null) {
+            entities.get(i).setId(references.get(i));
+          }
+        }
         parameter.setValue(ValueType.COLLECTION_ENTITY, entities);
       } else {
+        final URI reference = readEntityReference(node);
         final Entity entity = consumeEntityNode((EdmEntityType) edmParameter.getType(), (ObjectNode) node, null);
+        if (entity.getId() == null) {
+          entity.setId(reference);
+        }
         parameter.setValue(ValueType.ENTITY, entity);
       }
     } else {
