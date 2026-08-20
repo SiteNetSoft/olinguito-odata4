@@ -17,6 +17,8 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: read MaxLength and Precision as text, as every other
+ * CSDL XML deserializer does; jp.nextIntValue only fires on a number token and silently returned 0
  */
 package org.sitenetsoft.olinguito.client.core.edm.xml;
 
@@ -53,11 +55,13 @@ class ClientCsdlTypeDefinition extends CsdlTypeDefinition implements Serializabl
           } else if ("UnderlyingType".equals(jp.currentName())) {
             typeDefinition.setUnderlyingType(jp.nextTextValue());
           } else if ("MaxLength".equals(jp.currentName())) {
-            typeDefinition.setMaxLength(jp.nextIntValue(0));
+            final String maxLength = jp.nextTextValue();
+            typeDefinition.setMaxLength(
+                "max".equalsIgnoreCase(maxLength) ? Integer.MAX_VALUE : Integer.parseInt(maxLength));
           } else if ("Unicode".equals(jp.currentName())) {
             typeDefinition.setUnicode(Boolean.parseBoolean(jp.nextTextValue()));
           } else if ("Precision".equals(jp.currentName())) {
-            typeDefinition.setPrecision(jp.nextIntValue(0));
+            typeDefinition.setPrecision(Integer.parseInt(jp.nextTextValue()));
           } else if ("Scale".equals(jp.currentName())) {
             final String scale = jp.nextTextValue();
             typeDefinition.setScale("variable".equalsIgnoreCase(scale) || "floating".equalsIgnoreCase(scale) ?
