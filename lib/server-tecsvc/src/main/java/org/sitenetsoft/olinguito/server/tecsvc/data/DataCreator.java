@@ -838,6 +838,8 @@ public class DataCreator {
         .addProperty(createGeospatial("PropertyGeographyPolygon", null))
         .addProperty(createGeospatial("PropertyGeographyMultiPoint", null))
         .addProperty(createGeospatial("PropertyGeographyMultiLineString", null))
+        // The second ring is at +20, not +10, so entity 1's multi-polygon shares no ring with
+        // entity 2's: a filter over a multi-polygon can tell the two entities apart.
         .addProperty(createGeospatial("PropertyGeographyMultiPolygon", null))
         .addProperty(createGeospatial("PropertyGeographyCollection", null))
         .addProperty(createGeospatial("PropertyGeometryPoint", null))
@@ -875,7 +877,7 @@ public class DataCreator {
                 geoLine(Dimension.GEOGRAPHY, offset), geoLine(Dimension.GEOGRAPHY, 5 + offset)))))
         .addProperty(createGeospatial("PropertyGeographyMultiPolygon",
             new MultiPolygon(Dimension.GEOGRAPHY, null, List.of(
-                geoSquare(Dimension.GEOGRAPHY, offset), geoSquare(Dimension.GEOGRAPHY, 10 + offset)))))
+                geoSquare(Dimension.GEOGRAPHY, offset), geoSquare(Dimension.GEOGRAPHY, 20 + offset)))))
         .addProperty(createGeospatial("PropertyGeographyCollection",
             new GeospatialCollection(Dimension.GEOGRAPHY, null,
                 List.of(geoPoint(Dimension.GEOGRAPHY, 1 + offset, 1 + offset)))))
@@ -896,7 +898,7 @@ public class DataCreator {
                 geoLine(Dimension.GEOMETRY, offset), geoLine(Dimension.GEOMETRY, 5 + offset)))))
         .addProperty(createGeospatial("PropertyGeometryMultiPolygon",
             new MultiPolygon(Dimension.GEOMETRY, null, List.of(
-                geoSquare(Dimension.GEOMETRY, offset), geoSquare(Dimension.GEOMETRY, 10 + offset)))))
+                geoSquare(Dimension.GEOMETRY, offset), geoSquare(Dimension.GEOMETRY, 20 + offset)))))
         .addProperty(createGeospatial("PropertyGeometryCollection",
             new GeospatialCollection(Dimension.GEOMETRY, null,
                 List.of(geoPoint(Dimension.GEOMETRY, 1 + offset, 1 + offset)))))
@@ -2259,7 +2261,7 @@ public class DataCreator {
   }
 
   protected static Property createGeospatialCollection(final String name, final Geospatial... values) {
-    return new Property(null, name, ValueType.COLLECTION_GEOSPATIAL, new ArrayList<Object>(List.of(values)));
+    return new Property(null, name, ValueType.COLLECTION_GEOSPATIAL, new ArrayList<>(List.of(values)));
   }
 
   protected static Property createPrimitiveCollection(final String name, final Object... values) {

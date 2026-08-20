@@ -235,6 +235,15 @@ class DataProviderTest {
     final Entity created = dataProvider.create(esGeo);
     Assertions.assertEquals(4, dataProvider.readAll(esGeo).getEntities().size());
     Assertions.assertNotNull(created.getProperty("PropertyInt16").getValue());
+    // The create path must tag the geo properties GEOSPATIAL too, not just the seed path:
+    // updatePropertyValue reuses the stored value type, so a PRIMITIVE tag here would make every
+    // subsequent write of this entity serialise as a WKT literal instead of a GeoJSON object.
+    Assertions.assertEquals(ValueType.GEOSPATIAL,
+        created.getProperty("PropertyGeometryPoint").getValueType());
+    Assertions.assertEquals(ValueType.GEOSPATIAL,
+        created.getProperty("PropertyGeographyPolygon").getValueType());
+    Assertions.assertEquals(ValueType.COLLECTION_GEOSPATIAL,
+        created.getProperty("CollPropertyGeometryPoint").getValueType());
     dataProvider.delete(esGeo, created);
     Assertions.assertEquals(3, dataProvider.readAll(esGeo).getEntities().size());
   }

@@ -87,8 +87,8 @@ public class PropertyProvider {
   public static final FullQualifiedName nameGeometryCollection =
       EdmPrimitiveTypeKind.GeometryCollection.getFullQualifiedName();
 
-
-  // Geospatial Properties ------------------------------------------------------------------------------------------
+  // Primitive Properties --------------------------------------------------------------------------------------------
+  // Geospatial types are primitive types too; [OData-CSDL] section 7.2.6 gives them the SRID facet.
   public static final CsdlProperty propertyGeographyPoint = new CsdlProperty()
       .setName("PropertyGeographyPoint")
       .setType(nameGeographyPoint);
@@ -151,7 +151,6 @@ public class PropertyProvider {
       .setCollection(true)
       .setSrid(SRID.valueOf("0"));
 
-  // Primitive Properties --------------------------------------------------------------------------------------------
   public static final CsdlProperty collPropertyBinary = new CsdlProperty()
       .setName("CollPropertyBinary")
       .setType(nameBinary)

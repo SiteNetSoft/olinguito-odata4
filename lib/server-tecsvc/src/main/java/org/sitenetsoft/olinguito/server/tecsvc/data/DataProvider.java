@@ -29,6 +29,7 @@
  * Copyright 2026 SiteNetSoft - Empty key lists address no entity; added explicit readFirst
  * Copyright 2026 SiteNetSoft - OData 4.01: referential-constraint key predicates from the source entity
  * Copyright 2026 SiteNetSoft - OData 4.01: malformed optional-parameter default values are rejected with 400
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 2 Task 5: create geo properties with a geospatial value type
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -395,11 +396,26 @@ public class DataProvider {
     }
   }
 
+  /** True for the Edm.Geography* and Edm.Geometry* primitive types, which are not plain primitives. */
+  private static boolean isGeospatial(final EdmType type) {
+    return type.getKind() == EdmTypeKind.PRIMITIVE
+        && EdmPrimitiveType.EDM_NAMESPACE.equals(type.getNamespace())
+        && type.getName().startsWith("Geo")
+        && EdmPrimitiveTypeKind.valueOf(type.getName()).isGeospatial();
+  }
+
   private Property createProperty(final EdmProperty edmProperty, final String propertyName)
       throws DataProviderException {
     final EdmType type = edmProperty.getType();
     Property newProperty;
-    if (edmProperty.isPrimitive()
+    if (isGeospatial(type)) {
+      // A geospatial value must carry ValueType.GEOSPATIAL from the moment the property is created:
+      // updatePropertyValue reuses the stored property's value type, so a PRIMITIVE tag placed here
+      // would survive every later write and make the JSON writer emit a WKT literal.
+      newProperty = edmProperty.isCollection() ?
+          DataCreator.createGeospatialCollection(propertyName) :
+          DataCreator.createGeospatial(propertyName, null);
+    } else if (edmProperty.isPrimitive()
         || type.getKind() == EdmTypeKind.ENUM || type.getKind() == EdmTypeKind.DEFINITION) {
       newProperty = edmProperty.isCollection() ?
           DataCreator.createPrimitiveCollection(propertyName) :
