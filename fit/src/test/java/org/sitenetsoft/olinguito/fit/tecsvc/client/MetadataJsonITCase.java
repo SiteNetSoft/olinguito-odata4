@@ -24,6 +24,7 @@ package org.sitenetsoft.olinguito.fit.tecsvc.client;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -142,6 +143,16 @@ public class MetadataJsonITCase extends AbstractTecSvcITCase {
     assertNotNull(container.getSingleton("SIMedia"));
     assertNotNull(container.getActionImport("AIRTString"));
     assertNotNull(container.getFunctionImport("FICRTCollCTTwoPrim"));
+
+    // The discriminator: an XML-built Edm carries the reference-loaded Core vocabulary schema as
+    // well, so this assertion fails if the request quietly fell back to the XML representation.
+    final List<String> namespaces = new ArrayList<String>();
+    for (final EdmSchema each : edm.getSchemas()) {
+      namespaces.add(each.getNamespace());
+    }
+    assertTrue(namespaces.contains(SERVICE_NAMESPACE));
+    assertFalse("the JSON path does not follow $Reference, so the vocabulary schema must be absent",
+        namespaces.contains(CORE_NAMESPACE));
   }
 
   /** Every entity type, with its properties, facets and navigation properties, survives the format. */
@@ -355,8 +366,8 @@ public class MetadataJsonITCase extends AbstractTecSvcITCase {
     for (final EdmOperation operation : schema.getActions()) {
       signatures.add("Action " + operation(operation));
     }
-    for (final EdmOperation operation : schema.getFunctions()) {
-      signatures.add("Function " + operation(operation));
+    for (final EdmFunction function : schema.getFunctions()) {
+      signatures.add("Function " + operation(function) + " composable=" + function.isComposable());
     }
     Collections.sort(signatures);
     return signatures;

@@ -923,7 +923,7 @@ The returned entity's id and edit link carry the primary key, so a follow-up wri
 
 Normative reference: [OData-CSDLJSON] §1.1 (conformance), §2.2 (defaults), §4 (document object),
 §5.1 (aliases), §7.1/§7.2 (properties and facets), §8.1/§8.2/§8.5/§8.6 (navigation properties),
-§9.3 (open types), §10.3 (enumeration members), §11 (type definitions), §12.8/§12.9 (return types
+§6.3/§9.3 (open entity and complex types), §10.3 (enumeration members), §11 (type definitions), §12.8/§12.9 (return types
 and parameters), §13.1–§13.6 (entity container), §14.3/§14.4 (annotations and expressions);
 [OData-Protocol] §11.1.2 (metadata format selection).
 
@@ -960,7 +960,7 @@ bytes an existing consumer sees, so read them before upgrading a consumer that p
 | `$Nullable` on a collection navigation property | written | never written — "MUST NOT be specified for a collection-valued navigation property" | §8.2 |
 | `$Nullable` on a collection-of-entities return type | written | never written — the member "has no meaning and MUST NOT be specified" | §12.8 |
 | `$Type` on an `Edm.String` structural property | always written | omitted — absence means `Edm.String` | §7.1 |
-| `$OpenType` | never written | written as `true` for an open entity or complex type | §9.3 |
+| `$OpenType` | never written | written as `true` for an open entity or complex type | §6.3, §9.3 |
 | enum member values | strings | JSON numbers | §10.3 |
 | type definitions | `$Kind` missing, facets as strings | `$Kind: "TypeDefinition"` and §7.2 facet value types (`$SRID` stays a string, per §7.2.6) | §11, §7.2 |
 | `$ReferentialConstraint` | one object per constraint | one object with one member per constraint | §8.5 |
@@ -1063,11 +1063,14 @@ return type; and the entity container's sets, singletons, imports and navigation
   recovers the four shapes JSON does distinguish (`Bool`, `Int`, `Float`, `String`) and takes the
   rest from the term's declared type — so a constant whose term cannot be resolved re-reads as
   `String`. Values are exact either way; only the type tag normalizes.
-* **`$Reference` is not followed on either JSON path.** The server parser loads references through
-  the shared loader, which sniffs and parses **CSDL XML** documents; the client's JSON metadata
-  request does not follow `$Reference` at all (the XML request does, recursively, with cycle
-  detection). A service whose vocabularies live behind `$Reference` therefore yields a client-side
-  `Edm` without them, and annotation terms from those vocabularies do not resolve.
+* **The client does not follow `$Reference` on the JSON path.** `JSONMetadataRequestImpl` returns the
+  primary document's schemas; the client's CSDL XML request, by contrast, follows references
+  recursively with cycle detection. A service whose vocabularies live behind `$Reference` therefore
+  yields a client-side `Edm` without them, and annotation terms from those vocabularies do not
+  resolve. **The server parser is not affected**: `MetadataJsonParser` follows references through the
+  shared `ReferenceLoader` whenever a `ReferenceResolver` is configured, and the loader sniffs each
+  referenced document, so a referenced CSDL JSON document is parsed as JSON and a referenced CSDL XML
+  document as XML.
 * **Parse-time alias resolution leaves the graph namespace-qualified while `$Alias` stays on the
   schema.** That is invisible to every reader, but a future writer that emitted such a graph as-is
   would produce a document violating §5.1's mixed-use rule.
