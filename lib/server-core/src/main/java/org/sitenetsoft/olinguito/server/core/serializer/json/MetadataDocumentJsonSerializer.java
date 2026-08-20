@@ -26,6 +26,7 @@
  * single $ReferentialConstraint object)
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: CSDL JSON bare-value constant expressions and
  * record @type control information
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: write $OpenType for open entity and complex types
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -124,6 +125,7 @@ public class MetadataDocumentJsonSerializer {
   private static final String HAS_STREAM = DOLLAR + "HasStream";
   private static final String KEY = DOLLAR + "Key";
   private static final String ABSTRACT = DOLLAR + "Abstract";
+  private static final String OPEN_TYPE = DOLLAR + "OpenType";
   private static final String TYPE = DOLLAR + "Type";
   private static final String NULLABLE = DOLLAR + "Nullable";
   private static final String UNICODE = DOLLAR + "Unicode";
@@ -705,6 +707,13 @@ public class MetadataDocumentJsonSerializer {
         json.writeBooleanField(ABSTRACT, complexType.isAbstract());
       }
 
+      // Section 9.3/10.3: "The value of $OpenType is one of the Boolean literals true or false.
+      // Absence of the member means false." - so an open type has to say so, and a closed one stays
+      // silent. The member was never written before, which closed every open type on the JSON wire.
+      if (complexType.isOpenType()) {
+        json.writeBooleanField(OPEN_TYPE, true);
+      }
+
       appendProperties(json, complexType);
 
       appendNavigationProperties(json, complexType);
@@ -730,6 +739,11 @@ public class MetadataDocumentJsonSerializer {
 
       if (entityType.isAbstract()) {
         json.writeBooleanField(ABSTRACT, entityType.isAbstract());
+      }
+
+      // Section 9.3: $OpenType defaults to false, so an open entity type has to declare itself.
+      if (entityType.isOpenType()) {
+        json.writeBooleanField(OPEN_TYPE, true);
       }
 
       appendKey(json, entityType);
