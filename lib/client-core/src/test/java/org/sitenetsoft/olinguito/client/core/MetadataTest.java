@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Removed commented-out dead code
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - Port OLINGO-1403: test annotations nested in dynamic expressions
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: pinned a type definition's MaxLength and Precision
  */
 package org.sitenetsoft.olinguito.client.core;
 
@@ -298,6 +299,15 @@ class MetadataTest extends AbstractTest {
     assertEquals(EdmInt32.getInstance(), weight.getUnderlyingType());
     assertFalse(weight.getAnnotations().isEmpty());
     assertEquals("Kilograms", weight.getAnnotations().get(0).getExpression().asConstant().getValueAsString());
+
+    // A type definition's facets are attributes, so they arrive as text tokens: reading them as
+    // numbers silently produced 0. Length declares Precision="10" and Name MaxLength="100".
+    final EdmTypeDefinition length = edm.getTypeDefinition(new FullQualifiedName("ODataDemo", "Length"));
+    assertNotNull(length);
+    assertEquals(Integer.valueOf(10), length.getPrecision());
+    final EdmTypeDefinition name = edm.getTypeDefinition(new FullQualifiedName("ODataDemo", "Name"));
+    assertNotNull(name);
+    assertEquals(Integer.valueOf(100), name.getMaxLength());
   }
 
   /**

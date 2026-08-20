@@ -26,6 +26,7 @@
  * single $ReferentialConstraint object)
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: CSDL JSON bare-value constant expressions and
  * record @type control information
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: pinned $OpenType on entity and complex types
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -48,6 +49,8 @@ import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmAnnotation;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmComplexType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEnumType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmMember;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
@@ -620,6 +623,45 @@ class MetadataDocumentJsonSerializerTest {
         "no structural property writes the default type");
     assertTrue(metadata.contains("\"$ReturnType\":{\"$Type\":\"Edm.String\",\"$Nullable\":true}"),
         "return types keep $Type - section 12.8 states the default but no SHOULD-omit rule");
+  }
+
+  /**
+   * Section 6.3 (entity types) and section 9.3 (complex types): "The value of $OpenType is one of the
+   * Boolean literals true or false. Absence of the member means false." The member was never written,
+   * so an open type was indistinguishable from a closed one on the CSDL JSON wire.
+   */
+  @Test
+  void openTypesDeclareThemselves() throws Exception {
+    final EdmSchema schema = mock(EdmSchema.class);
+    when(schema.getNamespace()).thenReturn("ns");
+    final Edm edm = mock(Edm.class);
+    when(edm.getSchemas()).thenReturn(List.of(schema));
+    final ServiceMetadata metadata = mock(ServiceMetadata.class);
+    when(metadata.getEdm()).thenReturn(edm);
+
+    final EdmEntityType openEntity = mock(EdmEntityType.class);
+    when(openEntity.getName()).thenReturn("ETOpen");
+    when(openEntity.isOpenType()).thenReturn(true);
+    final EdmEntityType closedEntity = mock(EdmEntityType.class);
+    when(closedEntity.getName()).thenReturn("ETClosed");
+    when(schema.getEntityTypes()).thenReturn(List.of(openEntity, closedEntity));
+
+    final EdmComplexType openComplex = mock(EdmComplexType.class);
+    when(openComplex.getName()).thenReturn("CTOpen");
+    when(openComplex.isOpenType()).thenReturn(true);
+    when(schema.getComplexTypes()).thenReturn(List.of(openComplex));
+
+    final String document = new String(
+        serializer.metadataDocument(metadata).getContent().readAllBytes(), StandardCharsets.UTF_8);
+
+    assertTrue(document.contains("\"ETOpen\":{\"$Kind\":\"EntityType\",\"$OpenType\":true}"),
+        "an open entity type declares itself");
+    assertTrue(document.contains("\"CTOpen\":{\"$Kind\":\"ComplexType\",\"$OpenType\":true}"),
+        "an open complex type declares itself");
+    assertTrue(document.contains("\"ETClosed\":{\"$Kind\":\"EntityType\"}"),
+        "a closed type stays silent - false is the default");
+    assertFalse(document.contains("$OpenType\":false"),
+        "the default is never written");
   }
 
   /** Section 10.3: enumeration member values are JSON numbers, not strings. */

@@ -38,6 +38,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotatable;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAnnotation;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityContainer;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntitySet;
+import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlComplexType;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlEntityType;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlNavigationProperty;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlProperty;
@@ -101,13 +102,31 @@ class MetadataJsonRoundTripTest {
       assertNotNull(other, nav.getName());
       assertEquals(nav.getType(), other.getType(), nav.getName());
       assertEquals(nav.isCollection(), other.isCollection(), nav.getName());
-      if (!nav.isCollection()) {
-        // Section 8.2 forbids $Nullable on a collection-valued navigation property, so the writer
-        // omits it and the CSDL JSON default (false) is what comes back; the CSDL XML default is
-        // true. A format difference, pinned here rather than papered over in either parser.
-        assertEquals(nav.isNullable(), other.isNullable(), nav.getName() + " nullable");
-      }
+      // Section 8.2 forbids $Nullable on a collection-valued navigation property, so the writer omits
+      // it and the reader applies no default to one - which is exactly what makes this comparison hold
+      // for a collection too, since both parsers then leave the model default alone.
+      assertEquals(nav.isNullable(), other.isNullable(), nav.getName() + " nullable");
     }
+  }
+
+  /**
+   * Section 6.3 (entity types) and section 9.3 (complex types): "The value of $OpenType is one of the
+   * Boolean literals true or false. Absence of the member means false." The writer never wrote the
+   * member, so every open type came back closed; the fixture declares one of each.
+   */
+  @Test
+  void openTypeMarkersSurviveTheRoundTrip() throws Exception {
+    final CsdlEntityType xmlPerson = fromXml.getEntityType(new FullQualifiedName(NS, "Person"));
+    assertTrue(xmlPerson.isOpenType(), "guard: trippin.xml declares Person as an open entity type");
+    assertTrue(fromJson.getEntityType(new FullQualifiedName(NS, "Person")).isOpenType());
+
+    final CsdlComplexType xmlLocation = fromXml.getComplexType(new FullQualifiedName(NS, "Location"));
+    assertTrue(xmlLocation.isOpenType(), "guard: trippin.xml declares Location as an open complex type");
+    assertTrue(fromJson.getComplexType(new FullQualifiedName(NS, "Location")).isOpenType());
+
+    // The closed neighbours stay closed - the marker is not written unconditionally.
+    assertFalse(fromXml.getEntityType(new FullQualifiedName(NS, "Airline")).isOpenType());
+    assertFalse(fromJson.getEntityType(new FullQualifiedName(NS, "Airline")).isOpenType());
   }
 
   @Test

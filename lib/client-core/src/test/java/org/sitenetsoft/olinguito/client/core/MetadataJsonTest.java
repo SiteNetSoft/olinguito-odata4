@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Read CSDL JSON metadata in the client deserializer
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: pinned the collection navigation property $Nullable
  */
 package org.sitenetsoft.olinguito.client.core;
 
@@ -305,6 +306,30 @@ class MetadataJsonTest extends AbstractTest {
     assertEquals(1, category.getReferentialConstraints().size());
     assertEquals("CategoryCode", category.getReferentialConstraints().get(0).getProperty());
     assertEquals("Code", category.getReferentialConstraints().get(0).getReferencedProperty());
+  }
+
+  /**
+   * Section 8.2: "Nullable MUST NOT be specified for a collection-valued navigation property, a
+   * collection is allowed to have zero items." The section 7.2.1 false default therefore does not
+   * apply to one; the model default stands, which is what the CSDL XML path produces for the same
+   * model. A single-valued navigation property does take the false default. Mirrors
+   * MetadataJsonParserTest#collectionNavigationPropertyKeepsTheModelNullableDefault on the server.
+   */
+  @Test
+  void collectionNavigationPropertyKeepsTheModelNullableDefault() {
+    final CsdlNavigationProperty products =
+        aliasedSchema().getEntityType("Category").getNavigationProperty("Products");
+    assertTrue(products.isCollection());
+    assertTrue(products.isNullable(),
+        "$Nullable is prohibited on a collection navigation property, so no default is applied");
+
+    final CsdlSchema schema = parse("{\"$Version\":\"4.01\",\"ns\":{\"T\":{\"$Kind\":\"EntityType\","
+        + "\"Single\":{\"$Kind\":\"NavigationProperty\",\"$Type\":\"ns.T\"},"
+        + "\"Many\":{\"$Kind\":\"NavigationProperty\",\"$Type\":\"ns.T\",\"$Collection\":true}}}}")
+        .getSchema("ns");
+    assertFalse(schema.getEntityType("T").getNavigationProperty("Single").isNullable(),
+        "absent $Nullable means false for a single-valued navigation property");
+    assertTrue(schema.getEntityType("T").getNavigationProperty("Many").isNullable());
   }
 
   // --------------------------------------------------- sections 12 and 13: behaviour and container
