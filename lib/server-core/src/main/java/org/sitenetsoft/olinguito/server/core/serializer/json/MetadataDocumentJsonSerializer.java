@@ -707,7 +707,7 @@ public class MetadataDocumentJsonSerializer {
         json.writeBooleanField(ABSTRACT, complexType.isAbstract());
       }
 
-      // Section 9.3/10.3: "The value of $OpenType is one of the Boolean literals true or false.
+      // Section 9.3: "The value of $OpenType is one of the Boolean literals true or false.
       // Absence of the member means false." - so an open type has to say so, and a closed one stays
       // silent. The member was never written before, which closed every open type on the JSON wire.
       if (complexType.isOpenType()) {
@@ -741,7 +741,7 @@ public class MetadataDocumentJsonSerializer {
         json.writeBooleanField(ABSTRACT, entityType.isAbstract());
       }
 
-      // Section 9.3: $OpenType defaults to false, so an open entity type has to declare itself.
+      // Section 6.3: $OpenType defaults to false, so an open entity type has to declare itself.
       if (entityType.isOpenType()) {
         json.writeBooleanField(OPEN_TYPE, true);
       }
