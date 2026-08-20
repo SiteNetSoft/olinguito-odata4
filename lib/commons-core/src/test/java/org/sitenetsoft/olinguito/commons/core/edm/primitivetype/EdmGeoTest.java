@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - OLINGO-918: Cover the ABNF geo URI literal grammar
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
@@ -216,5 +217,88 @@ class EdmGeoTest extends PrimitiveTypeBaseTest {
 
     assertEquals(input, EdmGeometryCollection.getInstance().
         valueToString(collection, null, null, null, null, null));
+  }
+
+  /**
+   * OData 4.01 ABNF: geographyPoint = geographyPrefix SQUOTE fullPointLiteral SQUOTE. The URL form
+   * is what valueToString already produces, so toUriLiteral must leave it alone rather than
+   * double-wrapping it.
+   */
+  @Test
+  void uriLiteralOfAnAlreadyPrefixedValueIsIdempotent() throws EdmPrimitiveTypeException {
+    final String urlForm = "geometry'SRID=0;Point(142.1 64.1)'";
+    assertEquals(urlForm, EdmGeometryPoint.getInstance().toUriLiteral(urlForm));
+    assertEquals(urlForm, EdmGeometryPoint.getInstance().fromUriLiteral(urlForm));
+  }
+
+  /**
+   * OData 4.01 ABNF: fullPointLiteral = sridLiteral pointLiteral - the bare, unquoted, SRID-prefixed
+   * form is the one legal in payloads and in CSDL DefaultValue. It must be accepted on input and
+   * wrapped on output.
+   */
+  @Test
+  void bareFullLiteralIsWrappedAndAccepted() throws EdmPrimitiveTypeException {
+    assertEquals("geometry'SRID=0;Point(142.1 64.1)'",
+        EdmGeometryPoint.getInstance().toUriLiteral("SRID=0;Point(142.1 64.1)"));
+    assertEquals("geometry'SRID=0;Point(142.1 64.1)'",
+        EdmGeometryPoint.getInstance().fromUriLiteral("SRID=0;Point(142.1 64.1)"));
+    assertEquals("geography'SRID=4326;LineString(1.0 2.0,3.0 4.0)'",
+        EdmGeographyLineString.getInstance().toUriLiteral("SRID=4326;LineString(1.0 2.0,3.0 4.0)"));
+  }
+
+  /**
+   * OData 4.01 CSDL section 7.2.6: "If no value is specified, the facet defaults to 0 for Geometry
+   * types or 4326 for Geography types." A literal without the sridLiteral prefix therefore takes the
+   * type's default rather than being rejected.
+   */
+  @Test
+  void absentSridPrefixTakesTheFacetDefault() throws EdmPrimitiveTypeException {
+    assertEquals("geometry'SRID=0;Point(1.0 2.0)'",
+        EdmGeometryPoint.getInstance().toUriLiteral("Point(1.0 2.0)"));
+    assertEquals("geography'SRID=4326;Point(1.0 2.0)'",
+        EdmGeographyPoint.getInstance().toUriLiteral("Point(1.0 2.0)"));
+    assertEquals("geography'SRID=4326;Point(1.0 2.0)'",
+        EdmGeographyPoint.getInstance().fromUriLiteral("Point(1.0 2.0)"));
+  }
+
+  /** A URL literal must round-trip through fromUriLiteral into a value and back out again. */
+  @Test
+  void uriLiteralRoundTripsThroughTheValue() throws EdmPrimitiveTypeException {
+    final String urlForm = "geography'SRID=4326;Point(142.1 64.1)'";
+    final EdmGeographyPoint instance = EdmGeographyPoint.getInstance();
+    final Point point = instance.valueOfString(instance.fromUriLiteral(urlForm),
+        null, null, null, null, null, Point.class);
+    assertEquals(urlForm, instance.toUriLiteral(instance.valueToString(point, null, null, null, null, null)));
+  }
+
+  /** A literal that is not a geo literal at all is rejected, not passed through. */
+  @Test
+  void malformedUriLiteralIsRejected() {
+    expectErrorInFromUriLiteral(EdmGeometryPoint.getInstance(), "test");
+    expectErrorInFromUriLiteral(EdmGeometryPoint.getInstance(), "geometry'SRID=0;Point(1.0 2.0)");
+    expectErrorInFromUriLiteral(EdmGeometryPoint.getInstance(), "geography'SRID=0;Point(1.0 2.0)'");
+    expectErrorInFromUriLiteral(EdmGeometryPoint.getInstance(), "SRID=0;Point(1.0)");
+  }
+
+  /**
+   * OData 4.01 ABNF positionLiteral: "doubleValue SP doubleValue [ SP doubleValue ] [ SP doubleValue ]
+   * ; longitude, latitude, altitude/elevation (optional), linear referencing measure (optional)".
+   * The third element is kept on Point.z; the fourth is parsed and dropped, because Point carries no
+   * M coordinate (recorded deviation 3).
+   */
+  @Test
+  void positionAcceptsAltitudeAndDropsTheMeasure() throws EdmPrimitiveTypeException {
+    final EdmGeometryPoint instance = EdmGeometryPoint.getInstance();
+    final Point withZ = instance.valueOfString("geometry'SRID=0;Point(1.0 2.0 42.0)'",
+        null, null, null, null, null, Point.class);
+    assertEquals(42.0, withZ.getZ(), 0);
+    assertEquals("geometry'SRID=0;Point(1.0 2.0 42.0)'",
+        instance.valueToString(withZ, null, null, null, null, null));
+
+    final Point withM = instance.valueOfString("geometry'SRID=0;Point(1.0 2.0 42.0 7.0)'",
+        null, null, null, null, null, Point.class);
+    assertEquals(42.0, withM.getZ(), 0);
+    assertEquals("geometry'SRID=0;Point(1.0 2.0 42.0)'",
+        instance.valueToString(withM, null, null, null, null, null));
   }
 }

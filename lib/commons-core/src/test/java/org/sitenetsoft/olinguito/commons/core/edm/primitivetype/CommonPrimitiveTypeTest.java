@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - OLINGO-918: Cover the ABNF geo URI literal grammar
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
@@ -176,9 +177,18 @@ class CommonPrimitiveTypeTest extends PrimitiveTypeBaseTest {
   void uriLiteral() throws Exception {
     for (final EdmPrimitiveTypeKind kind : EdmPrimitiveTypeKind.values()) {
       final EdmPrimitiveType instance = EdmPrimitiveTypeFactory.getInstance(kind);
-      assertEquals("test", instance.fromUriLiteral(instance.toUriLiteral("test")));
       assertNull(instance.toUriLiteral(null));
       assertNull(instance.fromUriLiteral(null));
+      if (kind.isGeospatial()) {
+        // The Edm.Geo types are the only primitive types whose URI literal has a grammar of its own
+        // ([OData-ABNF] geographyPoint/geometryPoint and siblings), so "test" is not a literal they
+        // can round-trip; they reject it instead of passing it through. See EdmGeoTest.
+        final String literal = (kind.name().startsWith("Geography") ? "geography" : "geometry")
+            + "'SRID=0;Point(1.0 2.0)'";
+        assertEquals(literal, instance.fromUriLiteral(instance.toUriLiteral(literal)));
+      } else {
+        assertEquals("test", instance.fromUriLiteral(instance.toUriLiteral("test")));
+      }
     }
   }
 }
