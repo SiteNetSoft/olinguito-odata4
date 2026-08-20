@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Delegated the operations and the entity container to a collaborator
  * Copyright 2026 SiteNetSoft - Delegated the annotations and their expressions to a collaborator
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: kept the collection navigation property $Nullable prohibition
+ * Copyright 2026 SiteNetSoft - Documented the single-document contract and reset the per-document state
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -70,6 +71,11 @@ import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
  * the CSDL XML {@link MetadataParser} produces. This class covers the document object, references,
  * schemas and the structural model; operations, the entity container, annotations and annotation
  * expressions are read by the members added on top of it.
+ * <p>
+ * This class is <em>not</em> thread-safe: the document's aliases and its {@code $EntityContainer} are
+ * held as instance state while a document is being read, so one instance reads one document at a time.
+ * That state is reset when a read starts, so an instance may be reused sequentially - which is what a
+ * document with references does, re-entering the read for each referenced document.
  */
 public class MetadataJsonParser {
 
@@ -272,6 +278,10 @@ public class MetadataJsonParser {
   }
 
   private void readInto(final SchemaBasedEdmProvider provider, final JsonNode tree) throws CsdlJsonParseException {
+    // Aliases and $EntityContainer belong to the document being read, never to the one that referenced
+    // it, and this instance is re-entered for every referenced document.
+    this.aliasToNamespace.clear();
+    this.serviceContainerFqn = null;
     if (tree == null || !tree.isObject()) {
       throw new CsdlJsonParseException("", "a CSDL JSON document is a single JSON object");
     }

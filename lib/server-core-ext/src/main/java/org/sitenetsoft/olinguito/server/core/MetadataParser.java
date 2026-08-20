@@ -23,6 +23,7 @@
  * Copyright 2026 SiteNetSoft - Shared the reference loader, accepted 4.01 and fixed Nullable defaults
  * Copyright 2026 SiteNetSoft - Exposed the default reference resolver to the CSDL JSON parser
  * Copyright 2026 SiteNetSoft - Kept the Qualifier of an annotation, which was silently dropped
+ * Copyright 2026 SiteNetSoft - Kept the cause message when wrapping a failure in an XMLStreamException
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -282,7 +283,7 @@ public class MetadataParser {
             this.recursivelyLoadReferences);
       }
     } catch (ODataException e) {
-      throw new XMLStreamException(e);
+      throw new XMLStreamException(e.getMessage(), e);
     }
     return provider;
   }
@@ -299,7 +300,7 @@ public class MetadataParser {
     try {
       this.referenceLoader.loadCoreVocabulary(provider, namespace);
     } catch (ODataException e) {
-      throw new XMLStreamException(e);
+      throw new XMLStreamException(e.getMessage(), e);
     }
   }
 
@@ -326,7 +327,7 @@ public class MetadataParser {
       String uri = attr(element, "Uri");
       reference = new EdmxReference(new URI(uri));
     } catch (URISyntaxException e) {
-      throw new XMLStreamException(e);
+      throw new XMLStreamException(e.getMessage(), e);
     }
     new ElementReader<EdmxReference>() {
       @Override
