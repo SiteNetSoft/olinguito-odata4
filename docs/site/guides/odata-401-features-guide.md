@@ -25,6 +25,11 @@ delivered by the 4.01 compliance milestone.
 
 * [CSDL JSON metadata](#csdl-json-metadata-metadata-as-applicationjson)
 
+**Tier 6, Wave 2:**
+
+* [Geospatial types](#geospatial-types-edmgeography-edmgeometry)
+* [Entity-typed values in JSON payloads](#entity-typed-values-in-json-payloads)
+
 Each section names the governing [OASIS OData 4.01](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html)
 clause, describes server behavior including status codes, gives a client usage snippet, and
 records any deviations or spec-silent decisions made along the way. These features are additive:
@@ -1119,6 +1124,405 @@ return type; and the entity container's sets, singletons, imports and navigation
   "fix" them: a collection-of-entities return type has no nullability on the JSON wire at all
   (§12.8), and §13.4.2 keys navigation property bindings by path in one object, so a model that
   declares the same binding path twice can only carry it once.
+
+## Geospatial Types (`Edm.Geography*` / `Edm.Geometry*`)
+
+Normative reference: [OData-JSON] §7.1 (geospatial values are GeoJSON objects, RFC 7946) and its CRS
+clause; [OData-ABNF] `geographyLiteral`/`geometryLiteral` and `positionLiteral` (the URL literal
+grammar); [OData-URL] §5.1.1.11 (`geo.distance`, `geo.intersects`, `geo.length`) and §5.1.1.1 (geo
+values compare only to `null`); [OData-Protocol] §11.2.6.2 (geo values cannot be sorted);
+[OData-CSDL] §7.2.6 (the `SRID` facet and its defaults).
+
+The sixteen geospatial primitive types — `Edm.Geography`, `Edm.GeographyPoint`,
+`…LineString`, `…Polygon`, `…MultiPoint`, `…MultiLineString`, `…MultiPolygon`, `…Collection` and
+the eight `Edm.Geometry*` counterparts — now travel end to end: they read and write as GeoJSON in
+JSON payloads, they parse from and render to the ABNF URL literal form, and the three `geo.*`
+filter functions are evaluated by the reference service.
+
+### The JSON Wire Form
+
+A geo value is a bare GeoJSON object whose members are written in the order `type`, then
+`coordinates` (or `geometries` for a collection), then `crs`:
+
+```json
+{
+  "PropertyGeometryPoint": {"type": "Point", "coordinates": [1.5, 2.5]},
+  "PropertyGeometryLineString": {"type": "LineString", "coordinates": [[0.0, 0.0], [3.0, 4.0]]},
+  "PropertyGeometryPolygon": {"type": "Polygon",
+      "coordinates": [[[0.0, 0.0], [4.0, 0.0], [4.0, 4.0], [0.0, 4.0], [0.0, 0.0]]]},
+  "PropertyGeographyCollection": {"type": "GeometryCollection",
+      "geometries": [{"type": "Point", "coordinates": [1.0, 1.0]}]},
+  "CollPropertyGeometryPoint": [{"type": "Point", "coordinates": [0.0, 0.0]},
+                                {"type": "Point", "coordinates": [1.0, 1.0]}]
+}
+```
+
+A non-default SRID is carried by a `crs` member, which [OData-JSON] requires to be of type `name`
+with an EPSG legacy identifier:
+
+```json
+{"type": "Point", "coordinates": [1.5, 2.5],
+ "crs": {"type": "name", "properties": {"name": "EPSG:42"}}}
+```
+
+Both `Edm.GeographyCollection` and `Edm.GeometryCollection` serialize as GeoJSON
+`"type": "GeometryCollection"` with a `"geometries"` member — GeoJSON has no "GeographyCollection",
+and [OData-JSON] never names the member itself, so RFC 7946 §3.1.8 is followed.
+
+Four read/write defects were closed in this wave, all on the JSON path:
+
+| # | Symptom | Fix |
+|---|---|---|
+| 1 | A geo value read from a payload came back out as the WKT string `geometry'SRID=0;Point(1.5 2.5)'` | The deserializer tags a geo value `ValueType.GEOSPATIAL` / `COLLECTION_GEOSPATIAL` (it used to tag it `PRIMITIVE`, and `writePrimitive` tests `isPrimitive()` before `isGeospatial()`). The same tagging is applied by the reference service's create path |
+| 2 | A **collection-valued** geo property was written as an array of WKT strings | `COLLECTION_GEOSPATIAL` has its own serializer arm writing each member as a GeoJSON object |
+| 3 | Members of an `Edm.GeographyCollection` were read with dimension `GEOMETRY` | The collection's dimension is inherited by its members |
+| 4 | A malformed `crs` was a `NullPointerException` (a 500) | `crs` is validated: `type` must be `name`, `properties.name` must be present, textual and `EPSG:`-prefixed; anything else is a **400** (`INVALID_VALUE_FOR_PROPERTY`). Both `EPSG:4326` and the legacy `EPSG::4326` resolve |
+
+On the client, a collection-valued geo property used to deserialize into complex values; it now
+deserializes into `Geospatial` members tagged `COLLECTION_GEOSPATIAL`, using the declared element
+type when the payload carries one and a GeoJSON shape test (`type` plus `coordinates`/`geometries`,
+no `@odata.type`) when it does not.
+
+### The URL Literal Grammar
+
+A geo literal in a URL is the prefixed, quoted, SRID-carrying form the ABNF defines:
+
+```
+$filter=geo.distance(PropertyGeometryPoint,geometry'SRID=0;Point(1.5 2.5)') lt 0.5
+$filter=geo.intersects(PropertyGeometryPoint,geometry'SRID=0;Polygon((10 10,14 10,14 14,10 14,10 10))')
+```
+
+`EdmPrimitiveType.toUriLiteral`/`fromUriLiteral` are now implemented for all sixteen types
+(inherited from one place, `AbstractGeospatialType`), so a geo literal survives the parse →
+evaluate → render round trip:
+
+```
+uriLiteral       = ("geography" / "geometry") "'" "SRID=" 1*5DIGIT ";" geoLiteral "'"
+geoLiteral       = simpleGeoLiteral / collectionLiteral
+simpleGeoLiteral = "Point" pointData / "LineString" lineStringData
+                 / "MultiPoint(" [ pointData *("," pointData) ] ")"
+                 / "MultiLineString(" [ lineStringData *("," lineStringData) ] ")"
+                 / "Polygon" polygonData
+                 / "MultiPolygon(" [ polygonData *("," polygonData) ] ")"
+collectionLiteral = "Collection(" geoLiteral *("," geoLiteral) ")"
+pointData        = "(" positionLiteral ")"
+lineStringData   = "(" positionLiteral 1*("," positionLiteral) ")"    ; >= 2 positions
+ringLiteral      = "(" positionLiteral *("," positionLiteral) ")"
+polygonData      = "(" ringLiteral *("," ringLiteral) ")"
+positionLiteral  = doubleValue SP doubleValue [SP doubleValue] [SP doubleValue]
+doubleValue      = "-INF" / "INF" / "NaN" / [SIGN] 1*DIGIT ["." 1*DIGIT] [("e"/"E") [SIGN] 1*DIGIT]
+```
+
+Three things follow from that grammar, and all three are implemented:
+
+* **Matching is case-insensitive**, because RFC 5234 §2.3 makes ABNF quoted-string literals
+  case-insensitive: `GEOMETRY'SRID=0;POINT(1 2)'` is the same literal as
+  `geometry'SRID=0;Point(1 2)'`. This matches the URI tokenizer, which has always read the nine geo
+  keyword sites with `nextConstantIgnoreCase`. Output is always normalized to the lower-case prefix,
+  with the body preserved verbatim.
+* **The `SRID=` prefix may be omitted**, in which case the [OData-CSDL] §7.2.6 facet default is
+  applied — `SRID=0;` for a geometry type, `SRID=4326;` for a geography type. A bare
+  `SRID=nnn;Point(…)` (the ABNF's `fullPointLiteral`) is accepted too and wrapped with the type's
+  own prefix. `toUriLiteral` never double-wraps a literal that already carries a prefix.
+* **A position may carry 3 or 4 elements**, not just 2: `positionLiteral` allows an optional
+  altitude and an optional linear-referencing measure. `UriTokenizer.nextPosition()` accepts 2–4
+  space-separated coordinates; the third becomes the point's `Z`, and the fourth is validated and
+  then dropped (the geo model has no M coordinate).
+
+`fromUriLiteral` returns the *wrapped* form rather than the bare literal, because that is what
+`valueOfString` consumes in this codebase and what `VisitorOperand.tryCast` chains into. It
+validates: `fromUriLiteral("test")` used to return `"test"` and now raises
+`EdmPrimitiveTypeException` (*The literal 'test' has illegal content.*).
+
+### Comparison and Ordering Restrictions
+
+[OData-URL] §5.1.1.1 says geo values "can only be compared to the null value using the `eq` and `ne`
+operators", and [OData-Protocol] §11.2.6.2 says they "cannot be sorted". Both are enforced now:
+
+| Request | Result |
+|---|---|
+| `$filter=PropertyGeometryPoint eq null` / `ne null` | Allowed |
+| `$filter=PropertyGeometryPoint eq geometry'SRID=0;Point(1.5 2.5)'` | **400** — `TYPES_NOT_COMPATIBLE`, naming the property |
+| `$filter=PropertyGeometryPoint lt …` (any relational operator) | **400** — unchanged; the parser's relational allow-list never contained a geo kind |
+| `$orderby=PropertyGeometryPoint` | **400** — `TYPES_NOT_COMPATIBLE` |
+| `geo.distance(…) lt 500000`, `geo.length(…) eq 5` | Allowed — the *result* of a geo function is `Edm.Double`/`Edm.Boolean`, not a geo value |
+
+A dynamic (open-type) member, whose type is unknown at parse time, is treated like a `null` literal
+and still parses.
+
+### EDM Surface: the `ESGeo` Reference Set
+
+The technical reference service (tecsvc) gained an entity type `olingo.odata.test1.ETGeo` and an
+entity set `ESGeo`:
+
+| Property | Type |
+|---|---|
+| `PropertyInt16` | `Edm.Int16` — the key |
+| `PropertyGeography…` (7) | `Edm.GeographyPoint`, `…LineString`, `…Polygon`, `…MultiPoint`, `…MultiLineString`, `…MultiPolygon`, `…Collection` |
+| `PropertyGeometry…` (7) | the eight `Edm.Geometry*` counterparts, less the abstract kind |
+| `CollPropertyGeometryPoint` | `Collection(Edm.GeometryPoint)`, declared `SRID="0"` |
+
+The key is `Edm.Int16` because [OData-CSDL] §4.1 does not list any geospatial type among the
+primitive types a key property may have. The library does not enforce that (the prohibition exists
+only as an exclusion from a closed allow-list, never as prose), so the restriction is pinned in the
+reference model rather than validated in `EdmEntityTypeImpl`.
+
+Only `CollPropertyGeometryPoint` declares the `SRID` facet, so `$metadata` carries
+`SRID="0"` on that one property and nothing on the other fifteen — a client applies the §7.2.6
+default, and at runtime `SRID.getValue()` reports `"0"` for a geometry value and `"4326"` for a
+geography one.
+
+Three entities are seeded: entity **1** with shapes at the origin, entity **2** with the same
+shapes translated by +10 on both axes, and entity **3** with every geo property `null` (its
+collection property is an empty array, not `null`). Entity 1's geometry line string is a 3-4-5
+triangle, so its length is exactly `5.0`.
+
+### The Three Geo Functions
+
+[OData-URL] §5.1.1.11 fixes the signatures, the overload set and the return types, and nothing else —
+no algorithm, no ellipsoid, no tolerance. The reference service evaluates them as follows:
+
+| Function | Signature | Reference implementation | Unit |
+|---|---|---|---|
+| `geo.distance` | (Point, Point) → `Edm.Double`, geography and geometry flavours | Geometry: planar Euclidean `sqrt(dx² + dy²)`. Geography: haversine great circle, `2R·asin(min(1, √a))` with `R = 6371008.8` m (the WGS-84/IUGG mean radius R₁) | Geometry: the SRID's own linear units. Geography: **metres** |
+| `geo.length` | (LineString) → `Edm.Double` | The sum of the per-segment distances, each measured by the rule above. A line of 0 or 1 points is `0.0`, not an error | as above |
+| `geo.intersects` | (Point, Polygon) → `Edm.Boolean` | An explicit boundary test on each ring first (a vertex or an edge point is `true`, per "within the interior **or on the boundary**"), then even-odd ray casting over the exterior ring; a point strictly inside an interior ring (a hole) is `false`, a point on a hole's own edge is `true`. Planar in both dimensions, tolerance `1e-12` | – |
+
+Any operand outside those overloads — a non-Point/LineString/Polygon value, or a geography operand
+paired with a geometry one — answers **501 Not Implemented** with a message naming the function and
+the reason (*The reference service does not implement this overload of geo.distance: GEOMETRY and
+GEOGRAPHY operands cannot be mixed.*). Most malformed calls never get that far: the URI parser
+type-checks the operands and answers 400 first, so 501 is the last line of defence for what the
+parser lets through. A `null` operand yields a typed null result, never an exception, so an
+all-`null` entity is filterable rather than a 500.
+
+Worked examples against the seeded data, all verified over HTTP:
+
+```
+GET ESGeo?$filter=geo.length(PropertyGeometryLineString) eq 5                       -> 1, 2
+GET ESGeo?$filter=geo.distance(PropertyGeometryPoint,geometry'SRID=0;Point(1.5 2.5)') lt 0.5   -> 1
+GET ESGeo?$filter=geo.intersects(PropertyGeometryPoint,PropertyGeometryPolygon)     -> 1, 2
+GET ESGeo?$filter=geo.intersects(PropertyGeometryPoint,
+                                 geometry'SRID=0;Polygon((10 10,14 10,14 14,10 14,10 10))')    -> 2
+GET ESGeo?$filter=geo.distance(PropertyGeographyPoint,geography'SRID=4326;Point(0 0)')
+          gt 324000 and lt 324200                                                   -> 1
+```
+
+Geometry answers are exact and may be compared with `eq`; geography answers are metres on a mean
+sphere and should be bracketed with `gt`/`lt`.
+
+### Client Usage
+
+```java
+ODataEntityRequest<ClientEntity> request = client.getRetrieveRequestFactory()
+    .getEntityRequest(client.newURIBuilder(serviceRoot)
+        .appendEntitySetSegment("ESGeo").appendKeySegment(1).build());
+request.setFormat(ContentType.JSON_FULL_METADATA);
+
+ClientEntity entity = request.execute().getBody();
+Point point = (Point) entity.getProperty("PropertyGeometryPoint").getPrimitiveValue().toValue();
+// point.getX() == 1.5, point.getY() == 2.5, point.getDimension() == Dimension.GEOMETRY
+```
+
+**Full metadata matters for geo.** `{"type":"Point","coordinates":[1.5,2.5]}` is byte-identical for
+`Edm.GeometryPoint` and `Edm.GeographyPoint`. At `odata.metadata=minimal` the server writes no
+`Name@odata.type`, so a client with no EDM in hand cannot know the dimension and guesses
+`Edm.Geography*`. At `odata.metadata=full` the dimension and the SRID are read exactly.
+
+### Recorded Deviations and Limitations
+
+* **`ESGeo` is JSON-only.** `ODataXmlSerializer` throws `UNSUPPORTED_PROPERTY_TYPE` for geospatial
+  values, scalar and collection alike, so requesting a geo entity as `application/xml` answers a
+  **400** (*The type of the property 'PropertyGeographyPoint' is not yet supported.*). No GML
+  serializer was written; Atom is not on the 4.01 conformance ladder this milestone targets.
+* **The reference service's geo math is a reference implementation, not a geodesy library** —
+  haversine rather than an ellipsoidal geodesic (up to ~0.5 % off), planar polygon containment in
+  degree space for geography (exact for small axis-aligned shapes, wrong near the poles or across
+  the antimeridian), `Point × Polygon` intersection only, no CRS re-projection. Everything else is
+  501. This is a **tecsvc** decision; the library imposes none of it and another service may answer
+  in whatever unit its SRID implies.
+* **Geography distances and lengths are answered in metres**, although §5.1.1.11 says only "in the
+  coordinate reference system signified by … the SRID". Under EPSG:4326 those units are degrees, and
+  a shortest distance in degrees is not a distance. Geometry values are planar and genuinely in the
+  SRID's units.
+* **SRID is not compared, only the dimension is.** Two geometry values with different SRIDs are
+  measured against each other without re-projection or rejection.
+* **`SRID="variable"` breaks the URL literal round trip.** The model accepts it and renders
+  `SRID=variable;`, which the ABNF (`1*5DIGIT`) has no production for — there is no compliant literal
+  to emit. Pre-existing, spec-silent, and left for a decision rather than patched. No `ESGeo`
+  property declares it.
+* **The ABNF's fourth position element is parsed and dropped**, not retained: `Point` carries `x`,
+  `y` and `z` only, and adding an M coordinate would change `equals`/`hashCode` on a public value
+  class. A `Point(1 2 3 4)` literal is accepted but does not round-trip byte-identically.
+* **A genuine `z == 0.0` is dropped on output.** `Point.getZ()` is a primitive `double`, so "no
+  altitude" and "altitude zero" are indistinguishable; `Point(1 2 0)` re-emits as `Point(1 2)`. The
+  JSON serializer has always applied the same rule.
+* **Minimal metadata cannot convey a geo dimension to a non-EDM client**, and the client's fallback
+  guess is `Edm.Geography*` for both dimensions (see Client Usage above). Pinned by a fit test, not
+  hidden.
+* **Collection nesting deeper than two levels is rejected** by the URL literal validator: the ABNF's
+  `collectionLiteral` is recursive and Java regular expressions are not, so it is unrolled twice —
+  which is as deep as the existing value parser could build anyway.
+* **The `Edm.Binary` and `Edm.Stream` halves of the §5.1.1.1 restriction stay unenforced.** The same
+  sentence names all three, but `PropertyBinary eq binary'VGVzdA=='` is pinned as valid by existing
+  tests and tightening it is outside this feature's boundary.
+* **A geo type is still accepted as a key property.** The prohibition is an inference from a closed
+  allow-list, never prose, so no validator was added; the reference model keys `ETGeo` by
+  `Edm.Int16` and a test pins that.
+
+## Entity-Typed Values in JSON Payloads
+
+Normative reference: [OData-JSON] §6 (an entity is serialized as a JSON object), §13 (a collection
+of entities: "each element is representation of an entity or a representation of an entity
+reference"), §18 Action Invocation ("Entity typed parameter values MAY include a subset of the
+properties, or just the entity reference"), §14 and §4.5.8 (the `@id` by-reference form);
+[OData-CSDL] §7.1 (a structural property is primitive, complex or enumeration typed — never entity
+typed).
+
+An entity-typed value reaches a payload as an **action or function parameter, or as a return
+value** — never as a structural property, which CSDL forbids. Both directions of that round trip
+now work in JSON: the deserializer already produced `ValueType.ENTITY`/`COLLECTION_ENTITY`, and the
+serializer used to throw `UNSUPPORTED_PROPERTY_TYPE` (a 500) for them. It no longer does.
+
+### The Three Shapes of an Entity-Typed Value
+
+```json
+{
+  "ParameterETTwoPrim": {"PropertyInt16": 42, "PropertyString": "Yes"},
+  "CollParameterETTwoPrim": [{"PropertyInt16": 1, "PropertyString": "One"},
+                             {"PropertyInt16": 2, "PropertyString": "Two"}]
+}
+```
+
+1. **A complete or partial entity value** is a plain JSON object of name/value pairs. §18 permits a
+   subset of the properties; nothing is defaulted for the properties left out.
+2. **A collection of entities** is a JSON array, each element being either an entity object or an
+   entity reference — the choice is made per element.
+3. **An entity reference** is an object carrying only the id:
+
+```json
+{"ParameterETTwoPrim": {"@odata.id": "ESTwoPrim(32767)"}}
+```
+
+   The member is spelled `@odata.id` on a request negotiated as OData 4.0 and `@id` on 4.01, because
+   the writer and the reader both read the name from the version's `Constants`. A value is treated
+   as a reference only when it carries an id and nothing else — no properties, no navigation links,
+   no annotations.
+
+At `odata.metadata=full` an entity-typed value additionally carries its type control information
+*inside* the object (`"@odata.type": "#olingo.odata.test1.ETTwoPrim"`), and a collection's declared
+type is written as `#Collection(olingo.odata.test1.ETTwoPrim)`.
+
+### How an `@id` Reference Is Resolved
+
+[OData-JSON] §4.5.8 says only that "by convention the entity-id is identical to the canonical URL of
+the entity", so both spellings a client may reasonably send are accepted: the relative
+`ESTwoPrim(32767)` and the absolute `http://host/service/ESTwoPrim(32767)`. A reference matches when
+it equals the stored canonical id or ends with `/` + that id — the path-segment boundary is
+deliberate, so `(32767)` and `Prim(32767)` do **not** address `ESTwoPrim(32767)`.
+
+| Parameter value | Result |
+|---|---|
+| An entity object with properties | Used as it stands; a subset stays a subset |
+| `{"@odata.id": "ESTwoPrim(32767)"}` (relative or absolute canonical) | Resolved against the entity set |
+| A partial suffix such as `{"@odata.id": "(32767)"}` | **400** — *Cannot resolve the entity reference '(32767)'.* |
+| An id that matches nothing | **400**, naming the reference (spec-silent failure mode; recorded decision) |
+| An id **alongside** properties | The properties win and the id is ignored — a value carrying properties is read as "a subset of the properties", so no lookup happens |
+| `{"@odata.id": null}` | Not a reference; the value is an empty entity |
+| Omitted altogether (a nullable parameter) | The null value |
+
+Reading the id is confined to the **parameter** path: on an ordinary entity payload (create, update,
+an expanded navigation, a delta) a client-supplied `@odata.id` remains ignorable control information
+for 4.0 requests, exactly as [OData-JSON] §4.5 requires — it must not reach `Entity.getId()`, which
+would put a client-controlled value into the `OData-EntityId` response header.
+
+### EDM Surface: the Echo Action
+
+The reference service gained an unbound action whose sole purpose is to make the round trip
+observable:
+
+```xml
+<Action Name="UARTETTwoPrimEchoParam" IsBound="false">
+  <Parameter Name="ParameterETTwoPrim" Type="Namespace1_Alias.ETTwoPrim"/>
+  <Parameter Name="CollParameterETTwoPrim" Type="Collection(Namespace1_Alias.ETTwoPrim)"/>
+  <ReturnType Type="Namespace1_Alias.ETTwoPrim"/>
+</Action>
+<ActionImport Name="AIRTETTwoPrimEchoParam" Action="Namespace1_Alias.UARTETTwoPrimEchoParam"/>
+```
+
+Both parameters are nullable. The result's `PropertyInt16` is the parameter entity's (0 when
+absent), and its `PropertyString` is the parameter entity's suffixed with the collection's size:
+
+```
+POST /odata.svc/AIRTETTwoPrimEchoParam
+{"ParameterETTwoPrim":{"PropertyInt16":7,"PropertyString":"echo me"},
+ "CollParameterETTwoPrim":[{"PropertyInt16":1},{"PropertyInt16":2}]}
+
+200 OK
+{"@odata.context":"$metadata#olingo.odata.test1.ETTwoPrim",
+ "PropertyInt16":7,"PropertyString":"echo me (2)"}
+```
+
+The action import declares no entity set, so the returned entity is transient: there is no
+`Location` header.
+
+### Server Behavior and Status Codes
+
+| Condition | Result |
+|---|---|
+| Complete or partial entity value | **200**, evaluated as sent |
+| Collection of entity values and/or references | **200**; an empty collection is `[]`, not an error |
+| Resolvable `@id` reference | **200**, the referenced entity's values |
+| Unresolvable or partially-matching `@id` | **400**, message naming the reference |
+| Omitted nullable entity-typed parameter | **200**, the null value |
+| A `Property` whose declared type is *not* entity typed but whose value is an `Entity` | **500**-class serializer error `INCONSISTENT_PROPERTY_TYPE`, unchanged — the illegal shape still fails, and the message names the property |
+| The 4.01 `@id` spelling on a request negotiated as 4.0 | **400** (*The requested deserialization method has not been implemented yet.*) — the pre-existing rejection of unknown `@`-annotations in 4.0. Negotiate 4.01 to use `@id` |
+
+### Client Usage
+
+The client has no `ClientValue` shape for an entity, so an entity-typed parameter is expressed as a
+`ClientComplexValue`, whose JSON form is exactly the name/value object [OData-JSON] §18 requires:
+
+```java
+Map<String, ClientValue> parameters = new HashMap<>();
+parameters.put("ParameterETTwoPrim", client.getObjectFactory().newComplexValue(null)
+    .add(client.getObjectFactory().newPrimitiveProperty("PropertyInt16",
+        client.getObjectFactory().newPrimitiveValueBuilder().buildInt16((short) 7)))
+    .add(client.getObjectFactory().newPrimitiveProperty("PropertyString",
+        client.getObjectFactory().newPrimitiveValueBuilder().buildString("echo me"))));
+
+ODataInvokeRequest<ClientEntity> request = client.getInvokeRequestFactory().getActionInvokeRequest(
+    client.newURIBuilder(serviceRoot).appendActionCallSegment("AIRTETTwoPrimEchoParam").build(),
+    ClientEntity.class, parameters);
+ClientEntity result = request.execute().getBody();   // PropertyString == "echo me (0)"
+```
+
+### Recorded Deviations and Limitations
+
+* **Entity-typed values are JSON-only.** `ODataXmlSerializer` and the client's `AtomSerializer` both
+  still refuse `ValueType.ENTITY`/`COLLECTION_ENTITY` (*Entities cannot appear in this payload*), as
+  do the delta serializers. The XML *deserializer* does produce those value types, so the XML round
+  trip stays asymmetric exactly as JSON was before this wave.
+* **The §18 partial-entity form does not round-trip.** It is what a client *sends*; a service cannot
+  write it back, because `writeProperty` emits an explicit `null` for a declared-but-absent nullable
+  property and throws `MISSING_PROPERTY` for a non-nullable one. Return a complete value or the
+  `@id`-only reference.
+* **An unresolvable `@id` is a 400** — the spec states the by-reference form is legal but not the
+  failure mode.
+* **An `@id` sent alongside properties is ignored**, and the properties are the value. Defensible
+  under §18 (a value carrying properties is the "subset of the properties" case, so no lookup
+  happens), but it is a decision, not a spec requirement.
+* **There is no client-side id-only `ClientValue`.** `ClientValue` offers primitive, complex,
+  collection and enum shapes only, so the by-reference form cannot be expressed through the client
+  without hand-rolling the request body. It is pinned at the serializer and data-provider layers
+  instead; adding an entity-reference `ClientValue` is client public API and belongs in its own wave.
+* **`writeEntity` still emits `"@odata.type":"#null"` at full metadata for an `Entity` carrying no
+  type name.** The echo action sets the type on the result entity it builds, so this path is
+  correct; the durable fix — defaulting to the declared parameter/return type in the serializer or
+  the deserializer — is a server-core change deferred to a later wave.
+* **The `@odata.id` of an action-import result that declares no entity set** is a type name in an
+  entity-set position (`olingo.odata.test1.ETTwoPrim(7)`). Pre-existing, shared with other action
+  imports, and untouched: transient-entity id generation has a much wider blast radius.
 
 ## See Also
 
