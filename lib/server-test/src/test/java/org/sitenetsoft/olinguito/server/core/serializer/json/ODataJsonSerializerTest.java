@@ -23,6 +23,7 @@
  * Copyright 2026 SiteNetSoft - Tests for the omit-values preference (OData 4.01, Protocol Section 8.2.8.6)
  * Copyright 2026 SiteNetSoft - omit-values: non-nullable-missing exception, streamed collection,
  * and entry-point-reset regression tests
+ * Copyright 2026 SiteNetSoft - Tests for GeoJSON collection-valued properties and the geo round trip
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -43,6 +44,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import org.sitenetsoft.olinguito.commons.api.constants.Constantsv01;
 import org.sitenetsoft.olinguito.commons.api.data.Annotation;
@@ -2750,6 +2752,54 @@ class ODataJsonSerializerTest {
             .getContent().readAllBytes(), StandardCharsets.UTF_8));
   }
 
+  /**
+   * [OData-JSON] section 7.1: a geography or geometry value "is represented as a geometry type as
+   * defined in [RFC7946]" - a JSON object - and that does not stop being true inside a collection.
+   * Before this fix a collection-valued geo property was written as an array of WKT strings.
+   */
+  @Test
+  void geoCollectionValuedProperty() throws Exception {
+    final EdmEntityType entityType = mockCollectionEntityType(EdmPrimitiveTypeKind.GeometryPoint);
+    final Entity entity = new Entity()
+        .addProperty(new Property(null, entityType.getPropertyNames().get(0), ValueType.COLLECTION_GEOSPATIAL,
+            List.of(createPoint(1.5, 4.25), createPoint(2.5, 5.25))));
+    Assertions.assertEquals("{\"" + entityType.getPropertyNames().get(0) + "\":["
+        + "{\"type\":\"Point\",\"coordinates\":[1.5,4.25]},"
+        + "{\"type\":\"Point\",\"coordinates\":[2.5,5.25]}]}",
+        new String(serializerNoMetadata.entity(metadata, entityType, entity, null)
+            .getContent().readAllBytes(), StandardCharsets.UTF_8));
+  }
+
+  /** An empty geo collection is an empty JSON array, not an error. */
+  @Test
+  void geoCollectionValuedPropertyEmpty() throws Exception {
+    final EdmEntityType entityType = mockCollectionEntityType(EdmPrimitiveTypeKind.GeographyPoint);
+    final Entity entity = new Entity()
+        .addProperty(new Property(null, entityType.getPropertyNames().get(0), ValueType.COLLECTION_GEOSPATIAL,
+            List.of()));
+    Assertions.assertEquals("{\"" + entityType.getPropertyNames().get(0) + "\":[]}",
+        new String(serializerNoMetadata.entity(metadata, entityType, entity, null)
+            .getContent().readAllBytes(), StandardCharsets.UTF_8));
+  }
+
+  /**
+   * Deserialize then serialize: what came in as GeoJSON must go back out as GeoJSON, not as the
+   * geometry'SRID=0;Point(...)' literal EdmGeometryPoint.valueToString produces. The deserializer
+   * has to tag the value ValueType.GEOSPATIAL for the writer to recognise it.
+   */
+  @Test
+  void geoValueSurvivesTheRoundTripAsGeoJson() throws Exception {
+    final EdmEntityType entityType = mockEntityType(EdmPrimitiveTypeKind.GeometryPoint);
+    final String payload = "{\"" + entityType.getPropertyNames().get(0)
+        + "\":{\"type\":\"Point\",\"coordinates\":[1.25,2.75]}}";
+    final Entity entity = odata.createDeserializer(ContentType.JSON, metadata)
+        .entity(new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8)), entityType).getEntity();
+    Assertions.assertEquals(ValueType.GEOSPATIAL, entity.getProperties().get(0).getValueType());
+    Assertions.assertEquals(payload,
+        new String(serializerNoMetadata.entity(metadata, entityType, entity, null)
+            .getContent().readAllBytes(), StandardCharsets.UTF_8));
+  }
+
   private EdmEntityType mockEntityType(final EdmPrimitiveTypeKind type) {
     EdmProperty property = Mockito.mock(EdmProperty.class);
     final String name = "Property" + type.name();
@@ -2758,7 +2808,26 @@ class ODataJsonSerializerTest {
     Mockito.when(property.isPrimitive()).thenReturn(true);
     EdmEntityType entityType = Mockito.mock(EdmEntityType.class);
     Mockito.when(entityType.getPropertyNames()).thenReturn(List.of(name));
+    Mockito.when(entityType.getProperty(name)).thenReturn(property);
     Mockito.when(entityType.getStructuralProperty(name)).thenReturn(property);
+    Mockito.when(entityType.getFullQualifiedName())
+        .thenReturn(new FullQualifiedName("namespace", "entityType"));
+    return entityType;
+  }
+
+  private EdmEntityType mockCollectionEntityType(final EdmPrimitiveTypeKind type) {
+    EdmProperty property = Mockito.mock(EdmProperty.class);
+    final String name = "CollProperty" + type.name();
+    Mockito.when(property.getName()).thenReturn(name);
+    Mockito.when(property.getType()).thenReturn(odata.createPrimitiveTypeInstance(type));
+    Mockito.when(property.isPrimitive()).thenReturn(true);
+    Mockito.when(property.isCollection()).thenReturn(true);
+    EdmEntityType entityType = Mockito.mock(EdmEntityType.class);
+    Mockito.when(entityType.getPropertyNames()).thenReturn(List.of(name));
+    Mockito.when(entityType.getProperty(name)).thenReturn(property);
+    Mockito.when(entityType.getStructuralProperty(name)).thenReturn(property);
+    Mockito.when(entityType.getFullQualifiedName())
+        .thenReturn(new FullQualifiedName("namespace", "entityType"));
     return entityType;
   }
 

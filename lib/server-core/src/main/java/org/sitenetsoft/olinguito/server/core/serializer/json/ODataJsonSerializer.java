@@ -27,6 +27,7 @@
  * Copyright 2026 SiteNetSoft - OLINGO-1307: Include expanded complex properties even when not in $select
  * Copyright 2026 SiteNetSoft - Add OpenType support (serialize dynamic properties in JSON)
  * Copyright 2026 SiteNetSoft - Added the omit-values preference (OData 4.01, Protocol Section 8.2.8.6)
+ * Copyright 2026 SiteNetSoft - Write collection-valued geospatial properties as GeoJSON objects
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -1124,10 +1125,21 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       switch (property.getValueType()) {
       case COLLECTION_PRIMITIVE:
       case COLLECTION_ENUM:
-      case COLLECTION_GEOSPATIAL:
         try {
           writePrimitiveValue(property.getName(), type, value, isNullable,
               maxLength, precision, scale, isUnicode, json);
+        } catch (EdmPrimitiveTypeException e) {
+          throw new SerializerException("Wrong value for property!", e,
+              SerializerException.MessageKeys.WRONG_PROPERTY_VALUE,
+              property.getName(), property.getValue().toString());
+        }
+        break;
+      case COLLECTION_GEOSPATIAL:
+        // [OData-JSON] section 7.1: a geo value is a GeoJSON geometry object, in a collection just
+        // as much as outside one. Routing it through writePrimitiveValue would emit the WKT literal
+        // that EdmGeography*/EdmGeometry*.valueToString produces.
+        try {
+          writeGeoValue(property.getName(), type, (Geospatial) value, isNullable, json, null);
         } catch (EdmPrimitiveTypeException e) {
           throw new SerializerException("Wrong value for property!", e,
               SerializerException.MessageKeys.WRONG_PROPERTY_VALUE,

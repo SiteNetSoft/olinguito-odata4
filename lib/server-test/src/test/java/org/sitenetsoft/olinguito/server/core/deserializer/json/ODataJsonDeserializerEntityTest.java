@@ -19,6 +19,8 @@
  * Copyright 2026 SiteNetSoft - Improved test assertions; Replaced Arrays.asList with List.of
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - OLINGO-1590: Test enum types with "Geo" prefix
+ * Copyright 2026 SiteNetSoft - Tests for the geospatial value type, collection member dimension
+ * and the GeoJSON CRS "type: name" requirement
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -949,6 +951,8 @@ class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTest {
     assertEquals("42", point.getSrid().toString());
     assertEquals(1.25, point.getX(), 0);
     assertEquals(2.75, point.getY(), 0);
+    // The value type must say geospatial, otherwise the writer re-serialises it as a WKT literal.
+    assertEquals(ValueType.GEOSPATIAL, entity.getProperties().get(0).getValueType());
 
     expectException(preamble + "}}", entityType, ContentType.JSON,
         DeserializerException.MessageKeys.INVALID_VALUE_FOR_PROPERTY);
@@ -1152,6 +1156,47 @@ class ODataJsonDeserializerEntityTest extends AbstractODataDeserializerTest {
     expectException("{\"" + entityType.getPropertyNames().get(0) + "\":{"
         + "\"type\":\"GeometryCollection\",\"geometries\":[[0,0]]}}", entityType,
         ContentType.JSON, DeserializerException.MessageKeys.INVALID_VALUE_FOR_PROPERTY);
+
+    // [OData-JSON] section 7.1 refers geo values to [RFC7946]; section 3.1.8 there gives a
+    // GeometryCollection a "geometries" array "each element of this array is a GeoJSON Geometry
+    // object". Those member objects belong to the same dimension as the collection: a member of a
+    // GeographyCollection is a geography value, not a geometry one.
+    final EdmEntityType geographyType = mockEntityType(EdmPrimitiveTypeKind.GeographyCollection);
+    final Entity geographyEntity = deserialize("{\"" + geographyType.getPropertyNames().get(0) + "\":{"
+        + "\"type\":\"GeometryCollection\",\"geometries\":["
+        + "{\"type\":\"Point\",\"coordinates\":[1.5,2.5]}]}}", geographyType);
+    final GeospatialCollection geographyCollection =
+        (GeospatialCollection) geographyEntity.getProperties().get(0).getValue();
+    assertEquals(Geospatial.Dimension.GEOGRAPHY, geographyCollection.getDimension());
+    final Geospatial member = geographyCollection.iterator().next();
+    assertEquals(Geospatial.Dimension.GEOGRAPHY, member.getDimension());
+    assertEquals(EdmPrimitiveTypeKind.GeographyPoint, member.getEdmPrimitiveTypeKind());
+  }
+
+  /**
+   * [OData-JSON] section 7.1: "If the optional CRS object is present, it MUST be of type name, where
+   * the value of the name member of the contained properties object is an EPSG SRID legacy
+   * identifier". A CRS object that is not of type name, or whose name is not an EPSG identifier, is
+   * a malformed value, not a 500.
+   */
+  @Test
+  void geoCrsMustBeOfTypeName() throws Exception {
+    final EdmEntityType entityType = mockEntityType(EdmPrimitiveTypeKind.GeometryPoint);
+    final String preamble = "{\"" + entityType.getPropertyNames().get(0) + "\":{"
+        + "\"type\":\"Point\",\"coordinates\":[1.25,2.75],";
+
+    expectException(preamble + "\"crs\":{\"type\":\"link\",\"properties\":{\"href\":\"http://x\"}}}}",
+        entityType, ContentType.JSON, DeserializerException.MessageKeys.INVALID_VALUE_FOR_PROPERTY);
+    expectException(preamble + "\"crs\":{\"type\":\"name\"}}}",
+        entityType, ContentType.JSON, DeserializerException.MessageKeys.INVALID_VALUE_FOR_PROPERTY);
+    expectException(preamble + "\"crs\":{\"type\":\"name\",\"properties\":{\"name\":\"4326\"}}}}",
+        entityType, ContentType.JSON, DeserializerException.MessageKeys.INVALID_VALUE_FOR_PROPERTY);
+    expectException(preamble + "\"crs\":{\"type\":\"name\",\"properties\":{\"name\":\"EPSG:x\"}}}}",
+        entityType, ContentType.JSON, DeserializerException.MessageKeys.INVALID_VALUE_FOR_PROPERTY);
+
+    final Entity entity = deserialize(preamble
+        + "\"crs\":{\"type\":\"name\",\"properties\":{\"name\":\"EPSG:4326\"}}}}", entityType);
+    assertEquals("4326", ((Point) entity.getProperties().get(0).getValue()).getSrid().toString());
   }
 
   private EdmEntityType mockEntityType(final EdmPrimitiveTypeKind typeKind) {

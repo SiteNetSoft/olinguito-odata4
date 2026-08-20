@@ -40,6 +40,8 @@
  * Copyright 2026 SiteNetSoft - OData 4.01: apply default values of omitted optional action parameters
  * Copyright 2026 SiteNetSoft - OData 4.01: read optional parameter defaults as URI literals
  * Copyright 2026 SiteNetSoft - OData 4.01: shared resolver for optional-parameter default values
+ * Copyright 2026 SiteNetSoft - Keep geo values geospatial: value type, collection member
+ * dimension and the GeoJSON CRS "type: name" requirement
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -973,8 +975,10 @@ public class ODataJsonDeserializer implements ODataDeserializer {
     case ENUM:
       Object value = readPrimitiveValue(name, (EdmPrimitiveType) type,
           isNullable, maxLength, precision, scale, isUnicode, mapping, jsonNode);
-      property.setValue(type.getKind() == EdmTypeKind.ENUM ? ValueType.ENUM : ValueType.PRIMITIVE,
-          value);
+      // A geo value's Java representation is a Geospatial object, not a literal, and the JSON writer
+      // dispatches on ValueType (Property.isGeospatial()); tagging it PRIMITIVE makes the writer emit
+      // the WKT literal valueToString produces instead of the GeoJSON object [OData-JSON] 7.1 requires.
+      property.setValue(valueTypeFor(type, false), value);
       break;
     case COMPLEX:
       EdmType derivedType = getDerivedType((EdmComplexType) type,
@@ -1028,8 +1032,7 @@ public class ODataJsonDeserializer implements ODataDeserializer {
             isNullable, maxLength, precision, scale, isUnicode, mapping, arrayElement);
         valueArray.add(value);
       }
-      property.setValue(type.getKind() == EdmTypeKind.ENUM ? ValueType.COLLECTION_ENUM : ValueType.COLLECTION_PRIMITIVE,
-          valueArray);
+      property.setValue(valueTypeFor(type, true), valueArray);
       break;
     case COMPLEX:
       while (iterator.hasNext()) {
@@ -1124,13 +1127,42 @@ public class ODataJsonDeserializer implements ODataDeserializer {
     return complexValue;
   }
 
+  /**
+   * Tells whether an EDM type is one of the sixteen geospatial primitive types. The type kind must be
+   * checked as well because enumeration types whose name starts with "Geo" exist (OLINGO-1590).
+   */
+  private static boolean isGeoType(final EdmType type) {
+    if (type.getKind() != EdmTypeKind.PRIMITIVE) {
+      return false;
+    }
+    try {
+      return EdmPrimitiveTypeKind.valueOf(type.getName()).isGeospatial();
+    } catch (final IllegalArgumentException e) {
+      return false;
+    }
+  }
+
+  /**
+   * The {@link ValueType} that matches an EDM primitive-ish type: geospatial types are GEOSPATIAL,
+   * enumeration types ENUM, everything else PRIMITIVE (and the collection counterpart of each).
+   */
+  private static ValueType valueTypeFor(final EdmType type, final boolean isCollection) {
+    if (type.getKind() == EdmTypeKind.ENUM) {
+      return isCollection ? ValueType.COLLECTION_ENUM : ValueType.ENUM;
+    }
+    if (isGeoType(type)) {
+      return isCollection ? ValueType.COLLECTION_GEOSPATIAL : ValueType.GEOSPATIAL;
+    }
+    return isCollection ? ValueType.COLLECTION_PRIMITIVE : ValueType.PRIMITIVE;
+  }
+
   private Object readPrimitiveValue(final String name, final EdmPrimitiveType type,
       final boolean isNullable, final Integer maxLength, final Integer precision, final Integer scale,
       final boolean isUnicode, final EdmMapping mapping, final JsonNode jsonNode) throws DeserializerException {
     if (isValidNull(name, isNullable, jsonNode)) {
       return null;
     }
-    final boolean isGeoType = type.getKind() == EdmTypeKind.PRIMITIVE && type.getName().startsWith("Geo");
+    final boolean isGeoType = isGeoType(type);
     if (!isGeoType) {
       checkForValueNode(name, jsonNode);
     }
@@ -1162,13 +1194,23 @@ public class ODataJsonDeserializer implements ODataDeserializer {
     return false;
   }
 
+  private Geospatial readPrimitiveGeoValue(final String name, final EdmPrimitiveType type, ObjectNode jsonNode)
+      throws DeserializerException, EdmPrimitiveTypeException {
+    return readPrimitiveGeoValue(name, type, null, jsonNode);
+  }
+
   /**
    * Reads a geospatial JSON value following the GeoJSON specification defined in RFC 7946.
    * @param name property name
    * @param type EDM type of the value
-   *             (can be <code>null</code> for recursive calls while parsing a GeometryCollection)
+   *             (<code>null</code> for recursive calls while parsing a GeometryCollection)
+   * @param inheritedDimension the enclosing collection's dimension, used when <code>type</code> is
+   *             <code>null</code>: [RFC7946] section 3.1.8 makes every element of a
+   *             GeometryCollection a GeoJSON Geometry object of the same collection, so a member of
+   *             an Edm.GeographyCollection is a geography value, not a geometry one
    */
-  private Geospatial readPrimitiveGeoValue(final String name, final EdmPrimitiveType type, ObjectNode jsonNode)
+  private Geospatial readPrimitiveGeoValue(final String name, final EdmPrimitiveType type,
+      final Geospatial.Dimension inheritedDimension, ObjectNode jsonNode)
       throws DeserializerException, EdmPrimitiveTypeException {
     JsonNode typeNode = jsonNode.remove(Constants.ATTR_TYPE);
     if (typeNode != null && typeNode.isTextual()) {
@@ -1177,19 +1219,15 @@ public class ODataJsonDeserializer implements ODataDeserializer {
         final JsonNode topNode = jsonNode.remove(
             geoDataType.equals(GeospatialCollection.class) ? Constants.JSON_GEOMETRIES : Constants.JSON_COORDINATES);
 
-        SRID srid = null;
-        if (jsonNode.has(Constants.JSON_CRS)) {
-          srid = SRID.valueOf(
-          jsonNode.remove(Constants.JSON_CRS).get(Constants.PROPERTIES).
-            get(Constants.JSON_NAME).asText().split(":")[1]);
-        }
-        
+        final SRID srid = readCrs(name, jsonNode);
+
         assertJsonNodeIsEmpty(jsonNode);
 
         if (topNode != null && topNode.isArray()) {
-          final Geospatial.Dimension dimension = type == null || type.getName().startsWith("Geometry") ?
-              Geospatial.Dimension.GEOMETRY :
-              Geospatial.Dimension.GEOGRAPHY;
+          final Geospatial.Dimension dimension = type != null
+              ? (type.getName().startsWith("Geometry")
+                  ? Geospatial.Dimension.GEOMETRY : Geospatial.Dimension.GEOGRAPHY)
+              : (inheritedDimension == null ? Geospatial.Dimension.GEOMETRY : inheritedDimension);
           if (geoDataType.equals(Point.class)) {
             return readGeoPointValue(name, dimension, topNode, srid);
           } else if (geoDataType.equals(MultiPoint.class)) {
@@ -1218,7 +1256,7 @@ public class ODataJsonDeserializer implements ODataDeserializer {
             List<Geospatial> elements = new ArrayList<>();
             for (final JsonNode element : topNode) {
               if (element.isObject()) {
-                elements.add(readPrimitiveGeoValue(name, null, (ObjectNode) element));
+                elements.add(readPrimitiveGeoValue(name, null, dimension, (ObjectNode) element));
               } else {
                 throw new DeserializerException("Invalid value '" + element + "' in property: " + name,
                     DeserializerException.MessageKeys.INVALID_VALUE_FOR_PROPERTY, name);
@@ -1231,6 +1269,43 @@ public class ODataJsonDeserializer implements ODataDeserializer {
     }
     throw new DeserializerException("Invalid value '" + jsonNode + "' for property: " + name,
         DeserializerException.MessageKeys.INVALID_VALUE_FOR_PROPERTY, name);
+  }
+
+  /**
+   * Reads the optional GeoJSON CRS object. [OData-JSON] section 7.1: "If the optional CRS object is
+   * present, it MUST be of type name, where the value of the name member of the contained properties
+   * object is an EPSG SRID legacy identifier, see [GeoJSON-2008]." The legacy identifier form is
+   * <code>EPSG:nnnn</code>; anything else is a malformed value for the property, which is a 400
+   * rather than the NullPointerException the previous unguarded reader raised.
+   * @param name property name
+   * @param jsonNode the geo value's JSON object, from which the CRS member is removed
+   * @return the SRID, or <code>null</code> when no CRS object is present
+   */
+  private SRID readCrs(final String name, final ObjectNode jsonNode) throws DeserializerException {
+    final JsonNode crs = jsonNode.remove(Constants.JSON_CRS);
+    if (crs == null) {
+      return null;
+    }
+    final JsonNode crsType = crs.get(Constants.ATTR_TYPE);
+    final JsonNode properties = crs.get(Constants.PROPERTIES);
+    final JsonNode crsName = properties == null ? null : properties.get(Constants.JSON_NAME);
+    if (crsType == null || !Constants.JSON_NAME.equals(crsType.asText())
+        || crsName == null || !crsName.isTextual()) {
+      throw new DeserializerException("Invalid CRS '" + crs + "' in property: " + name,
+          DeserializerException.MessageKeys.INVALID_VALUE_FOR_PROPERTY, name);
+    }
+    final String identifier = crsName.asText();
+    final int colon = identifier.lastIndexOf(':');
+    if (colon < 0 || !identifier.regionMatches(true, 0, "EPSG:", 0, 5)) {
+      throw new DeserializerException("Invalid CRS name '" + identifier + "' in property: " + name,
+          DeserializerException.MessageKeys.INVALID_VALUE_FOR_PROPERTY, name);
+    }
+    try {
+      return SRID.valueOf(identifier.substring(colon + 1));
+    } catch (final IllegalArgumentException e) {
+      throw new DeserializerException("Invalid CRS name '" + identifier + "' in property: " + name, e,
+          DeserializerException.MessageKeys.INVALID_VALUE_FOR_PROPERTY, name);
+    }
   }
 
   private Point readGeoPointValue(final String name, final Geospatial.Dimension dimension, JsonNode node, SRID srid)
