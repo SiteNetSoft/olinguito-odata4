@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
+ * Copyright 2026 SiteNetSoft - Read collection members that are GeoJSON objects as geospatial values
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -318,6 +319,36 @@ public class JsonDeserializer implements ODataDeserializer {
     return complexValue;
   }
 
+  /**
+   * Decides whether a container-node member of a collection is a GeoJSON geometry object rather than a
+   * complex value, and returns the geospatial type to read it as, or {@code null} when it is not one.
+   *
+   * <p>A member of a {@code Collection(Edm.Geometry*)}/{@code Collection(Edm.Geography*)} property is
+   * written as a bare GeoJSON object ([OData-JSON] section 7.1), exactly like a single-valued geo
+   * property, so it must be read by the geo deserializer and not by {@code fromComplex}. The element
+   * type is authoritative when the payload declares one; without a declared type the member is only
+   * treated as geospatial when it actually looks like a GeoJSON geometry - a {@code "type"} member,
+   * no {@code @odata.type}, and either {@code "coordinates"} or {@code "geometries"} - so a complex
+   * value that merely happens to carry a property called {@code type} is left alone. The guessed
+   * dimension is the same {@code Edm.Geography*} the single-valued path guesses, because a payload
+   * without a declared type does not say which dimension it is.
+   *
+   * @param elementType the collection's element type, or {@code null} when the payload declares none
+   * @param child the collection member being read
+   * @return the geospatial type to read the member as, or {@code null} when it is not geospatial
+   */
+  private EdmTypeInfo geospatialElementType(final EdmTypeInfo elementType, final JsonNode child) {
+    if (elementType != null) {
+      return elementType.isPrimitiveType() && elementType.getPrimitiveTypeKind().isGeospatial()
+          ? elementType : null;
+    }
+    return child.has(Constants.ATTR_TYPE) && !child.has(Constants.JSON_TYPE)
+        && (child.has(Constants.JSON_COORDINATES) || child.has(Constants.JSON_GEOMETRIES))
+        ? new EdmTypeInfo.Builder()
+            .setTypeExpression("Edm.Geography" + child.get(Constants.ATTR_TYPE).asText()).build()
+        : null;
+  }
+
   private void fromCollection(final Valuable valuable, final Iterator<JsonNode> nodeItor, final EdmTypeInfo typeInfo,
       final ObjectCodec codec) throws IOException, EdmPrimitiveTypeException {
 
@@ -340,6 +371,12 @@ public class JsonDeserializer implements ODataDeserializer {
           values.add(child.asText());
         }
       } else if (child.isContainerNode()) {
+        final EdmTypeInfo geoElementType = geospatialElementType(type, child);
+        if (geoElementType != null) {
+          valueType = ValueType.COLLECTION_GEOSPATIAL;
+          values.add(getGeoDeserializer().deserialize(child, geoElementType));
+          continue;
+        }
         EdmTypeInfo childType = null;
         if (child.has(Constants.JSON_TYPE) && child instanceof ObjectNode childObjNode) {
           String typeName = child.get(Constants.JSON_TYPE).asText();
