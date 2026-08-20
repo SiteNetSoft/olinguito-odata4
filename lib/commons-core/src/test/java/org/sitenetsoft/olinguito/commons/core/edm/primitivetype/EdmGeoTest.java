@@ -27,7 +27,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Iterator;
+import java.util.stream.Stream;
 
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
 import org.sitenetsoft.olinguito.commons.api.edm.geo.Geospatial;
 import org.sitenetsoft.olinguito.commons.api.edm.geo.GeospatialCollection;
@@ -38,6 +40,9 @@ import org.sitenetsoft.olinguito.commons.api.edm.geo.MultiPolygon;
 import org.sitenetsoft.olinguito.commons.api.edm.geo.Point;
 import org.sitenetsoft.olinguito.commons.api.edm.geo.Polygon;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class EdmGeoTest extends PrimitiveTypeBaseTest {
 
@@ -300,5 +305,69 @@ class EdmGeoTest extends PrimitiveTypeBaseTest {
     assertEquals(42.0, withM.getZ(), 0);
     assertEquals("geometry'SRID=0;Point(1.0 2.0 42.0)'",
         instance.valueToString(withM, null, null, null, null, null));
+  }
+
+  /**
+   * RFC 5234 section 2.3: ABNF quoted-string literals are case-insensitive, so "geography",
+   * "SRID" and "Point" all match regardless of case. UriTokenizer already reads every geo keyword
+   * with nextConstantIgnoreCase, so the literal grammar must not be stricter than the tokenizer.
+   */
+  @Test
+  void uriLiteralIsMatchedCaseInsensitively() throws EdmPrimitiveTypeException {
+    assertEquals("geography'SRID=0;POINT(1 2)'",
+        EdmGeographyPoint.getInstance().fromUriLiteral("geography'SRID=0;POINT(1 2)'"));
+    assertEquals("geometry'srid=0;Point(1 2)'",
+        EdmGeometryPoint.getInstance().fromUriLiteral("geometry'srid=0;Point(1 2)'"));
+    assertEquals("geometry'srid=0;Point(1 2)'",
+        EdmGeometryPoint.getInstance().fromUriLiteral("srid=0;Point(1 2)"));
+    assertEquals("geography'SRID=4326;Point(1 2)'",
+        EdmGeographyPoint.getInstance().fromUriLiteral("Geography'SRID=4326;Point(1 2)'"));
+    assertEquals("geometry'SRID=0;MULTIPOINT((1 2))'",
+        EdmGeometryMultiPoint.getInstance().fromUriLiteral("GEOMETRY'SRID=0;MULTIPOINT((1 2))'"));
+  }
+
+  /** An already-prefixed literal, or an empty one, must never be wrapped a second time. */
+  @Test
+  void toUriLiteralNeverDoubleWraps() {
+    assertEquals("geography'SRID=0;Point(1.0 2.0)'",
+        EdmGeometryPoint.getInstance().toUriLiteral("geography'SRID=0;Point(1.0 2.0)'"));
+    assertEquals("Geometry'SRID=0;Point(1.0 2.0)'",
+        EdmGeometryPoint.getInstance().toUriLiteral("Geometry'SRID=0;Point(1.0 2.0)'"));
+    assertEquals("", EdmGeometryPoint.getInstance().toUriLiteral(""));
+  }
+
+  private static Stream<Arguments> geoLiteralsOfEveryShape() {
+    return Stream.of(
+        Arguments.of(EdmGeometryPoint.getInstance(), "geometry'SRID=0;Point(142.1 64.1)'"),
+        Arguments.of(EdmGeometryLineString.getInstance(),
+            "geometry'SRID=0;LineString(142.1 64.1,3.14 2.78)'"),
+        Arguments.of(EdmGeometryPolygon.getInstance(),
+            "geometry'SRID=0;Polygon((1.0 1.0,2.0 2.0,3.0 3.0,1.0 1.0))'"),
+        Arguments.of(EdmGeometryMultiPoint.getInstance(),
+            "geometry'SRID=0;MultiPoint((142.1 64.1),(1.0 2.0))'"),
+        Arguments.of(EdmGeometryMultiLineString.getInstance(),
+            "geometry'SRID=0;MultiLineString((142.1 64.1,3.14 2.78),(142.1 64.7,3.14 2.78))'"),
+        Arguments.of(EdmGeometryMultiPolygon.getInstance(),
+            "geometry'SRID=0;MultiPolygon(((1.0 1.0,1.0 1.0),(1.0 1.0,2.0 2.0,3.0 3.0,1.0 1.0)))'"),
+        Arguments.of(EdmGeographyCollection.getInstance(),
+            "geography'SRID=4326;Collection(LineString(142.1 64.1,3.14 2.78))'"));
+  }
+
+  /**
+   * Every one of the seven [OData-ABNF] geo literal shapes must survive both round trips: through
+   * toUriLiteral/fromUriLiteral, and through the value itself.
+   */
+  @ParameterizedTest
+  @MethodSource("geoLiteralsOfEveryShape")
+  void everyShapeRoundTrips(final EdmPrimitiveType instance, final String literal)
+      throws EdmPrimitiveTypeException {
+
+    assertEquals(literal, instance.fromUriLiteral(instance.toUriLiteral(literal)));
+
+    final Geospatial value = instance.valueOfString(instance.fromUriLiteral(literal),
+        null, null, null, null, null, Geospatial.class);
+    assertNotNull(value);
+    assertEquals(literal,
+        instance.toUriLiteral(instance.valueToString(value, null, null, null, null, null)));
   }
 }

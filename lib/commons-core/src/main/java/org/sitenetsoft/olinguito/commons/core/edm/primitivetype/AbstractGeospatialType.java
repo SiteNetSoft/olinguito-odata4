@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Cached compiled regex patterns for split()
  * Copyright 2026 SiteNetSoft - OLINGO-1440: Fix polygon parsing without interior rings
  * Copyright 2026 SiteNetSoft - OLINGO-918: Implement the ABNF geo URI literal grammar
+ * Copyright 2026 SiteNetSoft - OLINGO-918: Match geo URI literals case-insensitively per RFC 5234
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
@@ -97,7 +98,9 @@ public abstract class AbstractGeospatialType<T extends Geospatial> extends Singl
   /**
    * [OData-ABNF] collectionLiteral = "Collection(" geoLiteral *( COMMA geoLiteral ) CLOSE, where
    * geoLiteral may itself be a collectionLiteral. Java regular expressions are not recursive, so the
-   * nesting is unrolled to the two levels this implementation is able to parse.
+   * nesting is unrolled to two levels: a collection inside a collection is accepted, and three or
+   * more nesting levels are rejected. That matches what this type is able to parse either way -
+   * stringToCollection reads a single, non-nested item.
    */
   private static final String INNER_COLLECTION_LITERAL =
       "Collection\\(" + SIMPLE_GEO_LITERAL + "(?:," + SIMPLE_GEO_LITERAL + ")*\\)";
@@ -111,9 +114,13 @@ public abstract class AbstractGeospatialType<T extends Geospatial> extends Singl
   /**
    * [OData-ABNF] geographyPoint = geographyPrefix SQUOTE fullPointLiteral SQUOTE and its siblings,
    * with fullXLiteral = sridLiteral xLiteral and sridLiteral = "SRID" EQ 1*5DIGIT SEMI.
+   * <p>
+   * Matched case-insensitively: ABNF quoted-string literals are case-insensitive per RFC 5234
+   * section 2.3, which is also how UriTokenizer reads every geo keyword (nextConstantIgnoreCase).
    */
   private static final Pattern URI_LITERAL_PATTERN = Pattern.compile(
-      "(?:geography|geometry)'SRID=[0-9]{1,5};(?:" + GEO_LITERAL + "|" + COLLECTION_LITERAL + ")'");
+      "(?:geography|geometry)'SRID=[0-9]{1,5};(?:" + GEO_LITERAL + "|" + COLLECTION_LITERAL + ")'",
+      Pattern.CASE_INSENSITIVE);
 
   private static final Pattern POLYGON_SEPARATOR = Pattern.compile("\\),\\(");
   private static final Pattern MULTI_POLYGON_SEPARATOR = Pattern.compile("\\)\\),\\(\\(");
@@ -144,6 +151,15 @@ public abstract class AbstractGeospatialType<T extends Geospatial> extends Singl
   }
 
   /**
+   * Whether the literal already carries one of the two [OData-ABNF] URL prefixes, of either
+   * dimension. Case-insensitive, because ABNF string literals are (RFC 5234 section 2.3).
+   */
+  private static boolean startsWithPrefix(final String literal) {
+    return literal.regionMatches(true, 0, "geography'", 0, 10)
+        || literal.regionMatches(true, 0, "geometry'", 0, 9);
+  }
+
+  /**
    * Prepends the mandatory sridLiteral when the body has none. [OData-ABNF] never brackets
    * sridLiteral inside a full*Literal rule, so the prefix is required; [OData-CSDL] section 7.2.6
    * supplies the value when the caller did not: "the facet defaults to 0 for Geometry types or 4326
@@ -167,11 +183,12 @@ public abstract class AbstractGeospatialType<T extends Geospatial> extends Singl
     if (literal == null) {
       return null;
     }
-    final String prefix = uriPrefix();
-    if (literal.startsWith(prefix) && literal.endsWith("'")) {
+    // Anything that is already a prefixed literal - of either dimension - and the empty string are
+    // handed back untouched: wrapping them would produce a literal that matches no ABNF rule.
+    if (literal.isEmpty() || startsWithPrefix(literal)) {
       return literal;
     }
-    return prefix + withSridPrefix(literal) + '\'';
+    return uriPrefix() + withSridPrefix(literal) + '\'';
   }
 
   /**
@@ -187,9 +204,10 @@ public abstract class AbstractGeospatialType<T extends Geospatial> extends Singl
     }
     final String prefix = uriPrefix();
     final String body;
-    if (literal.startsWith(prefix) && literal.endsWith("'") && literal.length() > prefix.length()) {
+    if (literal.regionMatches(true, 0, prefix, 0, prefix.length())
+        && literal.endsWith("'") && literal.length() > prefix.length()) {
       body = literal.substring(prefix.length(), literal.length() - 1);
-    } else if (!literal.startsWith("geography'") && !literal.startsWith("geometry'")) {
+    } else if (!startsWithPrefix(literal)) {
       body = withSridPrefix(literal);
     } else {
       throw new EdmPrimitiveTypeException("The literal '" + literal + "' has illegal content.");
