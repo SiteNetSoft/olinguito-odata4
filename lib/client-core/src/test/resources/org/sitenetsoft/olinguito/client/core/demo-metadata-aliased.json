@@ -1,0 +1,142 @@
+{
+  "$Version": "4.01",
+  "$EntityContainer": "ns.Container",
+  "$Reference": {
+    "http://localhost/vocabularies/Org.OData.Core.V1.xml": {
+      "$Include": [ { "$Namespace": "Org.OData.Core.V1", "$Alias": "Core" } ],
+      "$IncludeAnnotations": [
+        { "$TermNamespace": "Org.OData.Core.V1", "$Qualifier": "Tablet", "$TargetNamespace": "ns" }
+      ]
+    }
+  },
+  "ns": {
+    "$Alias": "self",
+    "@Core.Description": "the schema itself",
+    "Colour": {
+      "$Kind": "EnumType",
+      "$UnderlyingType": "Edm.Int16",
+      "$IsFlags": true,
+      "Red": 1,
+      "Red@Core.Description": "the warm one",
+      "Blue": 2
+    },
+    "Weight": {
+      "$Kind": "TypeDefinition",
+      "$UnderlyingType": "Edm.Decimal",
+      "$Precision": 7,
+      "$Scale": 3
+    },
+    "Rating": {
+      "$Kind": "Term",
+      "$Type": "Edm.Int32",
+      "$Nullable": true,
+      "$DefaultValue": "3",
+      "$AppliesTo": [ "EntityType", "Property" ]
+    },
+    "Info": {
+      "$Kind": "ComplexType",
+      "$OpenType": true,
+      "ID": { "$Type": "Edm.Int32" },
+      "Label": {}
+    },
+    "Base": {
+      "$Kind": "EntityType",
+      "$Key": [ "ID" ],
+      "ID": { "$Type": "Edm.Int32" }
+    },
+    "Category": {
+      "$Kind": "EntityType",
+      "$Key": [ "Code" ],
+      "Code": { "$Type": "Edm.Int32" },
+      "Info": { "$Type": "self.Info", "$Nullable": true },
+      "Name": { "$Nullable": true, "$MaxLength": 40, "$Unicode": false },
+      "Tags": { "$Collection": true, "$Nullable": true },
+      "Shade": { "$Type": "self.Colour" },
+      "Mass": { "$Type": "self.Weight", "$Nullable": true },
+      "Where": { "$Type": "Edm.GeographyPoint", "$Nullable": true, "$SRID": "variable" },
+      "Products": {
+        "$Kind": "NavigationProperty",
+        "$Collection": true,
+        "$Type": "self.Product",
+        "$Partner": "Category",
+        "$OnDelete": "Cascade"
+      }
+    },
+    "Product": {
+      "$Kind": "EntityType",
+      "$BaseType": "self.Base",
+      "$HasStream": true,
+      "CategoryCode": { "$Type": "Edm.Int32", "$Nullable": true },
+      "Category": {
+        "$Kind": "NavigationProperty",
+        "$Type": "self.Category",
+        "$Nullable": true,
+        "$Partner": "Products",
+        "$ReferentialConstraint": { "CategoryCode": "Code" }
+      }
+    },
+    "Discount": [
+      {
+        "$Kind": "Action",
+        "$IsBound": true,
+        "$EntitySetPath": "product",
+        "$Parameter": [
+          { "$Name": "product", "$Type": "self.Product" },
+          { "$Name": "percent", "$Type": "Edm.Decimal", "$Nullable": true, "$Precision": 5, "$Scale": 2 }
+        ],
+        "$ReturnType": { "$Type": "self.Product" }
+      }
+    ],
+    "Reset": [ { "$Kind": "Action" } ],
+    "Top": [
+      {
+        "$Kind": "Function",
+        "$IsComposable": true,
+        "$Parameter": [ { "$Name": "count", "$Type": "Edm.Int32" } ],
+        "$ReturnType": { "$Collection": true, "$Type": "self.Product", "$Nullable": true }
+      }
+    ],
+    "Container": {
+      "$Kind": "EntityContainer",
+      "@Core.Description": "the container",
+      "Categories": {
+        "$Collection": true,
+        "$Type": "self.Category",
+        "$NavigationPropertyBinding": { "Products": "Products" }
+      },
+      "Products": {
+        "$Collection": true,
+        "$Type": "self.Product",
+        "$IncludeInServiceDocument": false,
+        "$NavigationPropertyBinding": { "Category": "Categories" }
+      },
+      "Best": { "$Type": "self.Product" },
+      "ResetAll": { "$Action": "self.Reset" },
+      "TopProducts": { "$Function": "self.Top", "$EntitySet": "Products", "$IncludeInServiceDocument": true }
+    },
+    "$Annotations": {
+      "self.Category": {
+        "@Core.Description": "all categories",
+        "@self.Rating": 5,
+        "@Core.Tag#Tablet": true,
+        "@Core.Ref": { "$Path": "Name" },
+        "@Core.Rec": { "@type": "self.Info", "ID": 7, "Label": "x", "Label@Core.Description": "the label" },
+        "@Core.Coll": [ 1, 2.5, "s", null ],
+        "@Core.Cond": { "$If": [ { "$Path": "Name" }, "yes", "no" ] },
+        "@Core.Fn": { "$Apply": [ { "$Path": "Name" } ], "$Function": "odata.concat" },
+        "@Core.Cast": { "$Cast": { "$Path": "Code" }, "$Type": "Edm.String", "$Collection": true },
+        "@Core.Check": { "$IsOf": { "$Path": "Code" }, "$Type": "Edm.Int32" },
+        "@Core.Url": { "$UrlRef": "http://www.odata.org/" },
+        "@Core.Cmp": { "$Eq": [ { "$Path": "Code" }, 1 ] },
+        "@Core.Neg": { "$Not": { "$Path": "Flag" } },
+        "@Core.Lbl": { "$LabeledElement": { "$Path": "Name" }, "$Name": "L" },
+        "@Core.LblRef": { "$LabeledElementReference": "self.L" },
+        "@Core.Nothing": { "$Null": null, "@Core.Description": "nothing" },
+        "@Core.Nav": { "$NavigationPropertyPath": "Products" },
+        "@Core.Prop": { "$PropertyPath": "Code" },
+        "@Core.Ann": { "$AnnotationPath": "Products/@Core.Description" }
+      },
+      "self.Category/Name#Tablet": { "@Core.Description": "the name" }
+    }
+  }
+}
