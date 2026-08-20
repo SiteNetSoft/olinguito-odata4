@@ -26,6 +26,7 @@
  * parameters, including the invalid-default action
  * Copyright 2026 SiteNetSoft - OData 4.01: malformed optional-parameter default values are rejected with 400
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 2 Task 5: register the ETGeo entity type
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 2 Task 9: register UARTETTwoPrimEchoParam
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
@@ -181,6 +182,7 @@ public class SchemaProvider {
     actions.addAll(prov.getActions(ActionProvider.nameUARTParam));
     actions.addAll(prov.getActions(ActionProvider.nameUARTTwoParam));
     actions.addAll(prov.getActions(ActionProvider.nameUARTByteNineParam));
+    actions.addAll(prov.getActions(ActionProvider.nameUARTETTwoPrimEchoParam));
     actions.addAll(prov.getActions(ActionProvider.name_A_RTTimeOfDay_));
     
     // Functions

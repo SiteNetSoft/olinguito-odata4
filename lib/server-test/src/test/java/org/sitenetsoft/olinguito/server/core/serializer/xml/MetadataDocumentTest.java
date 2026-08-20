@@ -21,6 +21,7 @@
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 3: tecsvc now publishes its schema version
  * through a schema-level Core.SchemaVersion annotation
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 2 Task 5: ETGeo/ESGeo geospatial reference model
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 2 Task 9: entity-typed action parameters and return type
  */
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
@@ -164,6 +165,16 @@ class MetadataDocumentTest {
     assertThat(metadata, containsString(
         "<Property Name=\"CollPropertyGeometryPoint\" Type=\"Collection(Edm.GeometryPoint)\" SRID=\"0\">"));
     assertThat(metadata, containsString("<EntitySet Name=\"ESGeo\" EntityType=\"Namespace1_Alias.ETGeo\">"));
+
+    // [OData-CSDL] section 12.9: a parameter "MAY be any type in scope", including an entity type,
+    // and section 12.8 says the same of the return type.
+    assertThat(metadata, containsString("<Action Name=\"UARTETTwoPrimEchoParam\" IsBound=\"false\">"
+        + "<Parameter Name=\"ParameterETTwoPrim\" Type=\"Namespace1_Alias.ETTwoPrim\"></Parameter>"
+        + "<Parameter Name=\"CollParameterETTwoPrim\" "
+        + "Type=\"Collection(Namespace1_Alias.ETTwoPrim)\"></Parameter>"
+        + "<ReturnType Type=\"Namespace1_Alias.ETTwoPrim\"/></Action>"));
+    assertThat(metadata, containsString("<ActionImport Name=\"AIRTETTwoPrimEchoParam\" "
+        + "Action=\"Namespace1_Alias.UARTETTwoPrimEchoParam\"></ActionImport>"));
 
     // TypeDefCheck
     assertThat(metadata,

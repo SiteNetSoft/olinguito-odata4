@@ -42,6 +42,7 @@
  * Copyright 2026 SiteNetSoft - OData 4.01: shared resolver for optional-parameter default values
  * Copyright 2026 SiteNetSoft - Keep geo values geospatial: value type, collection member
  * dimension and the GeoJSON CRS "type: name" requirement
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 2 Task 9: read the id control information in both format versions
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -543,7 +544,12 @@ public class ODataJsonDeserializer implements ODataDeserializer {
 
   private void consumeId(ObjectNode node, Entity entity) 
       throws DeserializerException {
-    if (node.get(constants.getId()) != null && constants instanceof Constantsv01) {
+    // [OData-JSON] section 4.5.8: the id control information carries the entity-id, spelled
+    // "@odata.id" in the 4.0 format and "@id" in the 4.01 one - "constants" already resolves the
+    // right name. It is read in both versions, because an entity-typed action parameter value may
+    // be "just the entity reference" ([OData-JSON] section 18) and dropping the id would leave the
+    // service an empty object it cannot resolve.
+    if (node.get(constants.getId()) != null && node.get(constants.getId()).isTextual()) {
       try {
         entity.setId(new URI(node.get(constants.getId()).textValue()));
         node.remove(constants.getId());

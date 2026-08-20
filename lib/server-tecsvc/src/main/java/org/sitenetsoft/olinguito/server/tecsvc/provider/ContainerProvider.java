@@ -25,6 +25,7 @@
  * Copyright 2026 SiteNetSoft - OData 4.01: alternate keys on ESAllPrim
  * Copyright 2026 SiteNetSoft - OData 4.01: malformed optional-parameter default values are rejected with 400
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 2 Task 5: the ESGeo entity set
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 2 Task 9: the AIRTETTwoPrimEchoParam action import
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
@@ -68,6 +69,7 @@ public class ContainerProvider {
   public static final String AI_RT_TIME_OF_DAY = "AIRTTimeOfDay";
   public static final String AIRT_TWO_PARAM = "AIRTTwoParam";
   public static final String AIRT_BYTE_NINE_PARAM = "AIRTByteNineParam";
+  public static final String AIRTET_TWO_PRIM_ECHO_PARAM = "AIRTETTwoPrimEchoParam";
   public static final String ES_STREAM = "ESStream";
   public static final String ES_STREAM_SERVER_PAGINATION = "ESStreamServerSidePaging";
   public static final String ES_MEDIA = "ESMedia";
@@ -159,6 +161,7 @@ public class ContainerProvider {
     actionImports.add(prov.getActionImport(ContainerProvider.nameContainer, AIRT_PARAM));
     actionImports.add(prov.getActionImport(ContainerProvider.nameContainer, AIRT_TWO_PARAM));
     actionImports.add(prov.getActionImport(ContainerProvider.nameContainer, AIRT_BYTE_NINE_PARAM));
+    actionImports.add(prov.getActionImport(ContainerProvider.nameContainer, AIRTET_TWO_PRIM_ECHO_PARAM));
     actionImports.add(prov.getActionImport(ContainerProvider.nameContainer, AI_RT_TIME_OF_DAY));
     
     // FunctionImports
@@ -910,6 +913,12 @@ public class ContainerProvider {
         return new CsdlActionImport()
             .setName(AIRT_BYTE_NINE_PARAM)
             .setAction(ActionProvider.nameUARTByteNineParam);
+
+      } else if (name.equals(AIRTET_TWO_PRIM_ECHO_PARAM)) {
+        // No EntitySet: the echoed entity is transient, so no Location header is expected.
+        return new CsdlActionImport()
+            .setName(AIRTET_TWO_PRIM_ECHO_PARAM)
+            .setAction(ActionProvider.nameUARTETTwoPrimEchoParam);
 
       } else if(name.equals(AI_RT_TIME_OF_DAY)){
            return new CsdlActionImport()

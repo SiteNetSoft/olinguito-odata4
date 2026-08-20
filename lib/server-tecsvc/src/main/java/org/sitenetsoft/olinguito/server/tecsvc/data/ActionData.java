@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - OData 4.01: action with optional parameters
  * Copyright 2026 SiteNetSoft - OData 4.01: resolve bound-action binding keys through alternate keys
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 2 Task 9: echo entity-typed parameters, resolve entity references
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -56,6 +57,7 @@ import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
 import org.sitenetsoft.olinguito.server.api.uri.UriParameter;
 import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider.DataProviderException;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.ComplexTypeProvider;
+import org.sitenetsoft.olinguito.server.tecsvc.provider.EntityTypeProvider;
 
 public class ActionData {
 
@@ -314,11 +316,66 @@ public class ActionData {
       } else {
         return new EntityActionResult().setEntity(entityCollection.getEntities().get(0));
       }
+    } else if ("UARTETTwoPrimEchoParam".equals(name)) {
+      // [OData-JSON] section 18: the parameter value may be a full entity, a subset of its
+      // properties, or just the entity reference. All three arrive here as a ValueType.ENTITY
+      // Parameter; only the reference form needs resolving.
+      final Entity parameterEntity = resolveEntityParameter(
+          parameters.get("ParameterETTwoPrim"), data, "ESTwoPrim");
+      final Parameter collectionParameter = parameters.get("CollParameterETTwoPrim");
+      final int collectionSize = collectionParameter == null || collectionParameter.isNull()
+          || collectionParameter.asCollection() == null ? 0 : collectionParameter.asCollection().size();
+      final Property int16 = parameterEntity == null ? null : parameterEntity.getProperty("PropertyInt16");
+      final Property string = parameterEntity == null ? null : parameterEntity.getProperty("PropertyString");
+      final Entity result = new Entity()
+          .addProperty(DataCreator.createPrimitive("PropertyInt16",
+              int16 == null || int16.getValue() == null ? (short) 0 : int16.getValue()))
+          .addProperty(DataCreator.createPrimitive("PropertyString",
+              (string == null || string.getValue() == null ? "" : string.getValue())
+                  + " (" + collectionSize + ')'));
+      // The echoed entity is transient, but it still carries its type name: without it the
+      // full-metadata JSON writer would emit "@odata.type":"#null" inside the value object.
+      result.setType(EntityTypeProvider.nameETTwoPrim.getFullQualifiedNameAsString());
+      return new EntityActionResult().setEntity(result);
     }
     throw new DataProviderException("Action " + name + " is not yet implemented.",
         HttpStatusCode.NOT_IMPLEMENTED);
   }
-  
+
+  /**
+   * Turns an entity-typed parameter value into the entity to work with. [OData-JSON] section 18
+   * allows three shapes: a full entity, a subset of its properties (both are used as they stand -
+   * nothing is defaulted, per the design's decision), and "just the entity reference", an object
+   * carrying only the id control information ([OData-JSON] section 4.5.8). The reference form is
+   * resolved against this service's own entity set; the spec does not say what happens when it does
+   * not resolve, and this service answers 400 (design deviation 9).
+   */
+  private static Entity resolveEntityParameter(final Parameter parameter,
+      final Map<String, EntityCollection> data, final String entitySetName) throws DataProviderException {
+    if (parameter == null || parameter.isNull()) {
+      return null;
+    }
+    final Entity value = parameter.asEntity();
+    if (value == null || !value.getProperties().isEmpty() || value.getId() == null) {
+      return value;
+    }
+    // [OData-JSON] section 4.5.8 says only that "By convention the entity-id is identical to the
+    // canonical URL of the entity", so a client may send either the relative form ESTwoPrim(32767)
+    // or the absolute canonical URL. Matching on the suffix accepts both without inventing a
+    // base-URL rule the specification does not state.
+    final String id = value.getId().toASCIIString();
+    final EntityCollection collection = data.get(entitySetName);
+    if (collection != null) {
+      for (final Entity candidate : collection.getEntities()) {
+        if (candidate.getId() != null && candidate.getId().toASCIIString().endsWith(id)) {
+          return candidate;
+        }
+      }
+    }
+    throw new DataProviderException("Cannot resolve the entity reference '" + id + "'.",
+        HttpStatusCode.BAD_REQUEST);
+  }
+
   protected static EntityActionResult entityBoundAction(final String name, final Map<String, Parameter> parameters,
       final Map<String, EntityCollection> data, final OData oData, final Edm edm, 
       List<UriParameter> keyList, EdmEntitySet edmEntitySet) throws DataProviderException {

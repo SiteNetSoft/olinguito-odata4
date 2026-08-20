@@ -25,11 +25,14 @@
  * Copyright 2026 SiteNetSoft - OData 4.01: referential-constraint key predicates from the source entity
  * Copyright 2026 SiteNetSoft - OData 4.01: malformed optional-parameter default values are rejected with 400
  * Copyright 2026 SiteNetSoft - OData 4.01: ETGeo/ESGeo geospatial reference model
+ * Copyright 2026 SiteNetSoft - OData 4.01: entity-typed action parameters and entity references
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
 import org.sitenetsoft.olinguito.commons.api.data.Entity;
@@ -38,6 +41,7 @@ import org.sitenetsoft.olinguito.commons.api.data.Parameter;
 import org.sitenetsoft.olinguito.commons.api.data.Property;
 import org.sitenetsoft.olinguito.commons.api.data.ValueType;
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmAction;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
@@ -432,6 +436,92 @@ class DataProviderTest {
         esKeyNav);
     Assertions.assertNotNull(result);
     Assertions.assertNotNull(result.getEntity());
+  }
+
+  /**
+   * [OData-JSON] section 18: "Entity typed parameter values MAY include a subset of the properties,
+   * or just the entity reference, as appropriate to the action." A value carrying every declared
+   * property is echoed back, and the collection parameter is counted.
+   */
+  @Test
+  void echoActionAcceptsACompleteEntityParameter() throws Exception {
+    final DataProvider dataProvider = new DataProvider(oData, edm);
+    final EdmAction action = edm.getUnboundAction(
+        new FullQualifiedName(SchemaProvider.NAMESPACE, "UARTETTwoPrimEchoParam"));
+    Assertions.assertNotNull(action);
+
+    final Entity parameterValue = new Entity()
+        .addProperty(new Property(null, "PropertyInt16", ValueType.PRIMITIVE, (short) 7))
+        .addProperty(new Property(null, "PropertyString", ValueType.PRIMITIVE, "echo me"));
+    final Parameter parameter = new Parameter();
+    parameter.setName("ParameterETTwoPrim");
+    parameter.setValue(ValueType.ENTITY, parameterValue);
+    final Parameter collection = new Parameter();
+    collection.setName("CollParameterETTwoPrim");
+    collection.setValue(ValueType.COLLECTION_ENTITY, List.of(parameterValue, parameterValue));
+
+    final Entity result = dataProvider.processActionEntity("UARTETTwoPrimEchoParam",
+        Map.of("ParameterETTwoPrim", parameter, "CollParameterETTwoPrim", collection)).getEntity();
+    Assertions.assertEquals((short) 7, result.getProperty("PropertyInt16").getValue());
+    Assertions.assertEquals("echo me (2)", result.getProperty("PropertyString").getValue());
+  }
+
+  /**
+   * [OData-JSON] section 18: a subset of the properties is legal too. The design's decision is that
+   * the value is used as it stands - the absent property is not defaulted from anywhere, so the echo
+   * simply has nothing to echo for it.
+   */
+  @Test
+  void echoActionAcceptsAnEntityParameterWithASubsetOfProperties() throws Exception {
+    final DataProvider dataProvider = new DataProvider(oData, edm);
+    final Entity parameterValue = new Entity()
+        .addProperty(new Property(null, "PropertyInt16", ValueType.PRIMITIVE, (short) 7));
+    final Parameter parameter = new Parameter();
+    parameter.setName("ParameterETTwoPrim");
+    parameter.setValue(ValueType.ENTITY, parameterValue);
+
+    final Entity result = dataProvider.processActionEntity("UARTETTwoPrimEchoParam",
+        Map.of("ParameterETTwoPrim", parameter)).getEntity();
+    Assertions.assertEquals((short) 7, result.getProperty("PropertyInt16").getValue());
+    Assertions.assertEquals(" (0)", result.getProperty("PropertyString").getValue());
+  }
+
+  /**
+   * [OData-JSON] section 4.5.8: "The id control information contains the entity-id ... By convention
+   * the entity-id is identical to the canonical URL of the entity." A parameter value that is "just
+   * the entity reference" is resolved against the service's own entity set.
+   */
+  @Test
+  void echoActionResolvesAnIdOnlyEntityParameter() throws Exception {
+    final DataProvider dataProvider = new DataProvider(oData, edm);
+    final Entity reference = new Entity();
+    reference.setId(URI.create("ESTwoPrim(32767)"));
+    final Parameter parameter = new Parameter();
+    parameter.setName("ParameterETTwoPrim");
+    parameter.setValue(ValueType.ENTITY, reference);
+
+    final Entity result = dataProvider.processActionEntity("UARTETTwoPrimEchoParam",
+        Map.of("ParameterETTwoPrim", parameter)).getEntity();
+    Assertions.assertEquals((short) 32767, result.getProperty("PropertyInt16").getValue());
+    Assertions.assertEquals("Test String4 (0)", result.getProperty("PropertyString").getValue());
+  }
+
+  /** Design deviation 9: an unresolvable entity reference is a 400, not a null-valued echo. */
+  @Test
+  void echoActionRefusesAnUnresolvableReference() {
+    final DataProvider dataProvider = new DataProvider(oData, edm);
+    final Entity reference = new Entity();
+    reference.setId(URI.create("ESTwoPrim(4711)"));
+    final Parameter parameter = new Parameter();
+    parameter.setName("ParameterETTwoPrim");
+    parameter.setValue(ValueType.ENTITY, reference);
+
+    final DataProvider.DataProviderException e = Assertions.assertThrows(
+        DataProvider.DataProviderException.class,
+        () -> dataProvider.processActionEntity("UARTETTwoPrimEchoParam",
+            Map.of("ParameterETTwoPrim", parameter)));
+    Assertions.assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusCode());
+    Assertions.assertTrue(e.getMessage().contains("ESTwoPrim(4711)"));
   }
 
   private static UriParameter mockParameter(final String name, final String text) {

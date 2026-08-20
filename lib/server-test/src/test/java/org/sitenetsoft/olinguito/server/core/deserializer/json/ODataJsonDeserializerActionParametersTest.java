@@ -23,6 +23,7 @@
  * to use List instead of EntityCollection (OLINGO-1638)
  * Copyright 2026 SiteNetSoft - OData 4.01: optional action parameters with default values
  * Copyright 2026 SiteNetSoft - OData 4.01: enum/Int16 and invalid URI-literal defaults
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 2 Task 9: entity-typed parameter values by reference
  */
 package org.sitenetsoft.olinguito.server.core.deserializer.json;
 
@@ -157,6 +158,35 @@ class ODataJsonDeserializerActionParametersTest extends AbstractODataDeserialize
     final List<Property> entityValues = parameter.asEntity().getProperties();
     assertEquals((short) 42, entityValues.get(0).getValue());
     assertEquals("Yes", entityValues.get(1).getValue());
+  }
+
+  /**
+   * [OData-JSON] section 18: an entity typed parameter value may be "just the entity reference".
+   * [OData-JSON] section 4.5.8: that reference is the id control information, spelled "@odata.id"
+   * in the 4.0 format. It must survive deserialization - it is the only thing the value carries.
+   */
+  @Test
+  void entityByReference() throws Exception {
+    final Parameter parameter = deserializeUARTByteNineParam("ParameterETTwoPrim",
+        "{ \"@odata.id\": \"ESTwoPrim(32767)\" }");
+    assertTrue(parameter.isEntity());
+    assertFalse(parameter.isCollection());
+    assertTrue(parameter.asEntity().getProperties().isEmpty());
+    assertNotNull(parameter.asEntity().getId());
+    assertEquals("ESTwoPrim(32767)", parameter.asEntity().getId().toASCIIString());
+  }
+
+  /** The same by-reference form inside a collection-valued entity parameter. */
+  @Test
+  void entityCollectionByReference() throws Exception {
+    final Parameter parameter = deserializeUARTByteNineParam("CollParameterETTwoPrim",
+        "[ { \"@odata.id\": \"ESTwoPrim(32767)\" }, { \"@odata.id\": \"ESTwoPrim(-365)\" }]");
+    @SuppressWarnings("unchecked")
+    final List<Entity> entities = (List<Entity>) parameter.asCollection();
+    assertNotNull(entities);
+    assertEquals(2, entities.size());
+    assertEquals("ESTwoPrim(32767)", entities.get(0).getId().toASCIIString());
+    assertEquals("ESTwoPrim(-365)", entities.get(1).getId().toASCIIString());
   }
 
   @Test

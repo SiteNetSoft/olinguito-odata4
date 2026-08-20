@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
  * Copyright 2026 SiteNetSoft - OData 4.01: action with optional parameters
  * Copyright 2026 SiteNetSoft - OData 4.01: enum/Int16 and invalid optional parameter defaults
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 2 Task 9: entity-typed parameters echo action
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
@@ -128,6 +129,8 @@ public class ActionProvider {
       new FullQualifiedName(SchemaProvider.NAMESPACE, "UARTTwoParam");
   public static final FullQualifiedName nameUARTByteNineParam =
       new FullQualifiedName(SchemaProvider.NAMESPACE, "UARTByteNineParam");
+  public static final FullQualifiedName nameUARTETTwoPrimEchoParam =
+      new FullQualifiedName(SchemaProvider.NAMESPACE, "UARTETTwoPrimEchoParam");
   
   public static List<CsdlAction> getBoundActionsForEntityType(FullQualifiedName entityType) throws ODataException {
     FullQualifiedName[] actionNames = {nameBAESAllPrimRTETAllPrim, 
@@ -248,6 +251,20 @@ public class ActionProvider {
                   new CsdlParameter().setName("ParameterInt16").setType(PropertyProvider.nameInt16)))
               .setReturnType(
                   new CsdlReturnType().setType(EntityTypeProvider.nameETTwoKeyTwoPrim)));
+
+    } else if (actionName.equals(nameUARTETTwoPrimEchoParam)) {
+      // [OData-CSDL] section 12.9: a parameter "MAY be any type in scope", including an entity type;
+      // section 12.8 says the same of the return type. Both parameters are nullable so that the
+      // by-reference form and the omitted form are equally legal ([OData-JSON] section 18).
+      return List.of(
+          new CsdlAction().setName(nameUARTETTwoPrimEchoParam.getName())
+              .setParameters(List.of(
+                  new CsdlParameter().setName("ParameterETTwoPrim")
+                      .setType(EntityTypeProvider.nameETTwoPrim),
+                  new CsdlParameter().setName("CollParameterETTwoPrim")
+                      .setType(EntityTypeProvider.nameETTwoPrim).setCollection(true)))
+              .setReturnType(
+                  new CsdlReturnType().setType(EntityTypeProvider.nameETTwoPrim)));
 
     } else if (actionName.equals(nameUARTCollETKeyNavParam)) {
       return List.of(
