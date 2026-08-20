@@ -21,6 +21,10 @@ delivered by the 4.01 compliance milestone.
 * [Key-as-segment URLs](#key-as-segment-urls)
 * [Alternate keys](#alternate-keys)
 
+**Tier 6, Wave 1:**
+
+* [CSDL JSON metadata](#csdl-json-metadata-metadata-as-applicationjson)
+
 Each section names the governing [OASIS OData 4.01](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html)
 clause, describes server behavior including status codes, gives a client usage snippet, and
 records any deviations or spec-silent decisions made along the way. These features are additive:
@@ -914,6 +918,182 @@ The returned entity's id and edit link carry the primary key, so a follow-up wri
 * A `null` value is rejected as an alternate-key value (`INVALID_KEY_VALUE`) even for a nullable
   property, because it can never identify an entity.
 * Alternate keys are never resolvable through key-as-segment URLs (spec exclusion).
+
+## CSDL JSON Metadata (`$metadata` as `application/json`)
+
+Normative reference: [OData-CSDLJSON] §1.1 (conformance), §2.2 (defaults), §4 (document object),
+§5.1 (aliases), §7.1/§7.2 (properties and facets), §8.1/§8.2/§8.5/§8.6 (navigation properties),
+§9.3 (open types), §10.3 (enumeration members), §11 (type definitions), §12.8/§12.9 (return types
+and parameters), §13.1–§13.6 (entity container), §14.3/§14.4 (annotations and expressions);
+[OData-Protocol] §11.1.2 (metadata format selection).
+
+CSDL JSON is the JSON representation of the metadata document. A service `MAY` support it at
+4.0-Minimal conformance, `SHOULD` support it at 4.01-Minimal, and `MUST` support it at
+4.01-Advanced (§1.1). Olinguito now serves a conformant CSDL JSON document, and reads one on both
+the server and the client.
+
+Ask for it with the `Accept` header — no `$format` query option is involved:
+
+```
+GET /service/$metadata
+Accept: application/json
+```
+
+`ContentNegotiator` lists `application/xml` and `application/json` for the metadata representation,
+and `application/xml` stays the default: a request that expresses no format preference still gets
+CSDL XML, as [OData-Protocol] §11.1.2 requires.
+
+### Writer Corrections — What Changed on the Wire
+
+The JSON metadata serializer already existed; it was not conformant. These corrections change the
+bytes an existing consumer sees, so read them before upgrading a consumer that parses this document.
+
+| Member | Before | Now | Clause |
+| --- | --- | --- | --- |
+| `$Version` | always `"4.01"` | the version the service actually serves (`"4.0"`, or `"4.01"` when `ServiceMetadata.getDataServiceVersion()` says so) | §4 |
+| `$EntityContainer` | absent | written at the document level, always **namespace**-qualified (never the alias) | §4 |
+| `$Extends` | nested in an `{"Extending": {...}}` object | written flat on the container object | §13.1 |
+| entity sets | `$Kind: "EntitySet"`, no `$Collection` | `$Collection: true` + `$Type`, no `$Kind` | §13.2 |
+| singletons, action imports, function imports | carried `$Kind` | no `$Kind` — the shape (`$Type` / `$Action` / `$Function`) distinguishes them | §13.3, §13.5, §13.6 |
+| `$EntitySet` on an import | qualified with the container namespace | the unqualified entity-set name for a same-container set | §13.5, §13.6 |
+| `$Nullable` | XML polarity (written when `false`) | JSON polarity — **absence means `false`**, so the member is written when the value is nullable and omitted otherwise | §7.2.1 |
+| `$Nullable` on a collection navigation property | written | never written — "MUST NOT be specified for a collection-valued navigation property" | §8.2 |
+| `$Nullable` on a collection-of-entities return type | written | never written — the member "has no meaning and MUST NOT be specified" | §12.8 |
+| `$Type` on an `Edm.String` structural property | always written | omitted — absence means `Edm.String` | §7.1 |
+| `$OpenType` | never written | written as `true` for an open entity or complex type | §9.3 |
+| enum member values | strings | JSON numbers | §10.3 |
+| type definitions | `$Kind` missing, facets as strings | `$Kind: "TypeDefinition"` and §7.2 facet value types (`$SRID` stays a string, per §7.2.6) | §11, §7.2 |
+| `$ReferentialConstraint` | one object per constraint | one object with one member per constraint | §8.5 |
+| `$OnDelete` | an object | a string, with `$OnDelete`-prefixed annotations | §8.6 |
+| constant expressions | `{"$String": "x"}`-style wrappers | bare JSON values (`"x"`, `42`, `true`) | §14.3 |
+| records | `$Type` member | the `@type` control information, `#`-prefixed short form | §14.4.12 |
+
+Two decisions the writer records explicitly:
+
+* **Integers outside the IEEE-754 safe range** are written as JSON strings rather than as numbers
+  that a JSON parser using a double would silently corrupt. `Decimal` always goes out through
+  `BigDecimal`'s own textual form, never a `double`.
+* **A record's type** uses the `#`-prefixed short form of `@type` (`"@type": "#ns.Record"`), the
+  spelling §14.4.12 names.
+
+Defaults are omitted throughout (§2.2): `$IsFlags`, `$IsBound`, `$Abstract`, `$OpenType`,
+`$HasStream`, `$Nullable` and `$ContainsTarget` appear only when they differ from the default.
+
+### Reading CSDL JSON on the Server
+
+`org.sitenetsoft.olinguito.server.core.MetadataJsonParser` (module `server-core-ext`) is the CSDL
+JSON counterpart of `MetadataParser`. It returns the same types, so the two are interchangeable at
+the call site:
+
+```java
+SchemaBasedEdmProvider provider = new MetadataJsonParser()
+    .parseAnnotations(true)
+    .referenceResolver(resolver)
+    .buildEdmProvider(new InputStreamReader(csdl, StandardCharsets.UTF_8));
+
+ServiceMetadata metadata = new MetadataJsonParser().buildServiceMetadata(reader);
+```
+
+The fluent switches are the same ones `MetadataParser` carries: `parseAnnotations`,
+`referenceResolver`, `recursivelyLoadReferences`, `implicitlyLoadCoreVocabularies` and
+`useLocalCoreVocabularies`. Both parsers now share one `ReferenceLoader`, so a referenced document
+is loaded and de-duplicated identically whichever format the root document is in.
+
+* **Both `$Version` values are accepted** — `"4.0"` and `"4.01"` (§4). Any other value, or a missing
+  `$Version`, is a parse error.
+* **JSON defaults, not XML defaults.** The single most load-bearing one: `$Nullable` defaults to
+  **false** in CSDL JSON and to **true** in CSDL XML. `$Type` defaults to `Edm.String`. `$Unicode`
+  defaults to true. A collection navigation property gets no `$Nullable` default at all, because
+  §8.2 prohibits the member.
+* **Aliases are resolved at parse time.** §5.1 makes alias use mandatory once a schema declares one
+  ("A mixed use … is not allowed"), so a JSON document that declares `$Alias` is entirely
+  alias-qualified. The parser rewrites `$Type`, `$BaseType`, `$UnderlyingType`, `$BaseTerm`,
+  `$Action`, `$Function`, `$Extends` and term names to their namespace-qualified form, using both
+  the schema aliases and the `$Include` aliases of the document. An unknown prefix passes through
+  unchanged.
+* **Errors carry their JSON path.** `CsdlJsonParseException extends ODataException` and its
+  `getJsonPath()` names the exact member (`ns/ET/@ns.Term/$Path`).
+* **Legacy tolerance on input.** Documents written by earlier Olinguito releases — the nested
+  `Extending` object, `$Kind: "EntitySet"` without `$Collection`, the `$OnDelete` object, and the
+  CSDL-XML-named constant members `$Binary`/`$Int`/… — still parse, even though nothing writes them
+  any more.
+
+### Reading CSDL JSON on the Client
+
+The client has its own reader (the two do not share code: `commons-*` declares no Jackson
+dependency, and `client-core` must not depend on `server-core-ext` — the same split CSDL XML has
+lived with for years). It produces the same `XMLMetadata`/`CsdlSchema` graph the CSDL XML path
+produces, so `ODataReader.readMetadata(...)`, `ClientCsdlEdmProvider` and `Edm` construction are
+reused unchanged.
+
+```java
+// Explicit request for the CSDL JSON document
+JSONMetadataRequest request = client.getRetrieveRequestFactory().getJSONMetadataRequest(serviceRoot);
+XMLMetadata metadata = request.execute().getBody();          // Accept: application/json
+Edm edm = client.getReader().readMetadata(metadata.getSchemaByNsOrAlias());
+
+// Or let the convenience Edm request pick the representation
+client.getConfiguration().setMetadataFormat(ContentType.APPLICATION_JSON);
+Edm sameEdm = client.getRetrieveRequestFactory().getMetadataRequest(serviceRoot).execute().getBody();
+```
+
+* `Configuration.getMetadataFormat()` defaults to `ContentType.APPLICATION_XML`. Anything that is
+  not `application/json`-compatible — including an unknown or `null` value — means the XML
+  representation, which is [OData-Protocol] §11.1.2's rule for a request with no format preference.
+* `ClientODataDeserializer.toJSONMetadata(InputStream)` is the deserializer entry point;
+  `toMetadata(InputStream)` is unchanged and still CSDL XML.
+* Every addition is a `default` interface method or a new type, so an existing implementor of
+  `Configuration` or `RetrieveRequestFactory` keeps compiling.
+
+### Reference Service
+
+`MetadataJsonITCase` reads the technical service's `$metadata` in both representations and compares
+the two resulting `Edm` graphs member by member: every entity and complex type with its properties
+(type, collection-ness, nullability, `MaxLength`/`Precision`/`Scale`/`Unicode`/`DefaultValue`),
+navigation properties (type, nullability, partner, `ContainsTarget`, `OnDelete`, constraint count),
+key and stream markers; every enum type (underlying type, `IsFlags`, member names and values); every
+type definition and its facets; every action and function overload with its binding, parameters and
+return type; and the entity container's sets, singletons, imports and navigation property bindings.
+
+### Known Limitations
+
+* **A constant expression loses its per-value type marker.** §14.3 renders `Binary`, `Date`,
+  `DateTimeOffset`, `Duration`, `EnumMember`, `Guid`, `String` and `TimeOfDay` constants identically,
+  as JSON strings; the format defines no `$Binary`/`$Date`/… member to disambiguate them. The reader
+  recovers the four shapes JSON does distinguish (`Bool`, `Int`, `Float`, `String`) and takes the
+  rest from the term's declared type — so a constant whose term cannot be resolved re-reads as
+  `String`. Values are exact either way; only the type tag normalizes.
+* **`$Reference` is not followed on either JSON path.** The server parser loads references through
+  the shared loader, which sniffs and parses **CSDL XML** documents; the client's JSON metadata
+  request does not follow `$Reference` at all (the XML request does, recursively, with cycle
+  detection). A service whose vocabularies live behind `$Reference` therefore yields a client-side
+  `Edm` without them, and annotation terms from those vocabularies do not resolve.
+* **Parse-time alias resolution leaves the graph namespace-qualified while `$Alias` stays on the
+  schema.** That is invisible to every reader, but a future writer that emitted such a graph as-is
+  would produce a document violating §5.1's mixed-use rule.
+* **`$Annotations` groups are read only under `parseAnnotations(true)`**, while the CSDL XML parser
+  always creates the (empty) group. Anything depending on the group existing without its annotations
+  sees a difference.
+* **XML-parsed annotations now expose a non-null `getQualifier()`.** The CSDL XML parser dropped the
+  `Qualifier` attribute; it no longer does. This is a downstream-visible change from a real bug fix —
+  two annotations of the same term that differ only by qualifier used to collapse.
+* **`getSchemaNamespaces()` returns `null` for client JSON metadata** (a JSON document has no
+  `edmx:Edmx` wrapper to delegate to), so `CsdlTypeValidator.isV4MetaData` throws for such a
+  document. Validate CSDL XML metadata, or skip validation on the JSON path.
+* **`$Has` and `$In` (§14.4.2) are parse errors on both readers.** `CsdlLogicalOrComparisonExpression`
+  declares `And, Or, Not, Eq, Ne, Gt, Ge, Lt, Le` and nothing else, so there is no model to build;
+  adding constants to that public enum is not an additive change. The parser names the member it
+  refused.
+* **`$Collection` on `$Cast`/`$IsOf`, `$Nullable` on a singleton, and document-level annotations**
+  have no home in the `Csdl*` model and are dropped, exactly as the CSDL XML parser drops their XML
+  equivalents.
+* **The `IEEE754Compatible` and `metadata` media-type parameters of §2.1 are not implemented for
+  `$metadata`.** Numbers go out as JSON numbers (the `IEEE754Compatible=false` default) and the same
+  amount of control information is always written.
+* **Two format-inherent asymmetries survive an XML→JSON→model comparison**, and neither parser should
+  "fix" them: a collection-of-entities return type has no nullability on the JSON wire at all
+  (§12.8), and §13.4.2 keys navigation property bindings by path in one object, so a model that
+  declares the same binding path twice can only carry it once.
 
 ## See Also
 

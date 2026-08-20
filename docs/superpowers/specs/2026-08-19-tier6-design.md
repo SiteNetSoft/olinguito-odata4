@@ -184,11 +184,13 @@ Tests: handler units (preference present with and without an SPI; monitor states
   2. `SRID="variable"` wire behavior is spec-silent; values keep the SRID they carry and literals without a prefix use the CSDL facet default.
   3. The ABNF's fourth position element (linear-referencing measure) is parsed and preserved but never emitted, reconciling OData's grammar with RFC 7946's advice.
   4. GeometryCollection member naming follows RFC 7946 (`"geometries"`), since [OData-JSON] never names it.
-  5. The CSDL JSON parser tolerates two shapes the old Olinguito writer emitted (`Extending`-nested container, absent `$EntityContainer`) on input; it never writes them.
+  5. The CSDL JSON parsers tolerate on input every shape the old Olinguito writer emitted — the `Extending`-nested container, an absent `$EntityContainer`, `"$Kind": "EntitySet"` without `$Collection`, the `$OnDelete` object, `$Type` on a record, and the CSDL-XML-named constant members `$Binary`/`$Int`/… — and never write any of them. Scouting the real documents added the last four to the list the design named.
   6. Malformed CSDL JSON errors carry a JSON member path — a spec-silent implementation choice.
   7. `mediaContentType` is always written when known at `metadata=full`, resolving a §3.1.2 ambiguity conservatively.
   8. `Retry-After` uses a fixed interval; the format is spec-silent. The async wrapper omits `Content-Transfer-Encoding`.
   9. An entity parameter value carrying an unresolvable `@id` is 400 — spec-silent failure mode.
+  10. CSDL JSON carries no per-value type marker for a constant expression (§14.3 renders `Binary`, `Date`, `DateTimeOffset`, `Duration`, `EnumMember`, `Guid`, `String` and `TimeOfDay` alike, as JSON strings), so a constant's type is recovered from the term's declared type and falls back to `String` when the term cannot be resolved. Values are exact; only the type tag normalizes.
+  11. `$Has` and `$In` (§14.4.2) are parse errors, not silent drops: `CsdlLogicalOrComparisonExpression` declares no constants for them and growing that public enum is not an additive change. The parser names the member it refused.
 
 ## Testing and rollout
 
