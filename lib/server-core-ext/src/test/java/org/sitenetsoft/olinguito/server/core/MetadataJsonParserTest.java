@@ -21,6 +21,7 @@
  * Copyright 2026 SiteNetSoft - Added the operation, import and entity container parser tests
  * Copyright 2026 SiteNetSoft - Added the annotation and annotation expression parser tests
  * Copyright 2026 SiteNetSoft - Pinned the collection cast type and the unknown expression member
+ * Copyright 2026 SiteNetSoft - Pinned the collection navigation property $Nullable prohibition
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -142,8 +143,31 @@ class MetadataJsonParserTest {
     final CsdlEntityType category = provider.getEntityType(CATEGORY);
     assertFalse(category.getProperty("Code").isNullable(), "absent $Nullable means false");
     assertTrue(category.getProperty("Name").isNullable());
-    assertFalse(category.getNavigationProperty("Products").isNullable());
     assertTrue(provider.getEntityType(PRODUCT).getNavigationProperty("Category").isNullable());
+  }
+
+  /**
+   * Section 8.2: "Nullable MUST NOT be specified for a collection-valued navigation property, a
+   * collection is allowed to have zero items." The section 7.2.1 false default therefore does not
+   * apply to one; the model keeps its own default, which is what the CSDL XML parser produces for the
+   * same model. A single-valued navigation property does take the false default.
+   */
+  @Test
+  void collectionNavigationPropertyKeepsTheModelNullableDefault() throws Exception {
+    assertTrue(provider.getEntityType(CATEGORY).getNavigationProperty("Products").isCollection());
+    assertTrue(provider.getEntityType(CATEGORY).getNavigationProperty("Products").isNullable(),
+        "$Nullable is prohibited on a collection navigation property, so no default is applied");
+
+    final String document = "{\"$Version\":\"4.01\",\"ns\":{\"ET\":{\"$Kind\":\"EntityType\","
+        + "\"$Key\":[\"ID\"],\"ID\":{\"$Type\":\"Edm.Int32\"},"
+        + "\"Single\":{\"$Kind\":\"NavigationProperty\",\"$Type\":\"ns.ET\"},"
+        + "\"Many\":{\"$Kind\":\"NavigationProperty\",\"$Type\":\"ns.ET\",\"$Collection\":true}}}}";
+    final SchemaBasedEdmProvider parsed =
+        new MetadataJsonParser().buildEdmProvider(new StringReader(document));
+    final CsdlEntityType type = parsed.getEntityType(new FullQualifiedName("ns", "ET"));
+    assertFalse(type.getNavigationProperty("Single").isNullable(),
+        "absent $Nullable means false for a single-valued navigation property");
+    assertTrue(type.getNavigationProperty("Many").isNullable());
   }
 
   /**

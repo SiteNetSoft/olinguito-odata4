@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Read CSDL JSON metadata in the client deserializer
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: kept the collection navigation property $Nullable prohibition
  */
 package org.sitenetsoft.olinguito.client.core.edm.xml;
 
@@ -540,8 +541,14 @@ public final class ClientCsdlJsonMetadataParser {
     property.setName(name);
     // Section 8.1: a navigation property MUST specify $Type; there is no Edm.String fallback.
     property.setType(resolveName(requireText(node, TYPE, path)));
-    property.setCollection(flag(node, COLLECTION));
-    property.setNullable(flag(node, NULLABLE));
+    final boolean collection = flag(node, COLLECTION);
+    property.setCollection(collection);
+    // Section 8.2: $Nullable "MUST NOT be specified for a collection-valued navigation property"; the
+    // section 7.2.1 default of false therefore does not apply to one - leaving the model default keeps
+    // a collection navigation property identical to the one the CSDL XML parser builds.
+    if (!collection) {
+      property.setNullable(flag(node, NULLABLE));
+    }
     property.setPartner(text(node, PARTNER, null));
     property.setContainsTarget(flag(node, CONTAINS_TARGET));
     property.setReferentialConstraints(readReferentialConstraints(node, path));
