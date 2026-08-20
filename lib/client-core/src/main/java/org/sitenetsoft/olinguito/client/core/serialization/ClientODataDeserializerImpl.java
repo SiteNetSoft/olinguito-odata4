@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Code quality improvements
  * Copyright 2026 SiteNetSoft - Narrowed catch(Exception) to specific exception types
+ * Copyright 2026 SiteNetSoft - Read CSDL JSON metadata in the client deserializer
  */
 package org.sitenetsoft.olinguito.client.core.serialization;
 
@@ -44,6 +45,7 @@ import org.sitenetsoft.olinguito.client.core.data.JSONServiceDocumentDeserialize
 import org.sitenetsoft.olinguito.client.core.data.XMLServiceDocumentDeserializer;
 import org.sitenetsoft.olinguito.client.core.edm.ClientCsdlXMLMetadata;
 import org.sitenetsoft.olinguito.client.core.edm.xml.ClientCsdlEdmx;
+import org.sitenetsoft.olinguito.client.core.edm.xml.ClientCsdlJsonMetadataParser;
 import org.sitenetsoft.olinguito.commons.api.data.Delta;
 import org.sitenetsoft.olinguito.commons.api.data.Entity;
 import org.sitenetsoft.olinguito.commons.api.data.EntityCollection;
@@ -149,6 +151,16 @@ public class ClientODataDeserializerImpl implements ClientODataDeserializer {
     } catch (IOException | SAXException | ParserConfigurationException e) {
       throw new IllegalArgumentException("Could not parse as Edmx document", e);
     }
+  }
+
+  /**
+   * Reads the CSDL JSON representation of a metadata document, [OData-CSDLJSON] section 2.1, into the
+   * object graph {@link #toMetadata(InputStream)} builds from the CSDL XML representation of the same
+   * model.
+   */
+  @Override
+  public XMLMetadata toJSONMetadata(final InputStream input) {
+    return ClientCsdlJsonMetadataParser.parse(input);
   }
 
 	private List<List<String>> getAllSchemaNameSpace(InputStream inputStream)

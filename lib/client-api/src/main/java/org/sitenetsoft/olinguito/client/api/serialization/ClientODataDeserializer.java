@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Read CSDL JSON metadata in the client deserializer
  */
 package org.sitenetsoft.olinguito.client.api.serialization;
 
@@ -30,6 +32,24 @@ import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlSchema;
 public interface ClientODataDeserializer extends ODataDeserializer {
 
   XMLMetadata toMetadata(InputStream input);
+
+  /**
+   * Gets the {@link XMLMetadata} object represented by the given CSDL JSON metadata document, as
+   * defined by [OData-CSDLJSON] section 2.1 - the JSON representation of a metadata document, which a
+   * service returns for {@code $metadata} when {@code application/json} is requested.
+   * <p>
+   * The resulting object graph is the one the CSDL XML representation produces, so the same
+   * {@code ODataReader#readMetadata(java.util.Map)} builds the {@code Edm} from either representation.
+   * <p>
+   * The default implementation is unsupported, so deserializers outside this library keep compiling.
+   *
+   * @param input stream containing a CSDL JSON metadata document
+   * @return the metadata of the document
+   * @throws UnsupportedOperationException if this deserializer cannot read CSDL JSON metadata
+   */
+  default XMLMetadata toJSONMetadata(InputStream input) {
+    throw new UnsupportedOperationException("This deserializer cannot read CSDL JSON metadata");
+  }
   
   /**
    * Gets all the terms defined in the given input stream
