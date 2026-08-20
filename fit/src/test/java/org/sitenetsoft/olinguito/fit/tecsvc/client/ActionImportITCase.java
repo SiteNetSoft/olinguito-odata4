@@ -17,11 +17,13 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
+ * Copyright 2026 SiteNetSoft - Added entity-typed action parameter tests
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
@@ -311,6 +313,75 @@ public class ActionImportITCase extends AbstractParamTecSvcITCase {
         callAction("AIRTByteNineParam", ClientProperty.class, parameters, false);
     assertEquals(HttpStatusCode.OK.getStatusCode(), response.getStatusCode());
     assertEquals(6, response.getBody().getPrimitiveValue().toValue());
+  }
+
+  /**
+   * [OData-JSON] section 18 Action Invocation: an entity-typed parameter value is an entity object.
+   * The full deserialize -> evaluate -> serialize round trip, through the real client.
+   * The echo action answers with the parameter entity's own values, the collection being counted,
+   * not echoed.
+   */
+  @Test
+  public void entityTypedParameterIsEchoedBack() {
+    final Map<String, ClientValue> parameters = new HashMap<String, ClientValue>();
+    parameters.put("ParameterETTwoPrim", getFactory().newComplexValue(null)
+        .add(getFactory().newPrimitiveProperty("PropertyInt16",
+            getFactory().newPrimitiveValueBuilder().buildInt16((short) 7)))
+        .add(getFactory().newPrimitiveProperty("PropertyString",
+            getFactory().newPrimitiveValueBuilder().buildString("echo me"))));
+    parameters.put("CollParameterETTwoPrim", getFactory().newCollectionValue(null)
+        .add(getFactory().newComplexValue(null)
+            .add(getFactory().newPrimitiveProperty("PropertyInt16",
+                getFactory().newPrimitiveValueBuilder().buildInt16((short) 1))))
+        .add(getFactory().newComplexValue(null)
+            .add(getFactory().newPrimitiveProperty("PropertyInt16",
+                getFactory().newPrimitiveValueBuilder().buildInt16((short) 2)))));
+
+    final ODataInvokeResponse<ClientEntity> response =
+        callAction("AIRTETTwoPrimEchoParam", ClientEntity.class, parameters, false);
+    assertEquals(HttpStatusCode.OK.getStatusCode(), response.getStatusCode());
+    final ClientEntity body = response.getBody();
+    assertNotNull(body);
+    assertShortOrInt(7, body.getProperty("PropertyInt16").getPrimitiveValue().toValue());
+    assertEquals("echo me (2)", body.getProperty("PropertyString").getPrimitiveValue().toValue());
+    // The action import declares no entity set, so the returned entity is transient: no Location.
+    assertTrue(response.getHeader(HttpHeader.LOCATION) == null
+        || response.getHeader(HttpHeader.LOCATION).isEmpty());
+  }
+
+  /**
+   * [OData-JSON] section 18: "Entity typed parameter values MAY include a subset of the
+   * properties". Nothing is defaulted for the properties left out - the absent PropertyString is
+   * simply absent, so the echo answers the empty string.
+   */
+  @Test
+  public void entityTypedParameterMayCarryASubsetOfTheProperties() {
+    final Map<String, ClientValue> parameters = new HashMap<String, ClientValue>();
+    parameters.put("ParameterETTwoPrim", getFactory().newComplexValue(null)
+        .add(getFactory().newPrimitiveProperty("PropertyInt16",
+            getFactory().newPrimitiveValueBuilder().buildInt16((short) 7))));
+
+    final ODataInvokeResponse<ClientEntity> response =
+        callAction("AIRTETTwoPrimEchoParam", ClientEntity.class, parameters, false);
+    assertEquals(HttpStatusCode.OK.getStatusCode(), response.getStatusCode());
+    final ClientEntity body = response.getBody();
+    assertNotNull(body);
+    assertShortOrInt(7, body.getProperty("PropertyInt16").getPrimitiveValue().toValue());
+    assertEquals(" (0)", body.getProperty("PropertyString").getPrimitiveValue().toValue());
+  }
+
+  /** An omitted entity-typed parameter is legal: it is nullable, so it is the null value. */
+  @Test
+  public void omittedEntityTypedParameterIsNull() {
+    final Map<String, ClientValue> parameters = new HashMap<String, ClientValue>();
+    parameters.put("CollParameterETTwoPrim", getFactory().newCollectionValue(null));
+    final ODataInvokeResponse<ClientEntity> response =
+        callAction("AIRTETTwoPrimEchoParam", ClientEntity.class, parameters, false);
+    assertEquals(HttpStatusCode.OK.getStatusCode(), response.getStatusCode());
+    final ClientEntity body = response.getBody();
+    assertNotNull(body);
+    assertShortOrInt(0, body.getProperty("PropertyInt16").getPrimitiveValue().toValue());
+    assertEquals(" (0)", body.getProperty("PropertyString").getPrimitiveValue().toValue());
   }
 
   private Map<String, ClientValue> buildParameterInt16(final int value) {
