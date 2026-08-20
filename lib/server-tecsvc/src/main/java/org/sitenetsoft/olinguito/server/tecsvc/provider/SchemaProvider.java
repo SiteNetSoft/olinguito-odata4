@@ -25,6 +25,7 @@
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 6: register the operations with optional
  * parameters, including the invalid-default action
  * Copyright 2026 SiteNetSoft - OData 4.01: malformed optional-parameter default values are rejected with 400
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 2 Task 5: register the ETGeo entity type
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
@@ -97,6 +98,7 @@ public class SchemaProvider {
     entityTypes.add(prov.getEntityType(EntityTypeProvider.nameETCompComp));
     entityTypes.add(prov.getEntityType(EntityTypeProvider.nameETCompCollComp));
     entityTypes.add(prov.getEntityType(EntityTypeProvider.nameETMedia));
+    entityTypes.add(prov.getEntityType(EntityTypeProvider.nameETGeo));
     entityTypes.add(prov.getEntityType(EntityTypeProvider.nameETFourKeyAlias));
     entityTypes.add(prov.getEntityType(EntityTypeProvider.nameETServerSidePaging));
     entityTypes.add(prov.getEntityType(EntityTypeProvider.nameETStreamServerSidePaging));

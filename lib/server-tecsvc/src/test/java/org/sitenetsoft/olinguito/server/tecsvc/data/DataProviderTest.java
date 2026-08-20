@@ -24,6 +24,7 @@
  * Copyright 2026 SiteNetSoft - Empty key lists address no entity; first entity selected explicitly
  * Copyright 2026 SiteNetSoft - OData 4.01: referential-constraint key predicates from the source entity
  * Copyright 2026 SiteNetSoft - OData 4.01: malformed optional-parameter default values are rejected with 400
+ * Copyright 2026 SiteNetSoft - OData 4.01: ETGeo/ESGeo geospatial reference model
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -35,11 +36,16 @@ import org.sitenetsoft.olinguito.commons.api.data.Entity;
 import org.sitenetsoft.olinguito.commons.api.data.EntityCollection;
 import org.sitenetsoft.olinguito.commons.api.data.Parameter;
 import org.sitenetsoft.olinguito.commons.api.data.Property;
+import org.sitenetsoft.olinguito.commons.api.data.ValueType;
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmFunction;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Geospatial;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Point;
 import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.uri.UriParameter;
@@ -64,6 +70,7 @@ class DataProviderTest {
   private final EdmEntitySet esCollAllPrim = entityContainer.getEntitySet("ESCollAllPrim");
   private final EdmEntitySet esMixPrimCollComp = entityContainer.getEntitySet("ESMixPrimCollComp");
   private final EdmEntitySet esMedia = entityContainer.getEntitySet("ESMedia");
+  private final EdmEntitySet esGeo = entityContainer.getEntitySet("ESGeo");
 
   @Test
   void esAllPrimEntity() throws Exception {
@@ -185,6 +192,64 @@ class DataProviderTest {
     dataProvider.setMedia(entity, new byte[] { 1, 2, 3, 4 }, "x/y");
     Assertions.assertArrayEquals(new byte[] { 1, 2, 3, 4 }, dataProvider.readMedia(entity));
     Assertions.assertEquals("x/y", entity.getMediaContentType());
+  }
+
+  @Test
+  void esGeoEntity() throws Exception {
+    final DataProvider dataProvider = new DataProvider(oData, edm);
+    final Entity entity = dataProvider.read(esGeo, List.of(mockParameter("PropertyInt16", "1")));
+    Assertions.assertEquals(16, entity.getProperties().size());
+
+    final Property point = entity.getProperty("PropertyGeometryPoint");
+    // The value type must be GEOSPATIAL, not PRIMITIVE: the JSON writer dispatches on it, and a
+    // PRIMITIVE tag makes it emit the WKT literal instead of the GeoJSON object.
+    Assertions.assertEquals(ValueType.GEOSPATIAL, point.getValueType());
+    Assertions.assertEquals(1.5, ((Point) point.getValue()).getX(), 0);
+    Assertions.assertEquals(Geospatial.Dimension.GEOMETRY, ((Point) point.getValue()).getDimension());
+
+    final Property geographyPoint = entity.getProperty("PropertyGeographyPoint");
+    Assertions.assertEquals(Geospatial.Dimension.GEOGRAPHY,
+        ((Point) geographyPoint.getValue()).getDimension());
+    // [OData-CSDL] section 7.2.6: "the facet defaults to 0 for Geometry types or 4326 for Geography types".
+    Assertions.assertEquals("4326", ((Point) geographyPoint.getValue()).getSrid().toString());
+    Assertions.assertEquals("0", ((Point) point.getValue()).getSrid().toString());
+
+    final Property collection = entity.getProperty("CollPropertyGeometryPoint");
+    Assertions.assertEquals(ValueType.COLLECTION_GEOSPATIAL, collection.getValueType());
+    Assertions.assertEquals(2, collection.asCollection().size());
+  }
+
+  /** Every geo property of the third seeded entity is null, and that is a legal entity. */
+  @Test
+  void esGeoNullEntity() throws Exception {
+    final DataProvider dataProvider = new DataProvider(oData, edm);
+    final Entity entity = dataProvider.read(esGeo, List.of(mockParameter("PropertyInt16", "3")));
+    Assertions.assertNull(entity.getProperty("PropertyGeometryPoint").getValue());
+  }
+
+  /** CRUD: create allocates a fresh Int16 key and the new entity is readable and deletable. */
+  @Test
+  void esGeoCrud() throws Exception {
+    final DataProvider dataProvider = new DataProvider(oData, edm);
+    Assertions.assertEquals(3, dataProvider.readAll(esGeo).getEntities().size());
+    final Entity created = dataProvider.create(esGeo);
+    Assertions.assertEquals(4, dataProvider.readAll(esGeo).getEntities().size());
+    Assertions.assertNotNull(created.getProperty("PropertyInt16").getValue());
+    dataProvider.delete(esGeo, created);
+    Assertions.assertEquals(3, dataProvider.readAll(esGeo).getEntities().size());
+  }
+
+  /**
+   * [OData-CSDL] section 4.1 lists the primitive types a key property may have and no Geo type is on
+   * it, so ETGeo is keyed by an Edm.Int16. Pinning the model here is what keeps the restriction
+   * honest, since the library does not validate key types (see the plan's Dropped section).
+   */
+  @Test
+  void esGeoKeyIsNotAGeoType() {
+    final EdmEntityType type = esGeo.getEntityType();
+    Assertions.assertEquals(List.of("PropertyInt16"), type.getKeyPredicateNames());
+    Assertions.assertEquals(EdmPrimitiveTypeKind.Int16.getFullQualifiedName(),
+        type.getProperty("PropertyInt16").getType().getFullQualifiedName());
   }
 
   @Test

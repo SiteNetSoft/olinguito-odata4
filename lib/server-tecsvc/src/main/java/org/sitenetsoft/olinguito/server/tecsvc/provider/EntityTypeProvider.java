@@ -21,6 +21,7 @@
  * Copyright 2026 SiteNetSoft - Add OpenType support (tecsvc ETOpen model)
  * Copyright 2026 SiteNetSoft - OpenType: give ETOpen a declared open complex property PropertyComp
  * Copyright 2026 SiteNetSoft - OData 4.01: a type-level alternate key on ETKeyNav
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 2 Task 5: the ETGeo entity type
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
@@ -72,6 +73,7 @@ public class EntityTypeProvider {
   public static final FullQualifiedName nameETTwoKeyNavCont = new FullQualifiedName(SchemaProvider.NAMESPACE,
       "ETTwoKeyNavCont");
   public static final FullQualifiedName nameETMedia = new FullQualifiedName(SchemaProvider.NAMESPACE, "ETMedia");
+  public static final FullQualifiedName nameETGeo = new FullQualifiedName(SchemaProvider.NAMESPACE, "ETGeo");
   public static final FullQualifiedName nameETMixPrimCollComp = new FullQualifiedName(SchemaProvider.NAMESPACE,
       "ETMixPrimCollComp");
   public static final FullQualifiedName nameETServerSidePaging =
@@ -306,6 +308,30 @@ public class EntityTypeProvider {
           .setProperties(List.of(
               PropertyProvider.propertyInt16_NotNullable,
               PropertyProvider.propertyComp_CTCompCollComp));
+
+    } else if (entityTypeName.equals(nameETGeo)) {
+      // [OData-CSDL] section 4.1 does not list any geospatial type among the primitive types a key
+      // property may have, so the key is an Edm.Int16.
+      return new CsdlEntityType()
+          .setName("ETGeo")
+          .setKey(List.of(new CsdlPropertyRef().setName("PropertyInt16")))
+          .setProperties(List.of(
+              PropertyProvider.propertyInt16_NotNullable,
+              PropertyProvider.propertyGeographyPoint,
+              PropertyProvider.propertyGeographyLineString,
+              PropertyProvider.propertyGeographyPolygon,
+              PropertyProvider.propertyGeographyMultiPoint,
+              PropertyProvider.propertyGeographyMultiLineString,
+              PropertyProvider.propertyGeographyMultiPolygon,
+              PropertyProvider.propertyGeographyCollection,
+              PropertyProvider.propertyGeometryPoint,
+              PropertyProvider.propertyGeometryLineString,
+              PropertyProvider.propertyGeometryPolygon,
+              PropertyProvider.propertyGeometryMultiPoint,
+              PropertyProvider.propertyGeometryMultiLineString,
+              PropertyProvider.propertyGeometryMultiPolygon,
+              PropertyProvider.propertyGeometryCollection,
+              PropertyProvider.collPropertyGeometryPoint));
 
     } else if (entityTypeName.equals(nameETMedia)) {
       return new CsdlEntityType()

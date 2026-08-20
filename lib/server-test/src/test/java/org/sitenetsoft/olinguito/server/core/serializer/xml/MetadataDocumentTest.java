@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 3: tecsvc now publishes its schema version
  * through a schema-level Core.SchemaVersion annotation
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 2 Task 5: ETGeo/ESGeo geospatial reference model
  */
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
@@ -153,6 +154,16 @@ class MetadataDocumentTest {
 
     // BaseTypeCheck
     assertThat(metadata, containsString("<EntityType Name=\"ETBase\" BaseType=\"Namespace1_Alias.ETTwoPrim\">"));
+
+    // OData 4.01 CSDL section 7.2.6: the SRID facet is written when it is specified and omitted when
+    // it is not, in which case it defaults to 0 for Geometry and 4326 for Geography.
+    assertThat(metadata, containsString("<EntityType Name=\"ETGeo\">"
+        + "<Key><PropertyRef Name=\"PropertyInt16\"/></Key>"
+        + "<Property Name=\"PropertyInt16\" Type=\"Edm.Int16\" Nullable=\"false\"></Property>"
+        + "<Property Name=\"PropertyGeographyPoint\" Type=\"Edm.GeographyPoint\"></Property>"));
+    assertThat(metadata, containsString(
+        "<Property Name=\"CollPropertyGeometryPoint\" Type=\"Collection(Edm.GeometryPoint)\" SRID=\"0\">"));
+    assertThat(metadata, containsString("<EntitySet Name=\"ESGeo\" EntityType=\"Namespace1_Alias.ETGeo\">"));
 
     // TypeDefCheck
     assertThat(metadata,

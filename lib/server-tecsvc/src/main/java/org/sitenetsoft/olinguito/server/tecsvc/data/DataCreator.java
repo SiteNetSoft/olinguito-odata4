@@ -25,6 +25,7 @@
  * Copyright 2026 SiteNetSoft - OpenType: seed ESOpen entity 1 with an open complex PropertyComp
  * Copyright 2026 SiteNetSoft - OpenType CRUD Task 3 fix round 1: seed ESOpen entity 1 with a
  * present-but-null dynamic property (DynamicNull) to cover the GET 204 path
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 2 Task 5: seed the ESGeo entity set
  */
 package org.sitenetsoft.olinguito.server.tecsvc.data;
 
@@ -63,6 +64,15 @@ import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlAction;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlFunction;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlParameter;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Geospatial;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Geospatial.Dimension;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.GeospatialCollection;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.LineString;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.MultiLineString;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.MultiPoint;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.MultiPolygon;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Point;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.Polygon;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataException;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
@@ -120,6 +130,7 @@ public class DataCreator {
     data.put("ETTwoCont", createETTwoCont(edm, odata));
     data.put("ESStreamOnComplexProp", createETStreamOnComplexProp(edm, odata));
     data.put("ESOpen", createESOpen(edm, odata));
+    data.put("ESGeo", createESGeo(edm, odata));
 
     linkSINav(data);
     linkESTwoPrim(data);
@@ -814,6 +825,109 @@ public class DataCreator {
 
   protected Map<String, EntityCollection> getData() {
     return data;
+  }
+
+  private EntityCollection createESGeo(final Edm edm, final OData odata) {
+    final EntityCollection entityCollection = new EntityCollection();
+    entityCollection.getEntities().add(createETGeoEntity((short) 1, 0.0));
+    entityCollection.getEntities().add(createETGeoEntity((short) 2, 10.0));
+    entityCollection.getEntities().add(new Entity()
+        .addProperty(createPrimitive("PropertyInt16", (short) 3))
+        .addProperty(createGeospatial("PropertyGeographyPoint", null))
+        .addProperty(createGeospatial("PropertyGeographyLineString", null))
+        .addProperty(createGeospatial("PropertyGeographyPolygon", null))
+        .addProperty(createGeospatial("PropertyGeographyMultiPoint", null))
+        .addProperty(createGeospatial("PropertyGeographyMultiLineString", null))
+        .addProperty(createGeospatial("PropertyGeographyMultiPolygon", null))
+        .addProperty(createGeospatial("PropertyGeographyCollection", null))
+        .addProperty(createGeospatial("PropertyGeometryPoint", null))
+        .addProperty(createGeospatial("PropertyGeometryLineString", null))
+        .addProperty(createGeospatial("PropertyGeometryPolygon", null))
+        .addProperty(createGeospatial("PropertyGeometryMultiPoint", null))
+        .addProperty(createGeospatial("PropertyGeometryMultiLineString", null))
+        .addProperty(createGeospatial("PropertyGeometryMultiPolygon", null))
+        .addProperty(createGeospatial("PropertyGeometryCollection", null))
+        .addProperty(createGeospatialCollection("CollPropertyGeometryPoint")));
+
+    setEntityType(entityCollection, edm.getEntityType(EntityTypeProvider.nameETGeo));
+    createEntityId(edm, odata, "ESGeo", entityCollection);
+    createOperations("ESGeo", entityCollection, EntityTypeProvider.nameETGeo);
+    return entityCollection;
+  }
+
+  private Entity createETGeoEntity(final short key, final double offset) {
+    return new Entity()
+        .addProperty(createPrimitive("PropertyInt16", key))
+        .addProperty(createGeospatial("PropertyGeographyPoint",
+            geoPoint(Dimension.GEOGRAPHY, 1.5 + offset, 2.5 + offset)))
+        .addProperty(createGeospatial("PropertyGeographyLineString",
+            new LineString(Dimension.GEOGRAPHY, null, List.of(
+                geoPoint(Dimension.GEOGRAPHY, offset, offset),
+                geoPoint(Dimension.GEOGRAPHY, 1 + offset, 1 + offset),
+                geoPoint(Dimension.GEOGRAPHY, 2 + offset, 2 + offset)))))
+        .addProperty(createGeospatial("PropertyGeographyPolygon", geoSquare(Dimension.GEOGRAPHY, offset)))
+        .addProperty(createGeospatial("PropertyGeographyMultiPoint",
+            new MultiPoint(Dimension.GEOGRAPHY, null, List.of(
+                geoPoint(Dimension.GEOGRAPHY, offset, offset),
+                geoPoint(Dimension.GEOGRAPHY, 1 + offset, 1 + offset)))))
+        .addProperty(createGeospatial("PropertyGeographyMultiLineString",
+            new MultiLineString(Dimension.GEOGRAPHY, null, List.of(
+                geoLine(Dimension.GEOGRAPHY, offset), geoLine(Dimension.GEOGRAPHY, 5 + offset)))))
+        .addProperty(createGeospatial("PropertyGeographyMultiPolygon",
+            new MultiPolygon(Dimension.GEOGRAPHY, null, List.of(
+                geoSquare(Dimension.GEOGRAPHY, offset), geoSquare(Dimension.GEOGRAPHY, 10 + offset)))))
+        .addProperty(createGeospatial("PropertyGeographyCollection",
+            new GeospatialCollection(Dimension.GEOGRAPHY, null,
+                List.of(geoPoint(Dimension.GEOGRAPHY, 1 + offset, 1 + offset)))))
+        .addProperty(createGeospatial("PropertyGeometryPoint",
+            geoPoint(Dimension.GEOMETRY, 1.5 + offset, 2.5 + offset)))
+        // 0 0 -> 3 4 is a 3-4-5 triangle, so geo.length of this line string is exactly 5.
+        .addProperty(createGeospatial("PropertyGeometryLineString",
+            new LineString(Dimension.GEOMETRY, null, List.of(
+                geoPoint(Dimension.GEOMETRY, offset, offset),
+                geoPoint(Dimension.GEOMETRY, 3 + offset, 4 + offset)))))
+        .addProperty(createGeospatial("PropertyGeometryPolygon", geoSquare(Dimension.GEOMETRY, offset)))
+        .addProperty(createGeospatial("PropertyGeometryMultiPoint",
+            new MultiPoint(Dimension.GEOMETRY, null, List.of(
+                geoPoint(Dimension.GEOMETRY, offset, offset),
+                geoPoint(Dimension.GEOMETRY, 1 + offset, 1 + offset)))))
+        .addProperty(createGeospatial("PropertyGeometryMultiLineString",
+            new MultiLineString(Dimension.GEOMETRY, null, List.of(
+                geoLine(Dimension.GEOMETRY, offset), geoLine(Dimension.GEOMETRY, 5 + offset)))))
+        .addProperty(createGeospatial("PropertyGeometryMultiPolygon",
+            new MultiPolygon(Dimension.GEOMETRY, null, List.of(
+                geoSquare(Dimension.GEOMETRY, offset), geoSquare(Dimension.GEOMETRY, 10 + offset)))))
+        .addProperty(createGeospatial("PropertyGeometryCollection",
+            new GeospatialCollection(Dimension.GEOMETRY, null,
+                List.of(geoPoint(Dimension.GEOMETRY, 1 + offset, 1 + offset)))))
+        .addProperty(createGeospatialCollection("CollPropertyGeometryPoint",
+            geoPoint(Dimension.GEOMETRY, offset, offset),
+            geoPoint(Dimension.GEOMETRY, 1 + offset, 1 + offset)));
+  }
+
+  private static Point geoPoint(final Dimension dimension, final double x, final double y) {
+    final Point point = new Point(dimension, null);
+    point.setX(x);
+    point.setY(y);
+    return point;
+  }
+
+  private static LineString geoLine(final Dimension dimension, final double offset) {
+    return new LineString(dimension, null, List.of(
+        geoPoint(dimension, offset, offset), geoPoint(dimension, 1 + offset, 1 + offset)));
+  }
+
+  /**
+   * The axis-aligned square (0 0, 4 0, 4 4, 0 4, 0 0), translated by {@code offset}. [OData-ABNF]
+   * requires a ring's first and last position to be "an exact syntactic match to each other".
+   */
+  private static Polygon geoSquare(final Dimension dimension, final double offset) {
+    return new Polygon(dimension, null, null, new LineString(dimension, null, List.of(
+        geoPoint(dimension, offset, offset),
+        geoPoint(dimension, 4 + offset, offset),
+        geoPoint(dimension, 4 + offset, 4 + offset),
+        geoPoint(dimension, offset, 4 + offset),
+        geoPoint(dimension, offset, offset))));
   }
 
   private EntityCollection createESTwoKeyTwoPrim(final Edm edm, final OData odata) {
@@ -2134,6 +2248,18 @@ public class DataCreator {
 
   protected static Property createPrimitive(final String name, final Object value) {
     return new Property(null, name, ValueType.PRIMITIVE, value);
+  }
+
+  /**
+   * A geospatial value must be stored as {@link ValueType#GEOSPATIAL}: the serializers dispatch on the
+   * value type, and DataProvider.updatePropertyValue reuses the stored property's value type on PATCH.
+   */
+  protected static Property createGeospatial(final String name, final Geospatial value) {
+    return new Property(null, name, ValueType.GEOSPATIAL, value);
+  }
+
+  protected static Property createGeospatialCollection(final String name, final Geospatial... values) {
+    return new Property(null, name, ValueType.COLLECTION_GEOSPATIAL, new ArrayList<Object>(List.of(values)));
   }
 
   protected static Property createPrimitiveCollection(final String name, final Object... values) {

@@ -24,6 +24,7 @@
  * Copyright 2026 SiteNetSoft - OData 4.01: function imports with optional parameters
  * Copyright 2026 SiteNetSoft - OData 4.01: alternate keys on ESAllPrim
  * Copyright 2026 SiteNetSoft - OData 4.01: malformed optional-parameter default values are rejected with 400
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 2 Task 5: the ESGeo entity set
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
@@ -70,6 +71,7 @@ public class ContainerProvider {
   public static final String ES_STREAM = "ESStream";
   public static final String ES_STREAM_SERVER_PAGINATION = "ESStreamServerSidePaging";
   public static final String ES_MEDIA = "ESMedia";
+  public static final String ES_GEO = "ESGeo";
   public static final String ES_MEDIA_STREAM = "ESMediaStream";
 
   static final String ALTERNATE_KEYS_TERM = "Core.AlternateKeys";
@@ -109,6 +111,7 @@ public class ContainerProvider {
     entitySets.add(prov.getEntitySet(ContainerProvider.nameContainer, "ESCompComp"));
     entitySets.add(prov.getEntitySet(ContainerProvider.nameContainer, "ESCompCollComp"));
     entitySets.add(prov.getEntitySet(ContainerProvider.nameContainer, ES_MEDIA));
+    entitySets.add(prov.getEntitySet(ContainerProvider.nameContainer, ES_GEO));
     entitySets.add(prov.getEntitySet(ContainerProvider.nameContainer, ES_MEDIA_STREAM));
     entitySets.add(prov.getEntitySet(ContainerProvider.nameContainer, "ESInvisible"));
     entitySets.add(prov.getEntitySet(ContainerProvider.nameContainer, "ESServerSidePaging"));
@@ -389,6 +392,18 @@ public class ContainerProvider {
         return new CsdlEntitySet()
             .setName("ESCompCollDerived")
             .setType(EntityTypeProvider.nameETDeriveCollComp);                       
+      } else if (name.equals(ES_GEO)) {
+        return new CsdlEntitySet()
+            .setName("ESGeo")
+            .setType(EntityTypeProvider.nameETGeo)
+            .setIncludeInServiceDocument(true)
+            .setAnnotations(List.of(
+                new CsdlAnnotation().setTerm("Core.Description")
+                    .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String)
+                        .setValue("Contains geography and geometry values")),
+                new CsdlAnnotation().setTerm(TermProvider.TERM_DATA.getFullQualifiedNameAsString()).setExpression(
+                    new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.Bool, "true"))));
+
       } else if (name.equals("ESMedia")) {
         return new CsdlEntitySet()
             .setName("ESMedia")

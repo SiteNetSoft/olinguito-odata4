@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of/Set.of
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 2 Task 5: geography and geometry properties for ETGeo
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
@@ -24,6 +25,7 @@ import java.util.List;
 
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.geo.SRID;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlNavigationProperty;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlProperty;
 import org.sitenetsoft.olinguito.commons.api.edm.provider.CsdlReferentialConstraint;
@@ -54,6 +56,100 @@ public class PropertyProvider {
   public static final FullQualifiedName nameString = EdmPrimitiveTypeKind.String.getFullQualifiedName();
   public static final FullQualifiedName nameTimeOfDay = EdmPrimitiveTypeKind.TimeOfDay.getFullQualifiedName();
   public static final FullQualifiedName nameStream = EdmPrimitiveTypeKind.Stream.getFullQualifiedName();
+
+  // Geospatial Type Names
+  public static final FullQualifiedName nameGeographyPoint =
+      EdmPrimitiveTypeKind.GeographyPoint.getFullQualifiedName();
+  public static final FullQualifiedName nameGeographyLineString =
+      EdmPrimitiveTypeKind.GeographyLineString.getFullQualifiedName();
+  public static final FullQualifiedName nameGeographyPolygon =
+      EdmPrimitiveTypeKind.GeographyPolygon.getFullQualifiedName();
+  public static final FullQualifiedName nameGeographyMultiPoint =
+      EdmPrimitiveTypeKind.GeographyMultiPoint.getFullQualifiedName();
+  public static final FullQualifiedName nameGeographyMultiLineString =
+      EdmPrimitiveTypeKind.GeographyMultiLineString.getFullQualifiedName();
+  public static final FullQualifiedName nameGeographyMultiPolygon =
+      EdmPrimitiveTypeKind.GeographyMultiPolygon.getFullQualifiedName();
+  public static final FullQualifiedName nameGeographyCollection =
+      EdmPrimitiveTypeKind.GeographyCollection.getFullQualifiedName();
+  public static final FullQualifiedName nameGeometryPoint =
+      EdmPrimitiveTypeKind.GeometryPoint.getFullQualifiedName();
+  public static final FullQualifiedName nameGeometryLineString =
+      EdmPrimitiveTypeKind.GeometryLineString.getFullQualifiedName();
+  public static final FullQualifiedName nameGeometryPolygon =
+      EdmPrimitiveTypeKind.GeometryPolygon.getFullQualifiedName();
+  public static final FullQualifiedName nameGeometryMultiPoint =
+      EdmPrimitiveTypeKind.GeometryMultiPoint.getFullQualifiedName();
+  public static final FullQualifiedName nameGeometryMultiLineString =
+      EdmPrimitiveTypeKind.GeometryMultiLineString.getFullQualifiedName();
+  public static final FullQualifiedName nameGeometryMultiPolygon =
+      EdmPrimitiveTypeKind.GeometryMultiPolygon.getFullQualifiedName();
+  public static final FullQualifiedName nameGeometryCollection =
+      EdmPrimitiveTypeKind.GeometryCollection.getFullQualifiedName();
+
+
+  // Geospatial Properties ------------------------------------------------------------------------------------------
+  public static final CsdlProperty propertyGeographyPoint = new CsdlProperty()
+      .setName("PropertyGeographyPoint")
+      .setType(nameGeographyPoint);
+
+  public static final CsdlProperty propertyGeographyLineString = new CsdlProperty()
+      .setName("PropertyGeographyLineString")
+      .setType(nameGeographyLineString);
+
+  public static final CsdlProperty propertyGeographyPolygon = new CsdlProperty()
+      .setName("PropertyGeographyPolygon")
+      .setType(nameGeographyPolygon);
+
+  public static final CsdlProperty propertyGeographyMultiPoint = new CsdlProperty()
+      .setName("PropertyGeographyMultiPoint")
+      .setType(nameGeographyMultiPoint);
+
+  public static final CsdlProperty propertyGeographyMultiLineString = new CsdlProperty()
+      .setName("PropertyGeographyMultiLineString")
+      .setType(nameGeographyMultiLineString);
+
+  public static final CsdlProperty propertyGeographyMultiPolygon = new CsdlProperty()
+      .setName("PropertyGeographyMultiPolygon")
+      .setType(nameGeographyMultiPolygon);
+
+  public static final CsdlProperty propertyGeographyCollection = new CsdlProperty()
+      .setName("PropertyGeographyCollection")
+      .setType(nameGeographyCollection);
+
+  public static final CsdlProperty propertyGeometryPoint = new CsdlProperty()
+      .setName("PropertyGeometryPoint")
+      .setType(nameGeometryPoint);
+
+  public static final CsdlProperty propertyGeometryLineString = new CsdlProperty()
+      .setName("PropertyGeometryLineString")
+      .setType(nameGeometryLineString);
+
+  public static final CsdlProperty propertyGeometryPolygon = new CsdlProperty()
+      .setName("PropertyGeometryPolygon")
+      .setType(nameGeometryPolygon);
+
+  public static final CsdlProperty propertyGeometryMultiPoint = new CsdlProperty()
+      .setName("PropertyGeometryMultiPoint")
+      .setType(nameGeometryMultiPoint);
+
+  public static final CsdlProperty propertyGeometryMultiLineString = new CsdlProperty()
+      .setName("PropertyGeometryMultiLineString")
+      .setType(nameGeometryMultiLineString);
+
+  public static final CsdlProperty propertyGeometryMultiPolygon = new CsdlProperty()
+      .setName("PropertyGeometryMultiPolygon")
+      .setType(nameGeometryMultiPolygon);
+
+  public static final CsdlProperty propertyGeometryCollection = new CsdlProperty()
+      .setName("PropertyGeometryCollection")
+      .setType(nameGeometryCollection);
+
+  public static final CsdlProperty collPropertyGeometryPoint = new CsdlProperty()
+      .setName("CollPropertyGeometryPoint")
+      .setType(nameGeometryPoint)
+      .setCollection(true)
+      .setSrid(SRID.valueOf("0"));
 
   // Primitive Properties --------------------------------------------------------------------------------------------
   public static final CsdlProperty collPropertyBinary = new CsdlProperty()
