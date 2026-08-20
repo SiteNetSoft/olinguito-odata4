@@ -21,6 +21,8 @@
  * Copyright 2026 SiteNetSoft - OLINGO-1440: Fix polygon parsing without interior rings
  * Copyright 2026 SiteNetSoft - OLINGO-918: Implement the ABNF geo URI literal grammar
  * Copyright 2026 SiteNetSoft - OLINGO-918: Match geo URI literals case-insensitively per RFC 5234
+ * Copyright 2026 SiteNetSoft - OLINGO-918: Accept case-variant SRID/Collection keywords in the value
+ *   parser and keep NaN/INF case-sensitive
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
@@ -48,17 +50,33 @@ import org.sitenetsoft.olinguito.commons.api.edm.geo.SRID;
 
 public abstract class AbstractGeospatialType<T extends Geospatial> extends SingletonPrimitiveType {
 
+  /**
+   * Matched case-insensitively, like {@link #URI_LITERAL_PATTERN} below and for the same reason:
+   * ABNF quoted-string literals are case-insensitive per RFC 5234 section 2.3, and UriTokenizer
+   * reads both the sridLiteral keyword and the "Collection" keyword with nextConstantIgnoreCase.
+   * Without this, {@code fromUriLiteral} would accept a literal spelled {@code srid=0;...} or
+   * {@code Collection(...)} in any other case and hand on a body these patterns then reject, so the
+   * literal would fail late and - through VisitorOperand.tryCast - silently evaluate to null.
+   * The two captured keywords are upper-cased before they are resolved, so relaxing the case here
+   * changes nothing else.
+   */
   private static final Pattern PATTERN =
-      Pattern.compile("([a-z]+)'SRID=([0-9]+);([a-zA-Z]+)\\((.*)\\)'");
+      Pattern.compile("([a-z]+)'SRID=([0-9]+);([a-zA-Z]+)\\((.*)\\)'", Pattern.CASE_INSENSITIVE);
 
   private static final Pattern COLLECTION_PATTERN =
-      Pattern.compile("([a-z]+)'SRID=([0-9]+);Collection\\(([a-zA-Z]+)\\((.*)\\)\\)'");
+      Pattern.compile("([a-z]+)'SRID=([0-9]+);Collection\\(([a-zA-Z]+)\\((.*)\\)\\)'",
+          Pattern.CASE_INSENSITIVE);
 
   /**
    * [OData-ABNF] doubleValue, restricted to the forms that can appear inside a positionLiteral.
+   * <p>
+   * The nanInfinity alternatives carry an inline {@code (?-i:...)} because this fragment is used by
+   * the case-insensitive {@link #URI_LITERAL_PATTERN}: [OData-ABNF] spells them as the case-
+   * sensitive rules "NaN" / "-INF" / "INF", which is also how UriTokenizer reads them
+   * (nextConstant, not nextConstantIgnoreCase), and EdmDouble accepts no other spelling.
    */
   private static final String DOUBLE_VALUE =
-      "(?:-?INF|NaN|[+-]?[0-9]+(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?)";
+      "(?:(?-i:-?INF|NaN)|[+-]?[0-9]+(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?)";
 
   /**
    * [OData-ABNF] positionLiteral = doubleValue SP doubleValue [ SP doubleValue ] [ SP doubleValue ]

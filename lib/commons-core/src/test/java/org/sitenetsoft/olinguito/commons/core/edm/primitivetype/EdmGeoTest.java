@@ -18,12 +18,14 @@
  *
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - OLINGO-918: Cover the ABNF geo URI literal grammar
+ * Copyright 2026 SiteNetSoft - OLINGO-918: Cover case-variant SRID/Collection keywords
  */
 package org.sitenetsoft.olinguito.commons.core.edm.primitivetype;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Iterator;
@@ -324,6 +326,44 @@ class EdmGeoTest extends PrimitiveTypeBaseTest {
         EdmGeographyPoint.getInstance().fromUriLiteral("Geography'SRID=4326;Point(1 2)'"));
     assertEquals("geometry'SRID=0;MULTIPOINT((1 2))'",
         EdmGeometryMultiPoint.getInstance().fromUriLiteral("GEOMETRY'SRID=0;MULTIPOINT((1 2))'"));
+  }
+
+  /**
+   * Whatever fromUriLiteral accepts, valueOfString on the same type must be able to read: anything
+   * else fails late and, through VisitorOperand.tryCast, makes a $filter evaluate to null instead
+   * of reporting an error. The case-variant sridLiteral and "Collection" keywords are the cases
+   * that used to slip through the case-insensitive literal grammar into a case-sensitive parser.
+   */
+  @Test
+  void everyAcceptedCaseVariantIsAlsoParseable() throws EdmPrimitiveTypeException {
+    assertCaseVariantParses(EdmGeometryPoint.getInstance(), "srid=0;Point(1 2)");
+    assertCaseVariantParses(EdmGeometryPoint.getInstance(), "Srid=0;Point(1 2)");
+    assertCaseVariantParses(EdmGeometryPoint.getInstance(), "geometry'srid=0;Point(1 2)'");
+    assertCaseVariantParses(EdmGeometryPoint.getInstance(), "GEOMETRY'SRID=0;POINT(1 2)'");
+    assertCaseVariantParses(EdmGeographyPoint.getInstance(), "Geography'sRiD=4326;Point(1 2)'");
+    assertCaseVariantParses(EdmGeographyCollection.getInstance(),
+        "geography'srid=4326;collection(Point(1 2))'");
+  }
+
+  private static void assertCaseVariantParses(final EdmPrimitiveType instance, final String literal)
+      throws EdmPrimitiveTypeException {
+
+    final Geospatial value = instance.valueOfString(instance.fromUriLiteral(literal),
+        null, null, null, null, null, Geospatial.class);
+    assertNotNull(value);
+  }
+
+  /**
+   * [OData-ABNF] spells nanInfinity as the case-sensitive rules "NaN" / "-INF" / "INF", and so does
+   * UriTokenizer (nextConstant). The literal grammar must not accept a spelling EdmDouble rejects.
+   */
+  @Test
+  void nanAndInfinityStayCaseSensitive() throws EdmPrimitiveTypeException {
+    assertCaseVariantParses(EdmGeometryPoint.getInstance(), "geometry'SRID=0;Point(NaN -INF)'");
+    assertThrows(EdmPrimitiveTypeException.class,
+        () -> EdmGeometryPoint.getInstance().fromUriLiteral("geometry'SRID=0;Point(nan 2)'"));
+    assertThrows(EdmPrimitiveTypeException.class,
+        () -> EdmGeometryPoint.getInstance().fromUriLiteral("geometry'SRID=0;Point(1 inf)'"));
   }
 
   /** An already-prefixed literal, or an empty one, must never be wrapped a second time. */
