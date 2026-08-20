@@ -28,6 +28,8 @@
  * Copyright 2026 SiteNetSoft - Add OpenType support (serialize dynamic properties in JSON)
  * Copyright 2026 SiteNetSoft - Added the omit-values preference (OData 4.01, Protocol Section 8.2.8.6)
  * Copyright 2026 SiteNetSoft - Write collection-valued geospatial properties as GeoJSON objects
+ * Copyright 2026 SiteNetSoft - OLINGO-1588: Serialize entity-typed and entity-collection values,
+ * including the @id-only by-reference form
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -1019,8 +1021,16 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
         json.writeStringField(typeName, 
             "#Collection(" + type.getFullQualifiedName().getFullQualifiedNameAsString() + ")");
       }
+    } else if (type.getKind() == EdmTypeKind.ENTITY) {
+      // [OData-JSON] section 4.5.3: the type control information of an entity value, written at
+      // metadata=full like every other declared type.
+      json.writeStringField(typeName, edmProperty.isCollection()
+          ? "#Collection(" + type.getFullQualifiedName().getFullQualifiedNameAsString() + ")"
+          : "#" + type.getFullQualifiedName().getFullQualifiedNameAsString());
     } else {
-      throw new SerializerException("Property type not yet supported!",
+      throw new SerializerException("Property type not yet supported: a property value must be "
+          + "primitive, enumeration, type definition, complex or entity typed, but "
+          + edmProperty.getName() + " is declared as " + type.getKind() + "!",
           SerializerException.MessageKeys.UNSUPPORTED_PROPERTY_TYPE, edmProperty.getName());
     }    
   }
@@ -1059,8 +1069,21 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
          writeComplex(metadata, (EdmComplexType) type, property, selectedPaths, json, 
              expandedPaths, linked, expand);
         }
+      } else if (type.getKind() == EdmTypeKind.ENTITY) {
+        // [OData-CSDL] section 7.1 forbids an entity-typed *structural* property, so this branch is
+        // reached only by an action parameter or return value ([OData-CSDL] section 12.9: the
+        // parameter type "MAY be any type in scope"). [OData-JSON] section 18 then says the value is
+        // written "in the JSON representation appropriate for its type", which section 6 makes a JSON
+        // object and section 14 allows to be reduced to an entity reference.
+        if (edmProperty.isCollection()) {
+          writeEntityCollectionValue(metadata, (EdmEntityType) type, property, json);
+        } else {
+          writeEntityValue(metadata, (EdmEntityType) type, property, json);
+        }
       } else {
-        throw new SerializerException("Property type not yet supported!",
+        throw new SerializerException("Property type not yet supported: a property value must be "
+            + "primitive, enumeration, type definition, complex or entity typed, but "
+            + edmProperty.getName() + " is declared as " + type.getKind() + "!",
             SerializerException.MessageKeys.UNSUPPORTED_PROPERTY_TYPE, edmProperty.getName());
       }
     } catch (final EdmPrimitiveTypeException e) {
@@ -1186,6 +1209,56 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       }
     }
     json.writeEndArray();
+  }
+
+  /**
+   * Writes an entity-typed value as a JSON object ([OData-JSON] section 6), or as an entity
+   * reference when the value carries nothing but its id (section 14: an entity reference "MUST
+   * contain the id of the referenced entity ... but no additional properties or control
+   * information").
+   */
+  private void writeEntityValue(final ServiceMetadata metadata, final EdmEntityType type,
+      final Property property, final JsonGenerator json)
+      throws IOException, SerializerException {
+    final Object value = property.getValue();
+    if (!(value instanceof Entity entity)) {
+      throw new SerializerException("Inconsistent property type!",
+          SerializerException.MessageKeys.INCONSISTENT_PROPERTY_TYPE, property.getName());
+    }
+    writeEntity(metadata, type, entity, null, null, null, null, isEntityReferenceOnly(entity),
+        null, null, json);
+  }
+
+  /**
+   * Writes a collection of entity-typed values ([OData-JSON] section 13: "each element is
+   * representation of an entity or a representation of an entity reference"). The by-reference
+   * decision is made per element, which is why the collection is not simply handed to
+   * writeEntitySet with one flag.
+   */
+  private void writeEntityCollectionValue(final ServiceMetadata metadata, final EdmEntityType type,
+      final Property property, final JsonGenerator json)
+      throws IOException, SerializerException {
+    json.writeStartArray();
+    for (final Object element : property.asCollection()) {
+      if (!(element instanceof Entity entity)) {
+        throw new SerializerException("Inconsistent property type!",
+            SerializerException.MessageKeys.INCONSISTENT_PROPERTY_TYPE, property.getName());
+      }
+      writeEntity(metadata, type, entity, null, null, null, null, isEntityReferenceOnly(entity),
+          null, null, json);
+    }
+    json.writeEndArray();
+  }
+
+  /**
+   * Whether the value is "just the entity reference" in the sense of [OData-JSON] section 18: an id
+   * and nothing else - no properties, no navigation links, no annotations.
+   */
+  private static boolean isEntityReferenceOnly(final Entity entity) {
+    return entity.getId() != null
+        && entity.getProperties().isEmpty()
+        && entity.getNavigationLinks().isEmpty()
+        && entity.getAnnotations().isEmpty();
   }
 
   private void writePrimitive(final EdmPrimitiveType type, final Property property,

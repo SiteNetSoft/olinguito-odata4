@@ -24,6 +24,7 @@
  * Copyright 2026 SiteNetSoft - omit-values: non-nullable-missing exception, streamed collection,
  * and entry-point-reset regression tests
  * Copyright 2026 SiteNetSoft - Tests for GeoJSON collection-valued properties and the geo round trip
+ * Copyright 2026 SiteNetSoft - Tests for entity-typed and entity-collection values in JSON payloads
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -68,6 +69,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationProperty;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmStructuredType;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.commons.api.edm.constants.EdmTypeKind;
 import org.sitenetsoft.olinguito.commons.api.edm.geo.Geospatial.Dimension;
 import org.sitenetsoft.olinguito.commons.api.edm.geo.GeospatialCollection;
 import org.sitenetsoft.olinguito.commons.api.edm.geo.LineString;
@@ -2800,12 +2802,17 @@ class ODataJsonSerializerTest {
             .getContent().readAllBytes(), StandardCharsets.UTF_8));
   }
 
-  private EdmEntityType mockEntityType(final EdmPrimitiveTypeKind type) {
+  private EdmProperty mockPrimitiveProperty(final String name, final EdmPrimitiveTypeKind type) {
     EdmProperty property = Mockito.mock(EdmProperty.class);
-    final String name = "Property" + type.name();
     Mockito.when(property.getName()).thenReturn(name);
     Mockito.when(property.getType()).thenReturn(odata.createPrimitiveTypeInstance(type));
     Mockito.when(property.isPrimitive()).thenReturn(true);
+    return property;
+  }
+
+  private EdmEntityType mockEntityType(final EdmPrimitiveTypeKind type) {
+    final String name = "Property" + type.name();
+    EdmProperty property = mockPrimitiveProperty(name, type);
     EdmEntityType entityType = Mockito.mock(EdmEntityType.class);
     Mockito.when(entityType.getPropertyNames()).thenReturn(List.of(name));
     Mockito.when(entityType.getProperty(name)).thenReturn(property);
@@ -2829,6 +2836,122 @@ class ODataJsonSerializerTest {
     Mockito.when(entityType.getFullQualifiedName())
         .thenReturn(new FullQualifiedName("namespace", "entityType"));
     return entityType;
+  }
+
+  /**
+   * [OData-JSON] section 6: "An entity is serialized as a JSON object." A structural property can
+   * never be entity-typed ([OData-CSDL] section 7.1), so this shape only ever arrives through an
+   * action parameter or return value - but when it does, it must be written, not rejected.
+   */
+  @Test
+  void entityTypedValueIsWrittenAsAnObject() throws Exception {
+    final EdmEntityType holder = mockEntityTypedPropertyHolder(false);
+    final Entity value = new Entity()
+        .addProperty(new Property(null, "PropertyInt16", ValueType.PRIMITIVE, (short) 42))
+        .addProperty(new Property(null, "PropertyString", ValueType.PRIMITIVE, "Yes"));
+    final Entity entity = new Entity()
+        .addProperty(new Property(null, holder.getPropertyNames().get(0), ValueType.ENTITY, value));
+    Assertions.assertEquals("{\"" + holder.getPropertyNames().get(0) + "\":"
+        + "{\"PropertyInt16\":42,\"PropertyString\":\"Yes\"}}",
+        new String(serializerNoMetadata.entity(metadata, holder, entity, null)
+            .getContent().readAllBytes(), StandardCharsets.UTF_8));
+  }
+
+  /**
+   * [OData-JSON] section 13: the array elements are "representation of an entity or a representation
+   * of an entity reference".
+   */
+  @Test
+  void entityCollectionTypedValueIsWrittenAsAnArrayOfObjects() throws Exception {
+    final EdmEntityType holder = mockEntityTypedPropertyHolder(true);
+    final Entity first = new Entity()
+        .addProperty(new Property(null, "PropertyInt16", ValueType.PRIMITIVE, (short) 1))
+        .addProperty(new Property(null, "PropertyString", ValueType.PRIMITIVE, "One"));
+    final Entity second = new Entity()
+        .addProperty(new Property(null, "PropertyInt16", ValueType.PRIMITIVE, (short) 2))
+        .addProperty(new Property(null, "PropertyString", ValueType.PRIMITIVE, "Two"));
+    final Entity entity = new Entity().addProperty(new Property(null, holder.getPropertyNames().get(0),
+        ValueType.COLLECTION_ENTITY, List.of(first, second)));
+    Assertions.assertEquals("{\"" + holder.getPropertyNames().get(0) + "\":"
+        + "[{\"PropertyInt16\":1,\"PropertyString\":\"One\"},"
+        + "{\"PropertyInt16\":2,\"PropertyString\":\"Two\"}]}",
+        new String(serializerNoMetadata.entity(metadata, holder, entity, null)
+            .getContent().readAllBytes(), StandardCharsets.UTF_8));
+  }
+
+  /**
+   * [OData-JSON] section 14: an entity reference "is serialized as a JSON object that MUST contain
+   * the id of the referenced entity ... but no additional properties or control information."
+   */
+  @Test
+  void entityTypedValueCarryingOnlyAnIdIsWrittenByReference() throws Exception {
+    final EdmEntityType holder = mockEntityTypedPropertyHolder(false);
+    final Entity reference = new Entity();
+    reference.setId(URI.create("ESTwoPrim(32767)"));
+    final Entity entity = new Entity()
+        .addProperty(new Property(null, holder.getPropertyNames().get(0), ValueType.ENTITY, reference));
+    Assertions.assertEquals("{\"" + holder.getPropertyNames().get(0) + "\":"
+        + "{\"@odata.id\":\"ESTwoPrim(32767)\"}}",
+        new String(serializerNoMetadata.entity(metadata, holder, entity, null)
+            .getContent().readAllBytes(), StandardCharsets.UTF_8));
+  }
+
+  /**
+   * Closed pin: the error survives for a genuinely illegal shape. An entity value on a property
+   * whose declared type is not entity-typed must still fail, and the message must name the property.
+   */
+  @Test
+  void entityValueOnANonEntityPropertyStillFails() {
+    final EdmEntityType holder = mockEntityType(EdmPrimitiveTypeKind.String);
+    final Entity entity = new Entity().addProperty(new Property(null, holder.getPropertyNames().get(0),
+        ValueType.ENTITY, new Entity()));
+    final SerializerException e = Assertions.assertThrows(SerializerException.class,
+        () -> serializerNoMetadata.entity(metadata, holder, entity, null).getContent().readAllBytes());
+    Assertions.assertEquals(SerializerException.MessageKeys.INCONSISTENT_PROPERTY_TYPE, e.getMessageKey());
+  }
+
+  /**
+   * Mocks an entity type with one entity-typed structural property. CSDL forbids that shape
+   * ([OData-CSDL] section 7.1), which is exactly why it has to be mocked: the serializer branch under
+   * test serves action parameter and return values, whose Property objects look like this.
+   */
+  private EdmEntityType mockEntityTypedPropertyHolder(final boolean isCollection) {
+    final EdmEntityType valueType = Mockito.mock(EdmEntityType.class);
+    Mockito.when(valueType.getKind()).thenReturn(EdmTypeKind.ENTITY);
+    Mockito.when(valueType.getFullQualifiedName())
+        .thenReturn(new FullQualifiedName("olingo.odata.test1", "ETTwoPrim"));
+    Mockito.when(valueType.getPropertyNames()).thenReturn(List.of("PropertyInt16", "PropertyString"));
+    Mockito.when(valueType.getNavigationPropertyNames()).thenReturn(List.of());
+    // The nested mocks must be built before the when(...) call: creating a mock inside an
+    // unfinished stubbing is what Mockito reports as UnfinishedStubbing.
+    final EdmProperty int16 = mockPrimitiveProperty("PropertyInt16", EdmPrimitiveTypeKind.Int16);
+    final EdmProperty string = mockPrimitiveProperty("PropertyString", EdmPrimitiveTypeKind.String);
+    // Facet stubs the real ETTwoPrim.PropertyString carries. Both matter: Mockito's default for
+    // isUnicode() is false (which makes EdmString reject the value) and its default for the
+    // Integer-returning getMaxLength() is 0, not null (which makes EdmString reject anything longer
+    // than the empty string). The geo* mocks get away without them because only EdmString checks
+    // these two facets.
+    Mockito.when(string.isUnicode()).thenReturn(true);
+    Mockito.when(string.getMaxLength()).thenReturn(null);
+    Mockito.when(string.isNullable()).thenReturn(true);
+    Mockito.when(int16.isNullable()).thenReturn(true);
+    Mockito.when(valueType.getStructuralProperty("PropertyInt16")).thenReturn(int16);
+    Mockito.when(valueType.getStructuralProperty("PropertyString")).thenReturn(string);
+
+    final EdmProperty property = Mockito.mock(EdmProperty.class);
+    final String name = isCollection ? "CollParameterETTwoPrim" : "ParameterETTwoPrim";
+    Mockito.when(property.getName()).thenReturn(name);
+    Mockito.when(property.getType()).thenReturn(valueType);
+    Mockito.when(property.isPrimitive()).thenReturn(false);
+    Mockito.when(property.isCollection()).thenReturn(isCollection);
+
+    final EdmEntityType holder = Mockito.mock(EdmEntityType.class);
+    Mockito.when(holder.getPropertyNames()).thenReturn(List.of(name));
+    Mockito.when(holder.getProperty(name)).thenReturn(property);
+    Mockito.when(holder.getStructuralProperty(name)).thenReturn(property);
+    Mockito.when(holder.getFullQualifiedName())
+        .thenReturn(new FullQualifiedName("namespace", "entityType"));
+    return holder;
   }
 
   @Test
