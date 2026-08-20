@@ -34,9 +34,11 @@ import java.nio.charset.StandardCharsets;
 import org.mockito.Mockito;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.JSONMetadataRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataRawRequest;
+import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataRetrieveRequest;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.RetrieveRequestFactory;
 import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
 import org.sitenetsoft.olinguito.client.core.ODataClientImpl;
+import org.sitenetsoft.olinguito.client.api.edm.xml.XMLMetadata;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.junit.jupiter.api.Test;
@@ -257,13 +259,36 @@ class RetrieveRequestTest {
     assertThrows(UnsupportedOperationException.class, () -> bare.getJSONMetadataRequest("http://host/svc"));
   }
 
-  /** Protocol section 11.1.2: the Edm convenience request keeps using XML unless the caller opts in. */
+  /**
+   * Protocol section 11.1.2: the Edm convenience request keeps using XML unless the caller opts in,
+   * and the delegate it builds must actually carry the Accept header of the chosen representation -
+   * the outer request's own headers must not be copied over the delegate's pinned ones.
+   */
   @Test
-  void edmMetadataRequestFollowsTheConfiguredMetadataFormat() {
+  void edmMetadataRequestDelegatesToTheConfiguredRepresentation() {
     final ODataClientImpl client = (ODataClientImpl) ODataClientFactory.getClient();
     assertEquals(ContentType.APPLICATION_XML, client.getConfiguration().getMetadataFormat());
+
+    final EdmMetadataRequestImpl xmlConfigured = (EdmMetadataRequestImpl) client.getRetrieveRequestFactory()
+        .getMetadataRequest("http://host/svc");
+    xmlConfigured.addCustomHeader("X-Custom", "kept");
+    final ODataRetrieveRequest<XMLMetadata> xmlDelegate = xmlConfigured.createMetadataRequest();
+    assertTrue(xmlDelegate instanceof XMLMetadataRequestImpl);
+    assertEquals(ContentType.APPLICATION_XML.toContentTypeString(), xmlDelegate.getAccept());
+    assertEquals("kept", xmlDelegate.getHeader("X-Custom"));
+
     client.getConfiguration().setMetadataFormat(ContentType.APPLICATION_JSON);
-    assertEquals(ContentType.APPLICATION_JSON, client.getConfiguration().getMetadataFormat());
+    final EdmMetadataRequestImpl jsonConfigured = (EdmMetadataRequestImpl) client.getRetrieveRequestFactory()
+        .getMetadataRequest("http://host/svc");
+    jsonConfigured.addCustomHeader("X-Custom", "kept");
+    final ODataRetrieveRequest<XMLMetadata> jsonDelegate = jsonConfigured.createMetadataRequest();
+    assertTrue(jsonDelegate instanceof JSONMetadataRequestImpl);
+    assertEquals(ContentType.APPLICATION_JSON.toContentTypeString(), jsonDelegate.getAccept(),
+        "the Edm request must not copy its own application/xml Accept onto the CSDL JSON delegate");
+    assertEquals(ContentType.APPLICATION_JSON.toContentTypeString(),
+        jsonDelegate.getHeader(HttpHeader.CONTENT_TYPE));
+    assertEquals("kept", jsonDelegate.getHeader("X-Custom"),
+        "custom headers other than Accept/Content-Type are still copied");
   }
 
 }

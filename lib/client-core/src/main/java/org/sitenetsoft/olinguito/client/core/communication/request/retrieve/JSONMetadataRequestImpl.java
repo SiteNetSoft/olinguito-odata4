@@ -27,6 +27,7 @@ import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.JSONM
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
 import org.sitenetsoft.olinguito.client.api.edm.xml.XMLMetadata;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
 
 /**
  * This class implements a CSDL JSON metadata request: the [OData-CSDLJSON] representation of the
@@ -52,6 +53,11 @@ public class JSONMetadataRequestImpl
       @Override
       public XMLMetadata getBody() {
         if (metadata == null) {
+          if (getStatusCode() != HttpStatusCode.OK.getStatusCode()) {
+            // an error payload is not a CSDL JSON document: do not feed it to the metadata reader
+            this.close();
+            return null;
+          }
           try {
             metadata = odataClient.getDeserializer(ContentType.APPLICATION_JSON).toJSONMetadata(getRawResponse());
           } finally {

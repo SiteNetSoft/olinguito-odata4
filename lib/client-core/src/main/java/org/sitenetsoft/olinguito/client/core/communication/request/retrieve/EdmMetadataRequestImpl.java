@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: honour the configured metadata document format
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: keep the delegate's pinned Accept/Content-Type
  */
 package org.sitenetsoft.olinguito.client.core.communication.request.retrieve;
 
@@ -31,6 +32,7 @@ import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieve
 import org.sitenetsoft.olinguito.client.api.edm.xml.XMLMetadata;
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 
 /**
  * This class implements a metadata query request.
@@ -46,29 +48,47 @@ class EdmMetadataRequestImpl extends AbstractMetadataRequestImpl<Edm> implements
     this.serviceRoot = serviceRoot;
   }
 
+  /**
+   * Builds the request that actually fetches the metadata document, in the representation the client
+   * is configured for, with this request's headers copied onto it. Package-private so that tests can
+   * inspect the delegate without executing it.
+   *
+   * @return the configured, not yet executed, metadata request.
+   */
+  ODataRetrieveRequest<XMLMetadata> createMetadataRequest() {
+    // OData 4.01, Part 1: Protocol section 11.1.2 - the CSDL JSON representation only when the caller
+    // asked for it; anything that is not application/json compatible (including an unknown format) is
+    // the XML representation, which is what a request expressing no format preference must get.
+    final ContentType metadataFormat = odataClient.getConfiguration().getMetadataFormat();
+    final ODataRetrieveRequest<XMLMetadata> request =
+        metadataFormat != null && ContentType.APPLICATION_JSON.isCompatible(metadataFormat)
+            ? odataClient.getRetrieveRequestFactory().getJSONMetadataRequest(serviceRoot)
+            : odataClient.getRetrieveRequestFactory().getXMLMetadataRequest(serviceRoot);
+    if (getPrefer() != null) {
+      request.setPrefer(getPrefer());
+    }
+    if (getIfMatch() != null) {
+      request.setIfMatch(getIfMatch());
+    }
+    if (getIfNoneMatch() != null) {
+      request.setIfNoneMatch(getIfNoneMatch());
+    }
+    if (getHeader() != null) {
+      for (String key : getHeaderNames()) {
+        // Accept and Content-Type are pinned by the delegate to the representation it can deserialize;
+        // copying this request's own (always application/xml) values would silently override them.
+        if (HttpHeader.ACCEPT.equalsIgnoreCase(key) || HttpHeader.CONTENT_TYPE.equalsIgnoreCase(key)) {
+          continue;
+        }
+        request.addCustomHeader(key, odataHeaders.getHeader(key));
+      }
+    }
+    return request;
+  }
+
   private EdmMetadataResponseImpl getPrivateResponse() {
     if (privateResponse == null) {
-      // OData 4.01, Part 1: Protocol section 11.1.2 - XML unless the caller asked for CSDL JSON.
-      final ContentType metadataFormat = odataClient.getConfiguration().getMetadataFormat();
-      final ODataRetrieveRequest<XMLMetadata> request =
-          metadataFormat != null && ContentType.APPLICATION_JSON.isCompatible(metadataFormat)
-              ? odataClient.getRetrieveRequestFactory().getJSONMetadataRequest(serviceRoot)
-              : odataClient.getRetrieveRequestFactory().getXMLMetadataRequest(serviceRoot);
-      if (getPrefer() != null) {
-        request.setPrefer(getPrefer());
-      }
-      if (getIfMatch() != null) {
-        request.setIfMatch(getIfMatch());
-      }
-      if (getIfNoneMatch() != null) {
-        request.setIfNoneMatch(getIfNoneMatch());
-      }
-      if (getHeader() != null) {
-        for (String key : getHeaderNames()) {
-          request.addCustomHeader(key, odataHeaders.getHeader(key));
-        }
-      }
-      final ODataRetrieveResponse<XMLMetadata> xmlMetadataResponse = request.execute();
+      final ODataRetrieveResponse<XMLMetadata> xmlMetadataResponse = createMetadataRequest().execute();
 
       privateResponse = new EdmMetadataResponseImpl(odataClient, httpClient, xmlMetadataResponse);
     }
