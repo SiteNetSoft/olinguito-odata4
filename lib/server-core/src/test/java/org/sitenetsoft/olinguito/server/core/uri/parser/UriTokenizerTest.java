@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - OLINGO-1585: Updated Word token tests for unreserved chars
  * Copyright 2026 SiteNetSoft - Added tests for matchesPattern method tokenization
+ * Copyright 2026 SiteNetSoft - Added tests for optional altitude/measure geo position elements
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -599,6 +600,13 @@ class UriTokenizerTest {
     assertFalse(new UriTokenizer("geometry'SRID=123456;Point(1 2)'").next(TokenKind.GeometryPoint));
     assertFalse(new UriTokenizer("geometry'SRID=123456;Point(1)'").next(TokenKind.GeometryPoint));
     wrongToken(TokenKind.GeometryPoint, "geometry'SRID=0;Point(1.23 4.56)'", ',');
+
+    // [OData-ABNF] positionLiteral allows an optional third element (altitude/elevation) and an
+    // optional fourth element (linear referencing measure).
+    assertTrue(new UriTokenizer("geometry'SRID=0;Point(1 2 42)'").next(TokenKind.GeometryPoint));
+    assertTrue(new UriTokenizer("geometry'SRID=0;Point(1.5 2.5 42.5 7.5)'").next(TokenKind.GeometryPoint));
+    assertFalse(new UriTokenizer("geometry'SRID=0;Point(1 2 3 4 5)'").next(TokenKind.GeometryPoint));
+    assertFalse(new UriTokenizer("geometry'SRID=0;Point(1 2 )'").next(TokenKind.GeometryPoint));
   }
 
   @Test
@@ -609,7 +617,13 @@ class UriTokenizerTest {
 
     assertTrue(new UriTokenizer("geometry'SRID=0;LineString(1 2,3 4,5 6,7 8)'")
         .next(TokenKind.GeometryLineString));
-    wrongToken(TokenKind.GeometryLineString, "geometry'SRID=0;LineString(1 2,3 4,5 6,7 8)'", '.');
+    // '.' is no longer a safe disturb character now that positionLiteral accepts 2-4 elements:
+    // disturbing the comma between two positions with '.' (e.g. "1 2.3 4,...") reparses as a
+    // syntactically valid position with an extra optional element rather than as an invalid token.
+    wrongToken(TokenKind.GeometryLineString, "geometry'SRID=0;LineString(1 2,3 4,5 6,7 8)'", '{');
+
+    assertTrue(new UriTokenizer("geometry'SRID=0;LineString(1 2 3,4 5 6)'")
+        .next(TokenKind.GeometryLineString));
   }
 
   @Test

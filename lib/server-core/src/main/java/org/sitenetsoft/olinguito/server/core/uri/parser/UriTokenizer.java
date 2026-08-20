@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - OLINGO-1566: Word boundary check for INF/NaN tokens
  * Copyright 2026 SiteNetSoft - OLINGO-1585: Accept unreserved chars in search words
  * Copyright 2026 SiteNetSoft - Added matchesPattern method (OData 4.01 URL Conventions section 5.1.1.7.1)
+ * Copyright 2026 SiteNetSoft - Accept optional altitude and measure elements in URL geo positions
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -1199,18 +1200,37 @@ public class UriTokenizer {
 
   /**
    * Moves past a geo position if found; otherwise leaves the index unchanged.
+   *
+   * <p>[OData-ABNF]: <code>positionLiteral = doubleValue SP doubleValue [ SP doubleValue ]
+   * [ SP doubleValue ]</code> - longitude, latitude, an optional altitude/elevation and an optional
+   * linear referencing measure. The two optional elements are accepted here and, for the third one,
+   * carried into {@code Point.z} by the value parser; the fourth is validated and dropped, since the
+   * geo model has no M coordinate and [GeoJSON] section 3.1.1 advises against emitting one.
+   *
    * @return whether a geo position has been found at the current index
    */
   private boolean nextPosition() {
     final int lastGoodIndex = index;
-    if ((nextDoubleValue() || nextDecimalValue() || nextIntegerValue(true))
-        && nextCharacter(' ')
-        && (nextDoubleValue() || nextDecimalValue() || nextIntegerValue(true))) {
-      return true;
-    } else {
+    if (!(nextCoordinate() && nextCharacter(' ') && nextCoordinate())) {
       index = lastGoodIndex;
       return false;
     }
+    final int afterLatitude = index;
+    if (!(nextCharacter(' ') && nextCoordinate())) {
+      index = afterLatitude;
+      return true;
+    }
+    final int afterAltitude = index;
+    if (!(nextCharacter(' ') && nextCoordinate())) {
+      index = afterAltitude;
+    }
+    return true;
+  }
+
+  /** One element of a positionLiteral: [OData-ABNF] spells it doubleValue, which subsumes the
+   *  decimal and integer spellings this tokenizer distinguishes. */
+  private boolean nextCoordinate() {
+    return nextDoubleValue() || nextDecimalValue() || nextIntegerValue(true);
   }
 
   /**
