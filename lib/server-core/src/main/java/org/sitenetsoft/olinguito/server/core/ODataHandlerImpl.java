@@ -29,15 +29,19 @@
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 1 follow-up Task 7: documented the /$query
  * trailing-slash edge (exact-suffix match is deliberate, not an oversight)
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 7: accept AsyncSupport registration
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 8: answer 202 Accepted for the respond-async
+ * preference ([OData-Protocol] sections 8.2.8.8 and 11.6) via the registered AsyncSupport
  */
 package org.sitenetsoft.olinguito.server.core;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.sitenetsoft.olinguito.commons.api.edm.constants.ODataServiceVersion;
 import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
@@ -58,6 +62,7 @@ import org.sitenetsoft.olinguito.server.api.async.AsyncSupport;
 import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
 import org.sitenetsoft.olinguito.server.api.etag.CustomETagSupport;
 import org.sitenetsoft.olinguito.server.api.etag.PreconditionException;
+import org.sitenetsoft.olinguito.server.api.prefer.PreferencesApplied;
 import org.sitenetsoft.olinguito.server.api.processor.DefaultProcessor;
 import org.sitenetsoft.olinguito.server.api.processor.ErrorProcessor;
 import org.sitenetsoft.olinguito.server.api.processor.Processor;
@@ -109,10 +114,27 @@ public class ODataHandlerImpl implements ODataHandler {
   }
 
   public ODataResponse process(final ODataRequest request) {
-    ODataResponse response = new ODataResponse();
+    final ODataResponse response = new ODataResponse();
     final int responseHandle = debugger.startRuntimeMeasurement("ODataHandler", "process");
+    processCatching(request, response, () -> processInternal(request, response));
+    debugger.stopRuntimeMeasurement(responseHandle);
+    return response;
+  }
+
+  /**
+   * Runs <code>body</code>, converting any failure into an error response exactly as a synchronous
+   * request's failure is converted. Asynchronous invocations run through this too, so an
+   * asynchronous failure and a synchronous one produce the same payload.
+   *
+   * @param request the request being processed, used to negotiate the error representation
+   * @param response the response the outcome is written to, returned for convenience
+   * @param body the processing attempt to run
+   * @return the same <code>response</code> instance that was passed in
+   */
+  ODataResponse processCatching(final ODataRequest request, final ODataResponse response,
+      final ThrowingProcess body) {
     try {
-      processInternal(request, response);
+      body.run();
     } catch (final UriValidationException e) {
       ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(e, null);
       handleException(request, response, serverError, e);
@@ -150,8 +172,12 @@ public class ODataHandlerImpl implements ODataHandler {
       ODataServerError serverError = ODataExceptionHelper.createServerErrorObject(e);
       handleException(request, response, serverError, e);
     }
-    debugger.stopRuntimeMeasurement(responseHandle);
     return response;
+  }
+
+  /** The body of a request-processing attempt, run by {@link #processCatching}. */
+  interface ThrowingProcess {
+    void run() throws ODataApplicationException, ODataLibraryException;
   }
 
   private void processInternal(final ODataRequest request, final ODataResponse response)
@@ -200,6 +226,17 @@ public class ODataHandlerImpl implements ODataHandler {
       throw e;
     }
 
+    // [OData-Protocol] section 8.2.8.8: processing a request asynchronously is a MAY, so this only
+    // happens when the service registered an AsyncSupport; without one the preference is ignored
+    // and not echoed, which section 11.6 requires (it forbids a 202 without the preference, never
+    // the other way round).
+    if (asyncSupport != null
+        && odata.createPreferences(request.getHeaders(HttpHeader.PREFER)).hasRespondAsync()) {
+      submitAsynchronously(request, localUriInfo, response);
+      debugger.stopRuntimeMeasurement(measurementHandle);
+      return;
+    }
+
     final int measurementDispatcher = debugger.startRuntimeMeasurement("ODataDispatcher", "dispatch");
     try {
       new ODataDispatcher(localUriInfo, this).dispatch(request, response);
@@ -207,6 +244,74 @@ public class ODataHandlerImpl implements ODataHandler {
       debugger.stopRuntimeMeasurement(measurementDispatcher);
       debugger.stopRuntimeMeasurement(measurementHandle);
     }
+  }
+
+  /**
+   * Hands the request to the registered {@link AsyncSupport} and answers 202 Accepted.
+   *
+   * <p>[OData-Protocol] section 11.6: a 202 response "MUST include a Location header pointing to a
+   * status monitor resource ... in addition to an optional Retry-After header"; section 8.2.8.8:
+   * the service "MUST include a Preference-Applied response header containing the respond-async
+   * preference".</p>
+   *
+   * <p>The submitted closure captures the already-parsed <code>localUriInfo</code> and never reads
+   * the handler's mutable {@link #uriInfo} field, so a later request on the same handler cannot
+   * corrupt an in-flight asynchronous dispatch. It dispatches directly rather than re-entering
+   * {@link #process(ODataRequest)}, which would see the preference again and submit forever.</p>
+   *
+   * @param request the incoming request
+   * @param localUriInfo the parsed URI info of that request
+   * @param response the response the 202 is written to
+   * @throws ODataLibraryException if the request body cannot be buffered for replay
+   */
+  private void submitAsynchronously(final ODataRequest request, final UriInfo localUriInfo,
+      final ODataResponse response) throws ODataLibraryException {
+    final ODataRequest detached = detach(request);
+    final String location = asyncSupport.submit(detached, () -> {
+      final ODataResponse asyncResponse = new ODataResponse();
+      return processCatching(detached, asyncResponse,
+          () -> new ODataDispatcher(localUriInfo, this).dispatch(detached, asyncResponse));
+    });
+    response.setStatusCode(HttpStatusCode.ACCEPTED.getStatusCode());
+    response.setHeader(HttpHeader.LOCATION, location);
+    response.setHeader(HttpHeader.PREFERENCE_APPLIED,
+        PreferencesApplied.with().respondAsync().build().toValueString());
+    final Integer retryAfter = asyncSupport.getRetryAfter();
+    if (retryAfter != null) {
+      response.setHeader(HttpHeader.RETRY_AFTER, retryAfter.toString());
+    }
+  }
+
+  /**
+   * Copies a request so it can be replayed on another thread after the container has recycled the
+   * original - the body is read into memory, because an <code>InputStream</code> handed over by a
+   * servlet container is not valid once the response has been sent.
+   *
+   * @param request the request to copy
+   * @return a detached copy carrying an in-memory body
+   * @throws ODataLibraryException if the body cannot be read
+   */
+  private static ODataRequest detach(final ODataRequest request) throws ODataLibraryException {
+    final ODataRequest copy = new ODataRequest();
+    copy.setMethod(request.getMethod());
+    copy.setProtocol(request.getProtocol());
+    copy.setRawBaseUri(request.getRawBaseUri());
+    copy.setRawODataPath(request.getRawODataPath());
+    copy.setRawQueryPath(request.getRawQueryPath());
+    copy.setRawRequestUri(request.getRawRequestUri());
+    copy.setRawServiceResolutionUri(request.getRawServiceResolutionUri());
+    for (final Map.Entry<String, List<String>> header : request.getAllHeaders().entrySet()) {
+      copy.addHeader(header.getKey(), header.getValue());
+    }
+    if (request.getBody() != null) {
+      try {
+        copy.setBody(new ByteArrayInputStream(request.getBody().readAllBytes()));
+      } catch (final IOException e) {
+        throw new DeserializerException("Could not buffer the request body for asynchronous processing.",
+            e, DeserializerException.MessageKeys.IO_EXCEPTION);
+      }
+    }
+    return copy;
   }
 
   /**
