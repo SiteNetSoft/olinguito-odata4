@@ -19,6 +19,8 @@
  * $schemaversion system query option is enforced (OData 4.01, Part 1: Protocol, section 11.2.12)
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 3: optionally serve the OData 4.01
  * key-as-segment URL convention (Part 2: URL Conventions, section 4.3.6)
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 10: register the asynchronous processing
+ * support so the handler can answer respond-async ([OData-Protocol] section 11.6)
  */
 package org.sitenetsoft.olinguito.server.tecsvc.quarkus;
 
@@ -41,6 +43,7 @@ import org.sitenetsoft.olinguito.server.api.ODataResponse;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
 import org.sitenetsoft.olinguito.server.tecsvc.ETagSupport;
 import org.sitenetsoft.olinguito.server.tecsvc.MetadataETagSupport;
+import org.sitenetsoft.olinguito.server.tecsvc.async.TechnicalAsyncService;
 import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.TechnicalActionProcessor;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.TechnicalBatchProcessor;
@@ -135,6 +138,9 @@ public class TechnicalODataHandler implements Handler<RoutingContext> {
             handler.register(new TechnicalActionProcessor(dataProvider, serviceMetadata));
             handler.register(new TechnicalBatchProcessor(dataProvider));
             handler.register(new ETagSupport());
+            // Asynchronous processing: the handler answers the respond-async preference
+            // itself once this is registered ([OData-Protocol] section 11.6).
+            handler.register(TechnicalAsyncService.getInstance());
 
             // Build OData request
             ODataRequest odRequest = buildODataRequest(ctx, body);

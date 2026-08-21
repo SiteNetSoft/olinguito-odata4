@@ -151,7 +151,7 @@ public class TechnicalAsyncService implements AsyncSupport {
    * Runs one deferred invocation and keeps its response until the monitor resource is read.
    */
   public static class AsyncRunner implements Runnable {
-    static final Pattern SLEEP_PATTERN = Pattern.compile("(" + TEC_ASYNC_SLEEP + "=)(\\d*)");
+    static final Pattern SLEEP_PATTERN = Pattern.compile("(" + TEC_ASYNC_SLEEP + "=)(\\d+)");
 
     private final AsyncInvocation invocation;
     private final int sleepTimeInSeconds;

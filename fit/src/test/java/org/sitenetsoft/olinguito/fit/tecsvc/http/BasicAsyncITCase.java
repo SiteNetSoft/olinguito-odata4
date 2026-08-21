@@ -15,6 +15,9 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 10: ask for the wrapped application/http
+ * result shape explicitly, and pin the unwrapped shape too ([OData-Protocol] section 11.6)
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.http;
 
@@ -57,6 +60,13 @@ public class BasicAsyncITCase extends AbstractBaseTestITCase {
       HttpHeader.CONTENT_TYPE + ": " + ContentType.APPLICATION_HTTP.toContentTypeString();
   private static final String DEFAULT_BATCH_BOUNDARY = "batch_123";
   private static final String ACCEPT_HEADER_VALUE = ContentType.APPLICATION_JSON.toContentTypeString();
+  /**
+   * [OData-Protocol] section 11.6 gives the status monitor two result shapes and lets the request
+   * choose: an Accept header that includes <code>application/http</code> asks for the result
+   * wrapped as an RFC 7230 message, which is the shape the byte-length assertions below pin.
+   */
+  private static final Map<String, String> ACCEPT_HTTP_MESSAGE =
+      Collections.singletonMap(HttpHeader.ACCEPT, ContentType.APPLICATION_HTTP.toContentTypeString());
 
   private static final String CRLF = "\r\n";
   private static final String DEFAULT_ENCODING = "utf-8";
@@ -81,7 +91,7 @@ public class BasicAsyncITCase extends AbstractBaseTestITCase {
 
     // get async response (still pending)
     String respondUri = headerFields.get("Location").get(0);
-    HttpURLConnection statusRequest = getRequest(new URL(respondUri), Collections.emptyMap());
+    HttpURLConnection statusRequest = getRequest(new URL(respondUri), ACCEPT_HTTP_MESSAGE);
     StringHelper.Stream statusBody = StringHelper.toStream(statusRequest.getInputStream());
     Map<String, List<String>> statusHeaderFields = statusRequest.getHeaderFields();
     assertEquals("HTTP/1.1 202", statusHeaderFields.get(null).get(0));
@@ -125,7 +135,7 @@ public class BasicAsyncITCase extends AbstractBaseTestITCase {
 
     // get async response (still pending)
     String respondUri = headerFields.get("Location").get(0);
-    HttpURLConnection statusRequest = getRequest(new URL(respondUri), Collections.emptyMap());
+    HttpURLConnection statusRequest = getRequest(new URL(respondUri), ACCEPT_HTTP_MESSAGE);
     StringHelper.Stream statusBody = StringHelper.toStream(statusRequest.getInputStream());
     Map<String, List<String>> statusHeaderFields = statusRequest.getHeaderFields();
     assertEquals("HTTP/1.1 202", statusHeaderFields.get(null).get(0));
@@ -145,6 +155,39 @@ public class BasicAsyncITCase extends AbstractBaseTestITCase {
         "\"@odata.context\":\"$metadata#ESAllPrim/$entity\"",
         "\"PropertyInt16\":32767",
         "\"PropertyGuid\":\"01234567-89ab-cdef-0123-456789abcdef\",",
+        "--batch_", "--");
+  }
+
+  /**
+   * The other result shape of [OData-Protocol] section 11.6: a monitor request that does not ask for
+   * <code>application/http</code> gets the result itself, plus the <code>AsyncResult</code> header
+   * carrying its status code (section 8.3.1).
+   */
+  @Test
+  public void asyncResultIsReturnedUnwrappedWithoutAnApplicationHttpAccept() throws Exception {
+    final String content = getDefaultRequest("ESAllPrim(32767)");
+    final HttpURLConnection connection = postBatch(StringHelper.encapsulate(content), DEFAULT_BATCH_BOUNDARY, 1);
+    StringHelper.toStream(connection.getInputStream());
+
+    Map<String, List<String>> headerFields = connection.getHeaderFields();
+    assertEquals("HTTP/1.1 202", headerFields.get(null).get(0));
+    String respondUri = headerFields.get("Location").get(0);
+
+    Map<String, String> acceptJson = Collections.singletonMap(HttpHeader.ACCEPT, ACCEPT_HEADER_VALUE);
+    HttpURLConnection result = waitTillDone(respondUri, 4, acceptJson);
+
+    String resBody = StringHelper.toStream(result.getInputStream()).asString();
+    Map<String, List<String>> resultHeaderFields = result.getHeaderFields();
+    assertEquals("HTTP/1.1 200", resultHeaderFields.get(null).get(0));
+    // the batch result's own status code, not the monitor's
+    assertEquals("200", resultHeaderFields.get("AsyncResult").get(0));
+    // the batch result's own headers and body, not an enclosed HTTP message
+    assertTrue(resultHeaderFields.get("Content-Type").get(0).startsWith("multipart/mixed"));
+    assertTrue(resBody, resBody.startsWith("--batch_"));
+    contains(resBody,
+        "HTTP/1.1 200",
+        "\"@odata.context\":\"$metadata#ESAllPrim/$entity\"",
+        "\"PropertyInt16\":32767",
         "--batch_", "--");
   }
 
@@ -185,11 +228,16 @@ public class BasicAsyncITCase extends AbstractBaseTestITCase {
   }
 
   private HttpURLConnection waitTillDone(String location, int maxWaitInSeconds) throws Exception {
+    return waitTillDone(location, maxWaitInSeconds, ACCEPT_HTTP_MESSAGE);
+  }
+
+  private HttpURLConnection waitTillDone(String location, int maxWaitInSeconds, Map<String, String> headers)
+      throws Exception {
     HttpURLConnection result = null;
     int waitCounter = maxWaitInSeconds * 1000;
 
     while(result == null && waitCounter > 0) {
-      HttpURLConnection statusRequest = getRequest(new URL(location), Collections.emptyMap());
+      HttpURLConnection statusRequest = getRequest(new URL(location), headers);
       Map<String, List<String>> statusHeaderFields = statusRequest.getHeaderFields();
       String statusHeader = statusHeaderFields.get(null).get(0);
       if("HTTP/1.1 202".equals(statusHeader)) {

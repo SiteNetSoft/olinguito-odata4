@@ -35,7 +35,7 @@
  * resource in both result shapes of [OData-Protocol] section 11.6, including the AsyncResult
  * response header of section 8.3.1
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 10: an asynchronously produced response carries
- * the OData-Version header, and a wildcard Accept media range also asks for the wrapped
+ * the OData-Version header, and an application/* Accept media range also asks for the wrapped
  * application/http result shape ([OData-Protocol] section 11.6)
  */
 package org.sitenetsoft.olinguito.server.core;
@@ -355,12 +355,17 @@ public class ODataHandlerImpl implements ODataHandler {
    * case: the request "includes an OData-MaxVersion header with a value of 4.0 and no Accept
    * header, or an Accept header that includes application/http".
    *
-   * <p>An Accept header "includes application/http" either by naming it or through a media range
-   * that covers it — <code>application/*</code>, <code>*&#47;*</code> or the bare <code>*</code> a
-   * JDK <code>HttpURLConnection</code> sends by default. The test stays a plain look at the media
-   * ranges rather than a full negotiation: a monitor request is not an OData request, so an Accept
-   * header the OData content negotiator dislikes must not make it fail, and <code>q</code> values
-   * are not honoured.</p>
+   * <p>An Accept header "includes application/http" by naming it, or through the
+   * <code>application/*</code> range that names its type. A blanket <code>*&#47;*</code> (or the
+   * bare <code>*</code> a JDK <code>HttpURLConnection</code> sends) does NOT count: section 11.6's
+   * two sentences are a matched pair — the wrapper is for an Accept that includes
+   * <code>application/http</code>, the <code>AsyncResult</code> header for one that does not
+   * specify it — so a range that covered everything would owe both answers at once. RFC 9110 also
+   * makes an absent Accept equivalent to <code>*&#47;*</code>, and section 13.2.1 makes
+   * <code>AsyncResult</code> a Minimal-conformance MUST, so the generic client gets the unwrapped
+   * shape. The test stays a plain look at the media ranges rather than a full negotiation: a
+   * monitor request is not an OData request, so an Accept header the OData content negotiator
+   * dislikes must not make it fail, and <code>q</code> values are not honoured.</p>
    *
    * <p>A request carrying neither header is not named by either sentence of section 11.6; it is
    * answered with the unwrapped shape (a recorded decision), following section 13.2.1's Minimal
@@ -386,7 +391,7 @@ public class ODataHandlerImpl implements ODataHandler {
       final String range = (parameterStart < 0 ? part : part.substring(0, parameterStart))
           .trim().toLowerCase(Locale.ROOT);
       if (ContentType.APPLICATION_HTTP.toContentTypeString().equals(range)
-          || "application/*".equals(range) || "*/*".equals(range) || "*".equals(range)) {
+          || "application/*".equals(range)) {
         return true;
       }
     }

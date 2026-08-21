@@ -20,6 +20,8 @@
  * resource ([OData-Protocol] sections 11.6 and 8.3.1)
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 9 fix round 1: pin the monitor branch ahead of
  * version validation, and pin the multi-valued result-header copy
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 10: pin which Accept media ranges ask for the
+ * wrapped application/http result shape ([OData-Protocol] section 11.6)
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -170,12 +172,10 @@ class AsyncStatusMonitorTest {
   }
 
   @Test
-  void aWildcardAcceptAlsoAsksForTheWrappedResult() throws Exception {
-    // The default Accept header of a JDK HttpURLConnection: no media type is named, but the
-    // wildcard ranges cover application/http, so section 11.6's "an Accept header that includes
-    // application/http" is satisfied.
-    for (final String accept : new String[] {"*/*", "application/*",
-        "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2"}) {
+  void anApplicationTypeRangeAlsoAsksForTheWrappedResult() throws Exception {
+    // "application/*" names application/http's type, so section 11.6's "an Accept header that
+    // includes application/http" is satisfied.
+    for (final String accept : new String[] {"application/*", "application/json, application/http"}) {
       final ODataRequest request = monitor(HttpMethod.GET);
       request.addHeader(HttpHeader.ACCEPT, Collections.singletonList(accept));
 
@@ -189,15 +189,22 @@ class AsyncStatusMonitorTest {
   }
 
   @Test
-  void aCompletedMonitorWrapsTheResultForA40MaxVersionEvenWithAnAcceptHeaderPresent() throws Exception {
-    final ODataRequest request = monitor(HttpMethod.GET);
-    request.addHeader(HttpHeader.ODATA_MAX_VERSION, Collections.singletonList("4.0"));
-    request.addHeader(HttpHeader.ACCEPT, Collections.singletonList("*/*"));
+  void aBlanketWildcardAcceptDoesNotAskForTheWrappedResult() throws Exception {
+    // A range covering everything cannot mean "includes application/http": section 11.6's two
+    // sentences are a matched pair, so such a request would owe the wrapper AND the AsyncResult
+    // header at once. RFC 9110 equates an absent Accept with */*, and section 13.2.1 makes
+    // AsyncResult a Minimal-conformance MUST, so the generic client gets the unwrapped shape.
+    for (final String accept : new String[] {"*/*", "*",
+        "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2"}) {
+      final ODataRequest request = monitor(HttpMethod.GET);
+      request.addHeader(HttpHeader.ACCEPT, Collections.singletonList(accept));
 
-    final ODataResponse response = process(request, completed());
+      final ODataResponse response = process(request, completed());
 
-    assertEquals(ContentType.APPLICATION_HTTP.toContentTypeString(),
-        response.getHeader(HttpHeader.CONTENT_TYPE));
+      assertEquals("200", response.getHeader(HttpHeader.ASYNC_RESULT), accept);
+      assertEquals(ContentType.JSON.toContentTypeString(),
+          response.getHeader(HttpHeader.CONTENT_TYPE), accept);
+    }
   }
 
   @Test
