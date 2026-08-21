@@ -23,6 +23,7 @@
  * Copyright 2026 SiteNetSoft - OLINGO-1307: Include expanded complex properties even when not in $select
  * Copyright 2026 SiteNetSoft - OLINGO-1581: Added XML instance annotation serialization support
  * Copyright 2026 SiteNetSoft - OLINGO-1402: Use entity editLink/selfLink in XML serializer
+ * Copyright 2026 SiteNetSoft - Refuse stream properties in XML (Atom representation not implemented)
  */
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
@@ -1023,6 +1024,13 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
       final Boolean isNullable, final Integer maxLength, final Integer precision, final Integer scale,
       final Boolean isUnicode, final String xml10InvalidCharReplacement, final XMLStreamWriter writer)
       throws EdmPrimitiveTypeException, XMLStreamException, SerializerException {
+    if (type == EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Stream)) {
+      // [OData-JSON] section 9 defines the stream property's media* control information for JSON;
+      // its Atom counterpart is defined by [OData-Atom], which this service does not implement.
+      // Refuse rather than emit the Link object's toString(), which no client can consume.
+      throw new SerializerException("Stream properties are not supported in XML.",
+          SerializerException.MessageKeys.UNSUPPORTED_PROPERTY_TYPE, property.getName());
+    }
     if (property.isPrimitive()) {
       if (type != EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.String)) {
         writer.writeAttribute(METADATA, NS_METADATA, Constants.ATTR_TYPE,

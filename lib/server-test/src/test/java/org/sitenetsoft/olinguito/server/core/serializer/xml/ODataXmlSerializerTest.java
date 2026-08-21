@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
  * Copyright 2026 SiteNetSoft - Migrated XMLUnit 1.6 to 2.11.0; Replaced Arrays.asList with List.of
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - Pin the refusal of stream properties in XML serialization
  */
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
@@ -73,6 +74,7 @@ import org.sitenetsoft.olinguito.server.core.uri.UriHelperImpl;
 import org.sitenetsoft.olinguito.server.tecsvc.MetadataETagSupport;
 import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
+import org.sitenetsoft.olinguito.server.tecsvc.provider.EntityTypeProvider;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Assertions;
@@ -3426,5 +3428,25 @@ class ODataXmlSerializerTest {
         + "</m:element><m:element><d:PropertyInt16 m:type=\"Int16\">3</d:PropertyInt16>"
         + "</m:element></m:value>";
     Assertions.assertEquals(expectedResult, resultString);
+  }
+
+  // An Atom representation of a stream property is defined by [OData-Atom], which this milestone
+  // does not implement (see docs/superpowers/specs/2026-08-19-tier6-citations.md - [OData-Atom] is
+  // not among the cited sources). Before this guard, writePrimitive handed the property's Link
+  // value straight to EdmStream.valueToString, which resolves the "value instanceof Link" branch and
+  // silently writes the link's href as the element's text content - a payload with no defined
+  // meaning to any client, not an error. Refusing explicitly follows the precedent Wave 2 set for
+  // geospatial and entity-typed values in this same serializer.
+  @Test
+  void streamPropertyIsNotSupportedInXml() throws Exception {
+    final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESWithStream");
+    final EdmEntityType entityType = metadata.getEdm().getEntityType(EntityTypeProvider.nameETStream);
+    final Entity entity = data.readAll(edmEntitySet).getEntities().get(0);
+    final SerializerException e = assertThrows(SerializerException.class,
+        () -> serializer.entity(metadata, entityType, entity,
+            EntitySerializerOptions.with()
+                .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
+                .build()));
+    Assertions.assertEquals(SerializerException.MessageKeys.UNSUPPORTED_PROPERTY_TYPE, e.getMessageKey());
   }
 }

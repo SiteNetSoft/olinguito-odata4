@@ -15,17 +15,22 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Added minimal-metadata stream link and XML-refusal fit tests
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.sitenetsoft.olinguito.client.api.ODataClient;
+import org.sitenetsoft.olinguito.client.api.communication.ODataClientErrorException;
 import org.sitenetsoft.olinguito.client.api.communication.request.retrieve.ODataEntitySetRequest;
 import org.sitenetsoft.olinguito.client.api.communication.response.ODataRetrieveResponse;
 import org.sitenetsoft.olinguito.client.api.domain.ClientEntity;
@@ -33,17 +38,21 @@ import org.sitenetsoft.olinguito.client.api.domain.ClientEntitySet;
 import org.sitenetsoft.olinguito.client.api.domain.ClientLink;
 import org.sitenetsoft.olinguito.client.api.domain.ClientLinkType;
 import org.sitenetsoft.olinguito.client.api.domain.ClientProperty;
+import org.sitenetsoft.olinguito.client.core.ODataClientFactory;
 import org.sitenetsoft.olinguito.commons.api.Constants;
 import org.sitenetsoft.olinguito.commons.api.format.ContentType;
 import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 
 public class EntityWithStreamITCase extends AbstractParamTecSvcITCase {
   private static final ContentType CONTENT_TYPE_JSON_FULL_METADATA =
-      ContentType.create(ContentType.JSON, ContentType.PARAMETER_ODATA_METADATA, 
+      ContentType.create(ContentType.JSON, ContentType.PARAMETER_ODATA_METADATA,
           ContentType.VALUE_ODATA_METADATA_FULL);
   private static final String PROPERTY_INT16 = "PropertyInt16";
+  private static final String PROPERTY_STREAM = "PropertyStream";
+  private static final String ES_WITH_STREAM = "ESWithStream";
 
   @Parameterized.Parameters(name = "{0}")
   public static List<ContentType[]> parameters() {
@@ -106,9 +115,69 @@ public class EntityWithStreamITCase extends AbstractParamTecSvcITCase {
     assertEquals("http://mediaserver:1234/editLink", link.getLink().toASCIIString());
     assertEquals(ClientLinkType.fromString(Constants.NS_MEDIA_EDIT_LINK_REL, "image/jpeg").name(), 
         link.getType().name());
-    assertEquals("eTag", link.getMediaETag());    
-  } 
-  
+    assertEquals("eTag", link.getMediaETag());
+  }
+
+  /**
+   * Task 5 taught the JSON serializer to write a stream property's media read/edit link at
+   * {@code metadata=minimal} whenever the link is not the one this service would compute - see
+   * {@code ODataJsonSerializer#isComputedStreamLink}. Neither entity's stream link in this fixture
+   * is computable (entity 1's href is {@code /readLink}, entity 2's is
+   * {@code http://mediaserver:1234/editLink}, and the computed form would be
+   * {@code ESWithStream(<id>)/PropertyStream}), so both links must now reach the client even without
+   * {@code metadata=full} - the round trip this test opens.
+   */
+  @Test
+  public void readEntitySetWithStreamPropertyAtMinimalMetadata() {
+    final ODataClient client = ODataClientFactory.getClient();
+    client.getConfiguration().setDefaultPubFormat(ContentType.JSON);
+    final ODataEntitySetRequest<ClientEntitySet> request = client.getRetrieveRequestFactory()
+        .getEntitySetRequest(client.newURIBuilder(SERVICE_URI).appendEntitySetSegment(ES_WITH_STREAM).build());
+    assertNotNull(request);
+    setCookieHeader(request);
+
+    final ODataRetrieveResponse<ClientEntitySet> response = request.execute();
+    saveCookieHeader(response);
+    assertEquals(HttpStatusCode.OK.getStatusCode(), response.getStatusCode());
+
+    final List<ClientEntity> entities = response.getBody().getEntities();
+    assertNotNull(entities);
+    assertEquals(2, entities.size());
+
+    ClientLink link = entities.get(0).getMediaEditLinks().get(0);
+    assertNotNull(link);
+    assertEquals("/readLink", link.getLink().toASCIIString());
+    assertEquals(ClientLinkType.MEDIA_READ, link.getType());
+
+    assertEquals(1, entities.get(1).getMediaEditLinks().size());
+    link = entities.get(1).getMediaEditLinks().get(0);
+    assertNotNull(link);
+    assertEquals("http://mediaserver:1234/editLink", link.getLink().toASCIIString());
+    assertEquals(ClientLinkType.fromString(Constants.NS_MEDIA_EDIT_LINK_REL, "image/jpeg").name(),
+        link.getType().name());
+    assertEquals("eTag", link.getMediaETag());
+  }
+
+  /**
+   * Mirrors {@code GeoITCase#esGeoInXmlIsNotSupported}: the Atom representation of a stream
+   * property is defined by [OData-Atom], which this milestone does not implement, so the XML
+   * serializer must refuse rather than emit a payload with no defined meaning.
+   */
+  @Test
+  public void esWithStreamInXmlIsNotSupported() {
+    final ODataClient xmlClient = ODataClientFactory.getClient();
+    xmlClient.getConfiguration().setDefaultPubFormat(ContentType.APPLICATION_XML);
+    try {
+      xmlClient.getRetrieveRequestFactory().getEntitySetRequest(
+          xmlClient.newURIBuilder(SERVICE_URI).appendEntitySetSegment(ES_WITH_STREAM).build()).execute();
+      Assert.fail("Expected the XML serializer to refuse a stream property.");
+    } catch (final ODataClientErrorException e) {
+      assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), e.getStatusCode());
+      assertTrue("Expected the message to name the property, got: " + e.getODataError().getMessage(),
+          e.getODataError().getMessage().contains(PROPERTY_STREAM));
+    }
+  }
+
   /**
    * These tests can be uncommented once client API's are fixed for V4.01
    */

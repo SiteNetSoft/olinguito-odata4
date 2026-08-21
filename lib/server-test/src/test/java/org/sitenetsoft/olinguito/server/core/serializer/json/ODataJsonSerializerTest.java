@@ -26,6 +26,7 @@
  * Copyright 2026 SiteNetSoft - Tests for GeoJSON collection-valued properties and the geo round trip
  * Copyright 2026 SiteNetSoft - Tests for entity-typed and entity-collection values in JSON payloads
  * Copyright 2026 SiteNetSoft - OLINGO-1505: Tests for stream-property media links at metadata=minimal
+ * Copyright 2026 SiteNetSoft - Pin instance annotations and omit-values=nulls on stream properties
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -1466,6 +1467,56 @@ class ODataJsonSerializerTest {
     Assertions.assertTrue(resultString.contains(
         "\"PropertyStream@odata.mediaEditLink\":\"http://mediaserver:1234/editLink\""));
     Assertions.assertFalse(resultString.contains("PropertyStream@odata.mediaReadLink"));
+  }
+
+  // instanceAnnotSerializer.writeInstanceAnnotationsOnProperties(edmProperty, property, json) runs
+  // unconditionally at the top of writeProperty, before both the omit-values early return and the
+  // stream branch - so a custom-term annotation on PropertyStream must appear alongside the media*
+  // control information, at minimal and full metadata alike. This is a pin, not a new behavior.
+  @Test
+  void customInstanceAnnotationOnAStreamPropertySerializes() throws Exception {
+    final Entity entity = streamEntity(Constants.NS_MEDIA_READ_LINK_REL, "http://mediaserver:1234/readLink");
+    final Annotation annotation = new Annotation();
+    annotation.setTerm("Core.Description");
+    annotation.setType("String");
+    annotation.setValue(ValueType.PRIMITIVE, "A custom description");
+    entity.getProperty("PropertyStream").getAnnotations().add(annotation);
+
+    final String minimal = serializeStreamEntity(serializer, entity);
+    MatcherAssert.assertThat(minimal, CoreMatchers.containsString(
+        "\"PropertyStream@Core.Description\":\"A custom description\""));
+    MatcherAssert.assertThat(minimal, CoreMatchers.containsString(
+        "\"PropertyStream@odata.mediaReadLink\":\"http://mediaserver:1234/readLink\""));
+
+    final String full = serializeStreamEntity(serializerFullMetadata, entity);
+    MatcherAssert.assertThat(full, CoreMatchers.containsString(
+        "\"PropertyStream@Core.Description\":\"A custom description\""));
+  }
+
+  // isPropertyOmittedByOmitValuesPreference carries "&& !isStreamProperty": a stream property is
+  // never subject to omit-values=nulls, unlike every other nullable property. Its own control-
+  // information writer already writes nothing for a value-less stream link regardless of the
+  // preference, so the payload is byte-identical with and without it - this is the Tier 5 interaction
+  // the design spec asks to preserve.
+  @Test
+  void aStreamPropertyIsNeverOmittedByOmitValuesNulls() throws Exception {
+    final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESWithStream");
+    final Entity entity = new Entity();
+    entity.setId(URI.create("ESWithStream(1)"));
+    entity.addProperty(new Property(null, "PropertyInt16", ValueType.PRIMITIVE, (short) 1));
+    entity.addProperty(new Property(null, "PropertyStream", ValueType.PRIMITIVE, null));
+
+    final String withoutPreference = new String(serializer.entity(metadata, edmEntitySet.getEntityType(), entity,
+        EntitySerializerOptions.with()
+            .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
+            .build()).getContent().readAllBytes(), StandardCharsets.UTF_8);
+    final String withPreference = new String(serializer.entity(metadata, edmEntitySet.getEntityType(), entity,
+        EntitySerializerOptions.with()
+            .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
+            .omitNulls(true)
+            .build()).getContent().readAllBytes(), StandardCharsets.UTF_8);
+
+    Assertions.assertEquals(withoutPreference, withPreference);
   }
 
   /** An {@code Edm.Stream}-valued property as a custom EDM provider could declare one. */
