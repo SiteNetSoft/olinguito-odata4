@@ -285,7 +285,8 @@ public final class AsyncSupportITCase extends AbstractParamTecSvcITCase {
   }
 
   /**
-   * Test delete with async prefer header but without async support from TecSvc.
+   * Test delete with the async prefer header: TecSvc answers it asynchronously through the
+   * framework's asynchronous processing, so the result arrives from the status monitor.
    */
   @Test
   public void deleteEntity() throws Exception {

@@ -312,12 +312,13 @@ public class AsyncRequestWrapperImpl<R extends ODataResponse> extends AbstractRe
           // [OData-Protocol] 11.6: the body of the final 200 OK "MUST be represented as an HTTP
           // message" when the status-monitor request accepted application/http.
           odataResponse = (R) template.initFromEnclosedPart(res.getBody());
-        } else if (template instanceof AbstractODataResponse abstractResponse) {
-          // otherwise "any other headers, along with the response body, represent the result of the
-          // completed asynchronous operation" and the AsyncResult header carries its final status code
-          odataResponse = (R) abstractResponse.initFromAsyncResult(res);
         } else {
-          odataResponse = (R) template.initFromHttpResponse(res);
+          // otherwise "any other headers, along with the response body, represent the result of the
+          // completed asynchronous operation" and the AsyncResult header carries its final status code.
+          // Reading that status and buffering the body before this response is closed both need
+          // AbstractODataResponse: an unknown template fails loudly here rather than being handed a
+          // closed stream and the status monitor's own 200.
+          odataResponse = (R) ((AbstractODataResponse) template).initFromAsyncResult(res);
         }
       } catch (RuntimeException e) {
         // a result body the client cannot read is an error, not a "not done yet": swallowing it here

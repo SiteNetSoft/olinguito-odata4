@@ -357,6 +357,11 @@ class AsyncRequestWrapperTest {
 
   private ODataResponse monitorResult(final ClassicHttpResponse monitorResponse)
       throws IOException, URISyntaxException {
+    return monitorResult(monitorResponse, null);
+  }
+
+  private ODataResponse monitorResult(final ClassicHttpResponse monitorResponse, final ODataResponse template)
+      throws IOException, URISyntaxException {
 
     final HttpClient httpClient = mock(HttpClient.class);
     final ODataClient oDataClient = mock(ODataClient.class);
@@ -379,7 +384,8 @@ class AsyncRequestWrapperTest {
 
     final AbstractODataRequest oDataRequest = mock(AbstractODataRequest.class);
     when(oDataRequest.getURI()).thenReturn(new URI("http://server/path"));
-    when(oDataRequest.getResponseTemplate()).thenReturn(new TestResponse(oDataClient));
+    when(oDataRequest.getResponseTemplate())
+        .thenReturn(template == null ? new TestResponse(oDataClient) : template);
 
     final AsyncRequestWrapperImpl<ODataResponse> req = new AsyncRequestWrapperImpl<>(oDataClient, oDataRequest);
     return req.execute().getODataResponse();
@@ -440,6 +446,18 @@ class AsyncRequestWrapperTest {
     monitor.setEntity(new StringEntity("not an http message", StandardCharsets.UTF_8));
 
     assertThrows(RuntimeException.class, () -> monitorResult(monitor));
+  }
+
+  @Test
+  void anUnknownResponseTemplateFailsLoudlyOnAnUnwrappedResult() throws IOException, URISyntaxException {
+    // the unwrapped shape needs AbstractODataResponse (AsyncResult status + buffered body); a foreign
+    // ODataResponse implementation must fail visibly instead of getting a closed stream and a 200
+    final ClassicHttpResponse monitor = new BasicClassicHttpResponse(200);
+    monitor.addHeader(HttpHeader.CONTENT_TYPE, "application/json");
+    monitor.addHeader(HttpHeader.ASYNC_RESULT, "200");
+    monitor.setEntity(new StringEntity("{\"value\":1}", StandardCharsets.UTF_8));
+
+    assertThrows(ClassCastException.class, () -> monitorResult(monitor, mock(ODataResponse.class)));
   }
 
 }
