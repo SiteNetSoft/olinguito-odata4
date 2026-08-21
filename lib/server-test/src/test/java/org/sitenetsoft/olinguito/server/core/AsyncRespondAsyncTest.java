@@ -110,9 +110,12 @@ class AsyncRespondAsyncTest {
     final ODataResponse plain = process(get(PATH, null), null);
     final ODataResponse preferred = process(get(PATH, "respond-async"), null);
 
-    assertEquals(HttpStatusCode.OK.getStatusCode(), preferred.getStatusCode());
-    assertNull(preferred.getHeader(HttpHeader.LOCATION));
-    assertNull(preferred.getHeader(HttpHeader.PREFERENCE_APPLIED));
+    assertEquals(HttpStatusCode.OK.getStatusCode(), plain.getStatusCode());
+    assertEquals(plain.getStatusCode(), preferred.getStatusCode());
+    // wholesale, so that ANY header difference fails: with no AsyncSupport registered a service is
+    // byte-identical to one that never heard of the preference - no Location, no
+    // Preference-Applied, no Retry-After, and nothing else either.
+    assertEquals(plain.getAllHeaders(), preferred.getAllHeaders());
     assertEquals(content(plain), content(preferred));
   }
 

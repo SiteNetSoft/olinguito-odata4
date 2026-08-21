@@ -17,6 +17,8 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Added the asynchronous-processing service provider interface
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 8 fix round 1: documented that a registered
+ * implementation makes the framework the sole author of a 202 Accepted response
  */
 package org.sitenetsoft.olinguito.server.api.async;
 
@@ -33,6 +35,10 @@ import org.sitenetsoft.olinguito.server.api.OlingoExtension;
  * service that does not support asynchronous processing must do: section 8.2.8.8 makes processing
  * asynchronously a MAY, and section 11.6 forbids answering 202 without the preference — never the
  * other way round.</p>
+ *
+ * <p>Once an implementation is registered the framework owns the {@code respond-async} preference
+ * end to end, so a processor MUST NOT answer 202 Accepted itself: the handler has already answered
+ * one and handed the processor's own invocation over for deferred execution.</p>
  *
  * <p>The implementation owns three things: where results are kept, on what thread they are
  * produced, and what the status monitor's URL looks like. Everything else — the 202 response, the
