@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Added streamed primitive and complex collection serialization
  */
 package org.sitenetsoft.olinguito.server.api.serializer;
 
@@ -23,6 +25,7 @@ import org.sitenetsoft.olinguito.commons.api.data.Entity;
 import org.sitenetsoft.olinguito.commons.api.data.AbstractEntityCollection;
 import org.sitenetsoft.olinguito.commons.api.data.EntityIterator;
 import org.sitenetsoft.olinguito.commons.api.data.Property;
+import org.sitenetsoft.olinguito.commons.api.data.PropertyIterator;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmComplexType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
@@ -74,6 +77,60 @@ public interface ODataSerializer {
    */
   SerializerStreamResult entityCollectionStreamed(ServiceMetadata metadata, EdmEntityType entityType,
       EntityIterator entities, EntityCollectionSerializerOptions options) throws SerializerException;
+
+  /**
+   * Writes collection-of-primitive data into an {@link org.sitenetsoft.olinguito.server.api.ODataContent}
+   * that is serialized directly onto the response channel instead of being buffered in memory.
+   *
+   * <p>The payload is byte-for-byte the payload
+   * {@link #primitiveCollection(ServiceMetadata, EdmPrimitiveType, Property, PrimitiveSerializerOptions)}
+   * produces for the same data; only the delivery differs. The ordering it emits — context control
+   * information first, then the count, then the value — is the one [OData-JSON] section 4.4
+   * requires of a streaming payload.</p>
+   *
+   * <p>This method is a {@code default} so that implementations written before it existed keep
+   * compiling; such an implementation reports {@link SerializerException.MessageKeys#NOT_IMPLEMENTED}.</p>
+   *
+   * @param metadata metadata of the service
+   * @param type primitive type of the collection's elements
+   * @param properties iterator over the collection's elements
+   * @param options options for the serializer
+   * @return serializer stream result
+   * @throws SerializerException if serialization fails, or if this serializer does not implement
+   *         streamed primitive collections
+   */
+  default SerializerStreamResult primitiveCollectionStreamed(final ServiceMetadata metadata,
+      final EdmPrimitiveType type, final PropertyIterator properties,
+      final PrimitiveSerializerOptions options) throws SerializerException {
+    throw new SerializerException("Streamed serialization of a primitive collection is not implemented "
+        + "by " + getClass().getName() + ".", SerializerException.MessageKeys.NOT_IMPLEMENTED);
+  }
+
+  /**
+   * Writes collection-of-complex data into an {@link org.sitenetsoft.olinguito.server.api.ODataContent}
+   * that is serialized directly onto the response channel instead of being buffered in memory.
+   *
+   * <p>The payload is byte-for-byte the payload
+   * {@link #complexCollection(ServiceMetadata, EdmComplexType, Property, ComplexSerializerOptions)}
+   * produces for the same data; only the delivery differs.</p>
+   *
+   * <p>This method is a {@code default} so that implementations written before it existed keep
+   * compiling; such an implementation reports {@link SerializerException.MessageKeys#NOT_IMPLEMENTED}.</p>
+   *
+   * @param metadata metadata of the service
+   * @param type complex type of the collection's elements
+   * @param properties iterator over the collection's elements
+   * @param options options for the serializer
+   * @return serializer stream result
+   * @throws SerializerException if serialization fails, or if this serializer does not implement
+   *         streamed complex collections
+   */
+  default SerializerStreamResult complexCollectionStreamed(final ServiceMetadata metadata,
+      final EdmComplexType type, final PropertyIterator properties,
+      final ComplexSerializerOptions options) throws SerializerException {
+    throw new SerializerException("Streamed serialization of a complex collection is not implemented "
+        + "by " + getClass().getName() + ".", SerializerException.MessageKeys.NOT_IMPLEMENTED);
+  }
 
   /**
    * Writes entity data into an InputStream.
