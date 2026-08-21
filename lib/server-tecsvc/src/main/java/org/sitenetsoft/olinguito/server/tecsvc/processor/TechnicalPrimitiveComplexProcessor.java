@@ -21,11 +21,14 @@
  * Copyright 2026 SiteNetSoft - OpenType CRUD Task 3: serve GET for direct dynamic-property paths
  * Copyright 2026 SiteNetSoft - OpenType CRUD Task 4: serve PUT/PATCH/DELETE for direct
  * dynamic-property paths
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 3: serve ESCollAllPrim/CollPropertyString and
+ * ESMixPrimCollComp/CollPropertyComp from the streamed serializer path
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -35,6 +38,7 @@ import org.sitenetsoft.olinguito.commons.api.data.ContextURL.Builder;
 import org.sitenetsoft.olinguito.commons.api.data.Entity;
 import org.sitenetsoft.olinguito.commons.api.data.Link;
 import org.sitenetsoft.olinguito.commons.api.data.Property;
+import org.sitenetsoft.olinguito.commons.api.data.PropertyIterator;
 import org.sitenetsoft.olinguito.commons.api.data.ValueType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmComplexType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
@@ -72,6 +76,7 @@ import org.sitenetsoft.olinguito.server.api.serializer.PrimitiveValueSerializerO
 import org.sitenetsoft.olinguito.server.api.serializer.RepresentationType;
 import org.sitenetsoft.olinguito.server.api.serializer.SerializerException;
 import org.sitenetsoft.olinguito.server.api.serializer.SerializerResult;
+import org.sitenetsoft.olinguito.server.api.serializer.SerializerStreamResult;
 import org.sitenetsoft.olinguito.server.api.uri.UriHelper;
 import org.sitenetsoft.olinguito.server.api.uri.UriInfo;
 import org.sitenetsoft.olinguito.server.api.uri.UriInfoResource;
@@ -100,6 +105,16 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
 
   private static final String NESTED_DYNAMIC_WRITE_MESSAGE =
       "Writing a dynamic property nested inside a complex property is not supported.";
+
+  /**
+   * The two collection-property endpoints this reference service serves from the streamed
+   * serializer path, so that streamed and buffered delivery are exercised against the same
+   * already-pinned payloads. Everything else stays buffered.
+   */
+  private static final String ES_COLL_ALL_PRIM = "ESCollAllPrim";
+  private static final String ES_MIX_PRIM_COLL_COMP = "ESMixPrimCollComp";
+  private static final String COLL_PROPERTY_STRING = "CollPropertyString";
+  private static final String COLL_PROPERTY_COMP = "CollPropertyComp";
 
   public TechnicalPrimitiveComplexProcessor(final DataProvider dataProvider,
       final ServiceMetadata serviceMetadata) {
@@ -321,9 +336,15 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
                 && property.isCollection() && property.asCollection() != null) {
               property.setCount(property.asCollection().size());
             }
-            final SerializerResult result = serializeProperty(entity, edmEntitySet, path, property, edmProperty,
-                type, returnType, representationType, contentType, countOption, expand, select);
-            response.setContent(result.getContent());
+            if (isStreamingCollection(edmEntitySet, path, representationType)) {
+              response.setODataContent(serializeCollectionStreamed(entity, edmEntitySet, path, property,
+                  edmProperty, type, returnType, representationType, contentType, countOption, expand, select)
+                  .getODataContent());
+            } else {
+              final SerializerResult result = serializeProperty(entity, edmEntitySet, path, property, edmProperty,
+                  type, returnType, representationType, contentType, countOption, expand, select);
+              response.setContent(result.getContent());
+            }
           }
         }
         response.setHeader(HttpHeader.CONTENT_TYPE, contentType.toContentTypeString());
@@ -774,6 +795,87 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
       break;
     }
     return result;
+  }
+
+  private boolean isStreamingCollection(final EdmEntitySet edmEntitySet, final List<String> path,
+      final RepresentationType representationType) {
+    if (edmEntitySet == null || path.size() != 1) {
+      return false;
+    }
+    final String property = path.get(0);
+    return (representationType == RepresentationType.COLLECTION_PRIMITIVE
+        && ES_COLL_ALL_PRIM.equals(edmEntitySet.getName()) && COLL_PROPERTY_STRING.equals(property))
+        || (representationType == RepresentationType.COLLECTION_COMPLEX
+        && ES_MIX_PRIM_COLL_COMP.equals(edmEntitySet.getName()) && COLL_PROPERTY_COMP.equals(property));
+  }
+
+  /** Wraps an already-materialized collection value in a {@link PropertyIterator}. */
+  private PropertyIterator asPropertyIterator(final Property property) {
+    final Iterator<?> values = property.asCollection().iterator();
+    final PropertyIterator iterator = new PropertyIterator() {
+      @Override
+      public boolean hasNext() {
+        return values.hasNext();
+      }
+
+      @Override
+      public Property next() {
+        return new Property(null, property.getName(), elementValueType(property.getValueType()), values.next());
+      }
+    };
+    iterator.setName(property.getName());
+    iterator.setValueType(property.getValueType());
+    iterator.setCount(property.getCount());
+    return iterator;
+  }
+
+  private static ValueType elementValueType(final ValueType collectionValueType) {
+    switch (collectionValueType) {
+    case COLLECTION_PRIMITIVE: return ValueType.PRIMITIVE;
+    case COLLECTION_ENUM: return ValueType.ENUM;
+    case COLLECTION_GEOSPATIAL: return ValueType.GEOSPATIAL;
+    case COLLECTION_COMPLEX: return ValueType.COMPLEX;
+    default: return collectionValueType;
+    }
+  }
+
+  /**
+   * Streamed counterpart of {@link #serializeProperty}, built from its
+   * {@code COLLECTION_PRIMITIVE}/{@code COLLECTION_COMPLEX} arms verbatim - same {@link ContextURL},
+   * same option-builder chains - with the terminal call swapped for the streamed serializer entry
+   * points and the property wrapped in a {@link PropertyIterator}. Kept separate from
+   * {@link #serializeProperty} so that method (and the buffered path it serves) stays untouched.
+   */
+  private SerializerStreamResult serializeCollectionStreamed(final Entity entity, final EdmEntitySet edmEntitySet,
+      final List<String> path, final Property property, final EdmProperty edmProperty,
+      final EdmType type, final EdmReturnType returnType,
+      final RepresentationType representationType, final ContentType responseFormat,
+      final CountOption count, final ExpandOption expand, final SelectOption select)
+      throws ODataLibraryException {
+    final ODataSerializer serializer = odata.createSerializer(responseFormat);
+    final ContextURL contextURL = isODataMetadataNone(responseFormat) ? null :
+        getContextUrl(edmEntitySet, entity, path, type, representationType, expand, select);
+    switch (representationType) {
+    case COLLECTION_PRIMITIVE:
+      return serializer.primitiveCollectionStreamed(serviceMetadata, (EdmPrimitiveType) type,
+          asPropertyIterator(property),
+          PrimitiveSerializerOptions.with().contextURL(contextURL)
+              .count(count)
+              .nullable(edmProperty == null ? returnType.isNullable() : edmProperty.isNullable())
+              .maxLength(edmProperty == null ? returnType.getMaxLength() : edmProperty.getMaxLength())
+              .precision(edmProperty == null ? returnType.getPrecision() : edmProperty.getPrecision())
+              .scale(edmProperty == null ? returnType.getScale() : edmProperty.getScale())
+              .unicode(edmProperty == null ? null : edmProperty.isUnicode())
+              .build());
+    case COLLECTION_COMPLEX:
+      return serializer.complexCollectionStreamed(serviceMetadata, (EdmComplexType) type,
+          asPropertyIterator(property),
+          ComplexSerializerOptions.with().contextURL(contextURL)
+              .count(count).expand(expand).select(select)
+              .build());
+    default:
+      return null;
+    }
   }
 
   private ContextURL getContextUrl(final EdmEntitySet entitySet, final Entity entity, final List<String> path,
