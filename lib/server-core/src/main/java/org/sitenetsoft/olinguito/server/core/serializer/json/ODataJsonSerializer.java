@@ -30,6 +30,8 @@
  * Copyright 2026 SiteNetSoft - Write collection-valued geospatial properties as GeoJSON objects
  * Copyright 2026 SiteNetSoft - OLINGO-1588: Serialize entity-typed and entity-collection values,
  * including the @id-only by-reference form
+ * Copyright 2026 SiteNetSoft - Stream primitive and complex collection-valued properties straight
+ * onto the response channel instead of buffering them
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -61,6 +63,8 @@ import org.sitenetsoft.olinguito.commons.api.data.Link;
 import org.sitenetsoft.olinguito.commons.api.data.Linked;
 import org.sitenetsoft.olinguito.commons.api.data.Operation;
 import org.sitenetsoft.olinguito.commons.api.data.Property;
+import org.sitenetsoft.olinguito.commons.api.data.PropertyIterator;
+import org.sitenetsoft.olinguito.commons.api.data.ValueType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmComplexType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
@@ -341,6 +345,111 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       cachedException =
           new SerializerException(IO_EXCEPTION_TEXT, e, SerializerException.MessageKeys.IO_EXCEPTION);
       throw cachedException;
+    }
+  }
+
+  @Override
+  public SerializerStreamResult primitiveCollectionStreamed(final ServiceMetadata metadata,
+      final EdmPrimitiveType type, final PropertyIterator properties,
+      final PrimitiveSerializerOptions options) throws SerializerException {
+    return ODataWritableContent.with(properties, type, this, metadata, options).build();
+  }
+
+  @Override
+  public SerializerStreamResult complexCollectionStreamed(final ServiceMetadata metadata,
+      final EdmComplexType type, final PropertyIterator properties,
+      final ComplexSerializerOptions options) throws SerializerException {
+    return ODataWritableContent.with(properties, type, this, metadata, options).build();
+  }
+
+  /**
+   * Writes a primitive collection straight onto {@code outputStream}, producing byte-for-byte the
+   * payload {@link #primitiveCollection} produces for the same data.
+   *
+   * <p>The member order — context, metadata ETag, type, count, value, next link — is the order
+   * [OData-JSON] section 4.4 requires of a streaming payload: the context control information first
+   * and the count before the value.</p>
+   */
+  public void primitiveCollectionIntoStream(final ServiceMetadata metadata, final EdmPrimitiveType type,
+      final PropertyIterator properties, final PrimitiveSerializerOptions options,
+      final OutputStream outputStream) throws SerializerException {
+    // PrimitiveSerializerOptions has no omit-values option; reset the shared omitNulls field so it
+    // cannot leak in from a prior entity()/entityCollection() call on this same instance.
+    omitNulls = false;
+    try (JsonGenerator json = new JsonFactory().createGenerator(outputStream)) {
+      json.writeStartObject();
+      writeContextURL(checkContextURL(options == null ? null : options.getContextURL()), json);
+      writeMetadataETag(metadata, json);
+      if (isODataMetadataFull) {
+        json.writeStringField(constants.getType(), "#Collection(" + type.getFullQualifiedName().getName() + ")");
+      }
+      if (options != null && options.getCount() != null && options.getCount().getValue()) {
+        writeInlineCount("", properties.getCount(), json);
+      }
+      json.writeFieldName(Constants.VALUE);
+      json.writeStartArray();
+      while (properties.hasNext()) {
+        final Property element = properties.next();
+        writePrimitiveCollectionElement(type, properties.getName(), properties.getValueType(),
+            element == null ? null : element.getValue(),
+            options == null ? null : options.isNullable(),
+            options == null ? null : options.getMaxLength(),
+            options == null ? null : options.getPrecision(),
+            options == null ? null : options.getScale(),
+            options == null ? null : options.isUnicode(), json);
+      }
+      json.writeEndArray();
+      if (properties.getNext() != null) {
+        json.writeStringField(constants.getNextLink(), properties.getNext().toASCIIString());
+      }
+      json.writeEndObject();
+    } catch (final IOException e) {
+      throw new SerializerException(IO_EXCEPTION_TEXT, e, SerializerException.MessageKeys.IO_EXCEPTION);
+    }
+  }
+
+  /**
+   * Writes a complex collection straight onto {@code outputStream}, producing byte-for-byte the
+   * payload {@link #complexCollection} produces for the same data.
+   */
+  public void complexCollectionIntoStream(final ServiceMetadata metadata, final EdmComplexType type,
+      final PropertyIterator properties, final ComplexSerializerOptions options,
+      final OutputStream outputStream) throws SerializerException {
+    // ComplexSerializerOptions has no omit-values option; same reset obligation as above.
+    omitNulls = false;
+    try (JsonGenerator json = new JsonFactory().createGenerator(outputStream)) {
+      json.writeStartObject();
+      writeContextURL(checkContextURL(options == null ? null : options.getContextURL()), json);
+      writeMetadataETag(metadata, json);
+      if (isODataMetadataFull) {
+        json.writeStringField(constants.getType(),
+            "#Collection(" + type.getFullQualifiedName().getFullQualifiedNameAsString() + ")");
+      }
+      if (options != null && options.getCount() != null && options.getCount().getValue()) {
+        writeInlineCount("", properties.getCount(), json);
+      }
+      Set<List<String>> selectedPaths = null;
+      if (options != null && options.getSelect() != null) {
+        selectedPaths = ExpandSelectHelper.isAll(options.getSelect()) ? null
+            : ExpandSelectHelper.getSelectedPaths(options.getSelect().getSelectItems());
+      }
+      final Set<List<String>> expandedPaths = options == null || options.getExpand() == null ? null
+          : ExpandSelectHelper.getExpandedItemsPath(options.getExpand());
+      json.writeFieldName(Constants.VALUE);
+      json.writeStartArray();
+      while (properties.hasNext()) {
+        final Property element = properties.next();
+        writeComplexCollectionElement(metadata, type, properties.getName(), properties.getValueType(),
+            element == null ? null : element.getValue(), selectedPaths, json, expandedPaths,
+            options == null ? null : options.getExpand());
+      }
+      json.writeEndArray();
+      if (properties.getNext() != null) {
+        json.writeStringField(constants.getNextLink(), properties.getNext().toASCIIString());
+      }
+      json.writeEndObject();
+    } catch (final IOException | IllegalArgumentException e) {
+      throw new SerializerException(IO_EXCEPTION_TEXT, e, SerializerException.MessageKeys.IO_EXCEPTION);
     }
   }
 
@@ -1148,70 +1257,91 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       throws IOException, SerializerException {
     json.writeStartArray();
     for (Object value : property.asCollection()) {
-      switch (property.getValueType()) {
-      case COLLECTION_PRIMITIVE:
-      case COLLECTION_ENUM:
-        try {
-          writePrimitiveValue(property.getName(), type, value, isNullable,
-              maxLength, precision, scale, isUnicode, json);
-        } catch (EdmPrimitiveTypeException e) {
-          throw new SerializerException("Wrong value for property!", e,
-              SerializerException.MessageKeys.WRONG_PROPERTY_VALUE,
-              property.getName(), property.getValue().toString());
-        }
-        break;
-      case COLLECTION_GEOSPATIAL:
-        // [OData-JSON] section 7.1: a geo value is a GeoJSON geometry object, in a collection just
-        // as much as outside one. Routing it through writePrimitiveValue would emit the WKT literal
-        // that EdmGeography*/EdmGeometry*.valueToString produces.
-        try {
-          writeGeoValue(property.getName(), type, (Geospatial) value, isNullable, json, null);
-        } catch (EdmPrimitiveTypeException e) {
-          throw new SerializerException("Wrong value for property!", e,
-              SerializerException.MessageKeys.WRONG_PROPERTY_VALUE,
-              property.getName(), property.getValue().toString());
-        }
-        break;
-      default:
-        throw new SerializerException("Property type not yet supported!",
-            SerializerException.MessageKeys.UNSUPPORTED_PROPERTY_TYPE, property.getName());
-      }
+      writePrimitiveCollectionElement(type, property.getName(), property.getValueType(), value,
+          isNullable, maxLength, precision, scale, isUnicode, json);
     }
     json.writeEndArray();
   }
 
+  /**
+   * Writes one element of a collection-valued primitive, enum or geospatial property. Shared by the
+   * buffered and the streamed collection writers so the two cannot drift apart.
+   */
+  private void writePrimitiveCollectionElement(final EdmPrimitiveType type, final String name,
+      final ValueType collectionValueType, final Object value,
+      final Boolean isNullable, final Integer maxLength, final Integer precision, final Integer scale,
+      final Boolean isUnicode, final JsonGenerator json)
+      throws IOException, SerializerException {
+    switch (collectionValueType) {
+    case COLLECTION_PRIMITIVE:
+    case COLLECTION_ENUM:
+      try {
+        writePrimitiveValue(name, type, value, isNullable, maxLength, precision, scale, isUnicode, json);
+      } catch (EdmPrimitiveTypeException e) {
+        throw new SerializerException("Wrong value for property!", e,
+            SerializerException.MessageKeys.WRONG_PROPERTY_VALUE, name, String.valueOf(value));
+      }
+      break;
+    case COLLECTION_GEOSPATIAL:
+      // [OData-JSON] section 7.1: a geo value is a GeoJSON geometry object, in a collection just
+      // as much as outside one. Routing it through writePrimitiveValue would emit the WKT literal
+      // that EdmGeography*/EdmGeometry*.valueToString produces.
+      try {
+        writeGeoValue(name, type, (Geospatial) value, isNullable, json, null);
+      } catch (EdmPrimitiveTypeException e) {
+        throw new SerializerException("Wrong value for property!", e,
+            SerializerException.MessageKeys.WRONG_PROPERTY_VALUE, name, String.valueOf(value));
+      }
+      break;
+    default:
+      throw new SerializerException("Property type not yet supported!",
+          SerializerException.MessageKeys.UNSUPPORTED_PROPERTY_TYPE, name);
+    }
+  }
+
   private void writeComplexCollection(final ServiceMetadata metadata, final EdmComplexType type,
-      final Property property,
-      final Set<List<String>> selectedPaths, final JsonGenerator json, 
+      final Property property, final Set<List<String>> selectedPaths, final JsonGenerator json,
       Set<List<String>> expandedPaths, Linked linked, ExpandOption expand)
       throws IOException, SerializerException, IllegalArgumentException {
     json.writeStartArray();
-    EdmComplexType derivedType = type;
-    Set<List<String>> expandedPaths1 = expandedPaths != null && !expandedPaths.isEmpty() ? 
-        expandedPaths : ExpandSelectHelper.getExpandedItemsPath(expand);
+    final Set<List<String>> expandedPathsForElements = expandedPaths != null && !expandedPaths.isEmpty()
+        ? expandedPaths : ExpandSelectHelper.getExpandedItemsPath(expand);
     for (Object value : property.asCollection()) {
-      expandedPaths = expandedPaths1;
-      derivedType = ((ComplexValue) value).getTypeName()!=null ? metadata.getEdm().getComplexType
-          (new FullQualifiedName(((ComplexValue) value).getTypeName())): type;          
-      switch (property.getValueType()) {
-      case COLLECTION_COMPLEX:
-        json.writeStartObject();
-        if (isODataMetadataFull || (!isODataMetadataNone && !derivedType.equals(type))) {
-             json.writeStringField(constants.getType(), "#" + 
-                 derivedType.getFullQualifiedName().getFullQualifiedNameAsString());
-        }
-        expandedPaths = expandedPaths == null || expandedPaths.isEmpty() ? null :
-          ExpandSelectHelper.getReducedExpandItemsPaths(expandedPaths, property.getName());
-        writeComplexValue(metadata, derivedType, ((ComplexValue) value).getValue(), 
-            selectedPaths, json, expandedPaths, (ComplexValue) value, expand, property.getName());
-        json.writeEndObject();
-        break;
-      default:
-        throw new SerializerException("Property type not yet supported!",
-            SerializerException.MessageKeys.UNSUPPORTED_PROPERTY_TYPE, property.getName());
-      }
+      writeComplexCollectionElement(metadata, type, property.getName(), property.getValueType(), value,
+          selectedPaths, json, expandedPathsForElements, expand);
     }
     json.writeEndArray();
+  }
+
+  /**
+   * Writes one element of a collection-valued complex property. Shared by the buffered and the
+   * streamed collection writers so the two cannot drift apart.
+   */
+  private void writeComplexCollectionElement(final ServiceMetadata metadata, final EdmComplexType type,
+      final String name, final ValueType collectionValueType, final Object value,
+      final Set<List<String>> selectedPaths, final JsonGenerator json,
+      final Set<List<String>> expandedPaths, final ExpandOption expand)
+      throws IOException, SerializerException, IllegalArgumentException {
+    switch (collectionValueType) {
+    case COLLECTION_COMPLEX:
+      final EdmComplexType derivedType = ((ComplexValue) value).getTypeName() != null
+          ? metadata.getEdm().getComplexType(new FullQualifiedName(((ComplexValue) value).getTypeName()))
+          : type;
+      json.writeStartObject();
+      if (isODataMetadataFull || (!isODataMetadataNone && !derivedType.equals(type))) {
+        json.writeStringField(constants.getType(),
+            "#" + derivedType.getFullQualifiedName().getFullQualifiedNameAsString());
+      }
+      final Set<List<String>> reduced = expandedPaths == null || expandedPaths.isEmpty() ? null
+          : ExpandSelectHelper.getReducedExpandItemsPaths(expandedPaths, name);
+      writeComplexValue(metadata, derivedType, ((ComplexValue) value).getValue(), selectedPaths, json,
+          reduced, (ComplexValue) value, expand, name);
+      json.writeEndObject();
+      break;
+    default:
+      throw new SerializerException("Property type not yet supported!",
+          SerializerException.MessageKeys.UNSUPPORTED_PROPERTY_TYPE, name);
+    }
   }
 
   /**
