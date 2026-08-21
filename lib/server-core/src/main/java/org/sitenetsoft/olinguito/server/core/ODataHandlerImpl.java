@@ -31,6 +31,9 @@
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 7: accept AsyncSupport registration
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 8: answer 202 Accepted for the respond-async
  * preference ([OData-Protocol] sections 8.2.8.8 and 11.6) via the registered AsyncSupport
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 9: serve the asynchronous status monitor
+ * resource in both result shapes of [OData-Protocol] section 11.6, including the AsyncResult
+ * response header of section 8.3.1
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -58,6 +61,7 @@ import org.sitenetsoft.olinguito.server.api.ODataResponse;
 import org.sitenetsoft.olinguito.server.api.ODataServerError;
 import org.sitenetsoft.olinguito.server.api.OlingoExtension;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.api.async.AsyncResult;
 import org.sitenetsoft.olinguito.server.api.async.AsyncSupport;
 import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
 import org.sitenetsoft.olinguito.server.api.etag.CustomETagSupport;
@@ -184,6 +188,15 @@ public class ODataHandlerImpl implements ODataHandler {
       throws ODataApplicationException, ODataLibraryException {
     final int measurementHandle = debugger.startRuntimeMeasurement("ODataHandler", "processInternal");
 
+    // [OData-Protocol] section 11.6 requires only that "the status monitor resource URL MUST differ
+    // from any other resource URL", so a service may mint one the OData URI parser cannot parse.
+    // The monitor therefore has to be recognized before version validation and before parsing.
+    if (asyncSupport != null && asyncSupport.isStatusMonitorRequest(request)) {
+      handleStatusMonitor(request, response);
+      debugger.stopRuntimeMeasurement(measurementHandle);
+      return;
+    }
+
     response.setHeader(HttpHeader.ODATA_VERSION, ODataServiceVersion.V40.toString());
     
     try {
@@ -244,6 +257,116 @@ public class ODataHandlerImpl implements ODataHandler {
       debugger.stopRuntimeMeasurement(measurementDispatcher);
       debugger.stopRuntimeMeasurement(measurementHandle);
     }
+  }
+
+  /**
+   * Serves a status monitor resource ([OData-Protocol] section 11.6).
+   *
+   * <p>A GET answers 202 Accepted with a <code>Location</code> header pointing at the monitor
+   * itself while the invocation runs, 404 Not Found for a monitor that does not (or no longer)
+   * exist, and 200 OK carrying the result once it has completed. A DELETE requests cancellation:
+   * 204 No Content when the service cancelled, and 405 Method Not Allowed when it does not support
+   * cancellation, because "if a delete request is not supported by the service, the service returns
+   * 405 Method Not Allowed".</p>
+   *
+   * @param request the monitor request
+   * @param response the response to write
+   * @throws ODataLibraryException if the completed result cannot be serialized
+   */
+  private void handleStatusMonitor(final ODataRequest request, final ODataResponse response)
+      throws ODataLibraryException {
+    response.setHeader(HttpHeader.ODATA_VERSION, ODataServiceVersion.V40.toString());
+    if (request.getMethod() == HttpMethod.DELETE) {
+      if (asyncSupport.cancel(request)) {
+        response.setStatusCode(HttpStatusCode.NO_CONTENT.getStatusCode());
+      } else {
+        response.setStatusCode(HttpStatusCode.METHOD_NOT_ALLOWED.getStatusCode());
+        response.setHeader(HttpHeader.ALLOW, HttpMethod.GET.name());
+      }
+      return;
+    }
+
+    final AsyncResult result = asyncSupport.resolve(request);
+    switch (result.getState()) {
+    case NOT_FOUND:
+      response.setStatusCode(HttpStatusCode.NOT_FOUND.getStatusCode());
+      break;
+    case RUNNING:
+      response.setStatusCode(HttpStatusCode.ACCEPTED.getStatusCode());
+      response.setHeader(HttpHeader.LOCATION, request.getRawRequestUri());
+      final Integer retryAfter = asyncSupport.getRetryAfter();
+      if (retryAfter != null) {
+        response.setHeader(HttpHeader.RETRY_AFTER, retryAfter.toString());
+      }
+      break;
+    case COMPLETED:
+      writeAsynchronousResult(request, response, result.getResponse());
+      break;
+    default:
+      throw new ODataRuntimeException("Unknown asynchronous result state " + result.getState());
+    }
+  }
+
+  /**
+   * Writes the completed result in whichever of section 11.6's two shapes the request asks for: the
+   * RFC 7230 HTTP message wrapped in <code>application/http</code>, or the result itself with an
+   * <code>AsyncResult</code> header carrying its status code (section 8.3.1).
+   *
+   * <p>In the unwrapped shape the result's own headers replace the monitor response's, because
+   * "any other headers, along with the response body, represent the result of the completed
+   * asynchronous operation".</p>
+   *
+   * @param request the monitor request, which decides the shape
+   * @param response the monitor response to write
+   * @param result the completed invocation's response
+   * @throws ODataLibraryException if the wrapped HTTP message cannot be serialized
+   */
+  private void writeAsynchronousResult(final ODataRequest request, final ODataResponse response,
+      final ODataResponse result) throws ODataLibraryException {
+    response.setStatusCode(HttpStatusCode.OK.getStatusCode());
+    if (wantsHttpMessage(request)) {
+      response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.APPLICATION_HTTP.toContentTypeString());
+      response.setContent(odata.createFixedFormatSerializer().asyncResponse(result));
+      return;
+    }
+    for (final Map.Entry<String, List<String>> header : result.getAllHeaders().entrySet()) {
+      final List<String> values = header.getValue();
+      if (values == null || values.isEmpty()) {
+        continue;
+      }
+      response.setHeader(header.getKey(), values.get(0));
+      for (final String value : values.subList(1, values.size())) {
+        response.addHeader(header.getKey(), value);
+      }
+    }
+    response.setHeader(HttpHeader.ASYNC_RESULT, Integer.toString(result.getStatusCode()));
+    if (result.getContent() != null) {
+      response.setContent(result.getContent());
+    } else if (result.getODataContent() != null) {
+      response.setODataContent(result.getODataContent());
+    }
+  }
+
+  /**
+   * Whether the monitor request asks for the wrapped HTTP-message shape. Section 11.6 names one
+   * case: the request "includes an OData-MaxVersion header with a value of 4.0 and no Accept
+   * header, or an Accept header that includes application/http".
+   *
+   * <p>A request carrying neither header is not named by either sentence of section 11.6; it is
+   * answered with the unwrapped shape (a recorded decision), following section 13.2.1's Minimal
+   * conformance MUST for a 4.01 service to "return the AsyncResult result header in the final
+   * response to an asynchronous request".</p>
+   *
+   * @param request the monitor request
+   * @return whether the result must be wrapped as an <code>application/http</code> message
+   */
+  private static boolean wantsHttpMessage(final ODataRequest request) {
+    final String accept = request.getHeader(HttpHeader.ACCEPT);
+    if (accept != null && accept.contains(ContentType.APPLICATION_HTTP.toContentTypeString())) {
+      return true;
+    }
+    final String maxVersion = request.getHeader(HttpHeader.ODATA_MAX_VERSION);
+    return accept == null && maxVersion != null && ODataServiceVersion.V40.toString().equals(maxVersion.trim());
   }
 
   /**

@@ -15,6 +15,9 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 9: added the AsyncResult response header
+ * ([OData-Protocol] sections 8.3.1 and 11.6)
  */
 package org.sitenetsoft.olinguito.commons.api.http;
 
@@ -178,4 +181,10 @@ public interface HttpHeader {
   String ODATA_ENTITY_ID = "OData-EntityID";
   /** Custom Header defined in the OData standard. */
   String ODATA_ISOLATION= "OData-Isolation";
+  /**
+   * Custom Header defined in the OData standard: the final status code of an asynchronously
+   * executed request, returned in the 200 OK response of a status monitor resource
+   * (see [OData-Protocol] sections 8.3.1 and 11.6).
+   */
+  String ASYNC_RESULT = "AsyncResult";
 }
