@@ -18,6 +18,8 @@
  *
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 9: tests for the asynchronous status monitor
  * resource ([OData-Protocol] sections 11.6 and 8.3.1)
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 9 fix round 1: pin the monitor branch ahead of
+ * version validation, and pin the multi-valued result-header copy
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -31,6 +33,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
@@ -241,6 +244,54 @@ class AsyncStatusMonitorTest {
     // a plain URI-parser answer would be a 4xx error document, never a 202 with a Location
     assertEquals(HttpStatusCode.ACCEPTED.getStatusCode(), response.getStatusCode());
     assertEquals(MONITOR_URI, response.getHeader(HttpHeader.LOCATION));
+  }
+
+  @Test
+  void aMonitorRequestIsNeverVersionValidated() {
+    final MonitorAsyncSupport async = new MonitorAsyncSupport();
+    async.result = AsyncResult.running();
+    final ODataRequest request = monitor(HttpMethod.GET);
+    // a version this service knows nothing about: an OData request carrying it is rejected with
+    // 400, but a status monitor is not an OData request - section 11.6 requires only that its URL
+    // "MUST differ from any other resource URL". This pins the branch ahead of version validation.
+    request.addHeader(HttpHeader.ODATA_VERSION, Collections.singletonList("4.02"));
+
+    final ODataResponse response = process(request, async);
+
+    assertEquals(HttpStatusCode.ACCEPTED.getStatusCode(), response.getStatusCode());
+    assertEquals(MONITOR_URI, response.getHeader(HttpHeader.LOCATION));
+  }
+
+  @Test
+  void aBogusODataVersionOnAnOrdinaryRequestIsStillRejected() {
+    final ODataRequest request = new ODataRequest();
+    request.setMethod(HttpMethod.GET);
+    request.setRawBaseUri(BASE_URI);
+    request.setRawODataPath("ESAllPrim");
+    request.setRawRequestUri(BASE_URI + "/ESAllPrim");
+    request.addHeader(HttpHeader.ODATA_VERSION, Collections.singletonList("4.02"));
+
+    // the counterpart of the test above: version validation is alive and well for everything that
+    // is not a status monitor, so the monitor's exemption is the branch placement, not a hole.
+    assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(),
+        process(request, new MonitorAsyncSupport()).getStatusCode());
+  }
+
+  @Test
+  void everyValueOfAMultiValuedResultHeaderSurvivesOntoTheUnwrappedResponse() {
+    final MonitorAsyncSupport async = new MonitorAsyncSupport();
+    final ODataResponse result = result(HttpStatusCode.OK, "{\"value\":\"done\"}");
+    result.addHeader(HttpHeader.PREFERENCE_APPLIED, "respond-async");
+    result.addHeader(HttpHeader.PREFERENCE_APPLIED, "return=representation");
+    async.result = AsyncResult.completed(result);
+
+    final ODataResponse response = process(monitor(HttpMethod.GET), async);
+
+    assertEquals(HttpStatusCode.OK.getStatusCode(), response.getStatusCode());
+    // section 11.6: "any other headers ... represent the result of the completed asynchronous
+    // operation" - all of them, not just the first value of each name.
+    assertEquals(Arrays.asList("respond-async", "return=representation"),
+        response.getHeaders(HttpHeader.PREFERENCE_APPLIED));
   }
 
   @Test
