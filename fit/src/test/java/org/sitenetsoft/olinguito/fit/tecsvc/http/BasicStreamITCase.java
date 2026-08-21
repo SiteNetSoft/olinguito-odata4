@@ -18,6 +18,8 @@
  *
  * Copyright 2026 SiteNetSoft - OLINGO-1505: Stream-property links are now written at metadata=minimal
  * Copyright 2026 SiteNetSoft - Adjusted XML stream-property assertions for the new XML refusal
+ * Copyright 2026 SiteNetSoft - Real BAD_REQUEST assertions + moved paging/count XML coverage
+ * to ESServerSidePaging (fix round 1)
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.http;
 
@@ -106,18 +108,15 @@ public class BasicStreamITCase extends AbstractBaseTestITCase {
     connection.setRequestMethod(HttpMethod.GET.name());
     connection.connect();
 
-    // ESStreamServerSidePaging streams its entity collection: the 200 status and the XML content
-    // type are committed to the wire before serialization reaches PropertyStream, so the new
-    // Edm.Stream refusal in ODataXmlSerializer#writePrimitive cannot turn this into an error
-    // response - it can only abort the body. The stale fragment this test used to pin
-    // ("<d:PropertyStream m:type=\"Stream\">readLink</d:PropertyStream>") was exactly the
-    // undefined-behavior payload the refusal exists to stop producing, so an empty body is the
-    // correct - if inelegant - outcome for this streamed path; making the streamed writer surface a
-    // clean error is a separate, larger change than this task's guard.
-    assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    assertEquals(ContentType.APPLICATION_XML, ContentType.create(connection.getHeaderField(HttpHeader.CONTENT_TYPE)));
-    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
-    assertFalse(content.contains("<d:PropertyStream"));
+    // ODataXmlSerializer#entityCollectionStreamed now runs a static, data-free EDM check for
+    // Edm.Stream properties before ODataWritableContent.with(...) is even built, i.e. before the
+    // processor commits any status or content type to the wire - so this now gets the same clean
+    // 400 that ESWithStream and ESGeo already get in XML, instead of the stale, undefined-behavior
+    // fragment ("<d:PropertyStream m:type=\"Stream\">readLink</d:PropertyStream>") this test used
+    // to pin.
+    assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), connection.getResponseCode());
+    final String content = new String(connection.getErrorStream().readAllBytes(), Charset.defaultCharset());
+    assertTrue("Expected the message to name the property, got: " + content, content.contains("PropertyStream"));
   }
 
   @Test
@@ -128,12 +127,35 @@ public class BasicStreamITCase extends AbstractBaseTestITCase {
     connection.setRequestMethod(HttpMethod.GET.name());
     connection.connect();
 
-    // See streamESStreamServerSidePagingXml above: the response is already committed to 200/XML
-    // before the Edm.Stream refusal fires, so the body is aborted rather than the status changing.
+    // See streamESStreamServerSidePagingXml above: the static EDM check refuses the entity type
+    // before anything is written, on every page, not only the first.
+    assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), connection.getResponseCode());
+    final String content = new String(connection.getErrorStream().readAllBytes(), Charset.defaultCharset());
+    assertTrue("Expected the message to name the property, got: " + content, content.contains("PropertyStream"));
+  }
+
+  /**
+   * The next-link/id/property XML fragments {@code streamESStreamServerSidePagingXml} used to pin
+   * on {@code ESStreamServerSidePaging} are no longer producible in XML now that the entity type is
+   * refused outright - moved here onto {@code ESServerSidePaging}, the equivalent server-side-paged
+   * entity set with no stream property, so the underlying XML paging mechanics stay covered.
+   */
+  @Test
+  public void serverSidePagingXml() throws Exception {
+    URL url = new URL(SERVICE_URI + "ESServerSidePaging?$format=xml");
+
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod(HttpMethod.GET.name());
+    connection.connect();
+
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
     assertEquals(ContentType.APPLICATION_XML, ContentType.create(connection.getHeaderField(HttpHeader.CONTENT_TYPE)));
+
     final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
-    assertFalse(content.contains("<d:PropertyStream"));
+    assertTrue(content.contains("<a:link rel=\"next\" href="));
+    assertTrue(content.contains("ESServerSidePaging?$format=xml&amp;%24skiptoken=1%2A10\"/>"));
+    assertTrue(content.contains("<a:id>ESServerSidePaging(1)</a:id>"));
+    assertTrue(content.contains("<d:PropertyInt16 m:type=\"Int16\">1</d:PropertyInt16>"));
   }
   
   @Test
@@ -186,12 +208,36 @@ public class BasicStreamITCase extends AbstractBaseTestITCase {
     connection.setRequestMethod(HttpMethod.GET.name());
     connection.connect();
 
-    // See streamESStreamServerSidePagingXml above: the response is already committed to 200/XML
-    // before the Edm.Stream refusal fires, so the body is aborted rather than the status changing.
+    // See streamESStreamServerSidePagingXml above: the static EDM check refuses the entity type
+    // before anything is written, $count=true included.
+    assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), connection.getResponseCode());
+    final String content = new String(connection.getErrorStream().readAllBytes(), Charset.defaultCharset());
+    assertTrue("Expected the message to name the property, got: " + content, content.contains("PropertyStream"));
+  }
+
+  /**
+   * The {@code <m:count>504</m:count>} fragment {@code streamCountXml} used to pin on
+   * {@code ESStreamServerSidePaging} is no longer producible in XML now that the entity type is
+   * refused outright - moved here onto {@code ESServerSidePaging} (503 entities), the equivalent
+   * server-side-paged entity set with no stream property, so $count in XML stays covered.
+   */
+  @Test
+  public void serverSidePagingCountXml() throws Exception {
+    URL url = new URL(SERVICE_URI + "ESServerSidePaging?$count=true&$format=xml");
+
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod(HttpMethod.GET.name());
+    connection.connect();
+
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
     assertEquals(ContentType.APPLICATION_XML, ContentType.create(connection.getHeaderField(HttpHeader.CONTENT_TYPE)));
+
     final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
-    assertFalse(content.contains("<d:PropertyStream"));
+    assertTrue(content.contains("<a:link rel=\"next\" href="));
+    assertTrue(content.contains("ESServerSidePaging?$count=true&amp;$format=xml&amp;%24skiptoken=1%2A10\"/>"));
+    assertTrue(content.contains("<a:id>ESServerSidePaging(1)</a:id>"));
+    assertTrue(content.contains("<m:count>503</m:count>"));
+    assertTrue(content.contains("<d:PropertyInt16 m:type=\"Int16\">1</d:PropertyInt16>"));
   }
   
    
@@ -224,12 +270,36 @@ public class BasicStreamITCase extends AbstractBaseTestITCase {
     connection.setRequestMethod(HttpMethod.GET.name());
     connection.connect();
 
-    // See streamESStreamServerSidePagingXml above: the response is already committed to 200/XML
-    // before the Edm.Stream refusal fires, so the body is aborted rather than the status changing.
+    // See streamESStreamServerSidePagingXml above: the static EDM check refuses the entity type
+    // before anything is written, $count=false included.
+    assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), connection.getResponseCode());
+    final String content = new String(connection.getErrorStream().readAllBytes(), Charset.defaultCharset());
+    assertTrue("Expected the message to name the property, got: " + content, content.contains("PropertyStream"));
+  }
+
+  /**
+   * The {@code assertFalse(content.contains("<m:count>504</m:count>"))} pin from the original
+   * {@code streamCountFalsetXml} is no longer meaningful on {@code ESStreamServerSidePaging} (the
+   * whole response is now refused); moved here onto {@code ESServerSidePaging} so $count=false in
+   * XML stays covered.
+   */
+  @Test
+  public void serverSidePagingCountFalseXml() throws Exception {
+    URL url = new URL(SERVICE_URI + "ESServerSidePaging?$count=false&$format=xml");
+
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod(HttpMethod.GET.name());
+    connection.connect();
+
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
     assertEquals(ContentType.APPLICATION_XML, ContentType.create(connection.getHeaderField(HttpHeader.CONTENT_TYPE)));
+
     final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
-    assertFalse(content.contains("<d:PropertyStream"));
+    assertTrue(content.contains("<a:link rel=\"next\" href="));
+    assertTrue(content.contains("ESServerSidePaging?$count=false&amp;$format=xml&amp;%24skiptoken=1%2A10\"/>"));
+    assertTrue(content.contains("<a:id>ESServerSidePaging(1)</a:id>"));
+    assertTrue(content.contains("<d:PropertyInt16 m:type=\"Int16\">1</d:PropertyInt16>"));
+    assertFalse(content.contains("<m:count>503</m:count>"));
   }
   
    

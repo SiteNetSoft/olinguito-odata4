@@ -27,6 +27,7 @@
  * Copyright 2026 SiteNetSoft - Tests for entity-typed and entity-collection values in JSON payloads
  * Copyright 2026 SiteNetSoft - OLINGO-1505: Tests for stream-property media links at metadata=minimal
  * Copyright 2026 SiteNetSoft - Pin instance annotations and omit-values=nulls on stream properties
+ * Copyright 2026 SiteNetSoft - Re-point the omit-values stream pin at full metadata (fix round 1)
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -1500,22 +1501,32 @@ class ODataJsonSerializerTest {
   // the design spec asks to preserve.
   @Test
   void aStreamPropertyIsNeverOmittedByOmitValuesNulls() throws Exception {
+    // At minimal metadata, writePropertyType is a no-op, so a passing comparison there cannot tell
+    // the guard apart from its absence - both produce byte-identical output regardless of
+    // omitNulls. Full metadata makes the guard observable: writePropertyType writes
+    // "PropertyStream@odata.type":"#Stream" for a stream property exactly like any other primitive,
+    // and only "!isStreamProperty" in isPropertyOmittedByOmitValuesPreference keeps that write (and
+    // the property's own control-information call) reachable when the preference is active.
     final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESWithStream");
     final Entity entity = new Entity();
     entity.setId(URI.create("ESWithStream(1)"));
     entity.addProperty(new Property(null, "PropertyInt16", ValueType.PRIMITIVE, (short) 1));
     entity.addProperty(new Property(null, "PropertyStream", ValueType.PRIMITIVE, null));
 
-    final String withoutPreference = new String(serializer.entity(metadata, edmEntitySet.getEntityType(), entity,
+    final String withoutPreference = new String(
+        serializerFullMetadata.entity(metadata, edmEntitySet.getEntityType(), entity,
         EntitySerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .build()).getContent().readAllBytes(), StandardCharsets.UTF_8);
-    final String withPreference = new String(serializer.entity(metadata, edmEntitySet.getEntityType(), entity,
+    final String withPreference = new String(
+        serializerFullMetadata.entity(metadata, edmEntitySet.getEntityType(), entity,
         EntitySerializerOptions.with()
             .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
             .omitNulls(true)
             .build()).getContent().readAllBytes(), StandardCharsets.UTF_8);
 
+    MatcherAssert.assertThat(withoutPreference,
+        CoreMatchers.containsString("\"PropertyStream@odata.type\":\"#Stream\""));
     Assertions.assertEquals(withoutPreference, withPreference);
   }
 

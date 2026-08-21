@@ -24,6 +24,7 @@
  * Copyright 2026 SiteNetSoft - OLINGO-1581: Added XML instance annotation serialization support
  * Copyright 2026 SiteNetSoft - OLINGO-1402: Use entity editLink/selfLink in XML serializer
  * Copyright 2026 SiteNetSoft - Refuse stream properties in XML (Atom representation not implemented)
+ * Copyright 2026 SiteNetSoft - Static Edm.Stream check in entityCollectionStreamed (fix round 1)
  */
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
@@ -355,7 +356,44 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
   @Override
   public SerializerStreamResult entityCollectionStreamed(ServiceMetadata metadata, EdmEntityType entityType,
       EntityIterator entities, EntityCollectionSerializerOptions options) throws SerializerException {
+      // Unlike the buffered entity()/entityCollection() paths, a streamed collection's response
+      // status and content type are committed by the processor before any entity is written - once
+      // that happens, a mid-stream SerializerException can no longer turn into a clean error
+      // response (ODataWritableContent$StreamContent#write swallows it when no
+      // ODataContentWriteErrorCallback is registered, which TechnicalEntityProcessor does not
+      // register). The Edm.Stream refusal therefore has to run as a static, data-free EDM check
+      // here, before ODataWritableContent.with(...) hands back a result the processor will commit
+      // to. No entity data is needed: Edm.Stream is refused for every instance of the type.
+      checkNoStreamProperty(entityType, new HashSet<>());
       return ODataWritableContent.with(entities, entityType, this, metadata, options).build();
+  }
+
+  /**
+   * Refuses (via {@link SerializerException}) an {@link EdmStructuredType} - an entity type or a
+   * complex type reachable from one - that declares an {@code Edm.Stream} property, directly or
+   * inside a nested complex property. The Atom representation of a stream property is defined by
+   * [OData-Atom], which this service does not implement; see {@link #writePrimitive} for the
+   * equivalent per-value guard used by the buffered (non-streamed) serialization paths.
+   *
+   * @param visitedComplexTypes complex types already checked on this path, to guard against a
+   *                            complex type that (directly or transitively) contains itself
+   */
+  private void checkNoStreamProperty(final EdmStructuredType type, final Set<EdmStructuredType> visitedComplexTypes)
+      throws SerializerException {
+    if (!visitedComplexTypes.add(type)) {
+      return;
+    }
+    for (final String propertyName : type.getPropertyNames()) {
+      final EdmProperty property = (EdmProperty) type.getProperty(propertyName);
+      final EdmType propertyType = property.getType();
+      if (propertyType == EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Stream)) {
+        throw new SerializerException("Stream properties are not supported in XML.",
+            SerializerException.MessageKeys.UNSUPPORTED_PROPERTY_TYPE, propertyName);
+      }
+      if (propertyType.getKind() == EdmTypeKind.COMPLEX) {
+        checkNoStreamProperty((EdmComplexType) propertyType, visitedComplexTypes);
+      }
+    }
   }
 
   @Override

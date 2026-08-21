@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Added minimal-metadata stream link and XML-refusal fit tests
+ * Copyright 2026 SiteNetSoft - Guard the entity-1 media link assertion (fix round 1)
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
@@ -144,6 +145,7 @@ public class EntityWithStreamITCase extends AbstractParamTecSvcITCase {
     assertNotNull(entities);
     assertEquals(2, entities.size());
 
+    assertEquals(1, entities.get(0).getMediaEditLinks().size());
     ClientLink link = entities.get(0).getMediaEditLinks().get(0);
     assertNotNull(link);
     assertEquals("/readLink", link.getLink().toASCIIString());
