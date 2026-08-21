@@ -15,6 +15,9 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 10: removed the respond-async handling; the
+ * request handler now owns the preference ([OData-Protocol] section 11.6)
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
@@ -36,8 +39,6 @@ import org.sitenetsoft.olinguito.server.api.deserializer.batch.BatchRequestPart;
 import org.sitenetsoft.olinguito.server.api.deserializer.batch.ODataResponsePart;
 import org.sitenetsoft.olinguito.server.api.prefer.PreferencesApplied;
 import org.sitenetsoft.olinguito.server.api.processor.BatchProcessor;
-import org.sitenetsoft.olinguito.server.tecsvc.async.AsyncProcessor;
-import org.sitenetsoft.olinguito.server.tecsvc.async.TechnicalAsyncService;
 import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider;
 
 public class TechnicalBatchProcessor extends TechnicalProcessor implements BatchProcessor {
@@ -49,21 +50,6 @@ public class TechnicalBatchProcessor extends TechnicalProcessor implements Batch
   @Override
   public void processBatch(final BatchFacade facade, final ODataRequest request, final ODataResponse response)
       throws ODataApplicationException, ODataLibraryException {
-    // only the first batch call (process batch) must be handled in a separate way for async support
-    // because a changeset has to be wrapped within a process batch call
-    if(odata.createPreferences(request.getHeaders(HttpHeader.PREFER)).hasRespondAsync()) {
-      TechnicalAsyncService asyncService = TechnicalAsyncService.getInstance();
-      BatchProcessor processor = new TechnicalBatchProcessor(dataProvider);
-      processor.init(odata, serviceMetadata);
-      AsyncProcessor<BatchProcessor> asyncProcessor = asyncService.register(processor, BatchProcessor.class);
-      asyncProcessor.prepareFor().processBatch(facade, request, response);
-      String location = asyncProcessor.processAsync();
-      TechnicalAsyncService.acceptedResponse(response, location);
-      //
-      return;
-    }
-
-
     final boolean continueOnError =
         odata.createPreferences(request.getHeaders(HttpHeader.PREFER)).hasContinueOnError();
 

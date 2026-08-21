@@ -170,6 +170,37 @@ class AsyncStatusMonitorTest {
   }
 
   @Test
+  void aWildcardAcceptAlsoAsksForTheWrappedResult() throws Exception {
+    // The default Accept header of a JDK HttpURLConnection: no media type is named, but the
+    // wildcard ranges cover application/http, so section 11.6's "an Accept header that includes
+    // application/http" is satisfied.
+    for (final String accept : new String[] {"*/*", "application/*",
+        "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2"}) {
+      final ODataRequest request = monitor(HttpMethod.GET);
+      request.addHeader(HttpHeader.ACCEPT, Collections.singletonList(accept));
+
+      final ODataResponse response = process(request, completed());
+
+      assertEquals(ContentType.APPLICATION_HTTP.toContentTypeString(),
+          response.getHeader(HttpHeader.CONTENT_TYPE), accept);
+      assertTrue(content(response).startsWith("HTTP/1.1 200 OK\r\n"), accept);
+      assertNull(response.getHeader(HttpHeader.ASYNC_RESULT), accept);
+    }
+  }
+
+  @Test
+  void aCompletedMonitorWrapsTheResultForA40MaxVersionEvenWithAnAcceptHeaderPresent() throws Exception {
+    final ODataRequest request = monitor(HttpMethod.GET);
+    request.addHeader(HttpHeader.ODATA_MAX_VERSION, Collections.singletonList("4.0"));
+    request.addHeader(HttpHeader.ACCEPT, Collections.singletonList("*/*"));
+
+    final ODataResponse response = process(request, completed());
+
+    assertEquals(ContentType.APPLICATION_HTTP.toContentTypeString(),
+        response.getHeader(HttpHeader.CONTENT_TYPE));
+  }
+
+  @Test
   void aCompletedMonitorUnwrapsTheResultAndSetsAsyncResultOtherwise() throws Exception {
     final MonitorAsyncSupport async = new MonitorAsyncSupport();
     final ODataResponse result = result(HttpStatusCode.CREATED, "{\"value\":\"created\"}");

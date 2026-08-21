@@ -23,6 +23,8 @@
  * readEntityCollection, symmetric with readEntity
  * Copyright 2026 SiteNetSoft - Gate track-changes Preference-Applied on !isReference (a reference
  * collection never carries a delta link) and switch to PreferencesApplied.Builder#omitValues
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 10: removed the respond-async handling; the
+ * request handler now owns the preference ([OData-Protocol] section 11.6)
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
@@ -86,8 +88,6 @@ import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.IdOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.SystemQueryOption;
-import org.sitenetsoft.olinguito.server.tecsvc.async.AsyncProcessor;
-import org.sitenetsoft.olinguito.server.tecsvc.async.TechnicalAsyncService;
 import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.data.RequestValidator;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.ExpandSystemQueryOptionHandler;
@@ -200,17 +200,6 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
           HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), Locale.ROOT);
     }
     checkRequestFormat(requestFormat);
-
-    if (odata.createPreferences(request.getHeaders(HttpHeader.PREFER)).hasRespondAsync()) {
-      TechnicalAsyncService asyncService = TechnicalAsyncService.getInstance();
-      TechnicalEntityProcessor processor = new TechnicalEntityProcessor(dataProvider, serviceMetadata);
-      processor.init(odata, serviceMetadata);
-      AsyncProcessor<EntityProcessor> asyncProcessor = asyncService.register(processor, EntityProcessor.class);
-      asyncProcessor.prepareFor().createEntity(request, response, uriInfo, requestFormat, responseFormat);
-      String location = asyncProcessor.processAsync();
-      TechnicalAsyncService.acceptedResponse(response, location);
-      return;
-    }
 
     final UriResourceEntitySet resourceEntitySet = (UriResourceEntitySet) uriInfo.getUriResourceParts().get(0);
     final EdmEntitySet edmEntitySet = resourceEntitySet.getEntitySet();
@@ -461,20 +450,6 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
   private void readEntity(final ODataRequest request, final ODataResponse response, final UriInfo uriInfo,
       final ContentType requestedFormat, final boolean isReference)
       throws ODataApplicationException, ODataLibraryException {
-    //
-    if (odata.createPreferences(request.getHeaders(HttpHeader.PREFER)).hasRespondAsync()) {
-      TechnicalAsyncService asyncService = TechnicalAsyncService.getInstance();
-      TechnicalEntityProcessor processor = new TechnicalEntityProcessor(dataProvider, serviceMetadata);
-      processor.init(odata, serviceMetadata);
-      AsyncProcessor<EntityProcessor> asyncProcessor = asyncService.register(processor, EntityProcessor.class);
-      asyncProcessor.prepareFor().readEntity(request, response, uriInfo, requestedFormat);
-      String location = asyncProcessor.processAsync();
-      TechnicalAsyncService.acceptedResponse(response, location);
-      //
-      return;
-    }
-    //
-
     final EdmEntitySet edmEntitySet = getEdmEntitySet(uriInfo);
     
     //for Singleton/$ref edmEntityset will be null throw error
@@ -589,21 +564,6 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
   private void readEntityCollection(final ODataRequest request, final ODataResponse response,
       final UriInfo uriInfo, final ContentType requestedContentType, final boolean isReference)
       throws ODataApplicationException, ODataLibraryException {
-    //
-    if (odata.createPreferences(request.getHeaders(HttpHeader.PREFER)).hasRespondAsync()) {
-      TechnicalAsyncService asyncService = TechnicalAsyncService.getInstance();
-      TechnicalEntityProcessor processor = new TechnicalEntityProcessor(dataProvider, serviceMetadata);
-      processor.init(odata, serviceMetadata);
-      AsyncProcessor<EntityCollectionProcessor> asyncProcessor =
-          asyncService.register(processor, EntityCollectionProcessor.class);
-      asyncProcessor.prepareFor().readEntityCollection(request, response, uriInfo, requestedContentType);
-      String location = asyncProcessor.processAsync();
-      TechnicalAsyncService.acceptedResponse(response, location);
-      //
-      return;
-    }
-    //
-
     // Shared Preferences view of the Prefer request header: reused below for maxpagesize,
     // track-changes, and omit-values so that a Prefer header combining several of them results
     // in a single, accumulated Preference-Applied response header.

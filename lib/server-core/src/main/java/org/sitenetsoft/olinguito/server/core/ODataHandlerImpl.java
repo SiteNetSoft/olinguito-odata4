@@ -34,6 +34,9 @@
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 9: serve the asynchronous status monitor
  * resource in both result shapes of [OData-Protocol] section 11.6, including the AsyncResult
  * response header of section 8.3.1
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 10: an asynchronously produced response carries
+ * the OData-Version header, and a wildcard Accept media range also asks for the wrapped
+ * application/http result shape ([OData-Protocol] section 11.6)
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -352,6 +355,13 @@ public class ODataHandlerImpl implements ODataHandler {
    * case: the request "includes an OData-MaxVersion header with a value of 4.0 and no Accept
    * header, or an Accept header that includes application/http".
    *
+   * <p>An Accept header "includes application/http" either by naming it or through a media range
+   * that covers it — <code>application/*</code>, <code>*&#47;*</code> or the bare <code>*</code> a
+   * JDK <code>HttpURLConnection</code> sends by default. The test stays a plain look at the media
+   * ranges rather than a full negotiation: a monitor request is not an OData request, so an Accept
+   * header the OData content negotiator dislikes must not make it fail, and <code>q</code> values
+   * are not honoured.</p>
+   *
    * <p>A request carrying neither header is not named by either sentence of section 11.6; it is
    * answered with the unwrapped shape (a recorded decision), following section 13.2.1's Minimal
    * conformance MUST for a 4.01 service to "return the AsyncResult result header in the final
@@ -362,11 +372,25 @@ public class ODataHandlerImpl implements ODataHandler {
    */
   private static boolean wantsHttpMessage(final ODataRequest request) {
     final String accept = request.getHeader(HttpHeader.ACCEPT);
-    if (accept != null && accept.contains(ContentType.APPLICATION_HTTP.toContentTypeString())) {
-      return true;
+    if (accept != null) {
+      return acceptCoversHttpMessage(accept);
     }
     final String maxVersion = request.getHeader(HttpHeader.ODATA_MAX_VERSION);
-    return accept == null && maxVersion != null && ODataServiceVersion.V40.toString().equals(maxVersion.trim());
+    return maxVersion != null && ODataServiceVersion.V40.toString().equals(maxVersion.trim());
+  }
+
+  /** Whether any media range of this Accept header covers <code>application/http</code>. */
+  private static boolean acceptCoversHttpMessage(final String accept) {
+    for (final String part : accept.split(",")) {
+      final int parameterStart = part.indexOf(';');
+      final String range = (parameterStart < 0 ? part : part.substring(0, parameterStart))
+          .trim().toLowerCase(Locale.ROOT);
+      if (ContentType.APPLICATION_HTTP.toContentTypeString().equals(range)
+          || "application/*".equals(range) || "*/*".equals(range) || "*".equals(range)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -392,6 +416,9 @@ public class ODataHandlerImpl implements ODataHandler {
     final ODataRequest detached = detach(request);
     final String location = asyncSupport.submit(detached, () -> {
       final ODataResponse asyncResponse = new ODataResponse();
+      // The deferred result is a complete OData response in its own right, so it carries the
+      // OData-Version header a synchronously dispatched response would have carried.
+      asyncResponse.setHeader(HttpHeader.ODATA_VERSION, ODataServiceVersion.V40.toString());
       return processCatching(detached, asyncResponse,
           () -> new ODataDispatcher(localUriInfo, this).dispatch(detached, asyncResponse));
     });

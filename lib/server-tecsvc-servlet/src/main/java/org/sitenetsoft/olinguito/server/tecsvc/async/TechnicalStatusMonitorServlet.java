@@ -17,39 +17,63 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Moved from server-tecsvc to server-tecsvc-servlet
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 10: reduced to a bridge onto the request handler,
+ * which serves the status monitor resource itself ([OData-Protocol] section 11.6)
  */
 package org.sitenetsoft.olinguito.server.tecsvc.async;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Serial;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
-public class TechnicalStatusMonitorServlet extends HttpServlet {
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import org.sitenetsoft.olinguito.server.tecsvc.TechnicalServlet;
+
+/**
+ * Serves the status monitor resources of the technical service.
+ *
+ * <p>The monitor URL sits outside the OData servlet's path (see
+ * {@link TechnicalAsyncService}, which mints <code>&lt;service root's parent&gt;/status/&lt;n&gt;</code>),
+ * so it needs its own servlet mapping — but not its own logic: this servlet builds exactly the same
+ * request handler as {@link TechnicalServlet}, with {@link TechnicalAsyncService} registered, and
+ * lets the handler recognize the monitor request and render both result shapes of
+ * [OData-Protocol] section 11.6.</p>
+ *
+ * <p>The one thing that is not OData is <code>/status/list</code>, a development aid listing the
+ * queued invocations.</p>
+ */
+public class TechnicalStatusMonitorServlet extends TechnicalServlet {
 
   @Serial
-
   private static final long serialVersionUID = 1L;
-  private static final Logger LOG = LoggerFactory.getLogger(TechnicalStatusMonitorServlet.class);
 
   @Override
   protected void service(final HttpServletRequest request, final HttpServletResponse response)
       throws ServletException, IOException {
-    try {
-      TechnicalAsyncServletService asyncServletService = new TechnicalAsyncServletService();
-      if("/list".equals(request.getPathInfo())) {
-        asyncServletService.listQueue(response);
-      } else if(asyncServletService.isStatusMonitorResource(request)) {
-        asyncServletService.handle(request, response);
-      }
-    } catch (final Exception e) {
-      LOG.error("Server Error", e);
-      throw new ServletException(e);
+    if ("/list".equals(request.getPathInfo())) {
+      listQueue(response);
+      return;
     }
+    super.service(request, response);
+  }
+
+  /** Writes a plain listing of the queued invocations and their state. */
+  private static void listQueue(final HttpServletResponse response) throws IOException {
+    final StringBuilder sb = new StringBuilder("<html><header/><body><h1>Queued requests</h1><ul>");
+    for (final Map.Entry<String, TechnicalAsyncService.AsyncRunner> entry
+        : TechnicalAsyncService.getInstance().getRunners().entrySet()) {
+      sb.append("<li><b>Location: </b><a href=\"").append(entry.getKey()).append("\">")
+          .append(entry.getKey()).append("</a><br/>")
+          .append("<b>Finished: </b>").append(entry.getValue().isFinished()).append("<br/>")
+          .append("</li>");
+    }
+    sb.append("</ul></body></html>");
+
+    response.setContentType("text/html;charset=UTF-8");
+    response.getOutputStream().write(sb.toString().getBytes(StandardCharsets.UTF_8));
   }
 }

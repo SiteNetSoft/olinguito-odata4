@@ -22,6 +22,8 @@
  * $schemaversion system query option is enforced (OData 4.01, Part 1: Protocol, section 11.2.12)
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 3: configureHandler hook so subclasses can serve
  * the same technical service with a different URL convention
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 10: register the asynchronous processing
+ * support so the handler can answer respond-async ([OData-Protocol] section 11.6)
  */
 package org.sitenetsoft.olinguito.server.tecsvc;
 
@@ -43,6 +45,7 @@ import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.ODataHandler;
 import org.sitenetsoft.olinguito.server.api.ODataRequestHandler;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.tecsvc.async.TechnicalAsyncService;
 import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.TechnicalActionProcessor;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.TechnicalBatchProcessor;
@@ -103,6 +106,9 @@ public class TechnicalServlet extends HttpServlet {
       core.register(new TechnicalBatchProcessor(dataProvider));
       // Register helpers.
       core.register(new ETagSupport());
+      // Asynchronous processing: with this registered the handler answers the respond-async
+      // preference itself ([OData-Protocol] section 11.6); no processor knows about it.
+      core.register(TechnicalAsyncService.getInstance());
       // Process the request.
       servlet.process(request, response);
     } catch (final RuntimeException e) {

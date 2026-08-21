@@ -18,28 +18,19 @@
  *
  * Copyright 2026 SiteNetSoft - Removed servlet-dependent methods to make engine-agnostic
  * Copyright 2026 SiteNetSoft - Replaced synchronizedMap with ConcurrentHashMap
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 10: implement the AsyncSupport service provider
+ * interface ([OData-Protocol] section 11.6) so the framework, not the processors, owns the
+ * respond-async preference; the dynamic-proxy processor wrapping is gone
  */
 package org.sitenetsoft.olinguito.server.tecsvc.async;
 
-import org.sitenetsoft.olinguito.commons.api.ex.ODataRuntimeException;
-import org.sitenetsoft.olinguito.commons.api.format.PreferenceName;
-import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
-import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
-import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
-import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
 import org.sitenetsoft.olinguito.server.api.ODataRequest;
 import org.sitenetsoft.olinguito.server.api.ODataResponse;
-import org.sitenetsoft.olinguito.server.api.processor.Processor;
+import org.sitenetsoft.olinguito.server.api.async.AsyncInvocation;
+import org.sitenetsoft.olinguito.server.api.async.AsyncResult;
+import org.sitenetsoft.olinguito.server.api.async.AsyncSupport;
+import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,30 +42,24 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * The TechnicalAsyncService provides asynchronous support for any Processor.
- * To use it following steps are necessary:
- * <ul>
- *   <li>Get the instance</li>
- *   <li>Create an instance of the Processor which should be wrapped for asynchronous support
- *   (do not forget to call the <code>init(...)</code> method on the processor)</li>
- *   <li>register the Processor instance via the <code>register(...)</code> method</li>
- *   <li>prepare the corresponding method with the request parameters via the
- *   <code>prepareFor()</code> method at the AsyncProcessor</li>
- *   <li>start the async processing via the <code>processAsync()</code> methods</li>
- * </ul>
- * A short code snippet is shown below:
- * <pre>
- * <code>
- * TechnicalAsyncService asyncService = TechnicalAsyncService.getInstance();
- * TechnicalEntityProcessor processor = new TechnicalEntityProcessor(dataProvider, serviceMetadata);
- * processor.init(odata, serviceMetadata);
- * AsyncProcessor<EntityProcessor> asyncProcessor = asyncService.register(processor, EntityProcessor.class);
- * asyncProcessor.prepareFor().readEntity(request, response, uriInfo, requestedFormat);
- * String location = asyncProcessor.processAsync();
- * </code>
- * </pre>
+ * Asynchronous processing support for the technical service, as an {@link AsyncSupport}
+ * implementation registered on the request handler.
+ *
+ * <p>The framework recognizes a status monitor request, hands over a ready-made
+ * {@link AsyncInvocation} for the requests that carry the <code>respond-async</code> preference and
+ * renders every response itself; this class only owns where results are kept, on what thread they
+ * are produced and what the monitor URL looks like ([OData-Protocol] section 11.6).</p>
+ *
+ * <p>A result is retrieved exactly once: {@link #resolve(ODataRequest)} removes the runner when it
+ * reports the completed response, so a second request to the same monitor URL is answered 404. That
+ * is the technical service's long-standing behavior, kept deliberately; section 11.6 makes 404
+ * correct after a successful cancellation or once the service stops retaining the result.</p>
+ *
+ * <p>For testing purposes the runner honors a <code>tec.sleep=&lt;seconds&gt;</code> token in the
+ * raw <code>Prefer</code> header, which delays the invocation so that a client can observe the
+ * running state of the monitor resource.</p>
  */
-public class TechnicalAsyncService {
+public class TechnicalAsyncService implements AsyncSupport {
 
   public static final String TEC_ASYNC_SLEEP = "tec.sleep";
   public static final String STATUS_MONITOR_TOKEN = "status";
@@ -83,21 +68,6 @@ public class TechnicalAsyncService {
       new ConcurrentHashMap<>();
   private static final ExecutorService ASYNC_REQUEST_EXECUTOR = Executors.newFixedThreadPool(10);
   private static final AtomicInteger ID_GENERATOR = new AtomicInteger();
-
-  public <T extends Processor> AsyncProcessor<T> register(T processor, Class<T> processorInterface) {
-    return new AsyncProcessor<T>(processor, processorInterface, this);
-  }
-
-  public static void updateHeader(ODataResponse response, HttpStatusCode status, String location) {
-    response.setStatusCode(status.getStatusCode());
-    response.setHeader(HttpHeader.LOCATION, location);
-    response.setHeader(HttpHeader.PREFERENCE_APPLIED, PreferenceName.RESPOND_ASYNC.toString());
-
-  }
-
-  public static void acceptedResponse(ODataResponse response, String location) {
-    updateHeader(response, HttpStatusCode.ACCEPTED, location);
-  }
 
   private static final class AsyncProcessorHolder {
     private static final TechnicalAsyncService INSTANCE = new TechnicalAsyncService();
@@ -111,46 +81,49 @@ public class TechnicalAsyncService {
     ASYNC_REQUEST_EXECUTOR.shutdown();
   }
 
-  String processAsynchronous(AsyncProcessor<?> dispatchedProcessor)
-      throws ODataApplicationException, ODataLibraryException {
-    // use executor thread pool
-    String location = createNewAsyncLocation(dispatchedProcessor.getRequest());
-    dispatchedProcessor.setLocation(location);
-    AsyncRunner run = new AsyncRunner(dispatchedProcessor);
-    LOCATION_2_ASYNC_RUNNER.put(location, run);
-    ASYNC_REQUEST_EXECUTOR.execute(run);
-    //
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The monitor URLs this service mints all have a <code>/status/</code> path segment, which no
+   * other resource of the technical service has, satisfying section 11.6's requirement that "the
+   * status monitor resource URL MUST differ from any other resource URL".</p>
+   */
+  @Override
+  public boolean isStatusMonitorRequest(final ODataRequest request) {
+    final String uri = request.getRawRequestUri();
+    return uri != null && uri.contains("/" + STATUS_MONITOR_TOKEN + "/");
+  }
+
+  @Override
+  public String submit(final ODataRequest request, final AsyncInvocation invocation) {
+    final String location = createNewAsyncLocation(request);
+    final AsyncRunner runner = new AsyncRunner(invocation, getSleepTime(request));
+    LOCATION_2_ASYNC_RUNNER.put(location, runner);
+    ASYNC_REQUEST_EXECUTOR.execute(runner);
     return location;
   }
 
-  public AsyncRunner getRunner(String location) {
-    return LOCATION_2_ASYNC_RUNNER.get(location);
-  }
-
-  public void removeRunner(String location) {
+  @Override
+  public AsyncResult resolve(final ODataRequest request) {
+    final String location = request.getRawRequestUri();
+    final AsyncRunner runner = LOCATION_2_ASYNC_RUNNER.get(location);
+    if (runner == null) {
+      return AsyncResult.notFound();
+    }
+    if (!runner.isFinished()) {
+      return AsyncResult.running();
+    }
     LOCATION_2_ASYNC_RUNNER.remove(location);
+    final ODataResponse response = runner.getResponse();
+    // An invocation never throws (the framework turns failures into an error response), so a
+    // finished runner without a response can only mean the executor thread was interrupted; there
+    // is nothing left to report on, which is what a missing monitor resource means.
+    return response == null ? AsyncResult.notFound() : AsyncResult.completed(response);
   }
 
+  /** The runners currently known to this service, keyed by their monitor location. */
   public Map<String, AsyncRunner> getRunners() {
     return Collections.unmodifiableMap(LOCATION_2_ASYNC_RUNNER);
-  }
-
-  static void copy(final InputStream input, final OutputStream output) {
-    if (output == null || input == null) {
-      return;
-    }
-
-    try (ReadableByteChannel ic = Channels.newChannel(input);
-         WritableByteChannel oc = Channels.newChannel(output)) {
-      ByteBuffer inBuffer = ByteBuffer.allocate(8192);
-      while (ic.read(inBuffer) > 0) {
-        inBuffer.flip();
-        oc.write(inBuffer);
-        inBuffer.rewind();
-      }
-    } catch (IOException e) {
-      throw new ODataRuntimeException("Error on reading request content");
-    }
   }
 
   private String createNewAsyncLocation(ODataRequest request) {
@@ -159,50 +132,58 @@ public class TechnicalAsyncService {
   }
 
   /**
-   * Runnable for the AsyncProcessor.
+   * Reads the test-only <code>tec.sleep=&lt;seconds&gt;</code> token out of the raw
+   * <code>Prefer</code> header, returning zero when it is absent.
+   */
+  private static int getSleepTime(final ODataRequest request) {
+    final String preferHeader = request.getHeader(HttpHeader.PREFER);
+    if (preferHeader == null) {
+      return 0;
+    }
+    final Matcher matcher = AsyncRunner.SLEEP_PATTERN.matcher(preferHeader);
+    if (matcher.find()) {
+      return Integer.parseInt(matcher.group(2));
+    }
+    return 0;
+  }
+
+  /**
+   * Runs one deferred invocation and keeps its response until the monitor resource is read.
    */
   public static class AsyncRunner implements Runnable {
-    private static final Pattern PATTERN = Pattern.compile("(" + TEC_ASYNC_SLEEP + "=)(\\d*)");
-    private final AsyncProcessor<? extends Processor> dispatched;
-    private int defaultSleepTimeInSeconds = 0;
-    private Exception exception;
-    boolean finished = false;
+    static final Pattern SLEEP_PATTERN = Pattern.compile("(" + TEC_ASYNC_SLEEP + "=)(\\d*)");
 
-    public AsyncRunner(AsyncProcessor<? extends Processor> wrap) {
-      this(wrap, 0);
-    }
+    private final AsyncInvocation invocation;
+    private final int sleepTimeInSeconds;
+    private volatile ODataResponse result;
+    private volatile Exception exception;
+    private volatile boolean finished = false;
 
-    public AsyncRunner(AsyncProcessor<? extends Processor> wrap, int defaultSleepTimeInSeconds) {
-      this.dispatched = wrap;
-      if (defaultSleepTimeInSeconds > 0) {
-        this.defaultSleepTimeInSeconds = defaultSleepTimeInSeconds;
-      }
+    public AsyncRunner(final AsyncInvocation invocation, final int sleepTimeInSeconds) {
+      this.invocation = invocation;
+      this.sleepTimeInSeconds = Math.max(sleepTimeInSeconds, 0);
     }
 
     @Override
     public void run() {
       try {
-        int sleep = getSleepTime(dispatched);
-        TimeUnit.SECONDS.sleep(sleep);
-        dispatched.process();
+        if (sleepTimeInSeconds > 0) {
+          TimeUnit.SECONDS.sleep(sleepTimeInSeconds);
+        }
+        result = invocation.invoke();
       } catch (final InterruptedException e) {
         exception = e;
-      } catch (final InvocationTargetException e) {
+        Thread.currentThread().interrupt();
+      } catch (final RuntimeException e) {
         exception = e;
-      } catch (final IllegalAccessException e) {
-        exception = e;
+      } finally {
+        finished = true;
       }
-      finished = true;
     }
 
-    private int getSleepTime(AsyncProcessor<? extends Processor> wrap) {
-      String preferHeader = wrap.getPreferHeader();
-      Matcher matcher = PATTERN.matcher(preferHeader);
-      if (matcher.find()) {
-        String waitTimeAsString = matcher.group(2);
-        return Integer.parseInt(waitTimeAsString);
-      }
-      return defaultSleepTimeInSeconds;
+    /** The response the invocation produced, or {@code null} if it did not complete normally. */
+    public ODataResponse getResponse() {
+      return result;
     }
 
     public Exception getException() {
@@ -211,10 +192,6 @@ public class TechnicalAsyncService {
 
     public boolean isFinished() {
       return finished;
-    }
-
-    public AsyncProcessor<? extends Processor> getDispatched() {
-      return dispatched;
     }
   }
 }
