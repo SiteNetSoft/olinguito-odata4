@@ -67,6 +67,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
+import org.sitenetsoft.olinguito.commons.core.edm.primitivetype.EdmPrimitiveTypeFactory;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationProperty;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmStructuredType;
@@ -1452,6 +1453,60 @@ class ODataJsonSerializerTest {
         + "\"PropertyStream@odata.mediaEtag\":\"eTag\","
         + "\"PropertyStream@odata.mediaContentType\":\"image/jpeg\","
         + "\"PropertyStream@odata.mediaEditLink\":\"http://mediaserver:1234/editLink\""));
+  }
+
+  // [OData-JSON] 4.5.12 makes at least one of mediaEditLink/mediaReadLink mandatory in a
+  // metadata=full response. A rel that is neither the read-link nor the edit-link rel used to
+  // satisfy neither branch and produced no link at all; it now writes an edit link, as a null rel
+  // has always done.
+  @Test
+  void streamPropertyWithAnArbitraryRelStillWritesALinkAtFullMetadata() throws Exception {
+    final String resultString = serializeStreamEntity(serializerFullMetadata,
+        streamEntity("describedby", "http://mediaserver:1234/editLink"));
+    Assertions.assertTrue(resultString.contains(
+        "\"PropertyStream@odata.mediaEditLink\":\"http://mediaserver:1234/editLink\""));
+    Assertions.assertFalse(resultString.contains("PropertyStream@odata.mediaReadLink"));
+  }
+
+  /** An {@code Edm.Stream}-valued property as a custom EDM provider could declare one. */
+  private Property streamProperty(final ValueType valueType) {
+    final Link stream = new Link();
+    stream.setRel(Constants.NS_MEDIA_READ_LINK_REL);
+    stream.setHref("http://mediaserver:1234/readLink");
+    return new Property("Edm.Stream", "PropertyStream", valueType,
+        valueType == ValueType.PRIMITIVE ? stream : List.of(stream));
+  }
+
+  // A stream property carries media* control information and no value, so it must never reach the
+  // primitive value writer; without the guard the link href would be written as if it were the
+  // property's value. Not reachable from tecsvc, but reachable from a custom EDM provider through
+  // the public primitive(...) entry point.
+  @Test
+  void streamTypedPropertyIsRejectedByThePrimitiveEntryPoint() {
+    final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESWithStream");
+    final SerializerException e = Assertions.assertThrows(SerializerException.class, () ->
+        serializer.primitive(metadata, EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Stream),
+            streamProperty(ValueType.PRIMITIVE),
+            PrimitiveSerializerOptions.with()
+                .contextURL(ContextURL.with().entitySet(edmEntitySet)
+                    .keyPath("7").navOrPropertyPath("PropertyStream").build())
+                .build()));
+    Assertions.assertEquals(SerializerException.MessageKeys.UNSUPPORTED_PROPERTY_TYPE, e.getMessageKey());
+  }
+
+  // [OData-CSDL] section 6 allows Edm.Stream only as a property type, never inside a collection;
+  // the shared collection-element writer rejects it rather than writing the bare href.
+  @Test
+  void streamTypedCollectionIsRejectedByThePrimitiveCollectionEntryPoint() {
+    final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESWithStream");
+    final SerializerException e = Assertions.assertThrows(SerializerException.class, () ->
+        serializer.primitiveCollection(metadata, EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Stream),
+            streamProperty(ValueType.COLLECTION_PRIMITIVE),
+            PrimitiveSerializerOptions.with()
+                .contextURL(ContextURL.with().entitySet(edmEntitySet)
+                    .keyPath("7").navOrPropertyPath("PropertyStream").build())
+                .build()));
+    Assertions.assertEquals(SerializerException.MessageKeys.UNSUPPORTED_PROPERTY_TYPE, e.getMessageKey());
   }
   @Test
   void entityWithStreamExpand() throws Exception {
