@@ -22,6 +22,7 @@
  * version validation, and pin the multi-valued result-header copy
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 10: pin which Accept media ranges ask for the
  * wrapped application/http result shape ([OData-Protocol] section 11.6)
+ * Copyright 2026 SiteNetSoft - Pin that a streamed result body reaches both result shapes
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -32,8 +33,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.channels.Channels;
+import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,6 +49,7 @@ import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
 import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.ODataContent;
 import org.sitenetsoft.olinguito.server.api.ODataRequest;
 import org.sitenetsoft.olinguito.server.api.ODataResponse;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
@@ -338,6 +344,69 @@ class AsyncStatusMonitorTest {
 
     assertTrue(response.getStatusCode() >= 400, "status " + response.getStatusCode());
     assertNull(response.getHeader(HttpHeader.ASYNC_RESULT));
+  }
+
+  private static final String STREAMED_BODY = "{\"value\":[\"one\",\"two\",\"three\"]}";
+
+  @Test
+  void aStreamedResultBodyReachesTheWrappedShape() throws Exception {
+    // regression: the wrapped application/http shape is built by AsyncResponseSerializer, which
+    // reads only ODataResponse#getContent(); a streamed result carries its body in
+    // getODataContent() and used to be delivered as 200 + headers + EMPTY body.
+    final MonitorAsyncSupport async = new MonitorAsyncSupport();
+    async.result = AsyncResult.completed(streamedResult());
+    final ODataRequest request = monitor(HttpMethod.GET);
+    request.addHeader(HttpHeader.ACCEPT, Collections.singletonList("application/http"));
+
+    final ODataResponse response = process(request, async);
+
+    assertEquals(HttpStatusCode.OK.getStatusCode(), response.getStatusCode());
+    assertEquals(ContentType.APPLICATION_HTTP.toContentTypeString(),
+        response.getHeader(HttpHeader.CONTENT_TYPE));
+    final String body = content(response);
+    assertTrue(body.startsWith("HTTP/1.1 200 OK\r\n"), body);
+    assertTrue(body.endsWith(STREAMED_BODY), body);
+  }
+
+  @Test
+  void aStreamedResultBodyStillReachesTheUnwrappedShape() throws Exception {
+    final MonitorAsyncSupport async = new MonitorAsyncSupport();
+    async.result = AsyncResult.completed(streamedResult());
+    final ODataRequest request = monitor(HttpMethod.GET);
+    request.addHeader(HttpHeader.ACCEPT, Collections.singletonList(ContentType.JSON.toContentTypeString()));
+
+    final ODataResponse response = process(request, async);
+
+    assertEquals(HttpStatusCode.OK.getStatusCode(), response.getStatusCode());
+    assertEquals("200", response.getHeader(HttpHeader.ASYNC_RESULT));
+    assertNotNull(response.getODataContent());
+    final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+    response.getODataContent().write(buffer);
+    assertEquals(STREAMED_BODY, buffer.toString(StandardCharsets.UTF_8));
+  }
+
+  /** A completed result whose body lives in an {@link ODataContent}, as a streamed serializer leaves it. */
+  private static ODataResponse streamedResult() {
+    final ODataResponse result = new ODataResponse();
+    result.setStatusCode(HttpStatusCode.OK.getStatusCode());
+    result.setHeader(HttpHeader.CONTENT_TYPE, ContentType.JSON.toContentTypeString());
+    result.setODataContent(new ODataContent() {
+      @Override
+      public void write(final WritableByteChannel channel) {
+        write(Channels.newOutputStream(channel));
+      }
+
+      @Override
+      public void write(final OutputStream stream) {
+        try {
+          stream.write(STREAMED_BODY.getBytes(StandardCharsets.UTF_8));
+          stream.flush();
+        } catch (final IOException e) {
+          throw new IllegalStateException(e);
+        }
+      }
+    });
+    return result;
   }
 
   private static MonitorAsyncSupport completed() {

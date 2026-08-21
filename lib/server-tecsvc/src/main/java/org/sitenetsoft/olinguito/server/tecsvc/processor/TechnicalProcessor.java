@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Modernized instanceof to pattern matching
  * Copyright 2026 SiteNetSoft - Select the first entity explicitly when no key predicates are given
  * Copyright 2026 SiteNetSoft - OData 4.01: referential-constraint key predicates from the source entity
+ * Copyright 2026 SiteNetSoft - Restrict streamed collection serialization to JSON response formats
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
@@ -363,6 +364,14 @@ public abstract class TechnicalProcessor implements Processor {
       throw new ODataApplicationException("The content type has not been set in the request.",
           HttpStatusCode.BAD_REQUEST.getStatusCode(), Locale.ROOT);
     }
+  }
+
+  /**
+   * Tells whether the given content type is a JSON one. Streamed serialization is only implemented
+   * by the JSON serializer, so callers use this to keep every other format on the buffered path.
+   */
+  protected boolean isJsonContentType(final ContentType contentType) {
+    return contentType != null && contentType.isCompatible(ContentType.APPLICATION_JSON);
   }
 
   protected boolean isODataMetadataNone(final ContentType contentType) {

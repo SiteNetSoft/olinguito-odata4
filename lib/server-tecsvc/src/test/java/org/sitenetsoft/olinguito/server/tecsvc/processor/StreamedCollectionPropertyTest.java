@@ -19,14 +19,18 @@
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 3: end-to-end test proving
  * ESCollAllPrim/CollPropertyString and ESMixPrimCollComp/CollPropertyComp are served through the
  * streamed serializer path, byte-equal to the buffered path, and that the gate stays narrow
+ * Copyright 2026 SiteNetSoft - Pin that non-JSON response formats keep the buffered path
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
@@ -78,10 +82,15 @@ class StreamedCollectionPropertyTest {
   private final DataProvider dataProvider = new DataProvider(odata, edm);
 
   private ODataResponse dispatch(final String path) {
+    return dispatch(path, null);
+  }
+
+  private ODataResponse dispatch(final String path, final String queryPath) {
     final ODataRequest request = new ODataRequest();
     request.setMethod(HttpMethod.GET);
     request.setRawBaseUri(BASE_URI);
     request.setRawODataPath(path);
+    request.setRawQueryPath(queryPath);
     request.addHeader(HttpHeader.CONTENT_TYPE, Collections.singletonList(ContentType.JSON.toContentTypeString()));
 
     final ODataHandlerImpl handler = new ODataHandlerImpl(odata, metadata, new ServerCoreDebugger(odata));
@@ -157,6 +166,31 @@ class StreamedCollectionPropertyTest {
         ComplexSerializerOptions.with().contextURL(contextURL).build());
 
     assertArrayEquals(buffered.getContent().readAllBytes(), contentOf(response));
+  }
+
+  @Test
+  void collAllPrimStringIsNotStreamedAsXml() throws Exception {
+    // regression: the streaming gate ignored the response content type, so the XML serializer -
+    // which does not implement the streamed entry points - answered 501 for a URL that served XML
+    // before (still pinned by ODataXmlSerializerTest#primitiveCollectionProperty).
+    final ODataResponse response = dispatch("ESCollAllPrim(1)/CollPropertyString", "$format=xml");
+
+    assertEquals(200, response.getStatusCode());
+    assertNull(response.getODataContent());
+    assertNotNull(response.getContent());
+    final String body = new String(response.getContent().readAllBytes(), StandardCharsets.UTF_8);
+    assertTrue(body.contains("Employee1@company.example"), body);
+  }
+
+  @Test
+  void mixPrimCollCompCompIsNotStreamedAsXml() throws Exception {
+    final ODataResponse response = dispatch("ESMixPrimCollComp(7)/CollPropertyComp", "$format=xml");
+
+    assertEquals(200, response.getStatusCode());
+    assertNull(response.getODataContent());
+    assertNotNull(response.getContent());
+    final String body = new String(response.getContent().readAllBytes(), StandardCharsets.UTF_8);
+    assertTrue(body.contains("PropertyString"), body);
   }
 
   @Test

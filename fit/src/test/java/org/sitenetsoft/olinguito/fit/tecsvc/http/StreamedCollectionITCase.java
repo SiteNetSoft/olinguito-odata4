@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Added a fit round trip proving the streamed
  * collection-property serialization path produces byte-identical wire output
  * to the pre-streaming buffered path.
+ * Copyright 2026 SiteNetSoft - Pin that the XML response format keeps the buffered path
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.http;
 
@@ -80,12 +81,36 @@ public class StreamedCollectionITCase extends AbstractBaseTestITCase {
   }
 
   private HttpURLConnection get(final String pathAndQuery) throws Exception {
+    return get(pathAndQuery, "application/json");
+  }
+
+  private HttpURLConnection get(final String pathAndQuery, final String accept) throws Exception {
     URL url = new URL(SERVICE_URI + pathAndQuery);
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestMethod(HttpMethod.GET.name());
-    connection.setRequestProperty(HttpHeader.ACCEPT, "application/json");
+    connection.setRequestProperty(HttpHeader.ACCEPT, accept);
     connection.connect();
     return connection;
+  }
+
+  @Test
+  public void primitiveCollectionIsStillServedAsXml() throws Exception {
+    // regression guard: the XML serializer has no streamed entry points, so the streaming gate
+    // must not divert a non-JSON response format onto them (it answered 501 when it did).
+    HttpURLConnection connection = get("ESCollAllPrim(1)/CollPropertyString", "application/xml");
+
+    assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
+    assertTrue(content, content.contains("Employee1@company.example"));
+  }
+
+  @Test
+  public void complexCollectionIsStillServedAsXml() throws Exception {
+    HttpURLConnection connection = get("ESMixPrimCollComp(7)/CollPropertyComp", "application/xml");
+
+    assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
+    assertTrue(content, content.contains("TEST 1"));
   }
 
   @Test

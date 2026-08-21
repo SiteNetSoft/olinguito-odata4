@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Added the asynchronous-processing service provider interface
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 8 fix round 1: documented that a registered
  * implementation makes the framework the sole author of a 202 Accepted response
+ * Copyright 2026 SiteNetSoft - Warn that isStatusMonitorRequest is consulted for every request
  */
 package org.sitenetsoft.olinguito.server.api.async;
 
@@ -53,6 +54,10 @@ public interface AsyncSupport extends OlingoExtension {
    * <p>Called before the request is parsed as an OData URI, because a monitor URL need not be one:
    * section 11.6 requires only that "the status monitor resource URL MUST differ from any other
    * resource URL".</p>
+   *
+   * <p>It is consulted for EVERY request before parsing, so the test must be specific enough not to
+   * divert ordinary resource URLs — a loose substring match will swallow any service URL that
+   * happens to contain it.</p>
    */
   boolean isStatusMonitorRequest(ODataRequest request);
 

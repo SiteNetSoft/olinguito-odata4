@@ -37,10 +37,12 @@
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 10: an asynchronously produced response carries
  * the OData-Version header, and an application/* Accept media range also asks for the wrapped
  * application/http result shape ([OData-Protocol] section 11.6)
+ * Copyright 2026 SiteNetSoft - Materialize a streamed async result body for the wrapped shape
  */
 package org.sitenetsoft.olinguito.server.core;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -57,6 +59,7 @@ import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
 import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
 import org.sitenetsoft.olinguito.server.api.OData;
 import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
+import org.sitenetsoft.olinguito.server.api.ODataContent;
 import org.sitenetsoft.olinguito.server.api.ODataHandler;
 import org.sitenetsoft.olinguito.server.api.ODataLibraryException;
 import org.sitenetsoft.olinguito.server.api.ODataRequest;
@@ -329,6 +332,7 @@ public class ODataHandlerImpl implements ODataHandler {
     response.setStatusCode(HttpStatusCode.OK.getStatusCode());
     if (wantsHttpMessage(request)) {
       response.setHeader(HttpHeader.CONTENT_TYPE, ContentType.APPLICATION_HTTP.toContentTypeString());
+      materializeODataContent(result);
       response.setContent(odata.createFixedFormatSerializer().asyncResponse(result));
       return;
     }
@@ -348,6 +352,30 @@ public class ODataHandlerImpl implements ODataHandler {
     } else if (result.getODataContent() != null) {
       response.setODataContent(result.getODataContent());
     }
+  }
+
+  /**
+   * Renders a streamed result body into the result's regular content, so the wrapped
+   * <code>application/http</code> shape carries it too.
+   *
+   * <p>The wrapped shape is serialized by {@link
+   * org.sitenetsoft.olinguito.server.core.serializer.AsyncResponseSerializer}, which builds one
+   * in-memory RFC 7230 message and can therefore only read {@link ODataResponse#getContent()}. A
+   * result produced by a streamed serializer carries its body in {@link
+   * ODataResponse#getODataContent()} instead and would otherwise be delivered with an empty body.
+   * That serializer is shared with the batch path, so the materialization happens here rather than
+   * there.</p>
+   *
+   * @param result the completed invocation's response, modified in place when it needs it
+   */
+  private void materializeODataContent(final ODataResponse result) {
+    final ODataContent odataContent = result.getODataContent();
+    if (odataContent == null || result.getContent() != null) {
+      return;
+    }
+    final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+    odataContent.write(buffer);
+    result.setContent(new ByteArrayInputStream(buffer.toByteArray()));
   }
 
   /**

@@ -23,6 +23,7 @@
  * dynamic-property paths
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 3: serve ESCollAllPrim/CollPropertyString and
  * ESMixPrimCollComp/CollPropertyComp from the streamed serializer path
+ * Copyright 2026 SiteNetSoft - Restrict streamed collection serialization to JSON response formats
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
@@ -336,7 +337,7 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
                 && property.isCollection() && property.asCollection() != null) {
               property.setCount(property.asCollection().size());
             }
-            if (isStreamingCollection(edmEntitySet, path, representationType)) {
+            if (isStreamingCollection(edmEntitySet, path, representationType, contentType)) {
               response.setODataContent(serializeCollectionStreamed(entity, edmEntitySet, path, property,
                   edmProperty, type, returnType, representationType, contentType, countOption, expand, select)
                   .getODataContent());
@@ -798,8 +799,8 @@ public class TechnicalPrimitiveComplexProcessor extends TechnicalProcessor
   }
 
   private boolean isStreamingCollection(final EdmEntitySet edmEntitySet, final List<String> path,
-      final RepresentationType representationType) {
-    if (edmEntitySet == null || path.size() != 1) {
+      final RepresentationType representationType, final ContentType responseFormat) {
+    if (edmEntitySet == null || path.size() != 1 || !isJsonContentType(responseFormat)) {
       return false;
     }
     final String property = path.get(0);
