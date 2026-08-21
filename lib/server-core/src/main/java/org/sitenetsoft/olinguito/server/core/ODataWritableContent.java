@@ -131,7 +131,7 @@ public class ODataWritableContent implements ODataContent {
       }
     }
     @Override
-	protected void writeBinary(EntityMediaObject mediaEntity,
+	protected void writeBinary(EntityMediaObject mediaEntity, 
 			OutputStream outputStream) throws SerializerException {
 		throw new ODataRuntimeException("Not Implemented in Entity Handling");
 	}
@@ -145,7 +145,6 @@ public class ODataWritableContent implements ODataContent {
    */
   private static class StreamContentForJsonProperty extends StreamContent {
     private final ODataJsonSerializer jsonSerializer;
-    private final ServiceMetadata propertyMetadata;
     private final EdmPrimitiveType primitiveType;
     private final EdmComplexType complexType;
     private final PrimitiveSerializerOptions primitiveOptions;
@@ -157,7 +156,7 @@ public class ODataWritableContent implements ODataContent {
       this.primitiveType = primitiveType;
       this.complexType = null;
       this.jsonSerializer = jsonSerializer;
-      this.propertyMetadata = metadata;
+      this.metadata = metadata;
       this.primitiveOptions = options;
       this.complexOptions = null;
     }
@@ -168,7 +167,7 @@ public class ODataWritableContent implements ODataContent {
       this.primitiveType = null;
       this.complexType = complexType;
       this.jsonSerializer = jsonSerializer;
-      this.propertyMetadata = metadata;
+      this.metadata = metadata;
       this.primitiveOptions = null;
       this.complexOptions = options;
     }
@@ -188,10 +187,10 @@ public class ODataWritableContent implements ODataContent {
     protected void writeProperties(final OutputStream outputStream) throws SerializerException {
       try {
         if (complexType != null) {
-          jsonSerializer.complexCollectionIntoStream(propertyMetadata, complexType, properties, complexOptions,
+          jsonSerializer.complexCollectionIntoStream(metadata, complexType, properties, complexOptions,
               outputStream);
         } else {
-          jsonSerializer.primitiveCollectionIntoStream(propertyMetadata, primitiveType, properties, primitiveOptions,
+          jsonSerializer.primitiveCollectionIntoStream(metadata, primitiveType, properties, primitiveOptions,
               outputStream);
         }
         outputStream.flush();
@@ -269,7 +268,7 @@ public class ODataWritableContent implements ODataContent {
     return new ODataWritableContentBuilder(iterator, entityType, serializer, metadata, options);
   }
   
-  public static ODataWritableContentBuilder with(EntityMediaObject mediaEntity,
+  public static ODataWritableContentBuilder with(EntityMediaObject mediaEntity, 
 		  FixedFormatSerializerImpl fixedFormatSerializer) {
 	  return new ODataWritableContentBuilder(mediaEntity, fixedFormatSerializer);
   }

@@ -369,6 +369,10 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
    * <p>The member order — context, metadata ETag, type, count, value, next link — is the order
    * [OData-JSON] section 4.4 requires of a streaming payload: the context control information first
    * and the count before the value.</p>
+   *
+   * <p>Unlike {@link #primitiveCollection}, this writes no {@code operations} and no instance
+   * annotations, because a {@link PropertyIterator} carries neither; byte-for-byte parity with the
+   * buffered form therefore holds only for data that has neither.</p>
    */
   public void primitiveCollectionIntoStream(final ServiceMetadata metadata, final EdmPrimitiveType type,
       final PropertyIterator properties, final PrimitiveSerializerOptions options,
@@ -376,7 +380,8 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
     // PrimitiveSerializerOptions has no omit-values option; reset the shared omitNulls field so it
     // cannot leak in from a prior entity()/entityCollection() call on this same instance.
     omitNulls = false;
-    try (JsonGenerator json = new JsonFactory().createGenerator(outputStream)) {
+    try {
+      final JsonGenerator json = new JsonFactory().createGenerator(outputStream);
       json.writeStartObject();
       writeContextURL(checkContextURL(options == null ? null : options.getContextURL()), json);
       writeMetadataETag(metadata, json);
@@ -403,7 +408,8 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
         json.writeStringField(constants.getNextLink(), properties.getNext().toASCIIString());
       }
       json.writeEndObject();
-    } catch (final IOException e) {
+      json.close();
+    } catch (final IOException | IllegalArgumentException e) {
       throw new SerializerException(IO_EXCEPTION_TEXT, e, SerializerException.MessageKeys.IO_EXCEPTION);
     }
   }
@@ -411,13 +417,18 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
   /**
    * Writes a complex collection straight onto {@code outputStream}, producing byte-for-byte the
    * payload {@link #complexCollection} produces for the same data.
+   *
+   * <p>Unlike {@link #complexCollection}, this writes no {@code operations} and no instance
+   * annotations, because a {@link PropertyIterator} carries neither; byte-for-byte parity with the
+   * buffered form therefore holds only for data that has neither.</p>
    */
   public void complexCollectionIntoStream(final ServiceMetadata metadata, final EdmComplexType type,
       final PropertyIterator properties, final ComplexSerializerOptions options,
       final OutputStream outputStream) throws SerializerException {
     // ComplexSerializerOptions has no omit-values option; same reset obligation as above.
     omitNulls = false;
-    try (JsonGenerator json = new JsonFactory().createGenerator(outputStream)) {
+    try {
+      final JsonGenerator json = new JsonFactory().createGenerator(outputStream);
       json.writeStartObject();
       writeContextURL(checkContextURL(options == null ? null : options.getContextURL()), json);
       writeMetadataETag(metadata, json);
@@ -448,6 +459,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
         json.writeStringField(constants.getNextLink(), properties.getNext().toASCIIString());
       }
       json.writeEndObject();
+      json.close();
     } catch (final IOException | IllegalArgumentException e) {
       throw new SerializerException(IO_EXCEPTION_TEXT, e, SerializerException.MessageKeys.IO_EXCEPTION);
     }

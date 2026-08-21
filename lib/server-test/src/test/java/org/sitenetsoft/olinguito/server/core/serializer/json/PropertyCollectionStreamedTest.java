@@ -112,6 +112,16 @@ class PropertyCollectionStreamedTest {
     return value;
   }
 
+  /** A CTBase-typed element (CTBase derives from CTTwoPrim), so the @odata.type emission condition
+   *  in writeComplexCollectionElement (derivedType != type) is actually exercised. */
+  private static ComplexValue derivedComplexValue(final String propertyString, final short propertyInt16,
+      final String additionalPropString) {
+    final ComplexValue value = complexValue(propertyString, propertyInt16);
+    value.setTypeName("olingo.odata.test1.CTBase");
+    value.getValue().add(new Property(null, "AdditionalPropString", ValueType.PRIMITIVE, additionalPropString));
+    return value;
+  }
+
   private static String streamed(final SerializerStreamResult result) throws Exception {
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
     result.getODataContent().write(out);
@@ -157,6 +167,23 @@ class PropertyCollectionStreamedTest {
   }
 
   @Test
+  void primitiveCollectionStreamedWithCountMatchesBuffered() throws Exception {
+    final CountOption count = new CountOptionImpl().setValue(true);
+    final List<String> values = List.of("a", "b");
+    final EdmPrimitiveType type = odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.String);
+    final Property property = new Property(null, "CollPropertyString", ValueType.COLLECTION_PRIMITIVE, values);
+    property.setCount(values.size());
+    final PropertyIterator properties = iterator("CollPropertyString", ValueType.COLLECTION_PRIMITIVE, values);
+    properties.setCount(values.size());
+
+    assertEquals(
+        buffered(serializer.primitiveCollection(metadata, type, property,
+            PrimitiveSerializerOptions.with().contextURL(collectionContextUrl).count(count).build())),
+        streamed(serializer.primitiveCollectionStreamed(metadata, type, properties,
+            PrimitiveSerializerOptions.with().contextURL(collectionContextUrl).count(count).build())));
+  }
+
+  @Test
   void emptyPrimitiveCollectionStreamsAnEmptyArray() throws Exception {
     assertEquals("{\"@odata.context\":\"../$metadata#ESCollAllPrim(1)/CollPropertyString\","
         + "\"@odata.metadataEtag\":\"W/\\\"metadataETag\\\"\",\"value\":[]}",
@@ -169,6 +196,23 @@ class PropertyCollectionStreamedTest {
   @Test
   void complexCollectionStreamedMatchesBuffered() throws Exception {
     final List<ComplexValue> values = List.of(complexValue("Comp1", (short) 1), complexValue("Comp2", (short) 2));
+    final EdmComplexType type = metadata.getEdm().getComplexType(ComplexTypeProvider.nameCTTwoPrim);
+    final Property property = new Property(null, "CollPropertyComp", ValueType.COLLECTION_COMPLEX, values);
+
+    assertEquals(
+        buffered(serializer.complexCollection(metadata, type, property,
+            ComplexSerializerOptions.with().contextURL(complexCollectionContextUrl).build())),
+        streamed(serializer.complexCollectionStreamed(metadata, type,
+            iterator("CollPropertyComp", ValueType.COLLECTION_COMPLEX, values),
+            ComplexSerializerOptions.with().contextURL(complexCollectionContextUrl).build())));
+  }
+
+  @Test
+  void complexCollectionStreamedWithDerivedTypeMatchesBuffered() throws Exception {
+    // at least one element carries a derived type name, so the "@odata.type" emission condition
+    // (derivedType != type) is actually exercised on both the buffered and the streamed side
+    final List<ComplexValue> values = List.of(complexValue("Comp1", (short) 1),
+        derivedComplexValue("Comp2", (short) 2, "ADD"));
     final EdmComplexType type = metadata.getEdm().getComplexType(ComplexTypeProvider.nameCTTwoPrim);
     final Property property = new Property(null, "CollPropertyComp", ValueType.COLLECTION_COMPLEX, values);
 
