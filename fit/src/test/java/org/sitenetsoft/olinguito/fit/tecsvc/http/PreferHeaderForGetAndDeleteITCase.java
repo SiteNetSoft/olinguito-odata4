@@ -23,6 +23,7 @@
  * Copyright 2026 SiteNetSoft - Pinned omit-values=nulls on a streamed-collection response
  * Copyright 2026 SiteNetSoft - Pinned that track-changes is not echoed on reference-collection
  * reads while maxpagesize still is (OData 4.01, Protocol Section 8.2.8.6)
+ * Copyright 2026 SiteNetSoft - OLINGO-1505: Stream links are now written at metadata=minimal
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.http;
 
@@ -563,13 +564,14 @@ public class PreferHeaderForGetAndDeleteITCase extends AbstractBaseTestITCase {
     assertEquals("omit-values=nulls", connection.getHeaderField(HttpHeader.PREFERENCE_APPLIED));
 
     final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
-    // Entity 1 (read-link, no eTag/type set) serializes with no PropertyStream fields at all at
-    // the default (minimal) metadata level -- see ODataJsonSerializer#writePrimitiveValue's Stream
-    // branch, which only ever writes the read/edit-link href itself under full metadata.
-    assertTrue(content.contains("{\"PropertyInt16\":1}"));
+    // Entity 1 (read-link, no eTag/type set) carries only its media read link at the default
+    // (minimal) metadata level: "readLink" is not the computed "<entity link>/PropertyStream", so
+    // [OData-JSON] 4.5.12 requires it -- see ODataJsonSerializer#writeStreamPropertyControlInformation.
+    assertTrue(content.contains("{\"PropertyInt16\":1,\"PropertyStream@odata.mediaReadLink\":\"readLink\"}"));
     // Entity 2 (edit-link, with eTag/type set) still carries its non-null media fields intact.
     assertTrue(content.contains("{\"PropertyInt16\":2,"
-        + "\"PropertyStream@odata.mediaEtag\":\"eTag\",\"PropertyStream@odata.mediaContentType\":\"image/jpeg\"}"));
+        + "\"PropertyStream@odata.mediaEtag\":\"eTag\",\"PropertyStream@odata.mediaContentType\":\"image/jpeg\","
+        + "\"PropertyStream@odata.mediaEditLink\":\"http://mediaserver:1234/editLink\"}"));
   }
 
   @Override

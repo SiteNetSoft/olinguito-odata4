@@ -15,6 +15,8 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ * Copyright 2026 SiteNetSoft - OLINGO-1505: Stream-property links are now written at metadata=minimal
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.http;
 
@@ -147,7 +149,8 @@ public class BasicStreamITCase extends AbstractBaseTestITCase {
     final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
 
     assertTrue(content.contains("{\"PropertyInt16\":2,"+
-    "\"PropertyStream@odata.mediaEtag\":\"eTag\",\"PropertyStream@odata.mediaContentType\":\"image/jpeg\"}"));
+    "\"PropertyStream@odata.mediaEtag\":\"eTag\",\"PropertyStream@odata.mediaContentType\":\"image/jpeg\","
+    + "\"PropertyStream@odata.mediaEditLink\":\"http://mediaserver:1234/editLink\"}"));
     assertTrue(content.contains("\"@odata.nextLink\""));
     assertTrue(content.contains("ESStreamServerSidePaging?$format=json&%24skiptoken=1%2A10"));
   }
@@ -167,7 +170,8 @@ public class BasicStreamITCase extends AbstractBaseTestITCase {
     final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
 
     assertTrue(content.contains("{\"PropertyInt16\":12,"+
-    "\"PropertyStream@odata.mediaEtag\":\"eTag\",\"PropertyStream@odata.mediaContentType\":\"image/jpeg\"}"));
+    "\"PropertyStream@odata.mediaEtag\":\"eTag\",\"PropertyStream@odata.mediaContentType\":\"image/jpeg\","
+    + "\"PropertyStream@odata.mediaEditLink\":\"http://mediaserver:1234/editLink\"}"));
     assertTrue(content.contains("\"@odata.nextLink\""));
     assertTrue(content.contains("ESStreamServerSidePaging?$format=json&%24skiptoken=2%2A10"));
   }
@@ -208,7 +212,8 @@ public class BasicStreamITCase extends AbstractBaseTestITCase {
     final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
 
     assertTrue(content.contains("{\"PropertyInt16\":2,"+
-    "\"PropertyStream@odata.mediaEtag\":\"eTag\",\"PropertyStream@odata.mediaContentType\":\"image/jpeg\"}"));
+    "\"PropertyStream@odata.mediaEtag\":\"eTag\",\"PropertyStream@odata.mediaContentType\":\"image/jpeg\","
+    + "\"PropertyStream@odata.mediaEditLink\":\"http://mediaserver:1234/editLink\"}"));
     assertTrue(content.contains("\"@odata.nextLink\""));
     assertTrue(content.contains("ESStreamServerSidePaging?$count=true&$format=json&%24skiptoken=1%2A10"));
     assertTrue(content.contains("\"@odata.count\":504"));
@@ -249,7 +254,8 @@ public class BasicStreamITCase extends AbstractBaseTestITCase {
     final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
 
     assertTrue(content.contains("{\"PropertyInt16\":2,"+
-    "\"PropertyStream@odata.mediaEtag\":\"eTag\",\"PropertyStream@odata.mediaContentType\":\"image/jpeg\"}"));
+    "\"PropertyStream@odata.mediaEtag\":\"eTag\",\"PropertyStream@odata.mediaContentType\":\"image/jpeg\","
+    + "\"PropertyStream@odata.mediaEditLink\":\"http://mediaserver:1234/editLink\"}"));
     assertTrue(content.contains("\"@odata.nextLink\""));
     assertTrue(content.contains("ESStreamServerSidePaging?$count=false&$format=json&%24skiptoken=1%2A10"));
     assertFalse(content.contains("\"@odata.count\":504"));
@@ -275,11 +281,13 @@ public class BasicStreamITCase extends AbstractBaseTestITCase {
         + "\"PropertyInt16\":7,"
         + "\"PropertyStream@mediaEtag\":\"eTag\","
         + "\"PropertyStream@mediaContentType\":\"image/jpeg\","
+        + "\"PropertyStream@mediaEditLink\":\"http://mediaserver:1234/editLink\","
         + "\"PropertyStream\":\"\ufffdioz\ufffd\\\"\ufffd\"}"));
     assertTrue(content.contains("\"NavPropertyETStreamOnComplexPropMany@count\":2"));
     assertTrue(content.contains("\"PropertyCompWithStream\":{"
         + "\"PropertyStream@mediaEtag\":\"eTag\","
         + "\"PropertyStream@mediaContentType\":\"image/jpeg\","
+        + "\"PropertyStream@mediaEditLink\":\"http://mediaserver:1234/editLink\","
         + "\"PropertyStream\":\"\ufffdioz\ufffd\\\"\ufffd\","
         + "\"PropertyComp\":{\"PropertyInt16\":333,\"PropertyString\":\"TEST123\"}"));
     assertFalse(content.contains("\"PropertyInt16\":7,"
@@ -307,8 +315,10 @@ public class BasicStreamITCase extends AbstractBaseTestITCase {
     assertTrue(content.contains("\"PropertyInt16\":7,"
         + "\"PropertyInt32\":10,\"PropertyEntityStream@mediaEtag\":\"eTag\","
         + "\"PropertyEntityStream@mediaContentType\":\"image/jpeg\","
+        + "\"PropertyEntityStream@mediaEditLink\":\"http://mediaserver:1234/editLink\","
         + "\"PropertyCompWithStream\":{\"PropertyStream@mediaEtag\":\"eTag\","
         + "\"PropertyStream@mediaContentType\":\"image/jpeg\","
+        + "\"PropertyStream@mediaEditLink\":\"http://mediaserver:1234/editLink\","
         + "\"PropertyComp\":{\"PropertyInt16\":333,\"PropertyString\":\"TEST123\"},"
         + "\"NavPropertyETStreamOnComplexPropMany\":["
         + "{\"@id\":\"ESWithStream(32767)\"},"

@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Fixed deprecated API usages and code quality warnings
  * Copyright 2026 SiteNetSoft - Replaced Arrays.asList with List.of
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
+ * Copyright 2026 SiteNetSoft - OLINGO-1505: Tests for stream-property media links at metadata=minimal
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -35,11 +36,13 @@ import java.io.ByteArrayOutputStream;
 import org.sitenetsoft.olinguito.commons.api.IConstants;
 import org.sitenetsoft.olinguito.commons.api.constants.Constantsv01;
 import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
+import org.sitenetsoft.olinguito.commons.api.Constants;
 import org.sitenetsoft.olinguito.commons.api.data.ContextURL;
 import org.sitenetsoft.olinguito.commons.api.data.ContextURL.Suffix;
 import org.sitenetsoft.olinguito.commons.api.data.Entity;
 import org.sitenetsoft.olinguito.commons.api.data.EntityCollection;
 import org.sitenetsoft.olinguito.commons.api.data.EntityIterator;
+import org.sitenetsoft.olinguito.commons.api.data.Link;
 import org.sitenetsoft.olinguito.commons.api.data.Operation;
 import org.sitenetsoft.olinguito.commons.api.data.Property;
 import org.sitenetsoft.olinguito.commons.api.data.ValueType;
@@ -980,11 +983,16 @@ class ODataJsonSerializerv01Test {
         .contextURL(ContextURL.with().entitySet(edmEntitySet).build())
         .build()).getContent();
     final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
+    // [OData-JSON] 4.5.12: at least one of mediaEditLink/mediaReadLink MUST be in the response when
+    // the link does not follow the standard URL conventions, not only at metadata=full. Neither
+    // fixture href ("readLink", "http://mediaserver:1234/editLink") is the computed
+    // "<entity link>/PropertyStream", so both entities now carry their link at metadata=minimal.
     final String expectedResult = "{\"@context\":\"$metadata#ESWithStream\","
         + "\"@metadataEtag\":\"W/\\\"metadataETag\\\"\","
-        + "\"value\":[{\"PropertyInt16\":32767},"
+        + "\"value\":[{\"PropertyInt16\":32767,\"PropertyStream@mediaReadLink\":\"readLink\"},"
         + "{\"PropertyInt16\":7,\"PropertyStream@mediaEtag\":\"eTag\","
-        + "\"PropertyStream@mediaContentType\":\"image/jpeg\"}]}";
+        + "\"PropertyStream@mediaContentType\":\"image/jpeg\","
+        + "\"PropertyStream@mediaEditLink\":\"http://mediaserver:1234/editLink\"}]}";
     Assertions.assertEquals(expectedResult, resultString);
   }
   
@@ -1048,9 +1056,14 @@ class ODataJsonSerializerv01Test {
     final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
     final String expectedResult =  "{\"@context\":\"$metadata#ESWithStream\","
         + "\"@metadataEtag\":\"W/\\\"metadataETag\\\"\","
-        + "\"value\":[{\"PropertyInt16\":32767,\"PropertyStream\":\"�ioz�\\\"�\"},"
+        // The link is now written at metadata=minimal too ([OData-JSON] 4.5.12), still ahead of the
+        // expanded stream value.
+        + "\"value\":[{\"PropertyInt16\":32767,\"PropertyStream@mediaReadLink\":\"readLink\","
+        + "\"PropertyStream\":\"�ioz�\\\"�\"},"
         + "{\"PropertyInt16\":7,\"PropertyStream@mediaEtag\":\"eTag\","
-        + "\"PropertyStream@mediaContentType\":\"image/jpeg\",\"PropertyStream\":\"�ioz�\\\"�\"}]}";
+        + "\"PropertyStream@mediaContentType\":\"image/jpeg\","
+        + "\"PropertyStream@mediaEditLink\":\"http://mediaserver:1234/editLink\","
+        + "\"PropertyStream\":\"�ioz�\\\"�\"}]}";
     Assertions.assertEquals(expectedResult, resultString);
   } 
   
@@ -1069,6 +1082,89 @@ class ODataJsonSerializerv01Test {
         + "{\"PropertyInt16\":-32766,\"PropertyString\":null},"
         + "{\"PropertyInt16\":32767,\"PropertyString\":\"Test String4\"}]}";
     Assertions.assertEquals(expectedResult, resultString);
+  }
+
+  /**
+   * An {@code ESWithStream} entity whose {@code PropertyStream} link carries the given rel and href.
+   * Its computed stream link - this service reads that as "&lt;entity link&gt;/&lt;property name&gt;",
+   * see ODataJsonSerializer#isComputedStreamLink - is {@code ESWithStream(1)/PropertyStream}.
+   */
+  private Entity streamEntity(final String rel, final String href) {
+    final Link stream = new Link();
+    stream.setRel(rel);
+    stream.setHref(href);
+    final Entity entity = new Entity();
+    entity.setId(URI.create("ESWithStream(1)"));
+    entity.addProperty(new Property(null, "PropertyInt16", ValueType.PRIMITIVE, (short) 1));
+    entity.addProperty(new Property(null, "PropertyStream", ValueType.PRIMITIVE, stream));
+    return entity;
+  }
+
+  private String serializeStreamEntity(final ODataSerializer target, final Entity entity) throws Exception {
+    final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESWithStream");
+    final InputStream result = target.entity(metadata, edmEntitySet.getEntityType(), entity,
+        EntitySerializerOptions.with()
+            .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
+            .build()).getContent();
+    return new String(result.readAllBytes(), StandardCharsets.UTF_8);
+  }
+
+  // [OData-JSON] 3.1.1: control information MUST appear "for cases where actual values are not the
+  // same as the computed values" - a link that IS the computed value may be left out at minimal.
+  @Test
+  void streamPropertyWithComputableReadLinkOmitsItAtMinimalMetadata() throws Exception {
+    final Entity entity = streamEntity(Constants.NS_MEDIA_READ_LINK_REL, "ESWithStream(1)/PropertyStream");
+    Assertions.assertFalse(serializeStreamEntity(serializer, entity).contains("PropertyStream@mediaReadLink"));
+    Assertions.assertTrue(serializeStreamEntity(serializerFullMetadata, entity)
+        .contains("\"PropertyStream@mediaReadLink\":\"ESWithStream(1)/PropertyStream\""));
+  }
+
+  // [OData-JSON] 4.5.12: a link that does not follow the standard URL conventions MUST be written.
+  @Test
+  void streamPropertyWithForeignReadLinkKeepsItAtMinimalMetadata() throws Exception {
+    final Entity entity = streamEntity(Constants.NS_MEDIA_READ_LINK_REL, "http://mediaserver:1234/readLink");
+    Assertions.assertTrue(serializeStreamEntity(serializer, entity)
+        .contains("\"PropertyStream@mediaReadLink\":\"http://mediaserver:1234/readLink\""));
+  }
+
+  @Test
+  void streamPropertyEditLinkFollowsTheSameRule() throws Exception {
+    final Entity computable = streamEntity(Constants.NS_MEDIA_EDIT_LINK_REL, "ESWithStream(1)/PropertyStream");
+    Assertions.assertFalse(serializeStreamEntity(serializer, computable).contains("PropertyStream@mediaEditLink"));
+    final Entity foreign = streamEntity(Constants.NS_MEDIA_EDIT_LINK_REL, "http://mediaserver:1234/editLink");
+    Assertions.assertTrue(serializeStreamEntity(serializer, foreign)
+        .contains("\"PropertyStream@mediaEditLink\":\"http://mediaserver:1234/editLink\""));
+    // A null rel keeps writing an edit link, exactly as the metadata=full-only code did.
+    final Entity noRel = streamEntity(null, "http://mediaserver:1234/editLink");
+    Assertions.assertTrue(serializeStreamEntity(serializer, noRel)
+        .contains("\"PropertyStream@mediaEditLink\":\"http://mediaserver:1234/editLink\""));
+  }
+
+  // [OData-JSON] 4.5.12, last sentence: "The media* control information is not written in responses
+  // if metadata=none is requested."
+  @Test
+  void streamPropertyWritesNoControlInformationAtMetadataNone() throws Exception {
+    final String resultString = serializeStreamEntity(serializerNoMetadata,
+        streamEntity(Constants.NS_MEDIA_READ_LINK_REL, "http://mediaserver:1234/readLink"));
+    Assertions.assertEquals("{\"PropertyInt16\":1}", resultString);
+  }
+
+  // Nothing is computable for a stream property inside a complex value - the serializer holds a
+  // ComplexValue, not an entity - so its link is always written, which [OData-JSON] 3.1.1 permits
+  // ("and MAY appear otherwise"). This is a design decision, not a specification quotation.
+  @Test
+  void streamPropertyOnAComplexValueAlwaysWritesItsLinkAtMinimalMetadata() throws Exception {
+    final EdmEntitySet edmEntitySet = entityContainer.getEntitySet("ESStreamOnComplexProp");
+    final Entity entity = data.readAll(edmEntitySet).getEntities().get(1);
+    final InputStream result = serializer.entity(metadata, edmEntitySet.getEntityType(), entity,
+        EntitySerializerOptions.with()
+            .contextURL(ContextURL.with().entitySet(edmEntitySet).suffix(Suffix.ENTITY).build())
+            .build()).getContent();
+    final String resultString = new String(result.readAllBytes(), StandardCharsets.UTF_8);
+    Assertions.assertTrue(resultString.contains("\"PropertyCompWithStream\":{"
+        + "\"PropertyStream@mediaEtag\":\"eTag\","
+        + "\"PropertyStream@mediaContentType\":\"image/jpeg\","
+        + "\"PropertyStream@mediaEditLink\":\"http://mediaserver:1234/editLink\""));
   }
 
   @Test

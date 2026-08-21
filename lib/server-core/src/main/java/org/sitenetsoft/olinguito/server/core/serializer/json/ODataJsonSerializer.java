@@ -32,6 +32,8 @@
  * including the @id-only by-reference form
  * Copyright 2026 SiteNetSoft - Stream primitive and complex collection-valued properties straight
  * onto the response channel instead of buffering them
+ * Copyright 2026 SiteNetSoft - OLINGO-1505: Write stream-property media links whenever they are not
+ * the computed ones, not only at metadata=full
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -1045,6 +1047,62 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
     return (edmProperty.isPrimitive() && type == EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Stream));    
   }
 
+  /**
+   * Writes the media* control information of a stream property ([OData-JSON] section 9, "the stream
+   * property MAY be annotated to provide the read link, edit link, media type, and ETag of the
+   * media stream through a set of media* control information").
+   *
+   * <p>Section 4.5.12 makes at least one of {@code mediaEditLink}/{@code mediaReadLink} mandatory
+   * in responses "if they don't follow standard URL conventions as defined in [OData-URL] or if
+   * metadata=full is requested", and section 3.1.1 makes control information mandatory at
+   * metadata=minimal "for cases where actual values are not the same as the computed values".
+   * Nothing at all is written at metadata=none (section 4.5.12, last sentence).</p>
+   *
+   * <p>What counts as the computed link is not spelled out by the specification; this service
+   * treats it as the containing entity's edit link (or, absent one, its id) followed by the stream
+   * property's name. When the containing object is not an entity - a stream property inside a
+   * complex value - nothing is computable and the link is always written, which section 3.1.1
+   * permits ("and MAY appear otherwise").</p>
+   *
+   * <p>The data model carries a single {@link Link} per stream property, so at most one of the two
+   * links can ever be written; the section 4.5.12 case of a read link that differs from the edit
+   * link is therefore not representable here.</p>
+   */
+  private void writeStreamPropertyControlInformation(final String name, final Property property,
+      final Linked linked, final JsonGenerator json) throws IOException {
+    if (isODataMetadataNone || property == null || !(property.getValue() instanceof Link stream)) {
+      return;
+    }
+    if (stream.getMediaETag() != null) {
+      json.writeStringField(name + constants.getMediaEtag(), stream.getMediaETag());
+    }
+    if (stream.getType() != null) {
+      json.writeStringField(name + constants.getMediaContentType(), stream.getType());
+    }
+    if (isODataMetadataFull || !isComputedStreamLink(name, stream.getHref(), linked)) {
+      // Preserved from the original metadata=full-only code: only an explicit read-link rel writes
+      // a read link; a null rel or an explicit edit-link rel writes an edit link.
+      final boolean readLink = Constants.NS_MEDIA_READ_LINK_REL.equals(stream.getRel());
+      json.writeStringField(name + (readLink ? constants.getMediaReadLink() : constants.getMediaEditLink()),
+          stream.getHref());
+    }
+  }
+
+  /**
+   * @return whether {@code href} is exactly the link this service would compute for the stream
+   *         property {@code name} of {@code linked}, and may therefore be left out of a
+   *         metadata=minimal response
+   */
+  private boolean isComputedStreamLink(final String name, final String href, final Linked linked) {
+    if (href == null || !(linked instanceof Entity entity)) {
+      return false;
+    }
+    final String base = entity.getEditLink() != null && entity.getEditLink().getHref() != null
+        ? entity.getEditLink().getHref()
+        : entity.getId() == null ? null : entity.getId().toASCIIString();
+    return base != null && href.equals(base + (base.endsWith("/") ? "" : "/") + name);
+  }
+
   protected void writeProperty(final ServiceMetadata metadata,
       final EdmProperty edmProperty, final Property property,
       final Set<List<String>> selectedPaths, final JsonGenerator json, 
@@ -1057,7 +1115,9 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       return;
     }
     writePropertyType(edmProperty, json);
-    if (!isStreamProperty) {
+    if (isStreamProperty) {
+      writeStreamPropertyControlInformation(edmProperty.getName(), property, linked, json);
+    } else {
       json.writeFieldName(edmProperty.getName());
     }
     if (property == null || property.isNull()) {
@@ -1172,11 +1232,17 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
               edmProperty.isNullable(), edmProperty.getMaxLength(),
               edmProperty.getPrecision(), edmProperty.getScale(), edmProperty.isUnicode(), json);
         } else {
-          writePrimitive((EdmPrimitiveType) type, property,
-              edmProperty.isNullable(), edmProperty.getMaxLength(),
-              edmProperty.getPrecision(), edmProperty.getScale(), edmProperty.isUnicode(), json);
+          // A stream property has no value of its own in the payload: its media* control
+          // information has already been written by writeProperty, the only place where the
+          // containing entity - the link the specification computes against - is in scope.
+          final boolean streamProperty = isStreamProperty(edmProperty);
+          if (!streamProperty) {
+            writePrimitive((EdmPrimitiveType) type, property,
+                edmProperty.isNullable(), edmProperty.getMaxLength(),
+                edmProperty.getPrecision(), edmProperty.getScale(), edmProperty.isUnicode(), json);
+          }
           // If there is expand on a stream property
-          if (isStreamProperty(edmProperty) && null != expand) {
+          if (streamProperty && null != expand) {
             final ExpandItem expandAll = ExpandSelectHelper.getExpandAll(expand);
             try {
               writeExpandedStreamProperty(expand, property.getName(), edmProperty, linked, expandAll, json);
@@ -1284,6 +1350,12 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       final Boolean isNullable, final Integer maxLength, final Integer precision, final Integer scale,
       final Boolean isUnicode, final JsonGenerator json)
       throws IOException, SerializerException {
+    if (type == EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Stream)) {
+      // [OData-CSDL] section 6 allows Edm.Stream only as a property type, never inside a collection;
+      // without this guard a Link element would silently be written as its bare href string.
+      throw new SerializerException("Collections of Edm.Stream are not supported.",
+          SerializerException.MessageKeys.UNSUPPORTED_PROPERTY_TYPE, name);
+    }
     switch (collectionValueType) {
     case COLLECTION_PRIMITIVE:
     case COLLECTION_ENUM:
@@ -1410,6 +1482,14 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       final Boolean isNullable, final Integer maxLength, final Integer precision, final Integer scale,
       final Boolean isUnicode, final JsonGenerator json)
       throws EdmPrimitiveTypeException, IOException, SerializerException {
+    if (type == EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Stream)) {
+      // A stream property is written by writeProperty/writeStreamPropertyControlInformation, which
+      // emits media* control information and no value at all. Reaching this writer - through the
+      // standalone primitive() entry point, say - would otherwise silently write the link href as
+      // if it were the property value.
+      throw new SerializerException("Stream properties are not serialized as primitive values.",
+          SerializerException.MessageKeys.UNSUPPORTED_PROPERTY_TYPE, property.getName());
+    }
     if (property.isPrimitive()) {
       writePrimitiveValue(property.getName(), type, property.asPrimitive(),
           isNullable, maxLength, precision, scale, isUnicode, json);
@@ -1443,25 +1523,6 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
         || type == EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Int64))
         && !isIEEE754Compatible) {
       json.writeNumber(value);
-    } else if (type == EdmPrimitiveTypeFactory.getInstance(EdmPrimitiveTypeKind.Stream)) {
-      if (primitiveValue instanceof Link stream) {
-        if (!isODataMetadataNone) {
-          if (stream.getMediaETag() != null) {
-            json.writeStringField(name+constants.getMediaEtag(), stream.getMediaETag());
-          }
-          if (stream.getType() != null) {
-            json.writeStringField(name+constants.getMediaContentType(), stream.getType());
-          }
-        }
-        if (isODataMetadataFull) {
-          if (stream.getRel() != null && stream.getRel().equals(Constants.NS_MEDIA_READ_LINK_REL)) {
-            json.writeStringField(name+constants.getMediaReadLink(), stream.getHref());
-          }
-          if (stream.getRel() == null || stream.getRel().equals(Constants.NS_MEDIA_EDIT_LINK_REL)) {
-            json.writeStringField(name+constants.getMediaEditLink(), stream.getHref());
-          }
-        }
-      }
     } else {
       json.writeString(value);
     }
