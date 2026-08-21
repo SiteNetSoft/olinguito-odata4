@@ -28,6 +28,7 @@
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 1 fix round 1: implement setKeyAsSegment
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 1 follow-up Task 7: documented the /$query
  * trailing-slash edge (exact-suffix match is deliberate, not an oversight)
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 7: accept AsyncSupport registration
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -53,6 +54,7 @@ import org.sitenetsoft.olinguito.server.api.ODataResponse;
 import org.sitenetsoft.olinguito.server.api.ODataServerError;
 import org.sitenetsoft.olinguito.server.api.OlingoExtension;
 import org.sitenetsoft.olinguito.server.api.ServiceMetadata;
+import org.sitenetsoft.olinguito.server.api.async.AsyncSupport;
 import org.sitenetsoft.olinguito.server.api.deserializer.DeserializerException;
 import org.sitenetsoft.olinguito.server.api.etag.CustomETagSupport;
 import org.sitenetsoft.olinguito.server.api.etag.PreconditionException;
@@ -91,6 +93,7 @@ public class ODataHandlerImpl implements ODataHandler {
 
   private CustomContentTypeSupport customContentTypeSupport;
   private CustomETagSupport customETagSupport;
+  private AsyncSupport asyncSupport;
 
   private boolean keyAsSegment;
   private UriInfo uriInfo;
@@ -448,6 +451,8 @@ public class ODataHandlerImpl implements ODataHandler {
       this.customContentTypeSupport = customContentType;
     } else if(extension instanceof CustomETagSupport customETag) {
       this.customETagSupport = customETag;
+    } else if (extension instanceof AsyncSupport asyncSupportExtension) {
+      this.asyncSupport = asyncSupportExtension;
     } else {
       throw new ODataRuntimeException("Got not supported exception with class name " +
           extension.getClass().getSimpleName());
@@ -465,6 +470,10 @@ public class ODataHandlerImpl implements ODataHandler {
 
   public CustomETagSupport getCustomETagSupport() {
     return customETagSupport;
+  }
+
+  AsyncSupport getAsyncSupport() {
+    return asyncSupport;
   }
 
   public Exception getLastThrownException() {
