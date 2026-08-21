@@ -30,6 +30,12 @@ delivered by the 4.01 compliance milestone.
 * [Geospatial types](#geospatial-types-edmgeography-edmgeometry)
 * [Entity-typed values in JSON payloads](#entity-typed-values-in-json-payloads)
 
+**Tier 6, Wave 3:**
+
+* [Streamed collection properties](#streamed-collection-properties)
+* [Stream-property links](#stream-property-links-edmstream-control-information)
+* [Framework-level `Prefer: respond-async`](#framework-level-prefer-respond-async)
+
 Each section names the governing [OASIS OData 4.01](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html)
 clause, describes server behavior including status codes, gives a client usage snippet, and
 records any deviations or spec-silent decisions made along the way. These features are additive:
@@ -1543,6 +1549,318 @@ ClientEntity result = request.execute().getBody();   // PropertyString == "echo 
 * **The `@odata.id` of an action-import result that declares no entity set** is a type name in an
   entity-set position (`olingo.odata.test1.ETTwoPrim(7)`). Pre-existing, shared with other action
   imports, and untouched: transient-entity id generation has a much wider blast radius.
+
+## Streamed Collection Properties
+
+Normative reference: [OData-JSON] §4.4 (`@count` "MUST be the first" member of a collection
+response, before `value`), §7.1; [OData-Protocol] §11.2.3 (requesting individual properties).
+Olinguito ticket: OLINGO-1066.
+
+A collection-valued primitive or complex property used to be materialized in full — the whole
+`Property` value list in memory, serialized into a byte array, then written to the response. A
+service that computes its elements lazily (a database cursor, a paged back end, a generator) can now
+hand the serializer an **iterator** instead, and the elements are written to the response stream one
+at a time.
+
+### `PropertyIterator`
+
+`org.sitenetsoft.olinguito.commons.api.data.PropertyIterator` is an abstract class implementing
+`Iterator<Property>`, modeled on the existing `EntityIterator`. It carries the collection-level
+metadata (`name`, `valueType`, `count`, `next`) and yields one `Property` per element:
+
+```java
+PropertyIterator properties = new PropertyIterator() {
+  private final Iterator<String> source = cursor();          // your lazy source
+  @Override public boolean hasNext() { return source.hasNext(); }
+  @Override public Property next() {
+    return new Property(null, null, ValueType.PRIMITIVE, source.next());
+  }
+};
+properties.setName("CollPropertyString");
+properties.setValueType(ValueType.COLLECTION_PRIMITIVE);
+```
+
+The iterator's own `getValueType()` is the **collection** type (`COLLECTION_PRIMITIVE`,
+`COLLECTION_COMPLEX`, …); each `Property` that `next()` returns carries the **element** type
+(`PRIMITIVE`, `ENUM`, `GEOSPATIAL`, `COMPLEX`) and a single element value. `remove()` throws
+`ODataNotSupportedException`, exactly as `EntityIterator` does.
+
+### The Two New Serializer Methods
+
+`ODataSerializer` gained two methods, alongside the pre-existing `entityCollectionStreamed`:
+
+```java
+SerializerStreamResult primitiveCollectionStreamed(ServiceMetadata metadata, EdmPrimitiveType type,
+    PropertyIterator properties, PrimitiveSerializerOptions options) throws SerializerException;
+
+SerializerStreamResult complexCollectionStreamed(ServiceMetadata metadata, EdmComplexType type,
+    PropertyIterator properties, ComplexSerializerOptions options) throws SerializerException;
+```
+
+Both are **`default` methods**, so this is additive: a third-party `ODataSerializer` implementation
+keeps compiling untouched. What such an implementation sees at runtime is a `SerializerException`
+carrying `MessageKeys.NOT_IMPLEMENTED` and naming its own class, until it overrides them.
+`ODataJsonSerializer` overrides both. The options types are the same `PrimitiveSerializerOptions` /
+`ComplexSerializerOptions` the buffered writers take — no new options class.
+
+A processor serves the result by handing the `SerializerStreamResult`'s content to the response:
+
+```java
+SerializerStreamResult result = serializer.complexCollectionStreamed(
+    serviceMetadata, complexType, properties, options);
+response.setODataContent(result.getODataContent());
+response.setStatusCode(HttpStatusCode.OK.getStatusCode());
+response.setHeader(HttpHeader.CONTENT_TYPE, requestedContentType.toContentTypeString());
+```
+
+### The Two Reference-Service Endpoints
+
+`TechnicalPrimitiveComplexProcessor.readProperty` routes exactly two endpoints through the streamed
+path, so the round trip is proven end to end against the real client:
+
+| Endpoint | Element type |
+|---|---|
+| `ESCollAllPrim(1)/CollPropertyString` | `Collection(Edm.String)` |
+| `ESMixPrimCollComp(7)/CollPropertyComp` | `Collection(CTTwoPrim)`, including a derived `CTBase` element |
+
+**The payload is byte-identical** to what the buffered writers produced — the same context URL,
+metadata ETag, `@odata.count` placement (before `value`, per §4.4), `@odata.type` at full metadata
+and next link. The fit round trip pins the exact pre-change bytes, captured from the baseline build
+before the switch. **No client change is needed, and none was made.**
+
+### Known Limitations
+
+* **A streamed collection writes no `operations` and no instance annotations.** A `PropertyIterator`
+  carries neither, so there is nowhere to read them from. The buffered writers still emit both.
+  Byte-for-byte parity with the buffered form therefore holds for data that has neither — which is
+  every collection-valued property tecsvc serves.
+* **Streamed collections are JSON-only.** `ODataXmlSerializer` deliberately inherits the
+  not-implemented `default` methods and reports `NOT_IMPLEMENTED`; there is no streamed XML writer
+  for properties in this release.
+* **A property-stream caller cannot register an `ODataContentWriteErrorCallback`.**
+  `PrimitiveSerializerOptions` and `ComplexSerializerOptions` do not carry one, so a mid-stream
+  failure has no error-callback delivery the way the entity-collection path does. The write path is
+  null-safe about it; adding the option is a public API change left to a later wave.
+
+## Stream-Property Links (`Edm.Stream` Control Information)
+
+Normative reference: [OData-JSON] §4.5.12 (`mediaReadLink`/`mediaEditLink`: "at least one of the
+control information mediaEditLink and mediaReadLink MUST be included … if `odata.metadata=full` is
+requested"; "mediaReadLink MUST be included if its value differs from the value of the associated
+mediaEditLink"), §3.1.1 (control information "MAY be omitted if the client can compute it from the
+metadata" and MAY appear otherwise), §3.1.2. Olinguito ticket: OLINGO-1505.
+
+A property whose type is `Edm.Stream` has no value in the payload; it is represented purely by
+control information — a read link, an edit link, an ETag, a content type. The JSON serializer used
+to write the link's bare href as if it were a string value, and at `odata.metadata=minimal` it wrote
+no link at all. Both are corrected.
+
+### The Minimal-Metadata Rule
+
+At `metadata=minimal`, a stream property's link is now **omitted only when the client could have
+computed it**, and written otherwise. "Computable" is defined as
+
+```
+<the entity's edit link, or its id when there is no edit link> + "/" + <property name>
+```
+
+§4.5.12 says "standard URL conventions" without writing the URL out; this is the convention Olinguito
+publishes, and it is the one tecsvc's own canonical URLs follow.
+
+Worked example — an `ESWithStream` entity with id `ESWithStream(1)` and a `PropertyStream`:
+
+```json
+// computable: the href IS ESWithStream(1)/PropertyStream, so minimal metadata stays silent
+{"@odata.context":"$metadata#ESWithStream/$entity","PropertyInt16":1}
+
+// foreign: the href is somewhere else, so minimal metadata publishes it
+{"@odata.context":"$metadata#ESWithStream/$entity","PropertyInt16":1,
+ "PropertyStream@odata.mediaReadLink":"http://mediaserver:1234/readLink"}
+```
+
+`metadata=full` always writes a link (§4.5.12's MUST), and `metadata=none` writes no control
+information at all. Which of the two members is written follows the `Link`'s `rel`: the explicit
+media-read-link rel writes `mediaReadLink`; a null rel, the edit-link rel, or any other rel writes
+`mediaEditLink`. (Previously an unrecognized rel produced *neither* link even at full metadata,
+which violated the MUST.)
+
+### The Wire Change
+
+**A service whose stream links do not follow the computed convention now returns those links at
+`metadata=minimal`, where it previously returned none.** This is an *addition* to the payload, never
+a removal: no member that used to be present has gone away, and no member changed its value. A
+conforming client — one that reads control information it recognizes and ignores what it does not —
+is unaffected. A client that asserts on the exact member set of a minimal-metadata payload will see
+the new members.
+
+Nothing changes for a service whose stream links are the computed ones: those payloads are
+byte-identical, and that silence is exactly what §3.1.1 permits.
+
+### Stream Properties in XML
+
+`ODataXmlSerializer` used to hand an `Edm.Stream` property into the primitive writer, which wrote the
+link's href as the element's plain text content (`<d:PropertyStream m:type="Stream">readLink</d:PropertyStream>`)
+— a plausible-looking payload with no defined meaning to any client. It now answers a
+`SerializerException` (`UNSUPPORTED_PROPERTY_TYPE`, a **400** naming the property), the same way
+geospatial values do.
+
+Because a **streamed** entity-collection response commits its 200 and its content type before
+serialization reaches the property, the refusal for such an entity set is made earlier: a static,
+data-free EDM check on `entityCollectionStreamed` walks the entity type and the complex properties it
+reaches (cycle-guarded) and refuses before a byte is written. So
+`ESStreamServerSidePaging?$format=xml` now answers a clean **400** where it previously answered a
+truncated **200**.
+
+### Known Limitations
+
+* **A `Property` carries one `Link` per stream property**, so a service can publish a read link **or**
+  an edit link, never both. §4.5.12's "mediaReadLink MUST be included if its value differs from the
+  value of the associated mediaEditLink" is therefore unreachable. Extending `Property`/`Link` is
+  public API and was deliberately left to a later wave.
+* **A stream property inside a `ComplexValue` has no computable link**, because the complex value has
+  no edit link or id of its own — so its link is always written, at every metadata level above `none`.
+* **The computed-link test compares raw strings.** No URI resolution or normalization happens, so an
+  absolute stream href never matches a relative entity id and vice versa. A service that mixes the two
+  forms publishes a link the client could have computed — conservative, and permitted by §3.1.1's
+  "MAY appear otherwise", but not minimal.
+* **Stream properties are refused in XML**, not represented. [OData-Atom] is outside the cited sources
+  of this milestone, so there is no conformant XML form to write. `Edm.Stream` is likewise refused by
+  the standalone `primitive(...)` and `primitiveCollection(...)` JSON entry points, which have no
+  entity in scope to compute a link against.
+* **A nullable stream property whose value is null still serializes as `m:null="true"` in XML.** Nulls
+  are handled before the refusal, and a null is representable.
+
+## Framework-Level `Prefer: respond-async`
+
+Normative reference: [OData-Protocol] §8.2.8.8 (`respond-async`, a MAY), §11.6 (the asynchronous
+request flow and the status-monitor resource), §8.3.1 and §13.2.1 (the `AsyncResult` header, a
+4.01-Minimal MUST), §8.3.7 (`Retry-After`), §11.7.7.1, §8.2.8.2 (`callback`, a MAY). Olinguito
+ticket: OLINGO-1235.
+
+Asynchronous processing used to be something each service implemented for itself — the reference
+service carried four duplicated `respond-async` blocks and a dynamic-proxy request replayer. It is
+now a framework capability: a service registers one small SPI and the handler owns the whole flow.
+
+### Implementing and Registering `AsyncSupport`
+
+```java
+package org.sitenetsoft.olinguito.server.api.async;
+
+public interface AsyncSupport extends OlingoExtension {
+  boolean isStatusMonitorRequest(ODataRequest request);
+  String submit(ODataRequest request, AsyncInvocation invocation);   // returns the monitor URL
+  AsyncResult resolve(ODataRequest request);
+  default boolean cancel(ODataRequest request) { return false; }
+  default Integer getRetryAfter() { return null; }
+}
+```
+
+A compact implementation, storing invocations in a map and running them on an executor:
+
+```java
+public final class MyAsyncSupport implements AsyncSupport {
+  private final Map<String, Job> jobs = new ConcurrentHashMap<>();
+  private final ExecutorService pool = Executors.newFixedThreadPool(10);
+  private final AtomicInteger ids = new AtomicInteger();
+
+  @Override public boolean isStatusMonitorRequest(ODataRequest request) {
+    return request.getRawRequestUri().contains("/status/");
+  }
+
+  @Override public String submit(ODataRequest request, AsyncInvocation invocation) {
+    String location = monitorUrlFor(request, ids.incrementAndGet());
+    Job job = new Job();
+    jobs.put(location, job);
+    pool.submit(() -> job.result = invocation.invoke());       // sets `finished` in a finally
+    return location;
+  }
+
+  @Override public AsyncResult resolve(ODataRequest request) {
+    Job job = jobs.get(request.getRawRequestUri());
+    if (job == null) { return AsyncResult.notFound(); }
+    if (!job.finished) { return AsyncResult.running(); }
+    return AsyncResult.completed(job.result);
+  }
+}
+
+// registration, wherever the handler is built
+handler.register(new MyAsyncSupport());
+```
+
+The framework does the rest. When `Prefer: respond-async` is present **and** an `AsyncSupport` is
+registered, `ODataHandlerImpl` detaches a full copy of the request (method, protocol, every raw URI
+field, every header, and the body buffered into memory so a replay survives the container recycling
+the original), hands the processor invocation to `submit`, and answers **202 Accepted** with
+`Location: <monitor URL>`, `Preference-Applied: respond-async`, and `Retry-After` when the SPI
+supplies one. The invocation dispatches directly rather than re-entering `process`, so no submission
+loop is possible.
+
+On the monitor URL the handler answers, before URI parsing and before version validation (§11.6
+permits a monitor URL that is not a valid OData URI):
+
+| Monitor request | Answer |
+|---|---|
+| GET, still running | **202** with `Location` (§11.6: "MUST again include a Location header"), plus `Retry-After` when supplied |
+| GET, completed, `Accept` includes `application/http` (or the `application/*` range) | **200**, `Content-Type: application/http`, the result as an RFC 7230 message — §11.6's wrapped form |
+| GET, completed, any other `Accept` (or none) | **200**, the result's own status-bearing headers and body, plus `AsyncResult: <result status>` — §11.6's unwrapped form |
+| GET, unknown monitor | **404** |
+| DELETE, `cancel` returns true | **204** |
+| DELETE, `cancel` returns false (the default) | **405** with `Allow: GET` |
+
+**Once an `AsyncSupport` is registered the framework owns the preference end to end**: a processor
+must not answer 202 itself, or the client gets two.
+
+### The Wire Change
+
+**The monitor's completed response is now the unwrapped `AsyncResult` form for a client that does
+not accept `application/http`**, where it was previously always the wrapped `application/http`
+message. That is what makes the `AsyncResult` header — §13.2.1's 4.01-Minimal MUST — reachable at
+all, and it means a generic client (curl, a browser, the JDK's default `Accept`) now receives the
+result itself rather than an enclosed HTTP message it would have to parse.
+
+The Olinguito client reads **both** shapes:
+`AsyncRequestWrapperImpl.AsyncResponseWrapperImpl.instantiateResponse` branches on the monitor
+response's `Content-Type` — `application/http` keeps the enclosed-message path, anything else is
+taken over directly by the new `AbstractODataResponse.initFromAsyncResult`, which buffers the body
+(the wrapper closes the monitor response immediately afterwards) and overwrites the monitor's 200
+with the numeric `AsyncResult` value, so a failed asynchronous operation surfaces as its real 4xx or
+5xx rather than as 200. A parse failure is now rethrown instead of being swallowed into an endless
+re-poll of a one-shot monitor URL. To keep receiving the wrapped form, send
+`Accept: application/http` on the monitor request.
+
+### Known Limitations
+
+* **Asynchronous processing is available in the servlet deployment only.** `TechnicalServlet`,
+  `TechnicalKeyAsSegmentServlet` and `TechnicalStatusMonitorServlet` register the SPI; the **Quarkus
+  deployment deliberately does not**, because it wires only the two OData base paths and has no
+  `/status` route — registering it there would produce a 202 whose `Location` points at a URL that
+  deployment does not serve, and §11.6 requires that `Location` to point at a real monitor resource.
+  Ignoring `respond-async` is explicitly conformant (§8.2.8.8 makes async a MAY); a dangling
+  `Location` is not. Enabling it there means routing `/status/*` into the same handler.
+* **`Prefer: callback` is parsed and echoed but never invoked.** §8.2.8.2 is a MAY; no HTTP call is
+  made to the callback URL.
+* **`Prefer: wait` is ignored.** §8.2.8.8 says a service SHOULD process synchronously for up to that
+  many seconds before falling back to 202; a request combining `respond-async` with `wait=10` is
+  answered 202 immediately. Honoring it would mean running the invocation on the request thread with
+  a timeout — out of scope for this wave.
+* **`Retry-After` is whatever the registered `AsyncSupport` returns, and absent by default.** §8.3.7
+  specifies only "the duration of time, in seconds"; the reference service supplies none.
+* **The `Accept` test for `application/http` is a look at the media ranges, not a negotiation**, so
+  `q=0` on `application/http` is not honored. §11.6 says "an Accept header that includes
+  application/http"; running a full `AcceptType.parse` would reject monitor requests the OData
+  negotiator dislikes, which §11.6 never asks for.
+* **A request with neither `Accept` nor `OData-MaxVersion` gets the unwrapped form.** §11.6's two
+  sentences do not partition the space; the unwrapped shape is chosen because §13.2.1 makes
+  `AsyncResult` the 4.01-Minimal MUST.
+* **The reference service's monitor is one-shot**: a second GET after the result has been retrieved
+  answers 404. §11.6 makes 404 correct after a successful DELETE or once retention lapses, not after
+  one read. This is pinned pre-existing behavior of the test service, not a rule of the library.
+* **Cancellation is a `boolean`,** so a DELETE against a monitor that never existed answers 405 (or
+  204) rather than 404 — the SPI cannot distinguish "unknown" from "not supported". §11.6 names 405
+  as the correct answer for a service that does not support cancellation, which the reference service
+  does not.
+* **The async wrapper omits `Content-Transfer-Encoding`** — its only normative mention (§11.7.7.1) is
+  about multipart batch parts.
 
 ## See Also
 
