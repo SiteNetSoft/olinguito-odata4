@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Fixed logger class, deprecated API usages, and code quality improvements
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
  * Copyright 2026 SiteNetSoft - Fixed resource leak in initFromEnclosedPart
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 11: read the AsyncResult status of an unwrapped async result
  * Copyright 2026 SiteNetSoft - Drain response body on close to prevent connection leaks (OLINGO-1621/1622)
  */
 package org.sitenetsoft.olinguito.client.core.communication.response;
@@ -184,6 +185,45 @@ public abstract class AbstractODataResponse implements ODataResponse {
     statusMessage = res.getReasonPhrase();
 
     hasBeenInitialized = true;
+    return this;
+  }
+
+  /**
+   * Initializes this response from the unwrapped result of a completed asynchronous operation, as
+   * returned by the status monitor when the monitor request did not accept <code>application/http</code>
+   * ([OData-Protocol] 11.6). The monitor response's own status is always <code>200 OK</code>; the final
+   * status code of the asynchronous operation is carried by the <code>AsyncResult</code> header
+   * ([OData-Protocol] 8.3.1) and, when present and parsable, becomes this response's status.
+   *
+   * @param res the status-monitor HTTP response
+   * @return this response, initialized
+   */
+  public ODataResponse initFromAsyncResult(final ODataHttpResponse res) {
+    initFromHttpResponse(res);
+
+    // the status-monitor response is closed by the caller as soon as it has been read, so the result
+    // body has to be buffered here - unlike initFromEnclosedPart, initFromHttpResponse keeps the live
+    // stream of the monitor response as the payload.
+    if (this.payload != null) {
+      try {
+        this.payload = new ByteArrayInputStream(this.payload.readAllBytes());
+      } catch (final IOException e) {
+        LOG.error("Error buffering the asynchronous result payload", e);
+        throw new ODataRuntimeException(e);
+      }
+    }
+
+    final Collection<String> asyncResult = getHeader(HttpHeader.ASYNC_RESULT);
+    if (asyncResult != null && !asyncResult.isEmpty()) {
+      final String value = asyncResult.iterator().next();
+      try {
+        this.statusCode = Integer.parseInt(value.trim());
+        final HttpStatusCode status = HttpStatusCode.fromStatusCode(this.statusCode);
+        this.statusMessage = status == null ? this.statusMessage : status.getInfo();
+      } catch (final NumberFormatException e) {
+        LOG.warn("Unparsable AsyncResult header value '{}'", value, e);
+      }
+    }
     return this;
   }
 

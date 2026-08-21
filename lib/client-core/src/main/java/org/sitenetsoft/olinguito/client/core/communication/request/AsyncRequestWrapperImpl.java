@@ -23,6 +23,7 @@
  * Copyright 2026 SiteNetSoft - Fixed connection leak: close async monitor responses to release HC 5.x connections
  * Copyright 2026 SiteNetSoft - OLINGO-1476: Resolve relative Location URIs against original request URI
  * Copyright 2026 SiteNetSoft - OLINGO-1475: Honor chunked-encoding configuration for async request payloads
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 11: accept both status-monitor result shapes
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -30,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Objects;
 
 import org.sitenetsoft.olinguito.client.api.ODataClient;
@@ -45,6 +47,7 @@ import org.sitenetsoft.olinguito.client.api.http.HttpClientException;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpClient;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpRequest;
 import org.sitenetsoft.olinguito.client.api.http.ODataHttpResponse;
+import org.sitenetsoft.olinguito.client.core.communication.response.AbstractODataResponse;
 import org.sitenetsoft.olinguito.client.core.http.CompressingODataHttpClient;
 import org.sitenetsoft.olinguito.client.core.uri.URIUtils;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
@@ -304,11 +307,23 @@ public class AsyncRequestWrapperImpl<R extends ODataResponse> extends AbstractRe
     private R instantiateResponse(final ODataHttpResponse res) {
       R odataResponse;
       try {
-        odataResponse = (R) ((AbstractODataRequest) odataRequest).getResponseTemplate().initFromEnclosedPart(res
-            .getBody());
-      } catch (Exception e) {
+        final ODataResponse template = ((AbstractODataRequest) odataRequest).getResponseTemplate();
+        if (isHttpMessage(res)) {
+          // [OData-Protocol] 11.6: the body of the final 200 OK "MUST be represented as an HTTP
+          // message" when the status-monitor request accepted application/http.
+          odataResponse = (R) template.initFromEnclosedPart(res.getBody());
+        } else if (template instanceof AbstractODataResponse abstractResponse) {
+          // otherwise "any other headers, along with the response body, represent the result of the
+          // completed asynchronous operation" and the AsyncResult header carries its final status code
+          odataResponse = (R) abstractResponse.initFromAsyncResult(res);
+        } else {
+          odataResponse = (R) template.initFromHttpResponse(res);
+        }
+      } catch (RuntimeException e) {
+        // a result body the client cannot read is an error, not a "not done yet": swallowing it here
+        // makes the wrapper poll a one-shot monitor URL again and report the follow-up 404 instead.
         LOG.error("Error instantiating odata response", e);
-        odataResponse = null;
+        throw e;
       } finally {
         try {
           res.close();
@@ -317,6 +332,12 @@ public class AsyncRequestWrapperImpl<R extends ODataResponse> extends AbstractRe
         }
       }
       return odataResponse;
+    }
+
+    private boolean isHttpMessage(final ODataHttpResponse res) {
+      final Collection<String> contentType = res.getHeader(HttpHeader.CONTENT_TYPE);
+      return contentType != null && contentType.stream().anyMatch(
+          value -> value != null && value.toLowerCase(Locale.ROOT).contains("application/http"));
     }
 
     private void retrieveMonitorDetails(final ODataHttpResponse res) {

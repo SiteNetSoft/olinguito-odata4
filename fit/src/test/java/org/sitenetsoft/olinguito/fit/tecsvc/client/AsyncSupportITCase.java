@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Replaced Apache HTTP types with OData abstractions
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 11: expectations for the unwrapped status-monitor result
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.client;
 
@@ -171,8 +172,10 @@ public final class AsyncSupportITCase extends AbstractParamTecSvcITCase {
     assertNotNull(first.getODataResponse());
     ODataResponse firstResponse = first.getODataResponse();
     assertEquals(HttpStatusCode.OK.getStatusCode(), firstResponse.getStatusCode());
-    assertEquals(2, firstResponse.getHeaderNames().size());
+    // [OData-Protocol] 11.6: the unwrapped status-monitor result carries the result's own headers
+    // (next to the monitor response's transport headers), and AsyncResult its final status code
     assertEquals("4.0", firstResponse.getHeader(HttpHeader.ODATA_VERSION).iterator().next());
+    assertEquals("200", firstResponse.getHeader(HttpHeader.ASYNC_RESULT).iterator().next());
     ResWrap<EntityCollection> firWrap = client.getDeserializer(getContentType())
         .toEntitySet(firstResponse.getRawResponse());
     EntityCollection firstResponseEntitySet = firWrap.getPayload();
@@ -291,9 +294,18 @@ public final class AsyncSupportITCase extends AbstractParamTecSvcITCase {
         .appendEntitySetSegment(ES_ALL_PRIM)
         .appendKeySegment(32767).build();
 
+    // Pin the session up front: the delete is now processed asynchronously, and the status-monitor
+    // result of an asynchronous operation carries the operation's headers, not a session cookie of
+    // its own, so the session has to be established (and joined) by the requests themselves.
+    final ODataRetrieveResponse<ClientEntity> sessionResponse =
+        client.getRetrieveRequestFactory().getEntityRequest(uri).execute();
+    final String session = sessionResponse.getHeader(HttpHeader.SET_COOKIE).iterator().next();
+    sessionResponse.close();
+
     // asyncDeleteRequest async request
     ODataRequest deleteRequest = client.getCUDRequestFactory().getDeleteRequest(uri)
         .setPrefer("respond-async; " + TEC_ASYNC_SLEEP + "=5");
+    deleteRequest.addCustomHeader(HttpHeader.COOKIE, session);
     AsyncResponseWrapper<ODataResponse> asyncDeleteRequest =
         client.getAsyncRequestFactory().getAsyncRequestWrapper(deleteRequest).execute();
 
@@ -305,7 +317,7 @@ public final class AsyncSupportITCase extends AbstractParamTecSvcITCase {
     // Check that the deleted entity is really gone.
     // This check has to be in the same session in order to access the same data provider.
     ODataEntityRequest<ClientEntity> entityRequest = client.getRetrieveRequestFactory().getEntityRequest(uri);
-    entityRequest.addCustomHeader(HttpHeader.COOKIE, response.getHeader(HttpHeader.SET_COOKIE).iterator().next());
+    entityRequest.addCustomHeader(HttpHeader.COOKIE, session);
     try {
       entityRequest.execute();
       fail("Expected exception not thrown!");

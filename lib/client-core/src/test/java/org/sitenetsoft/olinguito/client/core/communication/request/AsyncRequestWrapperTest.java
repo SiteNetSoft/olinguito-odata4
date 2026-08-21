@@ -21,6 +21,7 @@
  * Copyright 2026 SiteNetSoft - Reduced test method visibility
  * Copyright 2026 SiteNetSoft - OLINGO-1476: Tests for relative Location URIs
  * Copyright 2026 SiteNetSoft - OLINGO-1475: Tests for chunked-encoding configuration on async payloads
+ * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 11: tests for both status-monitor result shapes
  */
 package org.sitenetsoft.olinguito.client.core.communication.request;
 
@@ -49,6 +50,7 @@ import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
 import org.apache.hc.core5.http.ClassicHttpRequest;
 import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.http.message.BasicClassicHttpResponse;
 import org.sitenetsoft.olinguito.client.api.Configuration;
 import org.sitenetsoft.olinguito.client.api.ODataClient;
@@ -66,6 +68,7 @@ import org.sitenetsoft.olinguito.client.core.communication.request.AsyncRequestW
 import org.sitenetsoft.olinguito.client.core.communication.request.batch.ODataBatchRequestImpl;
 import org.sitenetsoft.olinguito.client.core.communication.request.invoke.ODataInvokeRequestImpl;
 import org.sitenetsoft.olinguito.client.core.http.ApacheHttpClient;
+import org.sitenetsoft.olinguito.client.core.communication.response.AbstractODataResponse;
 import org.sitenetsoft.olinguito.client.core.http.ApacheHttpRequest;
 import org.sitenetsoft.olinguito.commons.api.http.HttpHeader;
 import org.sitenetsoft.olinguito.commons.api.http.HttpMethod;
@@ -340,6 +343,103 @@ class AsyncRequestWrapperTest {
     AsyncRequestWrapperImpl<ODataResponse>.AsyncResponseWrapperImpl wrapper =
         createAsyncRequestWrapperImplWithLocation(target, location);
     assertEquals(new URI("http://server/service/monitor/status"), wrapper.location);
+  }
+
+  /**
+   * Minimal concrete response used as the response template so that the real
+   * initFromEnclosedPart / initFromAsyncResult code paths run.
+   */
+  private static final class TestResponse extends AbstractODataResponse {
+    TestResponse(final ODataClient odataClient) {
+      super(odataClient, null, null);
+    }
+  }
+
+  private ODataResponse monitorResult(final ClassicHttpResponse monitorResponse)
+      throws IOException, URISyntaxException {
+
+    final HttpClient httpClient = mock(HttpClient.class);
+    final ODataClient oDataClient = mock(ODataClient.class);
+    final Configuration configuration = mock(Configuration.class);
+    final HttpClientFactory httpClientFactory = mock(HttpClientFactory.class);
+    final HttpUriRequestFactory httpUriRequestFactory = mock(HttpUriRequestFactory.class);
+    final HttpUriRequestBase httpUriRequest = mock(HttpUriRequestBase.class);
+    when(httpUriRequest.getMethod()).thenReturn("GET");
+
+    when(oDataClient.getConfiguration()).thenReturn(configuration);
+    when(configuration.getHttpClientFactory()).thenReturn(httpClientFactory);
+    when(configuration.getHttpUriRequestFactory()).thenReturn(httpUriRequestFactory);
+    when(httpClientFactory.create(any(), any())).thenReturn(new ApacheHttpClient(httpClient));
+    when(httpUriRequestFactory.create(any(), any())).thenReturn(new ApacheHttpRequest(httpUriRequest));
+
+    final ClassicHttpResponse accepted = new BasicClassicHttpResponse(202);
+    accepted.addHeader(HttpHeader.LOCATION, "http://server/monitor");
+    when(httpClient.executeOpen(any(), any(ClassicHttpRequest.class), any()))
+        .thenReturn(accepted, monitorResponse);
+
+    final AbstractODataRequest oDataRequest = mock(AbstractODataRequest.class);
+    when(oDataRequest.getURI()).thenReturn(new URI("http://server/path"));
+    when(oDataRequest.getResponseTemplate()).thenReturn(new TestResponse(oDataClient));
+
+    final AsyncRequestWrapperImpl<ODataResponse> req = new AsyncRequestWrapperImpl<>(oDataClient, oDataRequest);
+    return req.execute().getODataResponse();
+  }
+
+  private static String body(final ODataResponse response) throws IOException {
+    return new String(response.getRawResponse().readAllBytes(), StandardCharsets.UTF_8);
+  }
+
+  @Test
+  void aWrappedMonitorResultIsUnwrapped() throws IOException, URISyntaxException {
+    // [OData-Protocol] 11.6: application/http result -> the enclosed HTTP message carries the result
+    final ClassicHttpResponse monitor = new BasicClassicHttpResponse(200);
+    monitor.addHeader(HttpHeader.CONTENT_TYPE, "application/http");
+    monitor.setEntity(new StringEntity(
+        "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"value\":1}",
+        StandardCharsets.UTF_8));
+
+    final ODataResponse response = monitorResult(monitor);
+    assertEquals(200, response.getStatusCode());
+    assertEquals("application/json", response.getContentType());
+    assertTrue(body(response).contains("{\"value\":1}"));
+  }
+
+  @Test
+  void anUnwrappedMonitorResultWithAsyncResultIsReadDirectly() throws IOException, URISyntaxException {
+    // [OData-Protocol] 11.6: any other content type -> headers and body ARE the result
+    final ClassicHttpResponse monitor = new BasicClassicHttpResponse(200);
+    monitor.addHeader(HttpHeader.CONTENT_TYPE, "application/json");
+    monitor.addHeader(HttpHeader.ASYNC_RESULT, "200");
+    monitor.setEntity(new StringEntity("{\"value\":1}", StandardCharsets.UTF_8));
+
+    final ODataResponse response = monitorResult(monitor);
+    assertEquals(200, response.getStatusCode());
+    assertEquals("{\"value\":1}", body(response));
+  }
+
+  @Test
+  void anUnwrappedErrorResultKeepsItsAsyncResultStatus() throws IOException, URISyntaxException {
+    // [OData-Protocol] 8.3.1: AsyncResult carries the final status of the asynchronous operation,
+    // while the status monitor itself answers 200 OK
+    final ClassicHttpResponse monitor = new BasicClassicHttpResponse(200);
+    monitor.addHeader(HttpHeader.CONTENT_TYPE, "application/json");
+    monitor.addHeader(HttpHeader.ASYNC_RESULT, "404");
+    monitor.setEntity(new StringEntity("{\"error\":{\"code\":null}}", StandardCharsets.UTF_8));
+
+    final ODataResponse response = monitorResult(monitor);
+    assertEquals(404, response.getStatusCode());
+    assertTrue(body(response).contains("\"error\""));
+  }
+
+  @Test
+  void anUnreadableWrappedResultFailsInsteadOfPollingAgain() throws IOException, URISyntaxException {
+    // an application/http result whose body is not an HTTP message must surface as an error rather
+    // than being swallowed into another poll of the one-shot monitor URL
+    final ClassicHttpResponse monitor = new BasicClassicHttpResponse(200);
+    monitor.addHeader(HttpHeader.CONTENT_TYPE, "application/http");
+    monitor.setEntity(new StringEntity("not an http message", StandardCharsets.UTF_8));
+
+    assertThrows(RuntimeException.class, () -> monitorResult(monitor));
   }
 
 }
