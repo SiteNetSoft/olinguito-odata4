@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Adjusted XML stream-property assertions for the new XML refusal
  * Copyright 2026 SiteNetSoft - Real BAD_REQUEST assertions + moved paging/count XML coverage
  * to ESServerSidePaging (fix round 1)
+ * Copyright 2026 SiteNetSoft - Added second-page XML paging coverage on ESServerSidePaging (fix round 2)
  */
 package org.sitenetsoft.olinguito.fit.tecsvc.http;
 
@@ -157,7 +158,31 @@ public class BasicStreamITCase extends AbstractBaseTestITCase {
     assertTrue(content.contains("<a:id>ESServerSidePaging(1)</a:id>"));
     assertTrue(content.contains("<d:PropertyInt16 m:type=\"Int16\">1</d:PropertyInt16>"));
   }
-  
+
+  /**
+   * The second-page next-link ({@code %24skiptoken=2%2A10}) that {@code streamESStreamServerSidePagingNextXml}
+   * used to pin on {@code ESStreamServerSidePaging} has no XML coverage anywhere else once that
+   * entity type is refused outright; follows {@code serverSidePagingXml}'s page-1 link onto
+   * {@code ESServerSidePaging} to keep second-page XML paging covered.
+   */
+  @Test
+  public void serverSidePagingNextXml() throws Exception {
+    URL url = new URL(SERVICE_URI + "ESServerSidePaging?$format=xml&$skiptoken=1%2A10");
+
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod(HttpMethod.GET.name());
+    connection.connect();
+
+    assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
+    assertEquals(ContentType.APPLICATION_XML, ContentType.create(connection.getHeaderField(HttpHeader.CONTENT_TYPE)));
+
+    final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
+    assertTrue(content.contains("<a:link rel=\"next\" href="));
+    assertTrue(content.contains("ESServerSidePaging?$format=xml&amp;%24skiptoken=2%2A10\"/>"));
+    assertTrue(content.contains("<a:id>ESServerSidePaging(11)</a:id>"));
+    assertTrue(content.contains("<d:PropertyInt16 m:type=\"Int16\">11</d:PropertyInt16>"));
+  }
+
   @Test
   public void streamESStreamServerSidePagingJson() throws Exception {
     URL url = new URL(SERVICE_URI + "ESStreamServerSidePaging?$format=json");
