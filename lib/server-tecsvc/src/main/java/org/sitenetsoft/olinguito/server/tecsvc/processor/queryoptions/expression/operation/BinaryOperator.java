@@ -17,11 +17,13 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Converted switch statements to switch expressions
+ * Copyright 2026 SiteNetSoft - Tier 7 Wave 2: evaluate divby; fixed decimal div using the left operand twice
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operation;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -196,7 +198,11 @@ public class BinaryOperator {
       if (left.isIntegerType()) {
         result = left.getTypedValue(BigInteger.class).compareTo(right.getTypedValue(BigInteger.class));
       } else if (left.isDecimalType()) {
-        result = left.getTypedValue(BigDecimal.class).compareTo(right.getTypedValue(BigDecimal.class));
+        // -INF, INF and NaN are kept as Double because no BigDecimal can hold them.
+        result = TypedOperand.isNonFinite(left.getValue()) || TypedOperand.isNonFinite(right.getValue()) ?
+            Double.compare(left.getTypedValue(Number.class).doubleValue(),
+                right.getTypedValue(Number.class).doubleValue()) :
+            left.getTypedValue(BigDecimal.class).compareTo(right.getTypedValue(BigDecimal.class));
       } else if(left.getValue().getClass() == right.getValue().getClass()
           && left.getValue() instanceof Comparable<?>) {
         result = ((Comparable<Object>) left.getValue()).compareTo(right.getValue());
@@ -212,6 +218,39 @@ public class BinaryOperator {
     }
 
     return false;
+  }
+
+  private static BigDecimal toBigDecimal(final TypedOperand operand) {
+    final Object value = operand.getValue();
+    if (value instanceof BigDecimal decimal) {
+      return decimal;
+    }
+    return value instanceof BigInteger integer ?
+        new BigDecimal(integer) :
+        new BigDecimal(value.toString());
+  }
+
+  /**
+   * Divides the left operand by the right one, promoting both to decimal, per [OData-URL] 5.1.1.2.5.
+   * Unlike {@link #arithmeticOperator} with {@link BinaryOperatorKind#DIV} this may yield a
+   * fractional result and never fails for division by zero: it returns -INF, INF or NaN depending
+   * on the sign of the left operand. Those three values cannot be held by a BigDecimal, so the
+   * result is typed Edm.Double throughout rather than Edm.Decimal.
+   */
+  public VisitorOperand divByOperator() throws ODataApplicationException {
+    if (left.isNull() || right.isNull()) {
+      return new TypedOperand(new Object(), EdmNull.getInstance());
+    }
+    // "promotes both operands to decimal": the operands may be integer-typed, whose value is a
+    // BigInteger, so convert rather than cast.
+    final BigDecimal leftValue = toBigDecimal(left);
+    final BigDecimal rightValue = toBigDecimal(right);
+    if (rightValue.signum() == 0) {
+      final double result = leftValue.signum() == 0 ? Double.NaN :
+          leftValue.signum() > 0 ? Double.POSITIVE_INFINITY : Double.NEGATIVE_INFINITY;
+      return new TypedOperand(result, primDouble);
+    }
+    return new TypedOperand(leftValue.divide(rightValue, MathContext.DECIMAL128).doubleValue(), primDouble);
   }
 
   public VisitorOperand arithmeticOperator(final BinaryOperatorKind operator) throws ODataApplicationException {
@@ -334,7 +373,7 @@ public class BinaryOperator {
 
     return switch (operator) {
       case ADD -> left.add(right);
-      case DIV -> left.divide(left);
+      case DIV -> left.divide(right, MathContext.DECIMAL128);
       case MUL -> left.multiply(right);
       case SUB -> left.subtract(right);
       default -> throw new ODataApplicationException("Operator not valid", HttpStatusCode.BAD_REQUEST.getStatusCode(),

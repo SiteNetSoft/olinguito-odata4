@@ -150,6 +150,43 @@ public class FilterSystemQueryITCase extends AbstractParamTecSvcITCase {
   }
 
   @Test
+  public void divByEvaluates() {
+    // [OData-URL] 5.1.1.2.5: divby promotes both operands to decimal and may yield a fractional
+    // result, where div on two integers truncates. Each filter gates a known 2-entity predicate
+    // on the arithmetic, so a wrong result changes the count.
+    assertEquals(2, sendRequest(ES_TWO_KEY_NAV, "PropertyInt16 eq 1 and 5 divby 2 eq 2.5")
+        .getBody().getEntities().size());
+    assertEquals(0, sendRequest(ES_TWO_KEY_NAV, "PropertyInt16 eq 1 and 5 divby 2 eq 2")
+        .getBody().getEntities().size());
+    assertEquals(2, sendRequest(ES_TWO_KEY_NAV, "PropertyInt16 eq 1 and 5 div 2 eq 2")
+        .getBody().getEntities().size());
+  }
+
+  @Test
+  public void divByZeroDoesNotFail() {
+    // "does not fail for divby zero, returning -INF, INF, or NaN depending on the sign of the
+    // left operand" -- so these are ordinary results, not errors.
+    // Compared against a bound rather than the INF literal: tecsvc cannot type an INF or NaN
+    // literal in a filter today ("Could not determine type for literal INF"), a pre-existing gap
+    // unrelated to divby.
+    assertEquals(2, sendRequest(ES_TWO_KEY_NAV, "PropertyInt16 eq 1 and 1 divby 0 gt 1000000")
+        .getBody().getEntities().size());
+    assertEquals(2, sendRequest(ES_TWO_KEY_NAV, "PropertyInt16 eq 1 and -1 divby 0 lt -1000000")
+        .getBody().getEntities().size());
+    // Division by zero is a result, not an error: this request succeeds and simply matches nothing.
+    assertEquals(0, sendRequest(ES_TWO_KEY_NAV, "PropertyInt16 eq 1 and 1 divby 0 lt 1000000")
+        .getBody().getEntities().size());
+  }
+
+  @Test
+  public void decimalDivisionUsesBothOperands() {
+    // Regression: decimalArithmeticOperation divided the left operand by itself, so every
+    // decimal division yielded 1.
+    assertEquals(2, sendRequest(ES_TWO_KEY_NAV, "PropertyInt16 eq 1 and 7.5 div 2.5 eq 3")
+        .getBody().getEntities().size());
+  }
+
+  @Test
   public void simpleEq() {
     ODataRetrieveResponse<ClientEntitySet> result = sendRequest(ES_TWO_KEY_NAV, "PropertyInt16 eq 1");
 

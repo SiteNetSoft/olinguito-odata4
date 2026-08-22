@@ -23,7 +23,7 @@
  * Copyright 2026 SiteNetSoft - Dispatch matchesPattern to MethodCallOperator
  * Copyright 2026 SiteNetSoft - OData 4.01: dispatch geo.distance, geo.length and geo.intersects,
  * and type geo literals while their EdmType is still known
- * Copyright 2026 SiteNetSoft - Tier 7 Task 9: answer 501 for the parsed-but-unevaluated divby operator
+ * Copyright 2026 SiteNetSoft - Tier 7 Wave 2: evaluate the divby operator
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression;
 
@@ -116,9 +116,7 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
       case ADD, SUB, MUL, DIV, MOD -> binaryOperator.arithmeticOperator(operator);
       // divby has its own semantics ([OData-URL] 5.1.1.2.5: decimal promotion, and -INF/INF/NaN
       // instead of failing on division by zero), so it is not folded into arithmeticOperator.
-      // Parsed in Tier 7 Wave 1; evaluated in Wave 2. Until then 501, which [OData-Protocol]
-      // 13.1.1 item 7 permits for parsed-but-unsupported functionality.
-      case DIVBY -> throwNotImplemented();
+      case DIVBY -> binaryOperator.divByOperator();
       case HAS -> binaryOperator.hasOperator();
       case IN -> binaryOperator.inOperator();
     };

@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Fixed unchecked cast warnings
+ * Copyright 2026 SiteNetSoft - Tier 7 Wave 2: carry non-finite floating-point values through casts
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operand;
 
@@ -136,10 +137,17 @@ public class TypedOperand extends VisitorOperand {
       }
     // Use BigDecimal for unlimited precision.
     } else if (asType.equals(primDouble) || asType.equals(primSingle) || asType.equals(primDecimal)) {
-      try {
-        newValue = new BigDecimal(value.toString());
-      } catch (NumberFormatException e) {
-        // Nothing to do
+      if (isNonFinite(value)) {
+        // BigDecimal cannot represent -INF, INF or NaN, which Edm.Double and Edm.Single can hold
+        // and which both the INF/NaN literals and the divby operator ([OData-URL] 5.1.1.2.5)
+        // produce; keep such a value as a Double instead of failing the cast.
+        newValue = ((Number) value).doubleValue();
+      } else {
+        try {
+          newValue = new BigDecimal(value.toString());
+        } catch (NumberFormatException e) {
+          // Nothing to do
+        }
       }
     } else {
       // Use type conversion of EdmPrimitive types
@@ -193,6 +201,15 @@ public class TypedOperand extends VisitorOperand {
 
   public EdmType getType() {
     return type;
+  }
+
+  /**
+   * @return whether the value is a floating-point -INF, INF or NaN, none of which a BigDecimal
+   *         can represent
+   */
+  public static boolean isNonFinite(final Object value) {
+    return value instanceof Double d && !Double.isFinite(d)
+        || value instanceof Float f && !Float.isFinite(f);
   }
 
   public <T> T getTypedValue(final Class<T> clazz) {
