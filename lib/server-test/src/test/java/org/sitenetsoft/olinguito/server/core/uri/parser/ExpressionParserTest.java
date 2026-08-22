@@ -596,6 +596,15 @@ class ExpressionParserTest {
         .goUpFilterValidator()
         .root().right().isLiteral("duration'P10DT5H34M21.123456789012S'");
 
+    // [OData-Protocol] 13.2.1 item 9b: the duration prefix is optional since OData 4.01, and the
+    // unprefixed form is still quoted ([OData-URL] 5.1.1.14.1).
+    testFilter.runOnETAllPrim("PropertyDuration eq 'P10DT5H34M21.123456789012S'")
+        .is("<<PropertyDuration> eq <duration'P10DT5H34M21.123456789012S'>>")
+        .isBinary(BinaryOperatorKind.EQ)
+        .root().left().goPath().isPrimitiveProperty("PropertyDuration", PropertyProvider.nameDuration, false)
+        .goUpFilterValidator()
+        .root().right().isLiteral("duration'P10DT5H34M21.123456789012S'");
+
     testFilter.runOnETAllPrim("PropertyGuid eq 005056A5-09B1-1ED3-89BD-FB81372CCB33")
         .is("<<PropertyGuid> eq <005056A5-09B1-1ED3-89BD-FB81372CCB33>>")
         .isBinary(BinaryOperatorKind.EQ)
@@ -618,6 +627,15 @@ class ExpressionParserTest {
         .root().right().isLiteral("12:34:55.12345678901");
 
     testFilter.runOnETMixEnumDefCollComp("PropertyEnumString eq olingo.odata.test1.ENString'String1'")
+        .is("<<PropertyEnumString> eq <olingo.odata.test1.ENString<String1>>>")
+        .isBinary(BinaryOperatorKind.EQ)
+        .root().left().goPath().isPrimitiveProperty("PropertyEnumString", EnumTypeProvider.nameENString, false)
+        .goUpFilterValidator()
+        .root().right().isEnum(EnumTypeProvider.nameENString, List.of("String1"));
+
+    // [OData-Protocol] 13.2.1 item 9b: since OData 4.01 the type prefix is optional, leaving a
+    // plain quoted string ([OData-URL] 5.1.1.14.1 shows both spellings side by side).
+    testFilter.runOnETMixEnumDefCollComp("PropertyEnumString eq 'String1'")
         .is("<<PropertyEnumString> eq <olingo.odata.test1.ENString<String1>>>")
         .isBinary(BinaryOperatorKind.EQ)
         .root().left().goPath().isPrimitiveProperty("PropertyEnumString", EnumTypeProvider.nameENString, false)

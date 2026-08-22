@@ -31,6 +31,7 @@
  * Copyright 2026 SiteNetSoft - Added matchesPattern method (OData 4.01 URL Conventions section 5.1.1.7.1)
  * Copyright 2026 SiteNetSoft - OData 4.01: map ambiguous optional-parameter overloads to a 400 response
  * Copyright 2026 SiteNetSoft - Refuse comparing geo values except against null (eq/ne)
+ * Copyright 2026 SiteNetSoft - Tier 7 Task 7: unprefixed enum and duration literals in expressions
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -288,7 +289,11 @@ public class ExpressionParser {
     TokenKind operatorTokenKind = ParserHelper.next(tokenizer, TokenKind.EqualsOperator, TokenKind.NotEqualsOperator);
     // Null for everything other than EQ or NE
     while (operatorTokenKind != null) {
-      final Expression right = parseExprEquality();
+      Expression right = parseExprEquality();
+      // OData 4.01 allows the enum and duration type prefixes to be omitted, leaving a plain
+      // quoted string; retype such an operand to the type it is compared with (item 9b).
+      right = retypeQuotedLiteral(right, getType(left));
+      left = retypeQuotedLiteral(left, getType(right));
       checkEqualityTypes(left, right);
       left = new BinaryImpl(left, tokenToBinaryOperator.get(operatorTokenKind), right,
           odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Boolean));
@@ -1479,6 +1484,34 @@ public class ExpressionParser {
         EdmPrimitiveTypeKind.Int64, EdmPrimitiveTypeKind.Int32, EdmPrimitiveTypeKind.Int16,
         EdmPrimitiveTypeKind.Byte, EdmPrimitiveTypeKind.SByte,
         EdmPrimitiveTypeKind.Decimal, EdmPrimitiveTypeKind.Single, EdmPrimitiveTypeKind.Double);
+  }
+
+  /**
+   * Retypes a quoted string literal to the type of the operand it is compared with, when that type
+   * takes an optionally-prefixed literal. [OData-Protocol] 13.2.1 item 9b makes the enumeration and
+   * duration type prefixes optional in OData 4.01, and [OData-URL] 5.1.1.14.1 shows the unprefixed
+   * forms are still quoted, so <code>PropertyEnumString eq 'String1'</code> means the same as the
+   * fully-prefixed spelling. Anything else is returned unchanged.
+   */
+  private Expression retypeQuotedLiteral(final Expression expression, final EdmType expectedType)
+      throws UriParserException {
+    if (expectedType == null
+        || !(expression instanceof LiteralImpl literal)
+        || literal.getText() == null
+        || !literal.getText().startsWith("'")) {
+      return expression;
+    }
+    final boolean retypable = expectedType.getKind() == EdmTypeKind.ENUM
+        || isType(expectedType, EdmPrimitiveTypeKind.Duration);
+    if (!retypable || expectedType.equals(getType(expression))) {
+      return expression;
+    }
+    final String prefixed = ParserHelper.reinterpretQuotedLiteral(literal.getText(), expectedType);
+    // An enumeration operand is an Enumeration expression, not a plain literal, so that the
+    // member names are available to the evaluator exactly as for the prefixed spelling.
+    return expectedType.getKind() == EdmTypeKind.ENUM ?
+        createEnumExpression(prefixed) :
+        new LiteralImpl(prefixed, expectedType);
   }
 
   private void checkEqualityTypes(final Expression left, final Expression right) throws UriParserException {
