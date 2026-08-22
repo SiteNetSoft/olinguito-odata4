@@ -1839,11 +1839,17 @@ public class BasicITCase extends AbstractParamTecSvcITCase {
     assertEquals(3, property.getCollectionValue().size());
   }
   
+  /*
+   * The key segment must not be a literal of the Int16 key type: since OData 4.01 a quoted string
+   * may stand for a primitive value ([OData-Protocol] 13.2.1 item 9a), so the former '42' is now a
+   * valid key and the request would fail content negotiation with 406 instead of raising the key
+   * error whose body these tests read.
+   */
   @Test
   public void readHeaderInfoFromClientException1() throws Exception {
     ODataEntityRequest<ClientEntity> request = getClient().getRetrieveRequestFactory()
         .getEntityRequest(getClient().newURIBuilder(SERVICE_URI)
-            .appendEntitySetSegment(ES_MIX_PRIM_COLL_COMP).appendKeySegment("42").build());
+            .appendEntitySetSegment(ES_MIX_PRIM_COLL_COMP).appendKeySegment("abc").build());
     assertNotNull(request);
     setCookieHeader(request);
     request.setAccept("text/plain");
@@ -1861,7 +1867,7 @@ public class BasicITCase extends AbstractParamTecSvcITCase {
   public void readHeaderInfoFromClientException2() throws Exception {
     ODataEntityRequest<ClientEntity> request = getClient().getRetrieveRequestFactory()
         .getEntityRequest(getClient().newURIBuilder(SERVICE_URI)
-            .appendEntitySetSegment(ES_MIX_PRIM_COLL_COMP).appendKeySegment("42").build());
+            .appendEntitySetSegment(ES_MIX_PRIM_COLL_COMP).appendKeySegment("abc").build());
     assertNotNull(request);
     setCookieHeader(request);
     request.setAccept("text/plain");
