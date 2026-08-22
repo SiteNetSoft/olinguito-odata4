@@ -78,6 +78,36 @@ class PreferencesTest {
   }
 
   @Test
+  void bothSpellingsOfEveryPreference() {
+    // [OData-Protocol] 8.2.8: the bare name is the OData 4.01 spelling and the "odata."-prefixed
+    // one is the 4.0 spelling a 4.01 service still accepts; 13.2.1 item 4 requires both.
+    final Preferences bare = new PreferencesImpl(Collections.singleton(
+        "allow-entityreferences, callback;url=\"callbackURI\", continue-on-error,"
+            + " include-annotations=\"*\", maxpagesize=42, track-changes"));
+    assertTrue(bare.hasAllowEntityReferences());
+    assertEquals(URI.create("callbackURI"), bare.getCallback());
+    assertTrue(bare.hasContinueOnError());
+    assertEquals(Integer.valueOf(42), bare.getMaxPageSize());
+    assertTrue(bare.hasTrackChanges());
+
+    // The 4.0 spelling keeps working; "all" above already pins the rest of that form.
+    final Preferences prefixed = new PreferencesImpl(Collections.singleton(
+        "odata.allow-entityreferences, odata.continue-on-error, odata.maxpagesize=42"));
+    assertTrue(prefixed.hasAllowEntityReferences());
+    assertTrue(prefixed.hasContinueOnError());
+    assertEquals(Integer.valueOf(42), prefixed.getMaxPageSize());
+  }
+
+  @Test
+  void bareSpellingWinsWhenBothAreSent() {
+    // 8.2.8.2 (callback) and 8.2.8.4 (include-annotations) state the tie-break explicitly:
+    // the value of the unprefixed preference is used. Applied uniformly.
+    final Preferences preferences = new PreferencesImpl(Collections.singleton(
+        "maxpagesize=1, odata.maxpagesize=2"));
+    assertEquals(Integer.valueOf(1), preferences.getMaxPageSize());
+  }
+
+  @Test
   void omitValuesDefaults() {
     final Preferences preferences = new PreferencesImpl(Collections.singleton("omit-values=defaults"));
     assertEquals(Preferences.OmitValues.DEFAULTS, preferences.getOmitValues());

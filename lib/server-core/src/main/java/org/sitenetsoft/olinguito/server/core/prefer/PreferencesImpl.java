@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Removed unnecessary boxing and modernized length checks
  * Copyright 2026 SiteNetSoft - Added the omit-values preference (OData 4.01, Protocol Section 8.2.8.6)
+ * Copyright 2026 SiteNetSoft - Tier 7 Wave 2: accept both spellings of every OData preference
  */
 package org.sitenetsoft.olinguito.server.core.prefer;
 
@@ -52,16 +53,17 @@ public class PreferencesImpl implements Preferences {
 
   @Override
   public boolean hasAllowEntityReferences() {
-    return preferences.containsKey(PreferenceName.ALLOW_ENTITY_REFERENCES.getName());
+    return resolve(PreferenceName.ALLOW_ENTITY_REFERENCES_PREF, PreferenceName.ALLOW_ENTITY_REFERENCES) != null;
   }
 
   @Override
   public URI getCallback() {
-    if (preferences.containsKey(PreferenceName.CALLBACK.getName())
-        && preferences.get(PreferenceName.CALLBACK.getName()).getParameters() != null
-        && preferences.get(PreferenceName.CALLBACK.getName()).getParameters().get(URL) != null) {
+    final Preference callback = resolve(PreferenceName.CALLBACK_PREF, PreferenceName.CALLBACK);
+    if (callback != null
+        && callback.getParameters() != null
+        && callback.getParameters().get(URL) != null) {
       try {
-        return URI.create(preferences.get(PreferenceName.CALLBACK.getName()).getParameters().get(URL));
+        return URI.create(callback.getParameters().get(URL));
       } catch (final IllegalArgumentException e) {
         return null;
       }
@@ -71,18 +73,18 @@ public class PreferencesImpl implements Preferences {
 
   @Override
   public boolean hasContinueOnError() {
-    return preferences.containsKey(PreferenceName.CONTINUE_ON_ERROR.getName());
+    return resolve(PreferenceName.CONTINUE_ON_ERROR_PREF, PreferenceName.CONTINUE_ON_ERROR) != null;
   }
 
   @Override
   public Integer getMaxPageSize() {
-    return getNonNegativeIntegerPreference(PreferenceName.MAX_PAGE_SIZE.getName());
+    return getNonNegativeIntegerPreference(
+        resolve(PreferenceName.MAX_PAGE_SIZE_PREF, PreferenceName.MAX_PAGE_SIZE));
   }
 
   @Override
   public boolean hasTrackChanges() {
-    return (preferences.containsKey(PreferenceName.TRACK_CHANGES.getName())
-        ||preferences.containsKey(PreferenceName.TRACK_CHANGES_PREF.getName()));
+    return resolve(PreferenceName.TRACK_CHANGES_PREF, PreferenceName.TRACK_CHANGES) != null;
   }
 
   @Override
@@ -120,13 +122,28 @@ public class PreferencesImpl implements Preferences {
 
   @Override
   public Integer getWait() {
-    return getNonNegativeIntegerPreference(PreferenceName.WAIT.getName());
+    return getNonNegativeIntegerPreference(preferences.get(PreferenceName.WAIT.getName()));
   }
 
-  private Integer getNonNegativeIntegerPreference(final String name) {
-    if (preferences.containsKey(name) && preferences.get(name).getValue() != null) {
+  /**
+   * Resolves a preference that has both an OData 4.01 spelling and the OData 4.0
+   * "odata."-prefixed one ([OData-Protocol] 8.2.8, required by 13.2.1 item 4).
+   * Where the spec states a tie-break for a preference sent in both spellings
+   * (8.2.8.2 callback, 8.2.8.4 include-annotations) the unprefixed 4.01 name wins;
+   * that rule is applied uniformly here.
+   * @param bare the OData 4.01 name
+   * @param prefixed the OData 4.0 "odata."-prefixed name
+   * @return the preference found, or <code>null</code> if neither spelling was sent
+   */
+  private Preference resolve(final PreferenceName bare, final PreferenceName prefixed) {
+    final Preference preference = preferences.get(bare.getName());
+    return preference == null ? preferences.get(prefixed.getName()) : preference;
+  }
+
+  private Integer getNonNegativeIntegerPreference(final Preference preference) {
+    if (preference != null && preference.getValue() != null) {
       try {
-        final int result = Integer.parseInt(preferences.get(name).getValue());
+        final int result = Integer.parseInt(preference.getValue());
         return result < 0 ? null : result;
       } catch (final NumberFormatException e) {
         return null;

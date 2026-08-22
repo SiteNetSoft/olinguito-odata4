@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Added OMIT_VALUES for the OData 4.01 omit-values preference
+ * Copyright 2026 SiteNetSoft - Tier 7 Wave 2: added the unprefixed OData 4.01 preference names
  */
 package org.sitenetsoft.olinguito.commons.api.format;
 
@@ -25,11 +26,19 @@ package org.sitenetsoft.olinguito.commons.api.format;
  */
 public enum PreferenceName {
 
+  // Each OData preference that was renamed in 4.01 has both spellings: the constant without the
+  // _PREF suffix is the OData 4.0 "odata."-prefixed name, the one with it is the 4.01 name.
+  // [OData-Protocol] 8.2.8 keeps the prefixed form for 4.0 clients; 13.2.1 item 4 requires both.
   ALLOW_ENTITY_REFERENCES("odata.allow-entityreferences"),
+  ALLOW_ENTITY_REFERENCES_PREF("allow-entityreferences"),
   CALLBACK("odata.callback"),
+  CALLBACK_PREF("callback"),
   CONTINUE_ON_ERROR("odata.continue-on-error"),
+  CONTINUE_ON_ERROR_PREF("continue-on-error"),
   INCLUDE_ANNOTATIONS("odata.include-annotations"),
+  INCLUDE_ANNOTATIONS_PREF("include-annotations"),
   MAX_PAGE_SIZE("odata.maxpagesize"),
+  MAX_PAGE_SIZE_PREF("maxpagesize"),
   OMIT_VALUES("omit-values"),
   TRACK_CHANGES("odata.track-changes"),
   TRACK_CHANGES_PREF("track-changes"),
