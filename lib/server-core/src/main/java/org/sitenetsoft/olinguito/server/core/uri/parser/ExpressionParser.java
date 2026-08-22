@@ -32,6 +32,7 @@
  * Copyright 2026 SiteNetSoft - OData 4.01: map ambiguous optional-parameter overloads to a 400 response
  * Copyright 2026 SiteNetSoft - Refuse comparing geo values except against null (eq/ne)
  * Copyright 2026 SiteNetSoft - Tier 7 Task 7: unprefixed enum and duration literals in expressions
+ * Copyright 2026 SiteNetSoft - Tier 7 Task 9: parse the divby operator
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -132,6 +133,7 @@ public class ExpressionParser {
 
     temp.put(TokenKind.MulOperator, BinaryOperatorKind.MUL);
     temp.put(TokenKind.DivOperator, BinaryOperatorKind.DIV);
+    temp.put(TokenKind.DivByOperator, BinaryOperatorKind.DIVBY);
     temp.put(TokenKind.ModOperator, BinaryOperatorKind.MOD);
 
     tokenToBinaryOperator = Collections.unmodifiableMap(temp);
@@ -365,17 +367,22 @@ public class ExpressionParser {
 
   private Expression parseExprMul() throws UriParserException, UriValidationException {
     Expression left = parseExprUnary();
+    // divby is offered before div so that "divby" does not lex as "div" plus a stray "by".
     TokenKind operatorTokenKind = ParserHelper.next(tokenizer,
-        TokenKind.MulOperator, TokenKind.DivOperator, TokenKind.ModOperator);
-    // Null for everything other than MUL or DIV or MOD
+        TokenKind.MulOperator, TokenKind.DivByOperator, TokenKind.DivOperator, TokenKind.ModOperator);
+    // Null for everything other than MUL or DIVBY or DIV or MOD
     while (operatorTokenKind != null) {
       checkNumericType(left);
       final Expression right = parseExprUnary();
       checkNumericType(right);
+      // [OData-URL] 5.1.1.2.5: divby promotes both operands to decimal, unlike div.
+      final EdmPrimitiveTypeKind resultKind = operatorTokenKind == TokenKind.DivByOperator ?
+          EdmPrimitiveTypeKind.Decimal :
+          EdmPrimitiveTypeKind.Double;
       left = new BinaryImpl(left, tokenToBinaryOperator.get(operatorTokenKind), right,
-          odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Double));
+          odata.createPrimitiveTypeInstance(resultKind));
       operatorTokenKind = ParserHelper.next(tokenizer,
-          TokenKind.MulOperator, TokenKind.DivOperator, TokenKind.ModOperator);
+          TokenKind.MulOperator, TokenKind.DivByOperator, TokenKind.DivOperator, TokenKind.ModOperator);
     }
     return left;
   }

@@ -15,6 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ * Copyright 2026 SiteNetSoft - Tier 7 Task 9: added the 4.01 divby operator
  */
 package org.sitenetsoft.olinguito.server.api.uri.queryoption.expression;
 
@@ -43,6 +44,12 @@ public enum BinaryOperatorKind {
    * Division operator
    */
   DIV("div"),
+  /**
+   * Division promoting both operands to decimal, per [OData-URL] 5.1.1.2.5. Unlike {@link #DIV}
+   * it may yield a fractional result and does not fail for division by zero, returning
+   * -INF, INF or NaN depending on the sign of the left operand.
+   */
+  DIVBY("divby"),
 
   /**
    * Modulo operator

@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Converted switch statements to switch expressions
  * Copyright 2026 SiteNetSoft - Added matchesPattern method (OData 4.01 URL Conventions section 5.1.1.7.1)
+ * Copyright 2026 SiteNetSoft - Tier 7 Task 9: cover the divby operator
  */
 package org.sitenetsoft.olinguito.server.core.debug;
 
@@ -274,7 +275,7 @@ public class ExpressionJsonVisitor implements ExpressionVisitor<JsonNode> {
 
   private String getType(final BinaryOperatorKind operator) {
     return switch (operator) {
-      case MUL, DIV, MOD, ADD, SUB -> NUMBER_NAME;
+      case MUL, DIV, DIVBY, MOD, ADD, SUB -> NUMBER_NAME;
       case HAS, GT, GE, LT, LE, EQ, NE, AND, OR, IN -> BOOLEAN_NAME;
     };
   }

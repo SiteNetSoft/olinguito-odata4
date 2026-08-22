@@ -136,6 +136,7 @@ public class UriTokenizer {
     AddOperator,
     SubOperator,
     MulOperator,
+    DivByOperator,
     DivOperator,
     ModOperator,
     MinusOperator,
@@ -530,6 +531,9 @@ public class UriTokenizer {
       break;
     case MulOperator:
       found = nextBinaryOperator("mul");
+      break;
+    case DivByOperator:
+      found = nextBinaryOperator("divby");
       break;
     case DivOperator:
       found = nextBinaryOperator("div");

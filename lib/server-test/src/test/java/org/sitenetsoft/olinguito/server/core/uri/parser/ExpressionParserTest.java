@@ -64,6 +64,20 @@ class ExpressionParserTest {
   private final FilterValidator testFilter = new FilterValidator().setEdm(edm);
 
   @Test
+  void divByParses() throws Exception {
+    // [OData-Protocol] 13.2.1 item 9j. Evaluation lands with the tecsvc operators in Wave 2;
+    // until then a divby filter answers 501, which [OData-Protocol] 13.1.1 item 7 allows.
+    testFilter.runOnETAllPrim("PropertyInt16 divby 2 eq 3")
+        .isBinary(BinaryOperatorKind.EQ)
+        .root().left().isBinary(BinaryOperatorKind.DIVBY);
+
+    // div is untouched.
+    testFilter.runOnETAllPrim("PropertyInt16 div 2 eq 3")
+        .isBinary(BinaryOperatorKind.EQ)
+        .root().left().isBinary(BinaryOperatorKind.DIV);
+  }
+
+  @Test
   void filter() throws Exception {
     testFilter.runOnESCompCollComp("PropertyComp/CollPropertyComp/any"
         + "(f:f/olingo.odata.test1.CTBase/AdditionalPropString eq 'ADD TEST')")

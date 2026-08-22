@@ -101,6 +101,17 @@ class UriTokenizerTest {
   }
 
   @Test
+  void divByOperator() {
+    // [OData-URL] 5.1.1.2.5: divby is a distinct operator, not a spelling of div.
+    assertTrue(new UriTokenizer(" divby ").next(TokenKind.DivByOperator));
+    assertTrue(new UriTokenizer(" DIVBY ").next(TokenKind.DivByOperator));
+
+    // div still lexes as div, and divby must not lex as div followed by a stray "by".
+    assertTrue(new UriTokenizer(" div ").next(TokenKind.DivOperator));
+    assertFalse(new UriTokenizer(" divby ").next(TokenKind.DivOperator));
+  }
+
+  @Test
   void constants() {
     final UriTokenizer tokenizer = new UriTokenizer("$ref");
     assertTrue(tokenizer.next(TokenKind.REF));
