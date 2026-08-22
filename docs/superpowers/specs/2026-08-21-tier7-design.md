@@ -168,7 +168,7 @@ The precondition machinery exists and is pinned by `ODataHandlerImplTest:956`; o
 
 **Wave 1 — the URI parser (`server-core`, `server-api`).** Option-name normalization (6 + 7 + the duplicate
 rule), operator/function/lambda case-insensitivity, the quoted-string fallback (9a + 9b), no-parens calls
-(9c), and the *parsing* halves of `divby` (9j) and negative substring (9k). Eight items, one subsystem,
+(9c), and the *parsing* half of `divby` (9j) — item 9k has no parsing half, `substring(Name,-3)` already parses, so it is entirely Wave 2. Eight items, one subsystem,
 shared machinery.
 
 **Wave 2 — everything else**, in this order: preference variants (4), the *evaluation* halves of 9j/9k in
