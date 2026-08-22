@@ -282,38 +282,38 @@ public class UriTokenizer {
       break;
 
     case APPLY:
-      found = nextConstant("$apply");
+      found = nextOptionName("$apply");
       break;
     case EXPAND:
-      found = nextConstant("$expand");
+      found = nextOptionName("$expand");
       break;
     case FILTER:
-      found = nextConstant("$filter");
+      found = nextOptionName("$filter");
       break;
     case LEVELS:
-      found = nextConstant("$levels");
+      found = nextOptionName("$levels");
       break;
     case ORDERBY:
-      found = nextConstant("$orderby");
+      found = nextOptionName("$orderby");
       break;
     case SEARCH:
-      found = nextConstant("$search");
+      found = nextOptionName("$search");
       break;
     case SELECT:
-      found = nextConstant("$select");
+      found = nextOptionName("$select");
       break;
     case SKIP:
-      found = nextConstant("$skip");
+      found = nextOptionName("$skip");
       break;
     case TOP:
-      found = nextConstant("$top");
+      found = nextOptionName("$top");
       break;
 
     case ANY:
-      found = nextConstant("any");
+      found = nextConstantIgnoreCase("any");
       break;
     case ALL:
-      found = nextConstant("all");
+      found = nextConstantIgnoreCase("all");
       break;
 
     case OPEN:
@@ -745,6 +745,17 @@ public class UriTokenizer {
     } else {
       return false;
     }
+  }
+
+  /**
+   * Moves past a system query option name if found; otherwise leaves the index unchanged.
+   * Since OData 4.01 such a name is case-insensitive and its "$" prefix is optional
+   * ([OData-URL] 5.1), unlike the dollar-prefixed path segments, which stay case-sensitive.
+   * @param constant the option name in its canonical "$name" spelling
+   * @return whether the option name has been found at the current index
+   */
+  private boolean nextOptionName(final String constant) {
+    return nextConstantIgnoreCase(constant) || nextConstantIgnoreCase(constant.substring(1));
   }
 
   /**

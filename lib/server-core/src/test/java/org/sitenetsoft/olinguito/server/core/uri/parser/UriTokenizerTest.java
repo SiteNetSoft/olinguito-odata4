@@ -77,6 +77,30 @@ class UriTokenizerTest {
   }
 
   @Test
+  void nestedOptionNamesAreCaseInsensitiveAndDollarIsOptional() {
+    // [OData-URL] 5.1: 4.01 services MUST support case-insensitive system query option
+    // names specified with or without the $ prefix. This applies to the option names
+    // nested inside $expand and $select too.
+    assertTrue(new UriTokenizer("$filter").next(TokenKind.FILTER));
+    assertTrue(new UriTokenizer("filter").next(TokenKind.FILTER));
+    assertTrue(new UriTokenizer("$FILTER").next(TokenKind.FILTER));
+    assertTrue(new UriTokenizer("Select").next(TokenKind.SELECT));
+    assertTrue(new UriTokenizer("$TOP").next(TokenKind.TOP));
+    assertTrue(new UriTokenizer("orderby").next(TokenKind.ORDERBY));
+
+    // Lambda operator names are case-insensitive too ([OData-URL] 5.1.1.10).
+    assertTrue(new UriTokenizer("ANY").next(TokenKind.ANY));
+    assertTrue(new UriTokenizer("All").next(TokenKind.ALL));
+
+    // [OData-ABNF]: "dollar-prefixed path segments are case-sensitive!" -- these are path
+    // segments, not query option names, so they stay strict.
+    assertFalse(new UriTokenizer("$REF").next(TokenKind.REF));
+    assertFalse(new UriTokenizer("ref").next(TokenKind.REF));
+    assertFalse(new UriTokenizer("$VALUE").next(TokenKind.VALUE));
+    assertFalse(new UriTokenizer("count").next(TokenKind.COUNT));
+  }
+
+  @Test
   void constants() {
     final UriTokenizer tokenizer = new UriTokenizer("$ref");
     assertTrue(tokenizer.next(TokenKind.REF));

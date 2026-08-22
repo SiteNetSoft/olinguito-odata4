@@ -50,6 +50,21 @@ class ExpandParserTest {
       new EdmTechProvider(), Collections.emptyList()).getEdm();
 
   @Test
+  void nestedOptionsInAnyCaseAndWithoutDollar() throws Exception {
+    // [OData-URL] 5.1: option names nested in $expand are case-insensitive and the
+    // "$" prefix is optional in a 4.01 service. All three spell the same option.
+    runOnETKeyNav("NavPropertyETKeyNavMany($select=PropertyString)")
+        .goSelectItem(0).isPrimitiveProperty("PropertyString", PropertyProvider.nameString, false);
+    runOnETKeyNav("NavPropertyETKeyNavMany($SELECT=PropertyString)")
+        .goSelectItem(0).isPrimitiveProperty("PropertyString", PropertyProvider.nameString, false);
+    runOnETKeyNav("NavPropertyETKeyNavMany(select=PropertyString)")
+        .goSelectItem(0).isPrimitiveProperty("PropertyString", PropertyProvider.nameString, false);
+    runOnETKeyNav("NavPropertyETKeyNavMany(TOP=1;skip=2)")
+        .isSkip(2)
+        .isTop(1);
+  }
+
+  @Test
   void expandStar() throws Exception {
     runOnETKeyNav("*").isSegmentStar();
 
