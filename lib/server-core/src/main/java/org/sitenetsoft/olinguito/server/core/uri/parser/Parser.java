@@ -19,6 +19,7 @@
  * Copyright 2026 SiteNetSoft - Modernized Collections usage
  * Copyright 2026 SiteNetSoft - OLINGO-1324: Tolerate trailing slash in URI paths
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 1: $schemaversion system query option
+ * Copyright 2026 SiteNetSoft - Tier 7 Task 2: route system query options spelled without the $ prefix
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 1: key-as-segment URL convention
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
@@ -331,12 +332,13 @@ public class Parser {
 
   private QueryOption parseOption(final String optionName, final String optionValue)
       throws UriParserException, UriValidationException {
-    if (optionName.startsWith(DOLLAR)) {
-      final SystemQueryOptionKind kind = SystemQueryOptionKind.get(optionName);
-      if (kind == null) {
-        throw new UriParserSyntaxException("Unknown system query option!",
-            UriParserSyntaxException.MessageKeys.UNKNOWN_SYSTEM_QUERY_OPTION, optionName);
-      }
+    // OData 4.01 ([OData-Protocol] 13.2.1 item 6): a system query option may be spelled
+    // without the "$" prefix, so the resolved kind decides the routing, not the prefix.
+    // A name that does not resolve is either an unknown system option (if it carries the
+    // "$") or a custom query option, which [OData-Protocol] 6.1 forbids from conflicting
+    // with an OData-defined name.
+    final SystemQueryOptionKind kind = SystemQueryOptionKind.get(optionName);
+    if (kind != null) {
       SystemQueryOptionImpl systemOption;
       switch (kind) {
       case SEARCH:
@@ -429,6 +431,10 @@ public class Parser {
       }
       systemOption.setText(optionValue);
       return systemOption;
+
+    } else if (optionName.startsWith(DOLLAR)) {
+      throw new UriParserSyntaxException("Unknown system query option!",
+          UriParserSyntaxException.MessageKeys.UNKNOWN_SYSTEM_QUERY_OPTION, optionName);
 
     } else if (optionName.startsWith(AT)) {
       // Aliases can only be parsed in the context of their usage, so the value is not checked here.

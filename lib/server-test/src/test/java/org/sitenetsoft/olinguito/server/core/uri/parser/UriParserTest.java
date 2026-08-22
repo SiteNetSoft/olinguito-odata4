@@ -53,6 +53,30 @@ class UriParserTest {
 
 
   @Test
+  void systemQueryOptionsWithoutDollarAndInAnyCase() throws Exception {
+    // [OData-Protocol] 13.2.1 items 6 and 7: names are case-insensitive and the "$" is optional.
+    testUri.run("ESAllPrim", "filter=PropertyInt16 eq 1")
+        .isKind(UriInfoKind.resource);
+    testUri.run("ESAllPrim", "$FILTER=PropertyInt16 eq 1")
+        .isKind(UriInfoKind.resource);
+    testUri.run("ESAllPrim", "Top=1")
+        .isKind(UriInfoKind.resource);
+
+    // A name that is not a system query option keeps its existing treatment.
+    testUri.runEx("ESAllPrim", "$nonsense=1")
+        .isExSyntax(UriParserSyntaxException.MessageKeys.UNKNOWN_SYSTEM_QUERY_OPTION);
+    testUri.run("ESAllPrim", "nonsense=1")
+        .isKind(UriInfoKind.resource);
+
+    // [OData-URL] 5.1: the same option, irrespective of casing or the $ prefix,
+    // MUST NOT be specified more than once for any resource.
+    testUri.runEx("ESAllPrim", "$filter=PropertyInt16 eq 1&FILTER=PropertyInt16 eq 2")
+        .isExSyntax(UriParserSyntaxException.MessageKeys.DOUBLE_SYSTEM_QUERY_OPTION);
+    testUri.runEx("ESAllPrim", "top=1&$top=2")
+        .isExSyntax(UriParserSyntaxException.MessageKeys.DOUBLE_SYSTEM_QUERY_OPTION);
+  }
+
+  @Test
   void misc() throws Exception {
     testUri.run("")
         .isKind(UriInfoKind.service);
@@ -973,9 +997,13 @@ class UriParserTest {
         .isExSyntax(UriParserSyntaxException.MessageKeys.WRONG_VALUE_FOR_SYSTEM_QUERY_OPTION);
     testUri.runEx("ESAllPrim", "$schemaversion=1&$schemaversion=2")
         .isExSyntax(UriParserSyntaxException.MessageKeys.DOUBLE_SYSTEM_QUERY_OPTION);
-    // Case sensitivity: system query options are lower-case only; an unknown-cased variant
-    // is simply an unrecognized system query option.
-    testUri.runEx("ESAllPrim", "$SchemaVersion=1.0.0")
-        .isExSyntax(UriParserSyntaxException.MessageKeys.UNKNOWN_SYSTEM_QUERY_OPTION);
+    // Since OData 4.01 ([OData-Protocol] 13.2.1 items 6 and 7) system query option names are
+    // case-insensitive and the "$" prefix is optional, so these spell the same option.
+    testUri.run("ESAllPrim", "$SchemaVersion=1.0.0").isKind(UriInfoKind.resource)
+        .isSchemaVersionText("1.0.0");
+    testUri.run("ESAllPrim", "schemaversion=1.0.0").isKind(UriInfoKind.resource)
+        .isSchemaVersionText("1.0.0");
+    testUri.runEx("ESAllPrim", "$schemaversion=1&SCHEMAVERSION=2")
+        .isExSyntax(UriParserSyntaxException.MessageKeys.DOUBLE_SYSTEM_QUERY_OPTION);
   }
 }
