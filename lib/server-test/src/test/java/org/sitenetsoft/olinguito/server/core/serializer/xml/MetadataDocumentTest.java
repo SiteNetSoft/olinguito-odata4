@@ -147,9 +147,11 @@ class MetadataDocumentTest {
         containsString("<EntitySet Name=\"ESInvisible\" EntityType=\"Namespace1_Alias.ETAllPrim\" "
             + "IncludeInServiceDocument=\"false\">"));
 
-    // The tecsvc schema publishes its version (OData 4.01, Part 1: Protocol, section 11.2.12) as a
-    // schema-level annotation, written after the entity container.
+    // The tecsvc schema publishes the capabilities it reports (section 13.2.1 item 13) and its
+    // version (section 11.2.12) as schema-level annotations, written after the entity container.
     assertThat(metadata, containsString("</EntityContainer>"
+        + "<Annotation Term=\"Capabilities.BatchSupported\"><Bool>true</Bool></Annotation>"
+        + "<Annotation Term=\"Capabilities.AsynchronousRequestsSupported\"><Bool>true</Bool></Annotation>"
         + "<Annotation Term=\"Core.SchemaVersion\"><String>" + SchemaProvider.SCHEMA_VERSION + "</String>"
         + "</Annotation></Schema></edmx:DataServices></edmx:Edmx>"));
 

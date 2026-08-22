@@ -27,6 +27,7 @@
  * Copyright 2026 SiteNetSoft - OData 4.01: malformed optional-parameter default values are rejected with 400
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 2 Task 5: register the ETGeo entity type
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 2 Task 9: register UARTETTwoPrimEchoParam
+ * Copyright 2026 SiteNetSoft - Tier 7 Wave 2: report tecsvc capabilities in its metadata
  */
 package org.sitenetsoft.olinguito.server.tecsvc.provider;
 
@@ -60,6 +61,9 @@ public class SchemaProvider {
 
   /** Alias-qualified name of the vocabulary term the schema version is published with. */
   private static final String SCHEMA_VERSION_TERM = "Core.SchemaVersion";
+  /** Capabilities this service reports through the Capabilities vocabulary (section 13.2.1 item 13). */
+  private static final String BATCH_SUPPORTED_TERM = "Capabilities.BatchSupported";
+  private static final String ASYNC_SUPPORTED_TERM = "Capabilities.AsynchronousRequestsSupported";
 
   private final CsdlEdmProvider prov;
 
@@ -258,9 +262,20 @@ public class SchemaProvider {
     // EntityContainer
     schema.setEntityContainer(prov.getEntityContainer());
 
-    // Schema version (OData 4.01, Part 1: Protocol, section 11.2.12)
-    schema.setAnnotations(List.of(new CsdlAnnotation().setTerm(SCHEMA_VERSION_TERM)
-        .setExpression(new CsdlConstantExpression(ConstantExpressionType.String, SCHEMA_VERSION))));
+    // What this service reports about itself: the capabilities it actually has (OData 4.01,
+    // Part 1: Protocol, section 13.2.1 item 13) and its schema version (section 11.2.12).
+    // These describe tecsvc's own model -- a service built on this library annotates its own
+    // schema and does not inherit them. Only capabilities tecsvc really has are claimed: batch
+    // is served, and asynchronous requests run through the AsyncSupport SPI. $apply, for
+    // instance, still answers 501, so nothing here may imply it.
+    // Core.SchemaVersion stays last: SchemaVersionITCase pins it as the final child of Schema.
+    schema.setAnnotations(List.of(
+        new CsdlAnnotation().setTerm(BATCH_SUPPORTED_TERM)
+            .setExpression(new CsdlConstantExpression(ConstantExpressionType.Bool, "true")),
+        new CsdlAnnotation().setTerm(ASYNC_SUPPORTED_TERM)
+            .setExpression(new CsdlConstantExpression(ConstantExpressionType.Bool, "true")),
+        new CsdlAnnotation().setTerm(SCHEMA_VERSION_TERM)
+            .setExpression(new CsdlConstantExpression(ConstantExpressionType.String, SCHEMA_VERSION))));
 
     return List.of(schema);
   }
