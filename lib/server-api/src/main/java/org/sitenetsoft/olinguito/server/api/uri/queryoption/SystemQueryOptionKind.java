@@ -17,8 +17,11 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 1: added $schemaversion (OData 4.01 §11.2.12)
+ * Copyright 2026 SiteNetSoft - Tier 7 Task 1: resolve option names ignoring case and the $ prefix
  */
 package org.sitenetsoft.olinguito.server.api.uri.queryoption;
+
+import java.util.Locale;
 
 
 /**
@@ -114,8 +117,16 @@ public enum SystemQueryOptionKind {
    *         (or <code>null</code> if the option does not represent a system query option)
    */
   public static SystemQueryOptionKind get(final String option) {
+    if (option == null || option.isEmpty()) {
+      return null;
+    }
+    // OData 4.01 ([OData-Protocol] 13.2.1 items 6 and 7, [OData-URL] 5.1): system query
+    // option names are case-insensitive and the "$" prefix is optional. The declared
+    // syntax values are all lower case and "$"-prefixed, so normalize to that shape.
+    final String lowerCase = option.toLowerCase(Locale.ROOT);
+    final String normalized = option.startsWith("$") ? lowerCase : "$" + lowerCase;
     for (final SystemQueryOptionKind kind : values()) {
-      if (kind.syntax.equals(option)) {
+      if (kind.syntax.equals(normalized)) {
         return kind;
       }
     }
