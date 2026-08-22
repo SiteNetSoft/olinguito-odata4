@@ -75,6 +75,23 @@ public class Conformance401ITCase extends AbstractBaseTestITCase {
         body.contains("\"@Capabilities.AsynchronousRequestsSupported\":true"));
   }
 
+  /** Item 12: the service declares its protocol conformance in $metadata. */
+  @Test
+  public void metadataDeclaresODataVersions() throws Exception {
+    final HttpURLConnection xml = getConnection(HttpMethod.GET, "$metadata", APPLICATION_XML);
+    assertEquals(HttpStatusCode.OK.getStatusCode(), xml.getResponseCode());
+    assertTrue("the entity container must report the supported protocol versions",
+        readResponse(xml).contains(
+            "<Annotation Term=\"Org.OData.Core.V1.ODataVersions\"><String>4.01</String></Annotation>"
+                + "</EntityContainer>"));
+
+    final HttpURLConnection json =
+        getConnection(HttpMethod.GET, "$metadata?$format=json", APPLICATION_JSON);
+    assertEquals(HttpStatusCode.OK.getStatusCode(), json.getResponseCode());
+    assertTrue("the JSON metadata document must declare the same versions",
+        readResponse(json).contains("\"@Org.OData.Core.V1.ODataVersions\":\"4.01\""));
+  }
+
   /** Items 6 and 7: system query option names take either spelling and any casing. */
   @Test
   public void systemQueryOptionsWithoutDollarAndInAnyCase() throws Exception {

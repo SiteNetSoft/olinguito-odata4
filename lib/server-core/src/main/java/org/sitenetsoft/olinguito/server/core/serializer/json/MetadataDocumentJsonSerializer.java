@@ -29,6 +29,7 @@
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: write $OpenType for open entity and complex types
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 1: null-safe numeric constants and section 14.3.7
  * enumeration member constants
+ * Copyright 2026 SiteNetSoft - Tier 7 Wave 2: report OData 4.01 conformance via Core.ODataVersions
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -150,6 +151,10 @@ public class MetadataDocumentJsonSerializer {
   private static final String ANNOTATION_PATH = DOLLAR + "Path";
   private static final String NAME = DOLLAR + "Name";
   private static final String ENTITY_CONTAINER_MEMBER = DOLLAR + "EntityContainer";
+  /** Term reporting the protocol versions this service supports ([OData-Protocol] 13.2). */
+  private static final String ODATA_VERSIONS_TERM = "Org.OData.Core.V1.ODataVersions";
+  /** 4.0 is implied by 4.01 and is deliberately not listed separately. */
+  private static final String ODATA_VERSIONS = "4.01";
   private static final String ON_DELETE_MEMBER = DOLLAR + "OnDelete";
   private static final String TYPE_DEFINITION_KIND = "TypeDefinition";
   private static final String EDM_STRING = "Edm.String";
@@ -346,6 +351,13 @@ public class MetadataDocumentJsonSerializer {
 
       // Annotations
       appendAnnotations(json, container, null);
+
+      // [OData-Protocol] 13.2: a service reports conformance to OData 4.01 by listing 4.01 in the
+      // Core.ODataVersions annotation on its entity container; 4.0 is implied by 4.01 and is not
+      // listed separately. The term is Edm.String holding a space-separated list ([OData-VocCore]).
+      // Written by the library rather than modelled per service, because the library is what
+      // implements the level, and kept identical to the XML metadata document.
+      json.writeStringField("@" + ODATA_VERSIONS_TERM, ODATA_VERSIONS);
 
       json.writeEndObject();
     }

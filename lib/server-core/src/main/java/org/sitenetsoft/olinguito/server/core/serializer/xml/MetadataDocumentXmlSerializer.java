@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - OLINGO-1399: fall back to raw term name for unresolvable annotation terms
+ * Copyright 2026 SiteNetSoft - Tier 7 Wave 2: report OData 4.01 conformance via Core.ODataVersions
  */
 package org.sitenetsoft.olinguito.server.core.serializer.xml;
 
@@ -127,6 +128,10 @@ public class MetadataDocumentXmlSerializer {
   private static final String XML_FUNCTION_IMPORT = "FunctionImport";
   private static final String XML_NAME = "Name";
   private static final String XML_ENTITY_CONTAINER = "EntityContainer";
+  /** Term reporting the protocol versions this service supports ([OData-Protocol] 13.2). */
+  private static final String ODATA_VERSIONS_TERM = "Org.OData.Core.V1.ODataVersions";
+  /** 4.0 is implied by 4.01 and is deliberately not listed separately. */
+  private static final String ODATA_VERSIONS = "4.01";
   private static final String XML_ALIAS = "Alias";
   private static final String XML_NAMESPACE = "Namespace";
   private static final String XML_TYPE_DEFINITION = "TypeDefinition";
@@ -579,8 +584,28 @@ public class MetadataDocumentXmlSerializer {
       // Annotations
       appendAnnotations(writer, container);
 
+      appendODataVersions(writer);
+
       writer.writeEndElement();
     }
+  }
+
+  /**
+   * Writes the Core.ODataVersions annotation that reports this service's protocol conformance.
+   * [OData-Protocol] 13.2: "OData services can report conformance to the OData 4.01 specification
+   * by including 4.01 in the list of supported protocol versions in the Core.ODataVersions
+   * annotation", and "OData 4.01 services do not need to separately list 4.0 as a supported
+   * version". The term is Edm.String holding a space-separated list and applies to the entity
+   * container ([OData-VocCore]). It is written by the library rather than modelled per service,
+   * because the library is what implements the level.
+   */
+  private void appendODataVersions(final XMLStreamWriter writer) throws XMLStreamException {
+    writer.writeStartElement(XML_ANNOTATION);
+    writer.writeAttribute(XML_TERM_ATT, ODATA_VERSIONS_TERM);
+    writer.writeStartElement("String");
+    writer.writeCharacters(ODATA_VERSIONS);
+    writer.writeEndElement();
+    writer.writeEndElement();
   }
 
   private void appendFunctionImports(final XMLStreamWriter writer, final List<EdmFunctionImport> functionImports,

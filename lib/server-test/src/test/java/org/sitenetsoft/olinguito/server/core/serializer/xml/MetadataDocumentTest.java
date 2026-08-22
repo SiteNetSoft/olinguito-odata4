@@ -147,6 +147,13 @@ class MetadataDocumentTest {
         containsString("<EntitySet Name=\"ESInvisible\" EntityType=\"Namespace1_Alias.ETAllPrim\" "
             + "IncludeInServiceDocument=\"false\">"));
 
+    // [OData-Protocol] 13.2: a service reports conformance to OData 4.01 by listing 4.01 in the
+    // Core.ODataVersions annotation on its entity container. Core.ODataVersions is Edm.String
+    // holding a space-separated list, and 4.0 is implied by 4.01, so 4.01 alone is correct.
+    assertThat(metadata, containsString(
+        "<Annotation Term=\"Org.OData.Core.V1.ODataVersions\"><String>4.01</String></Annotation>"
+        + "</EntityContainer>"));
+
     // The tecsvc schema publishes the capabilities it reports (section 13.2.1 item 13) and its
     // version (section 11.2.12) as schema-level annotations, written after the entity container.
     assertThat(metadata, containsString("</EntityContainer>"
