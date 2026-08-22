@@ -41,6 +41,42 @@ class UriTokenizerTest {
   }
 
   @Test
+  void operatorsAndMethodsAreCaseInsensitive() {
+    // [OData-Protocol] 13.2.1 item 7: 4.01 services MUST support case-insensitive
+    // query option, operator and canonical function names.
+    assertTrue(new UriTokenizer(" EQ ").next(TokenKind.EqualsOperator));
+    assertTrue(new UriTokenizer(" And ").next(TokenKind.AndOperator));
+    assertTrue(new UriTokenizer(" MUL ").next(TokenKind.MulOperator));
+    assertTrue(new UriTokenizer("Concat(").next(TokenKind.ConcatMethod));
+    assertTrue(new UriTokenizer("TOUPPER(").next(TokenKind.ToupperMethod));
+    assertTrue(new UriTokenizer("Geo.Distance(").next(TokenKind.GeoDistanceMethod));
+    assertTrue(new UriTokenizer(" DESC").next(TokenKind.DescSuffix));
+
+    // The lower-case 4.0 spelling still works.
+    assertTrue(new UriTokenizer(" eq ").next(TokenKind.EqualsOperator));
+    assertTrue(new UriTokenizer("concat(").next(TokenKind.ConcatMethod));
+    assertTrue(new UriTokenizer(" desc").next(TokenKind.DescSuffix));
+  }
+
+  @Test
+  void literalCasingFollowsTheAbnfQuoting() {
+    // [OData-Protocol] 13.2.1 item 7 covers option, operator and function names only.
+    // Literal values follow [OData-ABNF], whose preamble extends RFC 5234 so that
+    // single-quoted literals are case-sensitive while double-quoted ones are not:
+    //   nullValue    = 'null'                    -> case-sensitive
+    //   nanInfinity  = 'NaN' / '-INF' / 'INF'    -> case-sensitive
+    //   booleanValue = "true" / "false"          -> case-insensitive
+    assertFalse(new UriTokenizer("NULL").next(TokenKind.NULL));
+    assertFalse(new UriTokenizer("nan").next(TokenKind.DoubleValue));
+    assertFalse(new UriTokenizer("inf").next(TokenKind.DoubleValue));
+
+    assertTrue(new UriTokenizer("null").next(TokenKind.NULL));
+    assertTrue(new UriTokenizer("NaN").next(TokenKind.DoubleValue));
+    assertTrue(new UriTokenizer("TRUE").next(TokenKind.BooleanValue));
+    assertTrue(new UriTokenizer("true").next(TokenKind.BooleanValue));
+  }
+
+  @Test
   void constants() {
     final UriTokenizer tokenizer = new UriTokenizer("$ref");
     assertTrue(tokenizer.next(TokenKind.REF));
@@ -524,9 +560,12 @@ class UriTokenizerTest {
     assertTrue(new UriTokenizer("maxdatetime()").next(TokenKind.MaxdatetimeMethod));
     assertTrue(new UriTokenizer("mindatetime()").next(TokenKind.MindatetimeMethod));
 
+    // [OData-ABNF] spells this rule "matchesPattern" in double quotes, which RFC 5234 makes
+    // case-insensitive, and [OData-Protocol] 13.2.1 item 7 requires case-insensitive canonical
+    // function names of a 4.01 service; every spelling is therefore accepted.
     assertTrue(new UriTokenizer("matchesPattern(").next(TokenKind.MatchesPatternMethod));
-    assertFalse(new UriTokenizer("matchespattern(").next(TokenKind.MatchesPatternMethod));
-    assertFalse(new UriTokenizer("MATCHESPATTERN(").next(TokenKind.MatchesPatternMethod));
+    assertTrue(new UriTokenizer("matchespattern(").next(TokenKind.MatchesPatternMethod));
+    assertTrue(new UriTokenizer("MATCHESPATTERN(").next(TokenKind.MatchesPatternMethod));
 
     for (final TokenKind tokenKind : TokenKind.values()) {
       if (tokenKind.name().endsWith("Method") && tokenKind != TokenKind.MatchesPatternMethod) {
@@ -549,7 +588,10 @@ class UriTokenizerTest {
     assertTrue(tokenizer.next(TokenKind.DescSuffix));
     assertTrue(tokenizer.next(TokenKind.EOF));
 
-    wrongToken(TokenKind.DescSuffix, " desc", 'D');
+    // "desc" is double-quoted in [OData-ABNF] and is a 4.01 case-insensitive name, so a
+    // differently-cased suffix is accepted; a wholly different character is still rejected.
+    assertTrue(new UriTokenizer(" DESC").next(TokenKind.DescSuffix));
+    wrongToken(TokenKind.DescSuffix, " desc", 'x');
   }
 
   @Test

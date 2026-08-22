@@ -272,8 +272,10 @@ class ExpressionParserTest {
     assertEquals("{matchesPattern ['a', null]}", parseExpression("matchesPattern('a',null)").toString());
     wrongExpression("matchesPattern('a')");
     wrongExpression("matchesPattern('a',1)");
-    wrongExpression("matchespattern('a','b')");
-    wrongExpression("MATCHESPATTERN('a','b')");
+    // Canonical function names are case-insensitive in a 4.01 service
+    // ([OData-Protocol] 13.2.1 item 7; "matchesPattern" is double-quoted in [OData-ABNF]).
+    assertEquals("{matchesPattern ['a', 'b']}", parseExpression("matchespattern('a','b')").toString());
+    assertEquals("{matchesPattern ['a', 'b']}", parseExpression("MATCHESPATTERN('a','b')").toString());
 
     assertEquals("{{matchesPattern ['a', 'b']} AND {matchesPattern ['c', 'd']}}",
         parseExpression("matchesPattern('a','b') and matchesPattern('c','d')").toString());

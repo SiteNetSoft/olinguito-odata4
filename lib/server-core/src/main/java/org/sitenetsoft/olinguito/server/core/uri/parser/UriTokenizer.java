@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - OLINGO-1585: Accept unreserved chars in search words
  * Copyright 2026 SiteNetSoft - Added matchesPattern method (OData 4.01 URL Conventions section 5.1.1.7.1)
  * Copyright 2026 SiteNetSoft - Accept optional altitude and measure elements in URL geo positions
+ * Copyright 2026 SiteNetSoft - Tier 7 Task 3: match operator, function and suffix names ignoring case
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -895,7 +896,7 @@ public class UriTokenizer {
    * @return whether the operator has been found at the current index
    */
   private boolean nextBinaryOperator(final String operator) {
-    return nextWhitespace() && nextConstant(operator) && nextWhitespace();
+    return nextWhitespace() && nextConstantIgnoreCase(operator) && nextWhitespace();
   }
 
   /**
@@ -903,7 +904,7 @@ public class UriTokenizer {
    * @return whether the operator has been found at the current index
    */
   private boolean nextUnaryOperator(final String operator) {
-    return nextConstant(operator) && nextWhitespace();
+    return nextConstantIgnoreCase(operator) && nextWhitespace();
   }
 
   /**
@@ -911,7 +912,7 @@ public class UriTokenizer {
    * @return whether the method has been found at the current index
    */
   private boolean nextMethod(final String methodName) {
-    return nextConstant(methodName) && nextCharacter('(');
+    return nextConstantIgnoreCase(methodName) && nextCharacter('(');
   }
 
   /**
@@ -919,7 +920,7 @@ public class UriTokenizer {
    * @return whether the suffix has been found at the current index
    */
   private boolean nextSuffix(final String suffixName) {
-    return nextWhitespace() && nextConstant(suffixName);
+    return nextWhitespace() && nextConstantIgnoreCase(suffixName);
   }
 
   private boolean nextParameterAliasName() {
