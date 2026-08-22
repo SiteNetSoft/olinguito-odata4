@@ -25,6 +25,7 @@
  * collection never carries a delta link) and switch to PreferencesApplied.Builder#omitValues
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 10: removed the respond-async handling; the
  * request handler now owns the preference ([OData-Protocol] section 11.6)
+ * Copyright 2026 SiteNetSoft - Tier 7 Wave 2: echo only the page size actually applied
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
@@ -697,7 +698,12 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
     response.setHeader(HttpHeader.CONTENT_TYPE, requestedContentType.toContentTypeString());
     final PreferencesApplied.Builder preferencesAppliedBuilder = PreferencesApplied.with();
     boolean anyPreferenceApplied = false;
-    if (pageSize != null) {
+    // Echo maxpagesize only when the client asked for it AND the service applied a size:
+    // applyServerSidePaging returns null when the entity set does not page, and
+    // PreferencesApplied.maxPageSize unboxes its argument, so gating on the requested pageSize
+    // alone made every maxpagesize request against a non-paging entity set a 500, while gating on
+    // the applied size alone would echo a preference the client never sent.
+    if (pageSize != null && serverPageSize != null) {
       preferencesAppliedBuilder.maxPageSize(serverPageSize);
       anyPreferenceApplied = true;
     }

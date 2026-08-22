@@ -79,9 +79,12 @@ class UriParserTest {
   @Test
   void quotedKeyValuesForNonStringKeys() throws Exception {
     // [OData-Protocol] 13.2.1 item 9a: strings are cast to primitive types in URLs.
+    // The key predicate's text is normalised to a literal of the key's own type, because that is
+    // what consumers hand to fromUriLiteral -- tecsvc's DataProvider could not otherwise find the
+    // entity addressed by the quoted form.
     testRes.run("ESAllPrim('1')")
         .isEntitySet("ESAllPrim")
-        .isKeyPredicate(0, "PropertyInt16", "'1'");
+        .isKeyPredicate(0, "PropertyInt16", "1");
     // The unquoted 4.0 spelling is unchanged.
     testRes.run("ESAllPrim(1)")
         .isEntitySet("ESAllPrim")

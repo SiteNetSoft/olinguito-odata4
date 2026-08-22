@@ -348,9 +348,11 @@ public class BasicITCase extends AbstractParamTecSvcITCase {
 
   @Test
   public void readException() throws Exception {
+    // As above, the key must not be a literal of the Int16 key type: '42' now addresses key 42,
+    // which simply does not exist (404), where the quoted form used to be a key error (400).
     ODataEntityRequest<ClientEntity> request = getClient().getRetrieveRequestFactory()
         .getEntityRequest(getClient().newURIBuilder(SERVICE_URI)
-            .appendEntitySetSegment(ES_MIX_PRIM_COLL_COMP).appendKeySegment("42").build());
+            .appendEntitySetSegment(ES_MIX_PRIM_COLL_COMP).appendKeySegment("abc").build());
     assertNotNull(request);
     setCookieHeader(request);
 

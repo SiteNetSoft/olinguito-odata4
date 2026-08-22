@@ -686,7 +686,10 @@ public class ParserHelper {
 
     return new UriParameterImpl()
         .setName(parameterName)
-        .setText("null".equals(literalValue) ? null : literalValue)
+        // The text is what consumers hand to fromUriLiteral, so it must be a literal of the
+        // parameter's own type: a quoted string standing for a primitive value (4.01 item 9a) or
+        // an unprefixed enum/duration (item 9b) is stored in the form that type accepts.
+        .setText("null".equals(literalValue) ? null : alias == null ? value : literalValue)
         .setAlias(alias == null ? null : literalValue)
         .setExpression(alias == null ? null :
             alias.getValue() == null ? new LiteralImpl(value, primitiveType) : alias.getValue());
