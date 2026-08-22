@@ -278,7 +278,9 @@ class ODataHandlerImplTest {
 
   @Test
   void uriParserExceptionResultsInRightResponseBadRequest() throws Exception {
-    final ODataResponse response = dispatch(HttpMethod.GET, "ESAllPrim('122')", null);
+    // 'abc' is not a literal of the Int16 key type. ('122' would be one, and since OData 4.01
+    // lets a quoted string stand for a primitive value it is now a valid URL, not a parser error.)
+    final ODataResponse response = dispatch(HttpMethod.GET, "ESAllPrim('abc')", null);
     assertEquals(HttpStatusCode.BAD_REQUEST.getStatusCode(), response.getStatusCode());
   }
 

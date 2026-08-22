@@ -35,10 +35,35 @@ import org.sitenetsoft.olinguito.commons.api.edm.Edm;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmAmbiguousOverloadException;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmException;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmFunctionImport;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
+import org.sitenetsoft.olinguito.server.api.OData;
 
 /** Tests the mapping of EDM function-resolution errors onto URI-parser errors. */
 class ParserHelperTest {
+
+  @Test
+  void quotedLiteralIsReinterpretedAgainstTheExpectedType() {
+    final OData odata = OData.newInstance();
+    final EdmPrimitiveType int32 = odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Int32);
+    final EdmPrimitiveType duration = odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Duration);
+    final EdmPrimitiveType string = odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.String);
+
+    // [OData-Protocol] 13.2.1 item 9a: a quoted string is cast to the target primitive type.
+    assertEquals("1", ParserHelper.reinterpretQuotedLiteral("'1'", int32));
+    // item 9b: the unprefixed duration form is still quoted, so restore the prefix.
+    assertEquals("duration'P12D'", ParserHelper.reinterpretQuotedLiteral("'P12D'", duration));
+    // Already-correct forms are untouched.
+    assertEquals("1", ParserHelper.reinterpretQuotedLiteral("1", int32));
+    assertEquals("duration'P12D'", ParserHelper.reinterpretQuotedLiteral("duration'P12D'", duration));
+    // A string-typed target keeps its quotes, and an escaped quote survives unquoting.
+    assertEquals("'abc'", ParserHelper.reinterpretQuotedLiteral("'abc'", string));
+    assertEquals("a'b", ParserHelper.reinterpretQuotedLiteral("'a''b'", int32));
+    // Nulls and non-literals are passed through.
+    assertEquals(null, ParserHelper.reinterpretQuotedLiteral(null, int32));
+    assertEquals("'1'", ParserHelper.reinterpretQuotedLiteral("'1'", null));
+  }
 
   private static final FullQualifiedName FUNCTION_NAME = new FullQualifiedName("ns", "func");
   private static final FullQualifiedName BINDING_TYPE = new FullQualifiedName("ns", "ET");

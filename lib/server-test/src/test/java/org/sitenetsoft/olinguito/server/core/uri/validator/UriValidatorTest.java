@@ -473,8 +473,11 @@ class UriValidatorTest {
     testUri.runEx("ESTwoKeyNav(xxx=1,yyy='abc')")
         .isExValidation(UriValidationException.MessageKeys.INVALID_KEY_PROPERTY);
     testUri.runEx("ESCollAllPrim(null)").isExValidation(UriValidationException.MessageKeys.INVALID_KEY_PROPERTY);
-    testUri.runEx("ESAllPrim(PropertyInt16='1')")
-        .isExSemantic(UriParserSemanticException.MessageKeys.INVALID_KEY_VALUE);
+    // A quoted string holding a literal of the key type is valid since OData 4.01
+    // ([OData-Protocol] 13.2.1 item 9a); one that is not a literal of that type still fails.
+    testUri.run("ESAllPrim(PropertyInt16='1')");
+    testUri.runEx("ESAllPrim(PropertyInt16='abc')")
+        .isExValidation(UriValidationException.MessageKeys.INVALID_KEY_PROPERTY);
     testUri.runEx("ESAllPrim(12345678901234567890)")
         .isExValidation(UriValidationException.MessageKeys.INVALID_KEY_PROPERTY);
     testUri.runEx("ESTwoKeyNav(PropertyInt16=1,PropertyString=1)")
@@ -484,8 +487,11 @@ class UriValidatorTest {
 
     testUri.runEx("ESAllPrim(0)/NavPropertyETTwoPrimMany(xxx=42)")
         .isExValidation(UriValidationException.MessageKeys.INVALID_KEY_PROPERTY);
-    testUri.runEx("ESAllPrim(0)/NavPropertyETTwoPrimMany(PropertyInt16='1')")
-        .isExSemantic(UriParserSemanticException.MessageKeys.INVALID_KEY_VALUE);
+    // Same 4.01 rule on a navigation-property key: the quoted literal is accepted, a
+    // non-literal string is not.
+    testUri.run("ESAllPrim(0)/NavPropertyETTwoPrimMany(PropertyInt16='1')");
+    testUri.runEx("ESAllPrim(0)/NavPropertyETTwoPrimMany(PropertyInt16='abc')")
+        .isExValidation(UriValidationException.MessageKeys.INVALID_KEY_PROPERTY);
   }
 
   @Test

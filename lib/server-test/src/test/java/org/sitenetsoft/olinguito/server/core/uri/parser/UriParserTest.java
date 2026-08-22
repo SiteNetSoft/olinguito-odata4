@@ -77,6 +77,31 @@ class UriParserTest {
   }
 
   @Test
+  void quotedKeyValuesForNonStringKeys() throws Exception {
+    // [OData-Protocol] 13.2.1 item 9a: strings are cast to primitive types in URLs.
+    testRes.run("ESAllPrim('1')")
+        .isEntitySet("ESAllPrim")
+        .isKeyPredicate(0, "PropertyInt16", "'1'");
+    // The unquoted 4.0 spelling is unchanged.
+    testRes.run("ESAllPrim(1)")
+        .isEntitySet("ESAllPrim")
+        .isKeyPredicate(0, "PropertyInt16", "1");
+    // A string that is not a literal of the key type is still rejected.
+    testUri.runEx("ESAllPrim('abc')")
+        .isExValidation(UriValidationException.MessageKeys.INVALID_KEY_PROPERTY);
+  }
+
+  @Test
+  void unprefixedEnumAndDurationKeyValues() throws Exception {
+    // [OData-Protocol] 13.2.1 item 9b, alongside the prefixed spelling it already supported.
+    testRes.run("ESMixEnumDefCollComp(PropertyEnumString='String1',PropertyDefString='abc')")
+        .isEntitySet("ESMixEnumDefCollComp");
+    testRes.run("ESMixEnumDefCollComp(PropertyEnumString=olingo.odata.test1.ENString'String1',"
+        + "PropertyDefString='abc')")
+        .isEntitySet("ESMixEnumDefCollComp");
+  }
+
+  @Test
   void misc() throws Exception {
     testUri.run("")
         .isKind(UriInfoKind.service);
@@ -779,7 +804,11 @@ class UriParserTest {
 
     testUri.runEx("ESAllPrim(@p1)")
         .isExValidation(UriValidationException.MessageKeys.MISSING_ALIAS);
-    testUri.runEx("ESAllPrim(PropertyInt16=@p1)", "@p1='ewe'").isExSemantic(MessageKeys.UNKNOWN_PART);
+    // 'ewe' is not a literal of the Int16 key type, so it is rejected -- since OData 4.01 lets a
+    // quoted string stand for a primitive value (13.2.1 item 9a), the rejection now comes from key
+    // validation rather than from alias parsing. Both answer 400.
+    testUri.runEx("ESAllPrim(PropertyInt16=@p1)", "@p1='ewe'")
+        .isExValidation(UriValidationException.MessageKeys.INVALID_KEY_PROPERTY);
     testUri.runEx("ESAllPrim(PropertyInt16=@p1)", "@p1='ewe")
         .isExSyntax(UriParserSyntaxException.MessageKeys.SYNTAX);
     testFilter.runOnETKeyNavEx("PropertyInt16 gt @alias")
@@ -966,14 +995,17 @@ class UriParserTest {
   
   @Test
   void testValidationOnFunctions() throws Exception {
-    testUri.runEx("FICRTETTwoKeyNavParam(ParameterInt16='32')")
+    // A quoted string holding a literal of the parameter's own type is a valid 4.01 call
+    // ([OData-Protocol] 13.2.1 item 9a); one that is not a literal of that type still fails.
+    testUri.run("FICRTETTwoKeyNavParam(ParameterInt16='32')");
+    testUri.runEx("FICRTETTwoKeyNavParam(ParameterInt16='ewe')")
     .isExValidation(UriValidationException.MessageKeys.INVALID_VALUE_FOR_PROPERTY);
   
     testUri.runEx("FICRTETTwoKeyNavParam(ParameterInt16=null)")
     .isExValidation(UriValidationException.MessageKeys.MISSING_PARAMETER);
   
-    testUri.runEx("FICRTETTwoKeyNavParam(ParameterInt16=@p1)", "@p1='32'")
-    .isExSemantic(UriParserSemanticException.MessageKeys.UNKNOWN_PART);
+    // '32' IS a literal of the Int16 parameter type, so 13.2.1 item 9a makes this a valid call.
+    testUri.run("FICRTETTwoKeyNavParam(ParameterInt16=@p1)", "@p1='32'");
     
     testUri.run("FICRTETTwoKeyNavParam(ParameterInt16=32)");
   }

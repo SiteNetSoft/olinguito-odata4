@@ -23,6 +23,7 @@
  * Copyright 2026 SiteNetSoft - OData 4.01: resolve alternate keys in parenthesized key predicates
  * Copyright 2026 SiteNetSoft - OData 4.01: dedupe alternate-key declarations, reject null key values
  * Copyright 2026 SiteNetSoft - OData 4.01: malformed optional-parameter default values are rejected with 400
+ * Copyright 2026 SiteNetSoft - Tier 7 Tasks 5/6: reinterpret quoted literals against the expected type
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -669,7 +670,8 @@ public class ParserHelper {
     final AliasQueryOption alias = literalValue.startsWith("@") ?
         getKeyAlias(literalValue, edmProperty, edm, referringType, aliases) :
         null;
-    final String value = alias == null ? literalValue : alias.getText();
+    final String value = reinterpretQuotedLiteral(
+        alias == null ? literalValue : alias.getText(), edmProperty.getType());
     final EdmPrimitiveType primitiveType = (EdmPrimitiveType) edmProperty.getType();
     try {
       if (!(primitiveType.validate(primitiveType.fromUriLiteral(value), edmProperty.isNullable(),
@@ -703,6 +705,58 @@ public class ParserHelper {
     }
   }
 
+  /**
+   * Reinterprets a single-quoted string literal against the type it is being applied to,
+   * implementing [OData-Protocol] 13.2.1 items 9a (casting strings to primitive types in URLs)
+   * and 9b (enumeration and duration literals with or without the type prefix; the unprefixed
+   * forms are still quoted, see [OData-URL] 5.1.1.14.1). A literal already in the form the
+   * expected type accepts is returned unchanged, so no URL that parses today changes meaning.
+   * The value itself is not validated here: the caller's <code>fromUriLiteral</code>/
+   * <code>validate</code> pair still rejects a string that is not a literal of the target type.
+   * @param literal the literal as it appears in the URI, may be <code>null</code>
+   * @param expectedType the type the literal is applied to, may be <code>null</code>
+   * @return the literal in the form the expected type accepts
+   */
+  /**
+   * Moves past a quoted string standing for a value of some other primitive type, which OData 4.01
+   * allows ([OData-Protocol] 13.2.1 items 9a and 9b). Tried only after every strict alternative has
+   * failed, so it never changes the meaning of a URL that parses today.
+   * @return whether a quoted string has been found at the current index
+   */
+  private static boolean nextQuotedValue(UriTokenizer tokenizer) {
+    return tokenizer.next(TokenKind.StringValue);
+  }
+
+  protected static String reinterpretQuotedLiteral(final String literal, final EdmType expectedType) {
+    if (expectedType == null
+        || literal == null
+        || literal.length() < 2
+        || !literal.startsWith("'")
+        || !literal.endsWith("'")) {
+      return literal;
+    }
+    if (expectedType.getKind() == EdmTypeKind.ENUM) {
+      // 'Yellow' becomes Namespace.EnumType'Yellow'.
+      return expectedType.getFullQualifiedName().getFullQualifiedNameAsString() + literal;
+    }
+    if (expectedType.getKind() != EdmTypeKind.PRIMITIVE
+        && expectedType.getKind() != EdmTypeKind.DEFINITION) {
+      return literal;
+    }
+    final EdmPrimitiveType primitiveType = expectedType instanceof EdmTypeDefinition typeDef ?
+        typeDef.getUnderlyingType() :
+        (EdmPrimitiveType) expectedType;
+    if (primitiveType.equals(odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.String))) {
+      return literal;
+    }
+    if (primitiveType.equals(odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Duration))) {
+      // 'P12D' becomes duration'P12D'.
+      return "duration" + literal;
+    }
+    // Every other primitive type takes its literal unquoted.
+    return literal.substring(1, literal.length() - 1).replace("''", "'");
+  }
+
   protected static boolean nextPrimitiveTypeValue(UriTokenizer tokenizer,
       final EdmPrimitiveType primitiveType, final boolean nullable) {
     final EdmPrimitiveType type = primitiveType instanceof EdmTypeDefinition typeDef ?
@@ -715,7 +769,7 @@ public class ParserHelper {
 
     // Special handling for frequently-used types and types with more than one token kind.
     } else if (odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Boolean).equals(type)) {
-      return tokenizer.next(TokenKind.BooleanValue);
+      return tokenizer.next(TokenKind.BooleanValue) || nextQuotedValue(tokenizer);
     } else if (odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.String).equals(type)) {
       return tokenizer.next(TokenKind.StringValue);
     } else if (odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.SByte).equals(type)
@@ -723,14 +777,15 @@ public class ParserHelper {
         || odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Int16).equals(type)
         || odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Int32).equals(type)
         || odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Int64).equals(type)) {
-      return tokenizer.next(TokenKind.IntegerValue);
+      return tokenizer.next(TokenKind.IntegerValue) || nextQuotedValue(tokenizer);
     } else if (odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Guid).equals(type)) {
-      return tokenizer.next(TokenKind.GuidValue);
+      return tokenizer.next(TokenKind.GuidValue) || nextQuotedValue(tokenizer);
     } else if (odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Decimal).equals(type)) {
       // The order is important.
       // A decimal value should not be parsed as integer and let the tokenizer stop at the decimal point.
       return tokenizer.next(TokenKind.DecimalValue)
-          || tokenizer.next(TokenKind.IntegerValue);
+          || tokenizer.next(TokenKind.IntegerValue)
+          || nextQuotedValue(tokenizer);
     } else if (odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Double).equals(type)
         || odata.createPrimitiveTypeInstance(EdmPrimitiveTypeKind.Single).equals(type)) {
       // The order is important.
@@ -738,9 +793,11 @@ public class ParserHelper {
       // A decimal value should not be parsed as integer and let the tokenizer stop at the decimal point.
       return tokenizer.next(TokenKind.DoubleValue)
           || tokenizer.next(TokenKind.DecimalValue)
-          || tokenizer.next(TokenKind.IntegerValue);
+          || tokenizer.next(TokenKind.IntegerValue)
+          || nextQuotedValue(tokenizer);
     } else if (type.getKind() == EdmTypeKind.ENUM) {
-      return tokenizer.next(TokenKind.EnumValue);
+      // The type prefix is optional since OData 4.01, leaving a plain quoted string.
+      return tokenizer.next(TokenKind.EnumValue) || nextQuotedValue(tokenizer);
     } else {
       // Check the types that have not been checked already above.
       for (final Entry<TokenKind, EdmPrimitiveTypeKind> entry : tokenToPrimitiveType.entrySet()) {
@@ -750,10 +807,10 @@ public class ParserHelper {
             || kind == EdmPrimitiveTypeKind.Binary
             || kind.isGeospatial())
             && odata.createPrimitiveTypeInstance(kind).equals(type)) {
-          return tokenizer.next(entry.getKey());
+          return tokenizer.next(entry.getKey()) || nextQuotedValue(tokenizer);
         }
       }
-      return false;
+      return nextQuotedValue(tokenizer);
     }
   }
 
@@ -845,6 +902,9 @@ public class ParserHelper {
                     parseAliasValue(parameter.getAlias(),
                         edmParameter.getType(), edmParameter.isNullable(), edmParameter.isCollection(),
                         edm, type, aliases).getText() : null;
+          // A parameter value may be a quoted string standing for the parameter's own type
+          // ([OData-Protocol] 13.2.1 items 9a and 9b), directly or through an alias.
+          text = reinterpretQuotedLiteral(text, type);
           OptionalParameterDefaults.valueOfUriLiteral(edmParameter, primitiveType, text);
         } catch (final EdmPrimitiveTypeException e) {
           throw new UriValidationException(

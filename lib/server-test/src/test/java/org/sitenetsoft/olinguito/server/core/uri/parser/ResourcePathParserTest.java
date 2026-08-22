@@ -81,7 +81,11 @@ class ResourcePathParserTest {
     testUri.runEx("ESAllPrim/$count/invalid").isExSyntax(UriParserSyntaxException.MessageKeys.MUST_BE_LAST_SEGMENT);
     testUri.runEx("ESAllPrim/PropertyString").isExSemantic(MessageKeys.PROPERTY_AFTER_COLLECTION);
     testUri.runEx("ESAllPrim(1)/whatever").isExSemantic(MessageKeys.PROPERTY_NOT_IN_TYPE);
-    testUri.runEx("ESAllPrim('1')").isExSemantic(MessageKeys.INVALID_KEY_VALUE);
+    // ESAllPrim('1') is valid since OData 4.01 -- a quoted string may hold a literal of the key
+    // type ([OData-Protocol] 13.2.1 item 9a), pinned in UriParserTest.quotedKeyValuesForNonStringKeys.
+    // A string that is not a literal of that type still fails.
+    testUri.runEx("ESAllPrim('abc')")
+        .isExValidation(UriValidationException.MessageKeys.INVALID_KEY_PROPERTY);
     testUri.runEx("ESAllPrim(PropertyInt16)").isExSyntax(UriParserSyntaxException.MessageKeys.SYNTAX);
     testUri.runEx("ESAllPrim(PropertyInt16=)").isExSyntax(UriParserSyntaxException.MessageKeys.SYNTAX);
     testUri.runEx("ESAllPrim(PropertyInt16=1,Invalid='1')").isExSemantic(MessageKeys.WRONG_NUMBER_OF_KEY_PROPERTIES);
@@ -204,8 +208,12 @@ class ResourcePathParserTest {
         .isKeyPredicate(2, "KeyAlias2", "'3'")
         .isKeyPredicate(3, "KeyAlias3", "'4'");
 
-    testUri.runEx("ESTwoPrim('wrong')").isExSemantic(MessageKeys.INVALID_KEY_VALUE);
-    testUri.runEx("ESTwoPrim(PropertyInt16='wrong')").isExSemantic(MessageKeys.INVALID_KEY_VALUE);
+    // 'wrong' is not an Int16 literal. Since 4.01 accepts the quoted form for any primitive
+    // type, the rejection now comes from key validation instead of key-value parsing; both 400.
+    testUri.runEx("ESTwoPrim('wrong')")
+        .isExValidation(UriValidationException.MessageKeys.INVALID_KEY_PROPERTY);
+    testUri.runEx("ESTwoPrim(PropertyInt16='wrong')")
+        .isExValidation(UriValidationException.MessageKeys.INVALID_KEY_PROPERTY);
   }
 
   @Test
@@ -377,8 +385,10 @@ class ResourcePathParserTest {
 
   @Test
   void alternateKeyBareShortFormIsNotAlternate() {
-    // 'abc' is not a valid PropertyInt16 -> exactly today's error; the short form never resolves alternate keys
-    testUri.runEx("ESAllPrim('abc')").isExSemantic(MessageKeys.INVALID_KEY_VALUE);
+    // 'abc' is not a valid PropertyInt16, so the short form still fails and never resolves
+    // alternate keys; 4.01's quoted-literal form moved the rejection to key validation.
+    testUri.runEx("ESAllPrim('abc')")
+        .isExValidation(UriValidationException.MessageKeys.INVALID_KEY_PROPERTY);
   }
 
   @Test
