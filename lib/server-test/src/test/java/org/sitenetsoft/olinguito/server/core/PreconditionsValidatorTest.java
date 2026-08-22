@@ -191,10 +191,15 @@ class PreconditionsValidatorTest {
   }
 
   @Test
-  void referencesMustBeIgnored() throws Exception {
-    assertFalse(mustValidate("ESAllPrim(1)/NavPropertyETTwoPrimOne/$ref", "ESTwoPrim"));
-    assertFalse(mustValidate("ESAllPrim(1)/NavPropertyETTwoPrimMany(1)/$ref", "ESTwoPrim"));
-    assertFalse(mustValidate("SINav/NavPropertyETKeyNavOne/$ref", "ESKeyNav"));
+  void referencesKeepTheirBindingTarget() throws Exception {
+    // Previously a $ref segment discarded the binding target, so preconditions were never
+    // evaluated on the reference write paths at all. [OData-Protocol] 13.1.1 item 26 requires an
+    // updatable service to support If-Match on updates and deletes of resources with ETags, and a
+    // reference write is such an update, so the segment now leaves the target in place -- the same
+    // binding target the equivalent navigation path without /$ref resolves.
+    assertTrue(mustValidate("ESAllPrim(1)/NavPropertyETTwoPrimOne/$ref", "ESTwoPrim"));
+    assertTrue(mustValidate("ESAllPrim(1)/NavPropertyETTwoPrimMany(1)/$ref", "ESTwoPrim"));
+    assertTrue(mustValidate("SINav/NavPropertyETKeyNavOne/$ref", "ESKeyNav"));
   }
 
   @Test

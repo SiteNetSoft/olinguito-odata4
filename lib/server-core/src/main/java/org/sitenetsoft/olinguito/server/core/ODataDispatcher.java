@@ -23,6 +23,7 @@
  * through the primitive-property dispatch path
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 2: pass the outer $batch request's
  * $schemaversion to BatchHandler for batch-part inheritance
+ * Copyright 2026 SiteNetSoft - Tier 7 Wave 2: enforce If-Match on reference writes
  */
 package org.sitenetsoft.olinguito.server.core;
 
@@ -306,6 +307,9 @@ public class ODataDispatcher {
     }
   }
 
+  // The write branches validate preconditions the way the entity, media and property paths do:
+  // [OData-Protocol] 13.1.1 item 26 requires an updatable service to support If-Match on updates
+  // and deletes of resources that have an ETag, and a reference write is such an update.
   private void handleReferenceDispatching(final ODataRequest request, final ODataResponse response,
       final int lastPathSegmentIndex) throws ODataApplicationException, ODataLibraryException {
     final HttpMethod httpMethod = request.getMethod();
@@ -321,6 +325,7 @@ public class ODataDispatcher {
           .readReferenceCollection(request, response, uriInfo, responseFormat);
 
     } else if (isCollection && httpMethod == HttpMethod.POST) {
+      validatePreconditions(request, false);
       final ContentType requestFormat = getSupportedContentType(request.getHeader(HttpHeader.CONTENT_TYPE),
           RepresentationType.REFERENCE, true);
       handler.selectProcessor(ReferenceProcessor.class)
@@ -333,6 +338,7 @@ public class ODataDispatcher {
       handler.selectProcessor(ReferenceProcessor.class).readReference(request, response, uriInfo, responseFormat);
 
     } else if (!isCollection && (httpMethod == HttpMethod.PUT || httpMethod == HttpMethod.PATCH)) {
+      validatePreconditions(request, false);
       final ContentType requestFormat = getSupportedContentType(request.getHeader(HttpHeader.CONTENT_TYPE),
           RepresentationType.REFERENCE, true);
       handler.selectProcessor(ReferenceProcessor.class)
@@ -340,6 +346,7 @@ public class ODataDispatcher {
 
     } else if (httpMethod == HttpMethod.DELETE) {
       validatePreferHeader(request);
+      validatePreconditions(request, false);
       handler.selectProcessor(ReferenceProcessor.class)
           .deleteReference(request, response, uriInfo);
 

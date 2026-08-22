@@ -981,6 +981,40 @@ class ODataHandlerImplTest {
         any(ContentType.class));
   }
 
+  @Test
+  void referenceWritesEnforceEtagPrecondition() throws Exception {
+    // [OData-Protocol] 13.1.1 item 26: an updatable service MUST support If-Match on updates and
+    // deletes of resources with ETags. The $ref write paths never called validatePreconditions,
+    // so a reference could be created, replaced or deleted without one.
+    final CustomETagSupport eTagSupport = mock(CustomETagSupport.class);
+    when(eTagSupport.hasETag(any(EdmBindingTarget.class))).thenReturn(true);
+
+    final ReferenceProcessor deleteProcessor = mock(ReferenceProcessor.class);
+    final ODataResponse withoutIfMatch = dispatchWithETagSupport(HttpMethod.DELETE,
+        "ESAllPrim(0)/NavPropertyETTwoPrimOne/$ref", deleteProcessor, eTagSupport, null);
+    verifyNoInteractions(deleteProcessor);
+    assertEquals(HttpStatusCode.PRECONDITION_REQUIRED.getStatusCode(), withoutIfMatch.getStatusCode());
+
+    // With the header the request reaches the processor as before.
+    final ReferenceProcessor allowedProcessor = mock(ReferenceProcessor.class);
+    dispatchWithETagSupport(HttpMethod.DELETE,
+        "ESAllPrim(0)/NavPropertyETTwoPrimOne/$ref", allowedProcessor, eTagSupport, "*");
+    verify(allowedProcessor).deleteReference(
+        any(ODataRequest.class), any(ODataResponse.class), any(UriInfo.class));
+
+    // The same applies to PUT on a single-valued reference and POST to a collection one.
+    final ReferenceProcessor updateProcessor = mock(ReferenceProcessor.class);
+    assertEquals(HttpStatusCode.PRECONDITION_REQUIRED.getStatusCode(),
+        dispatchWithETagSupport(HttpMethod.PUT, "ESAllPrim(0)/NavPropertyETTwoPrimOne/$ref",
+            updateProcessor, eTagSupport, null).getStatusCode());
+    verifyNoInteractions(updateProcessor);
+
+    // POST to a collection-valued reference is a create ([OData-Protocol] 11.4.6.1, conformance
+    // item 21), not an update or delete, and PreconditionsValidator resolves no single ETag-bearing
+    // target across a collection navigation, so no precondition applies there. The call is still
+    // made on that branch so the check follows the target if one ever resolves.
+  }
+
   private ODataResponse dispatchWithETagSupport(final HttpMethod method, final String path,
       final Processor processor, final CustomETagSupport eTagSupport, final String ifMatchValue) {
     ODataRequest request = new ODataRequest();

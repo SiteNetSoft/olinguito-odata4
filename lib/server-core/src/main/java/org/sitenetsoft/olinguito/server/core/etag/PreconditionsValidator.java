@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - OpenType CRUD Task 2 fix: preserve the resolved binding target for
  * dynamicProperty segments so ETag preconditions are enforced on dynamic-property writes/deletes
+ * Copyright 2026 SiteNetSoft - Tier 7 Wave 2: keep the binding target across a $ref segment
  */
 package org.sitenetsoft.olinguito.server.core.etag;
 
@@ -69,6 +70,12 @@ public class PreconditionsValidator {
       case primitiveProperty:
       case complexProperty:
       case dynamicProperty:
+        break;
+      case ref:
+        // A $ref segment addresses the reference to the entity the preceding segment resolved, so
+        // the affected entity set is unchanged and must not be lost: without this the reference
+        // write paths could never validate preconditions at all ([OData-Protocol] 13.1.1 item 26).
+        // The URI parser already enforces that $ref is the last segment.
         break;
       case value:
       case action:
