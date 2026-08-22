@@ -1966,6 +1966,22 @@ class ResourcePathParserTest {
   }
 
   @Test
+  void parameterlessFunctionImportWithoutParentheses() {
+    // [OData-Protocol] 13.2.1 item 9c and the [OData-ABNF] rule functionImportCallNoParens:
+    // the parentheses are optional for a call that passes no parameters.
+    testRes.run("FINRTInt16")
+        .isFunctionImport("FINRTInt16")
+        .isFunction("UFNRTInt16")
+        .isType(PropertyProvider.nameInt16, false);
+
+    // The 4.0 spelling with parentheses is unchanged.
+    testRes.run("FINRTInt16()")
+        .isFunctionImport("FINRTInt16")
+        .isFunction("UFNRTInt16")
+        .isType(PropertyProvider.nameInt16, false);
+  }
+
+  @Test
   void functionImport_VarReturning() {
     // returning primitive
     testRes.run("FINRTInt16()")
@@ -2341,8 +2357,10 @@ class ResourcePathParserTest {
 
   @Test
   void functionImpError() {
-    testUri.runEx("FICRTCollCTTwoPrimTwoParam")
-        .isExSyntax(UriParserSyntaxException.MessageKeys.SYNTAX);
+    // Since OData 4.01 the parentheses are optional ([OData-Protocol] 13.2.1 item 9c), so a bare
+    // name is a zero-parameter call; this import has no zero-parameter overload, hence the same
+    // "function not found" error as the explicit "()" spelling below rather than a syntax error.
+    testUri.runEx("FICRTCollCTTwoPrimTwoParam").isExSemantic(MessageKeys.FUNCTION_NOT_FOUND);
     testUri.runEx("FICRTCollCTTwoPrimTwoParam()").isExSemantic(MessageKeys.FUNCTION_NOT_FOUND);
     testUri.runEx("FICRTCollCTTwoPrimTwoParam(invalidParam=2)").isExSemantic(MessageKeys.FUNCTION_NOT_FOUND);
   }

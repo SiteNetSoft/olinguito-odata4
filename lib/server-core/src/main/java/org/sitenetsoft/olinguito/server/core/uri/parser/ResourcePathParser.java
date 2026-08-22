@@ -25,6 +25,7 @@
  * key-as-segment URLs
  * Copyright 2026 SiteNetSoft - OData 4.01: pass the entity set to the key-predicate parser for alternate keys
  * Copyright 2026 SiteNetSoft - OData 4.01: memoize default namespaces, reject null key-value segments
+ * Copyright 2026 SiteNetSoft - Tier 7 Task 8: parameter-less function calls without parentheses
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -722,7 +723,16 @@ public class ResourcePathParser {
   private UriResource functionCall(final EdmFunctionImport edmFunctionImport,
       final FullQualifiedName boundFunctionName, final FullQualifiedName bindingParameterTypeName,
       final boolean isBindingParameterCollection) throws UriParserException, UriValidationException {
-    final List<UriParameter> parameters = ParserHelper.parseFunctionParameters(tokenizer, edm, null, false, aliases);
+    // OData 4.01 ([OData-Protocol] 13.2.1 item 9c) makes the parentheses optional for a call that
+    // passes no parameters; [OData-ABNF] gives the productions functionImportCallNoParens and
+    // boundFunctionCallNoParens, both reached from here. Absent parentheses mean no parameters,
+    // and the zero-parameter overload is then resolved exactly as for the empty "()" spelling.
+    tokenizer.saveState();
+    final boolean hasParameterList = tokenizer.next(TokenKind.OPEN);
+    tokenizer.returnToSavedState();
+    final List<UriParameter> parameters = hasParameterList ?
+        ParserHelper.parseFunctionParameters(tokenizer, edm, null, false, aliases) :
+        List.of();
     final List<String> names = ParserHelper.getParameterNames(parameters);
     EdmFunction function = null;
     if (edmFunctionImport != null) {
