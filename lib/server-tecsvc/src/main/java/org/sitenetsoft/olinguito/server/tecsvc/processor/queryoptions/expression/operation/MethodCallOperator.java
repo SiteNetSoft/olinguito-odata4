@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Convert anonymous classes to lambdas
  * Copyright 2026 SiteNetSoft - Evaluate matchesPattern method (OData 4.01 URL Conventions
  * section 5.1.1.7.1)
+ * Copyright 2026 SiteNetSoft - Tier 7 Wave 2: negative substring indexes count back from the end
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operation;
 
@@ -148,8 +149,13 @@ public class MethodCallOperator {
       return new TypedOperand(null, primString);
     } else if (valueOperand.is(primString) && startOperand.isIntegerType()) {
       final String value = valueOperand.getTypedValue(String.class);
-      int start = Math.min(startOperand.getTypedValue(BigInteger.class).intValue(), value.length());
-      start = start < 0 ? 0 : start;
+      final int requestedStart = startOperand.getTypedValue(BigInteger.class).intValue();
+      // OData 4.01 ([OData-URL] 5.1.1.5.7): "A negative start index N ... returns a
+      // string/collection starting N characters/items before the end of the string/collection."
+      // A negative index reaching past the beginning starts at the beginning.
+      final int start = requestedStart < 0 ?
+          Math.max(value.length() + requestedStart, 0) :
+          Math.min(requestedStart, value.length());
 
       int end = value.length();
 
@@ -160,7 +166,8 @@ public class MethodCallOperator {
           return new TypedOperand(null, primString);
         } else if (lengthOperand.isIntegerType()) {
           end = Math.min(start + lengthOperand.getTypedValue(BigInteger.class).intValue(), value.length());
-          end = end < 0 ? 0 : end;
+          // A negative length would put the end before the start; the result is then empty.
+          end = Math.max(end, start);
         } else {
           throw new ODataApplicationException("Third substring parameter should be Edm.Int32",
               HttpStatusCode.BAD_REQUEST.getStatusCode(), Locale.ROOT);

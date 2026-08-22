@@ -316,16 +316,41 @@ public class FilterSystemQueryITCase extends AbstractParamTecSvcITCase {
   public void substringWithNegativeValues() {
     // See OASIS JIRA ODATA-781
 
-    // -1 should be treated as 0
+    // OData 4.01 ([OData-URL] 5.1.1.5.7, Protocol 13.2.1 item 9k): "A negative start index N ...
+    // returns a string/collection starting N characters/items before the end". Before 4.01 this
+    // service clamped a negative start to 0, which was neither the 4.0 nor the 4.01 behaviour.
+    // Both "First Resource - positive values" and "Second Resource - negative values" end in "s",
+    // so the last character now selects two entities where the clamped first character selected one.
     ODataRetrieveResponse<ClientEntitySet> response =
-        sendRequest(ES_ALL_PRIM, "substring(PropertyString,-1,1) eq 'F'");
-    assertEquals(1, response.getBody().getEntities().size());
+        sendRequest(ES_ALL_PRIM, "substring(PropertyString,-1,1) eq 's'");
+    assertEquals(2, response.getBody().getEntities().size());
     assertShortOrInt(32767, response.getBody().getEntities().get(0).getProperty("PropertyInt16")
           .getPrimitiveValue().toValue());
 
-    // -1 should be treated as 0, Same values substring(PropertyString, 0, 0) returns the empty String
+    // The clamped behaviour is gone: a -1 start is the last character, not the first.
+    assertEquals(0, sendRequest(ES_ALL_PRIM, "substring(PropertyString,-1,1) eq 'F'")
+        .getBody().getEntities().size());
+
+    // A negative length is still clamped: the result cannot end before it starts.
     response = sendRequest(ES_ALL_PRIM, "substring(PropertyString,0,-1) eq ''");
     assertEquals(4, response.getBody().getEntities().size());
+  }
+
+  @Test
+  public void substringWithNegativeStartCountsFromTheEnd() {
+    // [OData-URL] 5.1.1.5.7, over constants so the expected value is unambiguous.
+    assertEquals(2, sendRequest(ES_TWO_KEY_NAV,
+        "PropertyInt16 eq 1 and substring('abcdef',-3) eq 'def'").getBody().getEntities().size());
+    assertEquals(2, sendRequest(ES_TWO_KEY_NAV,
+        "PropertyInt16 eq 1 and substring('abcdef',-3,2) eq 'de'").getBody().getEntities().size());
+    // A negative start reaching past the beginning starts at the beginning.
+    assertEquals(2, sendRequest(ES_TWO_KEY_NAV,
+        "PropertyInt16 eq 1 and substring('abcdef',-10) eq 'abcdef'").getBody().getEntities().size());
+    // Non-negative starts are unchanged.
+    assertEquals(2, sendRequest(ES_TWO_KEY_NAV,
+        "PropertyInt16 eq 1 and substring('abcdef',2) eq 'cdef'").getBody().getEntities().size());
+    assertEquals(2, sendRequest(ES_TWO_KEY_NAV,
+        "PropertyInt16 eq 1 and substring('abcdef',2,2) eq 'cd'").getBody().getEntities().size());
   }
 
   @Test
