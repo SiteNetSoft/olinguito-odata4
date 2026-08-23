@@ -49,28 +49,45 @@ public class Conformance401IntermediateITCase extends AbstractBaseTestITCase {
   private static final String APPLICATION_JSON = "application/json";
 
   /**
-   * 13.1.2 item 4. A cast combined with any other clause used to answer 500: the collection-narrowing
-   * special case recognised only a top-level Binary whose left operand carried the type filter, so the
-   * cast member was evaluated against entities that are not of the cast type.
+   * 13.1.2 item 4. ESTwoPrimDerived is the entity set that genuinely holds mixed types: four
+   * ETTwoPrim entities plus one ETBase (DataCreator:1238-1245). A cast restricts the collection to
+   * the instances of the derived type, and the rest of the filter is evaluated against those.
+   */
+  @Test
+  public void castInFilterSelectsMatchingInstances() throws Exception {
+    // The one derived entity carries AdditionalPropertyString_5; the four base ones do not.
+    assertEquals(1, entityCount("ESTwoPrimDerived?$filter=olingo.odata.test1.ETBase"
+        + "/AdditionalPropertyString_5 eq 'Additional String1'"));
+    assertEquals(0, entityCount("ESTwoPrimDerived?$filter=olingo.odata.test1.ETBase"
+        + "/AdditionalPropertyString_5 eq 'nope'"));
+  }
+
+  /**
+   * The same cast combined with another clause used to answer 500: the collection-narrowing special
+   * case recognised only a top-level Binary whose left operand carried the type filter, so with an
+   * "and" it did not fire and the cast member was evaluated against entities of the base type.
    */
   @Test
   public void castInFilterCombinedWithAnotherClause() throws Exception {
-    // ESBase(222) is "TEST B" / "TEST C 0815", so this matches nothing and must simply be empty.
-    assertEquals(0, entityCount("ESTwoPrim?$filter=olingo.odata.test1.ETBase/AdditionalPropertyString_5"
-        + " eq 'TEST A 0815' and PropertyInt16 eq 222"));
+    // The derived entity is PropertyInt16 32766, so both clauses hold.
+    assertEquals(1, entityCount("ESTwoPrimDerived?$filter=olingo.odata.test1.ETBase"
+        + "/AdditionalPropertyString_5 eq 'Additional String1' and PropertyInt16 eq 32766"));
 
-    // ESBase(111) satisfies both clauses.
-    assertEquals(1, entityCount("ESTwoPrim?$filter=olingo.odata.test1.ETBase/AdditionalPropertyString_5"
-        + " eq 'TEST A 0815' and PropertyInt16 eq 111"));
+    // A second clause that excludes the only derived entity leaves nothing.
+    assertEquals(0, entityCount("ESTwoPrimDerived?$filter=olingo.odata.test1.ETBase"
+        + "/AdditionalPropertyString_5 eq 'Additional String1' and PropertyInt16 eq -365"));
   }
 
-  /** The single-clause shape the special case already handled keeps its answers. */
+  /**
+   * An entity that is not of the cast type makes the comparison false rather than raising an error:
+   * [OData-URL] 5.1.1.10, "If the type cast is part of a Boolean expression, the type cast will
+   * evaluate to null". ESTwoPrim holds no derived instances at all, so every cast filter over it is
+   * empty -- it does not address the separate ESBase entity set.
+   */
   @Test
-  public void castInFilterAlone() throws Exception {
-    assertEquals(1, entityCount("ESTwoPrim?$filter=olingo.odata.test1.ETBase/AdditionalPropertyString_5"
-        + " eq 'TEST A 0815'"));
-    assertEquals(0, entityCount("ESTwoPrim?$filter=olingo.odata.test1.ETBase/AdditionalPropertyString_5"
-        + " eq 'nope'"));
+  public void castOverACollectionWithNoInstancesOfThatTypeIsEmpty() throws Exception {
+    assertEquals(0, entityCount("ESTwoPrim?$filter=olingo.odata.test1.ETBase"
+        + "/AdditionalPropertyString_5 eq 'TEST A 0815'"));
   }
 
   private int entityCount(final String pathAndQuery) throws IOException {

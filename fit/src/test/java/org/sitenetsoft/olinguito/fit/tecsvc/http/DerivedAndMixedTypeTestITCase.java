@@ -325,6 +325,16 @@ public class DerivedAndMixedTypeTestITCase extends AbstractBaseTestITCase {
         + "\"AdditionalPropertyString_5\":\"TEST A 0815\""));
   }
   
+  /*
+   * A cast inside a filter restricts the addressed collection to its instances of that type; it does
+   * not address a different entity set. ESTwoPrim holds four ETTwoPrim entities and no derived ones
+   * -- ESBase is a separate entity set with its own data -- so this filter matches nothing.
+   *
+   * This assertion previously expected the ESBase(111) entity, because the service resolved the cast
+   * type to the first entity set declaring it and returned that set's contents instead of filtering
+   * the one requested. The equivalent query over the entity set that really does hold mixed types,
+   * ESTwoPrimDerived, is covered by Conformance401IntermediateITCase.
+   */
   @Test
   public void queryESTwoPrimWithEntityTypeCastInFilter() throws Exception {
     URL url = new URL(SERVICE_URI + "ESTwoPrim?$filter=olingo.odata.test1.ETBase/"
@@ -336,23 +346,13 @@ public class DerivedAndMixedTypeTestITCase extends AbstractBaseTestITCase {
     connection.connect();
 
     assertEquals(HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    assertEquals(ContentType.JSON_FULL_METADATA, 
+    assertEquals(ContentType.JSON_FULL_METADATA,
         ContentType.create(connection.getHeaderField(HttpHeader.CONTENT_TYPE)));
 
     final String content = new String(connection.getInputStream().readAllBytes(), Charset.defaultCharset());
-    assertTrue(content.contains("\"value\":[{\"@odata.type\":\"#olingo.odata.test1.ETBase\","
-        + "\"@odata.id\":\"ESBase(111)\","
-        + "\"PropertyInt16@odata.type\":\"#Int16\","
-        + "\"PropertyInt16\":111,"
-        + "\"PropertyString\":\"TEST A\","
-        + "\"AdditionalPropertyString_5\":\"TEST A 0815\","
-        + "\"NavPropertyETAllPrimOne@odata.navigationLink\":\"ESBase(111)/NavPropertyETAllPrimOne\","
-        + "\"NavPropertyETAllPrimMany@odata.navigationLink\":\"ESBase(111)/NavPropertyETAllPrimMany\""
-        + ",\"#olingo.odata.test1.BAETBaseETTwoBaseRTETTwoBase\":"
-        + "{\"title\":\"olingo.odata.test1.BAETBaseETTwoBaseRTETTwoBase\","
-        + "\"target\":\"ESBase(111)/olingo.odata.test1.BAETBaseETTwoBaseRTETTwoBase\"}}]"));
+    assertTrue(content.contains("\"value\":[]"));
   }
-  
+
   @Test
   public void queryESAllPrimWithEntityTypeCastInExpand() throws Exception {
     URL url = new URL(SERVICE_URI + "ESAllPrim(0)?$expand=NavPropertyETTwoPrimOne/olingo.odata.test1.ETBase");

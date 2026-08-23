@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - Select the first entity explicitly when no key predicates are given
  * Copyright 2026 SiteNetSoft - OData 4.01: referential-constraint key predicates from the source entity
  * Copyright 2026 SiteNetSoft - Restrict streamed collection serialization to JSON response formats
+ * Copyright 2026 SiteNetSoft - Tier 8 Wave 1: filter the addressed collection instead of substituting one
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
@@ -300,22 +301,12 @@ public abstract class TechnicalProcessor implements Processor {
         return dataProvider.readFunctionEntityCollection(uriResource.getFunction(), uriResource.getParameters(),
             uriInfo);
       } else {
-        if (uriInfo.getFilterOption() != null) {
-          if (uriInfo.getFilterOption().getExpression() instanceof Binary expression) {
-            if (expression.getLeftOperand() instanceof Member member) {
-              if (member.getStartTypeFilter() != null) {
-                EdmEntityType entityType = (EdmEntityType) member.getStartTypeFilter();
-                EdmEntityContainer container = this.serviceMetadata.getEdm().getEntityContainer();
-                List<EdmEntitySet> entitySets = container.getEntitySets();
-                for (EdmEntitySet entitySet : entitySets) {
-                  if (entityType.getName().equals(entitySet.getEntityType().getName())) {
-                    return dataProvider.readAll(entitySet);
-                  }
-                }
-              }
-            }
-          }
-        }
+        // The addressed collection is read as it stands. A cast inside the filter is evaluated
+        // against each instance by ExpressionVisitorImpl ([OData-URL] 5.1.1.10), so the collection
+        // must not be narrowed here: the previous special case recognised only a filter whose
+        // top-level left operand carried the type filter -- answering 500 for every other shape --
+        // and resolved that type to the first entity set declaring it, which returned entities from
+        // an entity set the request never addressed.
         EdmEntitySet entitySet = getEntitySetBasedOnTypeCast(((UriResourceEntitySet)resourcePaths.get(0)));
         return dataProvider.readAll(entitySet);
       }
