@@ -24,6 +24,7 @@
  * Copyright 2026 SiteNetSoft - OData 4.01: dispatch geo.distance, geo.length and geo.intersects,
  * and type geo literals while their EdmType is still known
  * Copyright 2026 SiteNetSoft - Tier 7 Wave 2: evaluate the divby operator
+ * Copyright 2026 SiteNetSoft - Tier 8 Wave 1: evaluate a derived-type cast against each instance
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression;
 
@@ -44,7 +45,9 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeKind;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.commons.api.edm.constants.EdmTypeKind;
 import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
 import org.sitenetsoft.olinguito.server.api.OData;
@@ -204,6 +207,15 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
 
     final List<UriResource> uriResourceParts = member.getResourcePath().getUriResourceParts();
 
+    // OData 4.0 conformance 13.1.2 item 4: a member path may start with a cast to a derived type.
+    // [OData-URL] 5.1.1.10: "If the type cast is part of a Boolean expression, the type cast will
+    // evaluate to null" -- so an instance that is not of the cast type yields no value here rather
+    // than an error, and the surrounding comparison is false.
+    final EdmType startTypeFilter = member.getStartTypeFilter();
+    if (startTypeFilter != null && !isInstanceOf(entity, startTypeFilter)) {
+      return new TypedOperand(null, EdmNull.getInstance());
+    }
+
     // UriResourceParts contains at least one UriResource.
     final UriResource initialPart = uriResourceParts.get(0);
     if (initialPart instanceof UriResourceProperty uriResourceProp) {
@@ -348,6 +360,17 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
           HttpStatusCode.BAD_REQUEST.getStatusCode(), Locale.ROOT, e);
     }
     return new TypedOperand(result, type);
+  }
+
+  /**
+   * @return whether the entity's own type is the given type or derives from it
+   */
+  private boolean isInstanceOf(final Entity instance, final EdmType type) {
+    if (instance == null || instance.getType() == null) {
+      return false;
+    }
+    final EdmEntityType entityType = edm.getEntityType(new FullQualifiedName(instance.getType()));
+    return entityType != null && entityType.compatibleTo(type);
   }
 
   private VisitorOperand throwNotImplemented() throws ODataApplicationException {
