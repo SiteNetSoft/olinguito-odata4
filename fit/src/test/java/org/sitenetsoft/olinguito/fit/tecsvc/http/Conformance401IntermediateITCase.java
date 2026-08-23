@@ -245,6 +245,31 @@ public class Conformance401IntermediateITCase extends AbstractBaseTestITCase {
         + "&$filter=Doubled eq 65534"));
   }
 
+  /**
+   * 13.2.2 item 8: a computed property is usable from $orderby, and included by a star selection.
+   * ESAllPrim's PropertyInt16 values are Short.MAX_VALUE, Short.MIN_VALUE and 0
+   * (DataCreator:1261-1300), so the computed values span the same order.
+   */
+  @Test
+  public void computedPropertyIsUsableInOrderByAndStar() throws Exception {
+    final String ordered = body("ESAllPrim?$compute=PropertyInt16 mul 2 as Doubled"
+        + "&$orderby=Doubled desc&$select=PropertyInt16,Doubled");
+    assertTrue("the highest computed value must come first: " + ordered,
+        ordered.indexOf("\"Doubled\":65534") < ordered.indexOf("\"Doubled\":-65536"));
+
+    // "...MUST be included if $select is specified with the computed property name, or star (*)."
+    assertTrue("a star selection must include the computed property",
+        body("ESAllPrim(32767)?$compute=PropertyInt16 mul 2 as Doubled&$select=*")
+            .contains("\"Doubled\":65534"));
+  }
+
+  /** An alias that collides with a declared property is refused before anything is computed. */
+  @Test
+  public void computeAliasMayNotCollideWithADeclaredProperty() throws Exception {
+    assertStatus(HttpStatusCode.BAD_REQUEST,
+        "ESAllPrim?$compute=PropertyInt16 mul 2 as PropertyString");
+  }
+
   private int entityCount(final String pathAndQuery) throws IOException {
     final String content = body(pathAndQuery);
     final int start = content.indexOf("\"value\":[");
