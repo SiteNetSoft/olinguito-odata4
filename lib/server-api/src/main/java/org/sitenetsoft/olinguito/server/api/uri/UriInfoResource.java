@@ -15,12 +15,14 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ * Copyright 2026 SiteNetSoft - Tier 8 Wave 4: the $compute system query option
  */
 package org.sitenetsoft.olinguito.server.api.uri;
 
 import java.util.List;
 
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.ApplyOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ComputeOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.CountOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.CustomQueryOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.DeltaTokenOption;
@@ -70,6 +72,13 @@ public interface UriInfoResource {
    * @return Object containing information of the $count option
    */
   CountOption getCountOption();
+
+  /**
+   * @return the $compute option, or <code>null</code> if not specified. Its aliases name properties
+   *         computed for each instance, usable from $select, $filter and $orderby
+   *         ([OData-Protocol] 11.2.5.3).
+   */
+  ComputeOption getComputeOption();
   
   /**
    * @return Object containing information of the $deltatoken option

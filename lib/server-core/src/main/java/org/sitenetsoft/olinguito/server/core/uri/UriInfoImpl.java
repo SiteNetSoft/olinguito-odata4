@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 1: $schemaversion system query option
+ * Copyright 2026 SiteNetSoft - Tier 8 Wave 4: the $compute system query option
  */
 package org.sitenetsoft.olinguito.server.core.uri;
 
@@ -41,6 +42,7 @@ import org.sitenetsoft.olinguito.server.api.uri.UriInfoService;
 import org.sitenetsoft.olinguito.server.api.uri.UriResource;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.AliasQueryOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.ApplyOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ComputeOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.CountOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.DeltaTokenOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.CustomQueryOption;
@@ -198,6 +200,7 @@ public class UriInfoImpl implements UriInfo {
     case LEVELS:
     case APPLY:
     case SCHEMAVERSION:
+    case COMPUTE:
       systemQueryOptions.put(systemQueryOptionKind, systemOption);
       break;
     default:
@@ -325,5 +328,10 @@ public class UriInfoImpl implements UriInfo {
   @Override
   public SchemaVersionOption getSchemaVersionOption() {
     return (SchemaVersionOption) systemQueryOptions.get(SystemQueryOptionKind.SCHEMAVERSION);
+  }
+
+  @Override
+  public ComputeOption getComputeOption() {
+    return (ComputeOption) systemQueryOptions.get(SystemQueryOptionKind.COMPUTE);
   }
 }

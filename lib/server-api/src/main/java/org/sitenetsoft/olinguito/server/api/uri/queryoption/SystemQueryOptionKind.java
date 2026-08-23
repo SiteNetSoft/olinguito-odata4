@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 1: added $schemaversion (OData 4.01 §11.2.12)
  * Copyright 2026 SiteNetSoft - Tier 7 Task 1: resolve option names ignoring case and the $ prefix
+ * Copyright 2026 SiteNetSoft - Tier 8 Wave 4: added the $compute system query option
  */
 package org.sitenetsoft.olinguito.server.api.uri.queryoption;
 
@@ -102,7 +103,12 @@ public enum SystemQueryOptionKind {
   /**
    * @see SchemaVersionOption
    */
-  SCHEMAVERSION("$schemaversion");
+  SCHEMAVERSION("$schemaversion"),
+
+  /**
+   * @see ComputeOption
+   */
+  COMPUTE("$compute");
 
   private final String syntax;
 
