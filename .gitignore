@@ -19,3 +19,8 @@ dependency-reduced-pom.xml
 /site/
 .venv/
 .mcp.json
+
+# JVM crash dumps. This machine produces them from a known hardware fault, and they land wherever
+# the forked test JVM was running; apache-rat then fails the build on their missing licence.
+hs_err_pid*.log
+replay_pid*.log
