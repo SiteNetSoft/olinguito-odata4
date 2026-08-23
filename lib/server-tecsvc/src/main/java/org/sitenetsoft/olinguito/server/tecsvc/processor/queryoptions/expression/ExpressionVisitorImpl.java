@@ -25,6 +25,7 @@
  * and type geo literals while their EdmType is still known
  * Copyright 2026 SiteNetSoft - Tier 7 Wave 2: evaluate the divby operator
  * Copyright 2026 SiteNetSoft - Tier 8 Wave 1: evaluate a derived-type cast against each instance
+ * Copyright 2026 SiteNetSoft - Tier 8 Wave 1: compare a single-valued navigation property to null
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression;
 
@@ -306,6 +307,17 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
       EdmProperty currentEdmProperty = null;
       Link link = entity.getNavigationLink(currentEdmNavProperty.getName());
       Entity inlineEntity = link != null ? link.getInlineEntity() : null;
+
+      // A bare single-valued navigation property is a complete member path: it evaluates to the
+      // related entity, or to null when nothing is linked, so "NavProp eq null" is a boolean
+      // ([OData-Protocol] 13.2.2 item 3). The loop below starts at the second segment and so never
+      // assigns currentEdmProperty for such a path, which used to be dereferenced right after it.
+      if (uriResourceParts.size() == 1) {
+        return inlineEntity == null
+            ? new TypedOperand(null, EdmNull.getInstance())
+            : new TypedOperand(inlineEntity, currentEdmNavProperty.getType());
+      }
+
       Property currentProperty = null;
       for (int i = 1; i < uriResourceParts.size(); i++) {
         currentEdmProperty = ((UriResourceProperty) uriResourceParts.get(i)).getProperty();

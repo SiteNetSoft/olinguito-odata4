@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Fixed unchecked cast warnings
  * Copyright 2026 SiteNetSoft - Tier 7 Wave 2: carry non-finite floating-point values through casts
+ * Copyright 2026 SiteNetSoft - Tier 8 Wave 1: let an entity-typed operand reach a comparison
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operand;
 
@@ -28,6 +29,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
+import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveType;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmPrimitiveTypeException;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
@@ -64,6 +66,12 @@ public class TypedOperand extends VisitorOperand {
       return value.getClass() == getDefaultType(edmPrimType2) ?
           this :
           asTypedOperandForCollection(edmPrimType2);
+    } else if (type instanceof EdmEntityType) {
+      // A single-valued navigation property evaluates to the related entity ([OData-Protocol]
+      // 13.2.2 item 3). Such an operand is only ever compared -- in practice for null-ness -- so it
+      // passes through instead of being coerced to a primitive. Arithmetic on it still fails, in
+      // BinaryOperator.arithmeticOperator, which recognises no type for it.
+      return this;
     } else {
       throw new ODataApplicationException("A single primitive-type instance is expected.",
           HttpStatusCode.BAD_REQUEST.getStatusCode(), Locale.ROOT);

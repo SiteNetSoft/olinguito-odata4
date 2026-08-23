@@ -90,6 +90,19 @@ public class Conformance401IntermediateITCase extends AbstractBaseTestITCase {
         + "/AdditionalPropertyString_5 eq 'TEST A 0815'"));
   }
 
+  /**
+   * 13.2.2 item 3. A bare single-valued navigation property compared to null used to answer 500: the
+   * property loop in visitMember starts at index 1 and never runs when the navigation property is the
+   * whole path, leaving the EDM property null before getType(). ESAllPrim has four entities, two of
+   * which link NavPropertyETTwoPrimOne (DataCreator:2102,2108).
+   */
+  @Test
+  public void singleValuedNavigationComparedToNull() throws Exception {
+    assertEquals(4, entityCount("ESAllPrim"));
+    assertEquals(2, entityCount("ESAllPrim?$filter=NavPropertyETTwoPrimOne ne null"));
+    assertEquals(2, entityCount("ESAllPrim?$filter=NavPropertyETTwoPrimOne eq null"));
+  }
+
   private int entityCount(final String pathAndQuery) throws IOException {
     final String content = body(pathAndQuery);
     final int start = content.indexOf("\"value\":[");
@@ -100,8 +113,10 @@ public class Conformance401IntermediateITCase extends AbstractBaseTestITCase {
 
   private String body(final String pathAndQuery) throws IOException {
     final HttpURLConnection connection = connect(pathAndQuery);
-    assertEquals(pathAndQuery, HttpStatusCode.OK.getStatusCode(), connection.getResponseCode());
-    return read(connection);
+    final String content = read(connection);
+    assertEquals(pathAndQuery + " -> " + content, HttpStatusCode.OK.getStatusCode(),
+        connection.getResponseCode());
+    return content;
   }
 
   private HttpURLConnection connect(final String pathAndQuery) throws IOException {
