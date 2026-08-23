@@ -28,6 +28,7 @@ import org.sitenetsoft.olinguito.commons.api.data.EntityCollection;
 import org.sitenetsoft.olinguito.commons.api.data.Property;
 import org.sitenetsoft.olinguito.commons.api.data.ValueType;
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
 import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
 import org.sitenetsoft.olinguito.server.api.ODataApplicationException;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.ComputeOption;
@@ -89,10 +90,17 @@ public final class ComputeHandler {
             HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode(), Locale.ROOT, e);
       }
       final TypedOperand value = operand.asTypedOperand();
+      // Carry the EDM type the evaluation produced. The serializer writes a dynamic property using
+      // its declared type name when there is one and only falls back to inferring a kind from the
+      // Java class -- an inference that does not know BigInteger, which integer arithmetic here
+      // yields, and would then write the number as a string.
+      final EdmType valueType = value.getType();
+      final String typeName = valueType == null ? null
+          : valueType.getFullQualifiedName().getFullQualifiedNameAsString();
       // The parser rejects an alias that is already a declared property, so nothing is shadowed;
       // removing first keeps a repeated application idempotent.
       entity.getProperties().removeIf(property -> computeExpression.getAlias().equals(property.getName()));
-      entity.addProperty(new Property(null, computeExpression.getAlias(),
+      entity.addProperty(new Property(typeName, computeExpression.getAlias(),
           ValueType.PRIMITIVE, value.getValue()));
     }
   }

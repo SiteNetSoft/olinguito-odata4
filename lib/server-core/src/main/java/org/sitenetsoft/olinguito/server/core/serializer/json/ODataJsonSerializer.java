@@ -35,6 +35,7 @@
  * Copyright 2026 SiteNetSoft - OLINGO-1505: Write stream-property media links whenever they are not
  * the computed ones, not only at metadata=full
  * Copyright 2026 SiteNetSoft - Tier 8 Wave 3: inline count for a counted collection property
+ * Copyright 2026 SiteNetSoft - Tier 8 Wave 4: write computed properties, including on closed types
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -108,6 +109,8 @@ import org.sitenetsoft.olinguito.server.api.uri.queryoption.CountOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandItem;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.LevelsExpandOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ComputeOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.apply.ComputeExpression;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectOption;
 import org.sitenetsoft.olinguito.server.core.ODataWritableContent;
 import org.sitenetsoft.olinguito.server.core.serializer.AbstractODataSerializer;
@@ -152,6 +155,12 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
   private final boolean isIEEE754Compatible;
   private final boolean isODataMetadataNone;
   private final boolean isODataMetadataFull;
+  /**
+   * Names of the properties a $compute option produced for this response. They are dynamic
+   * properties, so they must be written even when the entity's type is closed
+   * ([OData-Protocol] 11.2.5.3). Set per serialization; a serializer instance serves one response.
+   */
+  private Set<String> computedPropertyNames = Collections.emptySet();
   private IConstants constants;
   private ODataJsonInstanceAnnotationSerializer instanceAnnotSerializer;
 
@@ -264,6 +273,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
   public SerializerResult entityCollection(final ServiceMetadata metadata,
       final EdmEntityType entityType, final AbstractEntityCollection entitySet,
       final EntityCollectionSerializerOptions options) throws SerializerException {
+    computedPropertyNames = computedPropertyNames(options);
     OutputStream outputStream = null;
     SerializerException cachedException = null;
     boolean pagination = false;
@@ -471,6 +481,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
   @Override
   public SerializerResult entity(final ServiceMetadata metadata, final EdmEntityType entityType,
       final Entity entity, final EntitySerializerOptions options) throws SerializerException {
+    computedPropertyNames = computedPropertyNames(options);
     OutputStream outputStream = null;
     SerializerException cachedException = null;
     omitNulls = options != null && options.isOmitNulls();
@@ -763,10 +774,30 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
    * @param all whether every property is selected (no $select, or a $select containing {@code *})
    * @param json the JSON generator to write to
    */
+  private static Set<String> computedPropertyNames(final EntitySerializerOptions options) {
+    return options == null ? Collections.emptySet() : computedPropertyNames(options.getCompute());
+  }
+
+  private static Set<String> computedPropertyNames(final EntityCollectionSerializerOptions options) {
+    return options == null ? Collections.emptySet() : computedPropertyNames(options.getCompute());
+  }
+
+  /** @return the aliases a $compute option defines, i.e. the properties it produces per instance */
+  private static Set<String> computedPropertyNames(final ComputeOption compute) {
+    if (compute == null) {
+      return Collections.emptySet();
+    }
+    final Set<String> names = new HashSet<>();
+    for (final ComputeExpression expression : compute.getExpressions()) {
+      names.add(expression.getAlias());
+    }
+    return names;
+  }
+
   private void writeDynamicProperties(final ServiceMetadata metadata, final EdmStructuredType type,
       final List<Property> properties, final Set<String> selected, final boolean all,
       final JsonGenerator json) throws IOException, SerializerException {
-    if (!type.isOpenType()) {
+    if (!type.isOpenType() && computedPropertyNames.isEmpty()) {
       return;
     }
     final Set<String> declaredNames = new HashSet<>(type.getPropertyNames());
@@ -774,6 +805,11 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
     for (final Property property : properties) {
       final String name = property.getName();
       if (declaredNames.contains(name) || navigationNames.contains(name)) {
+        continue;
+      }
+      // A closed type has no dynamic properties of its own -- only what $compute produced. Anything
+      // else undeclared there is internal (a media entity's $value, for one) and must stay unwritten.
+      if (!type.isOpenType() && !computedPropertyNames.contains(name)) {
         continue;
       }
       if (all || selected.contains(name)) {

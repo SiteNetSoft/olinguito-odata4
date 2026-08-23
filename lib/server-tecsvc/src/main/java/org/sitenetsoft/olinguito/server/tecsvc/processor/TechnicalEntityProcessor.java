@@ -86,6 +86,7 @@ import org.sitenetsoft.olinguito.server.api.uri.UriResourceEntitySet;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceNavigation;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourcePartTyped;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceSingleton;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ComputeOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.CountOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.IdOption;
@@ -496,7 +497,7 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
     final SerializerResult serializerResult = isReference ?
         serializeReference(entity, edmEntitySet, requestedFormat) :
         serializeEntity(request, entitySerialization, edmEntitySet, edmEntityType,
-            requestedFormat, expand, select, iscontNav, omitNulls);
+            requestedFormat, expand, select, iscontNav, omitNulls, uriInfo.getComputeOption());
 
     if (entity.getETag() != null) {
       response.setHeader(HttpHeader.ETAG, entity.getETag());
@@ -691,7 +692,7 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
       final SerializerStreamResult serializerResult =
           serializeEntityCollectionStreamed(request,
               entitySetSerialization, edmEntitySet, edmEntityType, requestedContentType,
-              expand, select, countOption, id, omitNulls);
+              expand, select, countOption, id, omitNulls, uriInfo.getComputeOption());
 
       response.setODataContent(serializerResult.getODataContent());
     } else if(delta != null){
@@ -706,7 +707,7 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
       final SerializerResult serializerResult =
           serializeEntityCollection(request,
               entitySetSerialization, edmEntitySet, edmEntityType, requestedContentType,
-              expand, select, countOption, id, isContNav, omitNulls);
+              expand, select, countOption, id, isContNav, omitNulls, uriInfo.getComputeOption());
       response.setContent(serializerResult.getContent());
     }
 
@@ -799,7 +800,8 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
   private SerializerResult serializeEntityCollection(final ODataRequest request, final EntityCollection
       entityCollection, final EdmEntitySet edmEntitySet, final EdmEntityType edmEntityType,
       final ContentType requestedFormat, final ExpandOption expand, final SelectOption select,
-      final CountOption countOption, String id, final boolean isContNav, final boolean omitNulls)
+      final CountOption countOption, String id, final boolean isContNav, final boolean omitNulls,
+      final ComputeOption compute)
       throws ODataLibraryException {
 
     return odata.createSerializer(requestedFormat, request.getHeaders(HttpHeader.ODATA_VERSION))
@@ -812,6 +814,7 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
                 getContextUrl(request.getRawODataPath(), edmEntitySet, edmEntityType, false, expand, select, isContNav))
             .count(countOption)
             .expand(expand).select(select)
+            .compute(compute)
             .id(id)
             .omitNulls(omitNulls)
             .build());
@@ -822,7 +825,8 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
       final EntityCollection entityCollection, final EdmEntitySet edmEntitySet,
       final EdmEntityType edmEntityType,
       final ContentType requestedFormat, final ExpandOption expand, final SelectOption select,
-      final CountOption countOption, final String id, final boolean omitNulls) throws ODataLibraryException {
+      final CountOption countOption, final String id, final boolean omitNulls,
+      final ComputeOption compute) throws ODataLibraryException {
 
     EntityIterator streamCollection = new EntityIterator() {
       Iterator<Entity> entityIterator = entityCollection.iterator();
@@ -894,6 +898,7 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
                 getContextUrl(request.getRawODataPath(), edmEntitySet, edmEntityType, false, expand, select, false))
             .count(countOption)
             .expand(expand).select(select)
+            .compute(compute)
             .id(id)
             .omitNulls(omitNulls)
             .build());
@@ -940,6 +945,17 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
       final ContentType requestedFormat,
       final ExpandOption expand, final SelectOption select, final boolean isContNav, final boolean omitNulls)
       throws ODataLibraryException {
+    // Write responses (create/update) never carry $compute.
+    return serializeEntity(request, entity, edmEntitySet, edmEntityType, requestedFormat, expand, select,
+        isContNav, omitNulls, null);
+  }
+
+  private SerializerResult serializeEntity(final ODataRequest request, final Entity entity,
+      final EdmEntitySet edmEntitySet, final EdmEntityType edmEntityType,
+      final ContentType requestedFormat,
+      final ExpandOption expand, final SelectOption select, final boolean isContNav, final boolean omitNulls,
+      final ComputeOption compute)
+      throws ODataLibraryException {
 
     ContextURL contextUrl = isODataMetadataNone(requestedFormat) ? null :
         getContextUrl(request.getRawODataPath(), edmEntitySet, edmEntityType, true, expand, select,isContNav);
@@ -950,6 +966,7 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
         EntitySerializerOptions.with()
             .contextURL(contextUrl)
             .expand(expand).select(select)
+            .compute(compute)
             .omitNulls(omitNulls)
             .build());
   }

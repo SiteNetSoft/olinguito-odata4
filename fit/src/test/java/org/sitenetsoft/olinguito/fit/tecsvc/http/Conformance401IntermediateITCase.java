@@ -227,6 +227,24 @@ public class Conformance401IntermediateITCase extends AbstractBaseTestITCase {
     return body.substring(start, end + 1);
   }
 
+  /**
+   * 13.2.2 item 8: $compute defines a property computed per instance. ESAllPrim(32767)'s
+   * PropertyInt16 is Short.MAX_VALUE (DataCreator:1262).
+   */
+  @Test
+  public void computeDefinesAUsableProperty() throws Exception {
+    final String computed = body("ESAllPrim(32767)?$compute=PropertyInt16 mul 2 as Doubled&$select=Doubled");
+    assertTrue("the computed property must be in the payload: " + computed,
+        computed.contains("\"Doubled\":65534"));
+  }
+
+  /** A computed property is usable in $filter, which is what the parse and evaluation order exists for. */
+  @Test
+  public void computedPropertyIsUsableInFilter() throws Exception {
+    assertEquals(1, entityCount("ESAllPrim?$compute=PropertyInt16 mul 2 as Doubled"
+        + "&$filter=Doubled eq 65534"));
+  }
+
   private int entityCount(final String pathAndQuery) throws IOException {
     final String content = body(pathAndQuery);
     final int start = content.indexOf("\"value\":[");

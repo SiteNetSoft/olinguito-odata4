@@ -17,11 +17,13 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Added the omit-values preference (OData 4.01, Protocol Section 8.2.8.6)
+ * Copyright 2026 SiteNetSoft - Tier 8 Wave 4: carry the $compute option to the serializer
  */
 package org.sitenetsoft.olinguito.server.api.serializer;
 
 import org.sitenetsoft.olinguito.commons.api.data.ContextURL;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.ExpandOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ComputeOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectOption;
 
 /** Options for the OData serializer. */
@@ -29,6 +31,7 @@ public class EntitySerializerOptions {
   private ContextURL contextURL;
   private ExpandOption expand;
   private SelectOption select;
+  private ComputeOption compute;
   private boolean writeOnlyReferences;
   private String xml10InvalidCharReplacement;
   private boolean omitNulls;
@@ -46,6 +49,15 @@ public class EntitySerializerOptions {
   /** Gets the $select system query option. */
   public SelectOption getSelect() {
     return select;
+  }
+
+  /**
+   * Gets the $compute system query option, whose aliases name the properties computed for each
+   * instance; the serializer must write them even on a closed type ([OData-Protocol] 11.2.5.3).
+   * @return the $compute option, or <code>null</code> if not specified
+   */
+  public ComputeOption getCompute() {
+    return compute;
   }
 
   /** only writes the references of the entities */
@@ -98,6 +110,12 @@ public class EntitySerializerOptions {
     /** Sets the $select system query option. */
     public Builder select(final SelectOption select) {
       options.select = select;
+      return this;
+    }
+
+    /** Sets the $compute system query option, so computed properties are serialized. */
+    public Builder compute(final ComputeOption compute) {
+      options.compute = compute;
       return this;
     }
 
