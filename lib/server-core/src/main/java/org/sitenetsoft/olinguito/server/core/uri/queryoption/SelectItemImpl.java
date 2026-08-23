@@ -15,12 +15,20 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ * Copyright 2026 SiteNetSoft - Tier 8 Wave 2: nested query options on a select item
  */
 package org.sitenetsoft.olinguito.server.core.uri.queryoption;
 
 import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.server.api.uri.UriInfoResource;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.FilterOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SearchOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.OrderByOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SkipOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.TopOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.CountOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectOption;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectItem;
 
 public class SelectItemImpl implements SelectItem {
@@ -31,6 +39,14 @@ public class SelectItemImpl implements SelectItem {
   private FullQualifiedName addOperationsInSchemaNameSpace;
 
   private EdmType startTypeFilter;
+
+  private FilterOption filterOption;
+  private SearchOption searchOption;
+  private OrderByOption orderByOption;
+  private SkipOption skipOption;
+  private TopOption topOption;
+  private CountOption countOption;
+  private SelectOption selectOption;
 
   @Override
   public UriInfoResource getResourcePath() {
@@ -74,6 +90,76 @@ public class SelectItemImpl implements SelectItem {
 
   public SelectItemImpl setTypeFilter(final EdmType startTypeFilter) {
     this.startTypeFilter = startTypeFilter;
+    return this;
+  }
+
+  @Override
+  public FilterOption getFilterOption() {
+    return filterOption;
+  }
+
+  public SelectItemImpl setFilterOption(final FilterOption filterOption) {
+    this.filterOption = filterOption;
+    return this;
+  }
+
+  @Override
+  public SearchOption getSearchOption() {
+    return searchOption;
+  }
+
+  public SelectItemImpl setSearchOption(final SearchOption searchOption) {
+    this.searchOption = searchOption;
+    return this;
+  }
+
+  @Override
+  public OrderByOption getOrderByOption() {
+    return orderByOption;
+  }
+
+  public SelectItemImpl setOrderByOption(final OrderByOption orderByOption) {
+    this.orderByOption = orderByOption;
+    return this;
+  }
+
+  @Override
+  public SkipOption getSkipOption() {
+    return skipOption;
+  }
+
+  public SelectItemImpl setSkipOption(final SkipOption skipOption) {
+    this.skipOption = skipOption;
+    return this;
+  }
+
+  @Override
+  public TopOption getTopOption() {
+    return topOption;
+  }
+
+  public SelectItemImpl setTopOption(final TopOption topOption) {
+    this.topOption = topOption;
+    return this;
+  }
+
+  @Override
+  public CountOption getCountOption() {
+    return countOption;
+  }
+
+  public SelectItemImpl setCountOption(final CountOption countOption) {
+    this.countOption = countOption;
+    return this;
+  }
+
+  @Override
+  public SelectOption getSelectOption() {
+    return selectOption;
+  }
+
+  public SelectItemImpl setSelectOption(final SelectOption selectOption) {
+    this.selectOption = selectOption;
     return this;
   }
 
