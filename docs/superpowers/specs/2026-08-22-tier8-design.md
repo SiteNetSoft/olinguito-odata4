@@ -61,7 +61,10 @@ plumbing.
 
 **New: the spec's option split is the parser's split.** [OData-Protocol] §11.2.5.1 allows different
 nested options on complex versus collection-valued selected properties, and none on a plain primitive.
-The parser enforces that distinction rather than accepting one union everywhere.
+The parser enforces that distinction rather than accepting one union everywhere. Note that
+[OData-ABNF]'s `selectProperty` gives a bare `navigationProperty` **no** option group at all, so the
+"complex or navigation path" phrasing used under Wave 2 below is too generous: options attach to a
+`selectPath`, which is complex-only, and to a primitive collection.
 
 ### Wave 1 — derived-type casts and single-valued navigation
 
@@ -148,9 +151,16 @@ honors them in `$select`.
 **Wave 1** — the four Wave 1 defects above, then a gate. Entirely `server-tecsvc` plus whatever the
 cast work needs in `server-core`'s expression evaluation.
 
-**Wave 2**, in order: `SelectItem` API → `SelectParser` grammar → nested-option evaluation →
-`$compute` parse plumbing → `$compute` evaluation → end-to-end ITs → gate → **re-audit §13.2.2 and
-§13.1.2** → record the tier.
+**Wave 2**, in order: `SelectItem` API → `SelectParser` grammar with the per-kind split → nested
+`$select` projection → 501 for the collection options not yet evaluated → gate.
+
+**Wave 3**, in order: evaluate the collection options (item 9) → `$compute` parse plumbing →
+`$compute` evaluation → end-to-end ITs → gate → **re-audit §13.2.2 and §13.1.2** → record the tier.
+
+*(The split was taken while planning Wave 2, under the licence below. Two things drove it: `$compute`
+is a system query option end to end, and evaluating `$filter`/`$orderby` on a selected
+collection-valued **property** has no existing machinery — `ExpandSystemQueryOptionHandler` applies
+those to expanded **entity** collections, which is a different thing.)*
 
 As in Tier 7, the re-audit is the second-to-last step and the conformance claim depends on it. Unlike
 Tier 7, no new `Core.ODataVersions` value is needed: the annotation already says `4.01`, and
