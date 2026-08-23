@@ -154,8 +154,18 @@ cast work needs in `server-core`'s expression evaluation.
 **Wave 2**, in order: `SelectItem` API → `SelectParser` grammar with the per-kind split → nested
 `$select` projection → 501 for the collection options not yet evaluated → gate.
 
-**Wave 3**, in order: evaluate the collection options (item 9) → `$compute` parse plumbing →
-`$compute` evaluation → end-to-end ITs → gate → **re-audit §13.2.2 and §13.1.2** → record the tier.
+**Wave 3**: evaluate the collection options (item 9) as far as the evaluator reaches — `$top`,
+`$skip`, `$count`, and `$filter`/`$orderby` over complex collections — narrowing the 501 to `$search`
+and to `$filter`/`$orderby` over primitive collections, which would need `$it`.
+
+**Wave 4**: `$compute` (item 8) → end-to-end ITs → gate → **re-audit §13.2.2 and §13.1.2** → record
+the tier.
+
+*(`$compute` was split out again while planning Wave 3. It needs a `ComputeOption` in `server-api` —
+the existing `Compute` is an `ApplyItem`, the wrong hierarchy — plus wiring into `Parser.parseUri`
+ahead of `$filter`/`$orderby`/`$select`, an evaluator, and a serializer that writes computed
+properties on a **closed** type, where `writeDynamicProperties` returns early today. That last part
+reaches the public serializer options, which makes it cross-module rather than a tecsvc change.)*
 
 *(The split was taken while planning Wave 2, under the licence below. Two things drove it: `$compute`
 is a system query option end to end, and evaluating `$filter`/`$orderby` on a selected
