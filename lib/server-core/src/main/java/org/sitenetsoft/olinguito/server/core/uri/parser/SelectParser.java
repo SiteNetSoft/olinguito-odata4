@@ -18,6 +18,7 @@
  *
  * Copyright 2026 SiteNetSoft - Add OpenType support ($select of dynamic properties)
  * Copyright 2026 SiteNetSoft - OData 4.01: map ambiguous optional-parameter overloads to a 400 response
+ * Copyright 2026 SiteNetSoft - Tier 8 Wave 2: nested option group on a selected property
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
@@ -45,6 +46,11 @@ import org.sitenetsoft.olinguito.server.core.uri.UriResourceFunctionImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourceNavigationPropertyImpl;
 import org.sitenetsoft.olinguito.server.core.uri.UriResourcePrimitivePropertyImpl;
 import org.sitenetsoft.olinguito.server.core.uri.parser.UriTokenizer.TokenKind;
+import org.sitenetsoft.olinguito.server.api.OData;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SystemQueryOptionKind;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.CountOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.SkipOptionImpl;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.TopOptionImpl;
 import org.sitenetsoft.olinguito.server.core.uri.queryoption.SelectItemImpl;
 import org.sitenetsoft.olinguito.server.core.uri.queryoption.SelectOptionImpl;
 import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidationException;
@@ -52,9 +58,16 @@ import org.sitenetsoft.olinguito.server.core.uri.validator.UriValidationExceptio
 public class SelectParser {
 
   private final Edm edm;
+  /** Needed by the nested $filter and $orderby parsers; null when no nested option can occur. */
+  private final OData odata;
 
   public SelectParser(final Edm edm) {
+    this(edm, null);
+  }
+
+  public SelectParser(final Edm edm, final OData odata) {
     this.edm = edm;
+    this.odata = odata;
   }
 
   public SelectOption parse(UriTokenizer tokenizer, final EdmStructuredType referencedType,
@@ -70,7 +83,8 @@ public class SelectParser {
   }
 
   private SelectItem parseItem(UriTokenizer tokenizer,
-      final EdmStructuredType referencedType, final boolean referencedIsCollection) throws UriParserException {
+      final EdmStructuredType referencedType, final boolean referencedIsCollection)
+      throws UriParserException, UriValidationException {
     SelectItemImpl item = new SelectItemImpl();
     if (tokenizer.next(TokenKind.STAR)) {
       item.setStar(true);
@@ -98,7 +112,7 @@ public class SelectParser {
             if (tokenizer.next(TokenKind.SLASH)) {
               ParserHelper.requireNext(tokenizer, TokenKind.ODataIdentifier);
               UriInfoImpl resource = new UriInfoImpl().setKind(UriInfoKind.resource);
-              addSelectPath(tokenizer, type, resource);
+              addSelectPath(tokenizer, type, resource, item);
               item.setResourcePath(resource);
             }
           } else {
@@ -118,7 +132,7 @@ public class SelectParser {
       } else {
         ensureReferencedTypeNotNull(referencedType);
         UriInfoImpl resource = new UriInfoImpl().setKind(UriInfoKind.resource);
-        addSelectPath(tokenizer, referencedType, resource);
+        addSelectPath(tokenizer, referencedType, resource, item);
         item.setResourcePath(resource);
       }
     }
@@ -185,8 +199,8 @@ public class SelectParser {
     return names;
   }
 
-  private void addSelectPath(UriTokenizer tokenizer, final EdmStructuredType referencedType, UriInfoImpl resource)
-      throws UriParserException {
+  private void addSelectPath(UriTokenizer tokenizer, final EdmStructuredType referencedType,
+      UriInfoImpl resource, SelectItemImpl item) throws UriParserException, UriValidationException {
     final String name = tokenizer.getText();
     final EdmProperty property = referencedType.getStructuralProperty(name);
 
@@ -204,12 +218,20 @@ public class SelectParser {
             referencedType.getName(), name);
       } else {
         resource.addResourcePart(new UriResourceNavigationPropertyImpl(navigationProperty));
+        // [OData-ABNF] selectProperty gives a bare navigationProperty no bracketed option group.
+        rejectOptionGroup(tokenizer, name);
       }
 
     } else if (property.isPrimitive()
         || property.getType().getKind() == EdmTypeKind.ENUM
         || property.getType().getKind() == EdmTypeKind.DEFINITION) {
       resource.addResourcePart(new UriResourcePrimitivePropertyImpl(property));
+      if (property.isCollection()) {
+        // [OData-ABNF]: a primitiveColProperty takes selectOptionPC only -- no nested $select.
+        parseSelectOptions(tokenizer, referencedType, property, item, false);
+      } else {
+        rejectOptionGroup(tokenizer, name);
+      }
 
     } else {
       UriResourceComplexPropertyImpl complexPart = new UriResourceComplexPropertyImpl(property);
@@ -225,7 +247,7 @@ public class SelectParser {
             complexPart.setTypeFilter(type);
             if (tokenizer.next(TokenKind.SLASH)) {
               if (tokenizer.next(TokenKind.ODataIdentifier)) {
-                addSelectPath(tokenizer, type, resource);
+                addSelectPath(tokenizer, type, resource, item);
               } else {
                 throw new UriParserSemanticException("Unknown part after '/'.",
                     UriParserSemanticException.MessageKeys.UNKNOWN_PART, "");
@@ -236,7 +258,7 @@ public class SelectParser {
                 UriParserSemanticException.MessageKeys.INCOMPATIBLE_TYPE_FILTER, type.getName());
           }
         } else if (tokenizer.next(TokenKind.ODataIdentifier)) {
-          addSelectPath(tokenizer, (EdmStructuredType) property.getType(), resource);
+          addSelectPath(tokenizer, (EdmStructuredType) property.getType(), resource, item);
         } else if (tokenizer.next(TokenKind.SLASH)) {
           throw new UriParserSyntaxException("Illegal $select expression.",
               UriParserSyntaxException.MessageKeys.SYNTAX);
@@ -244,7 +266,91 @@ public class SelectParser {
           throw new UriParserSemanticException("Unknown part after '/'.",
               UriParserSemanticException.MessageKeys.UNKNOWN_PART, "");
         }
+      } else {
+        // [OData-ABNF]: a selectPath -- a complex property, optionally cast -- takes the full
+        // selectOption group, which is $select plus the collection options when it is a collection.
+        parseSelectOptions(tokenizer, referencedType, property, item, true);
       }
+    }
+  }
+
+  /**
+   * Parses the parenthesized, semicolon-separated option group a selected property may carry.
+   * [OData-Protocol] 11.2.5.1: "Allowed system query options are $select and $compute for complex
+   * properties, plus $filter, $search, $count, $orderby, $skip, and $top for collection-valued
+   * properties." $compute is not accepted yet: the option does not exist elsewhere in the service.
+   * @param allowNested whether $select may appear, i.e. whether the property is complex
+   */
+  private void parseSelectOptions(UriTokenizer tokenizer, final EdmStructuredType referencedType,
+      final EdmProperty property, SelectItemImpl item, final boolean allowNested)
+      throws UriParserException, UriValidationException {
+    if (!tokenizer.next(TokenKind.OPEN)) {
+      return;
+    }
+    final boolean isCollection = property.isCollection();
+    final EdmStructuredType nestedType = property.getType() instanceof EdmStructuredType structured
+        ? structured
+        : referencedType;
+    do {
+      if (allowNested && tokenizer.next(TokenKind.SELECT)) {
+        ParserHelper.requireNext(tokenizer, TokenKind.EQ);
+        item.setSelectOption(new SelectParser(edm, odata).parse(tokenizer, nestedType, isCollection));
+
+      } else if (isCollection && tokenizer.next(TokenKind.FILTER)) {
+        ParserHelper.requireNext(tokenizer, TokenKind.EQ);
+        item.setFilterOption(new FilterParser(edm, odata).parse(tokenizer, nestedType, null, null, null));
+
+      } else if (isCollection && tokenizer.next(TokenKind.ORDERBY)) {
+        ParserHelper.requireNext(tokenizer, TokenKind.EQ);
+        item.setOrderByOption(new OrderByParser(edm, odata).parse(tokenizer, nestedType, null, null, null));
+
+      } else if (isCollection && tokenizer.next(TokenKind.SEARCH)) {
+        ParserHelper.requireNext(tokenizer, TokenKind.EQ);
+        ParserHelper.bws(tokenizer);
+        item.setSearchOption(new SearchParser().parse(tokenizer));
+
+      } else if (isCollection && tokenizer.next(TokenKind.COUNT)) {
+        ParserHelper.requireNext(tokenizer, TokenKind.EQ);
+        ParserHelper.requireNext(tokenizer, TokenKind.BooleanValue);
+        CountOptionImpl countOption = new CountOptionImpl();
+        countOption.setText(tokenizer.getText());
+        countOption.setValue(Boolean.parseBoolean(tokenizer.getText()));
+        item.setCountOption(countOption);
+
+      } else if (isCollection && tokenizer.next(TokenKind.SKIP)) {
+        ParserHelper.requireNext(tokenizer, TokenKind.EQ);
+        ParserHelper.requireNext(tokenizer, TokenKind.IntegerValue);
+        SkipOptionImpl skipOption = new SkipOptionImpl();
+        skipOption.setText(tokenizer.getText());
+        skipOption.setValue(ParserHelper.parseNonNegativeInteger(
+            SystemQueryOptionKind.SKIP.toString(), tokenizer.getText(), true));
+        item.setSkipOption(skipOption);
+
+      } else if (isCollection && tokenizer.next(TokenKind.TOP)) {
+        ParserHelper.requireNext(tokenizer, TokenKind.EQ);
+        ParserHelper.requireNext(tokenizer, TokenKind.IntegerValue);
+        TopOptionImpl topOption = new TopOptionImpl();
+        topOption.setText(tokenizer.getText());
+        topOption.setValue(ParserHelper.parseNonNegativeInteger(
+            SystemQueryOptionKind.TOP.toString(), tokenizer.getText(), true));
+        item.setTopOption(topOption);
+
+      } else {
+        throw new UriParserSemanticException("Not allowed as select option.",
+            UriParserSemanticException.MessageKeys.UNKNOWN_PART, property.getName());
+      }
+    } while (tokenizer.next(TokenKind.SEMI));
+    ParserHelper.requireNext(tokenizer, TokenKind.CLOSE);
+  }
+
+  /**
+   * Rejects an option group on a select item that may not carry one: a plain primitive property or
+   * a bare navigation property ([OData-ABNF] selectProperty).
+   */
+  private void rejectOptionGroup(UriTokenizer tokenizer, final String name) throws UriParserException {
+    if (tokenizer.next(TokenKind.OPEN)) {
+      throw new UriParserSemanticException("Options are not allowed on this select item.",
+          UriParserSemanticException.MessageKeys.UNKNOWN_PART, name);
     }
   }
 }

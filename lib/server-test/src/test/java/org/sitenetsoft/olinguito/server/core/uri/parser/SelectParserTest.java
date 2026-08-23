@@ -20,6 +20,11 @@
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Collections;
 
 import org.sitenetsoft.olinguito.commons.api.edm.Edm;
@@ -31,6 +36,8 @@ import org.sitenetsoft.olinguito.server.core.uri.testutil.TestUriValidator;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.ActionProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.ComplexTypeProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EdmTechProvider;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectItem;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectOption;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EntityTypeProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.EnumTypeProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.provider.FunctionProvider;
@@ -45,6 +52,45 @@ class SelectParserTest {
       new EdmTechProvider(), Collections.emptyList()).getEdm();
 
   private final TestUriValidator testUri = new TestUriValidator().setEdm(edm);
+
+  /**
+   * [OData-Protocol] 11.2.5.1: "Query options can be applied to a selected property by appending a
+   * semicolon-separated list of query options, enclosed in parentheses, to the property. Allowed
+   * system query options are $select and $compute for complex properties, plus $filter, $search,
+   * $count, $orderby, $skip, and $top for collection-valued properties."
+   */
+  @Test
+  void nestedSelectOnAComplexProperty() throws Exception {
+    final SelectItem item = parseSelect("PropertyCompNav($select=PropertyInt16)").getSelectItems().get(0);
+    assertNotNull(item.getSelectOption());
+    assertEquals(1, item.getSelectOption().getSelectItems().size());
+  }
+
+  @Test
+  void collectionOptionsOnACollectionValuedProperty() throws Exception {
+    final SelectItem item =
+        parseSelect("CollPropertyString($top=1;$skip=2;$count=true)").getSelectItems().get(0);
+    assertEquals(Integer.valueOf(1), item.getTopOption().getValue());
+    assertEquals(Integer.valueOf(2), item.getSkipOption().getValue());
+    assertTrue(item.getCountOption().getValue());
+  }
+
+  @Test
+  void optionsNotAllowedForThePropertyKindAreRejected() {
+    // A plain primitive and a bare navigation property take no option group at all
+    // ([OData-ABNF] selectProperty), and a primitive collection takes only selectOptionPC,
+    // which does not include $select.
+    assertThrows(UriParserSemanticException.class, () -> parseSelect("PropertyString($top=1)"));
+    assertThrows(UriParserSemanticException.class,
+        () -> parseSelect("NavPropertyETTwoKeyNavOne($select=PropertyString)"));
+    assertThrows(UriParserSemanticException.class, () -> parseSelect("CollPropertyString($select=X)"));
+  }
+
+  /** Parses a $select value against ETKeyNav, the type carrying one property of each kind. */
+  private SelectOption parseSelect(final String select) throws Exception {
+    return new SelectParser(edm, OData.newInstance()).parse(new UriTokenizer(select),
+        edm.getEntityType(EntityTypeProvider.nameETKeyNav), true);
+  }
 
   @Test
   void select() throws Exception {

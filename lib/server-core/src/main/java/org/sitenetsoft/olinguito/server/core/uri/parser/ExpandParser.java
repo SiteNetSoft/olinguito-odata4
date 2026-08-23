@@ -291,7 +291,7 @@ public class ExpandParser {
 
         } else if (!forRef && !forCount && tokenizer.next(TokenKind.SELECT)) {
           ParserHelper.requireNext(tokenizer, TokenKind.EQ);
-          systemQueryOption = new SelectParser(edm).parse(tokenizer, referencedType, referencedIsCollection);
+          systemQueryOption = new SelectParser(edm, odata).parse(tokenizer, referencedType, referencedIsCollection);
 
         } else if (!forCount && tokenizer.next(TokenKind.SKIP)) {
           ParserHelper.requireNext(tokenizer, TokenKind.EQ);

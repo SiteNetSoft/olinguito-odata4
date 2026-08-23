@@ -505,7 +505,7 @@ public class Parser {
       final String optionValue = selectOption.getText();
       UriTokenizer selectTokenizer = new UriTokenizer(optionValue);
       ((SelectOptionImpl) selectOption).setSelectItems(
-          new SelectParser(edm).parse(selectTokenizer,
+          new SelectParser(edm, odata).parse(selectTokenizer,
               contextType instanceof EdmStructuredType structuredType ? structuredType : null,
               contextIsCollection)
               .getSelectItems());
