@@ -22,6 +22,8 @@
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +36,7 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmProperty;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmStructuredType;
 import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.commons.api.edm.constants.EdmTypeKind;
+import org.sitenetsoft.olinguito.server.api.uri.UriResource;
 import org.sitenetsoft.olinguito.server.api.uri.UriInfoKind;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourcePartTyped;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectItem;
@@ -73,9 +76,16 @@ public class SelectParser {
   public SelectOption parse(UriTokenizer tokenizer, final EdmStructuredType referencedType,
       final boolean referencedIsCollection) throws UriParserException, UriValidationException {
     List<SelectItem> selectItems = new ArrayList<>();
+    final Set<String> pathsWithOptions = new HashSet<>();
     SelectItem item;
     do {
       item = parseItem(tokenizer, referencedType, referencedIsCollection);
+      // [OData-Protocol] 11.2.5.1: "A property MUST NOT have select options specified in more than
+      // one place in a request." Listing a property twice without options is not forbidden here.
+      if (hasOptions(item) && !pathsWithOptions.add(pathOf(item))) {
+        throw new UriParserSemanticException("Select options given twice for the same property.",
+            UriParserSemanticException.MessageKeys.UNKNOWN_PART, pathOf(item));
+      }
       selectItems.add(item);
     } while (tokenizer.next(TokenKind.COMMA));
 
@@ -272,6 +282,25 @@ public class SelectParser {
         parseSelectOptions(tokenizer, referencedType, property, item, true);
       }
     }
+  }
+
+  private static boolean hasOptions(final SelectItem item) {
+    return item.getSelectOption() != null || item.getFilterOption() != null
+        || item.getSearchOption() != null || item.getOrderByOption() != null
+        || item.getSkipOption() != null || item.getTopOption() != null
+        || item.getCountOption() != null;
+  }
+
+  /** @return a stable key for the selected path, used only to detect a repeated option group */
+  private static String pathOf(final SelectItem item) {
+    if (item.getResourcePath() == null) {
+      return "";
+    }
+    final StringBuilder path = new StringBuilder();
+    for (final UriResource segment : item.getResourcePath().getUriResourceParts()) {
+      path.append('/').append(segment.getSegmentValue());
+    }
+    return path.toString();
   }
 
   /**

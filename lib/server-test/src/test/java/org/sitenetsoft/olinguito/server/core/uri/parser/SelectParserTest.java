@@ -86,6 +86,17 @@ class SelectParserTest {
     assertThrows(UriParserSemanticException.class, () -> parseSelect("CollPropertyString($select=X)"));
   }
 
+  @Test
+  void theSamePropertyMayNotCarryOptionsTwice() throws Exception {
+    // [OData-Protocol] 11.2.5.1: "A property MUST NOT have select options specified in more than
+    // one place in a request."
+    assertThrows(UriParserSemanticException.class,
+        () -> parseSelect("CollPropertyString($top=1),CollPropertyString($skip=1)"));
+
+    // The same property listed twice without options is not what the rule forbids.
+    assertEquals(2, parseSelect("CollPropertyString,CollPropertyString").getSelectItems().size());
+  }
+
   /** Parses a $select value against ETKeyNav, the type carrying one property of each kind. */
   private SelectOption parseSelect(final String select) throws Exception {
     return new SelectParser(edm, OData.newInstance()).parse(new UriTokenizer(select),
