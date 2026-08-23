@@ -137,16 +137,25 @@ public class Conformance401IntermediateITCase extends AbstractBaseTestITCase {
   }
 
   /**
-   * Item 9's collection options parse but are not evaluated yet. [OData-Protocol] 13.1.2 item 2
-   * requires 501 for parsed-but-unsupported functionality, which is honest; accepting the option
-   * and silently ignoring it is the failure mode this tier exists to remove.
+   * What this service still cannot evaluate on a selected collection, refused explicitly rather
+   * than silently ignored ([OData-Protocol] 13.1.2 item 2): $search anywhere, and $filter or
+   * $orderby over a collection of primitives, whose items could only be named through $it -- which
+   * this service's expression visitor does not implement at all.
    */
   @Test
-  public void unevaluatedSelectCollectionOptionsAreNotImplemented() throws Exception {
+  public void selectCollectionOptionsStillOutOfReachAreRefused() throws Exception {
     assertStatus(HttpStatusCode.NOT_IMPLEMENTED,
-        "ESKeyNav(1)?$select=CollPropertyString($orderby=$it desc)");
+        "ESKeyNav(1)?$select=CollPropertyString($search=Employee1)");
+    assertStatus(HttpStatusCode.NOT_IMPLEMENTED,
+        "ESKeyNav(1)?$select=CollPropertyComp($search=First)");
+    assertStatus(HttpStatusCode.NOT_IMPLEMENTED,
+        "ESKeyNav(1)?$select=CollPropertyInt16($orderby=$it desc)");
 
-    // A nested $select is evaluated, so it must not be caught by the same guard.
+    // What this wave made work must not be caught by the narrowed guard, and a nested $select --
+    // projected since Wave 2 -- must not be either.
+    assertStatus(HttpStatusCode.OK, "ESKeyNav(1)?$select=CollPropertyString($top=1)");
+    assertStatus(HttpStatusCode.OK, "ESKeyNav(1)?$select=CollPropertyString($count=true)");
+    assertStatus(HttpStatusCode.OK, "ESKeyNav(1)?$select=CollPropertyComp($filter=PropertyInt16 eq 2)");
     assertStatus(HttpStatusCode.OK, "ESKeyNav(1)?$select=PropertyCompTwoPrim($select=PropertyInt16)");
   }
 
