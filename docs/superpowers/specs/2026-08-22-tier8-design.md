@@ -42,14 +42,13 @@ work discharges most of the latter in advance.
 
 The tier splits on a clean seam: **Wave 1 evaluates constructs that already parse; Wave 2 adds new
 grammar and evaluates it.** The two share no code, so the order is a preference rather than a
-dependency — Wave 1 goes first because it is smaller and because one of its defects returns wrong
-answers today.
+dependency — Wave 1 goes first because it is smaller and because one of its defects is a 500 today.
 
 Three principles carry over from Tier 7, and one is new:
 
-**Additive, never substitutive** — except where today's behavior is provably wrong. Wave 1 contains
-the tier's one deliberate behavior change (see Deviations D1); everything else only adds accepted
-syntax.
+**Additive, never substitutive.** Wave 1 replaces a special case with the general rule it was
+approximating, and the answers it already gives must not change (see Deviations D1); everything else
+only adds accepted syntax or makes a 500 answer properly.
 
 **Evidence at the level the clause operates.** The audit's recurring finding is *parsed then dropped
 at evaluation*, and Tier 7 found two gaps that only real HTTP requests exposed. Every clause here
