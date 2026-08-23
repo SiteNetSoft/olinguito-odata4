@@ -105,6 +105,29 @@ class UriParserTest {
   }
 
   @Test
+  void computeDefinesPropertiesUsableByTheOtherOptions() throws Exception {
+    // [OData-Protocol] 11.2.5.3: computed properties "can be used in a $select or within a $filter
+    // or $orderby expression", so $compute must be parsed before all three and contribute its
+    // aliases to the context type.
+    testUri.run("ESAllPrim", "$compute=PropertyInt16 mul 2 as Doubled")
+        .isKind(UriInfoKind.resource);
+    testUri.run("ESAllPrim", "$compute=PropertyInt16 mul 2 as Doubled&$select=Doubled")
+        .isKind(UriInfoKind.resource);
+    testUri.run("ESAllPrim", "$compute=PropertyInt16 mul 2 as Doubled&$filter=Doubled gt 2")
+        .isKind(UriInfoKind.resource);
+    testUri.run("ESAllPrim", "$compute=PropertyInt16 mul 2 as Doubled&$orderby=Doubled")
+        .isKind(UriInfoKind.resource);
+
+    // An alias colliding with a declared property is rejected.
+    testUri.runEx("ESAllPrim", "$compute=PropertyInt16 mul 2 as PropertyString")
+        .isExSemantic(MessageKeys.IS_PROPERTY);
+
+    // [OData-ABNF] computeItem = commonExpr RWS "as" RWS computedProperty -- the alias is required.
+    testUri.runEx("ESAllPrim", "$compute=PropertyInt16 mul 2")
+        .isExSyntax(UriParserSyntaxException.MessageKeys.SYNTAX);
+  }
+
+  @Test
   void misc() throws Exception {
     testUri.run("")
         .isKind(UriInfoKind.service);

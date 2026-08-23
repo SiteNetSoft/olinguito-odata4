@@ -20,6 +20,7 @@
  * Copyright 2026 SiteNetSoft - OLINGO-1324: Tolerate trailing slash in URI paths
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 1: $schemaversion system query option
  * Copyright 2026 SiteNetSoft - Tier 7 Task 2: route system query options spelled without the $ prefix
+ * Copyright 2026 SiteNetSoft - Tier 8 Wave 4: parse the $compute system query option first
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 3 Task 1: key-as-segment URL convention
  */
 package org.sitenetsoft.olinguito.server.core.uri.parser;
@@ -62,6 +63,9 @@ import org.sitenetsoft.olinguito.server.core.uri.parser.UriTokenizer.TokenKind;
 import org.sitenetsoft.olinguito.server.core.uri.parser.search.SearchParser;
 import org.sitenetsoft.olinguito.server.core.uri.queryoption.AliasQueryOptionImpl;
 import org.sitenetsoft.olinguito.server.core.uri.queryoption.ApplyOptionImpl;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.ComputeOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.apply.ComputeExpression;
+import org.sitenetsoft.olinguito.server.core.uri.queryoption.ComputeOptionImpl;
 import org.sitenetsoft.olinguito.server.core.uri.queryoption.CountOptionImpl;
 import org.sitenetsoft.olinguito.server.core.uri.queryoption.DeltaTokenOptionImpl;
 import org.sitenetsoft.olinguito.server.core.uri.queryoption.ExpandOptionImpl;
@@ -305,10 +309,14 @@ public class Parser {
     }
 
     // Post-process system query options that need context information from the resource path.
-    if (contextType instanceof EdmStructuredType structuredType && contextUriInfo.getApplyOption() != null) {
-      // Data aggregation may change the structure of the result.
+    if (contextType instanceof EdmStructuredType structuredType
+        && (contextUriInfo.getApplyOption() != null || contextUriInfo.getComputeOption() != null)) {
+      // Data aggregation may change the structure of the result, and $compute adds properties to it.
       contextType = new DynamicStructuredType(structuredType);
     }
+    // [OData-Protocol] 11.2.5.3: computed properties are usable from $select, $filter and $orderby,
+    // so $compute is parsed before all three and contributes its aliases to the context type.
+    parseComputeOption(contextUriInfo.getComputeOption(), contextType, contextUriInfo.getAliasMap());
     parseApplyOption(contextUriInfo.getApplyOption(), contextType,
         contextUriInfo.getEntitySetNames(), contextUriInfo.getAliasMap());
     parseFilterOption(contextUriInfo.getFilterOption(), contextType,
@@ -425,6 +433,9 @@ public class Parser {
       case APPLY:
         systemOption = new ApplyOptionImpl();
         break;
+      case COMPUTE:
+        systemOption = new ComputeOptionImpl();
+        break;
       default:
           throw new UriParserSyntaxException("System query option '" + kind + "' is not known!",
               UriParserSyntaxException.MessageKeys.UNKNOWN_SYSTEM_QUERY_OPTION, optionName);
@@ -510,6 +521,21 @@ public class Parser {
               contextIsCollection)
               .getSelectItems());
       checkOptionEOF(selectTokenizer, selectOption.getName(), optionValue);
+    }
+  }
+
+  private void parseComputeOption(ComputeOption computeOption, EdmType contextType,
+      final Map<String, AliasQueryOption> aliases) throws UriParserException, UriValidationException {
+    if (computeOption != null) {
+      final String optionValue = computeOption.getText();
+      UriTokenizer computeTokenizer = new UriTokenizer(optionValue);
+      final ComputeOption option = new ComputeParser(edm, odata).parse(computeTokenizer,
+          contextType instanceof EdmStructuredType structuredType ? structuredType : null,
+          aliases);
+      checkOptionEOF(computeTokenizer, computeOption.getName(), optionValue);
+      for (final ComputeExpression expression : option.getExpressions()) {
+        ((ComputeOptionImpl) computeOption).add(expression);
+      }
     }
   }
 

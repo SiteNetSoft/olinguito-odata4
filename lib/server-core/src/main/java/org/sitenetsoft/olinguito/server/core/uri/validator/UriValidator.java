@@ -25,6 +25,7 @@
  * mediaStream which are otherwise all-false
  * Copyright 2026 SiteNetSoft - Tier 5 Wave 2 Task 3: $schemaversion is exempt from the
  * method-specific query-option checks, so it may also accompany non-read requests such as $batch
+ * Copyright 2026 SiteNetSoft - Tier 8 Wave 4: allow $compute wherever $select is allowed
  */
 package org.sitenetsoft.olinguito.server.core.uri.validator;
 
@@ -55,7 +56,8 @@ public class UriValidator {
   //CHECKSTYLE:OFF (Maven checkstyle)
   // Column indices:
   // 0-FILTER  1-FORMAT  2-EXPAND  3-ID  4-COUNT  5-ORDERBY
-  // 6-SEARCH  7-SELECT  8-SKIP  9-SKIPTOKEN  10-TOP  11-APPLY  12-DELTATOKEN  13-SCHEMAVERSION
+  // 6-SEARCH  7-SELECT (and COMPUTE)  8-SKIP  9-SKIPTOKEN  10-TOP  11-APPLY  12-DELTATOKEN
+  // 13-SCHEMAVERSION
   private static final boolean[][] decisionMatrix = {
     // all                          0
     {true,  true,  true,  false, true,  true,  true,  true,  true,  true,  true,  true,  true,  true},
@@ -152,6 +154,11 @@ public class UriValidator {
     temp.put(SystemQueryOptionKind.APPLY, 11);
     temp.put(SystemQueryOptionKind.DELTATOKEN, 12);
     temp.put(SystemQueryOptionKind.SCHEMAVERSION, 13);
+    // $compute shares the $select column deliberately. [OData-URL] 5.1 groups the three together --
+    // "Resource paths identifying a single entity, a complex type instance, a collection of
+    // entities, or a collection of complex type instances allow $compute, $expand and $select" --
+    // so it is allowed in exactly the places $select is, including being disallowed on /$count.
+    temp.put(SystemQueryOptionKind.COMPUTE, 7);
     OPTION_INDEX = Collections.unmodifiableMap(temp);
   }
 
