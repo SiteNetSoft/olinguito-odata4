@@ -362,7 +362,7 @@ public abstract class TechnicalProcessor implements Processor {
         // accepting the option and ignoring it would be worse than refusing it. A nested $select
         // is deliberately absent from this check -- it is projected by ExpandSelectHelper.
         if (item.getFilterOption() != null || item.getSearchOption() != null
-            || item.getOrderByOption() != null || item.getCountOption() != null) {
+            || item.getOrderByOption() != null) {
           throw new ODataApplicationException("Query options on a selected collection-valued "
               + "property are not supported.",
               HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), Locale.ROOT);

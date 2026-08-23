@@ -96,6 +96,12 @@ public final class SelectOptionsHandler {
       throws ODataApplicationException {
     List<Object> values = new ArrayList<>(property.asCollection());
 
+    // [OData-Protocol] 11.2.5.1: the count reports the collection, so it is taken before $skip
+    // and $top page it.
+    final Integer count = item.getCountOption() != null && item.getCountOption().getValue()
+        ? values.size()
+        : null;
+
     if (item.getSkipOption() != null) {
       final int skip = Math.min(item.getSkipOption().getValue(), values.size());
       values = new ArrayList<>(values.subList(skip, values.size()));
@@ -108,6 +114,7 @@ public final class SelectOptionsHandler {
     final Property result = new Property(property.getType(), property.getName(),
         property.getValueType(), values);
     result.getAnnotations().addAll(property.getAnnotations());
+    result.setCount(count);
     return result;
   }
 

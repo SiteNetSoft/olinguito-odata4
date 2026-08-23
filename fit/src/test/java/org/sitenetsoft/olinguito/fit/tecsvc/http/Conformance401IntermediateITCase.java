@@ -143,7 +143,6 @@ public class Conformance401IntermediateITCase extends AbstractBaseTestITCase {
    */
   @Test
   public void unevaluatedSelectCollectionOptionsAreNotImplemented() throws Exception {
-    assertStatus(HttpStatusCode.NOT_IMPLEMENTED, "ESKeyNav(1)?$select=CollPropertyString($count=true)");
     assertStatus(HttpStatusCode.NOT_IMPLEMENTED,
         "ESKeyNav(1)?$select=CollPropertyString($orderby=$it desc)");
 
@@ -164,6 +163,23 @@ public class Conformance401IntermediateITCase extends AbstractBaseTestITCase {
         .contains("\"CollPropertyString\":[\"Employee3@company.example\"]"));
     assertTrue(body("ESKeyNav(1)?$select=CollPropertyString($skip=1;$top=1)")
         .contains("\"CollPropertyString\":[\"Employee2@company.example\"]"));
+  }
+
+  /**
+   * 13.2.2 item 9: $count on a selected collection reports the collection's size, taken before
+   * $skip and $top page it.
+   */
+  @Test
+  public void countOnASelectedCollection() throws Exception {
+    final String all = body("ESKeyNav(1)?$select=CollPropertyString($count=true)");
+    assertTrue("the collection must carry its count: " + all,
+        all.contains("\"CollPropertyString@odata.count\":3"));
+
+    final String paged = body("ESKeyNav(1)?$select=CollPropertyString($count=true;$top=1)");
+    assertTrue("the count reports the collection, not the page: " + paged,
+        paged.contains("\"CollPropertyString@odata.count\":3"));
+    assertTrue("the value is still paged: " + paged,
+        paged.contains("\"CollPropertyString\":[\"Employee1@company.example\"]"));
   }
 
   private int entityCount(final String pathAndQuery) throws IOException {

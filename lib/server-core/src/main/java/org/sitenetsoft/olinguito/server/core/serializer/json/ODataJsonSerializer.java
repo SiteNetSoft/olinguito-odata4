@@ -34,6 +34,7 @@
  * onto the response channel instead of buffering them
  * Copyright 2026 SiteNetSoft - OLINGO-1505: Write stream-property media links whenever they are not
  * the computed ones, not only at metadata=full
+ * Copyright 2026 SiteNetSoft - Tier 8 Wave 3: inline count for a counted collection property
  */
 package org.sitenetsoft.olinguito.server.core.serializer.json;
 
@@ -1115,6 +1116,11 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
       return;
     }
     writePropertyType(edmProperty, json);
+    if (property != null && property.getCount() != null) {
+      // A collection-valued property counted by a $select option carries its count alongside it
+      // ([OData-Protocol] 11.2.5.1); the annotation precedes the property, as annotations do.
+      writeInlineCount(edmProperty.getName(), property.getCount(), json);
+    }
     if (isStreamProperty) {
       writeStreamPropertyControlInformation(edmProperty.getName(), property, linked, json);
     } else {
