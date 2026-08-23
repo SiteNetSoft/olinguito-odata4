@@ -21,6 +21,7 @@
 package org.sitenetsoft.olinguito.fit.tecsvc.http;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -113,6 +114,26 @@ public class Conformance401IntermediateITCase extends AbstractBaseTestITCase {
     assertStatus(HttpStatusCode.OK, "FICRTCollESTwoKeyNavParam(ParameterInt16=1)");
     assertStatus(HttpStatusCode.OK,
         "FICRTCollESTwoKeyNavParam(ParameterInt16=1)/olingo.odata.test1.ETBaseTwoKeyNav");
+  }
+
+  /**
+   * 13.2.2 item 5, the level's remaining MUST: $select nested within $select. CTTwoPrim carries two
+   * structural members, so a nested selection of one of them is visible in the payload -- a complex
+   * type with a single structural member would project identically either way and prove nothing.
+   *
+   * [OData-Protocol] 11.2.5.1 also requires that "the context URL MUST reflect the set of selected
+   * properties", so both spellings must produce byte-identical responses.
+   */
+  @Test
+  public void nestedSelectProjectsLikeThePathForm() throws Exception {
+    final String nested = body("ESKeyNav(1)?$select=PropertyCompTwoPrim($select=PropertyInt16)");
+    final String path = body("ESKeyNav(1)?$select=PropertyCompTwoPrim/PropertyInt16");
+
+    assertTrue("the nested form must project PropertyInt16: " + nested,
+        nested.contains("\"PropertyInt16\""));
+    assertFalse("the nested form must not project the sibling member: " + nested,
+        nested.contains("\"PropertyString\""));
+    assertEquals("both spellings must project the same members and context URL", path, nested);
   }
 
   private int entityCount(final String pathAndQuery) throws IOException {

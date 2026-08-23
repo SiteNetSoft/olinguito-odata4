@@ -17,6 +17,7 @@
  * under the License.
  *
  * Copyright 2026 SiteNetSoft - Add OpenType support ($select of dynamic properties)
+ * Copyright 2026 SiteNetSoft - Tier 8 Wave 2: project a nested select option
  */
 package org.sitenetsoft.olinguito.server.core.serializer.utils;
 
@@ -108,7 +109,14 @@ public abstract class ExpandSelectHelper {
           path.add(resEntitySet.getTypeFilterOnCollection().
               getFullQualifiedName().getFullQualifiedNameAsString());
         }
-        extractPathsFromResourceParts(selectedPaths, parts, path);
+        if (parts.size() == 1 && item.getSelectOption() != null) {
+          // A nested $select contributes this property's sub-paths ([OData-Protocol] 11.2.5.1),
+          // and the context URL "MUST reflect the set of selected properties", so it is expanded
+          // here exactly as an explicit path would be.
+          addNestedSelectPaths(selectedPaths, item.getSelectOption().getSelectItems(), path);
+        } else {
+          extractPathsFromResourceParts(selectedPaths, parts, path);
+        }
       } else if (resource instanceof UriResourceNavigation resNav
           && propertyName.equals(resNav.getProperty().getName()) ) {
         List<String> path = new ArrayList<>();
@@ -126,6 +134,27 @@ public abstract class ExpandSelectHelper {
    * @param parts
    * @param path
    */
+  /**
+   * Adds one path per item of a nested $select, each prefixed with the path of the property that
+   * carries the nested option.
+   */
+  private static void addNestedSelectPaths(Set<List<String>> selectedPaths,
+      final List<SelectItem> nestedItems, final List<String> prefix) {
+    for (final SelectItem nested : nestedItems) {
+      final List<String> path = new ArrayList<>(prefix);
+      for (final UriResource part : nested.getResourcePath().getUriResourceParts()) {
+        if (part instanceof UriResourceProperty partProp) {
+          path.add(partProp.getProperty().getName());
+        } else if (part instanceof UriResourceNavigation partNav) {
+          path.add(partNav.getProperty().getName());
+        } else if (part instanceof UriResourceDynamicProperty partDynamic) {
+          path.add(partDynamic.getPropertyName());
+        }
+      }
+      selectedPaths.add(path);
+    }
+  }
+
   private static Set<List<String>> extractPathsFromResourceParts(
       Set<List<String>> selectedPaths, final List<UriResource> parts,
       List<String> path) {
@@ -172,6 +201,17 @@ public abstract class ExpandSelectHelper {
             }
           }
           selectedPaths.add(path);
+        } else if (item.getSelectOption() != null) {
+          // A nested $select hangs off the item instead of extending its path
+          // ([OData-Protocol] 11.2.5.1), so its own items supply this property's sub-paths.
+          // A nested selection that itself selects everything (a star) yields no paths, which
+          // means the whole property is selected, exactly as an item with no nested option does.
+          final Set<List<String>> nestedPaths =
+              getSelectedPaths(item.getSelectOption().getSelectItems());
+          if (nestedPaths == null) {
+            return null;
+          }
+          selectedPaths.addAll(nestedPaths);
         } else {
           return null;
         }
