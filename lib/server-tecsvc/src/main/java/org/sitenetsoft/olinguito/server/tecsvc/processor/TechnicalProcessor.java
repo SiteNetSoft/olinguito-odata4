@@ -22,6 +22,7 @@
  * Copyright 2026 SiteNetSoft - Restrict streamed collection serialization to JSON response formats
  * Copyright 2026 SiteNetSoft - Tier 8 Wave 1: filter the addressed collection instead of substituting one
  * Copyright 2026 SiteNetSoft - Tier 8 Wave 1: honor a derived-type cast on an operation result
+ * Copyright 2026 SiteNetSoft - Tier 8 Wave 2: 501 for select options that are not evaluated yet
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
@@ -52,6 +53,7 @@ import org.sitenetsoft.olinguito.server.api.uri.UriInfo;
 import org.sitenetsoft.olinguito.server.api.uri.UriInfoResource;
 import org.sitenetsoft.olinguito.server.api.uri.UriParameter;
 import org.sitenetsoft.olinguito.server.api.uri.UriResource;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectItem;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceAction;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceEntitySet;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceFunction;
@@ -352,6 +354,21 @@ public abstract class TechnicalProcessor implements Processor {
     if (uriInfo.getApplyOption() != null) {
       throw new ODataApplicationException("Not all of the specified options are supported.",
           HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), Locale.ROOT);
+    }
+    if (uriInfo.getSelectOption() != null) {
+      for (final SelectItem item : uriInfo.getSelectOption().getSelectItems()) {
+        // Parsed by SelectParser but not evaluated against the selected collection's value yet.
+        // [OData-Protocol] 13.1.2 item 2 requires 501 for parsed-but-unsupported functionality;
+        // accepting the option and ignoring it would be worse than refusing it. A nested $select
+        // is deliberately absent from this check -- it is projected by ExpandSelectHelper.
+        if (item.getFilterOption() != null || item.getSearchOption() != null
+            || item.getOrderByOption() != null || item.getSkipOption() != null
+            || item.getTopOption() != null || item.getCountOption() != null) {
+          throw new ODataApplicationException("Query options on a selected collection-valued "
+              + "property are not supported.",
+              HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), Locale.ROOT);
+        }
+      }
     }
   }
 

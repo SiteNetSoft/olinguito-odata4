@@ -136,6 +136,21 @@ public class Conformance401IntermediateITCase extends AbstractBaseTestITCase {
     assertEquals("both spellings must project the same members and context URL", path, nested);
   }
 
+  /**
+   * Item 9's collection options parse but are not evaluated yet. [OData-Protocol] 13.1.2 item 2
+   * requires 501 for parsed-but-unsupported functionality, which is honest; accepting the option
+   * and silently ignoring it is the failure mode this tier exists to remove.
+   */
+  @Test
+  public void unevaluatedSelectCollectionOptionsAreNotImplemented() throws Exception {
+    assertStatus(HttpStatusCode.NOT_IMPLEMENTED, "ESKeyNav(1)?$select=CollPropertyString($top=1)");
+    assertStatus(HttpStatusCode.NOT_IMPLEMENTED,
+        "ESKeyNav(1)?$select=CollPropertyString($orderby=$it desc)");
+
+    // A nested $select is evaluated, so it must not be caught by the same guard.
+    assertStatus(HttpStatusCode.OK, "ESKeyNav(1)?$select=PropertyCompTwoPrim($select=PropertyInt16)");
+  }
+
   private int entityCount(final String pathAndQuery) throws IOException {
     final String content = body(pathAndQuery);
     final int start = content.indexOf("\"value\":[");
