@@ -27,6 +27,7 @@
  * request handler now owns the preference ([OData-Protocol] section 11.6)
  * Copyright 2026 SiteNetSoft - Tier 7 Wave 2: echo only the page size actually applied
  * Copyright 2026 SiteNetSoft - Tier 8 Wave 3: apply the options a $select item carries
+ * Copyright 2026 SiteNetSoft - Tier 8 Wave 4: evaluate $compute before the options that name it
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
@@ -93,6 +94,7 @@ import org.sitenetsoft.olinguito.server.api.uri.queryoption.SystemQueryOption;
 import org.sitenetsoft.olinguito.server.tecsvc.data.DataProvider;
 import org.sitenetsoft.olinguito.server.tecsvc.data.RequestValidator;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.ExpandSystemQueryOptionHandler;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.options.ComputeHandler;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.options.CountHandler;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.options.DeltaTokenHandler;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.options.FilterHandler;
@@ -480,7 +482,8 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
 
     final ExpandSystemQueryOptionHandler expandHandler = new ExpandSystemQueryOptionHandler();
     final Entity entitySerialization = expandHandler.transformEntityGraphToTree(entity, edmEntitySet, expand, null);
-    // 13.2.2 item 9, single-entity read; see the collection path for why this runs on the copy.
+    // 13.2.2 item 8 then item 9, both on the copy the expand transform produced.
+    ComputeHandler.applyCompute(uriInfo.getComputeOption(), entitySerialization, serviceMetadata.getEdm());
     SelectOptionsHandler.applySelectOptions(select, entitySerialization, serviceMetadata.getEdm());
     expandHandler.applyExpandQueryOptions(entitySerialization, edmEntitySet, expand, uriInfo,
         serviceMetadata.getEdm());
@@ -597,6 +600,11 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
     EntityCollection entitySet = new EntityCollection();
     entitySet.getEntities().addAll(entitySetInitial.getEntities());
     entitySet.getOperations().addAll(entitySetInitial.getOperations());
+
+    // 13.2.2 item 8: $compute defines properties the options below may name, so it runs first.
+    // It replaces each entity with a copy carrying the computed values -- the entities in this
+    // shallow copy are the data provider's own.
+    ComputeHandler.applyCompute(uriInfo.getComputeOption(), entitySet, serviceMetadata.getEdm());
 
     // Apply system query options.
     SearchHandler.applySearchSystemQueryOption(uriInfo.getSearchOption(), entitySet);
