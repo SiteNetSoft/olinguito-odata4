@@ -103,12 +103,30 @@ public class Conformance401IntermediateITCase extends AbstractBaseTestITCase {
     assertEquals(2, entityCount("ESAllPrim?$filter=NavPropertyETTwoPrimOne eq null"));
   }
 
+  /**
+   * 13.1.2 item 4 covers casting a function result too: FICRTCollESTwoKeyNavParam returns a
+   * collection of ETTwoKeyNav, and ETBaseTwoKeyNav derives from it. The service used to reject any
+   * type filter on an operation segment with 501.
+   */
+  @Test
+  public void castOnFunctionResult() throws Exception {
+    assertStatus(HttpStatusCode.OK, "FICRTCollESTwoKeyNavParam(ParameterInt16=1)");
+    assertStatus(HttpStatusCode.OK,
+        "FICRTCollESTwoKeyNavParam(ParameterInt16=1)/olingo.odata.test1.ETBaseTwoKeyNav");
+  }
+
   private int entityCount(final String pathAndQuery) throws IOException {
     final String content = body(pathAndQuery);
     final int start = content.indexOf("\"value\":[");
     assertTrue("expected a collection response: " + content, start >= 0);
     // Every tecsvc entity in these sets carries PropertyInt16, so counting it counts entities.
     return content.substring(start).split("\"PropertyInt16\"", -1).length - 1;
+  }
+
+  private void assertStatus(final HttpStatusCode expected, final String pathAndQuery) throws IOException {
+    final HttpURLConnection connection = connect(pathAndQuery);
+    assertEquals(pathAndQuery + " -> " + read(connection), expected.getStatusCode(),
+        connection.getResponseCode());
   }
 
   private String body(final String pathAndQuery) throws IOException {

@@ -21,6 +21,7 @@
  * Copyright 2026 SiteNetSoft - OData 4.01: referential-constraint key predicates from the source entity
  * Copyright 2026 SiteNetSoft - Restrict streamed collection serialization to JSON response formats
  * Copyright 2026 SiteNetSoft - Tier 8 Wave 1: filter the addressed collection instead of substituting one
+ * Copyright 2026 SiteNetSoft - Tier 8 Wave 1: honor a derived-type cast on an operation result
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
@@ -36,6 +37,8 @@ import org.sitenetsoft.olinguito.commons.api.edm.EdmBindingTarget;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityContainer;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntitySet;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmEntityType;
+import org.sitenetsoft.olinguito.commons.api.edm.EdmType;
+import org.sitenetsoft.olinguito.commons.api.edm.FullQualifiedName;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmFunction;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmNavigationProperty;
 import org.sitenetsoft.olinguito.commons.api.edm.EdmSingleton;
@@ -88,7 +91,6 @@ public abstract class TechnicalProcessor implements Processor {
     EdmSingleton singleton = null;
     
     // First must be an entity, an entity collection, a function import, or an action import.
-    blockTypeFilters(resourcePaths.get(0));
     if (resourcePaths.get(0) instanceof UriResourceEntitySet uriResourceEntitySet) {
       entitySet = getEntitySetBasedOnTypeCast(uriResourceEntitySet);
     } else if (resourcePaths.get(0) instanceof UriResourceFunction uriResourceFunc) {
@@ -113,7 +115,6 @@ public abstract class TechnicalProcessor implements Processor {
       while ((entitySet != null || singleton!=null)
           && ++navigationCount < resourcePaths.size()
           && resourcePaths.get(navigationCount) instanceof UriResourceNavigation uriResourceNavigation) {
-        blockTypeFilters(uriResourceNavigation);
         if (uriResourceNavigation.getProperty().containsTarget()) {
           return entitySet;
         }
@@ -298,8 +299,18 @@ public abstract class TechnicalProcessor implements Processor {
       return link == null ? null : link.getInlineEntitySet();
     } else {
       if (resourcePaths.get(0) instanceof UriResourceFunction uriResource) {
-        return dataProvider.readFunctionEntityCollection(uriResource.getFunction(), uriResource.getParameters(),
-            uriInfo);
+        final EntityCollection result = dataProvider.readFunctionEntityCollection(
+            uriResource.getFunction(), uriResource.getParameters(), uriInfo);
+        // A type filter on an operation result is part of [OData-Protocol] 13.1.2 item 4's "casting
+        // to a derived type": it restricts the returned entities to those of the cast type. This
+        // used to be rejected outright with 501.
+        final EdmType typeFilter = uriResource.getTypeFilterOnCollection() != null
+            ? uriResource.getTypeFilterOnCollection()
+            : uriResource.getTypeFilterOnEntry();
+        if (typeFilter != null && result != null) {
+          result.getEntities().removeIf(candidate -> !isCompatible(candidate, typeFilter));
+        }
+        return result;
       } else {
         // The addressed collection is read as it stands. A cast inside the filter is evaluated
         // against each instance by ExpressionVisitorImpl ([OData-URL] 5.1.1.10), so the collection
@@ -313,6 +324,18 @@ public abstract class TechnicalProcessor implements Processor {
     }
   }
 
+  /**
+   * @return whether the entity's own type is the given type or derives from it
+   */
+  private boolean isCompatible(final Entity instance, final EdmType type) {
+    if (instance == null || instance.getType() == null) {
+      return false;
+    }
+    final EdmEntityType entityType = serviceMetadata.getEdm()
+        .getEntityType(new FullQualifiedName(instance.getType()));
+    return entityType != null && entityType.compatibleTo(type);
+  }
+
   protected UriResourceNavigation getLastNavigation(final UriInfoResource uriInfo) {
     final List<UriResource> resourcePaths = uriInfo.getUriResourceParts();
     int navigationCount = 1;
@@ -323,15 +346,6 @@ public abstract class TechnicalProcessor implements Processor {
     
     final UriResource lastSegment = resourcePaths.get(--navigationCount);
     return (lastSegment instanceof UriResourceNavigation uriResourceNav) ? uriResourceNav : null;
-  }
-
-  private void blockTypeFilters(final UriResource uriResource) throws ODataApplicationException {
-    if (uriResource instanceof UriResourceFunction uriResourceFunc
-        && (uriResourceFunc.getTypeFilterOnCollection() != null
-        || uriResourceFunc.getTypeFilterOnEntry() != null)) {
-      throw new ODataApplicationException("Type filters are not supported.",
-          HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), Locale.ROOT);
-    }
   }
 
   protected void validateOptions(final UriInfoResource uriInfo) throws ODataApplicationException {
