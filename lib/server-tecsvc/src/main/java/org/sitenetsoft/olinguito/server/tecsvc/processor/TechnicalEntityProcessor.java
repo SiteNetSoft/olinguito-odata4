@@ -26,6 +26,7 @@
  * Copyright 2026 SiteNetSoft - Tier 6 Wave 3 Task 10: removed the respond-async handling; the
  * request handler now owns the preference ([OData-Protocol] section 11.6)
  * Copyright 2026 SiteNetSoft - Tier 7 Wave 2: echo only the page size actually applied
+ * Copyright 2026 SiteNetSoft - Tier 8 Wave 3: apply the options a $select item carries
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor;
 
@@ -97,6 +98,7 @@ import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.options.De
 import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.options.FilterHandler;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.options.OrderByHandler;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.options.SearchHandler;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.options.SelectOptionsHandler;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.options.ServerSidePagingHandler;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.options.SkipHandler;
 import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.options.TopHandler;
@@ -478,6 +480,8 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
 
     final ExpandSystemQueryOptionHandler expandHandler = new ExpandSystemQueryOptionHandler();
     final Entity entitySerialization = expandHandler.transformEntityGraphToTree(entity, edmEntitySet, expand, null);
+    // 13.2.2 item 9, single-entity read; see the collection path for why this runs on the copy.
+    SelectOptionsHandler.applySelectOptions(select, entitySerialization);
     expandHandler.applyExpandQueryOptions(entitySerialization, edmEntitySet, expand, uriInfo,
         serviceMetadata.getEdm());
 
@@ -621,6 +625,10 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
     final EntityCollection entitySetSerialization = expandHandler.transformEntitySetGraphToTree(entitySet,
         edmEntitySet,
         expand, null);
+    // 13.2.2 item 9: options carried by a $select item act on the selected property's value.
+    // Applied to the transformed entities, whose property lists are copies -- the entities the
+    // data provider holds must not be touched.
+    SelectOptionsHandler.applySelectOptions(uriInfo.getSelectOption(), entitySetSerialization);
     expandHandler.applyExpandQueryOptions(entitySetSerialization, edmEntitySet, expand, uriInfo,
         serviceMetadata.getEdm());
     final CountOption countOption = uriInfo.getCountOption();

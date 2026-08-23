@@ -143,12 +143,27 @@ public class Conformance401IntermediateITCase extends AbstractBaseTestITCase {
    */
   @Test
   public void unevaluatedSelectCollectionOptionsAreNotImplemented() throws Exception {
-    assertStatus(HttpStatusCode.NOT_IMPLEMENTED, "ESKeyNav(1)?$select=CollPropertyString($top=1)");
+    assertStatus(HttpStatusCode.NOT_IMPLEMENTED, "ESKeyNav(1)?$select=CollPropertyString($count=true)");
     assertStatus(HttpStatusCode.NOT_IMPLEMENTED,
         "ESKeyNav(1)?$select=CollPropertyString($orderby=$it desc)");
 
     // A nested $select is evaluated, so it must not be caught by the same guard.
     assertStatus(HttpStatusCode.OK, "ESKeyNav(1)?$select=PropertyCompTwoPrim($select=PropertyInt16)");
+  }
+
+  /**
+   * 13.2.2 item 9: query options carried by a $select item act on the selected property's value.
+   * $top and $skip are list operations on that value. ESKeyNav(1)'s CollPropertyString holds
+   * Employee1@, Employee2@ and Employee3@company.example (DataCreator:1025-1028).
+   */
+  @Test
+  public void topAndSkipOnASelectedCollection() throws Exception {
+    assertTrue(body("ESKeyNav(1)?$select=CollPropertyString($top=1)")
+        .contains("\"CollPropertyString\":[\"Employee1@company.example\"]"));
+    assertTrue(body("ESKeyNav(1)?$select=CollPropertyString($skip=2)")
+        .contains("\"CollPropertyString\":[\"Employee3@company.example\"]"));
+    assertTrue(body("ESKeyNav(1)?$select=CollPropertyString($skip=1;$top=1)")
+        .contains("\"CollPropertyString\":[\"Employee2@company.example\"]"));
   }
 
   private int entityCount(final String pathAndQuery) throws IOException {
