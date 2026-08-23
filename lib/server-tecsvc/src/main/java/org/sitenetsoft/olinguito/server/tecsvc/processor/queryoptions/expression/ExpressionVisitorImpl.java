@@ -26,6 +26,7 @@
  * Copyright 2026 SiteNetSoft - Tier 7 Wave 2: evaluate the divby operator
  * Copyright 2026 SiteNetSoft - Tier 8 Wave 1: evaluate a derived-type cast against each instance
  * Copyright 2026 SiteNetSoft - Tier 8 Wave 1: compare a single-valued navigation property to null
+ * Copyright 2026 SiteNetSoft - Tier 8 Wave 3: resolve a member path against a complex value
  */
 package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression;
 
@@ -221,7 +222,10 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
     final UriResource initialPart = uriResourceParts.get(0);
     if (initialPart instanceof UriResourceProperty uriResourceProp) {
       EdmProperty currentEdmProperty = uriResourceProp.getProperty();
-      Property currentProperty = entity.getProperty(currentEdmProperty.getName());
+      // The visitor is built either over an entity or over a single complex value (the latter when
+      // a $select option is evaluated against each item of a complex collection, or for a lambda
+      // variable), so the first segment resolves against whichever context is present.
+      Property currentProperty = resolveFirstProperty(currentEdmProperty.getName());
       for (int i = 1; i < uriResourceParts.size(); i++) {
         if (uriResourceParts.get(i) instanceof UriResourceDynamicProperty dynamicProperty) {
           // Dynamic (undeclared) property segments are always leaves of the resource path
@@ -372,6 +376,24 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<VisitorOperand> 
           HttpStatusCode.BAD_REQUEST.getStatusCode(), Locale.ROOT, e);
     }
     return new TypedOperand(result, type);
+  }
+
+  /**
+   * Resolves the first segment of a member path against the context this visitor was built over.
+   * @return the property, or <code>null</code> when the context does not carry it
+   */
+  private Property resolveFirstProperty(final String name) {
+    if (entity != null) {
+      return entity.getProperty(name);
+    }
+    if (complexValue != null) {
+      for (final Property property : complexValue.getValue()) {
+        if (property.getName().equals(name)) {
+          return property;
+        }
+      }
+    }
+    return null;
   }
 
   /**

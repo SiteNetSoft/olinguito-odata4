@@ -481,7 +481,7 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
     final ExpandSystemQueryOptionHandler expandHandler = new ExpandSystemQueryOptionHandler();
     final Entity entitySerialization = expandHandler.transformEntityGraphToTree(entity, edmEntitySet, expand, null);
     // 13.2.2 item 9, single-entity read; see the collection path for why this runs on the copy.
-    SelectOptionsHandler.applySelectOptions(select, entitySerialization);
+    SelectOptionsHandler.applySelectOptions(select, entitySerialization, serviceMetadata.getEdm());
     expandHandler.applyExpandQueryOptions(entitySerialization, edmEntitySet, expand, uriInfo,
         serviceMetadata.getEdm());
 
@@ -628,7 +628,8 @@ public class TechnicalEntityProcessor extends TechnicalProcessor
     // 13.2.2 item 9: options carried by a $select item act on the selected property's value.
     // Applied to the transformed entities, whose property lists are copies -- the entities the
     // data provider holds must not be touched.
-    SelectOptionsHandler.applySelectOptions(uriInfo.getSelectOption(), entitySetSerialization);
+    SelectOptionsHandler.applySelectOptions(uriInfo.getSelectOption(), entitySetSerialization,
+        serviceMetadata.getEdm());
     expandHandler.applyExpandQueryOptions(entitySetSerialization, edmEntitySet, expand, uriInfo,
         serviceMetadata.getEdm());
     final CountOption countOption = uriInfo.getCountOption();

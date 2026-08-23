@@ -53,6 +53,7 @@ import org.sitenetsoft.olinguito.server.api.uri.UriInfo;
 import org.sitenetsoft.olinguito.server.api.uri.UriInfoResource;
 import org.sitenetsoft.olinguito.server.api.uri.UriParameter;
 import org.sitenetsoft.olinguito.server.api.uri.UriResource;
+import org.sitenetsoft.olinguito.server.api.uri.UriResourcePrimitiveProperty;
 import org.sitenetsoft.olinguito.server.api.uri.queryoption.SelectItem;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceAction;
 import org.sitenetsoft.olinguito.server.api.uri.UriResourceEntitySet;
@@ -329,6 +330,20 @@ public abstract class TechnicalProcessor implements Processor {
   /**
    * @return whether the entity's own type is the given type or derives from it
    */
+  /**
+   * @return whether the select item names a collection-valued <em>primitive</em> property, whose
+   *         items a filter or an order-by could only name through $it
+   */
+  private boolean isPrimitiveCollectionItem(final SelectItem item) {
+    if (item.getResourcePath() == null) {
+      return false;
+    }
+    final List<UriResource> parts = item.getResourcePath().getUriResourceParts();
+    return !parts.isEmpty()
+        && parts.get(parts.size() - 1) instanceof UriResourcePrimitiveProperty primitiveProperty
+        && primitiveProperty.getProperty().isCollection();
+  }
+
   private boolean isCompatible(final Entity instance, final EdmType type) {
     if (instance == null || instance.getType() == null) {
       return false;
@@ -361,8 +376,9 @@ public abstract class TechnicalProcessor implements Processor {
         // [OData-Protocol] 13.1.2 item 2 requires 501 for parsed-but-unsupported functionality;
         // accepting the option and ignoring it would be worse than refusing it. A nested $select
         // is deliberately absent from this check -- it is projected by ExpandSelectHelper.
-        if (item.getFilterOption() != null || item.getSearchOption() != null
-            || item.getOrderByOption() != null) {
+        if (item.getSearchOption() != null
+            || (isPrimitiveCollectionItem(item)
+                && (item.getFilterOption() != null || item.getOrderByOption() != null))) {
           throw new ODataApplicationException("Query options on a selected collection-valued "
               + "property are not supported.",
               HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), Locale.ROOT);

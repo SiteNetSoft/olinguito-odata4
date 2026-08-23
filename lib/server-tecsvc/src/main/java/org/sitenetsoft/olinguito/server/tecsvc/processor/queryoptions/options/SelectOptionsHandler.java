@@ -23,6 +23,17 @@ package org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.options;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.Locale;
+import org.sitenetsoft.olinguito.commons.api.data.ComplexValue;
+import org.sitenetsoft.olinguito.commons.api.edm.Edm;
+import org.sitenetsoft.olinguito.commons.api.http.HttpStatusCode;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.FilterOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.OrderByItem;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.OrderByOption;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.Expression;
+import org.sitenetsoft.olinguito.server.api.uri.queryoption.expression.ExpressionVisitException;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.ExpressionVisitorImpl;
+import org.sitenetsoft.olinguito.server.tecsvc.processor.queryoptions.expression.operand.TypedOperand;
 import org.sitenetsoft.olinguito.commons.api.data.Entity;
 import org.sitenetsoft.olinguito.commons.api.data.EntityCollection;
 import org.sitenetsoft.olinguito.commons.api.data.Property;
@@ -47,17 +58,17 @@ public final class SelectOptionsHandler {
   }
 
   public static void applySelectOptions(final SelectOption selectOption,
-      final EntityCollection entityCollection) throws ODataApplicationException {
+      final EntityCollection entityCollection, final Edm edm) throws ODataApplicationException {
     if (selectOption == null || entityCollection == null) {
       return;
     }
     for (final Entity entity : entityCollection.getEntities()) {
-      applySelectOptions(selectOption, entity);
+      applySelectOptions(selectOption, entity, edm);
     }
   }
 
-  public static void applySelectOptions(final SelectOption selectOption, final Entity entity)
-      throws ODataApplicationException {
+  public static void applySelectOptions(final SelectOption selectOption, final Entity entity,
+      final Edm edm) throws ODataApplicationException {
     if (selectOption == null || entity == null) {
       return;
     }
@@ -68,7 +79,7 @@ public final class SelectOptionsHandler {
       }
       final Property property = entity.getProperty(propertyName);
       if (property != null && property.isCollection()) {
-        replaceProperty(entity, property, applyToValue(item, property));
+        replaceProperty(entity, property, applyToValue(item, property, edm));
       }
     }
   }
@@ -92,7 +103,7 @@ public final class SelectOptionsHandler {
    *         the entity being serialized shares its {@link Property} objects with the entity the
    *         data provider holds -- the copies made upstream are shallow
    */
-  private static Property applyToValue(final SelectItem item, final Property property)
+  private static Property applyToValue(final SelectItem item, final Property property, final Edm edm)
       throws ODataApplicationException {
     List<Object> values = new ArrayList<>(property.asCollection());
 
@@ -102,6 +113,12 @@ public final class SelectOptionsHandler {
         ? values.size()
         : null;
 
+    if (item.getFilterOption() != null) {
+      values = filter(values, item.getFilterOption(), edm);
+    }
+    if (item.getOrderByOption() != null) {
+      values = order(values, item.getOrderByOption(), edm);
+    }
     if (item.getSkipOption() != null) {
       final int skip = Math.min(item.getSkipOption().getValue(), values.size());
       values = new ArrayList<>(values.subList(skip, values.size()));
@@ -116,6 +133,75 @@ public final class SelectOptionsHandler {
     result.getAnnotations().addAll(property.getAnnotations());
     result.setCount(count);
     return result;
+  }
+
+  /**
+   * Keeps the complex values for which the expression is true. A collection of primitive values
+   * cannot be filtered here -- naming the item needs $it, which this service's expression visitor
+   * does not implement -- and is refused in TechnicalProcessor.validateOptions before reaching this.
+   */
+  private static List<Object> filter(final List<Object> values, final FilterOption filterOption,
+      final Edm edm) throws ODataApplicationException {
+    final List<Object> result = new ArrayList<>();
+    for (final Object value : values) {
+      if (value instanceof ComplexValue complexValue
+          && Boolean.TRUE.equals(evaluate(filterOption.getExpression(), complexValue, edm).getValue())) {
+        result.add(value);
+      }
+    }
+    return result;
+  }
+
+  /** Orders the complex values, mirroring the comparison {@code OrderByHandler} applies to entities. */
+  private static List<Object> order(final List<Object> values, final OrderByOption orderByOption,
+      final Edm edm) throws ODataApplicationException {
+    final List<Object> result = new ArrayList<>(values);
+    try {
+      result.sort((first, second) -> compare(first, second, orderByOption, edm));
+    } catch (final IllegalStateException e) {
+      if (e.getCause() instanceof ODataApplicationException cause) {
+        throw cause;
+      }
+      throw e;
+    }
+    return result;
+  }
+
+  @SuppressWarnings("unchecked")
+  private static int compare(final Object first, final Object second,
+      final OrderByOption orderByOption, final Edm edm) {
+    int result = 0;
+    for (int i = 0; i < orderByOption.getOrders().size() && result == 0; i++) {
+      final OrderByItem item = orderByOption.getOrders().get(i);
+      try {
+        final TypedOperand operand1 = evaluate(item.getExpression(), (ComplexValue) first, edm);
+        final TypedOperand operand2 = evaluate(item.getExpression(), (ComplexValue) second, edm);
+
+        if (operand1.isNull() || operand2.isNull()) {
+          result = operand1.isNull() && operand2.isNull() ? 0 : operand1.isNull() ? -1 : 1;
+        } else {
+          final Object value1 = operand1.getValue();
+          final Object value2 = operand2.getValue();
+          result = value1.getClass() == value2.getClass() && value1 instanceof Comparable
+              ? ((Comparable<Object>) value1).compareTo(value2)
+              : 0;
+        }
+        result = item.isDescending() ? result * -1 : result;
+      } catch (final ODataApplicationException e) {
+        throw new IllegalStateException(e);
+      }
+    }
+    return result;
+  }
+
+  private static TypedOperand evaluate(final Expression expression, final ComplexValue value, final Edm edm)
+      throws ODataApplicationException {
+    try {
+      return expression.accept(new ExpressionVisitorImpl(value, null, edm)).asTypedOperand();
+    } catch (final ExpressionVisitException e) {
+      throw new ODataApplicationException("Error evaluating a select option.",
+          HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode(), Locale.ROOT, e);
+    }
   }
 
   private static void replaceProperty(final Entity entity, final Property original,

@@ -182,6 +182,42 @@ public class Conformance401IntermediateITCase extends AbstractBaseTestITCase {
         paged.contains("\"CollPropertyString\":[\"Employee1@company.example\"]"));
   }
 
+  /**
+   * 13.2.2 item 9: $filter and $orderby on a selected collection of complex values. Each item is
+   * evaluated in its own right. ESKeyNav(1)'s CollPropertyComp holds three CTPrimComp values whose
+   * PropertyInt16 are 1, 2 and 3 (DataCreator:1033-1043).
+   */
+  @Test
+  public void filterAndOrderByOnASelectedComplexCollection() throws Exception {
+    // Assertions are scoped to the collection itself: the entity's own PropertyInt16 is 1, so a
+    // whole-body search would match it and prove nothing.
+    final String filtered = collectionOf(
+        body("ESKeyNav(1)?$select=CollPropertyComp($filter=PropertyInt16 eq 2)"), "CollPropertyComp");
+    assertTrue("only the matching item may survive: " + filtered,
+        filtered.contains("\"PropertyInt16\":2"));
+    assertFalse("the non-matching items must be gone: " + filtered,
+        filtered.contains("\"PropertyInt16\":1,") || filtered.contains("\"PropertyInt16\":3,"));
+
+    // Descending order puts 3 first; ascending, the seeded order, puts 1 first.
+    final String descending = collectionOf(
+        body("ESKeyNav(1)?$select=CollPropertyComp($orderby=PropertyInt16 desc)"), "CollPropertyComp");
+    assertTrue("the collection must be reordered: " + descending,
+        descending.indexOf("\"PropertyInt16\":3,") < descending.indexOf("\"PropertyInt16\":1,"));
+
+    final String ascending = collectionOf(
+        body("ESKeyNav(1)?$select=CollPropertyComp($orderby=PropertyInt16)"), "CollPropertyComp");
+    assertTrue("ascending keeps the seeded order: " + ascending,
+        ascending.indexOf("\"PropertyInt16\":1,") < ascending.indexOf("\"PropertyInt16\":3,"));
+  }
+
+  /** @return the JSON text of one named collection property, from its opening bracket to its close */
+  private String collectionOf(final String body, final String propertyName) {
+    final int start = body.indexOf("\"" + propertyName + "\":[");
+    assertTrue("expected " + propertyName + " in: " + body, start >= 0);
+    final int end = body.indexOf("]", start);
+    return body.substring(start, end + 1);
+  }
+
   private int entityCount(final String pathAndQuery) throws IOException {
     final String content = body(pathAndQuery);
     final int start = content.indexOf("\"value\":[");
