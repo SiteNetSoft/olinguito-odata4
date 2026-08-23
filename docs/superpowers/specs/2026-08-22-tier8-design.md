@@ -20,7 +20,7 @@ only open gap is its item 4. Items 4, 6 and 7 already pass. Items 10 and 11 are 
 
 | Clause | Level | State today | Tier 8 |
 |---|---|---|---|
-| §13.1.2 item 4 | MUST | Cast honored on entity-set/nav path segments; **wrong results** in `$filter`; 501 on bound functions | Evaluate casts per instance |
+| §13.1.2 item 4 | MUST | Cast honored on path segments; **HTTP 500** when a cast appears in a filter alongside any other clause; 501 on bound functions | Evaluate casts per instance |
 | §13.2.2 item 3 | MUST | Parses, then NPEs in the evaluator | `NavPropSingle eq null` answers true/false |
 | §13.2.2 item 5 | MUST | `SelectParser` has no parenthesized-options grammar | `$select` nested within `$select` |
 | §13.2.2 item 9 | SHOULD | same | `$filter`/`$orderby`/`$count`/`$search`/`$skip`/`$top` nested in `$select` |
@@ -66,13 +66,27 @@ The parser enforces that distinction rather than accepting one union everywhere.
 
 ### Wave 1 — derived-type casts and single-valued navigation
 
-**1. The `$filter` cast special case returns wrong results.**
+**1. A cast in a filter answers HTTP 500 as soon as any other clause joins it.**
 `TechnicalProcessor.readEntityCollection` (`:304-317`) pattern-matches a top-level `Binary` whose left
-operand is a `Member` carrying a start type filter, then returns `dataProvider.readAll(castSet)` —
-discarding the comparison entirely. `?$filter=Ns.Derived/Prop eq 'nope'` returns every derived
-entity. The fix deletes the special case: resolve the cast as the collection to filter, then let
-`FilterHandler.applyFilterSystemQuery` evaluate the whole expression, as every other filter path
-already does.
+operand is a `Member` carrying a start type filter, and narrows the collection to the derived entity
+set. Where it fires the answer is right — the caller still applies `FilterHandler`, so
+`?$filter=Ns.ETBase/Additional eq 'nope'` correctly returns nothing. But it only recognises that one
+expression shape. Add a second clause and the top-level operand is an `and`, the special case does not
+fire, the collection stays the base entity set, and evaluating the cast member against an entity that
+is not of the cast type dereferences a null property:
+
+```
+ESTwoPrim?$filter=olingo.odata.test1.ETBase/AdditionalPropertyString_5 eq 'TEST A 0815'
+          and PropertyInt16 eq 222
+  -> 500 Cannot invoke "Property.getValue()" because "currentProperty" is null
+```
+
+(Verified against the running service, 2026-08-22. **The 2026-08-20 audit described this as the cast
+set being returned with the rest of the filter ignored; that reading is wrong** — the filter is
+applied. The defect is the 500, and the special case is a narrowing hack that hides it for one shape.)
+
+The fix removes the special case and makes the evaluator handle the cast per instance, so the base
+collection can be filtered directly like every other collection.
 
 **2. Casts inside member expressions are then honored per instance.**
 With the special case gone, `ExpressionVisitorImpl.visitMember` must handle a
@@ -158,8 +172,8 @@ likely to, being the only one that adds a system query option end to end.
   bugs.
 - **Closed-behavior pins** — `/`-path `$select` nesting, existing `$filter` casts that are already
   correct, `$expand`'s own nested options, and `$apply=compute(...)` still answering 501.
-- **A failing-first pin for the wrong-results bug**: a filter over a cast collection whose comparison
-  excludes some entities, asserting the filtered count. It fails today.
+- **A failing-first pin for the 500**: a filter combining a cast clause with a second clause, asserting
+  the filtered rows. It answers 500 today.
 - **Gate** — plain `mvn -B install --fail-at-end` (never `-Pbuild.fast`). Baseline: 38 modules, 4204
   tests.
 
@@ -177,9 +191,11 @@ likely to, being the only one that adds a system query option end to end.
 
 ## Deviations and rulings
 
-**D1 — Wave 1 changes results, deliberately.** Filters over a cast collection currently ignore the
-comparison and return the whole set. Anything depending on that is depending on a bug; the correction
-is called out in the commit and pinned by a test.
+**D1 — Wave 1 removes a special case whose answers were right.** Where the narrowing hack fires today
+the result is correct, so removing it must not change those answers: evaluating the cast per instance
+over the base collection yields the same rows, because an instance of the wrong type makes the
+comparison false. What changes is that the previously-500 shapes now answer. The equivalence is pinned
+by keeping the existing `DerivedAndMixedTypeTestITCase` assertions green.
 
 **D2 — item 3's evaluation rule is ours.** No source defines what a single-valued navigation property
 evaluates to (G1). We take: the related entity, or null when unlinked.
@@ -204,7 +220,7 @@ the protocol version, not the conformance level. The claim is recorded in the au
   match `ExpandItem`'s names exactly so the two read alike.
 - **`$compute` touches the whole request pipeline** — parse, evaluate, select, filter, orderby,
   serialize. It is the split candidate.
-- **The cast fix removes a special case that some test may depend on.** Expect fixtures pinning the
-  current wrong behavior; correct them loudly, as Tier 7 did with twenty-two of them.
+- **The cast fix removes a special case that existing tests depend on.** `DerivedAndMixedTypeTestITCase`
+  exercises it and must stay green unchanged — that is the equivalence check, not a fixture to correct.
 - **Dynamic properties already exist for open types.** Computed properties must not be confused with
   them at serialization time: an entity may carry both, and only computed ones are named by `$compute`.
